@@ -1,0 +1,14 @@
+{
+  "description": "Mobile sites with interesting memory characteristics",
+  "archive_data_file": "../data/mobile_memory.json",
+  "credentials_path": "../data/credentials.json",
+  "user_agent_type": "mobile",
+  "reload_and_gc": [{"action": "reload", "wait_seconds": 15}, {"action": "js_collect_garbage"}],
+  "stress_memory": { "action": "reload_and_gc", "repeat": 3 },
+  "pages": [
+    {
+      "url": "https://mail.google.com/mail/mu",
+      "credentials": "google"
+    }
+  ]
+}

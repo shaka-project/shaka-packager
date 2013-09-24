@@ -1,0 +1,7 @@
+{
+    "description": "Bloat page_cycler benchmark",
+    "serving_dirs": ["../../../../data/page_cycler/bloat"],
+    "pages": [
+        { "url": "file:///../../../../data/page_cycler/bloat/gmail_load_cleardot/" }
+    ]
+}

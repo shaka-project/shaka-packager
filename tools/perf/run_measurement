@@ -1,0 +1,102 @@
+#!/usr/bin/env python
+# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import imp
+import os
+import sys
+import urllib
+
+# Directory path in which to save bootstrap files.
+BOOTSTRAPPED_FILES_DIR = 'support/bootstrap_files'
+PERF_DIR = 'src/tools/perf'
+DEPS_FILE = 'bootstrap_deps'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+def BootstrapIfNeeded(module_name, module_path, module_deps_url):
+  """Ensures that the given module_name is available, grab from URL if not."""
+  try:
+    imp.find_module(module_name)
+    return
+  except ImportError:
+    sys.path.append(os.path.join(BASE_DIR, BOOTSTRAPPED_FILES_DIR, module_path))
+    try:
+      imp.find_module(module_name)
+      return
+    except ImportError:
+      bootstrap_txt = urllib.urlopen('http://src.chromium.org/viewvc/chrome/' +
+                                     'trunk/src/tools/telemetry_tools/' +
+                                     'telemetry_bootstrap.py').read()
+      bootstrap = imp.new_module('bootstrap')
+      exec bootstrap_txt in bootstrap.__dict__
+      bootstrap.DownloadDepsURL(os.path.join(BASE_DIR, BOOTSTRAPPED_FILES_DIR),
+                                module_deps_url)
+      return
+
+def ListBootstrapDeps():
+  """List the deps required for telemetry.
+
+  Returns: a list of telemetry deps.
+  """
+  # Add telemetry_tools to sys.path for the import below
+  telemetry_tools_path = os.path.join(BASE_DIR, os.pardir, 'telemetry_tools')
+  sys.path.append(telemetry_tools_path)
+
+  import perf_tools
+  import telemetry_bootstrap
+  deps_file = os.path.join(os.path.dirname(perf_tools.__file__), DEPS_FILE)
+  return telemetry_bootstrap.ListAllDepsPaths(open(deps_file).read())
+
+def main():
+  BootstrapIfNeeded('perf_tools', PERF_DIR,
+                    'http://src.chromium.org/viewvc/chrome/trunk/src/tools'
+                    '/perf/perf_tools/' + DEPS_FILE)
+
+  # Add telemetry to sys.path for the import below
+  telemetry_path = os.path.join(BASE_DIR, os.pardir, 'telemetry')
+  sys.path.append(telemetry_path)
+
+  if '--print-bootstrap-deps' in sys.argv:
+    print ListBootstrapDeps()
+    sys.exit(0)
+
+  from telemetry.page import page_measurement_runner
+  import page_sets
+  page_set_filenames = page_sets.GetAllPageSetFilenames()
+
+  old_benchmark_names = {
+    "image_decoding_benchmark": "image_decoding",
+    "image_decoding_measurement": "image_decoding",
+    "loading_benchmark": "loading",
+    "loading_measurement": "loading",
+    "media_measurement": "media",
+    "memory_benchmark": "memory",
+    "memory_measurement": "memory",
+    "rasterize_and_record_benchmark": "rasterize_and_record",
+    "rasterize_and_record_measurement": "rasterize_and_record",
+    "robohornetpro": "robohornet_pro",
+    "scrolling_benchmark": "smoothness",
+    "smoothness_benchmark": "smoothness",
+    "smoothness_measurement": "smoothness",
+    "startup_benchmark": "startup_warm_blank_page",
+    "startup_measurement": "startup",
+    "tab_switching_measurement": "tab_switching",
+  }
+
+  # There are bots that are hard-coded to run some specific named tests.
+  # Convert these to the current naming conventions by overriding them in the runner.
+  class MeasurementRunner(page_measurement_runner.PageMeasurementRunner):
+    def GetModernizedTestName(self, arg):
+      if arg not in old_benchmark_names:
+        return arg
+      sys.stderr.write(
+        'An old name %s was given. Please use %s in the future.\n' % (
+          arg,
+          old_benchmark_names.get(arg)))
+      return old_benchmark_names[arg]
+
+  runner = MeasurementRunner()
+  sys.exit(runner.Run(BASE_DIR, page_set_filenames))
+
+if __name__ == '__main__':
+  sys.exit(main())

@@ -1,0 +1,8 @@
+{"linux-chrome-pure/webrtc_pyauto/cpu/jsep01_call": {"reva": 199965, "revb": 200469, "type": "absolute", "improve": 27.55, "regress": 84.84, "sha1": "a35b38f1"},
+ "linux-chrome-pure/webrtc_pyauto/memory/jsep01_call": {"reva": 199600, "revb": 200178, "type": "absolute", "improve": 39672, "regress": 46402, "sha1": "e5906b10"},
+ "mac-chrome-pure/webrtc_pyauto/cpu/jsep01_call": {"reva": 189929, "revb": 193335, "type": "absolute", "improve": 35.15, "regress": 55.02, "sha1": "3fb872b1"},
+ "mac-chrome-pure/webrtc_pyauto/memory/jsep01_call": {"reva": 199600, "revb": 200178, "type": "absolute", "improve": 55537, "regress": 62769, "sha1": "3301ac33"},
+ "win-chrome-pure/webrtc_pyauto/cpu/jsep01_call": {"reva": 197094, "revb": 198850, "type": "absolute", "improve": 28.88, "regress": 51.45, "sha1": "0ce37cd6"},
+ "win-chrome-pure/webrtc_pyauto/memory/jsep01_call": {"reva": 199600, "revb": 200178, "type": "absolute", "improve": 39649, "regress": 44726, "sha1": "2beba373"},
+ "load": true
+}

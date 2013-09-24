@@ -1,0 +1,14 @@
+// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.base;
+
+// A simple auto-generated interface used to list the various
+// states of an activity as used by both org.chromium.base.ActivityStatus
+// and base/android/activity_status.h
+interface ActivityState {
+#define DEFINE_ACTIVITY_STATE(x,y) public final int x = y;
+#include "base/android/activity_state_list.h"
+#undef DEFINE_ACTIVITY_STATE
+}

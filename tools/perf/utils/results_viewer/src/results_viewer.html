@@ -1,0 +1,39 @@
+<!--
+Copyright (c) 2012 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<!DOCTYPE HTML>
+<html i18n-values="dir:textdirection">
+  <head>
+    <meta charset="utf-8">
+    <title>
+      Results viewer
+    </title>
+    <link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.9.0/build/datatable/assets/skins/sam/datatable.css">
+    <link type="text/css" rel="stylesheet" href="main.css">
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/prototype/1.7.0.0/prototype.js"></script>
+    <script src="http://yui.yahooapis.com/2.9.0/build/yahoo-dom-event/yahoo-dom-event.js"></script>
+    <script src="http://yui.yahooapis.com/2.9.0/build/element/element-min.js"></script>
+    <script src="http://yui.yahooapis.com/2.9.0/build/datasource/datasource-min.js"></script>
+    <script src="http://yui.yahooapis.com/2.9.0/build/datatable/datatable-min.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+    </script>
+    <script type="text/javascript" src="base.js"></script>
+    <script type="text/javascript" src="ui.js"></script>
+    <script type="text/javascript" src="results_viewer.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+  </head>
+  <body class="yui-skin-sam">
+    <form action="">
+      <input type="file" id="fileSelector" name="files[]" />
+    </form>
+    <!--<div id="csvContentsDataTable" class="viewer"></div> TODO remove me!-->
+    <!--<div id="barChart"></div> TODO remove me-->
+  </body>
+</html>
+<script type="text/javascript">
+  $('fileSelector').addEventListener('change', handleFileSelectEvent, false);
+</script>

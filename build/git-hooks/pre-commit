@@ -1,0 +1,34 @@
+#!/bin/sh
+
+submods=$(git diff-index --cached --ignore-submodules=dirty HEAD | grep -e '^:160000' -e '^:...... 160000' | xargs)
+if test "$submods"; then
+  echo "You are trying to commit changes to the following submodules:" 1>&2
+  echo 1>&2
+  echo $submods | cut -d ' ' -f 6 | sed 's/^/  /g' 1>&2
+  cat <<EOF 1>&2
+
+Submodule commits are not allowed.  Please run:
+
+  git status --ignore-submodules=dirty
+
+and/or:
+
+  git diff-index --cached --ignore-submodules=dirty HEAD
+
+... to see what's in your index.
+
+If you're really and truly trying to roll the version of a submodule, you should
+commit the new version to DEPS, instead.
+EOF
+  exit 1
+fi
+
+if test "$(git diff-index --cached HEAD .gitmodules)"; then
+  cat <<EOF 1>&2
+You are trying to commit a change to .gitmodules.  That is not allowed.
+To make changes to submodule names/paths, edit DEPS.
+EOF
+  exit 1
+fi
+
+exit 0

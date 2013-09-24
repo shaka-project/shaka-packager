@@ -1,0 +1,12 @@
+{
+  "l2": ["vm", "map", {
+    "mmap-tcmalloc": ["malloc", "component", {}]
+  }],
+  "details": ["vm", "map", {
+    "mmap-tcmalloc": ["malloc", "component", {
+      "webkit": ["malloc", "webkit-details", {}],
+      "skia": ["malloc", "skia-details", {}]
+    }],
+    "mmap-v8-heap": ["javascript", "type", {}]
+  }]
+}

@@ -1,0 +1,10 @@
+{
+  "description": "A collection of texture upload performance tests",
+  "smoothness": { "action": "scroll" },
+  "pages": [
+    { "url": "file:///tough_texture_upload_cases/background_color_animation.html" },
+    { "url": "file:///tough_texture_upload_cases/background_color_animation_and_transform_animation.html" },
+    { "url": "file:///tough_texture_upload_cases/background_color_animation_with_gradient.html" },
+    { "url": "file:///tough_texture_upload_cases/background_color_animation_with_gradient_and_transform_animation.html" }
+  ]
+}

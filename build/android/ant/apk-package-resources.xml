@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (C) 2005-2008 The Android Open Source Project
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project default="-package-resources">
+  <property name="out.dir" location="${OUT_DIR}" />
+  <property name="out.absolute.dir" location="${out.dir}" />
+  <property name="out.res.absolute.dir" location="${out.dir}/res" />
+  <property name="out.manifest.abs.file" location="${out.dir}/AndroidManifest.xml" />
+
+  <!-- tools location -->
+  <property name="sdk.dir" location="${ANDROID_SDK_ROOT}"/>
+  <property name="project.target.android.jar" location="${ANDROID_SDK_JAR}" />
+  <property name="android.sdk.tools.dir" location="${ANDROID_SDK_TOOLS}" />
+
+  <!-- jar file from where the tasks are loaded -->
+  <path id="android.antlibs">
+    <pathelement path="${sdk.dir}/tools/lib/ant-tasks.jar" />
+  </path>
+
+  <!-- Custom tasks -->
+  <taskdef resource="anttasks.properties" classpathref="android.antlibs" />
+
+  <condition property="build.target" value="release" else="debug">
+    <equals arg1="${CONFIGURATION_NAME}" arg2="Release" />
+  </condition>
+  <condition property="build.is.packaging.debug" value="true" else="false">
+    <equals arg1="${build.target}" arg2="debug" />
+  </condition>
+
+  <property name="resource.dir" value="${RESOURCE_DIR}"/>
+  <property name="resource.absolute.dir" location="${resource.dir}"/>
+
+  <property name="asset.dir" value="${ASSET_DIR}" />
+  <property name="asset.absolute.dir" location="${asset.dir}" />
+
+  <property name="aapt" location="${android.sdk.tools.dir}/aapt" />
+
+  <property name="version.code" value="${APP_MANIFEST_VERSION_CODE}"/>
+  <property name="version.name" value="${APP_MANIFEST_VERSION_NAME}"/>
+
+  <property name="aapt.resource.filter" value="" />
+  <!-- 'aapt.ignore.assets' is the list of file patterns to ignore under /res and /assets.
+         Default is "!.svn:!.git:.*:<dir>_*:!CVS:!thumbs.db:!picasa.ini:!*.scc:*~"
+
+         Overall patterns syntax is:
+           [!][<dir>|<file>][*suffix-match|prefix-match*|full-match]:more:patterns...
+
+         - The first character flag ! avoids printing a warning.
+         - Pattern can have the flag "<dir>" to match only directories
+           or "<file>" to match only files. Default is to match both.
+         - Match is not case-sensitive.
+  -->
+  <property name="aapt.ignore.assets" value="" />
+
+  <!--
+      Include additional resource folders in the apk, e.g. content/.../res.  We
+      list the res folders in project.library.res.folder.path and the
+      corresponding java packages in project.library.packages, which must be
+      semicolon-delimited while ADDITIONAL_RES_PACKAGES is space-delimited, hence
+      the javascript task.
+  -->
+  <path id="project.library.res.folder.path">
+    <filelist files="${ADDITIONAL_RES_DIRS}"/>
+  </path>
+  <path id="project.library.bin.r.file.path">
+    <filelist files="${ADDITIONAL_R_TEXT_FILES}"/>
+  </path>
+  <script language="javascript">
+    var before = project.getProperty("ADDITIONAL_RES_PACKAGES");
+    project.setProperty("project.library.packages", before.replaceAll(" ", ";"));
+  </script>
+
+  <property name="build.packaging.nocrunch" value="true" />
+
+  <!-- Intermediate files -->
+  <property name="resource.package.file.name" value="${APK_NAME}.ap_" />
+
+  <target name="-crunch">
+    <!-- Updates the pre-processed PNG cache -->
+    <exec executable="${aapt}" taskName="crunch">
+      <arg value="crunch" />
+      <arg value="-v" />
+      <arg value="-S" />
+      <arg path="${resource.absolute.dir}" />
+      <arg value="-C" />
+      <arg path="${out.res.absolute.dir}" />
+    </exec>
+  </target>
+
+  <target name="-package-resources" depends="-crunch">
+    <aapt
+        executable="${aapt}"
+        command="package"
+        versioncode="${version.code}"
+        versionname="${version.name}"
+        debug="${build.is.packaging.debug}"
+        manifest="${out.manifest.abs.file}"
+        assets="${asset.absolute.dir}"
+        androidjar="${project.target.android.jar}"
+        apkfolder="${out.absolute.dir}"
+        nocrunch="${build.packaging.nocrunch}"
+        resourcefilename="${resource.package.file.name}"
+        resourcefilter="${aapt.resource.filter}"
+        libraryResFolderPathRefid="project.library.res.folder.path"
+        libraryPackagesRefid="project.library.packages"
+        libraryRFileRefid="project.library.bin.r.file.path"
+        previousBuildType=""
+        buildType="${build.target}"
+        ignoreAssets="${aapt.ignore.assets}">
+      <res path="${out.res.absolute.dir}" />
+      <res path="${resource.absolute.dir}" />
+      <!-- <nocompress /> forces no compression on any files in assets or res/raw -->
+      <!-- <nocompress extension="xml" /> forces no compression on specific file extensions in assets and res/raw -->
+    </aapt>
+
+    <touch file="${STAMP}" />
+  </target>
+</project>

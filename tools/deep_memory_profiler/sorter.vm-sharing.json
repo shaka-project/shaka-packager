@@ -1,0 +1,25 @@
+{
+  "type": "sorter",
+  "version": 1,
+  "world": "vm",
+  "name": "sharing",
+  "root": true,
+  "order": {},
+  "rules": [
+    {
+      "name": "others",
+      "sharedwith": ["others"]
+    },
+    {
+      "name": "chrome",
+      "sharedwith": ["group"]
+    },
+    {
+      "name": "private",
+      "sharedwith": ["private"]
+    },
+    {
+      "name": "any"
+    }
+  ]
+}

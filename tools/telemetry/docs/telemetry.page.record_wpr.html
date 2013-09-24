@@ -1,0 +1,140 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module telemetry.page.record_wpr</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="telemetry.html"><font color="#ffffff">telemetry</font></a>.<a href="telemetry.page.html"><font color="#ffffff">page</font></a>.record_wpr</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="../telemetry/page/record_wpr.py">telemetry/page/record_wpr.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;Copyright&nbsp;(c)&nbsp;2012&nbsp;The&nbsp;Chromium&nbsp;Authors.&nbsp;All&nbsp;rights&nbsp;reserved.<br>
+#&nbsp;Use&nbsp;of&nbsp;this&nbsp;source&nbsp;code&nbsp;is&nbsp;governed&nbsp;by&nbsp;a&nbsp;BSD-style&nbsp;license&nbsp;that&nbsp;can&nbsp;be<br>
+#&nbsp;found&nbsp;in&nbsp;the&nbsp;LICENSE&nbsp;file.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="telemetry.core.browser_options.html">telemetry.core.browser_options</a><br>
+<a href="telemetry.core.discover.html">telemetry.core.discover</a><br>
+<a href="logging.html">logging</a><br>
+<a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="telemetry.page.page_measurement.html">telemetry.page.page_measurement</a><br>
+<a href="telemetry.page.page_runner.html">telemetry.page.page_runner</a><br>
+<a href="telemetry.page.page_set.html">telemetry.page.page_set</a><br>
+<a href="telemetry.page.page_test.html">telemetry.page.page_test</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+<a href="tempfile.html">tempfile</a><br>
+<a href="telemetry.test.html">telemetry.test</a><br>
+<a href="time.html">time</a><br>
+</td><td width="25%" valign=top><a href="telemetry.core.wpr_modes.html">telemetry.core.wpr_modes</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="telemetry.page.page_test.html#PageTest">telemetry.page.page_test.PageTest</a>(<a href="__builtin__.html#object">__builtin__.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.page.record_wpr.html#RecordPage">RecordPage</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="RecordPage">class <strong>RecordPage</strong></a>(<a href="telemetry.page.page_test.html#PageTest">telemetry.page.page_test.PageTest</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="telemetry.page.record_wpr.html#RecordPage">RecordPage</a></dd>
+<dd><a href="telemetry.page.page_test.html#PageTest">telemetry.page.page_test.PageTest</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="RecordPage-CanRunForPage"><strong>CanRunForPage</strong></a>(self, page)</dt></dl>
+
+<dl><dt><a name="RecordPage-CustomizeBrowserOptionsForPage"><strong>CustomizeBrowserOptionsForPage</strong></a>(self, page, options)</dt></dl>
+
+<dl><dt><a name="RecordPage-Run"><strong>Run</strong></a>(self, options, page, tab, results)</dt></dl>
+
+<dl><dt><a name="RecordPage-__init__"><strong>__init__</strong></a>(self, measurements)</dt></dl>
+
+<hr>
+Methods inherited from <a href="telemetry.page.page_test.html#PageTest">telemetry.page.page_test.PageTest</a>:<br>
+<dl><dt><a name="RecordPage-AddCommandLineOptions"><strong>AddCommandLineOptions</strong></a>(self, parser)</dt><dd><tt>Override&nbsp;to&nbsp;expose&nbsp;command-line&nbsp;options&nbsp;for&nbsp;this&nbsp;test.<br>
+&nbsp;<br>
+The&nbsp;provided&nbsp;parser&nbsp;is&nbsp;an&nbsp;optparse.OptionParser&nbsp;instance&nbsp;and&nbsp;accepts&nbsp;all<br>
+normal&nbsp;results.&nbsp;The&nbsp;parsed&nbsp;options&nbsp;are&nbsp;available&nbsp;in&nbsp;Run&nbsp;as<br>
+self.<strong>options</strong>.</tt></dd></dl>
+
+<dl><dt><a name="RecordPage-AddOutputOptions"><strong>AddOutputOptions</strong></a>(self, parser)</dt></dl>
+
+<dl><dt><a name="RecordPage-CreatePageSet"><strong>CreatePageSet</strong></a>(self, args, options)</dt><dd><tt>Override&nbsp;to&nbsp;make&nbsp;this&nbsp;test&nbsp;generate&nbsp;its&nbsp;own&nbsp;page&nbsp;set&nbsp;instead&nbsp;of<br>
+allowing&nbsp;arbitrary&nbsp;page&nbsp;sets&nbsp;entered&nbsp;from&nbsp;the&nbsp;command-line.</tt></dd></dl>
+
+<dl><dt><a name="RecordPage-CustomizeBrowserOptions"><strong>CustomizeBrowserOptions</strong></a>(self, options)</dt><dd><tt>Override&nbsp;to&nbsp;add&nbsp;test-specific&nbsp;options&nbsp;to&nbsp;the&nbsp;BrowserOptions&nbsp;object</tt></dd></dl>
+
+<dl><dt><a name="RecordPage-DidNavigateToPage"><strong>DidNavigateToPage</strong></a>(self, page, tab)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;right&nbsp;after&nbsp;the&nbsp;page&nbsp;is&nbsp;navigated,&nbsp;but&nbsp;before<br>
+any&nbsp;waiting&nbsp;for&nbsp;completion&nbsp;has&nbsp;occurred.</tt></dd></dl>
+
+<dl><dt><a name="RecordPage-DidRunAction"><strong>DidRunAction</strong></a>(self, page, tab, action)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;after&nbsp;running&nbsp;the&nbsp;action&nbsp;on&nbsp;the&nbsp;page.</tt></dd></dl>
+
+<dl><dt><a name="RecordPage-DidRunPageSet"><strong>DidRunPageSet</strong></a>(self, tab, results)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;after&nbsp;page&nbsp;set&nbsp;is&nbsp;completed,&nbsp;but&nbsp;before&nbsp;browser<br>
+is&nbsp;torn&nbsp;down.</tt></dd></dl>
+
+<dl><dt><a name="RecordPage-DidStartHTTPServer"><strong>DidStartHTTPServer</strong></a>(self, tab)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;after&nbsp;the&nbsp;HTTP&nbsp;server&nbsp;is&nbsp;started.</tt></dd></dl>
+
+<dl><dt><a name="RecordPage-NeedsBrowserRestartAfterEachRun"><strong>NeedsBrowserRestartAfterEachRun</strong></a>(self, tab)</dt><dd><tt>Override&nbsp;to&nbsp;specify&nbsp;browser&nbsp;restart&nbsp;after&nbsp;each&nbsp;run.</tt></dd></dl>
+
+<dl><dt><a name="RecordPage-PrepareResults"><strong>PrepareResults</strong></a>(self, options)</dt></dl>
+
+<dl><dt><a name="RecordPage-SetUpBrowser"><strong>SetUpBrowser</strong></a>(self, browser)</dt><dd><tt>Override&nbsp;to&nbsp;customize&nbsp;the&nbsp;browser&nbsp;right&nbsp;after&nbsp;it&nbsp;has&nbsp;launched.</tt></dd></dl>
+
+<dl><dt><a name="RecordPage-WillNavigateToPage"><strong>WillNavigateToPage</strong></a>(self, page, tab)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;before&nbsp;the&nbsp;page&nbsp;is&nbsp;navigated.</tt></dd></dl>
+
+<dl><dt><a name="RecordPage-WillRunAction"><strong>WillRunAction</strong></a>(self, page, tab, action)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;before&nbsp;running&nbsp;the&nbsp;action&nbsp;on&nbsp;the&nbsp;page.</tt></dd></dl>
+
+<dl><dt><a name="RecordPage-WillRunPageSet"><strong>WillRunPageSet</strong></a>(self, tab)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;before&nbsp;the&nbsp;page&nbsp;set&nbsp;is&nbsp;navigated.</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="telemetry.page.page_test.html#PageTest">telemetry.page.page_test.PageTest</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>action_name_to_run</strong></dt>
+</dl>
+<dl><dt><strong>clear_cache_before_each_run</strong></dt>
+<dd><tt>When&nbsp;set&nbsp;to&nbsp;True,&nbsp;the&nbsp;browser's&nbsp;disk&nbsp;and&nbsp;memory&nbsp;cache&nbsp;will&nbsp;be&nbsp;cleared<br>
+before&nbsp;each&nbsp;run.</tt></dd>
+</dl>
+<dl><dt><strong>discard_first_result</strong></dt>
+<dd><tt>When&nbsp;set&nbsp;to&nbsp;True,&nbsp;the&nbsp;first&nbsp;run&nbsp;of&nbsp;the&nbsp;test&nbsp;is&nbsp;discarded.&nbsp;&nbsp;This&nbsp;is<br>
+useful&nbsp;for&nbsp;cases&nbsp;where&nbsp;it's&nbsp;desirable&nbsp;to&nbsp;have&nbsp;some&nbsp;test&nbsp;resource&nbsp;cached&nbsp;so<br>
+the&nbsp;first&nbsp;run&nbsp;of&nbsp;the&nbsp;test&nbsp;can&nbsp;warm&nbsp;things&nbsp;up.</tt></dd>
+</dl>
+<dl><dt><strong>output_format_choices</strong></dt>
+<dd><tt>Allowed&nbsp;output&nbsp;formats.&nbsp;The&nbsp;default&nbsp;is&nbsp;the&nbsp;first&nbsp;item&nbsp;in&nbsp;the&nbsp;list.</tt></dd>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-Main"><strong>Main</strong></a>(base_dir)</dt></dl>
+</td></tr></table>
+</body></html>

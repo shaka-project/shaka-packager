@@ -1,0 +1,125 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module telemetry.page.gtest_test_results</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="telemetry.html"><font color="#ffffff">telemetry</font></a>.<a href="telemetry.page.html"><font color="#ffffff">page</font></a>.gtest_test_results</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="../telemetry/page/gtest_test_results.py">telemetry/page/gtest_test_results.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;Copyright&nbsp;(c)&nbsp;2013&nbsp;The&nbsp;Chromium&nbsp;Authors.&nbsp;All&nbsp;rights&nbsp;reserved.<br>
+#&nbsp;Use&nbsp;of&nbsp;this&nbsp;source&nbsp;code&nbsp;is&nbsp;governed&nbsp;by&nbsp;a&nbsp;BSD-style&nbsp;license&nbsp;that&nbsp;can&nbsp;be<br>
+#&nbsp;found&nbsp;in&nbsp;the&nbsp;LICENSE&nbsp;file.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="telemetry.page.page_test_results.html">telemetry.page.page_test_results</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top><a href="time.html">time</a><br>
+</td><td width="25%" valign=top><a href="unittest.html">unittest</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="telemetry.page.page_test_results.html#PageTestResults">telemetry.page.page_test_results.PageTestResults</a>(<a href="unittest.result.html#TestResult">unittest.result.TestResult</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.page.gtest_test_results.html#GTestTestResults">GTestTestResults</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="GTestTestResults">class <strong>GTestTestResults</strong></a>(<a href="telemetry.page.page_test_results.html#PageTestResults">telemetry.page.page_test_results.PageTestResults</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="telemetry.page.gtest_test_results.html#GTestTestResults">GTestTestResults</a></dd>
+<dd><a href="telemetry.page.page_test_results.html#PageTestResults">telemetry.page.page_test_results.PageTestResults</a></dd>
+<dd><a href="unittest.result.html#TestResult">unittest.result.TestResult</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="GTestTestResults-PrintSummary"><strong>PrintSummary</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="GTestTestResults-__init__"><strong>__init__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="GTestTestResults-addError"><strong>addError</strong></a>(self, test, err)</dt></dl>
+
+<dl><dt><a name="GTestTestResults-addFailure"><strong>addFailure</strong></a>(self, test, err)</dt></dl>
+
+<dl><dt><a name="GTestTestResults-addSuccess"><strong>addSuccess</strong></a>(self, test)</dt></dl>
+
+<dl><dt><a name="GTestTestResults-startTest"><strong>startTest</strong></a>(self, test)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>num_errors</strong></dt>
+</dl>
+<hr>
+Methods inherited from <a href="telemetry.page.page_test_results.html#PageTestResults">telemetry.page.page_test_results.PageTestResults</a>:<br>
+<dl><dt><a name="GTestTestResults-AddError"><strong>AddError</strong></a>(self, page, err)</dt></dl>
+
+<dl><dt><a name="GTestTestResults-AddErrorMessage"><strong>AddErrorMessage</strong></a>(self, page, message)</dt></dl>
+
+<dl><dt><a name="GTestTestResults-AddFailure"><strong>AddFailure</strong></a>(self, page, err)</dt></dl>
+
+<dl><dt><a name="GTestTestResults-AddFailureMessage"><strong>AddFailureMessage</strong></a>(self, page, message)</dt></dl>
+
+<dl><dt><a name="GTestTestResults-AddSkip"><strong>AddSkip</strong></a>(self, page, reason)</dt></dl>
+
+<dl><dt><a name="GTestTestResults-AddSuccess"><strong>AddSuccess</strong></a>(self, page)</dt></dl>
+
+<dl><dt><a name="GTestTestResults-StartTest"><strong>StartTest</strong></a>(self, page)</dt></dl>
+
+<dl><dt><a name="GTestTestResults-StopTest"><strong>StopTest</strong></a>(self, page)</dt></dl>
+
+<dl><dt><a name="GTestTestResults-addSkip"><strong>addSkip</strong></a>(self, test, reason)</dt></dl>
+
+<hr>
+Methods inherited from <a href="unittest.result.html#TestResult">unittest.result.TestResult</a>:<br>
+<dl><dt><a name="GTestTestResults-__repr__"><strong>__repr__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="GTestTestResults-addExpectedFailure"><strong>addExpectedFailure</strong></a>(self, test, err)</dt><dd><tt>Called&nbsp;when&nbsp;an&nbsp;expected&nbsp;failure/error&nbsp;occured.</tt></dd></dl>
+
+<dl><dt><a name="GTestTestResults-addUnexpectedSuccess"><strong>addUnexpectedSuccess</strong></a>(self, *args, **kw)</dt><dd><tt>Called&nbsp;when&nbsp;a&nbsp;test&nbsp;was&nbsp;expected&nbsp;to&nbsp;fail,&nbsp;but&nbsp;succeed.</tt></dd></dl>
+
+<dl><dt><a name="GTestTestResults-printErrors"><strong>printErrors</strong></a>(self)</dt><dd><tt>Called&nbsp;by&nbsp;TestRunner&nbsp;after&nbsp;test&nbsp;run</tt></dd></dl>
+
+<dl><dt><a name="GTestTestResults-startTestRun"><strong>startTestRun</strong></a>(self)</dt><dd><tt>Called&nbsp;once&nbsp;before&nbsp;any&nbsp;tests&nbsp;are&nbsp;executed.<br>
+&nbsp;<br>
+See&nbsp;startTest&nbsp;for&nbsp;a&nbsp;method&nbsp;called&nbsp;before&nbsp;each&nbsp;test.</tt></dd></dl>
+
+<dl><dt><a name="GTestTestResults-stop"><strong>stop</strong></a>(self)</dt><dd><tt>Indicates&nbsp;that&nbsp;the&nbsp;tests&nbsp;should&nbsp;be&nbsp;aborted</tt></dd></dl>
+
+<dl><dt><a name="GTestTestResults-stopTest"><strong>stopTest</strong></a>(self, test)</dt><dd><tt>Called&nbsp;when&nbsp;the&nbsp;given&nbsp;test&nbsp;has&nbsp;been&nbsp;run</tt></dd></dl>
+
+<dl><dt><a name="GTestTestResults-stopTestRun"><strong>stopTestRun</strong></a>(self)</dt><dd><tt>Called&nbsp;once&nbsp;after&nbsp;all&nbsp;tests&nbsp;are&nbsp;executed.<br>
+&nbsp;<br>
+See&nbsp;stopTest&nbsp;for&nbsp;a&nbsp;method&nbsp;called&nbsp;after&nbsp;each&nbsp;test.</tt></dd></dl>
+
+<dl><dt><a name="GTestTestResults-wasSuccessful"><strong>wasSuccessful</strong></a>(self)</dt><dd><tt>Tells&nbsp;whether&nbsp;or&nbsp;not&nbsp;this&nbsp;result&nbsp;was&nbsp;a&nbsp;success</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="unittest.result.html#TestResult">unittest.result.TestResult</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

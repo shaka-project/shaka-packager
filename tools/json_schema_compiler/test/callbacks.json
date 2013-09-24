@@ -1,0 +1,72 @@
+[
+  {
+    "namespace": "callbacks",
+    "description": "The callbacks API.",
+    "types": [],
+    "functions": [
+      {
+        "name": "returnsNothing",
+        "type": "function",
+        "description": "Takes nothing. Returns nothing.",
+        "parameters": [
+          {
+            "name": "callback",
+            "type": "function",
+            "parameters": []
+          }
+        ]
+      },
+      {
+        "name": "returnsObject",
+        "description": "Returns an object.",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "callback",
+            "type": "function",
+            "parameters": [
+              {
+                "name": "someObject",
+                "type": "object",
+                "properties": {
+                  "state": {
+                    "type": "string",
+                    "enum": ["foo", "bar", "baz"]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "returnsMultiple",
+        "description": "Returns an object.",
+        "type": "function",
+        "parameters": [
+          {
+            "name": "callback",
+            "type": "function",
+            "parameters": [
+              {
+                "name": "someInteger",
+                "type": "integer"
+              },
+              {
+                "name": "someObject",
+                "type": "object",
+                "properties": {
+                  "state": {
+                    "type": "string",
+                    "enum": ["foo", "bar", "baz"]
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
+

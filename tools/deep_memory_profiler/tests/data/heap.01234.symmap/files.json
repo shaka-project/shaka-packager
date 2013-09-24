@@ -1,0 +1,12 @@
+{
+  "/home/user/chromium/src/out/Debug/chrome": {
+    "nm": {
+      "file": "chrome.abcdef.nm", 
+      "format": "bsd", 
+      "mangled": false
+    }, 
+    "readelf-e": {
+      "file": "chrome.uvwxyz.readelf-e"
+    }
+  }
+}

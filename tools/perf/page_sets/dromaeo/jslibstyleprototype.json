@@ -1,0 +1,8 @@
+{
+    "description": "Dromaeo JSLib style prototype JavaScript benchmark",
+    "pages": [
+        {
+            "url": "file:///../../../../chrome/test/data/dromaeo/index.html?jslib-style-prototype&automated"
+        }
+    ]
+}

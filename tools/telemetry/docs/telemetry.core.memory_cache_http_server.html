@@ -1,0 +1,560 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module telemetry.core.memory_cache_http_server</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="telemetry.html"><font color="#ffffff">telemetry</font></a>.<a href="telemetry.core.html"><font color="#ffffff">core</font></a>.memory_cache_http_server</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="../telemetry/core/memory_cache_http_server.py">telemetry/core/memory_cache_http_server.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;Copyright&nbsp;(c)&nbsp;2012&nbsp;The&nbsp;Chromium&nbsp;Authors.&nbsp;All&nbsp;rights&nbsp;reserved.<br>
+#&nbsp;Use&nbsp;of&nbsp;this&nbsp;source&nbsp;code&nbsp;is&nbsp;governed&nbsp;by&nbsp;a&nbsp;BSD-style&nbsp;license&nbsp;that&nbsp;can&nbsp;be<br>
+#&nbsp;found&nbsp;in&nbsp;the&nbsp;LICENSE&nbsp;file.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="BaseHTTPServer.html">BaseHTTPServer</a><br>
+<a href="SimpleHTTPServer.html">SimpleHTTPServer</a><br>
+</td><td width="25%" valign=top><a href="SocketServer.html">SocketServer</a><br>
+<a href="StringIO.html">StringIO</a><br>
+</td><td width="25%" valign=top><a href="gzip.html">gzip</a><br>
+<a href="mimetypes.html">mimetypes</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="sys.html">sys</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="BaseHTTPServer.html#HTTPServer">BaseHTTPServer.HTTPServer</a>(<a href="SocketServer.html#TCPServer">SocketServer.TCPServer</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.core.memory_cache_http_server.html#MemoryCacheHTTPServer">MemoryCacheHTTPServer</a>(<a href="SocketServer.html#ThreadingMixIn">SocketServer.ThreadingMixIn</a>, <a href="BaseHTTPServer.html#HTTPServer">BaseHTTPServer.HTTPServer</a>)
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="SimpleHTTPServer.html#SimpleHTTPRequestHandler">SimpleHTTPServer.SimpleHTTPRequestHandler</a>(<a href="BaseHTTPServer.html#BaseHTTPRequestHandler">BaseHTTPServer.BaseHTTPRequestHandler</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.core.memory_cache_http_server.html#MemoryCacheHTTPRequestHandler">MemoryCacheHTTPRequestHandler</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="SocketServer.html#ThreadingMixIn">SocketServer.ThreadingMixIn</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.core.memory_cache_http_server.html#MemoryCacheHTTPServer">MemoryCacheHTTPServer</a>(<a href="SocketServer.html#ThreadingMixIn">SocketServer.ThreadingMixIn</a>, <a href="BaseHTTPServer.html#HTTPServer">BaseHTTPServer.HTTPServer</a>)
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#tuple">__builtin__.tuple</a>(<a href="__builtin__.html#object">__builtin__.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.core.memory_cache_http_server.html#ByteRange">ByteRange</a>
+</font></dt><dt><font face="helvetica, arial"><a href="telemetry.core.memory_cache_http_server.html#ResourceAndRange">ResourceAndRange</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ByteRange">class <strong>ByteRange</strong></a>(<a href="__builtin__.html#tuple">__builtin__.tuple</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#ByteRange">ByteRange</a>(from_byte,&nbsp;to_byte)<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="telemetry.core.memory_cache_http_server.html#ByteRange">ByteRange</a></dd>
+<dd><a href="__builtin__.html#tuple">__builtin__.tuple</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ByteRange-__getnewargs__"><strong>__getnewargs__</strong></a>(self)</dt><dd><tt>Return&nbsp;self&nbsp;as&nbsp;a&nbsp;plain&nbsp;<a href="__builtin__.html#tuple">tuple</a>.&nbsp;&nbsp;Used&nbsp;by&nbsp;copy&nbsp;and&nbsp;pickle.</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;nicely&nbsp;formatted&nbsp;representation&nbsp;string</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-_asdict"><strong>_asdict</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;new&nbsp;OrderedDict&nbsp;which&nbsp;maps&nbsp;field&nbsp;names&nbsp;to&nbsp;their&nbsp;values</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-_replace"><strong>_replace</strong></a>(_self, **kwds)</dt><dd><tt>Return&nbsp;a&nbsp;new&nbsp;<a href="#ByteRange">ByteRange</a>&nbsp;object&nbsp;replacing&nbsp;specified&nbsp;fields&nbsp;with&nbsp;new&nbsp;values</tt></dd></dl>
+
+<hr>
+Class methods defined here:<br>
+<dl><dt><a name="ByteRange-_make"><strong>_make</strong></a>(cls, iterable, new<font color="#909090">=&lt;built-in method __new__ of type object&gt;</font>, len<font color="#909090">=&lt;built-in function len&gt;</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Make&nbsp;a&nbsp;new&nbsp;<a href="#ByteRange">ByteRange</a>&nbsp;object&nbsp;from&nbsp;a&nbsp;sequence&nbsp;or&nbsp;iterable</tt></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="ByteRange-__new__"><strong>__new__</strong></a>(_cls, from_byte, to_byte)</dt><dd><tt>Create&nbsp;new&nbsp;instance&nbsp;of&nbsp;<a href="#ByteRange">ByteRange</a>(from_byte,&nbsp;to_byte)</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>from_byte</strong></dt>
+<dd><tt>Alias&nbsp;for&nbsp;field&nbsp;number&nbsp;0</tt></dd>
+</dl>
+<dl><dt><strong>to_byte</strong></dt>
+<dd><tt>Alias&nbsp;for&nbsp;field&nbsp;number&nbsp;1</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>_fields</strong> = ('from_byte', 'to_byte')</dl>
+
+<hr>
+Methods inherited from <a href="__builtin__.html#tuple">__builtin__.tuple</a>:<br>
+<dl><dt><a name="ByteRange-__add__"><strong>__add__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__add__">__add__</a>(y)&nbsp;&lt;==&gt;&nbsp;x+y</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__contains__"><strong>__contains__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__contains__">__contains__</a>(y)&nbsp;&lt;==&gt;&nbsp;y&nbsp;in&nbsp;x</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__eq__"><strong>__eq__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__eq__">__eq__</a>(y)&nbsp;&lt;==&gt;&nbsp;x==y</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__ge__"><strong>__ge__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__ge__">__ge__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&gt;=y</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__gt__"><strong>__gt__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__gt__">__gt__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&gt;y</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__hash__"><strong>__hash__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__hash__">__hash__</a>()&nbsp;&lt;==&gt;&nbsp;hash(x)</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__iter__"><strong>__iter__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__iter__">__iter__</a>()&nbsp;&lt;==&gt;&nbsp;iter(x)</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__le__"><strong>__le__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__le__">__le__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&lt;=y</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__len__"><strong>__len__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__len__">__len__</a>()&nbsp;&lt;==&gt;&nbsp;len(x)</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__lt__"><strong>__lt__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__lt__">__lt__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&lt;y</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__mul__"><strong>__mul__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__mul__">__mul__</a>(n)&nbsp;&lt;==&gt;&nbsp;x*n</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__ne__"><strong>__ne__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__ne__">__ne__</a>(y)&nbsp;&lt;==&gt;&nbsp;x!=y</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__rmul__"><strong>__rmul__</strong></a>(...)</dt><dd><tt>x.<a href="#ByteRange-__rmul__">__rmul__</a>(n)&nbsp;&lt;==&gt;&nbsp;n*x</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-__sizeof__"><strong>__sizeof__</strong></a>(...)</dt><dd><tt>T.<a href="#ByteRange-__sizeof__">__sizeof__</a>()&nbsp;--&nbsp;size&nbsp;of&nbsp;T&nbsp;in&nbsp;memory,&nbsp;in&nbsp;bytes</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-count"><strong>count</strong></a>(...)</dt><dd><tt>T.<a href="#ByteRange-count">count</a>(value)&nbsp;-&gt;&nbsp;integer&nbsp;--&nbsp;return&nbsp;number&nbsp;of&nbsp;occurrences&nbsp;of&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="ByteRange-index"><strong>index</strong></a>(...)</dt><dd><tt>T.<a href="#ByteRange-index">index</a>(value,&nbsp;[start,&nbsp;[stop]])&nbsp;-&gt;&nbsp;integer&nbsp;--&nbsp;return&nbsp;first&nbsp;index&nbsp;of&nbsp;value.<br>
+Raises&nbsp;ValueError&nbsp;if&nbsp;the&nbsp;value&nbsp;is&nbsp;not&nbsp;present.</tt></dd></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="MemoryCacheHTTPRequestHandler">class <strong>MemoryCacheHTTPRequestHandler</strong></a>(<a href="SimpleHTTPServer.html#SimpleHTTPRequestHandler">SimpleHTTPServer.SimpleHTTPRequestHandler</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="telemetry.core.memory_cache_http_server.html#MemoryCacheHTTPRequestHandler">MemoryCacheHTTPRequestHandler</a></dd>
+<dd><a href="SimpleHTTPServer.html#SimpleHTTPRequestHandler">SimpleHTTPServer.SimpleHTTPRequestHandler</a></dd>
+<dd><a href="BaseHTTPServer.html#BaseHTTPRequestHandler">BaseHTTPServer.BaseHTTPRequestHandler</a></dd>
+<dd><a href="SocketServer.html#StreamRequestHandler">SocketServer.StreamRequestHandler</a></dd>
+<dd><a href="SocketServer.html#BaseRequestHandler">SocketServer.BaseRequestHandler</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-GetByteRange"><strong>GetByteRange</strong></a>(self, total_num_of_bytes)</dt><dd><tt>Parse&nbsp;the&nbsp;header&nbsp;and&nbsp;get&nbsp;the&nbsp;range&nbsp;values&nbsp;specified.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;total_num_of_bytes:&nbsp;Total&nbsp;#&nbsp;of&nbsp;bytes&nbsp;in&nbsp;requested&nbsp;resource,<br>
+&nbsp;&nbsp;used&nbsp;to&nbsp;calculate&nbsp;upper&nbsp;range&nbsp;limit.<br>
+Returns:<br>
+&nbsp;&nbsp;A&nbsp;<a href="#ByteRange">ByteRange</a>&nbsp;namedtuple&nbsp;object&nbsp;with&nbsp;the&nbsp;requested&nbsp;byte-range&nbsp;values.<br>
+&nbsp;&nbsp;If&nbsp;no&nbsp;Range&nbsp;is&nbsp;explicitly&nbsp;requested&nbsp;or&nbsp;there&nbsp;is&nbsp;a&nbsp;failure&nbsp;parsing,<br>
+&nbsp;&nbsp;return&nbsp;None.<br>
+&nbsp;&nbsp;Special&nbsp;case:&nbsp;If&nbsp;range&nbsp;specified&nbsp;is&nbsp;in&nbsp;the&nbsp;format&nbsp;"N-",&nbsp;return&nbsp;N-N.<br>
+&nbsp;&nbsp;If&nbsp;upper&nbsp;range&nbsp;limit&nbsp;is&nbsp;greater&nbsp;than&nbsp;total&nbsp;#&nbsp;of&nbsp;bytes,&nbsp;return&nbsp;upper&nbsp;index.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-SendHead"><strong>SendHead</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-do_GET"><strong>do_GET</strong></a>(self)</dt><dd><tt>Serve&nbsp;a&nbsp;GET&nbsp;request.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-do_HEAD"><strong>do_HEAD</strong></a>(self)</dt><dd><tt>Serve&nbsp;a&nbsp;HEAD&nbsp;request.</tt></dd></dl>
+
+<hr>
+Methods inherited from <a href="SimpleHTTPServer.html#SimpleHTTPRequestHandler">SimpleHTTPServer.SimpleHTTPRequestHandler</a>:<br>
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-copyfile"><strong>copyfile</strong></a>(self, source, outputfile)</dt><dd><tt>Copy&nbsp;all&nbsp;data&nbsp;between&nbsp;two&nbsp;file&nbsp;objects.<br>
+&nbsp;<br>
+The&nbsp;SOURCE&nbsp;argument&nbsp;is&nbsp;a&nbsp;file&nbsp;object&nbsp;open&nbsp;for&nbsp;reading<br>
+(or&nbsp;anything&nbsp;with&nbsp;a&nbsp;read()&nbsp;method)&nbsp;and&nbsp;the&nbsp;DESTINATION<br>
+argument&nbsp;is&nbsp;a&nbsp;file&nbsp;object&nbsp;open&nbsp;for&nbsp;writing&nbsp;(or<br>
+anything&nbsp;with&nbsp;a&nbsp;write()&nbsp;method).<br>
+&nbsp;<br>
+The&nbsp;only&nbsp;reason&nbsp;for&nbsp;overriding&nbsp;this&nbsp;would&nbsp;be&nbsp;to&nbsp;change<br>
+the&nbsp;block&nbsp;size&nbsp;or&nbsp;perhaps&nbsp;to&nbsp;replace&nbsp;newlines&nbsp;by&nbsp;CRLF<br>
+--&nbsp;note&nbsp;however&nbsp;that&nbsp;this&nbsp;the&nbsp;default&nbsp;server&nbsp;uses&nbsp;this<br>
+to&nbsp;copy&nbsp;binary&nbsp;data&nbsp;as&nbsp;well.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-guess_type"><strong>guess_type</strong></a>(self, path)</dt><dd><tt>Guess&nbsp;the&nbsp;type&nbsp;of&nbsp;a&nbsp;file.<br>
+&nbsp;<br>
+Argument&nbsp;is&nbsp;a&nbsp;PATH&nbsp;(a&nbsp;filename).<br>
+&nbsp;<br>
+Return&nbsp;value&nbsp;is&nbsp;a&nbsp;string&nbsp;of&nbsp;the&nbsp;form&nbsp;type/subtype,<br>
+usable&nbsp;for&nbsp;a&nbsp;MIME&nbsp;Content-type&nbsp;header.<br>
+&nbsp;<br>
+The&nbsp;default&nbsp;implementation&nbsp;looks&nbsp;the&nbsp;file's&nbsp;extension<br>
+up&nbsp;in&nbsp;the&nbsp;table&nbsp;self.<strong>extensions_map</strong>,&nbsp;using&nbsp;application/octet-stream<br>
+as&nbsp;a&nbsp;default;&nbsp;however&nbsp;it&nbsp;would&nbsp;be&nbsp;permissible&nbsp;(if<br>
+slow)&nbsp;to&nbsp;look&nbsp;inside&nbsp;the&nbsp;data&nbsp;to&nbsp;make&nbsp;a&nbsp;better&nbsp;guess.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-list_directory"><strong>list_directory</strong></a>(self, path)</dt><dd><tt>Helper&nbsp;to&nbsp;produce&nbsp;a&nbsp;directory&nbsp;listing&nbsp;(absent&nbsp;index.html).<br>
+&nbsp;<br>
+Return&nbsp;value&nbsp;is&nbsp;either&nbsp;a&nbsp;file&nbsp;object,&nbsp;or&nbsp;None&nbsp;(indicating&nbsp;an<br>
+error).&nbsp;&nbsp;In&nbsp;either&nbsp;case,&nbsp;the&nbsp;headers&nbsp;are&nbsp;sent,&nbsp;making&nbsp;the<br>
+interface&nbsp;the&nbsp;same&nbsp;as&nbsp;for&nbsp;<a href="#MemoryCacheHTTPRequestHandler-send_head">send_head</a>().</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-send_head"><strong>send_head</strong></a>(self)</dt><dd><tt>Common&nbsp;code&nbsp;for&nbsp;GET&nbsp;and&nbsp;HEAD&nbsp;commands.<br>
+&nbsp;<br>
+This&nbsp;sends&nbsp;the&nbsp;response&nbsp;code&nbsp;and&nbsp;MIME&nbsp;headers.<br>
+&nbsp;<br>
+Return&nbsp;value&nbsp;is&nbsp;either&nbsp;a&nbsp;file&nbsp;object&nbsp;(which&nbsp;has&nbsp;to&nbsp;be&nbsp;copied<br>
+to&nbsp;the&nbsp;outputfile&nbsp;by&nbsp;the&nbsp;caller&nbsp;unless&nbsp;the&nbsp;command&nbsp;was&nbsp;HEAD,<br>
+and&nbsp;must&nbsp;be&nbsp;closed&nbsp;by&nbsp;the&nbsp;caller&nbsp;under&nbsp;all&nbsp;circumstances),&nbsp;or<br>
+None,&nbsp;in&nbsp;which&nbsp;case&nbsp;the&nbsp;caller&nbsp;has&nbsp;nothing&nbsp;further&nbsp;to&nbsp;do.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-translate_path"><strong>translate_path</strong></a>(self, path)</dt><dd><tt>Translate&nbsp;a&nbsp;/-separated&nbsp;PATH&nbsp;to&nbsp;the&nbsp;local&nbsp;filename&nbsp;syntax.<br>
+&nbsp;<br>
+Components&nbsp;that&nbsp;mean&nbsp;special&nbsp;things&nbsp;to&nbsp;the&nbsp;local&nbsp;file&nbsp;system<br>
+(e.g.&nbsp;drive&nbsp;or&nbsp;directory&nbsp;names)&nbsp;are&nbsp;ignored.&nbsp;&nbsp;(XXX&nbsp;They&nbsp;should<br>
+probably&nbsp;be&nbsp;diagnosed.)</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="SimpleHTTPServer.html#SimpleHTTPRequestHandler">SimpleHTTPServer.SimpleHTTPRequestHandler</a>:<br>
+<dl><dt><strong>extensions_map</strong> = {'': 'application/octet-stream', '.123': 'application/vnd.lotus-1-2-3', '.3dml': 'text/vnd.in3d.3dml', '.3g2': 'video/3gpp2', '.3gp': 'video/3gpp', '.7z': 'application/x-7z-compressed', '.a': 'application/octet-stream', '.aab': 'application/x-authorware-bin', '.aac': 'audio/x-aac', '.aam': 'application/x-authorware-map', ...}</dl>
+
+<dl><dt><strong>server_version</strong> = 'SimpleHTTP/0.6'</dl>
+
+<hr>
+Methods inherited from <a href="BaseHTTPServer.html#BaseHTTPRequestHandler">BaseHTTPServer.BaseHTTPRequestHandler</a>:<br>
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-address_string"><strong>address_string</strong></a>(self)</dt><dd><tt>Return&nbsp;the&nbsp;client&nbsp;address&nbsp;formatted&nbsp;for&nbsp;logging.<br>
+&nbsp;<br>
+This&nbsp;version&nbsp;looks&nbsp;up&nbsp;the&nbsp;full&nbsp;hostname&nbsp;using&nbsp;gethostbyaddr(),<br>
+and&nbsp;tries&nbsp;to&nbsp;find&nbsp;a&nbsp;name&nbsp;that&nbsp;contains&nbsp;at&nbsp;least&nbsp;one&nbsp;dot.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-date_time_string"><strong>date_time_string</strong></a>(self, timestamp<font color="#909090">=None</font>)</dt><dd><tt>Return&nbsp;the&nbsp;current&nbsp;date&nbsp;and&nbsp;time&nbsp;formatted&nbsp;for&nbsp;a&nbsp;message&nbsp;header.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-end_headers"><strong>end_headers</strong></a>(self)</dt><dd><tt>Send&nbsp;the&nbsp;blank&nbsp;line&nbsp;ending&nbsp;the&nbsp;MIME&nbsp;headers.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-handle"><strong>handle</strong></a>(self)</dt><dd><tt>Handle&nbsp;multiple&nbsp;requests&nbsp;if&nbsp;necessary.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-handle_one_request"><strong>handle_one_request</strong></a>(self)</dt><dd><tt>Handle&nbsp;a&nbsp;single&nbsp;HTTP&nbsp;request.<br>
+&nbsp;<br>
+You&nbsp;normally&nbsp;don't&nbsp;need&nbsp;to&nbsp;override&nbsp;this&nbsp;method;&nbsp;see&nbsp;the&nbsp;class<br>
+__doc__&nbsp;string&nbsp;for&nbsp;information&nbsp;on&nbsp;how&nbsp;to&nbsp;handle&nbsp;specific&nbsp;HTTP<br>
+commands&nbsp;such&nbsp;as&nbsp;GET&nbsp;and&nbsp;POST.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-log_date_time_string"><strong>log_date_time_string</strong></a>(self)</dt><dd><tt>Return&nbsp;the&nbsp;current&nbsp;time&nbsp;formatted&nbsp;for&nbsp;logging.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-log_error"><strong>log_error</strong></a>(self, format, *args)</dt><dd><tt>Log&nbsp;an&nbsp;error.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;called&nbsp;when&nbsp;a&nbsp;request&nbsp;cannot&nbsp;be&nbsp;fulfilled.&nbsp;&nbsp;By<br>
+default&nbsp;it&nbsp;passes&nbsp;the&nbsp;message&nbsp;on&nbsp;to&nbsp;<a href="#MemoryCacheHTTPRequestHandler-log_message">log_message</a>().<br>
+&nbsp;<br>
+Arguments&nbsp;are&nbsp;the&nbsp;same&nbsp;as&nbsp;for&nbsp;<a href="#MemoryCacheHTTPRequestHandler-log_message">log_message</a>().<br>
+&nbsp;<br>
+XXX&nbsp;This&nbsp;should&nbsp;go&nbsp;to&nbsp;the&nbsp;separate&nbsp;error&nbsp;log.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-log_message"><strong>log_message</strong></a>(self, format, *args)</dt><dd><tt>Log&nbsp;an&nbsp;arbitrary&nbsp;message.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;used&nbsp;by&nbsp;all&nbsp;other&nbsp;logging&nbsp;functions.&nbsp;&nbsp;Override<br>
+it&nbsp;if&nbsp;you&nbsp;have&nbsp;specific&nbsp;logging&nbsp;wishes.<br>
+&nbsp;<br>
+The&nbsp;first&nbsp;argument,&nbsp;FORMAT,&nbsp;is&nbsp;a&nbsp;format&nbsp;string&nbsp;for&nbsp;the<br>
+message&nbsp;to&nbsp;be&nbsp;logged.&nbsp;&nbsp;If&nbsp;the&nbsp;format&nbsp;string&nbsp;contains<br>
+any&nbsp;%&nbsp;escapes&nbsp;requiring&nbsp;parameters,&nbsp;they&nbsp;should&nbsp;be<br>
+specified&nbsp;as&nbsp;subsequent&nbsp;arguments&nbsp;(it's&nbsp;just&nbsp;like<br>
+printf!).<br>
+&nbsp;<br>
+The&nbsp;client&nbsp;host&nbsp;and&nbsp;current&nbsp;date/time&nbsp;are&nbsp;prefixed&nbsp;to<br>
+every&nbsp;message.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-log_request"><strong>log_request</strong></a>(self, code<font color="#909090">='-'</font>, size<font color="#909090">='-'</font>)</dt><dd><tt>Log&nbsp;an&nbsp;accepted&nbsp;request.<br>
+&nbsp;<br>
+This&nbsp;is&nbsp;called&nbsp;by&nbsp;<a href="#MemoryCacheHTTPRequestHandler-send_response">send_response</a>().</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-parse_request"><strong>parse_request</strong></a>(self)</dt><dd><tt>Parse&nbsp;a&nbsp;request&nbsp;(internal).<br>
+&nbsp;<br>
+The&nbsp;request&nbsp;should&nbsp;be&nbsp;stored&nbsp;in&nbsp;self.<strong>raw_requestline</strong>;&nbsp;the&nbsp;results<br>
+are&nbsp;in&nbsp;self.<strong>command</strong>,&nbsp;self.<strong>path</strong>,&nbsp;self.<strong>request_version</strong>&nbsp;and<br>
+self.<strong>headers</strong>.<br>
+&nbsp;<br>
+Return&nbsp;True&nbsp;for&nbsp;success,&nbsp;False&nbsp;for&nbsp;failure;&nbsp;on&nbsp;failure,&nbsp;an<br>
+error&nbsp;is&nbsp;sent&nbsp;back.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-send_error"><strong>send_error</strong></a>(self, code, message<font color="#909090">=None</font>)</dt><dd><tt>Send&nbsp;and&nbsp;log&nbsp;an&nbsp;error&nbsp;reply.<br>
+&nbsp;<br>
+Arguments&nbsp;are&nbsp;the&nbsp;error&nbsp;code,&nbsp;and&nbsp;a&nbsp;detailed&nbsp;message.<br>
+The&nbsp;detailed&nbsp;message&nbsp;defaults&nbsp;to&nbsp;the&nbsp;short&nbsp;entry&nbsp;matching&nbsp;the<br>
+response&nbsp;code.<br>
+&nbsp;<br>
+This&nbsp;sends&nbsp;an&nbsp;error&nbsp;response&nbsp;(so&nbsp;it&nbsp;must&nbsp;be&nbsp;called&nbsp;before&nbsp;any<br>
+output&nbsp;has&nbsp;been&nbsp;generated),&nbsp;logs&nbsp;the&nbsp;error,&nbsp;and&nbsp;finally&nbsp;sends<br>
+a&nbsp;piece&nbsp;of&nbsp;HTML&nbsp;explaining&nbsp;the&nbsp;error&nbsp;to&nbsp;the&nbsp;user.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-send_header"><strong>send_header</strong></a>(self, keyword, value)</dt><dd><tt>Send&nbsp;a&nbsp;MIME&nbsp;header.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-send_response"><strong>send_response</strong></a>(self, code, message<font color="#909090">=None</font>)</dt><dd><tt>Send&nbsp;the&nbsp;response&nbsp;header&nbsp;and&nbsp;log&nbsp;the&nbsp;response&nbsp;code.<br>
+&nbsp;<br>
+Also&nbsp;send&nbsp;two&nbsp;standard&nbsp;headers&nbsp;with&nbsp;the&nbsp;server&nbsp;software<br>
+version&nbsp;and&nbsp;the&nbsp;current&nbsp;date.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-version_string"><strong>version_string</strong></a>(self)</dt><dd><tt>Return&nbsp;the&nbsp;server&nbsp;software&nbsp;version&nbsp;string.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="BaseHTTPServer.html#BaseHTTPRequestHandler">BaseHTTPServer.BaseHTTPRequestHandler</a>:<br>
+<dl><dt><strong>MessageClass</strong> = &lt;class mimetools.Message&gt;</dl>
+
+<dl><dt><strong>default_request_version</strong> = 'HTTP/0.9'</dl>
+
+<dl><dt><strong>error_content_type</strong> = 'text/html'</dl>
+
+<dl><dt><strong>error_message_format</strong> = '&lt;head&gt;<font color="#c040c0">\n</font>&lt;title&gt;Error response&lt;/title&gt;<font color="#c040c0">\n</font>&lt;/head&gt;<font color="#c040c0">\n</font>&lt;bo...ode explanation: %(code)s = %(explain)s.<font color="#c040c0">\n</font>&lt;/body&gt;<font color="#c040c0">\n</font>'</dl>
+
+<dl><dt><strong>monthname</strong> = [None, 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']</dl>
+
+<dl><dt><strong>protocol_version</strong> = 'HTTP/1.0'</dl>
+
+<dl><dt><strong>responses</strong> = {100: ('Continue', 'Request received, please continue'), 101: ('Switching Protocols', 'Switching to new protocol; obey Upgrade header'), 200: ('OK', 'Request fulfilled, document follows'), 201: ('Created', 'Document created, URL follows'), 202: ('Accepted', 'Request accepted, processing continues off-line'), 203: ('Non-Authoritative Information', 'Request fulfilled from cache'), 204: ('No Content', 'Request fulfilled, nothing follows'), 205: ('Reset Content', 'Clear input form for further input.'), 206: ('Partial Content', 'Partial content follows.'), 300: ('Multiple Choices', 'Object has several resources -- see URI list'), ...}</dl>
+
+<dl><dt><strong>sys_version</strong> = 'Python/2.7.2'</dl>
+
+<dl><dt><strong>weekdayname</strong> = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']</dl>
+
+<hr>
+Methods inherited from <a href="SocketServer.html#StreamRequestHandler">SocketServer.StreamRequestHandler</a>:<br>
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-finish"><strong>finish</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-setup"><strong>setup</strong></a>(self)</dt></dl>
+
+<hr>
+Data and other attributes inherited from <a href="SocketServer.html#StreamRequestHandler">SocketServer.StreamRequestHandler</a>:<br>
+<dl><dt><strong>disable_nagle_algorithm</strong> = False</dl>
+
+<dl><dt><strong>rbufsize</strong> = -1</dl>
+
+<dl><dt><strong>timeout</strong> = None</dl>
+
+<dl><dt><strong>wbufsize</strong> = 0</dl>
+
+<hr>
+Methods inherited from <a href="SocketServer.html#BaseRequestHandler">SocketServer.BaseRequestHandler</a>:<br>
+<dl><dt><a name="MemoryCacheHTTPRequestHandler-__init__"><strong>__init__</strong></a>(self, request, client_address, server)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="MemoryCacheHTTPServer">class <strong>MemoryCacheHTTPServer</strong></a>(<a href="SocketServer.html#ThreadingMixIn">SocketServer.ThreadingMixIn</a>, <a href="BaseHTTPServer.html#HTTPServer">BaseHTTPServer.HTTPServer</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="telemetry.core.memory_cache_http_server.html#MemoryCacheHTTPServer">MemoryCacheHTTPServer</a></dd>
+<dd><a href="SocketServer.html#ThreadingMixIn">SocketServer.ThreadingMixIn</a></dd>
+<dd><a href="BaseHTTPServer.html#HTTPServer">BaseHTTPServer.HTTPServer</a></dd>
+<dd><a href="SocketServer.html#TCPServer">SocketServer.TCPServer</a></dd>
+<dd><a href="SocketServer.html#BaseServer">SocketServer.BaseServer</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="MemoryCacheHTTPServer-AddDirectoryToResourceMap"><strong>AddDirectoryToResourceMap</strong></a>(self, directory_path)</dt><dd><tt>Loads&nbsp;all&nbsp;files&nbsp;in&nbsp;directory_path&nbsp;into&nbsp;the&nbsp;in-memory&nbsp;resource&nbsp;map.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPServer-AddFileToResourceMap"><strong>AddFileToResourceMap</strong></a>(self, file_path)</dt><dd><tt>Loads&nbsp;file_path&nbsp;into&nbsp;the&nbsp;in-memory&nbsp;resource&nbsp;map.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPServer-__init__"><strong>__init__</strong></a>(self, host_port, handler, paths)</dt></dl>
+
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>request_queue_size</strong> = 128</dl>
+
+<hr>
+Methods inherited from <a href="SocketServer.html#ThreadingMixIn">SocketServer.ThreadingMixIn</a>:<br>
+<dl><dt><a name="MemoryCacheHTTPServer-process_request"><strong>process_request</strong></a>(self, request, client_address)</dt><dd><tt>Start&nbsp;a&nbsp;new&nbsp;thread&nbsp;to&nbsp;process&nbsp;the&nbsp;request.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPServer-process_request_thread"><strong>process_request_thread</strong></a>(self, request, client_address)</dt><dd><tt>Same&nbsp;as&nbsp;in&nbsp;BaseServer&nbsp;but&nbsp;as&nbsp;a&nbsp;thread.<br>
+&nbsp;<br>
+In&nbsp;addition,&nbsp;exception&nbsp;handling&nbsp;is&nbsp;done&nbsp;here.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="SocketServer.html#ThreadingMixIn">SocketServer.ThreadingMixIn</a>:<br>
+<dl><dt><strong>daemon_threads</strong> = False</dl>
+
+<hr>
+Methods inherited from <a href="BaseHTTPServer.html#HTTPServer">BaseHTTPServer.HTTPServer</a>:<br>
+<dl><dt><a name="MemoryCacheHTTPServer-server_bind"><strong>server_bind</strong></a>(self)</dt><dd><tt>Override&nbsp;server_bind&nbsp;to&nbsp;store&nbsp;the&nbsp;server&nbsp;name.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="BaseHTTPServer.html#HTTPServer">BaseHTTPServer.HTTPServer</a>:<br>
+<dl><dt><strong>allow_reuse_address</strong> = 1</dl>
+
+<hr>
+Methods inherited from <a href="SocketServer.html#TCPServer">SocketServer.TCPServer</a>:<br>
+<dl><dt><a name="MemoryCacheHTTPServer-close_request"><strong>close_request</strong></a>(self, request)</dt><dd><tt>Called&nbsp;to&nbsp;clean&nbsp;up&nbsp;an&nbsp;individual&nbsp;request.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPServer-fileno"><strong>fileno</strong></a>(self)</dt><dd><tt>Return&nbsp;socket&nbsp;file&nbsp;number.<br>
+&nbsp;<br>
+Interface&nbsp;required&nbsp;by&nbsp;select().</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPServer-get_request"><strong>get_request</strong></a>(self)</dt><dd><tt>Get&nbsp;the&nbsp;request&nbsp;and&nbsp;client&nbsp;address&nbsp;from&nbsp;the&nbsp;socket.<br>
+&nbsp;<br>
+May&nbsp;be&nbsp;overridden.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPServer-server_activate"><strong>server_activate</strong></a>(self)</dt><dd><tt>Called&nbsp;by&nbsp;constructor&nbsp;to&nbsp;activate&nbsp;the&nbsp;server.<br>
+&nbsp;<br>
+May&nbsp;be&nbsp;overridden.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPServer-server_close"><strong>server_close</strong></a>(self)</dt><dd><tt>Called&nbsp;to&nbsp;clean-up&nbsp;the&nbsp;server.<br>
+&nbsp;<br>
+May&nbsp;be&nbsp;overridden.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPServer-shutdown_request"><strong>shutdown_request</strong></a>(self, request)</dt><dd><tt>Called&nbsp;to&nbsp;shutdown&nbsp;and&nbsp;close&nbsp;an&nbsp;individual&nbsp;request.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="SocketServer.html#TCPServer">SocketServer.TCPServer</a>:<br>
+<dl><dt><strong>address_family</strong> = 2</dl>
+
+<dl><dt><strong>socket_type</strong> = 1</dl>
+
+<hr>
+Methods inherited from <a href="SocketServer.html#BaseServer">SocketServer.BaseServer</a>:<br>
+<dl><dt><a name="MemoryCacheHTTPServer-finish_request"><strong>finish_request</strong></a>(self, request, client_address)</dt><dd><tt>Finish&nbsp;one&nbsp;request&nbsp;by&nbsp;instantiating&nbsp;RequestHandlerClass.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPServer-handle_error"><strong>handle_error</strong></a>(self, request, client_address)</dt><dd><tt>Handle&nbsp;an&nbsp;error&nbsp;gracefully.&nbsp;&nbsp;May&nbsp;be&nbsp;overridden.<br>
+&nbsp;<br>
+The&nbsp;default&nbsp;is&nbsp;to&nbsp;print&nbsp;a&nbsp;traceback&nbsp;and&nbsp;continue.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPServer-handle_request"><strong>handle_request</strong></a>(self)</dt><dd><tt>Handle&nbsp;one&nbsp;request,&nbsp;possibly&nbsp;blocking.<br>
+&nbsp;<br>
+Respects&nbsp;self.<strong>timeout</strong>.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPServer-handle_timeout"><strong>handle_timeout</strong></a>(self)</dt><dd><tt>Called&nbsp;if&nbsp;no&nbsp;new&nbsp;request&nbsp;arrives&nbsp;within&nbsp;self.<strong>timeout</strong>.<br>
+&nbsp;<br>
+Overridden&nbsp;by&nbsp;ForkingMixIn.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPServer-serve_forever"><strong>serve_forever</strong></a>(self, poll_interval<font color="#909090">=0.5</font>)</dt><dd><tt>Handle&nbsp;one&nbsp;request&nbsp;at&nbsp;a&nbsp;time&nbsp;until&nbsp;shutdown.<br>
+&nbsp;<br>
+Polls&nbsp;for&nbsp;shutdown&nbsp;every&nbsp;poll_interval&nbsp;seconds.&nbsp;Ignores<br>
+self.<strong>timeout</strong>.&nbsp;If&nbsp;you&nbsp;need&nbsp;to&nbsp;do&nbsp;periodic&nbsp;tasks,&nbsp;do&nbsp;them&nbsp;in<br>
+another&nbsp;thread.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPServer-shutdown"><strong>shutdown</strong></a>(self)</dt><dd><tt>Stops&nbsp;the&nbsp;serve_forever&nbsp;loop.<br>
+&nbsp;<br>
+Blocks&nbsp;until&nbsp;the&nbsp;loop&nbsp;has&nbsp;finished.&nbsp;This&nbsp;must&nbsp;be&nbsp;called&nbsp;while<br>
+<a href="#MemoryCacheHTTPServer-serve_forever">serve_forever</a>()&nbsp;is&nbsp;running&nbsp;in&nbsp;another&nbsp;thread,&nbsp;or&nbsp;it&nbsp;will<br>
+deadlock.</tt></dd></dl>
+
+<dl><dt><a name="MemoryCacheHTTPServer-verify_request"><strong>verify_request</strong></a>(self, request, client_address)</dt><dd><tt>Verify&nbsp;the&nbsp;request.&nbsp;&nbsp;May&nbsp;be&nbsp;overridden.<br>
+&nbsp;<br>
+Return&nbsp;True&nbsp;if&nbsp;we&nbsp;should&nbsp;proceed&nbsp;with&nbsp;this&nbsp;request.</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="SocketServer.html#BaseServer">SocketServer.BaseServer</a>:<br>
+<dl><dt><strong>timeout</strong> = None</dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="ResourceAndRange">class <strong>ResourceAndRange</strong></a>(<a href="__builtin__.html#tuple">__builtin__.tuple</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt><a href="#ResourceAndRange">ResourceAndRange</a>(resource,&nbsp;byte_range)<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="telemetry.core.memory_cache_http_server.html#ResourceAndRange">ResourceAndRange</a></dd>
+<dd><a href="__builtin__.html#tuple">__builtin__.tuple</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="ResourceAndRange-__getnewargs__"><strong>__getnewargs__</strong></a>(self)</dt><dd><tt>Return&nbsp;self&nbsp;as&nbsp;a&nbsp;plain&nbsp;<a href="__builtin__.html#tuple">tuple</a>.&nbsp;&nbsp;Used&nbsp;by&nbsp;copy&nbsp;and&nbsp;pickle.</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__repr__"><strong>__repr__</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;nicely&nbsp;formatted&nbsp;representation&nbsp;string</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-_asdict"><strong>_asdict</strong></a>(self)</dt><dd><tt>Return&nbsp;a&nbsp;new&nbsp;OrderedDict&nbsp;which&nbsp;maps&nbsp;field&nbsp;names&nbsp;to&nbsp;their&nbsp;values</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-_replace"><strong>_replace</strong></a>(_self, **kwds)</dt><dd><tt>Return&nbsp;a&nbsp;new&nbsp;<a href="#ResourceAndRange">ResourceAndRange</a>&nbsp;object&nbsp;replacing&nbsp;specified&nbsp;fields&nbsp;with&nbsp;new&nbsp;values</tt></dd></dl>
+
+<hr>
+Class methods defined here:<br>
+<dl><dt><a name="ResourceAndRange-_make"><strong>_make</strong></a>(cls, iterable, new<font color="#909090">=&lt;built-in method __new__ of type object&gt;</font>, len<font color="#909090">=&lt;built-in function len&gt;</font>)<font color="#909090"><font face="helvetica, arial"> from <a href="__builtin__.html#type">__builtin__.type</a></font></font></dt><dd><tt>Make&nbsp;a&nbsp;new&nbsp;<a href="#ResourceAndRange">ResourceAndRange</a>&nbsp;object&nbsp;from&nbsp;a&nbsp;sequence&nbsp;or&nbsp;iterable</tt></dd></dl>
+
+<hr>
+Static methods defined here:<br>
+<dl><dt><a name="ResourceAndRange-__new__"><strong>__new__</strong></a>(_cls, resource, byte_range)</dt><dd><tt>Create&nbsp;new&nbsp;instance&nbsp;of&nbsp;<a href="#ResourceAndRange">ResourceAndRange</a>(resource,&nbsp;byte_range)</tt></dd></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>byte_range</strong></dt>
+<dd><tt>Alias&nbsp;for&nbsp;field&nbsp;number&nbsp;1</tt></dd>
+</dl>
+<dl><dt><strong>resource</strong></dt>
+<dd><tt>Alias&nbsp;for&nbsp;field&nbsp;number&nbsp;0</tt></dd>
+</dl>
+<hr>
+Data and other attributes defined here:<br>
+<dl><dt><strong>_fields</strong> = ('resource', 'byte_range')</dl>
+
+<hr>
+Methods inherited from <a href="__builtin__.html#tuple">__builtin__.tuple</a>:<br>
+<dl><dt><a name="ResourceAndRange-__add__"><strong>__add__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__add__">__add__</a>(y)&nbsp;&lt;==&gt;&nbsp;x+y</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__contains__"><strong>__contains__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__contains__">__contains__</a>(y)&nbsp;&lt;==&gt;&nbsp;y&nbsp;in&nbsp;x</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__eq__"><strong>__eq__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__eq__">__eq__</a>(y)&nbsp;&lt;==&gt;&nbsp;x==y</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__ge__"><strong>__ge__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__ge__">__ge__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&gt;=y</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__gt__"><strong>__gt__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__gt__">__gt__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&gt;y</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__hash__"><strong>__hash__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__hash__">__hash__</a>()&nbsp;&lt;==&gt;&nbsp;hash(x)</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__iter__"><strong>__iter__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__iter__">__iter__</a>()&nbsp;&lt;==&gt;&nbsp;iter(x)</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__le__"><strong>__le__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__le__">__le__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&lt;=y</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__len__"><strong>__len__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__len__">__len__</a>()&nbsp;&lt;==&gt;&nbsp;len(x)</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__lt__"><strong>__lt__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__lt__">__lt__</a>(y)&nbsp;&lt;==&gt;&nbsp;x&lt;y</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__mul__"><strong>__mul__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__mul__">__mul__</a>(n)&nbsp;&lt;==&gt;&nbsp;x*n</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__ne__"><strong>__ne__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__ne__">__ne__</a>(y)&nbsp;&lt;==&gt;&nbsp;x!=y</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__rmul__"><strong>__rmul__</strong></a>(...)</dt><dd><tt>x.<a href="#ResourceAndRange-__rmul__">__rmul__</a>(n)&nbsp;&lt;==&gt;&nbsp;n*x</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-__sizeof__"><strong>__sizeof__</strong></a>(...)</dt><dd><tt>T.<a href="#ResourceAndRange-__sizeof__">__sizeof__</a>()&nbsp;--&nbsp;size&nbsp;of&nbsp;T&nbsp;in&nbsp;memory,&nbsp;in&nbsp;bytes</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-count"><strong>count</strong></a>(...)</dt><dd><tt>T.<a href="#ResourceAndRange-count">count</a>(value)&nbsp;-&gt;&nbsp;integer&nbsp;--&nbsp;return&nbsp;number&nbsp;of&nbsp;occurrences&nbsp;of&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="ResourceAndRange-index"><strong>index</strong></a>(...)</dt><dd><tt>T.<a href="#ResourceAndRange-index">index</a>(value,&nbsp;[start,&nbsp;[stop]])&nbsp;-&gt;&nbsp;integer&nbsp;--&nbsp;return&nbsp;first&nbsp;index&nbsp;of&nbsp;value.<br>
+Raises&nbsp;ValueError&nbsp;if&nbsp;the&nbsp;value&nbsp;is&nbsp;not&nbsp;present.</tt></dd></dl>
+
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-Main"><strong>Main</strong></a>()</dt></dl>
+</td></tr></table>
+</body></html>

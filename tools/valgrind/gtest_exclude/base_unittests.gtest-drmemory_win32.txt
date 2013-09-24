@@ -1,0 +1,26 @@
+# TODO(timurrrr) investigate the failures and enable these tests one-by-one.
+RSA*
+GmockTest.*
+EtwTrace*
+StatsTableTest.*
+ProcessUtilTest.EnableLFH
+ScopedNativeLibrary.Basic
+# TODO(zhaoqin) investigate the failures and enable it later, 106043
+ConditionVariableTest.LargeFastTaskTest
+# Next test creates a child that crashes, which naturally generates an
+# unaddressable report as well as a handful of leak reports that we don't need
+# to see.
+ProcessUtilTest.GetTerminationStatusCrash
+# See crbug.com/130668
+ProcessUtilTest.GetTerminationStatusKill
+ProcessUtilTest.KillSlowChild
+ProcessUtilTest.SpawnChild
+ScopedProcessInformationTest.Duplicate
+ScopedProcessInformationTest.Swap
+ScopedProcessInformationTest.TakeBoth
+ScopedProcessInformationTest.TakeProcess
+ScopedProcessInformationTest.TakeWholeStruct
+SharedMemoryProcessTest.Tasks
+
+# crbug/144018
+ScopedStartupInfoExTest.InheritStdOut

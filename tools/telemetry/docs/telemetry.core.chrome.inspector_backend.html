@@ -1,0 +1,198 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module telemetry.core.chrome.inspector_backend</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="telemetry.html"><font color="#ffffff">telemetry</font></a>.<a href="telemetry.core.html"><font color="#ffffff">core</font></a>.<a href="telemetry.core.chrome.html"><font color="#ffffff">chrome</font></a>.inspector_backend</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="../telemetry/core/chrome/inspector_backend.py">telemetry/core/chrome/inspector_backend.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;Copyright&nbsp;(c)&nbsp;2012&nbsp;The&nbsp;Chromium&nbsp;Authors.&nbsp;All&nbsp;rights&nbsp;reserved.<br>
+#&nbsp;Use&nbsp;of&nbsp;this&nbsp;source&nbsp;code&nbsp;is&nbsp;governed&nbsp;by&nbsp;a&nbsp;BSD-style&nbsp;license&nbsp;that&nbsp;can&nbsp;be<br>
+#&nbsp;found&nbsp;in&nbsp;the&nbsp;LICENSE&nbsp;file.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="telemetry.core.exceptions.html">telemetry.core.exceptions</a><br>
+<a href="telemetry.core.chrome.inspector_console.html">telemetry.core.chrome.inspector_console</a><br>
+<a href="telemetry.core.chrome.inspector_memory.html">telemetry.core.chrome.inspector_memory</a><br>
+<a href="telemetry.core.chrome.inspector_network.html">telemetry.core.chrome.inspector_network</a><br>
+</td><td width="25%" valign=top><a href="telemetry.core.chrome.inspector_page.html">telemetry.core.chrome.inspector_page</a><br>
+<a href="telemetry.core.chrome.inspector_runtime.html">telemetry.core.chrome.inspector_runtime</a><br>
+<a href="telemetry.core.chrome.inspector_timeline.html">telemetry.core.chrome.inspector_timeline</a><br>
+<a href="json.html">json</a><br>
+</td><td width="25%" valign=top><a href="logging.html">logging</a><br>
+<a href="telemetry.core.chrome.png_bitmap.html">telemetry.core.chrome.png_bitmap</a><br>
+<a href="socket.html">socket</a><br>
+<a href="sys.html">sys</a><br>
+</td><td width="25%" valign=top><a href="telemetry.core.util.html">telemetry.core.util</a><br>
+<a href="telemetry.core.chrome.websocket.html">telemetry.core.chrome.websocket</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.core.chrome.inspector_backend.html#InspectorBackend">InspectorBackend</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="exceptions.html#Exception">exceptions.Exception</a>(<a href="exceptions.html#BaseException">exceptions.BaseException</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.core.chrome.inspector_backend.html#InspectorException">InspectorException</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="InspectorBackend">class <strong>InspectorBackend</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="InspectorBackend-Activate"><strong>Activate</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-ClearCache"><strong>ClearCache</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-Close"><strong>Close</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-CollectGarbage"><strong>CollectGarbage</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-Disconnect"><strong>Disconnect</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-DispatchNotifications"><strong>DispatchNotifications</strong></a>(self, timeout<font color="#909090">=10</font>)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-EvaluateJavaScript"><strong>EvaluateJavaScript</strong></a>(self, expr, timeout)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-ExecuteJavaScript"><strong>ExecuteJavaScript</strong></a>(self, expr, timeout)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-GetCookieByName"><strong>GetCookieByName</strong></a>(self, name, timeout)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-GetDOMStats"><strong>GetDOMStats</strong></a>(self, timeout)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-Navigate"><strong>Navigate</strong></a>(self, url, script_to_evaluate_on_commit, timeout)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-PerformActionAndWaitForNavigate"><strong>PerformActionAndWaitForNavigate</strong></a>(self, action_function, timeout)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-RegisterDomain"><strong>RegisterDomain</strong></a>(self, domain_name, notification_handler, will_close_handler)</dt><dd><tt>Registers&nbsp;a&nbsp;given&nbsp;domain&nbsp;for&nbsp;handling&nbsp;notification&nbsp;methods.<br>
+&nbsp;<br>
+For&nbsp;example,&nbsp;given&nbsp;inspector_backend:<br>
+&nbsp;&nbsp;&nbsp;def&nbsp;OnConsoleNotification(msg):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;msg['method']&nbsp;==&nbsp;'Console.messageAdded':<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print&nbsp;msg['params']['message']<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return<br>
+&nbsp;&nbsp;&nbsp;def&nbsp;OnConsoleClose(self):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;pass<br>
+&nbsp;&nbsp;&nbsp;inspector_backend.<a href="#InspectorBackend-RegisterDomain">RegisterDomain</a>('Console',<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;OnConsoleNotification,&nbsp;OnConsoleClose)</tt></dd></dl>
+
+<dl><dt><a name="InspectorBackend-Screenshot"><strong>Screenshot</strong></a>(self, timeout)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-SendAndIgnoreResponse"><strong>SendAndIgnoreResponse</strong></a>(self, req)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-StartTimelineRecording"><strong>StartTimelineRecording</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-StopTimelineRecording"><strong>StopTimelineRecording</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-SyncRequest"><strong>SyncRequest</strong></a>(self, req, timeout<font color="#909090">=10</font>)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-UnregisterDomain"><strong>UnregisterDomain</strong></a>(self, domain_name)</dt><dd><tt>Unregisters&nbsp;a&nbsp;previously&nbsp;registered&nbsp;domain.</tt></dd></dl>
+
+<dl><dt><a name="InspectorBackend-WaitForDocumentReadyStateToBeComplete"><strong>WaitForDocumentReadyStateToBeComplete</strong></a>(self, timeout)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-WaitForDocumentReadyStateToBeInteractiveOrBetter"><strong>WaitForDocumentReadyStateToBeInteractiveOrBetter</strong></a>(self, timeout)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-__del__"><strong>__del__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="InspectorBackend-__init__"><strong>__init__</strong></a>(self, browser, browser_backend, debugger_url)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>browser</strong></dt>
+</dl>
+<dl><dt><strong>message_output_stream</strong></dt>
+</dl>
+<dl><dt><strong>screenshot_supported</strong></dt>
+</dl>
+<dl><dt><strong>timeline_model</strong></dt>
+</dl>
+<dl><dt><strong>url</strong></dt>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="InspectorException">class <strong>InspectorException</strong></a>(<a href="exceptions.html#Exception">exceptions.Exception</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="telemetry.core.chrome.inspector_backend.html#InspectorException">InspectorException</a></dd>
+<dd><a href="exceptions.html#Exception">exceptions.Exception</a></dd>
+<dd><a href="exceptions.html#BaseException">exceptions.BaseException</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><a name="InspectorException-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt>x.<a href="#InspectorException-__init__">__init__</a>(...)&nbsp;initializes&nbsp;x;&nbsp;see&nbsp;help(type(x))&nbsp;for&nbsp;signature</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object&gt;<dd><tt>T.<a href="#InspectorException-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+<hr>
+Methods inherited from <a href="exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><a name="InspectorException-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#InspectorException-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="InspectorException-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#InspectorException-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="InspectorException-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#InspectorException-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="InspectorException-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#InspectorException-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="InspectorException-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="InspectorException-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#InspectorException-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="InspectorException-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#InspectorException-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="InspectorException-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="InspectorException-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#InspectorException-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+
+<dl><dt><a name="InspectorException-__unicode__"><strong>__unicode__</strong></a>(...)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
+</dl>
+<dl><dt><strong>message</strong></dt>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

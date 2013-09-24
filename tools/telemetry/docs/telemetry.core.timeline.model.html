@@ -1,0 +1,85 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module telemetry.core.timeline.model</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="telemetry.html"><font color="#ffffff">telemetry</font></a>.<a href="telemetry.core.html"><font color="#ffffff">core</font></a>.<a href="telemetry.core.timeline.html"><font color="#ffffff">timeline</font></a>.model</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="../telemetry/core/timeline/model.py">telemetry/core/timeline/model.py</a></font></td></tr></table>
+    <p><tt>A&nbsp;container&nbsp;for&nbsp;timeline-based&nbsp;events&nbsp;and&nbsp;traces&nbsp;and&nbsp;can&nbsp;handle&nbsp;importing<br>
+raw&nbsp;event&nbsp;data&nbsp;from&nbsp;different&nbsp;sources.&nbsp;This&nbsp;model&nbsp;closely&nbsp;resembles&nbsp;that&nbsp;in&nbsp;the<br>
+trace_viewer&nbsp;project:<br>
+https://code.google.com/p/trace-viewer/</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="telemetry.core.timeline.bounds.html">telemetry.core.timeline.bounds</a><br>
+</td><td width="25%" valign=top><a href="telemetry.core.timeline.inspector_importer.html">telemetry.core.timeline.inspector_importer</a><br>
+</td><td width="25%" valign=top><a href="telemetry.core.timeline.trace_event_importer.html">telemetry.core.timeline.trace_event_importer</a><br>
+</td><td width="25%" valign=top><a href="telemetry.core.timeline.process.html">telemetry.core.timeline.process</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.core.timeline.model.html#TimelineModel">TimelineModel</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="TimelineModel">class <strong>TimelineModel</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="TimelineModel-GetAllContainers"><strong>GetAllContainers</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TimelineModel-GetAllEvents"><strong>GetAllEvents</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TimelineModel-GetAllEventsOfName"><strong>GetAllEventsOfName</strong></a>(self, name)</dt></dl>
+
+<dl><dt><a name="TimelineModel-GetAllProcesses"><strong>GetAllProcesses</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TimelineModel-GetAllThreads"><strong>GetAllThreads</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TimelineModel-GetOrCreateProcess"><strong>GetOrCreateProcess</strong></a>(self, pid)</dt></dl>
+
+<dl><dt><a name="TimelineModel-ImportTraces"><strong>ImportTraces</strong></a>(self, traces, shift_world_to_zero<font color="#909090">=True</font>)</dt></dl>
+
+<dl><dt><a name="TimelineModel-IterAllEvents"><strong>IterAllEvents</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TimelineModel-ShiftWorldToZero"><strong>ShiftWorldToZero</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TimelineModel-UpdateBounds"><strong>UpdateBounds</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="TimelineModel-__init__"><strong>__init__</strong></a>(self, event_data<font color="#909090">=None</font>, shift_world_to_zero<font color="#909090">=True</font>)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>bounds</strong></dt>
+</dl>
+<dl><dt><strong>processes</strong></dt>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

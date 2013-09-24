@@ -1,0 +1,104 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module telemetry.page.page_test_runner</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="telemetry.html"><font color="#ffffff">telemetry</font></a>.<a href="telemetry.page.html"><font color="#ffffff">page</font></a>.page_test_runner</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="../telemetry/page/page_test_runner.py">telemetry/page/page_test_runner.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;Copyright&nbsp;(c)&nbsp;2012&nbsp;The&nbsp;Chromium&nbsp;Authors.&nbsp;All&nbsp;rights&nbsp;reserved.<br>
+#&nbsp;Use&nbsp;of&nbsp;this&nbsp;source&nbsp;code&nbsp;is&nbsp;governed&nbsp;by&nbsp;a&nbsp;BSD-style&nbsp;license&nbsp;that&nbsp;can&nbsp;be<br>
+#&nbsp;found&nbsp;in&nbsp;the&nbsp;LICENSE&nbsp;file.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="telemetry.core.browser_options.html">telemetry.core.browser_options</a><br>
+<a href="telemetry.core.discover.html">telemetry.core.discover</a><br>
+<a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="telemetry.page.page_runner.html">telemetry.page.page_runner</a><br>
+<a href="telemetry.page.page_set.html">telemetry.page.page_set</a><br>
+<a href="telemetry.page.page_test.html">telemetry.page.page_test</a><br>
+</td><td width="25%" valign=top><a href="telemetry.core.profile_types.html">telemetry.core.profile_types</a><br>
+<a href="sys.html">sys</a><br>
+<a href="telemetry.test.html">telemetry.test</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.page.page_test_runner.html#PageTestRunner">PageTestRunner</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PageTestRunner">class <strong>PageTestRunner</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="PageTestRunner-FindTestConstructors"><strong>FindTestConstructors</strong></a>(self, base_dir)</dt></dl>
+
+<dl><dt><a name="PageTestRunner-FindTestName"><strong>FindTestName</strong></a>(self, test_constructors, args)</dt><dd><tt>Find&nbsp;the&nbsp;test&nbsp;name&nbsp;in&nbsp;an&nbsp;arbitrary&nbsp;argument&nbsp;list.<br>
+&nbsp;<br>
+We&nbsp;can't&nbsp;use&nbsp;the&nbsp;optparse&nbsp;parser,&nbsp;because&nbsp;the&nbsp;test&nbsp;may&nbsp;add&nbsp;its&nbsp;own<br>
+command-line&nbsp;options.&nbsp;If&nbsp;the&nbsp;user&nbsp;passed&nbsp;in&nbsp;any&nbsp;of&nbsp;those,&nbsp;the<br>
+optparse&nbsp;parsing&nbsp;will&nbsp;fail.<br>
+&nbsp;<br>
+Returns:<br>
+&nbsp;&nbsp;test_name&nbsp;or&nbsp;None</tt></dd></dl>
+
+<dl><dt><a name="PageTestRunner-GetModernizedTestName"><strong>GetModernizedTestName</strong></a>(self, arg)</dt><dd><tt>Sometimes&nbsp;tests&nbsp;change&nbsp;names&nbsp;but&nbsp;buildbots&nbsp;keep&nbsp;calling&nbsp;the&nbsp;old&nbsp;name.<br>
+&nbsp;<br>
+If&nbsp;arg&nbsp;matches&nbsp;an&nbsp;old&nbsp;test&nbsp;name,&nbsp;return&nbsp;the&nbsp;new&nbsp;test&nbsp;name&nbsp;instead.<br>
+Otherwise,&nbsp;return&nbsp;the&nbsp;arg.</tt></dd></dl>
+
+<dl><dt><a name="PageTestRunner-GetPageSet"><strong>GetPageSet</strong></a>(self, test, page_set_filenames)</dt></dl>
+
+<dl><dt><a name="PageTestRunner-ParseCommandLine"><strong>ParseCommandLine</strong></a>(self, args, base_dir, page_set_filenames)</dt></dl>
+
+<dl><dt><a name="PageTestRunner-PrintParseError"><strong>PrintParseError</strong></a>(self, message)</dt></dl>
+
+<dl><dt><a name="PageTestRunner-Run"><strong>Run</strong></a>(self, base_dir, page_set_filenames)</dt></dl>
+
+<dl><dt><a name="PageTestRunner-__init__"><strong>__init__</strong></a>(self)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>test_class</strong></dt>
+</dl>
+<dl><dt><strong>test_class_name</strong></dt>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-Main"><strong>Main</strong></a>(base_dir, page_set_filenames)</dt><dd><tt>Turns&nbsp;a&nbsp;PageTest&nbsp;into&nbsp;a&nbsp;command-line&nbsp;program.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;base_dir:&nbsp;Path&nbsp;to&nbsp;directory&nbsp;containing&nbsp;tests&nbsp;and&nbsp;ProfileCreators.</tt></dd></dl>
+</td></tr></table>
+</body></html>

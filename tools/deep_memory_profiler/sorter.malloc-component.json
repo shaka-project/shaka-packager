@@ -1,0 +1,261 @@
+{
+  "type": "sorter",
+  "version": 1,
+  "world": "malloc",
+  "name": "component",
+  "order": {
+    "preset1": [
+      "tc-webcore-fontcache",
+      "tc-skia",
+      "tc-renderobject",
+      "tc-renderstyle",
+      "tc-webcore-sharedbuf",
+      "tc-webcore-XHRcreate",
+      "tc-webcore-XHRreceived",
+      "tc-webcore-docwriter-add",
+      "tc-webcore-node-and-doc",
+      "tc-webcore-node-factory",
+      "tc-webcore-element-wrapper",
+      "tc-webcore-stylepropertyset",
+      "tc-webcore-style-createsheet",
+      "tc-webcore-cachedresource",
+      "tc-webcore-script-execute",
+      "tc-webcore-events-related",
+      "tc-webcore-document-write",
+      "tc-webcore-node-create-renderer",
+      "tc-webcore-render-catch-all",
+      "tc-webcore-setInnerHTML-except-node",
+      "tc-wtf-StringImpl-user-catch-all",
+      "tc-wtf-HashTable-user-catch-all",
+      "tc-webcore-everything-create",
+      "tc-webkit-from-v8-catch-all",
+      "tc-webkit-catch-all",
+      "tc-v8-catch-all",
+      "tc-toplevel-string",
+      "tc-std-treemap",
+      "tc-std-hashmap",
+      "tc-std-vector",
+      "tc-std-other",
+      "tc-catch-all",
+      "tc-unused"
+    ]
+  },
+  "rules": [
+    {
+      "name": "tc-webcore-fontcache",
+      "backtrace_function": ".*WebCore::FontCache::getCachedFontData.*"
+    },
+    {
+      "name": "tc-skia",
+      "backtrace_function": ".* Sk[A-Za-z_]+::.*"
+    },
+    {
+      "name": "tc-renderobject",
+      "backtrace_function": ".*WebCore::RenderArena::allocate.*"
+    },
+    {
+      "name": "tc-renderstyle",
+      "backtrace_function": ".*WebCore::RenderStyle::create.*"
+    },
+    {
+      "name": "tc-renderstyle",
+      "backtrace_function": ".*WebCore::RenderStyle::clone.*"
+    },
+    {
+      "name": "tc-webcore-sharedbuf",
+      "backtrace_function": ".*WebCore::SharedBuffer::create.*"
+    },
+    {
+      "name": "tc-webcore-sharedbuf",
+      "backtrace_function": ".*WebCore::SharedBuffer::buffer.*"
+    },
+    {
+      "name": "tc-webcore-sharedbuf",
+      "backtrace_function": ".*WebCore::SharedBuffer::append.*"
+    },
+    {
+      "name": "tc-webcore-XHRcreate",
+      "backtrace_function": ".*WebCore::XMLHttpRequest::create .*"
+    },
+    {
+      "name": "tc-webcore-XHRreceived",
+      "backtrace_function": ".*WebCore::XMLHttpRequest::didReceiveData.*"
+    },
+    {
+      "name": "tc-webcore-docwriter-add",
+      "backtrace_function": ".*WebCore::DocumentWriter::addData.*"
+    },
+    {
+      "name": "tc-webcore-node-and-doc",
+      "backtrace_function": ".*WebCore::HTML[a-zA-Z0-9_]*Element::create .*"
+    },
+    {
+      "name": "tc-webcore-node-and-doc",
+      "backtrace_function": ".*WebCore::Text::create .*"
+    },
+    {
+      "name": "tc-webcore-node-and-doc",
+      "backtrace_function": ".*WebCore::Comment::create .*"
+    },
+    {
+      "name": "tc-webcore-node-and-doc",
+      "backtrace_function": ".*WebCore::HTMLDocument::create .*"
+    },
+    {
+      "name": "tc-webcore-node-and-doc",
+      "backtrace_function": ".*WebCore::CSSStyleRule::create .*"
+    },
+    {
+      "name": "tc-webcore-node-and-doc",
+      "backtrace_function": ".*WebCore::Attribute::create .*"
+    },
+    {
+      "name": "tc-webcore-node-and-doc",
+      "backtrace_function": ".*WebCore::DOMWindow::create .*"
+    },
+    {
+      "name": "tc-webcore-node-factory",
+      "backtrace_function": ".*WebCore::HTML[a-zA-Z0-9_]*Factory::create[a-zA-Z0-9_]*Element.*"
+    },
+    {
+      "name": "tc-webcore-element-wrapper",
+      "backtrace_function": ".*WebCore::createHTML[a-zA-Z0-9_]*ElementWrapper.*"
+    },
+    {
+      "name": "tc-webcore-stylepropertyset",
+      "backtrace_function": ".*WebCore::StylePropertySet::create .*"
+    },
+    {
+      "name": "tc-webcore-style-createsheet",
+      "backtrace_function": ".*WebCore::StyleElement::createSheet.*"
+    },
+    {
+      "name": "tc-webcore-cachedresource",
+      "backtrace_function": ".*WebCore::CachedResource::data .*"
+    },
+    {
+      "name": "tc-webcore-cachedresource",
+      "backtrace_function": ".*WebCore::CachedResource::load .*"
+    },
+    {
+      "name": "tc-webcore-script-execute",
+      "backtrace_function": ".*WebCore::ScriptElement::execute.*"
+    },
+    {
+      "name": "tc-webcore-events-related",
+      "backtrace_function": ".*WebCore::createAttributeEventListener.*"
+    },
+    {
+      "name": "tc-webcore-events-related",
+      "backtrace_function": ".*WebCore::V8LazyEventListener::create.*"
+    },
+    {
+      "name": "tc-webcore-events-related",
+      "backtrace_function": ".*WebCore::V8EventListener::create.*"
+    },
+    {
+      "name": "tc-webcore-events-related",
+      "backtrace_function": ".*WebCore::Event::create .*"
+    },
+    {
+      "name": "tc-webcore-events-related",
+      "backtrace_function": ".*WebCore::EventListener::create .*"
+    },
+    {
+      "name": "tc-webcore-document-write",
+      "backtrace_function": ".*WebCore::Document::write.*"
+    },
+    {
+      "name": "tc-webcore-node-create-renderer",
+      "backtrace_function": ".*WebCore::Node::createRendererIfNeeded.*"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "backtrace_function": ".*WebCore::RenderLayer.*"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "backtrace_function": ".*WebCore::RenderBlock.*"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "backtrace_function": ".*WebCore::RenderWidget.*"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "backtrace_function": ".*WebCore::RenderView.*"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "backtrace_function": ".*WebCore::RenderViewImpl.*"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "backtrace_function": ".*WebCore::RenderStyle.*"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "backtrace_function": ".*WebCore::RenderText.*"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "backtrace_function": ".* RendererMain .*"
+    },
+    {
+      "name": "tc-webcore-setInnerHTML-except-node",
+      "backtrace_function": ".*WebCore::HTMLElement::setInnerHTML.*"
+    },
+    {
+      "name": "tc-wtf-StringImpl-user-catch-all",
+      "backtrace_function": ".*WTF::StringImpl::create .*"
+    },
+    {
+      "name": "tc-wtf-StringImpl-user-catch-all",
+      "backtrace_function": ".*WTF::StringImpl::createUninitialized.*"
+    },
+    {
+      "name": "tc-wtf-HashTable-user-catch-all",
+      "backtrace_function": ".*WTF::HashTable::allocateTable.*"
+    },
+    {
+      "name": "tc-webcore-everything-create",
+      "backtrace_function": ".*WebCore::[a-zA-Z0-9_]*::create .*"
+    },
+    {
+      "name": "tc-webkit-from-v8-catch-all",
+      "backtrace_function": ".*(WTF::|WebCore::|WebKit::).*v8::.*"
+    },
+    {
+      "name": "tc-webkit-catch-all",
+      "backtrace_function": ".*(WTF::|WebCore::|WebKit::).*"
+    },
+    {
+      "name": "tc-v8-catch-all",
+      "backtrace_function": ".*v8::.*"
+    },
+    {
+      "name": "tc-toplevel-string",
+      "backtrace_function": "std::basic_string::_Rep::_S_create"
+    },
+    {
+      "name": "tc-std-treemap",
+      "backtrace_function": ".*::allocate std::(_Rb_tree|__1::__tree).*"
+    },
+    {
+      "name": "tc-std-hashmap",
+      "backtrace_function": ".*(std::vector::reserve __gnu_cxx::hashtable|::allocate std::_Hashtable|::allocate std::__1::__hash_table).*"
+    },
+    {
+      "name": "tc-std-vector",
+      "backtrace_function": ".*std::(_Vector_base::_M_allocate|__1::vector::allocate).*"
+    },
+    {
+      "name": "tc-std-other",
+      "backtrace_function": ".*(__gnu_cxx::new_allocator::allocate|std::__1::allocator::allocate).*"
+    },
+    {
+      "name": "tc-catch-all",
+      "backtrace_function": ".*"
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              DYN (Shared object file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0x9fbcc0
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          418040784 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         10
+  Size of section headers:           64 (bytes)
+  Number of section headers:         47
+  Section header string table index: 46
+
+Section Headers:
+  [Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            0000000000000000 000000 000000 00      0   0  0
+  [ 1] .interp           PROGBITS        0000000000000270 000270 00001c 00   A  0   0  1
+  [ 2] .note.ABI-tag     NOTE            000000000000028c 00028c 000020 00   A  0   0  4
+  [ 3] .note.gnu.build-id NOTE            00000000000002ac 0002ac 000024 00   A  0   0  4
+  [ 4] .dynsym           DYNSYM          00000000000002d0 0002d0 00fb70 18   A  5   1  8
+  [ 5] .dynstr           STRTAB          000000000000fe40 00fe40 00e678 00   A  0   0  1
+  [ 6] .gnu.hash         GNU_HASH        000000000001e4b8 01e4b8 0001d0 00   A  4   0  8
+  [ 7] .gnu.version      VERSYM          000000000001e688 01e688 0014f4 02   A  4   0  2
+  [ 8] .gnu.version_r    VERNEED         000000000001fb7c 01fb7c 0003b0 00   A  5  13  4
+  [ 9] .rela.dyn         RELA            000000000001ff30 01ff30 9c3210 18   A  4   0  8
+  [10] .rela.plt         RELA            00000000009e3140 9e3140 00ed30 18  AI  4  12  8
+  [11] .init             PROGBITS        00000000009f1e70 9f1e70 000018 00  AX  0   0  4
+  [12] .plt              PROGBITS        00000000009f1e88 9f1e88 009e30 10  AX  0   0  8
+  [13] .text             PROGBITS        00000000009fbcc0 9fbcc0 6a0c238 00  AX  0   0 16
+  [14] malloc_hook       PROGBITS        0000000007407f00 7407f00 0005b1 00  AX  0   0 16
+  [15] google_malloc     PROGBITS        00000000074084c0 74084c0 0005a2 00  AX  0   0 16
+  [16] .fini             PROGBITS        0000000007408a64 7408a64 00000e 00  AX  0   0  4
+  [17] .rodata           PROGBITS        0000000007408a80 7408a80 18388f0 00   A  0   0 64
+  [18] .gcc_except_table PROGBITS        0000000008c41370 8c41370 0014f4 00   A  0   0  4
+  [19] .eh_frame         PROGBITS        0000000008c42868 8c42868 1887a54 00   A  0   0  8
+  [20] .eh_frame_hdr     PROGBITS        000000000a4ca2bc a4ca2bc 66e33c 00   A  0   0  4
+  [21] .tbss             NOBITS          000000000ab39720 ab38720 000028 00 WAT  0   0  8
+  [22] .data.rel.ro.local PROGBITS        000000000ab39720 ab38720 1907e0 00  WA  0   0 16
+  [23] .ctors            PROGBITS        000000000acc9f00 acc8f00 0001f8 00  WA  0   0  8
+  [24] .dtors            PROGBITS        000000000acca0f8 acc90f8 000010 00  WA  0   0  8
+  [25] .jcr              PROGBITS        000000000acca108 acc9108 000008 00  WA  0   0  8
+  [26] .data.rel.ro      PROGBITS        000000000acca110 acc9110 257380 00  WA  0   0 16
+  [27] .dynamic          DYNAMIC         000000000af21490 af20490 000520 10  WA  5   0  8
+  [28] .got              PROGBITS        000000000af219b0 af209b0 01e638 00  WA  0   0  8
+  [29] .got.plt          PROGBITS        000000000af3ffe8 af3efe8 004f28 00  WA  0   0  8
+  [30] .data             PROGBITS        000000000af44f10 af43f10 0372b8 00  WA  0   0 16
+  [31] .bss              NOBITS          000000000af7c1d0 af7b1d0 07895a 00  WA  0   0 16
+  [32] .comment          PROGBITS        0000000000000000 af7b1c8 00002b 01  MS  0   0  1
+  [33] .debug_info       PROGBITS        0000000000000000 af7b1f3 2fd3510 00      0   0  1
+  [34] .debug_abbrev     PROGBITS        0000000000000000 df4e703 156ae4 00      0   0  1
+  [35] .debug_aranges    PROGBITS        0000000000000000 e0a51e7 000120 00      0   0  1
+  [36] .debug_macinfo    PROGBITS        0000000000000000 e0a5307 000000 00      0   0  1
+  [37] .debug_line       PROGBITS        0000000000000000 e0a5307 2e73466 00      0   0  1
+  [38] .debug_loc        PROGBITS        0000000000000000 10f1876d 000934 00      0   0  1
+  [39] .debug_pubtypes   PROGBITS        0000000000000000 10f190a1 000000 00      0   0  1
+  [40] .debug_str        PROGBITS        0000000000000000 10f190a1 fd980a 01  MS  0   0  1
+  [41] .debug_ranges     PROGBITS        0000000000000000 11ef28ab 08d950 00      0   0  1
+  [42] .debug_frame      PROGBITS        0000000000000000 11f80200 000058 00      0   0  8
+  [43] .note.gnu.gold-version NOTE            0000000000000000 11f80258 00001c 00      0   0  4
+  [44] .symtab           SYMTAB          0000000000000000 11f80278 1c2e928 18     45 1175494  8
+  [45] .strtab           STRTAB          0000000000000000 13baeba0 52fde3d 00      0   0  1
+  [46] .shstrtab         STRTAB          0000000000000000 18eac9dd 0001ec 00      0   0  1
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings), l (large)
+  I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)
+  O (extra OS processing required) o (OS specific), p (processor specific)
+
+Program Headers:
+  Type           Offset   VirtAddr           PhysAddr           FileSiz  MemSiz   Flg Align
+  PHDR           0x000040 0x0000000000000040 0x0000000000000040 0x000230 0x000230 R   0x8
+  INTERP         0x000270 0x0000000000000270 0x0000000000000270 0x00001c 0x00001c R   0x1
+      [Requesting program interpreter: /lib64/ld-linux-x86-64.so.2]
+  LOAD           0x000000 0x0000000000000000 0x0000000000000000 0xab385f8 0xab385f8 R E 0x1000
+  LOAD           0xab38720 0x000000000ab39720 0x000000000ab39720 0x442aa8 0x4bb40a RW  0x1000
+  DYNAMIC        0xaf20490 0x000000000af21490 0x000000000af21490 0x000520 0x000520 RW  0x8
+  NOTE           0x00028c 0x000000000000028c 0x000000000000028c 0x000044 0x000044 R   0x4
+  GNU_EH_FRAME   0xa4ca2bc 0x000000000a4ca2bc 0x000000000a4ca2bc 0x66e33c 0x66e33c R   0x4
+  GNU_STACK      0x000000 0x0000000000000000 0x0000000000000000 0x000000 0x000000 RW  0
+  TLS            0xab38720 0x000000000ab39720 0x000000000ab39720 0x000000 0x000028 R   0x8
+  GNU_RELRO      0xab38720 0x000000000ab39720 0x000000000ab39720 0x4068e0 0x4068e0 RW  0x10
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     
+   01     .interp 
+   02     .interp .note.ABI-tag .note.gnu.build-id .dynsym .dynstr .gnu.hash .gnu.version .gnu.version_r .rela.dyn .rela.plt .init .plt .text malloc_hook google_malloc .fini .rodata .gcc_except_table .eh_frame .eh_frame_hdr 
+   03     .data.rel.ro.local .ctors .dtors .jcr .data.rel.ro .dynamic .got .got.plt .data .bss 
+   04     .dynamic 
+   05     .note.ABI-tag .note.gnu.build-id 
+   06     .eh_frame_hdr 
+   07     
+   08     .tbss 
+   09     .data.rel.ro.local .ctors .dtors .jcr .data.rel.ro .dynamic .got 

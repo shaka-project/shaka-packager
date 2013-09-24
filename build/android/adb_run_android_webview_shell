@@ -1,0 +1,15 @@
+#!/bin/bash
+#
+# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if [ $# -gt 0 ] ; then
+   INTENT_ARGS="-d \"$1\""  # e.g. a URL
+fi
+
+adb shell am start \
+  -a android.intent.action.VIEW \
+  -n org.chromium.android_webview.shell/.AwShellActivity \
+  $INTENT_ARGS
+

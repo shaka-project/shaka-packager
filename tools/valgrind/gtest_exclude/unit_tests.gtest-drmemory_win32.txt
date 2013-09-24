@@ -1,0 +1,69 @@
+##################################################
+# known Dr. Memory bugs:
+
+# http://code.google.com/p/drmemory/issues/detail?id=318
+AudioRendererHostTest.*
+
+##################################################
+# un-analyzed Dr. Memory bugs:
+
+# http://code.google.com/p/drmemory/issues/detail?id=548
+DownloadManagerTest.StartDownload
+
+# http://code.google.com/p/drmemory/issues/detail?id=979
+FirefoxProfileImporterTest.Firefox35Importer
+
+# http://code.google.com/p/drmemory/issues/detail?id=980
+MetricsLogManagerTest.*
+
+# http://code.google.com/p/drmemory/issues/detail?id=983
+ProfileShortcutManagerTest.*
+
+##################################################
+# Chromium bugs:
+
+# times out on the bot
+# http://crbug.com/87887
+VideoCaptureHostTest.*
+
+# crashes due to use-after-free's, http://crbug.com/90980
+FirefoxImporterTest.Firefox*NSS3Decryptor
+
+# fails http://crbug.com/92144
+ServiceProcessStateTest.ForceShutdown
+
+# fails sporadically: http://crbug.com/108205
+MultiProcessLockTest.RecursiveLock
+
+# Poor isolation, DCHECKs when no MessageLoop exists.  Breaks when sharded.
+# http://crbug.com/117679
+WebsiteSettingsModelTest.*
+
+# fails to create thread
+# http://crbug.com/144087
+DesktopNotificationServiceTest.SettingsForSchemes
+TemplateURLFetcherTest.*
+
+# times out on the bot.
+# http://crbug.com/148644
+GAIAInfoUpdateServiceTest.*
+ProfileManagerTest.*
+ProfileInfoCacheTest.*
+
+# Failing on the bot. http://crbug.com/167014
+BrowserCommandControllerTest.AvatarMenuDisabledWhenOnlyOneProfile
+
+# Failing on the bot. http://crbug.com/168882
+UserCloudPolicyStoreTest.LoadWithInvalidFile
+UserCloudPolicyStoreTest.LoadWithNoFile
+UserCloudPolicyStoreTest.Store
+UserCloudPolicyStoreTest.StoreThenClear
+UserCloudPolicyStoreTest.StoreThenLoad
+UserCloudPolicyStoreTest.StoreTwoTimes
+UserCloudPolicyStoreTest.StoreValidationError
+
+# Tests are timing out on the bot. crbug.com/248373.
+PnaclTranslationCacheTest.*
+
+# Failing on the bot. crbug.com/266972
+OneClickSigninBubbleViewTest.ShowBubble

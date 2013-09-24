@@ -1,0 +1,15 @@
+{
+    "description": "DOM page_cycler benchmark",
+    "serving_dirs": ["../../../../data/page_cycler/dom"],
+    "pages": [
+        { "url": "file:///../../../../data/page_cycler/dom/HTMLDocument_write/" },
+        { "url": "file:///../../../../data/page_cycler/dom/Document_getElementById/" },
+        { "url": "file:///../../../../data/page_cycler/dom/DOMWindow_document/" },
+        { "url": "file:///../../../../data/page_cycler/dom/DOMWindow_window/" },
+        { "url": "file:///../../../../data/page_cycler/dom/Element_getAttribute/" },
+        { "url": "file:///../../../../data/page_cycler/dom/HTMLCollection_length/" },
+        { "url": "file:///../../../../data/page_cycler/dom/HTMLElement_className/" },
+        { "url": "file:///../../../../data/page_cycler/dom/HTMLElement_id/" },
+        { "url": "file:///../../../../data/page_cycler/dom/NodeList_length/" }
+    ]
+}

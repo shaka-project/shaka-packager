@@ -1,0 +1,33 @@
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// A comment describing tags.
+namespace tags {
+  // This dictionary has the property [inline_doc].
+  [inline_doc] dictionary InlineDoc {
+  };
+
+  // This dictionary has the property [nodoc].
+  [nodoc] dictionary Nodoc {
+  };
+
+  // This dictionary has the property [nocompile].
+  [nocompile] dictionary Nocompile {
+  };
+
+  // This dictionary has no tags on the dictionary itself.
+  dictionary PlainDict {
+    // This int has the property [inline_doc].
+    [inline_doc] int inline_doc;
+
+    // This String has the property [nodoc].
+    [nodoc] String nodoc;
+
+    // This double has the property [nocompile].
+    [nocompile] double nocompile;
+
+    // This object has the property [instanceOf=fileEntry].
+    [instanceOf=fileEntry] object instance_of_tag;
+  };
+};

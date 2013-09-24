@@ -1,0 +1,197 @@
+# -*- python -*-
+
+# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Example configuration file for Croc
+
+# Basic formatting rules:
+#   * It looks like JSON.
+#   * It's really python.
+#   * Dictionaries are wrapped in {}.  Order does not matter.  Entries are of
+#     the form:
+#         'key':value,
+#     Note the trailing comma, which will help save you from python's built-in
+#     string concatenation.
+#   * Lists are wrapped in [].  Order does matter.  Entries should be followed
+#     with a trailing comma, which will help save you from python's built-in
+#     string concatenation.
+#   * Comments start with # and extend to end of line.
+#   * Strings are wrapped in ''.  Backslashes must be escaped ('foo\\bar', not
+#     'foo\bar') - this is particularly important in rule regular expressions.
+
+
+# What follows is the main configuration dictionary.
+{
+  # List of root directories, applied in order.
+  #
+  # Typically, coverage data files contain absolute paths to the sources.
+  # What you care about is usually a relative path from the top of your source
+  # tree (referred to here as a 'source root') to the sources.
+  #
+  # Roots may also be specified on the command line via the --root option.
+  # Roots specified by --root are applied before those specified in config
+  # files.
+  'roots' : [
+    # Each entry is a dict.
+    #     * It must contain a 'root' entry, which is the start of a path.
+    #         * Root entries may be absolute paths
+    #         * Root entries starting with './' or '../' are relative paths, and
+    #           are taken relative to the current directory where you run croc.
+    #         * Root entries may start with previously defined altnames.
+    #         * Use '/' as a path separator, even on Windows.
+    #     * It may contain a 'altname' entry.  If the root matches the start of
+    #        a filename, that start is replaced with the 'altname', or with '_'
+    #        if no default is specified.
+    #     * Multiple root entries may share the same altname.  This is commonly
+    #       used when combining LCOV files from different platforms into one
+    #       coverage report, when each platform checks out source code into a
+    #       different source tree.
+    {'root' : 'c:/P4/EarthHammer'},
+    {'root' : 'd:/pulse/recipes/330137642/base'},
+    {'root' : '/Volumes/BuildData/PulseData/data/recipes/330137640/base'},
+    {'root' : '/usr/local/google/builder/.pulse-agent/data/recipes/330137641/base'},
+
+    # Sub-paths we specifically care about and want to call out.  Note that
+    # these are relative to the default '_' altname.
+    {
+      'root' : '_/googleclient/third_party/software_construction_toolkit/files',
+      'altname' : 'SCT',
+    },
+    {
+      'root' : '_/googleclient/tools/hammer',
+      'altname' : 'HAMMER',
+    },
+  ],
+
+  # List of rules, applied in order.
+  'rules' : [
+    # Each rule is a dict.
+    #   * It must contaihn a 'regexp' entry.  Filenames which match this
+    #     regular expression (after applying mappings from 'roots') are
+    #     affected by the rule.
+    #
+    #   * Other entries in the dict are attributes to apply to matching files.
+    #
+    # Allowed attributes:
+    #
+    #   'include' : If 1, the file will be included in coverage reports.  If 0,
+    #               it won't be included in coverage reports.
+    #
+    #   'group' : Name of the group the file belongs to.  The most common
+    #             group names are 'source' and 'test'.  Files must belong to
+    #             a group to be included in coverage reports.
+    #
+    #   'language' : Programming language for the file.  The most common
+    #                languages are 'C', 'C++', 'python', 'ObjC', 'ObjC++'.
+    #                Files must have a language to be included in coverage
+    #                reports.
+    #
+    #   'add_if_missing' : If 1, and the file was not referenced by any LCOV
+    #                      files, it will be be scanned for executable lines
+    #                      and added to the coverage report.  If 0, if the
+    #                      file is not referenced by any LCOV files, it will
+    #                      simply be ignored and not present in coverage
+    #                      reports.
+
+    # Files/paths to include
+    {
+      'regexp' : '^(SCT|HAMMER)/',
+      'include' : 1,
+      'add_if_missing': 1,
+    },
+    {
+      'regexp' : '.*/(\\.svn|\\.hg)/',
+      'include' : 0,
+    },
+
+    # Groups
+    {
+      'regexp' : '',
+      'group' : 'source',
+    },
+    {
+      'regexp' : '.*_(test|test_mac|unittest)\\.',
+      'group' : 'test',
+    },
+
+    # Languages
+    {
+      'regexp' : '.*\\.py$',
+      'language' : 'python',
+    },
+  ],
+
+  # List of paths to add source from.
+  #
+  # Each entry is a path.  It may be a local path, or one relative to a root
+  # altname (see 'roots' above).
+  #
+  # If more than one root's altname matches the start of this path, all matches
+  # will be attempted; matches where the candidate directory doesn't exist will
+  # be ignored.  For example, if you're combining data from multiple platforms'
+  # LCOV files, you probably defined at least one root per LCOV, but only have
+  # one copy of the source on your local platform.  That's fine; Croc will use
+  # the source it can find and not worry about the source it can't.
+  #
+  # Source files must be added via 'add_files' to generate line-by-line HTML
+  # output (via the --html option) and/or to scan for missing executable lines
+  # (if 'add_if_missing' is 1).
+  'add_files' : [
+    'SCT',
+    'HAMMER',
+  ],
+
+  # Statistics to print.
+  #
+  'print_stats' : [
+    # Each entry is a dict.
+    #
+    # It must have a 'stat' entry, which is the statistic to print.  This may
+    # be one of the following stats:
+    #
+    #   * files_executable
+    #   * files_instrumented
+    #   * files_covered
+    #   * lines_executable
+    #   * lines_instrumented
+    #   * lines_covered
+    #
+    # or an expression using those stats.
+    #
+    # It may have a 'format' entry, which is a python formatting string (very
+    # printf-like) for the statistic.
+    #
+    # It may have a 'group' entry.  If this is specified, only files from the
+    # matching group will be included in the statistic.  If not specified, the
+    # group defaults to 'all', which means all groups.
+    {
+      'stat' : 'files_executable',
+      'format' : '*RESULT FilesKnown: files_executable= %d files',
+    },
+    {
+      'stat' : 'files_instrumented',
+      'format' : '*RESULT FilesInstrumented: files_instrumented= %d files',
+    },
+    {
+      'stat' : '100.0 * files_instrumented / files_executable',
+      'format' : '*RESULT FilesInstrumentedPercent: files_instrumented_percent= %g',
+    },
+    {
+      'stat' : 'lines_instrumented',
+      'format' : '*RESULT LinesInstrumented: lines_instrumented= %d lines',
+    },
+    {
+      'stat' : 'lines_covered',
+      'format' : '*RESULT LinesCoveredSource: lines_covered_source= %d lines',
+      'group' : 'source',
+    },
+    {
+      'stat' : 'lines_covered',
+      'format' : '*RESULT LinesCoveredTest: lines_covered_test= %d lines',
+      'group' : 'test',
+    },
+  ],
+
+}

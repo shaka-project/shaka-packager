@@ -1,0 +1,15 @@
+Page Cycler Tests with Web Page Replay
+---------------------------------------------------------------------------
+Web Page Replay is a proxy that can record and "play" web pages with
+simulated network characteristics -- without having to edit the pages
+by hand. With WPR, tests can use "real" web content, and catch
+performance issues that may result from introducing network delays and
+bandwidth throttling.
+
+The Chromium extension here is used to load URLs, record the times,
+and set the appropriate cookies for src/tools/page_cycler/common/report.html.
+
+For more information:
+https://sites.google.com/a/chromium.org/dev/developers/testing/page-cyclers-wpr
+https://sites.google.com/a/chromium.org/dev/developers/testing/page-cyclers
+http://code.google.com/p/web-page-replay

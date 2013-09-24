@@ -1,0 +1,56 @@
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This comment is for the events namespace.
+namespace events {
+  dictionary EventArgumentElement {
+    DOMString elementStringArg;
+  };
+
+  dictionary EventArgument {
+    // A file entry
+    [instanceOf=FileEntry] object entryArg;
+
+    // A string
+    DOMString stringArg;
+
+    // A primitive
+    int intArg;
+
+    // An array
+    EventArgumentElement[] elements;
+
+    // Optional file entry
+    [instanceOf=FileEntry] object? optionalEntryArg;
+
+    // A string
+    DOMString? optionalStringArg;
+
+    // A primitive
+    int? optionalIntArg;
+
+    // An array
+    EventArgumentElement[]? optionalElements;
+  };
+
+  interface Events {
+    // Documentation for the first basic event.
+    static void firstBasicEvent();
+
+    // Documentation for the second basic event.
+    static void secondBasicEvent();
+
+    // Documentation for an event with a non-optional primitive argument.
+    static void nonOptionalPrimitiveArgEvent(int argument);
+
+    // Documentation for an event with an optional primitive argument.
+    static void optionalPrimitiveArgEvent(optional int argument);
+
+    // Documentation for an event with a non-optional dictionary argument.
+    static void nonOptionalDictArgEvent(EventArgument argument);
+
+    // Documentation for an event with a optional dictionary argument.
+    static void optionalDictArgEvent(EventArgument argument);
+  };
+};

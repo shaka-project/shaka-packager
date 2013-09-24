@@ -1,0 +1,301 @@
+{
+  "components": [
+    "second",
+    "mmap-profiler",
+    "mmap-type-profiler",
+    "mmap-tcmalloc",
+    "FROM_HERE_FOR_TOTAL",
+    "mustbezero",
+    "unhooked-absent",
+    "unhooked-ashmem-dalvik-heap",
+    "unhooked-ashmem-dalvik-LinearAlloc",
+    "unhooked-ashmem-dalvik-aux-structure",
+    "unhooked-ashmem-dalvik-bitmap",
+    "unhooked-ashmem-dalvik-other",
+    "unhooked-pvrsrvkm",
+    "unhooked-system-dex",
+    "unhooked-chrome-dex",
+    "unhooked-other-ashmem",
+    "unhooked-anonymous",
+    "unhooked-file-exec-lib-chrome",
+    "unhooked-file-exec",
+    "unhooked-file-nonexec-lib-chrome",
+    "unhooked-file-nonexec",
+    "unhooked-stack",
+    "unhooked-other",
+    "no-bucket",
+    "mmap-gpu-transferbuffer",
+    "mmap-gpu-ringbuffer",
+    "mmap-catch-all",
+    "tc-disk_cache-backing",
+    "tc-disk_cache-other",
+    "tc-sqlite3MemAlloc",
+    "tc-angle",
+    "tc-crypto",
+    "tc-net-iobuffer",
+    "tc-stl-string",
+    "tc-stl-rbtree",
+    "tc-stl-vector",
+    "tc-stl-hashtable",
+    "tc-stl-node",
+    "tc-catch-all",
+    "tc-unused",
+    "UNTIL_HERE_FOR_TOTAL",
+    "total-exclude-profiler",
+    "total",
+    "absent",
+    "anonymous",
+    "file-exec",
+    "file-nonexec",
+    "stack",
+    "other",
+    "mmap-total-log",
+    "mmap-no-log",
+    "mmap-total-record",
+    "other-total-log",
+    "tc-total-log",
+    "tc-no-log",
+    "tc-total-record",
+    "tc-total"
+  ],
+  "rules": [
+    {
+      "name": "second",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "mmap-profiler",
+      "stacktrace": ".*(ProfilerMalloc|MemoryRegionMap::).*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-type-profiler",
+      "stacktrace": ".*(TypeProfilerMalloc).*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-tcmalloc",
+      "stacktrace": ".*(DoAllocWithArena|SbrkSysAllocator::Alloc|MmapSysAllocator::Alloc|LowLevelAlloc::Alloc|LowLevelAlloc::AllocWithArena).*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "FROM_HERE_FOR_TOTAL",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "mustbezero",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "unhooked-absent",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "unhooked-ashmem-dalvik-heap",
+      "mappedpathname": "/dev/ashmem/dalvik-heap.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-ashmem-dalvik-LinearAlloc",
+      "mappedpathname": "/dev/ashmem/dalvik-LinearAlloc.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-ashmem-dalvik-aux-structure",
+      "mappedpathname": "/dev/ashmem/dalvik-aux-structure.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-ashmem-dalvik-bitmap",
+      "mappedpathname": "/dev/ashmem/dalvik-bitmap.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-ashmem-dalvik-other",
+      "mappedpathname": "/dev/ashmem/dalvik.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-pvrsrvkm",
+      "mappedpathname": "/dev/pvrsrvkm.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-system-dex",
+      "mappedpathname": "/data/dalvik-cache/system.*.dex.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-chrome-dex",
+      "mappedpathname": "^/.*?(chrome|content).*?apk@classes.dex",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-other-ashmem",
+      "mappedpathname": "/dev/ashmem/.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-anonymous",
+      "mappedpathname": "^$",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-file-exec-lib-chrome",
+      "mappedpathname": "^/.*?(chromeview|content).*",
+      "mappedpermission": "..x.",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-file-exec",
+      "mappedpathname": "^/.*",
+      "mappedpermission": "..x.",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-file-nonexec-lib-chrome",
+      "mappedpathname": "^/.*?(chromeview|content).*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-file-nonexec",
+      "mappedpathname": "^/.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-stack",
+      "mappedpathname": ".stack.",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-other",
+      "mappedpathname": ".*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "mmap-gpu-transferbuffer",
+      "stacktrace": ".*gpu::TransferBufferManager::RegisterTransferBuffer.*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-gpu-ringbuffer",
+      "stacktrace": ".*gpu::CommandBufferHelper::AllocateRingBuffer.*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-catch-all",
+      "stacktrace": ".*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "tc-disk_cache-backing",
+      "stacktrace": ".*disk_cache::BackendImpl::InitBackingStore.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-disk_cache-other",
+      "stacktrace": ".*disk_cache::.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-sqlite3MemAlloc",
+      "stacktrace": ".*sqlite3MemMalloc.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-angle",
+      "stacktrace": ".*TPoolAllocator::allocate.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-crypto",
+      "stacktrace": ".*(CRYPTO_malloc|CRYPTO_realloc).*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-net-iobuffer",
+      "stacktrace": ".*net::IOBuffer::IOBuffer.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-stl-string",
+      "stacktrace": ".*std::basic_string::.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-stl-rbtree",
+      "stacktrace": ".*std::priv::_Rb_tree::.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-stl-vector",
+      "stacktrace": ".*std::priv::_Impl_vector::.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-stl-hashtable",
+      "stacktrace": ".*std::hashtable::.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-stl-node",
+      "stacktrace": ".*std::priv::_Impl_vector::.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-catch-all",
+      "stacktrace": ".*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "UNTIL_HERE_FOR_TOTAL",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "total-exclude-profiler",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "total",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "absent",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "anonymous",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "file-exec",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "file-nonexec",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "stack",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "other",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    }
+  ],
+  "version": "POLICY_DEEP_3"
+}

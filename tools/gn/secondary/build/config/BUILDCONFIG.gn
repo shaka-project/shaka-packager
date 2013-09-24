@@ -1,0 +1,210 @@
+# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# =============================================================================
+# BUILD FLAGS
+# =============================================================================
+#
+# This block lists input arguments to the build, along with their default
+# values. GN requires listing them explicitly so it can validate input and have
+# a central place to manage the build flags.
+#
+# If a value is specified on the command line, it will overwrite the defaults
+# given here, otherwise the default will be injected into the root scope.
+#
+# KEEP IN ALPHABETICAL ORDER and write a good description for everything.
+# Use "is_*" names for intrinsic platform descriptions and build modes, and
+# "use_*" names for optional features libraries, and configurations.
+declare_args() {
+  is_android = 0
+  is_component_build = 1
+  is_chromeos = 0
+  is_debug = 1
+  is_ios = 0
+  use_ash = 0
+  use_aura = 0
+  use_ozone = 0
+}
+
+# =============================================================================
+# SOURCES FILTERS
+# =============================================================================
+#
+# These patterns filter out platform-specific files when assigning to the
+# sources variable. The magic variable |sources_assignment_filter| is applied
+# to each assignment or appending to the sources variable and matches are
+# automatcally removed.
+#
+# We define lists of filters for each platform for all builds so they can
+# be used by individual targets if necessary (a target can always change
+# sources_assignment_filter on itself if it needs something more specific).
+#
+# Note that the patterns are NOT regular expressions. Only "*" and "\b" (path
+# boundary = end of string or slash) are supported, and the entire string
+# muct match the pattern (so you need "*.cc" to match all .cc files, for
+# example).
+
+windows_sources_filters = [
+  "*_win.cc",
+  "*_win.h",
+  "*_win_unittest.cc",
+  "*\bwin/*",
+]
+mac_sources_filters = [
+  "*_mac.h",
+  "*_mac.cc",
+  "*_mac.mm",
+  "*_mac_unittest.h",
+  "*_mac_unittest.cc",
+  "*_mac_unittest.mm",
+  "*\bmac/*",
+  "*_cocoa.h",
+  "*_cocoa.cc",
+  "*_cocoa.mm",
+  "*_cocoa_unittest.h",
+  "*_cocoa_unittest.cc",
+  "*_cocoa_unittest.mm",
+  "*\bcocoa/*",
+]
+ios_sources_filters = [
+  "*_ios.h",
+  "*_ios.cc",
+  "*_ios.mm",
+  "*_ios_unittest.h",
+  "*_ios_unittest.cc",
+  "*_ios_unittest.mm",
+  "*\bios/*",
+]
+objective_c_sources_filters = [
+  "*.mm",
+]
+linux_sources_filters = [
+  "*_linux.h",
+  "*_linux.cc",
+  "*_linux_unittest.h",
+  "*_linux_unittest.cc",
+  "*\blinux/*",
+]
+android_sources_filters = [
+  "*_android.h",
+  "*_android.cc",
+  "*_android_unittest.h",
+  "*_android_unittest.cc",
+  "*\bandroid/*",
+]
+posix_sources_filters = [
+  "*_posix.h",
+  "*_posix.cc",
+  "*_posix_unittest.h",
+  "*_posix_unittest.cc",
+  "*\bposix/*",
+]
+
+# Construct the full list of sources we're using for this platform.
+sources_assignment_filter = []
+if (is_win) {
+  sources_assignment_filter += posix_sources_filters
+} else {
+  sources_assignment_filter += windows_sources_filters
+}
+if (!is_mac) {
+  sources_assignment_filter += mac_sources_filters
+}
+if (!is_ios) {
+  sources_assignment_filter += ios_sources_filters
+}
+if (!is_mac && !is_ios) {
+  sources_assignment_filter += objective_c_sources_filters
+}
+if (!is_linux) {
+  sources_assignment_filter += linux_sources_filters
+}
+if (!is_android) {
+  sources_assignment_filter += android_sources_filters
+}
+
+# This is the actual set.
+set_sources_assignment_filter(sources_assignment_filter)
+
+# =============================================================================
+# SYSTEM CONFIG
+# =============================================================================
+
+is_nacl = 0
+
+# =============================================================================
+# BUILD OPTIONS
+# =============================================================================
+
+if (is_component_build) {
+  component_mode = "shared_library"
+} else {
+  component_mode = "static_library"
+}
+
+# =============================================================================
+# TARGET DEFAULTS
+# =============================================================================
+#
+# Set up the default configuration for every build target of the given type.
+# The values configured here will be automatically set on the scope of the
+# corresponding target. Target definitions can add or remove to the settings
+# here as needed.
+
+# Holds all configs used for making native executables and libraries, to avoid
+# duplication in each target below.
+native_compiler_configs = [
+  "//build/config:my_msvs",  # TODO(brettw) eraseme
+
+  "//build/config/compiler:compiler",
+  "//build/config/compiler:chromium_code",
+  "//build/config/compiler:default_warnings",
+  "//build/config/compiler:no_rtti",
+  "//build/config/compiler:runtime_library",
+]
+if (is_win) {
+  native_compiler_configs += "//build/config/win:sdk"
+} else if (is_mac) {
+  # TODO(brettw) this should be in an if (is_clang) block instead but I haven't
+  # written an is_clang flag yet.
+  native_compiler_configs += "//build/config/clang:find_bad_constructs"
+}
+
+if (is_debug) {
+  native_compiler_configs += "//build/config:debug"
+} else {
+  native_compiler_configs += "//build/config:release"
+}
+
+set_defaults("executable") {
+  configs = native_compiler_configs
+  if (is_mac) {
+    configs += "//build/config/mac:mac_dynamic_flags"
+  } else if (is_linux) {
+    configs += "//build/config/linux:executable_ldconfig"
+  }
+}
+
+set_defaults("static_library") {
+  configs = native_compiler_configs
+}
+
+set_defaults("shared_library") {
+  configs = native_compiler_configs
+  if (is_mac) {
+    configs += "//build/config/mac:mac_dynamic_flags"
+  }
+}
+
+# ==============================================================================
+# TOOLCHAIN SETUP
+# ==============================================================================
+
+if (is_win) {
+  set_default_toolchain("//build/config/win:32")
+} else if (is_linux) {
+  set_default_toolchain("//build/config/linux/toolchain:gcc")
+} else if (is_mac) {
+  set_default_toolchain("//build/config/mac:clang")
+}

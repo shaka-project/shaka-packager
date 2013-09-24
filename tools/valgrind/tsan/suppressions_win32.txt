@@ -1,0 +1,225 @@
+############################
+# Reports on the guts of Windows
+{
+  UuidCreate
+  ThreadSanitizer:Race
+  ...
+  fun:UuidCreate
+}
+
+{
+  ILFindLastID
+  ThreadSanitizer:Race
+  ...
+  fun:ILFindLastID
+}
+
+{
+  RpcServerUnregisterIf
+  ThreadSanitizer:Race
+  ...
+  fun:RpcServerUnregisterIf
+}
+
+# http://code.google.com/p/data-race-test/issues/detail?id=45
+{
+  accessing an invalid lock in unnamedImageEntryPoint
+  ThreadSanitizer:InvalidLock
+  fun:unnamedImageEntryPoint
+}
+
+{
+  accessing an invalid lock in CoFreeAllLibraries
+  ThreadSanitizer:InvalidLock
+  fun:CoFreeAllLibraries
+}
+
+{
+  bug_158099_mmdevice_endpoint_shutdown_too_fast
+  ThreadSanitizer:Race
+  fun:GetLocalIdFromEndpointId
+  ...
+}
+
+############################
+# Chromium
+
+{
+  Benign race durung InitializeClock
+  ThreadSanitizer:Race
+  ...
+  fun:*InitializeClock*
+}
+
+{
+  bug_62560
+  ThreadSanitizer:Race
+  ...
+  fun:_initterm
+  fun:doexit
+}
+
+{
+  accessing an invalid lock under exit/doexit
+  ThreadSanitizer:InvalidLock
+  fun:*~Lock*
+  ...
+  fun:doexit
+  fun:exit
+}
+{
+  bug_81793a
+  ThreadSanitizer:Race
+  ...
+  fun:NetTestSuite::InitializeTestThread
+}
+{
+  bug_81793b
+  ThreadSanitizer:Race
+  ...
+  fun:base::MessageLoop::CalculateDelayedRuntime
+  fun:base::MessageLoop::Post*Task
+}
+{
+  bug_93932a
+  ThreadSanitizer:Race
+  fun:avcodec_default_release_buffer
+  fun:ff_mpeg4video_split
+}
+{
+  bug_93932b
+  ThreadSanitizer:Race
+  ...
+  fun:avcodec_close
+  fun:media::FFmpegVideoDecoder::ReleaseFFmpegResources
+}
+{
+  bug_93932d
+  ThreadSanitizer:Race
+  fun:memcpy
+  fun:media::CopyPlane
+}
+{
+  bug_93932e
+  ThreadSanitizer:Race
+  ...
+  fun:ff_thread_finish_setup
+  fun:ptw32_threadStart@4
+}
+{
+  bug_93932f
+  ThreadSanitizer:Race
+  ...
+  fun:ff_vp3_h_loop_filter_c
+  ...
+  fun:ff_thread_flush
+  fun:media::FFmpegVideoDecoder::Flush
+}
+{
+  bug_93932g
+  ThreadSanitizer:Race
+  ...
+  fun:av_parser_close
+  ...
+  fun:BaseThreadInitThunk
+}
+{
+  bug_93932h
+  ThreadSanitizer:Race
+  ...
+  fun:av_parser_close
+  ...
+  fun:base::internal::RunnableAdapter::Run
+}
+{
+  bug_93932i
+  ThreadSanitizer:Race
+  fun:ff_simple_idct_add_mmx
+  ...
+  fun:BaseThreadInitThunk
+}
+{
+  bug_144928_a
+  ThreadSanitizer:Race
+  fun:google_breakpad::CrashGenerationServer::Handle*
+  fun:google_breakpad::CrashGenerationServer::OnPipeConnected
+  fun:RtlSetTimer
+  fun:RtlSetTimer
+  fun:TpReleaseTimer
+  fun:TpReleaseTimer
+  fun:RtlMultiByteToUnicodeSize
+  fun:TpCallbackMayRunLong
+  fun:TpCallbackMayRunLong
+  fun:BaseThreadInitThunk
+}
+{
+  bug_144928_b
+  ThreadSanitizer:Race
+  fun:google_breakpad::CrashGenerationServer::~CrashGenerationServer
+  fun:google_breakpad::CrashGenerationServer::`scalar deleting destructor'
+  fun:base::DefaultDeleter*
+  fun:base::internal::scoped_ptr_impl::~scoped_ptr_impl
+  fun:remoting::BreakpadWinDeathTest::~BreakpadWinDeathTest
+  fun:remoting::BreakpadWinDeathTest_TestAccessViolation_Test::`scalar deleting destructor'
+  fun:testing::Test::DeleteSelf_
+  fun:testing::internal::HandleExceptionsInMethodIfSupported
+}
+
+{
+  bug_146119
+  ThreadSanitizer:Race
+  ...
+  fun:GetAdaptersAddresses
+  ...
+  fun:base::internal::RunnableAdapter::Run
+}
+
+{
+  bug_157076_a
+  ThreadSanitizer:Race
+  fun:win32thread_worker
+  fun:_callthreadstartex
+  fun:_threadstartex
+  fun:BaseThreadInitThunk
+}
+
+{
+  bug_157076_b
+  ThreadSanitizer:Race
+  fun:memset
+  fun:_free_dbg_nolock
+  fun:_free_dbg
+  fun:_aligned_free_dbg
+  fun:_aligned_free
+}
+
+{
+  bug_157076_c
+  ThreadSanitizer:Race
+  fun:memset
+  fun:_heap_alloc_dbg_impl
+  fun:_nh_malloc_dbg_impl
+  fun:_nh_malloc_dbg
+  fun:_malloc_dbg
+  fun:_aligned_offset_malloc_dbg
+  fun:_aligned_malloc
+  fun:base::AlignedAlloc
+}
+
+{
+   bug_170334
+   ThreadSanitizer:Race
+   ...
+   fun:net::NetworkChangeNotifierWinTest::~NetworkChangeNotifierWinTest
+}
+
+{
+  bug_239350
+  ThreadSanitizer:Race
+  ...
+  fun:av_freep
+  fun:av_buffer_unref
+  fun:av_frame_unref
+  ...
+  fun:media::FFmpegVideoDecoder::Decode
+}

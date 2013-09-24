@@ -1,0 +1,26 @@
+{
+    "description": "Alexa US page_cycler benchmark",
+    "serving_dirs": ["../../../../data/page_cycler/alexa_us"],
+    "pages": [
+        { "url": "file:///../../../../data/page_cycler/alexa_us/accountservices.passport.net/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/sfbay.craigslist.org/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.amazon.com/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.aol.com/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.bbc.co.uk/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.blogger.com/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.cnn.com/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.ebay.com/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.flickr.com/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.friendster.com/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.go.com/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.google.com/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.imdb.com/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.megaupload.com/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.msn.com/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.myspace.com/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.orkut.com/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.wikipedia.org/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.xanga.com/" },
+        { "url": "file:///../../../../data/page_cycler/alexa_us/www.youtube.com/" }
+    ]
+}

@@ -1,0 +1,11 @@
+Name: SortTable
+Short Name: sorttable.js
+URL: http://www.kryogenix.org/code/browser/sorttable/
+Version: 2
+Date: 7th April 2007
+License: Licenced as X11: http://www.kryogenix.org/code/browser/licence.html
+
+Description:
+Add <script src="sorttable.js"></script> to your HTML
+Add class="sortable" to any table you'd like to make sortable
+Click on the headers to sort

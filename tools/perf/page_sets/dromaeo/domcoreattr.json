@@ -1,0 +1,8 @@
+{
+    "description": "Dromaeo DOMCore attr JavaScript benchmark",
+    "pages": [
+        {
+            "url": "file:///../../../../chrome/test/data/dromaeo/index.html?dom-attr&automated"
+        }
+    ]
+}

@@ -1,0 +1,25 @@
+heap profile: DUMP_DEEP_6
+GLOBAL_STATS:
+                               virtual    committed
+                    total   1022775296     64831488
+                file-exec    207237120     32600064
+             file-nonexec    194805760     10862592
+                anonymous    620589056     21233664
+                    stack       139264       131072
+                    other         4096         4096
+        nonprofiled-total    414846427     47091700
+       nonprofiled-absent            0            0
+    nonprofiled-anonymous     23650304      3751936
+    nonprofiled-file-exec    207237120     32600064
+ nonprofiled-file-nonexec    183815643     10604532
+        nonprofiled-stack       139264       131072
+        nonprofiled-other         4096         4096
+            profiled-mmap    607928869     17727500
+          profiled-malloc      1935377      1873937
+STACKTRACES:
+   virtual  committed
+     65536      65536      1      0 @ 4
+        32         32      1      0 @ 1
+        48         48      1      0 @ 3
+      8288       8288    109      0 @ 2
+        72         72      1      0 @ 5

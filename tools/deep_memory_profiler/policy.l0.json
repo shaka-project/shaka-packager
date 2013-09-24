@@ -1,0 +1,162 @@
+{
+  "components": [
+    "second",
+    "mmap-profiler",
+    "mmap-type-profiler",
+    "mmap-tcmalloc",
+    "FROM_HERE_FOR_TOTAL",
+    "mustbezero",
+    "unhooked-absent",
+    "unhooked-anonymous",
+    "unhooked-file-exec",
+    "unhooked-file-nonexec",
+    "unhooked-stack",
+    "unhooked-other",
+    "no-bucket",
+    "mmap-v8",
+    "mmap-catch-all",
+    "tc-used-all",
+    "tc-unused",
+    "UNTIL_HERE_FOR_TOTAL",
+    "total-exclude-profiler",
+    "total",
+    "absent",
+    "anonymous",
+    "file-exec",
+    "file-nonexec",
+    "stack",
+    "other",
+    "mmap-total-log",
+    "mmap-no-log",
+    "mmap-total-record",
+    "other-total-log",
+    "tc-total-log",
+    "tc-no-log",
+    "tc-total-record",
+    "tc-total"
+  ],
+  "rules": [
+    {
+      "name": "second",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "mmap-profiler",
+      "stacktrace": ".*(ProfilerMalloc|MemoryRegionMap::).*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-type-profiler",
+      "stacktrace": ".*(TypeProfilerMalloc).*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-tcmalloc",
+      "stacktrace": ".*(DoAllocWithArena|SbrkSysAllocator::Alloc|MmapSysAllocator::Alloc|LowLevelAlloc::Alloc|LowLevelAlloc::AllocWithArena).*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "FROM_HERE_FOR_TOTAL",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "mustbezero",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "unhooked-absent",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "unhooked-anonymous",
+      "mappedpathname": "^$",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-file-exec",
+      "mappedpathname": "^/.*",
+      "mappedpermission": "..x.",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-file-nonexec",
+      "mappedpathname": "^/.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-stack",
+      "mappedpathname": ".stack.",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-other",
+      "mappedpathname": ".*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "mmap-v8",
+      "stacktrace": ".*v8::.*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-catch-all",
+      "stacktrace": ".*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "tc-used-all",
+      "stacktrace": ".*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "UNTIL_HERE_FOR_TOTAL",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "total-exclude-profiler",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "total",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "absent",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "anonymous",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "file-exec",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "file-nonexec",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "stack",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "other",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    }
+  ],
+  "version": "POLICY_DEEP_3"
+}

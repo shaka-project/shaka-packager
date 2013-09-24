@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (C) 2005-2008 The Android Open Source Project
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project default="-obfuscate">
+  <property name="verbose" value="false" />
+  <property name="out.dir" location="${OUT_DIR}" />
+  <!-- Output directories -->
+  <property name="out.dir" value="bin" />
+  <property name="out.absolute.dir" location="${out.dir}" />
+  <property name="out.classes.absolute.dir" location="${out.dir}/classes" />
+  <property name="out.manifest.abs.file" location="${out.dir}/AndroidManifest.xml" />
+
+  <!-- tools location -->
+  <property name="sdk.dir" location="${ANDROID_SDK_ROOT}"/>
+  <property name="android.tools.dir" location="${sdk.dir}/tools" />
+
+  <property name="project.target.android.jar" location="${ANDROID_SDK_JAR}" />
+  <path id="project.target.class.path">
+    <pathelement location="${project.target.android.jar}" />
+  </path>
+
+
+  <!-- jar file from where the tasks are loaded -->
+  <path id="android.antlibs">
+      <pathelement path="${sdk.dir}/tools/lib/ant-tasks.jar" />
+  </path>
+
+  <!-- Custom tasks -->
+  <taskdef resource="anttasks.properties" classpathref="android.antlibs" />
+
+  <!-- Classpath for javac -->
+  <path id="javac.custom.classpath">
+    <filelist files="${INPUT_JARS_PATHS}"/>
+  </path>
+
+  <condition property="project.is.testapp" value="true" else="false">
+    <equals arg1="${IS_TEST_APK}" arg2="1" />
+  </condition>
+
+  <property name="proguard.enabled" value="${PROGUARD_ENABLED}" />
+  <property name="proguard.config" value="${PROGUARD_FLAGS}" />
+
+  <!-- Obfuscate target
+      This is only active in release builds when proguard.config is defined
+      in default.properties.
+
+  -->
+  <!--
+    Override obfuscate target to pass javac.custom.classpath to Proguard. SDK tools do not provide
+    any way to pass custom class paths to Proguard.
+   -->
+  <target name="-obfuscate">
+    <if condition="${project.is.testapp}">
+      <then>
+        <!-- get the project manifest package -->
+        <xpath input="${out.manifest.abs.file}"
+                expression="/manifest/@package" output="project.app.package" />
+        <property name="create.test.jar.file"
+          location="${CREATE_TEST_JAR_PATH}" />
+        <script language="javascript" src="${create.test.jar.file}"/>
+      </then>
+    </if>
+    <if>
+      <condition>
+        <and>
+          <istrue value="${proguard.enabled}"/>
+          <equals arg1="${CONFIGURATION_NAME}" arg2="Release"/>
+        </and>
+      </condition>
+      <then>
+        <property name="obfuscate.absolute.dir" location="${out.absolute.dir}/proguard"/>
+        <property name="preobfuscate.jar.file" value="${obfuscate.absolute.dir}/original.jar"/>
+        <property name="obfuscated.jar.file" value="${OBFUSCATED_JAR_PATH}"/>
+        <property name="obfuscated.jar.abs.file" location="${obfuscated.jar.file}"/>
+
+        <!-- Add Proguard Tasks -->
+        <property name="proguard.jar" location="${android.tools.dir}/proguard/lib/proguard.jar"/>
+        <taskdef name="proguard" classname="proguard.ant.ProGuardTask" classpath="${proguard.jar}"/>
+
+        <!-- Set the android classpath Path object into a single property. It'll be
+                 all the jar files separated by a platform path-separator.
+                 Each path must be quoted if it contains spaces.
+        -->
+        <pathconvert property="project.target.classpath.value" refid="project.target.class.path">
+          <firstmatchmapper>
+            <regexpmapper from='^([^ ]*)( .*)$$' to='"\1\2"'/>
+            <identitymapper/>
+          </firstmatchmapper>
+        </pathconvert>
+
+        <!-- Build a path object with all the jar files that must be obfuscated.
+             This include the project compiled source code and any 3rd party jar
+             files. -->
+        <path id="project.all.classes.path">
+          <pathelement location="${preobfuscate.jar.file}"/>
+          <!-- Pass javac.custom.classpath for apks. -->
+          <path refid="javac.custom.classpath"/>
+        </path>
+        <!-- Set the project jar files Path object into a single property. It'll be
+             all the jar files separated by a platform path-separator.
+             Each path must be quoted if it contains spaces.
+        -->
+        <pathconvert property="project.all.classes.value" refid="project.all.classes.path">
+          <firstmatchmapper>
+            <regexpmapper from='^([^ ]*)( .*)$$' to='"\1\2"'/>
+            <identitymapper/>
+          </firstmatchmapper>
+        </pathconvert>
+
+        <!-- Turn the path property ${proguard.config} from an A:B:C property
+             into a series of includes: -include A -include B -include C
+             suitable for processing by the ProGuard task. Note - this does
+             not include the leading '-include "' or the closing '"'; those
+             are added under the <proguard> call below.
+        -->
+        <path id="proguard.configpath">
+          <filelist files="${proguard.config}"/>
+        </path>
+        <pathconvert pathsep='" -include "' property="proguard.configcmd"
+          refid="proguard.configpath"/>
+
+        <mkdir   dir="${obfuscate.absolute.dir}"/>
+        <delete file="${preobfuscate.jar.file}"/>
+        <delete file="${obfuscated.jar.abs.file}"/>
+        <jar basedir="${out.classes.absolute.dir}"
+          destfile="${preobfuscate.jar.file}"/>
+        <proguard>
+          -include      "${proguard.configcmd}"
+          -include      "${out.absolute.dir}/proguard.txt"
+          -injars       ${project.all.classes.value}
+          -outjars      "${obfuscated.jar.abs.file}"
+          -libraryjars  ${project.target.classpath.value}
+          -dump         "${obfuscate.absolute.dir}/dump.txt"
+          -printseeds   "${obfuscate.absolute.dir}/seeds.txt"
+          -printusage   "${obfuscate.absolute.dir}/usage.txt"
+          -printmapping "${obfuscate.absolute.dir}/mapping.txt"
+        </proguard>
+      </then>
+    </if>
+    <touch file="${STAMP}" />
+  </target>
+</project>

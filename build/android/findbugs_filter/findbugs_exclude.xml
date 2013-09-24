@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (c) 2012 The Chromium Authors. All rights reserved.
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.
+-->
+
+<!--
+Documentation: http://findbugs.sourceforge.net/manual/filter.html
+In particular, ~ at the start of a string means it's a regex.
+-->
+<FindBugsFilter>
+  <!-- Skip the generated resource classes (including nested classes). -->
+  <Match>
+    <Class name="~org\.chromium\..*\.R(\$\w+)?" />
+  </Match>
+  <Match>
+    <Class name="~org\.chromium\..*\.Manifest(\$\w+)?" />
+  </Match>
+  <!-- Ignore bugs in NativeLibraries.java (the auto-generation confuses findbugs). -->
+  <Match>
+    <Class name="~org\.chromium\.content\..*\.NativeLibraries.*?" />
+  </Match>
+  <!-- Ignore errors in JavaBridge due to reflection. -->
+  <Match>
+    <Class name="~.*\.JavaBridge.*"/>
+    <Bug code="UuF,UrF,UMAC" />
+  </Match>
+  <!-- "Struct" like classes expect to have unused public data members -->
+  <Match>
+    <Class name="~.*android_webview.*FileChooserParams"/>
+    <Bug code="UrF" />
+  </Match>
+  <!-- Ignore "reliance on default String encoding" warnings, as we're not multi-platform -->
+  <Bug pattern="DM_DEFAULT_ENCODING" />
+  <!-- Ignore bugs that are often false-positives in test code -->
+  <Match>
+    <Class name="~org\.chromium\..*Test(\$\w+)?" />
+    <Or>
+      <Bug code="DLS,UrF" />
+      <Bug pattern="DM_GC" />
+    </Or>
+  </Match>
+</FindBugsFilter>

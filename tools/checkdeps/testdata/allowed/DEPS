@@ -1,0 +1,12 @@
+include_rules = [
+  "+tools/checkdeps/testdata/disallowed/allowed",
+  "!tools/checkdeps/testdata/disallowed/temporarily_allowed.h",
+  "+third_party/allowed_may_use",
+]
+
+specific_include_rules = {
+  ".*_unittest\.cc": [
+    "+tools/checkdeps/testdata/disallowed/teststuff",
+    "!tools/checkdeps/testdata/bongo/temp_allowed_for_tests.h",
+  ]
+}

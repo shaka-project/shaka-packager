@@ -1,0 +1,11 @@
+# List of suppressions
+
+# Death tests are not supported on APK
+# http://crbug.com/138855
+CompositeFilterDeathTest.*
+
+# http://crbug.com/138833
+AesDecryptorTest.*
+
+# crbug.com/138930
+SkCanvasVideoRendererTest.*

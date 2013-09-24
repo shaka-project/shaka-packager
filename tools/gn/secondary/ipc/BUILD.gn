@@ -1,0 +1,168 @@
+# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("ipc") {
+  sources = [
+    "file_descriptor_set_posix.cc",
+    "file_descriptor_set_posix.h",
+    "ipc_channel.cc",
+    "ipc_channel.h",
+    "ipc_channel_factory.cc",
+    "ipc_channel_factory.h",
+    "ipc_channel_handle.h",
+    "ipc_channel_nacl.cc",
+    "ipc_channel_nacl.h",
+    "ipc_channel_posix.cc",
+    "ipc_channel_posix.h",
+    "ipc_channel_proxy.cc",
+    "ipc_channel_proxy.h",
+    "ipc_channel_reader.cc",
+    "ipc_channel_reader.h",
+    "ipc_channel_win.cc",
+    "ipc_channel_win.h",
+    "ipc_descriptors.h",
+    "ipc_export.h",
+    "ipc_forwarding_message_filter.cc",
+    "ipc_forwarding_message_filter.h",
+    "ipc_listener.h",
+    "ipc_logging.cc",
+    "ipc_logging.h",
+    "ipc_message.cc",
+    "ipc_message.h",
+    "ipc_message_macros.h",
+    "ipc_message_start.h",
+    "ipc_message_utils.cc",
+    "ipc_message_utils.h",
+    "ipc_param_traits.h",
+    "ipc_platform_file.cc",
+    "ipc_platform_file.h",
+    "ipc_sender.h",
+    "ipc_switches.cc",
+    "ipc_switches.h",
+    "ipc_sync_channel.cc",
+    "ipc_sync_channel.h",
+    "ipc_sync_message.cc",
+    "ipc_sync_message.h",
+    "ipc_sync_message_filter.cc",
+    "ipc_sync_message_filter.h",
+    "param_traits_log_macros.h",
+    "param_traits_macros.h",
+    "param_traits_read_macros.h",
+    "param_traits_write_macros.h",
+    "struct_constructor_macros.h",
+    "struct_destructor_macros.h",
+    "unix_domain_socket_util.cc",
+    "unix_domain_socket_util.h",
+  ]
+
+  #if (!is_untrusted_nacl) {
+    sources -= [
+      "ipc_channel_nacl.cc",
+      "ipc_channel_nacl.h",
+    ]
+
+  if (is_win || is_ios) {
+    sources -= [
+      "ipc_channel_factory.cc",
+      "unix_domain_socket_util.cc",
+    ]
+  }
+
+  defines = [ "IPC_IMPLEMENTATION" ]
+
+  deps = [
+    "//base",
+    # TODO(viettrungluu): Needed for base/lazy_instance.h, which is suspect.
+    "//base/third_party/dynamic_annotations",
+  ]
+}
+
+test("ipc_tests") {
+  sources = [
+    "file_descriptor_set_posix_unittest.cc",
+    "ipc_channel_posix_unittest.cc",
+    "ipc_channel_unittest.cc",
+    "ipc_fuzzing_tests.cc",
+    "ipc_message_unittest.cc",
+    "ipc_message_utils_unittest.cc",
+    "ipc_send_fds_test.cc",
+    "ipc_sync_channel_unittest.cc",
+    "ipc_sync_message_unittest.cc",
+    "ipc_sync_message_unittest.h",
+    "ipc_test_base.cc",
+    "ipc_test_base.h",
+    "sync_socket_unittest.cc",
+    "unix_domain_socket_util_unittest.cc",
+  ]
+
+  #if (toolkit_uses_gtk) {
+  #  deps += "/build/linux/system:gtk"
+  #}
+  if (is_win || is_ios) {
+    sources -= "unix_domain_socket_util_unittest.cc"
+  }
+  #if (is_android && gtest_target_type == "shared_library") {
+  #  deps += "/testing/android/native_test.gyp:native_testNative_code"
+  #}
+  #if (is_posix && !is_mac && !is_android) {
+  #  if (linux_use_tcmalloc) {
+  #    deps += "/base/allocator"
+  #  }
+  #}
+
+  deps = [
+    ":ipc",
+    ":test_support_ipc",
+    "//base",
+    "//base:base_i18n",
+    "//base:run_all_unittests",
+    "//base:test_support_base",
+    "//testing:gtest",
+  ]
+}
+
+test("ipc_perftests") {
+  sources = [
+    "ipc_perftests.cc",
+    "ipc_test_base.cc",
+    "ipc_test_base.h",
+  ]
+
+  #if (toolkit_uses_gtk) {
+  #  deps += "/build/linux/system:gtk"
+  #}
+  #if (is_android && gtest_target_type == "shared_library") {
+  #  deps += "/testing/android/native_test.gyp:native_testNative_code"
+  #}
+  #if (is_posix && !is_mac && !is_android) {
+  #  if (linux_use_tcmalloc) {
+  #    deps += "/base/allocator"
+  #  }
+  #}
+
+  deps = [
+    ":ipc",
+    ":test_support_ipc",
+    "//base",
+    "//base:base_i18n",
+    "//base:test_support_base",
+    "//base:test_support_perf",
+    "//testing:gtest",
+  ]
+}
+
+static_library("test_support_ipc") {
+  sources = [
+    "ipc_multiprocess_test.cc",
+    "ipc_multiprocess_test.h",
+    "ipc_test_sink.cc",
+    "ipc_test_sink.h",
+  ]
+  deps = [
+    ":ipc",
+    "//base",
+    "//testing:gtest",
+  ]
+}
+

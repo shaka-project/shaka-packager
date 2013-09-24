@@ -1,0 +1,5 @@
+telemetry provides automation of chrome instances on top of the
+chrome developer tools protocol.
+
+The protocol we use:
+https://developers.google.com/chrome-developer-tools/docs/remote-debugging

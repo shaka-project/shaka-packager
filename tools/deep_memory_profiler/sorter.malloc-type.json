@@ -1,0 +1,38 @@
+{
+  "type": "sorter",
+  "version": 1,
+  "world": "malloc",
+  "name": "type",
+  "order": {},
+  "rules": [
+    {
+      "name": "tc-std-string",
+      "typeinfo": "std::basic_string.*"
+    },
+    {
+      "name": "tc-WTF-String",
+      "typeinfo": "WTF::String.*"
+    },
+    {
+      "name": "tc-no-typeinfo-StringImpl",
+      "backtrace_function": ".*WTF::StringImpl::getData16SlowCase.*",
+      "typeinfo": "no typeinfo"
+    },
+    {
+      "name": "tc-Skia",
+      "typeinfo": "(skia::|SkGlyph).*"
+    },
+    {
+      "name": "tc-WebCore-Style",
+      "typeinfo": "WebCore::Style.*"
+    },
+    {
+      "name": "tc-no-typeinfo-other",
+      "typeinfo": "no typeinfo"
+    },
+    {
+      "name": "tc-other",
+      "typeinfo": ".*"
+    }
+  ]
+}

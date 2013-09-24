@@ -1,0 +1,102 @@
+/*
+ * Copyright (c) 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+/*
+ * croc.css - styles for croc HTML output
+ */
+
+body {
+	font-family:arial;
+}
+
+table {
+	border-collapse:collapse;
+	border-width:0px;
+	border-style:solid;
+}
+
+thead {
+	background-color:#C0C0E0;
+	text-align:center;
+}
+
+td {
+	padding-right:10px;
+	padding-left:10px;
+	font-size:small;
+	border-width:1px;
+	border-style:solid;
+	border-color:black;
+}
+
+td.secdesc {
+	text-align:center;
+	font-size:medium;
+	font-weight:bold;
+	border-width:0px;
+	border-style:none;
+	padding-top:10px;
+	padding-bottom:5px;
+}
+
+td.section {
+	background-color:#D0D0F0;
+	text-align:center;
+}
+
+td.stat {
+	text-align:center;
+}
+
+td.number {
+	text-align:right;
+}
+
+td.graph {
+	/* Hide the dummy character */
+	color:#FFFFFF;
+	padding-left:6px;
+}
+
+td.high_pct {
+	text-align:right;
+	background-color:#B0FFB0;
+}
+td.mid_pct {
+	text-align:right;
+	background-color:#FFFF90;
+}
+td.low_pct {
+	text-align:right;
+	background-color:#FFB0B0;
+}
+
+
+span.missing {
+	background-color:#FFB0B0;
+}
+span.instr {
+	background-color:#FFFF90;
+}
+span.covered {
+	background-color:#B0FFB0;
+}
+
+span.g_missing {
+	background-color:#FF4040;
+}
+span.g_instr {
+	background-color:#FFFF00;
+}
+span.g_covered {
+	background-color:#40FF40;
+}
+
+p.time {
+	padding-top:10px;
+	font-size:small;
+	font-style:italic;
+}

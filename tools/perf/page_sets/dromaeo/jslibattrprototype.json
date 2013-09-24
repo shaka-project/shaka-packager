@@ -1,0 +1,8 @@
+{
+    "description": "Dromaeo JSLib attr prototype JavaScript benchmark",
+    "pages": [
+        {
+            "url": "file:///../../../../chrome/test/data/dromaeo/index.html?jslib-attr-prototype&automated"
+        }
+    ]
+}

@@ -1,0 +1,17 @@
+#!/usr/bin/env python
+# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import os
+import sys
+
+# Add telemetry to sys.path so that it can be imported below
+# Relative path from this file is ../telemetry
+_perf_dir = os.path.dirname(__file__)
+_telemetry_path = os.path.join(_perf_dir, os.pardir, 'telemetry')
+sys.path.append(_telemetry_path)
+
+from telemetry.page import record_wpr
+
+if __name__ == '__main__':
+  sys.exit(record_wpr.Main(_perf_dir))

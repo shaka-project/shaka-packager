@@ -1,0 +1,2 @@
+# per-file rules:
+per-file chromeactions.txt=*

@@ -1,0 +1,92 @@
+{
+  "description": "Pages designed to represent the median, not highly optimized web",
+  "archive_data_file": "../data/typical_25.json",
+  "user_agent_type": "desktop",
+  "smoothness": { "action": "scroll" },
+  "pages": [
+    {
+      "url": "http://www.nick.com/games",
+      "why": "Alexa games #48"
+    },
+    {
+      "url": "http://www.rei.com/",
+      "why": "Alexa sports #45"
+    },
+    {
+      "url": "http://www.fifa.com/",
+      "why": "Alexa sports #50"
+    },
+    {
+      "url": "http://www.gamestop.com/ps3",
+      "why": "Alexa shopping #41"
+    },
+    {
+      "url": "http://www.barnesandnoble.com/u/books-bestselling-books/379003057/",
+      "why": "Alexa shopping #25"
+    },
+    {
+      "url": "http://www.economist.com/news/science-and-technology/21573529-small-models-cosmic-phenomena-are-shedding-light-real-thing-how-build",
+      "why": "Alexa news #55"
+    },
+    {
+      "url": "http://www.theonion.com",
+      "why": "Alexa news #67"
+    },
+    {
+      "url": "http://arstechnica.com/"
+    },
+    {
+      "url": "http://allrecipes.com/Recipe/Pull-Apart-Hot-Cross-Buns/Detail.aspx",
+      "why": "Alexa home #10"
+    },
+    {
+      "url": "http://www.html5rocks.com/en/"
+    },
+    {
+      "url": "http://www.mlb.com/"
+    },
+    {
+      "url": "http://gawker.com/5939683/based-on-a-true-story-is-a-rotten-lie-i-hope-you-never-believe"
+    },
+    {
+      "url": "http://www.imdb.com/title/tt0910970/"
+    },
+    {
+      "url": "http://www.flickr.com/search/?q=monkeys&f=hp"
+    },
+    {
+      "url": "http://money.cnn.com/"
+    },
+    {
+      "url": "http://www.nationalgeographic.com/"
+    },
+    {
+      "url": "http://premierleague.com"
+    },
+    {
+      "url": "http://www.osubeavers.com/"
+    },
+    {
+      "url": "http://walgreens.com"
+    },
+    {
+      "url": "http://colorado.edu"
+    },
+    {
+      "url": "http://www.ticketmaster.com/JAY-Z-and-Justin-Timberlake-tickets/artist/1837448?brand=none&tm_link=tm_homeA_rc_name2"
+    },
+    {
+      "url": "http://www.theverge.com/2013/3/5/4061684/inside-ted-the-smartest-bubble-in-the-world"
+    },
+    {
+      "url": "http://www.airbnb.com/"
+    },
+    {
+      "url": "http://www.ign.com/"
+    },
+    {
+      "url": "http://www.fda.gov",
+      "why": "Alexa health #25"
+    }
+  ]
+}

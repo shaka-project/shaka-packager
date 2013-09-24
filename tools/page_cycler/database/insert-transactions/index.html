@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+<title>Insert transactions</title>
+<script src="../head.js"></script>
+<script src="../common.js"></script>
+<script>
+var randomString = getRandomString();
+var idCounter = 0;
+
+function transactionCallback(tx) {
+  tx.executeSql('INSERT INTO Test VALUES (?, ?)',
+                [idCounter++, randomString],
+                function(tx, data) {}, function(tx, error) {});
+}
+</script>
+
+<body>
+<script>
+  runPerformanceTest({
+    dbName: "InsertTransactions",
+    readOnly: false,
+    insertRowsAtSetup: false,
+    transactionCallback: transactionCallback,
+    customRunTransactions: null
+  });
+</script>
+</body>
+</html>

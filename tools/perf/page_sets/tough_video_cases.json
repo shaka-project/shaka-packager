@@ -1,0 +1,75 @@
+{
+  "description": "Video Stack Perf benchmark",
+  "play_audio": [
+    { "action": "play",
+      "selector": "#audio_1",
+      "wait_for_playing": true,
+      "wait_for_ended": true
+    }
+  ],
+  "play_video": [
+    { "action": "play",
+      "selector": "#video_1",
+      "wait_for_playing": true,
+      "wait_for_ended": true
+    }
+  ],
+  "pages": [
+    {
+      "url": "file:///tough_video_cases/video.html?src=crowd.wav&id=audio_1&type=audio",
+      "media_metrics": {"action": "play_audio"}
+    },
+    {
+      "url": "file:///tough_video_cases/video.html?src=crowd.ogg&id=audio_1&type=audio",
+      "media_metrics": {"action": "play_audio"}
+    },
+    {
+      "url": "file:///tough_video_cases/video.html?src=crowd1080.mp4&id=video_1&type=video",
+      "media_metrics": {"action": "play_video"}
+    },
+    {
+      "url": "file:///tough_video_cases/video.html?src=crowd1080.ogv&id=video_1&type=video",
+      "media_metrics": {"action": "play_video"}
+    },
+    {
+      "url": "file:///tough_video_cases/video.html?src=crowd1080.webm&id=video_1&type=video",
+      "media_metrics": {"action": "play_video"}
+    },
+    {
+      "url": "file:///tough_video_cases/video.html?src=crowd2160.mp4&id=video_1&type=video",
+      "media_metrics": {"action": "play_video"}
+    },
+    {
+      "url": "file:///tough_video_cases/video.html?src=crowd2160.ogv&id=video_1&type=video",
+      "media_metrics": {"action": "play_video"}
+    },
+    {
+      "url": "file:///tough_video_cases/video.html?src=crowd2160.webm&id=video_1&type=video",
+      "media_metrics": {"action": "play_video"}
+    },
+    {
+      "url": "file:///tough_video_cases/video.html?src=tulip2.mp3&id=audio_1&type=audio",
+      "media_metrics": {"action": "play_audio"}
+    },
+    {
+      "url": "file:///tough_video_cases/video.html?src=tulip2.ogg&id=audio_1&type=audio",
+      "media_metrics": {"action": "play_audio"}
+    },
+    {
+      "url": "file:///tough_video_cases/video.html?src=tulip2.wav&id=audio_1&type=audio",
+      "media_metrics": {"action": "play_audio"}
+    },
+    {
+      "url": "file:///tough_video_cases/video.html?src=tulip2.mp4&id=video_1&type=video",
+      "media_metrics": {"action": "play_video"}
+    },
+    {
+      "url": "file:///tough_video_cases/video.html?src=tulip2.ogv&id=video_1&type=video",
+      "media_metrics": {"action": "play_video"}
+    },
+    {
+      "url": "file:///tough_video_cases/video.html?src=tulip2.webm&id=video_1&type=video",
+      "media_metrics": {"action": "play_video"}
+    }
+  ]
+}

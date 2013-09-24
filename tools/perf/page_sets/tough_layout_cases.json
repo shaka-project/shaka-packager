@@ -1,0 +1,39 @@
+{
+  "description": "The slowest layouts observed in the alexa top 1 million sites in July 2013.",
+  "archive_data_file": "../data/tough_layout_cases.json",
+  "credentials_path": "../data/credentials.json",
+  "user_agent_type": "desktop",
+  "smoothness": { "action": "scroll" },
+  "pages": [
+    {
+      "url": "http://oilevent.com"
+    },
+    {
+      "url": "http://www.muzoboss.ru"
+    },
+    {
+      "url": "http://natunkantha.com"
+    },
+    {
+      "url": "http://www.mossiella.com"
+    },
+    {
+      "url": "http://bookish.com"
+    },
+    {
+      "url": "http://mydiyclub.com"
+    },
+    {
+      "url": "http://amarchoti.blogspot.com"
+    },
+    {
+      "url": "http://picarisimo.es"
+    },
+    {
+      "url": "http://chinaapache.com"
+    },
+    {
+      "url": "http://indoritel.com"
+    }
+  ]
+}

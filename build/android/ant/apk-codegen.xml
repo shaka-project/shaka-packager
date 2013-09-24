@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (C) 2005-2008 The Android Open Source Project
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project default="-code-gen">
+  <property name="verbose" value="false" />
+
+  <property name="out.dir" location="${OUT_DIR}" />
+  <property name="out.absolute.dir" location="${out.dir}" />
+  <property name="out.res.absolute.dir" location="${out.dir}/res" />
+  <property name="out.manifest.abs.file" location="${out.dir}/AndroidManifest.xml" />
+  <property name="gen.absolute.dir" value="${out.dir}/gen"/>
+
+  <!-- tools location -->
+  <property name="sdk.dir" location="${ANDROID_SDK_ROOT}"/>
+  <property name="android.sdk.tools.dir" location="${ANDROID_SDK_TOOLS}" />
+  <property name="aapt" location="${android.sdk.tools.dir}/aapt" />
+  <property name="project.target.android.jar" location="${ANDROID_SDK_JAR}" />
+
+  <!-- jar file from where the tasks are loaded -->
+  <path id="android.antlibs">
+      <pathelement path="${sdk.dir}/tools/lib/ant-tasks.jar" />
+  </path>
+
+  <!-- Custom tasks -->
+  <taskdef resource="anttasks.properties" classpathref="android.antlibs" />
+
+  <!--
+    Include additional resource folders in the apk, e.g. content/.../res.  We
+    list the res folders in project.library.res.folder.path and the
+    corresponding java packages in project.library.packages, which must be
+    semicolon-delimited while ADDITIONAL_RES_PACKAGES is space-delimited, hence
+    the javascript task.
+  -->
+  <path id="project.library.res.folder.path">
+    <filelist files="${ADDITIONAL_RES_DIRS}"/>
+  </path>
+  <path id="project.library.bin.r.file.path">
+    <filelist files="${ADDITIONAL_R_TEXT_FILES}"/>
+  </path>
+  <script language="javascript">
+    var before = project.getProperty("ADDITIONAL_RES_PACKAGES");
+    project.setProperty("project.library.packages", before.replaceAll(" ", ";"));
+  </script>
+
+  <path id="project.library.manifest.file.path">
+    <filelist files="${LIBRARY_MANIFEST_PATHS}"/>
+  </path>
+
+  <!-- manifest merger default value -->
+  <condition property="manifestmerger.enabled"
+      value="false"
+      else="true">
+    <equals arg1="${LIBRARY_MANIFEST_PATHS}" arg2="" />
+  </condition>
+
+  <property name="resource.absolute.dir" value="${RESOURCE_DIR}"/>
+
+  <property name="manifest.file" value="${ANDROID_MANIFEST}" />
+  <property name="manifest.abs.file" location="${manifest.file}" />
+
+  <!-- Intermediate files -->
+  <property name="resource.package.file.name" value="${APK_NAME}.ap_" />
+
+  <property name="aapt.ignore.assets" value="" />
+
+  <target name="-mergemanifest">
+      <mergemanifest
+              appManifest="${manifest.abs.file}"
+              outManifest="${out.manifest.abs.file}"
+              enabled="${manifestmerger.enabled}">
+        <library refid="project.library.manifest.file.path" />
+      </mergemanifest>
+  </target>
+
+  <!-- Code Generation: compile resources (aapt -> R.java), aidl -->
+  <target name="-code-gen" depends="-mergemanifest">
+      <mkdir dir="${out.absolute.dir}" />
+      <mkdir dir="${out.res.absolute.dir}" />
+      <mkdir dir="${gen.absolute.dir}" />
+
+      <aapt executable="${aapt}"
+              command="package"
+              verbose="${verbose}"
+              manifest="${out.manifest.abs.file}"
+              androidjar="${project.target.android.jar}"
+              rfolder="${gen.absolute.dir}"
+              nonConstantId="false"
+              libraryResFolderPathRefid="project.library.res.folder.path"
+              libraryPackagesRefid="project.library.packages"
+              libraryRFileRefid="project.library.bin.r.file.path"
+              ignoreAssets="${aapt.ignore.assets}"
+              binFolder="${out.absolute.dir}"
+              proguardFile="${out.absolute.dir}/proguard.txt">
+          <res path="${out.res.absolute.dir}" />
+          <res path="${resource.absolute.dir}" />
+      </aapt>
+
+      <touch file="${STAMP}" />
+  </target>
+</project>

@@ -1,0 +1,15 @@
+{
+  "description": "A collection of difficult scrolling tests",
+  "smoothness": { "action": "scroll" },
+  "pages": [
+    { "url": "file:///tough_scrolling_cases/background_fixed.html" },
+    { "url": "file:///tough_scrolling_cases/cust_scrollbar.html" },
+    { "url": "file:///tough_scrolling_cases/div_scrolls.html" },
+    { "url": "file:///tough_scrolling_cases/fixed_nonstacking.html" },
+    { "url": "file:///tough_scrolling_cases/fixed_stacking.html" },
+    { "url": "file:///tough_scrolling_cases/iframe_scrolls.html" },
+    { "url": "file:///tough_scrolling_cases/simple.html" },
+    { "url": "file:///tough_scrolling_cases/wheel_body_prevdefault.html" },
+    { "url": "file:///tough_scrolling_cases/wheel_div_prevdefault.html" }
+  ]
+}

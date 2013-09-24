@@ -1,0 +1,107 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module telemetry.page.actions.play</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="telemetry.html"><font color="#ffffff">telemetry</font></a>.<a href="telemetry.page.html"><font color="#ffffff">page</font></a>.<a href="telemetry.page.actions.html"><font color="#ffffff">actions</font></a>.play</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="../telemetry/page/actions/play.py">telemetry/page/actions/play.py</a></font></td></tr></table>
+    <p><tt>A&nbsp;Telemetry&nbsp;page_action&nbsp;that&nbsp;performs&nbsp;the&nbsp;"play"&nbsp;action&nbsp;on&nbsp;media&nbsp;elements.<br>
+&nbsp;<br>
+Media&nbsp;elements&nbsp;can&nbsp;be&nbsp;specified&nbsp;by&nbsp;a&nbsp;selector&nbsp;attribute.&nbsp;If&nbsp;no&nbsp;selector&nbsp;is<br>
+defined&nbsp;then&nbsp;then&nbsp;the&nbsp;action&nbsp;attempts&nbsp;to&nbsp;play&nbsp;the&nbsp;first&nbsp;video&nbsp;element&nbsp;or&nbsp;audio<br>
+element&nbsp;on&nbsp;the&nbsp;page.&nbsp;A&nbsp;selector&nbsp;can&nbsp;also&nbsp;be&nbsp;'all'&nbsp;to&nbsp;play&nbsp;all&nbsp;media&nbsp;elements.<br>
+&nbsp;<br>
+Other&nbsp;attributes&nbsp;to&nbsp;use&nbsp;are:&nbsp;wait_for_playing&nbsp;and&nbsp;wait_for_ended,&nbsp;which&nbsp;forces<br>
+the&nbsp;action&nbsp;to&nbsp;wait&nbsp;until&nbsp;playing&nbsp;and&nbsp;ended&nbsp;events&nbsp;get&nbsp;fired&nbsp;respectively.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="telemetry.core.exceptions.html">telemetry.core.exceptions</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="telemetry.page.actions.page_action.html">telemetry.page.actions.page_action</a><br>
+</td><td width="25%" valign=top><a href="telemetry.core.util.html">telemetry.core.util</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="telemetry.page.actions.page_action.html#PageAction">telemetry.page.actions.page_action.PageAction</a>(<a href="__builtin__.html#object">__builtin__.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.page.actions.play.html#PlayAction">PlayAction</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PlayAction">class <strong>PlayAction</strong></a>(<a href="telemetry.page.actions.page_action.html#PageAction">telemetry.page.actions.page_action.PageAction</a>)</font></td></tr>
+    
+<tr><td bgcolor="#ffc8d8"><tt>&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="telemetry.page.actions.play.html#PlayAction">PlayAction</a></dd>
+<dd><a href="telemetry.page.actions.page_action.html#PageAction">telemetry.page.actions.page_action.PageAction</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="PlayAction-HasEventCompleted"><strong>HasEventCompleted</strong></a>(self, tab, selector, event_name)</dt></dl>
+
+<dl><dt><a name="PlayAction-RunAction"><strong>RunAction</strong></a>(self, page, tab, previous_action)</dt></dl>
+
+<dl><dt><a name="PlayAction-WaitForEvent"><strong>WaitForEvent</strong></a>(self, tab, selector, event_name, timeout)</dt><dd><tt>Halts&nbsp;play&nbsp;action&nbsp;until&nbsp;the&nbsp;selector's&nbsp;event&nbsp;is&nbsp;fired.</tt></dd></dl>
+
+<dl><dt><a name="PlayAction-WillRunAction"><strong>WillRunAction</strong></a>(self, page, tab)</dt><dd><tt>Load&nbsp;the&nbsp;media&nbsp;metrics&nbsp;JS&nbsp;code&nbsp;prior&nbsp;to&nbsp;running&nbsp;the&nbsp;action.</tt></dd></dl>
+
+<dl><dt><a name="PlayAction-__init__"><strong>__init__</strong></a>(self, attributes<font color="#909090">=None</font>)</dt></dl>
+
+<hr>
+Methods inherited from <a href="telemetry.page.actions.page_action.html#PageAction">telemetry.page.actions.page_action.PageAction</a>:<br>
+<dl><dt><a name="PlayAction-BindMeasurementJavaScript"><strong>BindMeasurementJavaScript</strong></a>(self, tab, start_js, stop_js)</dt><dd><tt>Let&nbsp;this&nbsp;action&nbsp;determine&nbsp;when&nbsp;measurements&nbsp;should&nbsp;start&nbsp;and&nbsp;stop.<br>
+&nbsp;<br>
+A&nbsp;measurement&nbsp;can&nbsp;call&nbsp;this&nbsp;method&nbsp;to&nbsp;provide&nbsp;the&nbsp;action<br>
+with&nbsp;JavaScript&nbsp;code&nbsp;that&nbsp;starts&nbsp;and&nbsp;stops&nbsp;measurements.&nbsp;The&nbsp;action<br>
+determines&nbsp;when&nbsp;to&nbsp;execute&nbsp;the&nbsp;provided&nbsp;JavaScript&nbsp;code,&nbsp;for&nbsp;more&nbsp;accurate<br>
+timings.<br>
+&nbsp;<br>
+Args:<br>
+&nbsp;&nbsp;tab:&nbsp;The&nbsp;tab&nbsp;to&nbsp;do&nbsp;everything&nbsp;on.<br>
+&nbsp;&nbsp;start_js:&nbsp;JavaScript&nbsp;code&nbsp;that&nbsp;starts&nbsp;measurements.<br>
+&nbsp;&nbsp;stop_js:&nbsp;JavaScript&nbsp;code&nbsp;that&nbsp;stops&nbsp;measurements.</tt></dd></dl>
+
+<dl><dt><a name="PlayAction-CanBeBound"><strong>CanBeBound</strong></a>(self)</dt><dd><tt>If&nbsp;this&nbsp;class&nbsp;implements&nbsp;BindMeasurementJavaScript,&nbsp;override&nbsp;CanBeBound<br>
+to&nbsp;return&nbsp;True&nbsp;so&nbsp;that&nbsp;a&nbsp;test&nbsp;knows&nbsp;it&nbsp;can&nbsp;bind&nbsp;measurements.</tt></dd></dl>
+
+<dl><dt><a name="PlayAction-CleanUp"><strong>CleanUp</strong></a>(self, page, tab)</dt></dl>
+
+<dl><dt><a name="PlayAction-CustomizeBrowserOptions"><strong>CustomizeBrowserOptions</strong></a>(self, options)</dt><dd><tt>Override&nbsp;to&nbsp;add&nbsp;action-specific&nbsp;options&nbsp;to&nbsp;the&nbsp;BrowserOptions<br>
+object.</tt></dd></dl>
+
+<dl><dt><a name="PlayAction-RunsPreviousAction"><strong>RunsPreviousAction</strong></a>(self)</dt><dd><tt>Some&nbsp;actions&nbsp;require&nbsp;some&nbsp;initialization&nbsp;to&nbsp;be&nbsp;performed&nbsp;before&nbsp;the<br>
+previous&nbsp;action.&nbsp;For&nbsp;example,&nbsp;wait&nbsp;for&nbsp;href&nbsp;change&nbsp;needs&nbsp;to&nbsp;record&nbsp;the&nbsp;old<br>
+href&nbsp;before&nbsp;the&nbsp;previous&nbsp;action&nbsp;changes&nbsp;it.&nbsp;Therefore,&nbsp;we&nbsp;allow&nbsp;actions&nbsp;to<br>
+run&nbsp;the&nbsp;previous&nbsp;action.&nbsp;An&nbsp;action&nbsp;that&nbsp;does&nbsp;this&nbsp;should&nbsp;override&nbsp;this&nbsp;to<br>
+return&nbsp;True&nbsp;in&nbsp;order&nbsp;to&nbsp;prevent&nbsp;the&nbsp;previous&nbsp;action&nbsp;from&nbsp;being&nbsp;run&nbsp;twice.</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="telemetry.page.actions.page_action.html#PageAction">telemetry.page.actions.page_action.PageAction</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

@@ -1,0 +1,38 @@
+# Disable JavaScript tests that cause V8 to install a SIGPROF handler that
+# times out the subsequent fork() calls.
+# http://crbug.com/79320
+*Json*
+
+# Failing after Lucid migration. http://crbug.com/82715
+MultiProcessLockTest.BasicCreationTest
+MultiProcessLockTest.LockScope
+MultiProcessLockTest.RecursiveLock
+MultiProcessLockTest.SimpleLock
+ServiceProcessStateTest.ForceShutdown
+ServiceProcessStateTest.ReadyState
+ServiceProcessStateTest.Singleton
+
+# http://crbug.com/88221
+ConnectionTesterTest.DeleteWhileInProgress
+
+# Fails under Heapcheck http://crbug.com/93027
+ProcessWatcherTest.ImmediateTermination
+
+# Two memory leaks with too inconcrete stacks http://crbug.com/114988
+BookmarkEditorGtkTest.ModelsMatch
+BookmarkEditorGtkTest.MoveToNewParent
+
+# Timing out all over the place. Disabling for now. http://crbug.com/149715
+ExtensionWebRequestTest.*
+
+# Crashes occasionally. http://crbug.com/165458
+BackgroundApplicationListModelTest.ExplicitTest
+
+# Timing out. Disabling for now. http://crbug.com/175496
+AppsModelBuilderTest.OnExtensionMoved
+
+# Don't run FLAKY or FAILS tests under the heapchecker.
+# They may cause flaky leak reports and timeouts.
+*FLAKY_*
+*FAILS_*
+

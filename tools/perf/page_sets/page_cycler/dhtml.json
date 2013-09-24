@@ -1,0 +1,23 @@
+{
+    "description": "DHTML page_cycler benchmark",
+    "serving_dirs": ["../../../../data/page_cycler/dhtml"],
+    "pages": [
+        { "url": "file:///../../../../data/page_cycler/dhtml/colorfade/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/diagball/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/fadespacing/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/imageslide/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/layers1/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/layers2/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/layers4/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/layers5/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/layers6/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/meter/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/movingtext/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/mozilla/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/replaceimages/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/scrolling/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/slidein/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/slidingballs/" },
+        { "url": "file:///../../../../data/page_cycler/dhtml/zoom/" }
+    ]
+}

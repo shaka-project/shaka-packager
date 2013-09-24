@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style type="text/css">
+    @-webkit-keyframes color-animation {
+      0% { background:#000; }
+      100% { background:#fff; }
+    }
+
+    div {
+      position: absolute;
+      -webkit-transform-style: preserve-3d;
+    }
+  </style>
+  <script type="text/javascript">
+    function startExperiment()
+    {
+      document.body.style.margin = "0";
+      document.body.style.webkitAnimationName = "color-animation";
+      document.body.style.webkitAnimationDuration = "0.5s";
+      document.body.style.webkitAnimationIterationCount = "infinite";
+      document.body.style.webkitAnimationDirection = "alternate";
+      for (var i = 0; i < 2; ++i) {
+        var elem = document.getElementById("elem" + i.toString());
+        elem.style.opacity = "0.5";
+        elem.style.width = "100%";
+        elem.style.height = "900px";
+        elem.style.webkitTransform = "rotate3d(1,1,0," + ((i + 1) * 10).toString() + "deg)";
+        elem.style.webkitAnimationName = "color-animation";
+        elem.style.webkitAnimationDuration = (i + 1).toString() + "s";
+        elem.style.webkitAnimationIterationCount = "infinite";
+      }
+    }
+
+    window.addEventListener('load', startExperiment, false);
+  </script>
+</head>
+<body>
+<div id="elem0"></div>
+<div id="elem1"></div>
+</body>
+</html>

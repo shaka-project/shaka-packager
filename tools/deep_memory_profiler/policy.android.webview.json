@@ -1,0 +1,639 @@
+{
+  "components": [
+    "second",
+    "mmap-profiler",
+    "mmap-type-profiler",
+    "mmap-tcmalloc",
+    "FROM_HERE_FOR_TOTAL",
+    "mustbezero",
+    "unhooked-absent",
+    "unhooked-ashmem-dalvik-heap",
+    "unhooked-ashmem-dalvik-LinearAlloc",
+    "unhooked-ashmem-dalvik-aux-structure",
+    "unhooked-ashmem-dalvik-bitmap",
+    "unhooked-ashmem-dalvik-other",
+    "unhooked-pvrsrvkm",
+    "unhooked-system-dex",
+    "unhooked-chrome-dex",
+    "unhooked-other-ashmem",
+    "unhooked-anonymous",
+    "unhooked-file-exec-lib-chrome",
+    "unhooked-file-exec",
+    "unhooked-file-nonexec-lib-chrome",
+    "unhooked-file-nonexec",
+    "unhooked-stack",
+    "unhooked-other",
+    "no-bucket",
+    "mmap-v8-heap-newspace",
+    "mmap-v8-heap-coderange",
+    "mmap-v8-heap-pagedspace",
+    "mmap-v8-other",
+    "mmap-gpu-mappedmemorymanager",
+    "mmap-gpu-command-ringbuffer",
+    "mmap-gpu-transfer-ringbuffer",
+    "mmap-gpu-gles2-createbuffer",
+    "mmap-skia-font",
+    "mmap-catch-all",
+    "tc-disk_cache-backing",
+    "tc-disk_cache-other",
+    "tc-sqlite3MemAlloc",
+    "tc-angle",
+    "tc-crypto",
+    "tc-net-iobuffer",
+    "tc-stl-string",
+    "tc-stl-rbtree",
+    "tc-stl-vector",
+    "tc-stl-hashtable",
+    "tc-stl-node",
+    "tc-webcore-fontcache",
+    "tc-skia",
+    "tc-renderobject",
+    "tc-renderstyle",
+    "tc-webcore-sharedbuf",
+    "tc-webcore-XHRcreate",
+    "tc-webcore-XHRreceived",
+    "tc-webcore-docwriter-add",
+    "tc-webcore-node-and-doc",
+    "tc-webcore-node-factory",
+    "tc-webcore-element-wrapper",
+    "tc-webcore-stylepropertyset",
+    "tc-webcore-style-createsheet",
+    "tc-webcore-cachedresource",
+    "tc-webcore-script-execute",
+    "tc-webcore-events-related",
+    "tc-webcore-document-write",
+    "tc-webcore-node-create-renderer",
+    "tc-webcore-render-catch-all",
+    "tc-webcore-setInnerHTML-except-node",
+    "tc-wtf-StringImpl-user-catch-all",
+    "tc-wtf-HashTable-user-catch-all",
+    "tc-webcore-everything-create",
+    "tc-webkit-from-v8-catch-all",
+    "tc-webkit-catch-all",
+    "tc-v8-catch-all",
+    "tc-toplevel-string",
+    "tc-std-treemap",
+    "tc-std-hashmap",
+    "tc-std-vector",
+    "tc-std-other",
+    "tc-catch-all",
+    "tc-unused",
+    "UNTIL_HERE_FOR_TOTAL",
+    "total-exclude-profiler",
+    "total",
+    "absent",
+    "anonymous",
+    "file-exec",
+    "file-nonexec",
+    "stack",
+    "other",
+    "mmap-total-log",
+    "mmap-no-log",
+    "mmap-total-record",
+    "other-total-log",
+    "tc-total-log",
+    "tc-no-log",
+    "tc-total-record",
+    "tc-total"
+  ],
+  "rules": [
+    {
+      "name": "second",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "mmap-profiler",
+      "stacktrace": ".*(ProfilerMalloc|MemoryRegionMap::).*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-type-profiler",
+      "stacktrace": ".*(TypeProfilerMalloc).*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-tcmalloc",
+      "stacktrace": ".*(DoAllocWithArena|SbrkSysAllocator::Alloc|MmapSysAllocator::Alloc|LowLevelAlloc::Alloc|LowLevelAlloc::AllocWithArena).*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "FROM_HERE_FOR_TOTAL",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "mustbezero",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "unhooked-absent",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "unhooked-ashmem-dalvik-heap",
+      "mappedpathname": "/dev/ashmem/dalvik-heap.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-ashmem-dalvik-LinearAlloc",
+      "mappedpathname": "/dev/ashmem/dalvik-LinearAlloc.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-ashmem-dalvik-aux-structure",
+      "mappedpathname": "/dev/ashmem/dalvik-aux-structure.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-ashmem-dalvik-bitmap",
+      "mappedpathname": "/dev/ashmem/dalvik-bitmap.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-ashmem-dalvik-other",
+      "mappedpathname": "/dev/ashmem/dalvik.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-pvrsrvkm",
+      "mappedpathname": "/dev/pvrsrvkm.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-system-dex",
+      "mappedpathname": "/data/dalvik-cache/system.*.dex.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-chrome-dex",
+      "mappedpathname": "^/.*?(chrome|content).*?apk@classes.dex",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-other-ashmem",
+      "mappedpathname": "/dev/ashmem/.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-anonymous",
+      "mappedpathname": "^$",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-file-exec-lib-chrome",
+      "mappedpathname": "^/.*?(chromeview|content).*",
+      "mappedpermission": "..x.",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-file-exec",
+      "mappedpathname": "^/.*",
+      "mappedpermission": "..x.",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-file-nonexec-lib-chrome",
+      "mappedpathname": "^/.*?(chromeview|content).*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-file-nonexec",
+      "mappedpathname": "^/.*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-stack",
+      "mappedpathname": ".stack.",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "unhooked-other",
+      "mappedpathname": ".*",
+      "allocator": "unhooked"
+    },
+    {
+      "name": "mmap-v8-heap-newspace",
+      "stacktrace": ".*v8::internal::NewSpace::SetUp.*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-v8-heap-coderange",
+      "stacktrace": ".*v8::internal::CodeRange::SetUp.*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-v8-heap-pagedspace",
+      "stacktrace": ".*v8::internal::PagedSpace::AllocateRaw.*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-v8-other",
+      "stacktrace": ".*v8::.*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-gpu-mappedmemorymanager",
+      "stacktrace": ".*gpu::MappedMemoryManager::Alloc.*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-gpu-command-ringbuffer",
+      "stacktrace": ".*gpu::CommandBufferHelper::AllocateRingBuffer.*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-gpu-transfer-ringbuffer",
+      "stacktrace": ".*gpu::TransferBuffer::AllocateRingBuffer.*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-gpu-gles2-createbuffer",
+      "stacktrace": ".*gpu::gles2::BufferTracker::CreateBuffer.*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-skia-font",
+      "stacktrace": ".*SkTypeface::openStream.*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "mmap-catch-all",
+      "stacktrace": ".*",
+      "allocator": "mmap"
+    },
+    {
+      "name": "tc-disk_cache-backing",
+      "stacktrace": ".*disk_cache::BackendImpl::InitBackingStore.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-disk_cache-other",
+      "stacktrace": ".*disk_cache::.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-sqlite3MemAlloc",
+      "stacktrace": ".*sqlite3MemMalloc.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-angle",
+      "stacktrace": ".*TPoolAllocator::allocate.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-crypto",
+      "stacktrace": ".*(CRYPTO_malloc|CRYPTO_realloc).*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-net-iobuffer",
+      "stacktrace": ".*net::IOBuffer::IOBuffer.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-stl-string",
+      "stacktrace": ".*std::basic_string::.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-stl-rbtree",
+      "stacktrace": ".*std::priv::_Rb_tree::.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-stl-vector",
+      "stacktrace": ".*std::priv::_Impl_vector::.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-stl-hashtable",
+      "stacktrace": ".*std::hashtable::.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-stl-node",
+      "stacktrace": ".*std::priv::_Impl_vector::.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-fontcache",
+      "stacktrace": ".*WebCore::FontCache::getCachedFontData.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-skia",
+      "stacktrace": ".* Sk[A-Za-z_]+::.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-renderobject",
+      "stacktrace": ".*WebCore::RenderArena::allocate.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-renderstyle",
+      "stacktrace": ".*WebCore::RenderStyle::create.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-renderstyle",
+      "stacktrace": ".*WebCore::RenderStyle::clone.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-sharedbuf",
+      "stacktrace": ".*WebCore::SharedBuffer::create.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-sharedbuf",
+      "stacktrace": ".*WebCore::SharedBuffer::buffer.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-sharedbuf",
+      "stacktrace": ".*WebCore::SharedBuffer::append.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-XHRcreate",
+      "stacktrace": ".*WebCore::XMLHttpRequest::create .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-XHRreceived",
+      "stacktrace": ".*WebCore::XMLHttpRequest::didReceiveData.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-docwriter-add",
+      "stacktrace": ".*WebCore::DocumentWriter::addData.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-node-and-doc",
+      "stacktrace": ".*WebCore::HTML[a-zA-Z0-9_]*Element::create .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-node-and-doc",
+      "stacktrace": ".*WebCore::Text::create .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-node-and-doc",
+      "stacktrace": ".*WebCore::Comment::create .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-node-and-doc",
+      "stacktrace": ".*WebCore::HTMLDocument::create .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-node-and-doc",
+      "stacktrace": ".*WebCore::CSSStyleRule::create .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-node-and-doc",
+      "stacktrace": ".*WebCore::Attribute::create .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-node-and-doc",
+      "stacktrace": ".*WebCore::DOMWindow::create .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-node-factory",
+      "stacktrace": ".*WebCore::HTML[a-zA-Z0-9_]*Factory::create[a-zA-Z0-9_]*Element.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-element-wrapper",
+      "stacktrace": ".*WebCore::createHTML[a-zA-Z0-9_]*ElementWrapper.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-stylepropertyset",
+      "stacktrace": ".*WebCore::StylePropertySet::create .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-style-createsheet",
+      "stacktrace": ".*WebCore::StyleElement::createSheet.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-cachedresource",
+      "stacktrace": ".*WebCore::CachedResource::data .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-cachedresource",
+      "stacktrace": ".*WebCore::CachedResource::load .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-script-execute",
+      "stacktrace": ".*WebCore::ScriptElement::execute.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-events-related",
+      "stacktrace": ".*WebCore::createAttributeEventListener.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-events-related",
+      "stacktrace": ".*WebCore::V8LazyEventListener::create.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-events-related",
+      "stacktrace": ".*WebCore::V8EventListener::create.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-events-related",
+      "stacktrace": ".*WebCore::Event::create .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-events-related",
+      "stacktrace": ".*WebCore::EventListener::create .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-document-write",
+      "stacktrace": ".*WebCore::Document::write.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-node-create-renderer",
+      "stacktrace": ".*WebCore::Node::createRendererIfNeeded.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "stacktrace": ".*WebCore::RenderLayer.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "stacktrace": ".*WebCore::RenderBlock.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "stacktrace": ".*WebCore::RenderWidget.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "stacktrace": ".*WebCore::RenderView.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "stacktrace": ".*WebCore::RenderViewImpl.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "stacktrace": ".*WebCore::RenderStyle.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "stacktrace": ".*WebCore::RenderText.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-render-catch-all",
+      "stacktrace": ".* RendererMain .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-setInnerHTML-except-node",
+      "stacktrace": ".*WebCore::HTMLElement::setInnerHTML.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-wtf-StringImpl-user-catch-all",
+      "stacktrace": ".*WTF::StringImpl::create .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-wtf-StringImpl-user-catch-all",
+      "stacktrace": ".*WTF::StringImpl::createUninitialized.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-wtf-HashTable-user-catch-all",
+      "stacktrace": ".*WTF::HashTable::allocateTable.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webcore-everything-create",
+      "stacktrace": ".*WebCore::[a-zA-Z0-9_]*::create .*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webkit-from-v8-catch-all",
+      "stacktrace": ".*(WTF::|WebCore::|WebKit::).*v8::.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-webkit-catch-all",
+      "stacktrace": ".*(WTF::|WebCore::|WebKit::).*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-v8-catch-all",
+      "stacktrace": ".*v8::.*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-toplevel-string",
+      "stacktrace": "std::basic_string::_Rep::_S_create",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-std-treemap",
+      "stacktrace": ".*::allocate std::(_Rb_tree|__1::__tree).*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-std-hashmap",
+      "stacktrace": ".*(std::vector::reserve __gnu_cxx::hashtable|::allocate std::_Hashtable|::allocate std::__1::__hash_table).*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-std-vector",
+      "stacktrace": ".*std::(_Vector_base::_M_allocate|__1::vector::allocate).*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-std-other",
+      "stacktrace": ".*(__gnu_cxx::new_allocator::allocate|std::__1::allocator::allocate).*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "tc-catch-all",
+      "stacktrace": ".*",
+      "allocator": "malloc"
+    },
+    {
+      "name": "UNTIL_HERE_FOR_TOTAL",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "total-exclude-profiler",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "total",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "absent",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "anonymous",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "file-exec",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "file-nonexec",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "stack",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    },
+    {
+      "name": "other",
+      "stacktrace": "optional",
+      "allocator": "optional"
+    }
+  ],
+  "version": "POLICY_DEEP_3"
+}

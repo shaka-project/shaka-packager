@@ -1,0 +1,58 @@
+// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+bear-320x240.webm - WebM encode of bear.1280x720.mp4 resized to 320x240.
+no_streams.webm - Header, Info, & Tracks element from bear-320x240.webm slightly corrupted so it looks 
+                  like there are no tracks.
+nonzero-start-time.webm - Has the same headers as bear-320x240.webm but the first cluster of this file 
+                          is the second cluster of bear-320x240.webm. This creates the situation where
+                          the media data doesn't start at time 0.
+bear-320x240-live.webm - bear-320x240.webm remuxed w/o a duration and using clusters with unknown sizes.
+                         ffmpeg -i bear-320x240.webm -acodec copy -vcodec copy -f webm pipe:1 > bear-320x240-live.webm
+vp8-I-frame-160x240 - The first I frame of a 160x240 reencode of bear-320x240.webm.
+vp8-I-frame-320x120 - The first I frame of a 320x120 reencode of bear-320x240.webm.
+vp8-I-frame-320x240 - The first I frame of bear-320x240.webm.
+vp8-I-frame-320x480 - The first I frame of a 320x480 reencode of bear-320x240.webm.
+vp8-I-frame-640x240 - The first I frame of a 640x240 reencode of bear-320x240.webm.
+vp8-corrupt-I-frame - A copy of vp8-I-frame-320x240 w/ all bytes XORed w/ 0xA5.
+
+Vorbis test data from bear.ogv (44100 Hz, 16 bits, stereo)
+vorbis-extradata - Vorbis extradata section
+vorbis-packet-0  - timestamp: 0ms, duration: 0ms
+vorbis-packet-1  - timestamp: 0ms, duration: 0ms
+vorbis-packet-2  - timestamp: 0ms, duration: 0ms
+vorbis-packet-3  - timestamp: 2902ms, duration: 0ms
+
+// Encrypted Files
+bear-1280x720-a_frag-cenc.mp4 - A fragmented MP4 version of the audio track of bear-1280x720.mp4 encrypted (ISO CENC) using key ID [1] and key [2].
+bear-1280x720-a_frag-cenc_clear-all.mp4 - Same as bear-1280x720-a_frag-cenc.mp4 but no fragments are encrypted.
+bear-1280x720-v_frag-cenc.mp4 - A fragmented MP4 version of the video track of bear-1280x720.mp4 encrypted (ISO CENC) using key ID [1] and key [2].
+bear-1280x720-v_frag-cenc_clear-all.mp4 - Same as bear-1280x720-v_frag-cenc.mp4 but no fragments are encrypted.
+bear-320x240-16x9-aspect-av_enc-av.webm - bear-320x240-16x9-aspect.webm with audio & video encrypted using key ID [1] and key [2]
+bear-320x240-av_enc-av.webm - bear-320x240.webm with audio & video encrypted using key ID [1] and key [2].
+bear-320x240-av_enc-av_clear-1s.webm - Same as bear-320x240-av_enc-av.webm but with no frames in the first second encrypted.
+bear-320x240-av_enc-av_clear-all.webm - Same as bear-320x240-av_enc-av.webm but with no frames encrypted.
+bear-640x360-av_enc-av.webm - bear-640x360.webm with audio & video encrypted using key ID [1] and key [2].
+bear-640x360-a_frag-cenc.mp4 - A fragmented MP4 version of the audio track of bear-640x360.mp4 encrypted (ISO CENC) using key ID [1] and key [2].
+bear-640x360-v_frag-cenc.mp4 - A fragmented MP4 version of the video track of bear-640x360.mp4 encrypted (ISO CENC) using key ID [1] and key [2].
+
+[1] 30313233343536373839303132333435
+[2] ebdd62f16814d27b68ef122afce4ae3c
+
+// Container Tests (additional containers derived from bear.ogv)
+bear.ac3    -- created using "avconv -i bear.ogv -f ac3 -b 192k bear.ac3".
+bear.adts   -- created using "avconv -i bear.ogv -f adts -strict experimental bear.adts".
+bear.aiff   -- created using "avconv -i bear.ogv -f aiff bear.aiff".
+bear.asf    -- created using "avconv -i bear.ogv -f asf bear.asf".
+bear.avi    -- created using "avconv -i bear.ogv -f avi -b 192k bear.avi".
+bear.eac3   -- created using "avconv -i bear.ogv -f eac3 bear.eac3".
+bear.flac   -- created using "avconv -i bear.ogv -f flac bear.flac".
+bear.flv    -- created using "avconv -i bear.ogv -f flv bear.flv".
+bear.h261   -- created using "avconv -i bear.ogv -f h261 -s:0 cif bear.h261".
+bear.h263   -- created using "avconv -i bear.ogv -f h263 -s:0 cif bear.h263".
+bear.m2ts   -- created using "avconv -i bear.ogv -f mpegts bear.m2ts".
+bear.mjpeg  -- created using "avconv -i bear.ogv -f mjpeg bear.mjpeg".
+bear.mpeg   -- created using "avconv -i bear.ogv -f mpeg bear.mpeg".
+bear.rm     -- created using "avconv -i bear.ogv -f rm -b 192k bear.rm".
+bear.swf    -- created using "avconv -i bear.ogv -f swf -an bear.swf".

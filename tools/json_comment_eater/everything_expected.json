@@ -1,0 +1,13 @@
+
+
+
+
+
+{ "namespace": "test",
+  "comments": "yo",  
+  "strings": "yes",  
+  "escaped\"": "string\"isescaped",
+  "more//": "\"more",
+  "so\\many": "\\\\escapes\\\\\"whoa",
+  "comment//inmiddle": "of string"
+}

@@ -1,0 +1,338 @@
+# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Base compiler configuration.
+config("compiler") {
+  includes = [ "//" ]
+  if (is_win) {
+    cflags = [
+      # TODO(brettw) these probably need to be refactored.
+      "/Od", "/WX", "/Zi", "/Gy", "/GS", "/RTC1", "/EHsc",
+    ]
+  } else {
+    # Common GCC compiler flags setup.
+    # --------------------------------
+    cflags = [
+      "-fno-strict-aliasing",  # See http://crbug.com/32204
+      "-fvisibility=hidden",
+      "-g",  # Debug symbols.
+    ]
+    cflags_c = [
+    ]
+    cflags_cc = [
+      "-fno-exceptions",
+      "-fno-threadsafe-statics",
+      "-fvisibility-inlines-hidden",
+    ]
+    ldflags = [
+      "-Wl,-z,now",
+      "-Wl,-z,relro",
+    ]
+
+    # Optimization.
+    if (is_debug) {
+      cflags += [
+        "-O0"  # No optimization.
+      ]
+    } else {
+      # TODO(brettw) release optimization.
+    }
+
+    # Stack protection.
+    # TODO(brettw) why do we have different values for all of these cases?
+    if (is_mac) {
+      cflags += "-fstack-protector-all"
+    } else if (is_chromeos) {
+      cflags += "-fstack-protector-strong"
+    } else if (is_linux) {
+      cflags += [ "-fstack-protector", "--param=ssp-buffer-size=4" ]
+    }
+
+    # Mac-specific compiler flags setup.
+    # ----------------------------------
+    if (is_mac) {
+      # These flags are shared between the C compiler and linker.
+      common_mac_flags = [
+        # TODO(brettw) obviously this arch flag needs to be parameterized.
+        "-arch i386",
+
+        # Set which SDK to use.
+        # TODO(brettw) this needs to be configurable somehow.
+        "-isysroot", "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk",
+
+        "-mmacosx-version-min=10.6",
+      ]
+
+      cflags += common_mac_flags + [
+        # Without this, the constructors and destructors of a C++ object inside
+        # an Objective C struct won't be called, which is very bad.
+        "-fobjc-call-cxx-cdtors",
+      ]
+
+      cflags_c += [ "-std=c99" ]
+      cflags_cc += [ "-std=gnu++11" ]
+
+      ldflags += common_mac_flags + [
+        "-L.",
+
+        # TODO(brettW) I don't understand these options.
+        "-Wl,-rpath,@loader_path/.",
+        "-Wl,-rpath,@loader_path/../../..",
+      ]
+    }
+
+    # Linux-specific compiler flags setup.
+    # ------------------------------------
+    if (is_linux) {
+      cflags += [
+        "-fPIC",
+        "-pthread",
+        "-pipe",  # Use pipes for communicating between sub-processes. Faster.
+      ]
+      ldflags += [
+        # Use Gold for linking: it is checked out in the source tree.
+        "-B$relative_build_to_source_root_dir/third_party/gold",
+
+        "-fPIC",
+        "-pthread",
+        "-Wl,-z,noexecstack",
+
+        # TODO(brettw) gold linker flags, only target.
+        # There seems to be a conflict of --icf and -pie in gold which can
+        # generate crashy binaries. As a security measure, -pie takes
+        # precendence for now.
+        # TODO(brettw) common.gypi has this only for target toolset.
+        #"-Wl,--icf=safe",
+        "-Wl,--icf=none",
+
+        # TODO(brettw) gold linker flags, only target.
+        # Experimentation found that using four linking threads
+        # saved ~20% of link time.
+        # https://groups.google.com/a/chromium.org/group/chromium-dev/browse_thread/thread/281527606915bb36
+        # Only apply this to the target linker, since the host
+        # linker might not be gold, but isn't used much anyway.
+        "-Wl,--threads",
+        "-Wl,--thread-count=4",
+      ]
+    }
+
+    # Clang-specific compiler flags setup.
+    # ------------------------------------
+    # TODO(brettw) these should be clang-only. For now, make it mac-only since
+    # that's where we always use clang.
+    if (is_mac) { # if (is_clang) {
+      cflags += [
+        "-fcolor-diagnostics",
+      ]
+    }
+  }
+}
+
+# runtime_library -------------------------------------------------------------
+#
+# Sets the runtime library and associated options.
+#
+# We don't bother making multiple versions that are toggle-able since there
+# is more than one axis of control (which makes it complicated) and there's
+# no practical reason for anybody to change this since the CRT must agree.
+
+config("runtime_library") {
+  if (is_component_build) {
+    # Component mode: dynamic CRT.
+    defines = [ "COMPONENT_BUILD" ]
+    if (is_win) {
+      # Since the library is shared, it requires exceptions or will give errors
+      # about things not matching, so keep exceptions on.
+      if (is_debug) {
+        cflags = [ "/MDd" ]
+      } else {
+        cflags = [ "/MD" ]
+      }
+    }
+  } else {
+    # Static CRT.
+    if (is_win) {
+      # We don't use exceptions, and when we link statically we can just get
+      # rid of them entirely.
+      defines = [ "_HAS_EXCEPTIONS=0" ]
+      if (is_debug) {
+        cflags = [ "/MTd" ]
+      } else {
+        cflags = [ "/MT" ]
+      }
+    }
+  }
+
+  if (is_win) {
+    defines += [
+      "__STD_C",
+      "__STDC_CONSTANT_MACROS",
+      "__STDC_FORMAT_MACROS",
+      "_CRT_RAND_S",
+      "_CRT_SECURE_NO_DEPRECATE",
+      "_SCL_SECURE_NO_DEPRECATE",
+      "_UNICODE",
+      "UNICODE",
+    ]
+  }
+}
+
+# chromium_code ---------------------------------------------------------------
+#
+# Toggles between higher and lower warnings for code that is (or isn't)
+# part of Chromium.
+
+config("chromium_code") {
+  if (is_win) {
+    cflags = [
+      "/W4",  # Warning level 4.
+    ]
+  } else {
+    cflags = [
+      "-Wall",
+      "-Werror",
+
+      # GCC turns on -Wsign-compare for C++ under -Wall, but clang doesn't,
+      # so we specify it explicitly.
+      # TODO(fischman): remove this if http://llvm.org/PR10448 obsoletes it.
+      # http://code.google.com/p/chromium/issues/detail?id=90453
+      "-Wsign-compare",
+    ]
+
+    # In Chromium code, we define __STDC_foo_MACROS in order to get the
+    # C99 macros on Mac and Linux.
+    defines = [
+      "__STDC_CONSTANT_MACROS",
+      "__STDC_FORMAT_MACROS",
+    ]
+
+    # TODO(brettw) this should also be enabled on Linux but some files
+    # currently fail.
+    if (is_mac) {
+      cflags += "-Wextra"
+    }
+  }
+}
+config("no_chromium_code") {
+  if (is_win) {
+    cflags = [
+      "/W3",  # Warning level 3.
+      "/wd4800",  # Disable warning when forcing value to bool.
+    ]
+    defines = [
+      "_CRT_NONSTDC_NO_WARNINGS",
+      "_CRT_NONSTDC_NO_DEPRECATE",
+    ]
+  }
+}
+
+# rtti ------------------------------------------------------------------------
+#
+# Allows turning Run-Time Type Identification on or off.
+
+config("rtti") {
+  if (is_win) {
+    cflags_cc = [ "/GR" ]
+  }
+}
+config("no_rtti") {
+  if (is_win) {
+    cflags_cc = [ "/GR-" ]
+  } else {
+    cflags_cc = [ "-fno-rtti" ]
+  }
+}
+
+# Warnings ---------------------------------------------------------------------
+
+config("default_warnings") {
+  if (is_win) {
+    # Please keep ordered and add names if you add more.
+    cflags = [
+      "/wd4018",  # Comparing signed and unsigned values.
+      "/wd4100",  # Unreferenced formal function parameter.
+      "/wd4121",  # Alignment of a member was sensitive to packing.
+      "/wd4125",  # Decimal digit terminates octal escape sequence.
+      "/wd4127",  # Conditional expression is constant.
+      "/wd4130",  # Logical operation on address of string constant.
+      # TODO(brettw) is this necessary? If so, it should probably be on whoever
+      # is silly enough to be doing this rather than globally.
+      #"/wd4131",  # Function uses old-style declarator.
+      "/wd4189",  # A variable was declared and initialized but never used.
+      "/wd4201",  # Nonstandard extension used: nameless struct/union.
+      "/wd4238",  # Nonstandard extension used: class rvalue used as lvalue.
+      "/wd4244",  # Conversion: possible loss of data.
+      "/wd4245",  # Conversion: signed/unsigned mismatch,
+      "/wd4251",  # Class needs to have dll-interface.
+      "/wd4310",  # Cast truncates constant value.
+      "/wd4351",  # Elements of array will be default initialized.
+      "/wd4355",  # 'this' used in base member initializer list.
+      "/wd4396",  # Inline friend template thing.
+      "/wd4428",  # Universal character name encountered in source.
+      "/wd4481",  # Nonstandard extension: override specifier.
+      "/wd4503",  # Decorated name length exceeded, name was truncated.
+      "/wd4505",  # Unreferenced local function has been removed.
+      "/wd4510",  # Default constructor could not be generated.
+      "/wd4512",  # Assignment operator could not be generated.
+      "/wd4530",  # Exception handler used, but unwind semantics not enabled.
+      "/wd4610",  # Class can never be instantiated, constructor required.
+      "/wd4611",  # C++ object destruction and 'catch'.
+      "/wd4701",  # Potentially uninitialized local variable name used.
+      "/wd4702",  # Unreachable code.
+      "/wd4706",  # Assignment within conditional expression.
+      "/wd4819",  # Character not in the current code page.
+    ]
+  } else {
+    # Common GCC warning setup.
+    cflags = [
+      # Enables.
+      "-Wendif-labels",  # Weird old-style text after an #endif.
+
+      # Disables.
+      "-Wno-missing-field-initializers",  # "struct foo f = {0};"
+      "-Wno-unused-parameter",  # Unused function parameters.
+      "-Wno-write-strings",
+    ]
+
+    if (is_mac) {
+      cflags += [
+        "-Wnewline-eof",
+      ]
+    }
+
+    # TODO(brettw) Ones below here should be clang-only when we have a flag
+    # for it.
+    if (is_mac) { #if (is_clang) {
+      cflags += [
+        "-Wheader-hygiene",
+
+        # This warns on using ints as initializers for floats in
+        # initializer lists (e.g. |int a = f(); CGSize s = { a, a };|),
+        # which happens in several places in chrome code. Not sure if
+        # this is worth fixing.
+        "-Wno-c++11-narrowing",
+
+        # Don't die on dtoa code that uses a char as an array index.
+        # This is required solely for base/third_party/dmg_fp/dtoa.cc.
+        # TODO(brettw) move this to that project then!
+        "-Wno-char-subscripts",
+
+        # Warns on switches on enums that cover all enum values but
+        # also contain a default: branch. Chrome is full of that.
+        "-Wno-covered-switch-default",
+
+        # Clang considers the `register` keyword as deprecated, but e.g.
+        # code generated by flex (used in angle) contains that keyword.
+        # http://crbug.com/255186
+        "-Wno-deprecated-register",
+
+        # Clang spots more unused functions.
+        "-Wno-unused-function",
+
+        # Warns when a const char[] is converted to bool.
+        "-Wstring-conversion",
+      ]
+    }
+  }
+}

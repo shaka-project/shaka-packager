@@ -1,0 +1,248 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module telemetry.page.page_measurement</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="telemetry.html"><font color="#ffffff">telemetry</font></a>.<a href="telemetry.page.html"><font color="#ffffff">page</font></a>.page_measurement</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="../telemetry/page/page_measurement.py">telemetry/page/page_measurement.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;Copyright&nbsp;(c)&nbsp;2012&nbsp;The&nbsp;Chromium&nbsp;Authors.&nbsp;All&nbsp;rights&nbsp;reserved.<br>
+#&nbsp;Use&nbsp;of&nbsp;this&nbsp;source&nbsp;code&nbsp;is&nbsp;governed&nbsp;by&nbsp;a&nbsp;BSD-style&nbsp;license&nbsp;that&nbsp;can&nbsp;be<br>
+#&nbsp;found&nbsp;in&nbsp;the&nbsp;LICENSE&nbsp;file.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="telemetry.page.block_page_measurement_results.html">telemetry.page.block_page_measurement_results</a><br>
+<a href="telemetry.page.buildbot_page_measurement_results.html">telemetry.page.buildbot_page_measurement_results</a><br>
+</td><td width="25%" valign=top><a href="telemetry.page.csv_page_measurement_results.html">telemetry.page.csv_page_measurement_results</a><br>
+<a href="os.html">os</a><br>
+</td><td width="25%" valign=top><a href="telemetry.page.page_measurement_results.html">telemetry.page.page_measurement_results</a><br>
+<a href="telemetry.page.page_test.html">telemetry.page.page_test</a><br>
+</td><td width="25%" valign=top><a href="sys.html">sys</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="telemetry.page.page_test.html#Failure">telemetry.page.page_test.Failure</a>(<a href="exceptions.html#Exception">exceptions.Exception</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.page.page_measurement.html#MeasurementFailure">MeasurementFailure</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="telemetry.page.page_test.html#PageTest">telemetry.page.page_test.PageTest</a>(<a href="__builtin__.html#object">__builtin__.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.page.page_measurement.html#PageMeasurement">PageMeasurement</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="MeasurementFailure">class <strong>MeasurementFailure</strong></a>(<a href="telemetry.page.page_test.html#Failure">telemetry.page.page_test.Failure</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Exception&nbsp;that&nbsp;can&nbsp;be&nbsp;thrown&nbsp;from&nbsp;MeasurePage&nbsp;to&nbsp;indicate&nbsp;an&nbsp;undesired&nbsp;but<br>
+designed-for&nbsp;problem.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="telemetry.page.page_measurement.html#MeasurementFailure">MeasurementFailure</a></dd>
+<dd><a href="telemetry.page.page_test.html#Failure">telemetry.page.page_test.Failure</a></dd>
+<dd><a href="exceptions.html#Exception">exceptions.Exception</a></dd>
+<dd><a href="exceptions.html#BaseException">exceptions.BaseException</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Data descriptors inherited from <a href="telemetry.page.page_test.html#Failure">telemetry.page.page_test.Failure</a>:<br>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><a name="MeasurementFailure-__init__"><strong>__init__</strong></a>(...)</dt><dd><tt>x.<a href="#MeasurementFailure-__init__">__init__</a>(...)&nbsp;initializes&nbsp;x;&nbsp;see&nbsp;help(type(x))&nbsp;for&nbsp;signature</tt></dd></dl>
+
+<hr>
+Data and other attributes inherited from <a href="exceptions.html#Exception">exceptions.Exception</a>:<br>
+<dl><dt><strong>__new__</strong> = &lt;built-in method __new__ of type object&gt;<dd><tt>T.<a href="#MeasurementFailure-__new__">__new__</a>(S,&nbsp;...)&nbsp;-&gt;&nbsp;a&nbsp;new&nbsp;object&nbsp;with&nbsp;type&nbsp;S,&nbsp;a&nbsp;subtype&nbsp;of&nbsp;T</tt></dl>
+
+<hr>
+Methods inherited from <a href="exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><a name="MeasurementFailure-__delattr__"><strong>__delattr__</strong></a>(...)</dt><dd><tt>x.<a href="#MeasurementFailure-__delattr__">__delattr__</a>('name')&nbsp;&lt;==&gt;&nbsp;del&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="MeasurementFailure-__getattribute__"><strong>__getattribute__</strong></a>(...)</dt><dd><tt>x.<a href="#MeasurementFailure-__getattribute__">__getattribute__</a>('name')&nbsp;&lt;==&gt;&nbsp;x.name</tt></dd></dl>
+
+<dl><dt><a name="MeasurementFailure-__getitem__"><strong>__getitem__</strong></a>(...)</dt><dd><tt>x.<a href="#MeasurementFailure-__getitem__">__getitem__</a>(y)&nbsp;&lt;==&gt;&nbsp;x[y]</tt></dd></dl>
+
+<dl><dt><a name="MeasurementFailure-__getslice__"><strong>__getslice__</strong></a>(...)</dt><dd><tt>x.<a href="#MeasurementFailure-__getslice__">__getslice__</a>(i,&nbsp;j)&nbsp;&lt;==&gt;&nbsp;x[i:j]<br>
+&nbsp;<br>
+Use&nbsp;of&nbsp;negative&nbsp;indices&nbsp;is&nbsp;not&nbsp;supported.</tt></dd></dl>
+
+<dl><dt><a name="MeasurementFailure-__reduce__"><strong>__reduce__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="MeasurementFailure-__repr__"><strong>__repr__</strong></a>(...)</dt><dd><tt>x.<a href="#MeasurementFailure-__repr__">__repr__</a>()&nbsp;&lt;==&gt;&nbsp;repr(x)</tt></dd></dl>
+
+<dl><dt><a name="MeasurementFailure-__setattr__"><strong>__setattr__</strong></a>(...)</dt><dd><tt>x.<a href="#MeasurementFailure-__setattr__">__setattr__</a>('name',&nbsp;value)&nbsp;&lt;==&gt;&nbsp;x.name&nbsp;=&nbsp;value</tt></dd></dl>
+
+<dl><dt><a name="MeasurementFailure-__setstate__"><strong>__setstate__</strong></a>(...)</dt></dl>
+
+<dl><dt><a name="MeasurementFailure-__str__"><strong>__str__</strong></a>(...)</dt><dd><tt>x.<a href="#MeasurementFailure-__str__">__str__</a>()&nbsp;&lt;==&gt;&nbsp;str(x)</tt></dd></dl>
+
+<dl><dt><a name="MeasurementFailure-__unicode__"><strong>__unicode__</strong></a>(...)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="exceptions.html#BaseException">exceptions.BaseException</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+</dl>
+<dl><dt><strong>args</strong></dt>
+</dl>
+<dl><dt><strong>message</strong></dt>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PageMeasurement">class <strong>PageMeasurement</strong></a>(<a href="telemetry.page.page_test.html#PageTest">telemetry.page.page_test.PageTest</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Glue&nbsp;code&nbsp;for&nbsp;running&nbsp;a&nbsp;measurement&nbsp;across&nbsp;a&nbsp;set&nbsp;of&nbsp;pages.<br>
+&nbsp;<br>
+To&nbsp;use&nbsp;this,&nbsp;subclass&nbsp;from&nbsp;the&nbsp;measurement&nbsp;and&nbsp;override&nbsp;MeasurePage.&nbsp;For<br>
+example:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;class&nbsp;BodyChildElementMeasurement(<a href="#PageMeasurement">PageMeasurement</a>):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;<a href="#PageMeasurement-MeasurePage">MeasurePage</a>(self,&nbsp;page,&nbsp;tab,&nbsp;results):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body_child_count&nbsp;=&nbsp;tab.EvaluateJavaScript(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'document.body.children.length')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;results.Add('body_children',&nbsp;'count',&nbsp;body_child_count)<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;if&nbsp;__name__&nbsp;==&nbsp;'__main__':<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;page_measurement.Main(BodyChildElementMeasurement())<br>
+&nbsp;<br>
+To&nbsp;add&nbsp;test-specific&nbsp;options:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;class&nbsp;BodyChildElementMeasurement(<a href="#PageMeasurement">PageMeasurement</a>):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;<a href="#PageMeasurement-AddCommandLineOptions">AddCommandLineOptions</a>(parser):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parser.add_option('--element',&nbsp;action='store',&nbsp;default='body')<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;<a href="#PageMeasurement-MeasurePage">MeasurePage</a>(self,&nbsp;page,&nbsp;tab,&nbsp;results):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body_child_count&nbsp;=&nbsp;tab.EvaluateJavaScript(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'document.querySelector('%s').children.length')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;results.Add('children',&nbsp;'count',&nbsp;child_count)<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="telemetry.page.page_measurement.html#PageMeasurement">PageMeasurement</a></dd>
+<dd><a href="telemetry.page.page_test.html#PageTest">telemetry.page.page_test.PageTest</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="PageMeasurement-AddOutputOptions"><strong>AddOutputOptions</strong></a>(self, parser)</dt></dl>
+
+<dl><dt><a name="PageMeasurement-MeasurePage"><strong>MeasurePage</strong></a>(self, page, tab, results)</dt><dd><tt>Override&nbsp;to&nbsp;actually&nbsp;measure&nbsp;the&nbsp;page's&nbsp;performance.<br>
+&nbsp;<br>
+page&nbsp;is&nbsp;a&nbsp;page_set.Page<br>
+tab&nbsp;is&nbsp;an&nbsp;instance&nbsp;of&nbsp;telemetry.core.Tab<br>
+&nbsp;<br>
+Should&nbsp;call&nbsp;results.Add(name,&nbsp;units,&nbsp;value)&nbsp;for&nbsp;each&nbsp;result,&nbsp;or&nbsp;raise&nbsp;an<br>
+exception&nbsp;on&nbsp;failure.&nbsp;The&nbsp;name&nbsp;and&nbsp;units&nbsp;of&nbsp;each&nbsp;Add()&nbsp;call&nbsp;must&nbsp;be<br>
+the&nbsp;same&nbsp;across&nbsp;all&nbsp;iterations.&nbsp;The&nbsp;name&nbsp;'url'&nbsp;must&nbsp;not&nbsp;be&nbsp;used.<br>
+&nbsp;<br>
+Prefer&nbsp;field&nbsp;names&nbsp;that&nbsp;are&nbsp;in&nbsp;accordance&nbsp;with&nbsp;python&nbsp;variable&nbsp;style.&nbsp;E.g.<br>
+field_name.<br>
+&nbsp;<br>
+Put&nbsp;together:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;def&nbsp;<a href="#PageMeasurement-MeasurePage">MeasurePage</a>(self,&nbsp;page,&nbsp;tab,&nbsp;results):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res&nbsp;=&nbsp;tab.EvaluateJavaScript('2+2')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;res&nbsp;!=&nbsp;4:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;raise&nbsp;Exception('Oh,&nbsp;wow.')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;results.Add('two_plus_two',&nbsp;'count',&nbsp;res)</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-PrepareResults"><strong>PrepareResults</strong></a>(self, options)</dt></dl>
+
+<dl><dt><a name="PageMeasurement-__init__"><strong>__init__</strong></a>(self, action_name_to_run<font color="#909090">=''</font>, needs_browser_restart_after_each_run<font color="#909090">=False</font>, discard_first_result<font color="#909090">=False</font>, clear_cache_before_each_run<font color="#909090">=False</font>)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>output_format_choices</strong></dt>
+</dl>
+<dl><dt><strong>results_are_the_same_on_every_page</strong></dt>
+<dd><tt>By&nbsp;default,&nbsp;measurements&nbsp;are&nbsp;assumed&nbsp;to&nbsp;output&nbsp;the&nbsp;same&nbsp;values&nbsp;for&nbsp;every<br>
+page.&nbsp;This&nbsp;allows&nbsp;incremental&nbsp;output,&nbsp;for&nbsp;example&nbsp;in&nbsp;CSV.&nbsp;If,&nbsp;however,&nbsp;the<br>
+measurement&nbsp;discovers&nbsp;what&nbsp;values&nbsp;it&nbsp;can&nbsp;report&nbsp;as&nbsp;it&nbsp;goes,&nbsp;and&nbsp;those&nbsp;values<br>
+may&nbsp;vary&nbsp;from&nbsp;page&nbsp;to&nbsp;page,&nbsp;you&nbsp;need&nbsp;to&nbsp;override&nbsp;this&nbsp;function&nbsp;and&nbsp;return<br>
+False.&nbsp;Output&nbsp;will&nbsp;not&nbsp;appear&nbsp;in&nbsp;this&nbsp;mode&nbsp;until&nbsp;the&nbsp;entire&nbsp;pageset&nbsp;has<br>
+run.</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="telemetry.page.page_test.html#PageTest">telemetry.page.page_test.PageTest</a>:<br>
+<dl><dt><a name="PageMeasurement-AddCommandLineOptions"><strong>AddCommandLineOptions</strong></a>(self, parser)</dt><dd><tt>Override&nbsp;to&nbsp;expose&nbsp;command-line&nbsp;options&nbsp;for&nbsp;this&nbsp;test.<br>
+&nbsp;<br>
+The&nbsp;provided&nbsp;parser&nbsp;is&nbsp;an&nbsp;optparse.OptionParser&nbsp;instance&nbsp;and&nbsp;accepts&nbsp;all<br>
+normal&nbsp;results.&nbsp;The&nbsp;parsed&nbsp;options&nbsp;are&nbsp;available&nbsp;in&nbsp;Run&nbsp;as<br>
+self.<strong>options</strong>.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-CanRunForPage"><strong>CanRunForPage</strong></a>(self, page)</dt><dd><tt>Override&nbsp;to&nbsp;customize&nbsp;if&nbsp;the&nbsp;test&nbsp;can&nbsp;be&nbsp;ran&nbsp;for&nbsp;the&nbsp;given&nbsp;page.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-CreatePageSet"><strong>CreatePageSet</strong></a>(self, args, options)</dt><dd><tt>Override&nbsp;to&nbsp;make&nbsp;this&nbsp;test&nbsp;generate&nbsp;its&nbsp;own&nbsp;page&nbsp;set&nbsp;instead&nbsp;of<br>
+allowing&nbsp;arbitrary&nbsp;page&nbsp;sets&nbsp;entered&nbsp;from&nbsp;the&nbsp;command-line.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-CustomizeBrowserOptions"><strong>CustomizeBrowserOptions</strong></a>(self, options)</dt><dd><tt>Override&nbsp;to&nbsp;add&nbsp;test-specific&nbsp;options&nbsp;to&nbsp;the&nbsp;BrowserOptions&nbsp;object</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-CustomizeBrowserOptionsForPage"><strong>CustomizeBrowserOptionsForPage</strong></a>(self, page, options)</dt><dd><tt>Add&nbsp;options&nbsp;specific&nbsp;to&nbsp;the&nbsp;test&nbsp;and&nbsp;the&nbsp;given&nbsp;page.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-DidNavigateToPage"><strong>DidNavigateToPage</strong></a>(self, page, tab)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;right&nbsp;after&nbsp;the&nbsp;page&nbsp;is&nbsp;navigated,&nbsp;but&nbsp;before<br>
+any&nbsp;waiting&nbsp;for&nbsp;completion&nbsp;has&nbsp;occurred.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-DidRunAction"><strong>DidRunAction</strong></a>(self, page, tab, action)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;after&nbsp;running&nbsp;the&nbsp;action&nbsp;on&nbsp;the&nbsp;page.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-DidRunPageSet"><strong>DidRunPageSet</strong></a>(self, tab, results)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;after&nbsp;page&nbsp;set&nbsp;is&nbsp;completed,&nbsp;but&nbsp;before&nbsp;browser<br>
+is&nbsp;torn&nbsp;down.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-DidStartHTTPServer"><strong>DidStartHTTPServer</strong></a>(self, tab)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;after&nbsp;the&nbsp;HTTP&nbsp;server&nbsp;is&nbsp;started.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-NeedsBrowserRestartAfterEachRun"><strong>NeedsBrowserRestartAfterEachRun</strong></a>(self, tab)</dt><dd><tt>Override&nbsp;to&nbsp;specify&nbsp;browser&nbsp;restart&nbsp;after&nbsp;each&nbsp;run.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-Run"><strong>Run</strong></a>(self, options, page, tab, results)</dt></dl>
+
+<dl><dt><a name="PageMeasurement-SetUpBrowser"><strong>SetUpBrowser</strong></a>(self, browser)</dt><dd><tt>Override&nbsp;to&nbsp;customize&nbsp;the&nbsp;browser&nbsp;right&nbsp;after&nbsp;it&nbsp;has&nbsp;launched.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-WillNavigateToPage"><strong>WillNavigateToPage</strong></a>(self, page, tab)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;before&nbsp;the&nbsp;page&nbsp;is&nbsp;navigated.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-WillRunAction"><strong>WillRunAction</strong></a>(self, page, tab, action)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;before&nbsp;running&nbsp;the&nbsp;action&nbsp;on&nbsp;the&nbsp;page.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-WillRunPageSet"><strong>WillRunPageSet</strong></a>(self, tab)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;before&nbsp;the&nbsp;page&nbsp;set&nbsp;is&nbsp;navigated.</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="telemetry.page.page_test.html#PageTest">telemetry.page.page_test.PageTest</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>action_name_to_run</strong></dt>
+</dl>
+<dl><dt><strong>clear_cache_before_each_run</strong></dt>
+<dd><tt>When&nbsp;set&nbsp;to&nbsp;True,&nbsp;the&nbsp;browser's&nbsp;disk&nbsp;and&nbsp;memory&nbsp;cache&nbsp;will&nbsp;be&nbsp;cleared<br>
+before&nbsp;each&nbsp;run.</tt></dd>
+</dl>
+<dl><dt><strong>discard_first_result</strong></dt>
+<dd><tt>When&nbsp;set&nbsp;to&nbsp;True,&nbsp;the&nbsp;first&nbsp;run&nbsp;of&nbsp;the&nbsp;test&nbsp;is&nbsp;discarded.&nbsp;&nbsp;This&nbsp;is<br>
+useful&nbsp;for&nbsp;cases&nbsp;where&nbsp;it's&nbsp;desirable&nbsp;to&nbsp;have&nbsp;some&nbsp;test&nbsp;resource&nbsp;cached&nbsp;so<br>
+the&nbsp;first&nbsp;run&nbsp;of&nbsp;the&nbsp;test&nbsp;can&nbsp;warm&nbsp;things&nbsp;up.</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

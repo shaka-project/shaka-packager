@@ -1,0 +1,13 @@
+========
+Overview
+========
+
+See http://dev.chromium.org/developers/tree-sheriffs/perf-sheriffs#TOC-Selecting-an-acceptable-range-of-results
+for a general explanation of how performance expectations work.
+
+Instead of the regular make_expectations.py call, run this:
+
+../perf_expectations/make_expectations.py -c webrtc_perf_expectations.cfg
+
+We keep the WebRTC perf expectations aside since the tests are running on an
+internal master for now.

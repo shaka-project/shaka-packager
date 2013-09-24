@@ -1,0 +1,103 @@
+# List of suppressions
+# Timeouts
+Http/MediaTest.*
+File/MediaTest.*
+ExternalClearKey/EncryptedMediaTest.*
+ClearKey/EncryptedMediaTest.*
+WorkerTest.*
+MediaTest.*
+MediaSourceTest.*
+WebGLConformanceTest.*
+MessagePortTest.Tests
+EncryptedMediaTest.*
+CrossPlatformAccessibilityBrowserTest.*
+DatabaseTest.*
+ResourceDispatcherHostBrowserTest.SyncXMLHttpRequest_DuringUnload
+
+# Crashes
+ResourceDispatcherHostBrowserTest.CrossSiteAfterCrash
+
+# Failures
+RenderViewHostTest.BaseURLParam
+OffTheRecordClipboardTest.ClearContentData
+GpuPixelBrowserTest.*
+FileSystemBrowserTestWithLowQuota.QuotaTest
+ChildProcessSecurityPolicyInProcessBrowserTest.NoLeak
+
+# Needs to start the test server before
+# BrowserTestBase::SetUpCommandLine is called, but on Android
+# the test server needs to be started in SetUpOnMainThread().
+SecurityExploitBrowserTest.SetWebUIProperty
+
+# Plugins are not supported.
+BrowserPluginHostTest.*
+BrowserPluginTest.*
+PluginTest.*
+
+# These used to be test_shell_tests and were ported to content_browsertests in
+# https://codereview.chromium.org/14304004/. Investigate more.
+DomSerializerTests.*
+
+# http://crbug.com/187500
+RenderViewImplTest.*
+RendererAccessibilityTest.EditableTextModeFocusNotifications
+RendererAccessibilityTest.SendFullAccessibilityTreeOnReload
+RendererAccessibilityTest.HideAccessibilityObject
+RendererAccessibilityTest.ShowAccessibilityObject
+RenderWidgetTest.OnMsgPaintAtSize
+PasswordFormConversionUtilsTest.ValidWebFormElementToPasswordForm
+PasswordFormConversionUtilsTest.InvalidWebFormElementToPasswordForm
+
+# Multiple test servers support: http://crbug/187570
+RenderViewHostManagerTest.*
+
+# http://crbug.com/215894
+DownloadContentTest.CancelInterruptedDownload
+DownloadContentTest.CancelResumingDownload
+DownloadContentTest.RemoveDownload
+DownloadContentTest.RemoveResumingDownload
+DownloadContentTest.ResumeInterruptedDownload
+DownloadContentTest.ResumeInterruptedDownloadNoRange
+DownloadContentTest.ResumeInterruptedDownloadNoVerifiers
+DownloadContentTest.ResumeInterruptedDownloadBadPrecondition
+DownloadContentTest.ResumeWithDeletedFile
+
+# http://crbug.com/181069
+WebrtcBrowserTest.CanSetupVideoCall
+WebrtcBrowserTest.CanSetupAudioAndVideoCall
+WebrtcBrowserTest.CanSetupAudioAndVideoCallWithoutMsidAndBundle
+WebrtcBrowserTest.CallWithDataOnly
+WebrtcBrowserTest.CallWithDataAndMedia
+WebrtcBrowserTest.CanMakeEmptyCallThenAddStreamsAndRenegotiate
+WebrtcBrowserTest.CallWithNewVideoMediaStream
+WebrtcBrowserTest.GetAudioAndVideoStreamAndClone
+WebrtcBrowserTest.GetAudioAndVideoStreamAndStop
+WebrtcBrowserTest.GetVideoStreamAndStop
+WebRTCInternalsBrowserTest.WithRealPeerConnectionCall
+
+# http://crbug.com/175683
+WebrtcBrowserTest.CallWithDataAndLaterAddMedia
+
+# http://crbug.com/224134
+RenderWidgetHostBrowserTest.GetSnapshotFromRendererTest
+
+# http://crbug.com/233118
+IndexedDBBrowserTest.*
+IndexedDBBrowserTestWithMissingSSTFile.DestroyTest
+IndexedDBBrowserTestWithVersion0Schema.MigrationTest
+IndexedDBBrowserTestWithVersion123456Schema.DestroyTest
+IndexedDBBrowserTestWithVersion987654SSVData.DestroyTest
+
+# http://crbug.com/256184
+IndexedDBBrowserTestWithCorruptLevelDB.DestroyTest
+
+BookmarkletTest.NonEmptyResult
+
+# http://crbug.com/248796
+ResourceFetcherTests.ResourceFetcher404
+ResourceFetcherTests.ResourceFetcherDeletedInCallback
+ResourceFetcherTests.ResourceFetcherTimeout
+ResourceFetcherTests.ResourceFetcherDownload
+
+# http://crbug.com/256238
+SignalTest.*

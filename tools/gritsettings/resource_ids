@@ -1,0 +1,221 @@
+# Copyright (c) 2012 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# This file is used to assign starting resource ids for resources and strings
+# used by Chromium.  This is done to ensure that resource ids are unique
+# across all the grd files.  If you are adding a new grd file, please add
+# a new entry to this file.
+#
+# The first entry in the file, SRCDIR, is special: It is a relative path from
+# this file to the base of your checkout.
+#
+# http://msdn.microsoft.com/en-us/library/t2zechd4(VS.71).aspx says that the
+# range for IDR_ is 1 to 28,671 and the range for IDS_ is 1 to 32,767 and
+# common convention starts practical use of IDs at 100 or 101.
+{
+  "SRCDIR": "../..",
+
+  "chrome/browser/browser_resources.grd": {
+    "includes": [500],
+    "structures": [750],
+  },
+  "chrome/browser/resources/component_extension_resources.grd": {
+    "includes": [1000],
+    "structures": [1450],
+  },
+  "chrome/browser/resources/net_internals_resources.grd": {
+    "includes": [1500],
+  },
+  "ui/webui/resources/webui_resources.grd": {
+    "includes": [2000],
+    "structures": [2200],
+  },
+  "chrome/common/common_resources.grd": {
+    "includes": [2500],
+  },
+  "chrome/renderer/resources/renderer_resources.grd": {
+    "includes": [3500],
+    "structures": [3700],
+  },
+  "net/base/net_resources.grd": {
+    "includes": [4000],
+  },
+  "ui/resources/ui_unscaled_resources.grd": {
+    "includes": [4500],
+  },
+  "webkit/glue/resources/webkit_resources.grd": {
+    "structures": [4700],
+  },
+  "webkit/tools/test_shell/test_shell_resources.grd": {
+    "includes": [5000],
+  },
+  "ui/resources/ui_resources.grd": {
+    "structures": [5500],
+  },
+  "ash/resources/ash_resources.grd": {
+    "includes": [6100],
+    "structures": [6150],
+  },
+  "chrome/app/theme/theme_resources.grd": {
+    "structures": [6500],
+  },
+  "chrome/app/theme/chrome_unscaled_resources.grd": {
+    "includes": [7500],
+  },
+  "chrome_frame/resources/chrome_frame_resources.grd": {
+    "includes": [8000],
+  },
+  "ui/base/strings/app_locale_settings.grd": {
+    "messages": [9000],
+  },
+  "chrome/app/resources/locale_settings.grd": {
+    "includes": [9500],
+    "messages": [10000],
+  },
+  # These each start with the same resource id because we only use one
+  # file for each build (chromiumos, google_chromeos, linux, mac, or win).
+  "chrome/app/resources/locale_settings_chromiumos.grd": {
+    "messages": [10500],
+  },
+  "chrome/app/resources/locale_settings_google_chromeos.grd": {
+    "messages": [10500],
+  },
+  "chrome/app/resources/locale_settings_linux.grd": {
+    "messages": [10500],
+  },
+  "chrome/app/resources/locale_settings_mac.grd": {
+    "messages": [10500],
+  },
+  "chrome/app/resources/locale_settings_win.grd": {
+    "messages": [10500],
+  },
+
+  "ui/base/strings/ui_strings.grd": {
+    "messages": [11000],
+  },
+  # Chromium strings and Google Chrome strings must start at the same id.
+  # We only use one file depending on whether we're building Chromium or
+  # Google Chrome.
+  "chrome/app/chromium_strings.grd": {
+    "messages": [11500],
+  },
+  "chrome/app/google_chrome_strings.grd": {
+    "messages": [11500],
+  },
+  # Leave lots of space for generated_resources since it has most of our
+  # strings.
+  "chrome/app/generated_resources.grd": {
+    "structures": [12000],
+    "messages": [12500],
+  },
+  # The chrome frame dialogs are also in generated_resources.grd so they
+  # get included by the translation console.  We make sure that the ids
+  # for structures here are the same as for generated_resources.grd.
+  "chrome_frame/resources/chrome_frame_dialogs.grd": {
+    "structures": [12000],
+    "includes": [12250],
+  },
+  "webkit/glue/inspector_strings.grd": {
+    "messages": [17500],
+  },
+  "webkit/glue/webkit_strings.grd": {
+    "messages": [18000],
+  },
+
+  "chrome_frame/resources/chrome_frame_resources.grd": {
+    "includes": [19000],
+    "structures": [19500],
+  },
+
+ "ui/base/native_theme/resources/native_theme_resources.grd": {
+    "includes": [20000],
+  },
+
+  "chrome/app/policy/policy_templates.grd": {
+    "structures": [20500],
+    "messages": [20510],
+  },
+
+  "chrome/browser/autofill/autofill_resources.grd": {
+    "messages": [21000],
+  },
+  "chrome/browser/resources/sync_internals_resources.grd": {
+    "includes": [21500],
+  },
+  "chrome/browser/resources/signin_internals_resources.grd": {
+    "includes": [21750],
+  },
+  # This file is generated during the build.
+  # devtools_resources.grd can be in two different places depending on whether
+  # we are in a chromium checkout or a webkit-only checkout.
+  "<(SHARED_INTERMEDIATE_DIR)/devtools/devtools_resources.grd": {
+    "includes": [22000],
+  },
+  "devtools_resources.grd": {
+    "includes": [22000],
+  },
+  # This file is generated during the build.
+  "chrome/browser/devtools/frontend/devtools_discovery_page_resources.grd": {
+    "includes": [22500],
+  },
+  "chrome/browser/resources/options_resources.grd": {
+    "includes": [23000],
+  },
+  "chrome/browser/resources/options_resources.grd": {
+    "structures": [23200],
+  },
+  "cloud_print/virtual_driver/win/install/virtual_driver_setup_resources.grd": {
+    "messages": [23500],
+    "includes": [23550],
+  },
+  "cloud_print/service/win/service_resources.grd": {
+    "messages": [23600],
+    "includes": [23800],
+    "structures": [23900],
+  },
+  "chrome/browser/resources/quota_internals_resources.grd": {
+    "includes": [24000],
+  },
+  "content/content_resources.grd": {
+    "includes": [25000],
+  },
+  "content/shell/shell_resources.grd": {
+    "includes": [25500],
+  },
+  # This file is generated during the build.
+  "<(SHARED_INTERMEDIATE_DIR)/content/browser/tracing/tracing_resources.grd": {
+    "includes": [25750],
+  },
+  "ash/ash_strings.grd": {
+    "messages": [26000],
+  },
+  "chrome/common/extensions_api_resources.grd": {
+    "includes": [26500],
+  },
+  "third_party/trace-viewer/src/tracing.grd": {
+    "includes": [27000],
+  },
+  "chrome/browser/resources/memory_internals_resources.grd": {
+    "includes": [27500],
+  },
+  "device/bluetooth/bluetooth_strings.grd": {
+    "messages": [28000],
+  },
+  "ui/keyboard/keyboard_resources.grd": {
+    "includes": [28050],
+  },
+  "chrome/browser/resources/translate_internals_resources.grd": {
+    "includes": [28500],
+  },
+  "chrome/browser/resources/sync_file_system_internals_resources.grd": {
+    "includes": [29000],
+  },
+  "components/component_strings.grd": {
+    "messages": [30000],
+  },
+  "third_party/WebKit/public/blink_resources.grd": {
+    "includes": [30500],
+  },
+  # Resource ids starting at 31000 are reserved for projects built on Chromium.
+}

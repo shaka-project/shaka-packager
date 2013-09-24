@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style type="text/css">
+    @-webkit-keyframes color-animation {
+      0% { background:#000; }
+      100% { background:#fff; }
+    }
+
+    @-webkit-keyframes transform-animation {
+      0% { -webkit-transform: scale(1) rotate3d(1, 1, 1, 0deg); opacity(1); }
+      50% { -webkit-transform: scale(10) rotate3d(1, 1, 1, 45deg); opacity(0); }
+      100% { -webkit-transform: scale(1) rotate3d(1, 1, 1, 0deg); opacity(1); }
+    }
+
+    div {
+      position: absolute;
+      -webkit-transform-style: preserve-3d;
+    }
+
+    .gradient {
+      background:-webkit-repeating-radial-gradient(circle, red, green 5%, blue 10%, red 15%);
+      opacity: 0.25;
+      width:100%;
+      height:900px;
+     }
+
+    .poster {
+      height: 50px;
+      width: 50px;
+      background-color: gray;
+      -webkit-border-radius: 10px;
+      font-family: 'Georgia', serif;
+      border: 2px solid black;
+      font-size: 42px;
+      font-weight: bold;
+      text-align: center;
+    }
+  </style>
+  <script type="text/javascript">
+    function startExperiment()
+    {
+      document.body.style.margin = "0";
+      document.body.style.webkitAnimationName = "color-animation";
+      document.body.style.webkitAnimationDuration = "0.5s";
+      document.body.style.webkitAnimationIterationCount = "infinite";
+      document.body.style.webkitAnimationDirection = "alternate";
+      for (var i = 0; i < 2; ++i) {
+        var elem = document.getElementById("elem" + i.toString());
+        elem.style.opacity = "0.5";
+        elem.style.width = "100%";
+        elem.style.height = "900px";
+        elem.style.webkitTransform = "rotate3d(1,1,0," + ((i + 1) * 10).toString() + "deg)";
+        elem.style.webkitAnimationName = "color-animation";
+        elem.style.webkitAnimationDuration = (i + 1).toString() + "s";
+        elem.style.webkitAnimationIterationCount = "infinite";
+      }
+      var transformed_elem = document.getElementById("transformed-elem0");
+      transformed_elem.style.left = "250px";
+      transformed_elem.style.top = "250px";
+      transformed_elem.style.webkitAnimationName = "transform-animation";
+      transformed_elem.style.webkitAnimationDuration = "5s";
+      transformed_elem.style.webkitAnimationIterationCount = "infinite";
+    }
+
+    window.addEventListener('load', startExperiment, false);
+  </script>
+</head>
+<body>
+<div class="gradient"></div>
+<div id="elem0"><div class="gradient"></div></div>
+<div id="elem1"><div class="gradient"></div></div>
+<div id="transformed-elem0"><p class="poster">?</p></div>
+</body>
+</html>

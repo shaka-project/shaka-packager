@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+<title>Pseudo-random transactions</title>
+<script src="../head.js"></script>
+<script src="../common.js"></script>
+<script>
+var SELECT_STATEMENT_IN_READ_TRANSACTION = 0;
+var SELECT_STATEMENT_IN_TRANSACTION = 1;
+var INSERT_STATEMENT = 2;
+var UPDATE_STATEMENT = 3;
+var DELETE_STATEMENT = 4;
+var STATEMENTS =
+  [2, 0, 4, 2, 2, 2, 2, 2, 1, 4, 1, 1, 0, 2, 0, 0, 2, 1, 2, 0,
+   4, 4, 2, 3, 3, 4, 3, 1, 3, 3, 2, 4, 3, 3, 2, 3, 1, 1, 4, 2,
+   4, 1, 4, 2, 3, 0, 4, 2, 4, 0, 4, 3, 3, 2, 0, 2, 1, 4, 4, 4,
+   4, 2, 3, 2, 0, 3, 3, 0, 4, 4, 4, 2, 3, 1, 4, 2, 4, 2, 3, 0,
+   2, 4, 0, 4, 2, 2, 4, 0, 3, 2, 3, 2, 3, 2, 0, 0, 4, 0, 2, 0];
+
+var transactionsCompleted = 0;
+var startTime = 0;
+
+function statementSuccessCallback(tx, data) {}
+function statementErrorCallback(tx, error) {}
+
+function transactionSuccessCallback() {
+  if (++transactionsCompleted == TRANSACTIONS)
+    testComplete(Date.now() - startTime);
+}
+
+function transactionErrorCallback(error) {
+  testComplete(TEST_FAILED);
+}
+
+function customRunTransactions(db) {
+  var selectIDCounter = 0;
+  var insertIDCounter = 0;
+  var updateIDCounter = 0;
+  var deleteIDCounter = 0;
+  var randomString = getRandomString();
+  var randomStringForUpdates = getRandomString();
+  startTime = Date.now();
+  for (var i = 0; i < TRANSACTIONS; i++) {
+    switch (STATEMENTS[i % STATEMENTS.length]) {
+      case SELECT_STATEMENT_IN_READ_TRANSACTION:
+        db.readTransaction(
+            function(tx) {
+              tx.executeSql('SELECT * FROM Test WHERE ID = ?',
+                            [selectIDCounter++],
+                            statementSuccessCallback, statementErrorCallback);
+            }, transactionErrorCallback, transactionSuccessCallback);
+        break;
+      case SELECT_STATEMENT_IN_TRANSACTION:
+        db.transaction(
+            function(tx) {
+              tx.executeSql('SELECT * FROM Test WHERE ID = ?',
+                            [selectIDCounter++],
+                            statementSuccessCallback, statementErrorCallback);
+            }, transactionErrorCallback, transactionSuccessCallback);
+        break;
+      case INSERT_STATEMENT:
+        db.transaction(
+            function(tx) {
+              tx.executeSql('INSERT INTO Test VALUES (?, ?)',
+                            [insertIDCounter++, randomString],
+                            statementSuccessCallback, statementErrorCallback);
+            }, transactionErrorCallback, transactionSuccessCallback);
+        break;
+      case UPDATE_STATEMENT:
+        db.transaction(
+            function(tx) {
+              tx.executeSql('UPDATE Test SET Foo = ? WHERE ID = ?',
+                            [randomStringForUpdates, updateIDCounter++],
+                            statementSuccessCallback, statementErrorCallback);
+            }, transactionErrorCallback, transactionSuccessCallback);
+        break;
+      case DELETE_STATEMENT:
+        db.transaction(
+            function(tx) {
+              tx.executeSql('DELETE FROM Test WHERE ID = ?',
+                            [deleteIDCounter++],
+                            statementSuccessCallback, statementErrorCallback);
+            }, transactionErrorCallback, transactionSuccessCallback);
+        break;
+      default:
+        testComplete(TEST_FAILED);
+        return;
+    }
+  }
+}
+</script>
+
+<body>
+<script>
+  runPerformanceTest({
+    dbName: "PseudoRandomTransactions",
+    readOnly: false,
+    insertRowsAtSetup: true,
+    transactionCallback: null,
+    customRunTransactions: customRunTransactions
+  });
+</script>
+</body>
+</html>

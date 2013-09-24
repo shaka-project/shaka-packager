@@ -1,0 +1,11 @@
+# The set noparent is temporary until src/OWNERS isn't *.
+set noparent
+bulach@chromium.org
+dtu@chromium.org
+nduca@chromium.org
+tonyg@chromium.org
+hartmanng@chromium.org
+marja@chromium.org
+
+# for cros-related changes.
+achuith@chromium.org 

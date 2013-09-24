@@ -1,0 +1,52 @@
+{
+  "description": "Popular pages in Korean, Thai and Vietnamese.",
+  "archive_data_file": "../data/intl_ko_th_vi.json",
+  "user_agent_type": "desktop",
+  "smoothness": { "action": "scroll" },
+  "pages": [
+    {
+      "url": "http://us.24h.com.vn/",
+      "why": "#7 site in Vietnam"
+    },
+    {
+      "url": "http://vnexpress.net/",
+      "why": "#6 site in Vietnam"
+    },
+    {
+      "url": "http://vietnamnet.vn/",
+      "why": "#18 site in Vietnam"
+    },
+    {
+      "url": "http://news.zing.vn/the-gioi/ba-dam-thep-margaret-thatcher-qua-doi/a312895.html#home_noibat1",
+      "why": "#5 site in Vietnam"
+    },
+    {
+      "url": "http://kenh14.vn/home.chn"
+    },
+    {
+      "url": "http://www.naver.com/",
+      "why": "#5 site in Korea"
+    },
+    {
+      "url": "http://www.daum.net/",
+      "why": "#9 site in Korea"
+    },
+    {
+      "url": "http://www.donga.com/",
+      "why": "#25 site in Korea"
+    },
+    {
+      "url": "http://www.chosun.com/"
+    },
+    {
+      "url": "http://www.danawa.com/"
+    },
+    {
+      "url": "http://pantip.com/",
+      "why": "#10 site in Thailand"
+    },
+    {
+      "url": "http://thaimisc.com/"
+    }
+  ]
+}

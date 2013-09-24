@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+<title>Select read-transactions (store results in JS variables)</title>
+<script src="../head.js"></script>
+<script src="../common.js"></script>
+<script>
+var idCounter = 0;
+var resultId = 0;
+var resultString = '';
+
+function transactionCallback(tx) {
+  tx.executeSql('SELECT * FROM Test WHERE ID = ?', [idCounter++],
+                function(tx, data) {
+                  for (var i = 0; i < data.rows.length; i++) {
+                    resultId = data.rows.item(i).ID;
+                    resultString = data.rows.item(i).Foo;
+                  }
+                }, function(tx, error) {});
+}
+</script>
+
+<body>
+<script>
+  runPerformanceTest({
+    dbName: "SelectReadTransactionsReadResults",
+    readOnly: true,
+    insertRowsAtSetup: true,
+    transactionCallback: transactionCallback,
+    customRunTransactions: null
+  });
+</script>
+</body>
+</html>

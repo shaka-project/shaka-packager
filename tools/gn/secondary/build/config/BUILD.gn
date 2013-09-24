@@ -1,0 +1,52 @@
+# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("my_msvs") {
+  defines = [
+      "CHROMIUM_BUILD",
+      "TOOLKIT_VIEWS=1",
+      "USE_LIBJPEG_TURBO=1",
+      "ENABLE_ONE_CLICK_SIGNIN",
+      "ENABLE_REMOTING=1",
+      "ENABLE_WEBRTC=1",
+      "ENABLE_CONFIGURATION_POLICY",
+      "ENABLE_INPUT_SPEECH",
+      "ENABLE_NOTIFICATIONS",
+      "ENABLE_GPU=1",
+      "ENABLE_EGLIMAGE=1",
+      "ENABLE_TASK_MANAGER=1",
+      "ENABLE_EXTENSIONS=1",
+      "ENABLE_PLUGIN_INSTALLATION=1",
+      "ENABLE_PLUGINS=1",
+      "ENABLE_SESSION_SERVICE=1",
+      "ENABLE_THEMES=1",
+      "ENABLE_AUTOFILL_DIALOG=1",
+      "ENABLE_BACKGROUND=1",
+      "ENABLE_AUTOMATION=1",
+      "ENABLE_GOOGLE_NOW=1",
+      "ENABLE_LANGUAGE_DETECTION=1",
+      "ENABLE_PRINTING=1",
+      "ENABLE_CAPTIVE_PORTAL_DETECTION=1",
+      "ENABLE_APP_LIST=1",
+      "ENABLE_MESSAGE_CENTER=1",
+      "ENABLE_SETTINGS_APP=1",
+      "ENABLE_MANAGED_USERS=1",
+  ]
+}
+
+config("feature_flags") {
+  #defines = 
+}
+
+config("debug") {
+  defines = [
+    "_DEBUG",
+    "DYNAMIC_ANNOTATIONS_ENABLED=1",
+    "WTF_USE_DYNAMIC_ANNOTATIONS=1",
+  ]
+}
+
+config("release") {
+
+}

@@ -1,0 +1,26 @@
+<!DOCTYPE HTML>
+<html>
+<title>Delete transactions</title>
+<script src="../head.js"></script>
+<script src="../common.js"></script>
+<script>
+var idCounter = 0;
+
+function transactionCallback(tx) {
+  tx.executeSql('DELETE FROM Test WHERE ID = ?', [idCounter++],
+                function(tx, data) {}, function(tx, error) {});
+}
+</script>
+
+<body>
+<script>
+  runPerformanceTest({
+    dbName: "DeleteTransactions",
+    readOnly: false,
+    insertRowsAtSetup: true,
+    transactionCallback: transactionCallback,
+    customRunTransactions: null
+  });
+</script>
+</body>
+</html>

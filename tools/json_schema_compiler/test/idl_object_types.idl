@@ -1,0 +1,22 @@
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Tests 'object' types in various places in IDL.
+
+namespace idl_object_types {
+  dictionary FooType {
+    long x;
+    object y;
+    [instanceOf=Window]object z;
+  };
+
+  dictionary BarType {
+    any x;
+  };
+
+  interface Functions {
+    static void objectFunction1([instanceOf=ImageData]object icon);
+    static void objectFunction2(any some_arg);
+  };
+};

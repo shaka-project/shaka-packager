@@ -1,0 +1,16 @@
+# The rules in this file are only applied at compile time.
+# Because the Chrome buildsystem does not automatically touch the files
+# mentioned here, changing this file requires clobbering all TSan v2 bots.
+#
+# Please think twice before you add or remove these rules.
+# Data races should typically go to suppressions.txt.
+
+# See http://crbug.com/102327
+fun:*ThreadData*Initialize*
+
+# Known benign races on histograms. See http://crbug.com/62694.
+src:base/metrics/histogram_samples.cc
+src:base/metrics/sample_vector.cc
+
+# See http://crbug.com/172104
+fun:*v8*internal*ThreadEntry*

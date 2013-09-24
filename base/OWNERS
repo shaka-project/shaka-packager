@@ -1,0 +1,29 @@
+mark@chromium.org
+darin@chromium.org
+brettw@chromium.org
+willchan@chromium.org
+jar@chromium.org
+
+per-file *.isolate=csharp@chromium.org
+per-file *.isolate=maruel@chromium.org
+per-file bind.h=ajwong@chromium.org
+per-file bind_helpers.cc=ajwong@chromium.org
+per-file bind_helpers.h=ajwong@chromium.org
+per-file bind_helpers_unittest.cc=ajwong@chromium.org
+per-file bind.h.pump=ajwong@chromium.org
+per-file bind_internal.h=ajwong@chromium.org
+per-file bind_internal.h.pump=ajwong@chromium.org
+per-file bind_internal_win.h=ajwong@chromium.org
+per-file bind_internal_win.h.pump=ajwong@chromium.org
+per-file bind_unittest.cc=ajwong@chromium.org
+per-file bind_unittest.nc=ajwong@chromium.org
+per-file callback_forward.h=ajwong@chromium.org
+per-file callback.h=ajwong@chromium.org
+per-file callback_helpers.h=ajwong@chromium.org
+per-file callback.h.pump=ajwong@chromium.org
+per-file callback_internal.cc=ajwong@chromium.org
+per-file callback_internal.h=ajwong@chromium.org
+per-file callback_unittest.cc=ajwong@chromium.org
+per-file callback_unittest.h=ajwong@chromium.org
+per-file callback_unittest.nc=ajwong@chromium.org
+per-file security_unittest.cc=jln@chromium.org

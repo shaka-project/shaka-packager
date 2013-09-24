@@ -1,0 +1,81 @@
+$$ This is a pump file for generating file templates.  Pump is a python
+$$ script that is part of the Google Test suite of utilities.  Description
+$$ can be found here:
+$$
+$$ http://code.google.com/p/googletest/wiki/PumpManual
+$$
+
+$$ See comment for MAX_ARITY in base/bind.h.pump.
+$var MAX_ARITY = 7
+
+// Copyright (c) 2011 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Specializations of RunnableAdapter<> for Windows specific calling
+// conventions.  Please see base/bind_internal.h for more info.
+
+#ifndef BASE_BIND_INTERNAL_WIN_H_
+#define BASE_BIND_INTERNAL_WIN_H_
+
+// In the x64 architecture in Windows, __fastcall, __stdcall, etc, are all
+// the same as __cdecl which would turn the following specializations into
+// multiple definitions.
+#if !defined(ARCH_CPU_X86_64)
+
+namespace base {
+namespace internal {
+
+template <typename Functor>
+class RunnableAdapter;
+
+$range ARITY 0..MAX_ARITY
+$for ARITY [[
+$range ARG 1..ARITY
+
+// __stdcall Function: Arity $(ARITY).
+template <typename R[[]]
+$if ARITY > 0[[, ]] $for ARG , [[typename A$(ARG)]]>
+class RunnableAdapter<R(__stdcall *)($for ARG , [[A$(ARG)]])> {
+ public:
+  typedef R (RunType)($for ARG , [[A$(ARG)]]);
+
+  explicit RunnableAdapter(R(__stdcall *function)($for ARG , [[A$(ARG)]]))
+      : function_(function) {
+  }
+
+  R Run($for ARG , [[typename CallbackParamTraits<A$(ARG)>::ForwardType a$(ARG)]]) {
+    return function_($for ARG , [[a$(ARG)]]);
+  }
+
+ private:
+  R (__stdcall *function_)($for ARG , [[A$(ARG)]]);
+};
+
+// __fastcall Function: Arity $(ARITY).
+template <typename R[[]]
+$if ARITY > 0[[, ]] $for ARG , [[typename A$(ARG)]]>
+class RunnableAdapter<R(__fastcall *)($for ARG , [[A$(ARG)]])> {
+ public:
+  typedef R (RunType)($for ARG , [[A$(ARG)]]);
+
+  explicit RunnableAdapter(R(__fastcall *function)($for ARG , [[A$(ARG)]]))
+      : function_(function) {
+  }
+
+  R Run($for ARG , [[typename CallbackParamTraits<A$(ARG)>::ForwardType a$(ARG)]]) {
+    return function_($for ARG , [[a$(ARG)]]);
+  }
+
+ private:
+  R (__fastcall *function_)($for ARG , [[A$(ARG)]]);
+};
+
+]]  $$for ARITY
+
+}  // namespace internal
+}  // namespace base
+
+#endif  // !defined(ARCH_CPU_X86_64)
+
+#endif  // BASE_BIND_INTERNAL_WIN_H_

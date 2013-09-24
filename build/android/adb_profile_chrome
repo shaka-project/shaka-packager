@@ -1,0 +1,139 @@
+#!/bin/bash
+#
+# Copyright 2013 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# Start / stop profiling in chrome.
+
+# The profiling data is saved to directory /sdcard/Download. The files
+# are named beginning chrome-profile-results-
+#
+# Assumes you have sourced the android build environment script
+# (e.g. 'adb' is on your path).
+set -e
+
+usage() {
+  echo "adb_profile_chrome [--start [-o file] [-c C]|--stop|-d|-t N] [-v N]"
+  echo "See http://dev.chromium.org/developers/how-tos/trace-event-profiling-tool for detailed instructions on profiling."
+  echo ""
+  echo "  --start            Start profiling."
+  echo "  --output|-o file   Save profile output to file. "
+  echo "                     (Default is /sdcard/Download/chrome-profile-results-*)"
+  echo "  --categories|-c C  Select categories to trace with comma-delimited wildcards."
+  echo "                     e.g. '*', 'cat1*,-cat1a'. Default is '*'."
+  echo "  --stop             Stop profiling."
+  echo "  --download|-d      Download latest trace."
+  echo "  --time|-t N        Profile for N seconds and download the resulting trace."
+  echo "  --version|v N      Select among installed browsers."
+  echo "                     One of stable (default), beta, dev, build"
+  echo ""
+  echo "Profiling data is saved to the device."
+  exit 0
+}
+
+send_intent() {
+  local PACKAGE=$1
+  local INTENT=$2
+  shift
+  shift
+  adb shell am broadcast -a $PACKAGE.$INTENT $*
+}
+
+download_latest_trace() {
+  TRACE_FILE=$(adb logcat -d | \
+      grep "Logging performance trace to file: " | \
+      tail -1 | \
+      perl -pi -e "s/.*\/storage\/emulated\/.+\/([^\r]+).*/\/sdcard\/Download\/\\1/g")
+  if [ -z "$TRACE_FILE" ]; then
+    echo "Unable to determine trace file name"
+    exit 1
+  fi
+
+  adb pull $TRACE_FILE 2> /dev/null
+  LOCAL_TRACE_FILE=$(basename $TRACE_FILE)
+  if [ ! -f "$LOCAL_TRACE_FILE" ]; then
+    echo "Unable to download trace file"
+    exit 1
+  fi
+}
+
+do_timed_capture() {
+  local PACKAGE=$1
+  local INTERVAL=$2
+  shift
+  shift
+  echo -n "Capturing trace..."
+  send_intent ${PACKAGE} "GPU_PROFILER_START" $* > /dev/null
+  sleep ${INTERVAL}
+  send_intent ${PACKAGE} "GPU_PROFILER_STOP" > /dev/null
+  echo "done"
+
+  echo -n "Downloading trace..."
+  sleep $[${INTERVAL} / 4 + 1]
+  download_latest_trace
+  echo "done"
+
+  echo "Trace written to ${PWD}/${LOCAL_TRACE_FILE}"
+}
+
+PACKAGE=${DEFAULT_PACKAGE:-com.android.chrome}
+
+while test -n "$1"; do
+  case "$1" in
+    -v|--version)
+      if [[ -z "$2" ]] ; then
+        usage
+      fi
+      shift
+      case "$1" in
+        stable) PACKAGE="com.android.chrome" ;;
+        beta) PACKAGE="com.chrome.beta" ;;
+        dev) PACKAGE="com.google.android.apps.chrome_dev" ;;
+        build) PACKAGE="com.google.android.apps.chrome" ;;
+        *) usage ;;
+      esac
+      ;;
+    --start) FUNCTION="GPU_PROFILER_START" ;;
+    --stop) FUNCTION="GPU_PROFILER_STOP" ;;
+    -o|--output)
+      if [ -z "$2" ] ; then
+        usage
+      fi
+      OUTPUT="-e file '$2'"
+      shift
+      ;;
+    -c|--categories)
+      if [ -z "$2" ]; then
+        usage
+      fi
+      CATEGORIES="-e categories '$2'"
+      shift
+      ;;
+    -t|--time)
+      shift
+      if [ -z "$1" ] ; then
+        usage
+      fi
+      INTERVAL="$1"
+      ;;
+    -d|--download)
+      shift
+      download_latest_trace
+      echo "Trace written to ${PWD}/${LOCAL_TRACE_FILE}"
+      ;;
+    *) usage ;;
+  esac
+  shift
+done
+
+if [ -z "${INTERVAL}" ] ; then
+  if [ -z "${FUNCTION}" ] ; then
+    usage
+  else
+    send_intent ${PACKAGE} ${FUNCTION} ${OUTPUT} ${CATEGORIES}
+  fi
+else
+  do_timed_capture ${PACKAGE} ${INTERVAL} ${CATEGORIES}
+fi
+exit 0

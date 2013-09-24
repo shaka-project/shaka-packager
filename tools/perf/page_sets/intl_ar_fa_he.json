@@ -1,0 +1,32 @@
+{
+  "description": "Popular pages in right-to-left languages Arabic, Farsi and Hebrew.",
+  "archive_data_file": "../data/intl_ar_fa_he.json",
+  "user_agent_type": "desktop",
+  "smoothness": { "action": "scroll" },
+  "pages": [
+    {
+      "url": "http://msn.co.il/"
+    },
+    {
+      "url": "http://ynet.co.il/"
+    },
+    {
+      "url": "http://www.islamweb.net/"
+    },
+    {
+      "url": "http://farsnews.com/"
+    },
+    {
+      "url": "http://www.masrawy.com/"
+    },
+    {
+      "url": "http://www.startimes.com/f.aspx"
+    },
+    {
+      "url": "http://www.aljayyash.net/"
+    },
+    {
+      "url": "http://www.google.com.sa/"
+    }
+  ]
+}

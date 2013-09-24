@@ -1,0 +1,94 @@
+{
+  "_description" : "This file contains info about our performance test units, used by the perf dashboard (http://chromeperf.appspot.com).",
+
+  "%": {
+    "improvement_direction": "down",
+    "why": "Percent CPU usage"
+  },
+  "bytes": {
+    "improvement_direction": "down"
+  },
+  "count": {
+    "improvement_direction": "down",
+    "why": "Processes"
+  },
+  "files": {
+    "improvement_direction": "down",
+    "why": "Static initializers"
+  },
+  "fps": {
+    "improvement_direction": "up"
+  },
+  "frames": {
+    "improvement_direction": "down",
+    "why": "Dropped frames"
+  },
+  "frames-per-second": {
+    "improvement_direction": "up"
+  },
+  "frame_time": {
+    "improvement_direction": "down"
+  },
+  "kb": {
+    "improvement_direction": "down"
+  },
+  "KB": {
+    "improvement_direction": "down"
+  },
+  "lines": {
+    "improvement_direction": "up",
+    "why": "Coverage"
+  },
+  "load": {
+    "improvement_direction": "down"
+  },
+  "MB": {
+    "improvement_direction": "down"
+  },
+  "ms": {
+    "improvement_direction": "down"
+  },
+  "milliseconds": {
+    "improvement_direction": "down"
+  },
+  "milliseconds-per-frame": {
+    "improvement_direction": "down"
+  },
+  "objects (bigger is better)": {
+    "improvement_direction": "up"
+  },
+  "ObjectsAt30FPS": {
+    "improvement_direction": "up"
+  },
+  "percent": {
+    "improvement_direction": "down"
+  },
+  "ports": {
+    "improvement_direction": "down"
+  },
+  "relocs": {
+    "improvement_direction": "down"
+  },
+  "runs/s": {
+    "improvement_direction": "up"
+  },
+  "runs_per_second": {
+    "improvement_direction": "up"
+  },
+  "score": {
+    "improvement_direction": "up"
+  },
+  "score_(bigger_is_better)": {
+    "improvement_direction": "up"
+  },
+  "score (bigger is better)": {
+    "improvement_direction": "up"
+  },
+  "sec": {
+    "improvement_direction": "down"
+  },
+  "seconds": {
+    "improvement_direction": "down"
+  }
+}
+

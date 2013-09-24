@@ -1,0 +1,34 @@
+{
+  "android.browser": {
+    "file": "policy.android.browser.json",
+    "format": "json"
+  },
+  "android.renderer": {
+    "file": "policy.android.renderer.json",
+    "format": "json"
+  },
+  "android.webview": {
+    "file": "policy.android.webview.json",
+    "format": "json"
+  },
+  "sourcefile": {
+    "file": "policy.sourcefile.json",
+    "format": "json"
+  },
+  "l0": {
+    "file": "policy.l0.json",
+    "format": "json"
+  },
+  "l1": {
+    "file": "policy.l1.json",
+    "format": "json"
+  },
+  "l2": {
+    "file": "policy.l2.json",
+    "format": "json"
+  },
+  "t0": {
+    "file": "policy.t0.json",
+    "format": "json"
+  }
+}

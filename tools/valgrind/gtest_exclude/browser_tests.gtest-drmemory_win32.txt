@@ -1,0 +1,50 @@
+# TODO(zhaoqin): File bugs for those failing browser tests.
+
+# Dr.Memory i#1052: http://code.google.com/p/drmemory/issues/detail?id=1052
+#
+# The list is too long for gtest_filter, so we exclude the whole
+# test case if any of its tests failed.
+*FLAKY*
+
+# it takes too long to run all browser_tests with Dr.Memory,
+# and we only select subset to run
+# A*: ~70  tests
+A*
+# DrM-i#1052-c#52
+# AutofillTest.*
+# AcceleratedCompositingBlockedTest.*
+# AppApiTest.*
+# BrowserAccessibilityStateImplTest.*
+B*
+C*
+D*
+E*
+F*
+G*
+# H*: ~35  tests
+H*
+# DrM-i#1052-c#53
+# HistoryWebUITest.*
+# I*: ~10  tests
+# DrM-i#1052-c#53
+InfoBarsTest.*
+# J*: 0    tests
+# K*: 1    tests
+L*
+M*
+N*
+O*
+P*
+Q*
+R*
+S*
+T*
+# U*: ~20  tests
+# DrM-i#1052-c#53
+UnloadTest.*
+# V*: 5    tests
+# W*: ~150 tests
+W*
+# X*: 0    tests
+# Y*: 0    tests
+# Z*: 0    tests

@@ -1,0 +1,8 @@
+# Primary OWNER
+jar@chromium.org
+
+# Secondary OWNER; can review simpler changes
+isherman@chromium.org
+
+# Note that all members of the parent file base/OWNERS can also stamp trivial
+# changes, but will probably defer to Jim for meatier changes.

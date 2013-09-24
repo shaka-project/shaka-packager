@@ -1,0 +1,491 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: package telemetry</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong>telemetry</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="../telemetry/__init__.py">telemetry/__init__.py</a></font></td></tr></table>
+    <p><tt>A&nbsp;library&nbsp;for&nbsp;cross-platform&nbsp;browser&nbsp;tests.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Package Contents</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="telemetry.core.html"><strong>core</strong>&nbsp;(package)</a><br>
+<a href="telemetry.page.html"><strong>page</strong>&nbsp;(package)</a><br>
+</td><td width="25%" valign=top><a href="telemetry.test.html">test</a><br>
+<a href="telemetry.test_runner.html">test_runner</a><br>
+</td><td width="25%" valign=top><a href="telemetry.unittest.html"><strong>unittest</strong>&nbsp;(package)</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.core.browser.html#Browser">telemetry.core.browser.Browser</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="optparse.html#Values">optparse.Values</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.core.browser_options.html#BrowserOptions">telemetry.core.browser_options.BrowserOptions</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="telemetry.core.web_contents.html#WebContents">telemetry.core.web_contents.WebContents</a>(<a href="__builtin__.html#object">__builtin__.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.core.tab.html#Tab">telemetry.core.tab.Tab</a>
+</font></dt></dl>
+</dd>
+<dt><font face="helvetica, arial"><a href="telemetry.page.page_test.html#PageTest">telemetry.page.page_test.PageTest</a>(<a href="__builtin__.html#object">__builtin__.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.page.page_measurement.html#PageMeasurement">telemetry.page.page_measurement.PageMeasurement</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Browser">class <strong>Browser</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;running&nbsp;browser&nbsp;instance&nbsp;that&nbsp;can&nbsp;be&nbsp;controlled&nbsp;in&nbsp;a&nbsp;limited&nbsp;way.<br>
+&nbsp;<br>
+To&nbsp;create&nbsp;a&nbsp;browser&nbsp;instance,&nbsp;use&nbsp;browser_finder.FindBrowser.<br>
+&nbsp;<br>
+Be&nbsp;sure&nbsp;to&nbsp;clean&nbsp;up&nbsp;after&nbsp;yourself&nbsp;by&nbsp;calling&nbsp;<a href="#Browser-Close">Close</a>()&nbsp;when&nbsp;you&nbsp;are&nbsp;done&nbsp;with<br>
+the&nbsp;browser.&nbsp;Or&nbsp;better&nbsp;yet:<br>
+&nbsp;&nbsp;browser_to_create&nbsp;=&nbsp;FindBrowser(options)<br>
+&nbsp;&nbsp;with&nbsp;browser_to_create.Create()&nbsp;as&nbsp;browser:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;do&nbsp;all&nbsp;your&nbsp;operations&nbsp;on&nbsp;browser&nbsp;here<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Browser-Close"><strong>Close</strong></a>(self)</dt><dd><tt>Closes&nbsp;this&nbsp;browser.</tt></dd></dl>
+
+<dl><dt><a name="Browser-GetStackTrace"><strong>GetStackTrace</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Browser-GetStandardOutput"><strong>GetStandardOutput</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Browser-GetTraceResultAndReset"><strong>GetTraceResultAndReset</strong></a>(self)</dt><dd><tt>Returns&nbsp;the&nbsp;result&nbsp;of&nbsp;the&nbsp;trace,&nbsp;as&nbsp;TraceResult&nbsp;<a href="__builtin__.html#object">object</a>.</tt></dd></dl>
+
+<dl><dt><a name="Browser-SetHTTPServerDirectories"><strong>SetHTTPServerDirectories</strong></a>(self, paths)</dt><dd><tt>Returns&nbsp;True&nbsp;if&nbsp;the&nbsp;HTTP&nbsp;server&nbsp;was&nbsp;started,&nbsp;False&nbsp;otherwise.</tt></dd></dl>
+
+<dl><dt><a name="Browser-SetReplayArchivePath"><strong>SetReplayArchivePath</strong></a>(self, archive_path, append_to_existing_wpr<font color="#909090">=False</font>, make_javascript_deterministic<font color="#909090">=True</font>)</dt></dl>
+
+<dl><dt><a name="Browser-StartProfiling"><strong>StartProfiling</strong></a>(self, options, base_output_file)</dt><dd><tt>Starts&nbsp;profiling&nbsp;using&nbsp;|options|.profiler_tool.&nbsp;Results&nbsp;are&nbsp;saved&nbsp;to<br>
+|base_output_file|.&lt;process_name&gt;.</tt></dd></dl>
+
+<dl><dt><a name="Browser-StartTracing"><strong>StartTracing</strong></a>(self, custom_categories<font color="#909090">=None</font>, timeout<font color="#909090">=10</font>)</dt></dl>
+
+<dl><dt><a name="Browser-StopProfiling"><strong>StopProfiling</strong></a>(self)</dt><dd><tt>Stops&nbsp;all&nbsp;active&nbsp;profilers&nbsp;and&nbsp;saves&nbsp;their&nbsp;results.</tt></dd></dl>
+
+<dl><dt><a name="Browser-StopTracing"><strong>StopTracing</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Browser-__enter__"><strong>__enter__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Browser-__exit__"><strong>__exit__</strong></a>(self, *args)</dt></dl>
+
+<dl><dt><a name="Browser-__init__"><strong>__init__</strong></a>(self, backend, platform_backend)</dt></dl>
+
+<dl><dt><a name="Browser-is_profiler_active"><strong>is_profiler_active</strong></a>(self, profiler_name)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>browser_type</strong></dt>
+</dl>
+<dl><dt><strong>extensions</strong></dt>
+<dd><tt>Returns&nbsp;the&nbsp;extension&nbsp;dictionary&nbsp;if&nbsp;it&nbsp;exists.</tt></dd>
+</dl>
+<dl><dt><strong>http_server</strong></dt>
+</dl>
+<dl><dt><strong>io_stats</strong></dt>
+<dd><tt>Returns&nbsp;a&nbsp;dict&nbsp;of&nbsp;IO&nbsp;statistics&nbsp;for&nbsp;the&nbsp;browser:<br>
+{&nbsp;'Browser':&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ReadOperationCount':&nbsp;W,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WriteOperationCount':&nbsp;X,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ReadTransferCount':&nbsp;Y,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WriteTransferCount':&nbsp;Z<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;'Gpu':&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ReadOperationCount':&nbsp;W,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WriteOperationCount':&nbsp;X,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ReadTransferCount':&nbsp;Y,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WriteTransferCount':&nbsp;Z<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;'Renderer':&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ReadOperationCount':&nbsp;W,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WriteOperationCount':&nbsp;X,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ReadTransferCount':&nbsp;Y,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WriteTransferCount':&nbsp;Z<br>
+&nbsp;&nbsp;}<br>
+}</tt></dd>
+</dl>
+<dl><dt><strong>is_content_shell</strong></dt>
+<dd><tt>Returns&nbsp;whether&nbsp;this&nbsp;browser&nbsp;is&nbsp;a&nbsp;content&nbsp;shell,&nbsp;only.</tt></dd>
+</dl>
+<dl><dt><strong>memory_stats</strong></dt>
+<dd><tt>Returns&nbsp;a&nbsp;dict&nbsp;of&nbsp;memory&nbsp;statistics&nbsp;for&nbsp;the&nbsp;browser:<br>
+{&nbsp;'Browser':&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'VM':&nbsp;S,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'VMPeak':&nbsp;T,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WorkingSetSize':&nbsp;U,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WorkingSetSizePeak':&nbsp;V,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ProportionalSetSize':&nbsp;W,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'PrivateDirty':&nbsp;X<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;'Gpu':&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'VM':&nbsp;S,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'VMPeak':&nbsp;T,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WorkingSetSize':&nbsp;U,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WorkingSetSizePeak':&nbsp;V,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ProportionalSetSize':&nbsp;W,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'PrivateDirty':&nbsp;X<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;'Renderer':&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'VM':&nbsp;S,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'VMPeak':&nbsp;T,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WorkingSetSize':&nbsp;U,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WorkingSetSizePeak':&nbsp;V,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ProportionalSetSize':&nbsp;W,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'PrivateDirty':&nbsp;X<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;'SystemCommitCharge':&nbsp;Y,<br>
+&nbsp;&nbsp;'ProcessCount':&nbsp;Z,<br>
+}<br>
+Any&nbsp;of&nbsp;the&nbsp;above&nbsp;keys&nbsp;may&nbsp;be&nbsp;missing&nbsp;on&nbsp;a&nbsp;per-platform&nbsp;basis.</tt></dd>
+</dl>
+<dl><dt><strong>platform</strong></dt>
+</dl>
+<dl><dt><strong>supports_extensions</strong></dt>
+</dl>
+<dl><dt><strong>supports_tab_control</strong></dt>
+</dl>
+<dl><dt><strong>supports_tracing</strong></dt>
+</dl>
+<dl><dt><strong>tabs</strong></dt>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="BrowserOptions">class <strong>BrowserOptions</strong></a>(<a href="optparse.html#Values">optparse.Values</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Options&nbsp;to&nbsp;be&nbsp;used&nbsp;for&nbsp;discovering&nbsp;and&nbsp;launching&nbsp;a&nbsp;browser.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="BrowserOptions-AppendExtraBrowserArg"><strong>AppendExtraBrowserArg</strong></a>(self, arg)</dt></dl>
+
+<dl><dt><a name="BrowserOptions-Copy"><strong>Copy</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="BrowserOptions-CreateParser"><strong>CreateParser</strong></a>(self, *args, **kwargs)</dt></dl>
+
+<dl><dt><a name="BrowserOptions-__init__"><strong>__init__</strong></a>(self, browser_type<font color="#909090">=None</font>)</dt></dl>
+
+<hr>
+Methods inherited from <a href="optparse.html#Values">optparse.Values</a>:<br>
+<dl><dt><a name="BrowserOptions-__cmp__"><strong>__cmp__</strong></a>(self, other)</dt></dl>
+
+<dl><dt><a name="BrowserOptions-__repr__"><strong>__repr__</strong></a> = _repr(self)</dt></dl>
+
+<dl><dt><a name="BrowserOptions-__str__"><strong>__str__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="BrowserOptions-ensure_value"><strong>ensure_value</strong></a>(self, attr, value)</dt></dl>
+
+<dl><dt><a name="BrowserOptions-read_file"><strong>read_file</strong></a>(self, filename, mode<font color="#909090">='careful'</font>)</dt></dl>
+
+<dl><dt><a name="BrowserOptions-read_module"><strong>read_module</strong></a>(self, modname, mode<font color="#909090">='careful'</font>)</dt></dl>
+
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="PageMeasurement">class <strong>PageMeasurement</strong></a>(<a href="telemetry.page.page_test.html#PageTest">telemetry.page.page_test.PageTest</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Glue&nbsp;code&nbsp;for&nbsp;running&nbsp;a&nbsp;measurement&nbsp;across&nbsp;a&nbsp;set&nbsp;of&nbsp;pages.<br>
+&nbsp;<br>
+To&nbsp;use&nbsp;this,&nbsp;subclass&nbsp;from&nbsp;the&nbsp;measurement&nbsp;and&nbsp;override&nbsp;MeasurePage.&nbsp;For<br>
+example:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;class&nbsp;BodyChildElementMeasurement(<a href="#PageMeasurement">PageMeasurement</a>):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;<a href="#PageMeasurement-MeasurePage">MeasurePage</a>(self,&nbsp;page,&nbsp;tab,&nbsp;results):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body_child_count&nbsp;=&nbsp;tab.EvaluateJavaScript(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'document.body.children.length')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;results.Add('body_children',&nbsp;'count',&nbsp;body_child_count)<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;if&nbsp;__name__&nbsp;==&nbsp;'__main__':<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;page_measurement.Main(BodyChildElementMeasurement())<br>
+&nbsp;<br>
+To&nbsp;add&nbsp;test-specific&nbsp;options:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;class&nbsp;BodyChildElementMeasurement(<a href="#PageMeasurement">PageMeasurement</a>):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;<a href="#PageMeasurement-AddCommandLineOptions">AddCommandLineOptions</a>(parser):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parser.add_option('--element',&nbsp;action='store',&nbsp;default='body')<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;def&nbsp;<a href="#PageMeasurement-MeasurePage">MeasurePage</a>(self,&nbsp;page,&nbsp;tab,&nbsp;results):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;body_child_count&nbsp;=&nbsp;tab.EvaluateJavaScript(<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'document.querySelector('%s').children.length')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;results.Add('children',&nbsp;'count',&nbsp;child_count)<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="telemetry.page.page_measurement.html#PageMeasurement">PageMeasurement</a></dd>
+<dd><a href="telemetry.page.page_test.html#PageTest">telemetry.page.page_test.PageTest</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="PageMeasurement-AddOutputOptions"><strong>AddOutputOptions</strong></a>(self, parser)</dt></dl>
+
+<dl><dt><a name="PageMeasurement-MeasurePage"><strong>MeasurePage</strong></a>(self, page, tab, results)</dt><dd><tt>Override&nbsp;to&nbsp;actually&nbsp;measure&nbsp;the&nbsp;page's&nbsp;performance.<br>
+&nbsp;<br>
+page&nbsp;is&nbsp;a&nbsp;page_set.Page<br>
+tab&nbsp;is&nbsp;an&nbsp;instance&nbsp;of&nbsp;telemetry.core.<a href="#Tab">Tab</a><br>
+&nbsp;<br>
+Should&nbsp;call&nbsp;results.Add(name,&nbsp;units,&nbsp;value)&nbsp;for&nbsp;each&nbsp;result,&nbsp;or&nbsp;raise&nbsp;an<br>
+exception&nbsp;on&nbsp;failure.&nbsp;The&nbsp;name&nbsp;and&nbsp;units&nbsp;of&nbsp;each&nbsp;Add()&nbsp;call&nbsp;must&nbsp;be<br>
+the&nbsp;same&nbsp;across&nbsp;all&nbsp;iterations.&nbsp;The&nbsp;name&nbsp;'url'&nbsp;must&nbsp;not&nbsp;be&nbsp;used.<br>
+&nbsp;<br>
+Prefer&nbsp;field&nbsp;names&nbsp;that&nbsp;are&nbsp;in&nbsp;accordance&nbsp;with&nbsp;python&nbsp;variable&nbsp;style.&nbsp;E.g.<br>
+field_name.<br>
+&nbsp;<br>
+Put&nbsp;together:<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;def&nbsp;<a href="#PageMeasurement-MeasurePage">MeasurePage</a>(self,&nbsp;page,&nbsp;tab,&nbsp;results):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;res&nbsp;=&nbsp;tab.EvaluateJavaScript('2+2')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if&nbsp;res&nbsp;!=&nbsp;4:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;raise&nbsp;Exception('Oh,&nbsp;wow.')<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;results.Add('two_plus_two',&nbsp;'count',&nbsp;res)</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-PrepareResults"><strong>PrepareResults</strong></a>(self, options)</dt></dl>
+
+<dl><dt><a name="PageMeasurement-__init__"><strong>__init__</strong></a>(self, action_name_to_run<font color="#909090">=''</font>, needs_browser_restart_after_each_run<font color="#909090">=False</font>, discard_first_result<font color="#909090">=False</font>, clear_cache_before_each_run<font color="#909090">=False</font>)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>output_format_choices</strong></dt>
+</dl>
+<dl><dt><strong>results_are_the_same_on_every_page</strong></dt>
+<dd><tt>By&nbsp;default,&nbsp;measurements&nbsp;are&nbsp;assumed&nbsp;to&nbsp;output&nbsp;the&nbsp;same&nbsp;values&nbsp;for&nbsp;every<br>
+page.&nbsp;This&nbsp;allows&nbsp;incremental&nbsp;output,&nbsp;for&nbsp;example&nbsp;in&nbsp;CSV.&nbsp;If,&nbsp;however,&nbsp;the<br>
+measurement&nbsp;discovers&nbsp;what&nbsp;values&nbsp;it&nbsp;can&nbsp;report&nbsp;as&nbsp;it&nbsp;goes,&nbsp;and&nbsp;those&nbsp;values<br>
+may&nbsp;vary&nbsp;from&nbsp;page&nbsp;to&nbsp;page,&nbsp;you&nbsp;need&nbsp;to&nbsp;override&nbsp;this&nbsp;function&nbsp;and&nbsp;return<br>
+False.&nbsp;Output&nbsp;will&nbsp;not&nbsp;appear&nbsp;in&nbsp;this&nbsp;mode&nbsp;until&nbsp;the&nbsp;entire&nbsp;pageset&nbsp;has<br>
+run.</tt></dd>
+</dl>
+<hr>
+Methods inherited from <a href="telemetry.page.page_test.html#PageTest">telemetry.page.page_test.PageTest</a>:<br>
+<dl><dt><a name="PageMeasurement-AddCommandLineOptions"><strong>AddCommandLineOptions</strong></a>(self, parser)</dt><dd><tt>Override&nbsp;to&nbsp;expose&nbsp;command-line&nbsp;options&nbsp;for&nbsp;this&nbsp;test.<br>
+&nbsp;<br>
+The&nbsp;provided&nbsp;parser&nbsp;is&nbsp;an&nbsp;optparse.OptionParser&nbsp;instance&nbsp;and&nbsp;accepts&nbsp;all<br>
+normal&nbsp;results.&nbsp;The&nbsp;parsed&nbsp;options&nbsp;are&nbsp;available&nbsp;in&nbsp;Run&nbsp;as<br>
+self.<strong>options</strong>.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-CanRunForPage"><strong>CanRunForPage</strong></a>(self, page)</dt><dd><tt>Override&nbsp;to&nbsp;customize&nbsp;if&nbsp;the&nbsp;test&nbsp;can&nbsp;be&nbsp;ran&nbsp;for&nbsp;the&nbsp;given&nbsp;page.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-CreatePageSet"><strong>CreatePageSet</strong></a>(self, args, options)</dt><dd><tt>Override&nbsp;to&nbsp;make&nbsp;this&nbsp;test&nbsp;generate&nbsp;its&nbsp;own&nbsp;page&nbsp;set&nbsp;instead&nbsp;of<br>
+allowing&nbsp;arbitrary&nbsp;page&nbsp;sets&nbsp;entered&nbsp;from&nbsp;the&nbsp;command-line.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-CustomizeBrowserOptions"><strong>CustomizeBrowserOptions</strong></a>(self, options)</dt><dd><tt>Override&nbsp;to&nbsp;add&nbsp;test-specific&nbsp;options&nbsp;to&nbsp;the&nbsp;<a href="#BrowserOptions">BrowserOptions</a>&nbsp;<a href="__builtin__.html#object">object</a></tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-CustomizeBrowserOptionsForPage"><strong>CustomizeBrowserOptionsForPage</strong></a>(self, page, options)</dt><dd><tt>Add&nbsp;options&nbsp;specific&nbsp;to&nbsp;the&nbsp;test&nbsp;and&nbsp;the&nbsp;given&nbsp;page.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-DidNavigateToPage"><strong>DidNavigateToPage</strong></a>(self, page, tab)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;right&nbsp;after&nbsp;the&nbsp;page&nbsp;is&nbsp;navigated,&nbsp;but&nbsp;before<br>
+any&nbsp;waiting&nbsp;for&nbsp;completion&nbsp;has&nbsp;occurred.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-DidRunAction"><strong>DidRunAction</strong></a>(self, page, tab, action)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;after&nbsp;running&nbsp;the&nbsp;action&nbsp;on&nbsp;the&nbsp;page.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-DidRunPageSet"><strong>DidRunPageSet</strong></a>(self, tab, results)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;after&nbsp;page&nbsp;set&nbsp;is&nbsp;completed,&nbsp;but&nbsp;before&nbsp;browser<br>
+is&nbsp;torn&nbsp;down.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-DidStartHTTPServer"><strong>DidStartHTTPServer</strong></a>(self, tab)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;after&nbsp;the&nbsp;HTTP&nbsp;server&nbsp;is&nbsp;started.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-NeedsBrowserRestartAfterEachRun"><strong>NeedsBrowserRestartAfterEachRun</strong></a>(self, tab)</dt><dd><tt>Override&nbsp;to&nbsp;specify&nbsp;browser&nbsp;restart&nbsp;after&nbsp;each&nbsp;run.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-Run"><strong>Run</strong></a>(self, options, page, tab, results)</dt></dl>
+
+<dl><dt><a name="PageMeasurement-SetUpBrowser"><strong>SetUpBrowser</strong></a>(self, browser)</dt><dd><tt>Override&nbsp;to&nbsp;customize&nbsp;the&nbsp;browser&nbsp;right&nbsp;after&nbsp;it&nbsp;has&nbsp;launched.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-WillNavigateToPage"><strong>WillNavigateToPage</strong></a>(self, page, tab)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;before&nbsp;the&nbsp;page&nbsp;is&nbsp;navigated.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-WillRunAction"><strong>WillRunAction</strong></a>(self, page, tab, action)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;before&nbsp;running&nbsp;the&nbsp;action&nbsp;on&nbsp;the&nbsp;page.</tt></dd></dl>
+
+<dl><dt><a name="PageMeasurement-WillRunPageSet"><strong>WillRunPageSet</strong></a>(self, tab)</dt><dd><tt>Override&nbsp;to&nbsp;do&nbsp;operations&nbsp;before&nbsp;the&nbsp;page&nbsp;set&nbsp;is&nbsp;navigated.</tt></dd></dl>
+
+<hr>
+Data descriptors inherited from <a href="telemetry.page.page_test.html#PageTest">telemetry.page.page_test.PageTest</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>action_name_to_run</strong></dt>
+</dl>
+<dl><dt><strong>clear_cache_before_each_run</strong></dt>
+<dd><tt>When&nbsp;set&nbsp;to&nbsp;True,&nbsp;the&nbsp;browser's&nbsp;disk&nbsp;and&nbsp;memory&nbsp;cache&nbsp;will&nbsp;be&nbsp;cleared<br>
+before&nbsp;each&nbsp;run.</tt></dd>
+</dl>
+<dl><dt><strong>discard_first_result</strong></dt>
+<dd><tt>When&nbsp;set&nbsp;to&nbsp;True,&nbsp;the&nbsp;first&nbsp;run&nbsp;of&nbsp;the&nbsp;test&nbsp;is&nbsp;discarded.&nbsp;&nbsp;This&nbsp;is<br>
+useful&nbsp;for&nbsp;cases&nbsp;where&nbsp;it's&nbsp;desirable&nbsp;to&nbsp;have&nbsp;some&nbsp;test&nbsp;resource&nbsp;cached&nbsp;so<br>
+the&nbsp;first&nbsp;run&nbsp;of&nbsp;the&nbsp;test&nbsp;can&nbsp;warm&nbsp;things&nbsp;up.</tt></dd>
+</dl>
+</td></tr></table> <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Tab">class <strong>Tab</strong></a>(<a href="telemetry.core.web_contents.html#WebContents">telemetry.core.web_contents.WebContents</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Represents&nbsp;a&nbsp;tab&nbsp;in&nbsp;the&nbsp;browser<br>
+&nbsp;<br>
+The&nbsp;important&nbsp;parts&nbsp;of&nbsp;the&nbsp;<a href="#Tab">Tab</a>&nbsp;<a href="__builtin__.html#object">object</a>&nbsp;are&nbsp;in&nbsp;the&nbsp;runtime&nbsp;and&nbsp;page&nbsp;objects.<br>
+E.g.:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Navigates&nbsp;the&nbsp;tab&nbsp;to&nbsp;a&nbsp;given&nbsp;url.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tab.<a href="#Tab-Navigate">Navigate</a>('<a href="http://www.google.com/">http://www.google.com/</a>')<br>
+&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;#&nbsp;Evaluates&nbsp;1+1&nbsp;in&nbsp;the&nbsp;tab's&nbsp;JavaScript&nbsp;context.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;tab.Evaluate('1+1')<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="telemetry.core.tab.html#Tab">Tab</a></dd>
+<dd><a href="telemetry.core.web_contents.html#WebContents">telemetry.core.web_contents.WebContents</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Tab-Activate"><strong>Activate</strong></a>(self)</dt><dd><tt>Brings&nbsp;this&nbsp;tab&nbsp;to&nbsp;the&nbsp;foreground&nbsp;asynchronously.<br>
+&nbsp;<br>
+Not&nbsp;all&nbsp;browsers&nbsp;or&nbsp;browser&nbsp;versions&nbsp;support&nbsp;this&nbsp;method.<br>
+Be&nbsp;sure&nbsp;to&nbsp;check&nbsp;browser.supports_tab_control.<br>
+&nbsp;<br>
+Please&nbsp;note:&nbsp;this&nbsp;is&nbsp;asynchronous.&nbsp;There&nbsp;is&nbsp;a&nbsp;delay&nbsp;between&nbsp;this&nbsp;call<br>
+and&nbsp;the&nbsp;page's&nbsp;documentVisibilityState&nbsp;becoming&nbsp;'visible',&nbsp;and&nbsp;yet&nbsp;more<br>
+delay&nbsp;until&nbsp;the&nbsp;actual&nbsp;tab&nbsp;is&nbsp;visible&nbsp;to&nbsp;the&nbsp;user.&nbsp;None&nbsp;of&nbsp;these&nbsp;delays<br>
+are&nbsp;included&nbsp;in&nbsp;this&nbsp;call.</tt></dd></dl>
+
+<dl><dt><a name="Tab-ClearCache"><strong>ClearCache</strong></a>(self)</dt><dd><tt>Clears&nbsp;the&nbsp;browser's&nbsp;HTTP&nbsp;disk&nbsp;cache&nbsp;and&nbsp;the&nbsp;tab's&nbsp;HTTP&nbsp;memory&nbsp;cache.</tt></dd></dl>
+
+<dl><dt><a name="Tab-CollectGarbage"><strong>CollectGarbage</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Tab-GetCookieByName"><strong>GetCookieByName</strong></a>(self, name, timeout<font color="#909090">=60</font>)</dt><dd><tt>Returns&nbsp;the&nbsp;value&nbsp;of&nbsp;the&nbsp;cookie&nbsp;by&nbsp;the&nbsp;given&nbsp;|name|.</tt></dd></dl>
+
+<dl><dt><a name="Tab-Navigate"><strong>Navigate</strong></a>(self, url, script_to_evaluate_on_commit<font color="#909090">=None</font>, timeout<font color="#909090">=60</font>)</dt><dd><tt>Navigates&nbsp;to&nbsp;url.<br>
+&nbsp;<br>
+If&nbsp;|script_to_evaluate_on_commit|&nbsp;is&nbsp;given,&nbsp;the&nbsp;script&nbsp;source&nbsp;string&nbsp;will&nbsp;be<br>
+evaluated&nbsp;when&nbsp;the&nbsp;navigation&nbsp;is&nbsp;committed.&nbsp;This&nbsp;is&nbsp;after&nbsp;the&nbsp;context&nbsp;of<br>
+the&nbsp;page&nbsp;exists,&nbsp;but&nbsp;before&nbsp;any&nbsp;script&nbsp;on&nbsp;the&nbsp;page&nbsp;itself&nbsp;has&nbsp;executed.</tt></dd></dl>
+
+<dl><dt><a name="Tab-PerformActionAndWaitForNavigate"><strong>PerformActionAndWaitForNavigate</strong></a>(self, action_function, timeout<font color="#909090">=60</font>)</dt><dd><tt>Executes&nbsp;action_function,&nbsp;and&nbsp;waits&nbsp;for&nbsp;the&nbsp;navigation&nbsp;to&nbsp;complete.<br>
+&nbsp;<br>
+action_function&nbsp;must&nbsp;be&nbsp;a&nbsp;Python&nbsp;function&nbsp;that&nbsp;results&nbsp;in&nbsp;a&nbsp;navigation.<br>
+This&nbsp;function&nbsp;returns&nbsp;when&nbsp;the&nbsp;navigation&nbsp;is&nbsp;complete&nbsp;or&nbsp;when<br>
+the&nbsp;timeout&nbsp;has&nbsp;been&nbsp;exceeded.</tt></dd></dl>
+
+<dl><dt><a name="Tab-Screenshot"><strong>Screenshot</strong></a>(self, timeout<font color="#909090">=60</font>)</dt><dd><tt>Capture&nbsp;a&nbsp;screenshot&nbsp;of&nbsp;the&nbsp;window&nbsp;for&nbsp;rendering&nbsp;validation</tt></dd></dl>
+
+<dl><dt><a name="Tab-__del__"><strong>__del__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Tab-__init__"><strong>__init__</strong></a>(self, inspector_backend)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>browser</strong></dt>
+<dd><tt>The&nbsp;browser&nbsp;in&nbsp;which&nbsp;this&nbsp;tab&nbsp;resides.</tt></dd>
+</dl>
+<dl><dt><strong>dom_stats</strong></dt>
+<dd><tt>A&nbsp;dictionary&nbsp;populated&nbsp;with&nbsp;measured&nbsp;DOM&nbsp;statistics.<br>
+&nbsp;<br>
+Currently&nbsp;this&nbsp;dictionary&nbsp;contains:<br>
+{<br>
+&nbsp;&nbsp;'document_count':&nbsp;integer,<br>
+&nbsp;&nbsp;'node_count':&nbsp;integer,<br>
+&nbsp;&nbsp;'event_listener_count':&nbsp;integer<br>
+}</tt></dd>
+</dl>
+<dl><dt><strong>screenshot_supported</strong></dt>
+<dd><tt>True&nbsp;if&nbsp;the&nbsp;browser&nbsp;instance&nbsp;is&nbsp;capable&nbsp;of&nbsp;capturing&nbsp;screenshots</tt></dd>
+</dl>
+<dl><dt><strong>url</strong></dt>
+</dl>
+<hr>
+Methods inherited from <a href="telemetry.core.web_contents.html#WebContents">telemetry.core.web_contents.WebContents</a>:<br>
+<dl><dt><a name="Tab-Close"><strong>Close</strong></a>(self)</dt><dd><tt>Closes&nbsp;this&nbsp;page.<br>
+&nbsp;<br>
+Not&nbsp;all&nbsp;browsers&nbsp;or&nbsp;browser&nbsp;versions&nbsp;support&nbsp;this&nbsp;method.<br>
+Be&nbsp;sure&nbsp;to&nbsp;check&nbsp;browser.supports_tab_control.</tt></dd></dl>
+
+<dl><dt><a name="Tab-Disconnect"><strong>Disconnect</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Tab-EvaluateJavaScript"><strong>EvaluateJavaScript</strong></a>(self, expr, timeout<font color="#909090">=60</font>)</dt><dd><tt>Evalutes&nbsp;expr&nbsp;in&nbsp;JavaScript&nbsp;and&nbsp;returns&nbsp;the&nbsp;JSONized&nbsp;result.<br>
+&nbsp;<br>
+Consider&nbsp;using&nbsp;ExecuteJavaScript&nbsp;for&nbsp;cases&nbsp;where&nbsp;the&nbsp;result&nbsp;of&nbsp;the<br>
+expression&nbsp;is&nbsp;not&nbsp;needed.<br>
+&nbsp;<br>
+If&nbsp;evaluation&nbsp;throws&nbsp;in&nbsp;JavaScript,&nbsp;a&nbsp;Python&nbsp;EvaluateException&nbsp;will<br>
+be&nbsp;raised.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;result&nbsp;of&nbsp;the&nbsp;evaluation&nbsp;cannot&nbsp;be&nbsp;JSONized,&nbsp;then&nbsp;an<br>
+EvaluationException&nbsp;will&nbsp;be&nbsp;raised.</tt></dd></dl>
+
+<dl><dt><a name="Tab-ExecuteJavaScript"><strong>ExecuteJavaScript</strong></a>(self, expr, timeout<font color="#909090">=60</font>)</dt><dd><tt>Executes&nbsp;expr&nbsp;in&nbsp;JavaScript.&nbsp;Does&nbsp;not&nbsp;return&nbsp;the&nbsp;result.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;expression&nbsp;failed&nbsp;to&nbsp;evaluate,&nbsp;EvaluateException&nbsp;will&nbsp;be&nbsp;raised.</tt></dd></dl>
+
+<dl><dt><a name="Tab-StartTimelineRecording"><strong>StartTimelineRecording</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Tab-StopTimelineRecording"><strong>StopTimelineRecording</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Tab-WaitForDocumentReadyStateToBeComplete"><strong>WaitForDocumentReadyStateToBeComplete</strong></a>(self, timeout<font color="#909090">=60</font>)</dt></dl>
+
+<dl><dt><a name="Tab-WaitForDocumentReadyStateToBeInteractiveOrBetter"><strong>WaitForDocumentReadyStateToBeInteractiveOrBetter</strong></a>(self, timeout<font color="#909090">=60</font>)</dt></dl>
+
+<hr>
+Data descriptors inherited from <a href="telemetry.core.web_contents.html#WebContents">telemetry.core.web_contents.WebContents</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>message_output_stream</strong></dt>
+</dl>
+<dl><dt><strong>timeline_model</strong></dt>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#eeaa77">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Functions</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#eeaa77"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl><dt><a name="-RunPage"><strong>RunPage</strong></a> = Run(test, page_set, options)</dt><dd><tt>Runs&nbsp;a&nbsp;given&nbsp;test&nbsp;against&nbsp;a&nbsp;given&nbsp;page_set&nbsp;with&nbsp;the&nbsp;given&nbsp;options.</tt></dd></dl>
+</td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>__all__</strong> = ['Browser', 'BrowserOptions', 'PageMeasurement', 'RunPage', 'Tab']</td></tr></table>
+</body></html>

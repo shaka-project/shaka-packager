@@ -1,0 +1,40 @@
+# These tests fail due to unknown reasons
+# TODO(timurrrr): investigate
+CookieMonsterTest.TestLastAccess
+SpdyNetwork*Error*
+SpdyNetwork*Get*
+SpdyNetworkTransactionTest.SynReplyHeadersVary
+X509CertificateTest.UnoSoftCertParsing
+URLRequestTest.DoNotSaveCookies
+URLRequestTest.QuitTest
+
+# See http://crbug.com/47836
+ClientSocketPoolBaseTest.CancelPendingSocketAtSocketLimit
+
+# Single-threaded and relatively slow - no reason to test
+# See http://crbug.com/59642
+CookieMonsterTest.GarbageCollectionTriggers
+
+# Time out, see http://crbug.com/68482
+SSLServerSocketTest.*
+
+# See http://crbug.com/102330
+SSLClientSocketTest.*
+
+# See http://crbug.com/104805
+HostResolverImplTest.AbortOnlyExistingRequestsOnIPAddressChange
+
+# Times out occasionally, http://crbug.com/124452
+HostResolverImplTest.StartWithinCallback
+
+# Crash. See crbug.com/234776.
+DiskCacheEntryTest.EvictOldEntries
+DiskCacheEntryTest.NewEvictionEvictOldEntries
+
+# Hang. crbug.com/265647.
+NetworkChangeNotifierWinTest.NetChangeWinBasic
+NetworkChangeNotifierWinTest.NetChangeWinSignal
+NetworkChangeNotifierWinTest.NetChangeWinFailSignal*
+
+
+

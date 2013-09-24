@@ -1,0 +1,176 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module telemetry.core.browser</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="telemetry.html"><font color="#ffffff">telemetry</font></a>.<a href="telemetry.core.html"><font color="#ffffff">core</font></a>.browser</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="../telemetry/core/browser.py">telemetry/core/browser.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;Copyright&nbsp;(c)&nbsp;2012&nbsp;The&nbsp;Chromium&nbsp;Authors.&nbsp;All&nbsp;rights&nbsp;reserved.<br>
+#&nbsp;Use&nbsp;of&nbsp;this&nbsp;source&nbsp;code&nbsp;is&nbsp;governed&nbsp;by&nbsp;a&nbsp;BSD-style&nbsp;license&nbsp;that&nbsp;can&nbsp;be<br>
+#&nbsp;found&nbsp;in&nbsp;the&nbsp;LICENSE&nbsp;file.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="telemetry.core.chrome.browser_backend.html">telemetry.core.chrome.browser_backend</a><br>
+<a href="telemetry.core.browser_credentials.html">telemetry.core.browser_credentials</a><br>
+<a href="telemetry.core.extension_dict.html">telemetry.core.extension_dict</a><br>
+</td><td width="25%" valign=top><a href="os.html">os</a><br>
+<a href="telemetry.core.platform.html">telemetry.core.platform</a><br>
+<a href="telemetry.core.platform.profiler.profiler_finder.html">telemetry.core.platform.profiler.profiler_finder</a><br>
+</td><td width="25%" valign=top><a href="telemetry.core.tab_list.html">telemetry.core.tab_list</a><br>
+<a href="telemetry.core.temporary_http_server.html">telemetry.core.temporary_http_server</a><br>
+<a href="telemetry.core.wpr_modes.html">telemetry.core.wpr_modes</a><br>
+</td><td width="25%" valign=top><a href="telemetry.core.wpr_server.html">telemetry.core.wpr_server</a><br>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.core.browser.html#Browser">Browser</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Browser">class <strong>Browser</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;running&nbsp;browser&nbsp;instance&nbsp;that&nbsp;can&nbsp;be&nbsp;controlled&nbsp;in&nbsp;a&nbsp;limited&nbsp;way.<br>
+&nbsp;<br>
+To&nbsp;create&nbsp;a&nbsp;browser&nbsp;instance,&nbsp;use&nbsp;browser_finder.FindBrowser.<br>
+&nbsp;<br>
+Be&nbsp;sure&nbsp;to&nbsp;clean&nbsp;up&nbsp;after&nbsp;yourself&nbsp;by&nbsp;calling&nbsp;<a href="#Browser-Close">Close</a>()&nbsp;when&nbsp;you&nbsp;are&nbsp;done&nbsp;with<br>
+the&nbsp;browser.&nbsp;Or&nbsp;better&nbsp;yet:<br>
+&nbsp;&nbsp;browser_to_create&nbsp;=&nbsp;FindBrowser(options)<br>
+&nbsp;&nbsp;with&nbsp;browser_to_create.Create()&nbsp;as&nbsp;browser:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;...&nbsp;do&nbsp;all&nbsp;your&nbsp;operations&nbsp;on&nbsp;browser&nbsp;here<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="Browser-Close"><strong>Close</strong></a>(self)</dt><dd><tt>Closes&nbsp;this&nbsp;browser.</tt></dd></dl>
+
+<dl><dt><a name="Browser-GetStackTrace"><strong>GetStackTrace</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Browser-GetStandardOutput"><strong>GetStandardOutput</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Browser-GetTraceResultAndReset"><strong>GetTraceResultAndReset</strong></a>(self)</dt><dd><tt>Returns&nbsp;the&nbsp;result&nbsp;of&nbsp;the&nbsp;trace,&nbsp;as&nbsp;TraceResult&nbsp;<a href="__builtin__.html#object">object</a>.</tt></dd></dl>
+
+<dl><dt><a name="Browser-SetHTTPServerDirectories"><strong>SetHTTPServerDirectories</strong></a>(self, paths)</dt><dd><tt>Returns&nbsp;True&nbsp;if&nbsp;the&nbsp;HTTP&nbsp;server&nbsp;was&nbsp;started,&nbsp;False&nbsp;otherwise.</tt></dd></dl>
+
+<dl><dt><a name="Browser-SetReplayArchivePath"><strong>SetReplayArchivePath</strong></a>(self, archive_path, append_to_existing_wpr<font color="#909090">=False</font>, make_javascript_deterministic<font color="#909090">=True</font>)</dt></dl>
+
+<dl><dt><a name="Browser-StartProfiling"><strong>StartProfiling</strong></a>(self, options, base_output_file)</dt><dd><tt>Starts&nbsp;profiling&nbsp;using&nbsp;|options|.profiler_tool.&nbsp;Results&nbsp;are&nbsp;saved&nbsp;to<br>
+|base_output_file|.&lt;process_name&gt;.</tt></dd></dl>
+
+<dl><dt><a name="Browser-StartTracing"><strong>StartTracing</strong></a>(self, custom_categories<font color="#909090">=None</font>, timeout<font color="#909090">=10</font>)</dt></dl>
+
+<dl><dt><a name="Browser-StopProfiling"><strong>StopProfiling</strong></a>(self)</dt><dd><tt>Stops&nbsp;all&nbsp;active&nbsp;profilers&nbsp;and&nbsp;saves&nbsp;their&nbsp;results.</tt></dd></dl>
+
+<dl><dt><a name="Browser-StopTracing"><strong>StopTracing</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Browser-__enter__"><strong>__enter__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Browser-__exit__"><strong>__exit__</strong></a>(self, *args)</dt></dl>
+
+<dl><dt><a name="Browser-__init__"><strong>__init__</strong></a>(self, backend, platform_backend)</dt></dl>
+
+<dl><dt><a name="Browser-is_profiler_active"><strong>is_profiler_active</strong></a>(self, profiler_name)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>browser_type</strong></dt>
+</dl>
+<dl><dt><strong>extensions</strong></dt>
+<dd><tt>Returns&nbsp;the&nbsp;extension&nbsp;dictionary&nbsp;if&nbsp;it&nbsp;exists.</tt></dd>
+</dl>
+<dl><dt><strong>http_server</strong></dt>
+</dl>
+<dl><dt><strong>io_stats</strong></dt>
+<dd><tt>Returns&nbsp;a&nbsp;dict&nbsp;of&nbsp;IO&nbsp;statistics&nbsp;for&nbsp;the&nbsp;browser:<br>
+{&nbsp;'Browser':&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ReadOperationCount':&nbsp;W,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WriteOperationCount':&nbsp;X,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ReadTransferCount':&nbsp;Y,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WriteTransferCount':&nbsp;Z<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;'Gpu':&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ReadOperationCount':&nbsp;W,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WriteOperationCount':&nbsp;X,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ReadTransferCount':&nbsp;Y,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WriteTransferCount':&nbsp;Z<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;'Renderer':&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ReadOperationCount':&nbsp;W,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WriteOperationCount':&nbsp;X,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ReadTransferCount':&nbsp;Y,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WriteTransferCount':&nbsp;Z<br>
+&nbsp;&nbsp;}<br>
+}</tt></dd>
+</dl>
+<dl><dt><strong>is_content_shell</strong></dt>
+<dd><tt>Returns&nbsp;whether&nbsp;this&nbsp;browser&nbsp;is&nbsp;a&nbsp;content&nbsp;shell,&nbsp;only.</tt></dd>
+</dl>
+<dl><dt><strong>memory_stats</strong></dt>
+<dd><tt>Returns&nbsp;a&nbsp;dict&nbsp;of&nbsp;memory&nbsp;statistics&nbsp;for&nbsp;the&nbsp;browser:<br>
+{&nbsp;'Browser':&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'VM':&nbsp;S,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'VMPeak':&nbsp;T,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WorkingSetSize':&nbsp;U,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WorkingSetSizePeak':&nbsp;V,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ProportionalSetSize':&nbsp;W,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'PrivateDirty':&nbsp;X<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;'Gpu':&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'VM':&nbsp;S,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'VMPeak':&nbsp;T,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WorkingSetSize':&nbsp;U,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WorkingSetSizePeak':&nbsp;V,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ProportionalSetSize':&nbsp;W,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'PrivateDirty':&nbsp;X<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;'Renderer':&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'VM':&nbsp;S,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'VMPeak':&nbsp;T,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WorkingSetSize':&nbsp;U,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'WorkingSetSizePeak':&nbsp;V,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'ProportionalSetSize':&nbsp;W,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;'PrivateDirty':&nbsp;X<br>
+&nbsp;&nbsp;},<br>
+&nbsp;&nbsp;'SystemCommitCharge':&nbsp;Y,<br>
+&nbsp;&nbsp;'ProcessCount':&nbsp;Z,<br>
+}<br>
+Any&nbsp;of&nbsp;the&nbsp;above&nbsp;keys&nbsp;may&nbsp;be&nbsp;missing&nbsp;on&nbsp;a&nbsp;per-platform&nbsp;basis.</tt></dd>
+</dl>
+<dl><dt><strong>platform</strong></dt>
+</dl>
+<dl><dt><strong>supports_extensions</strong></dt>
+</dl>
+<dl><dt><strong>supports_tab_control</strong></dt>
+</dl>
+<dl><dt><strong>supports_tracing</strong></dt>
+</dl>
+<dl><dt><strong>tabs</strong></dt>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

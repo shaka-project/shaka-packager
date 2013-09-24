@@ -1,0 +1,40 @@
+{
+  "description": "Popular pages in Romance languages Spanish, French and Brazilian Portuguese.",
+  "archive_data_file": "../data/intl_es_fr_pt-BR.json",
+  "user_agent_type": "desktop",
+  "smoothness": { "action": "scroll" },
+  "pages": [
+    {
+      "url": "http://elmundo.es/"
+    },
+    {
+      "url": "http://terra.es/"
+    },
+    {
+      "url": "http://www.ebay.es/sch/i.html?_sacat=382&_trkparms=clkid%3D6548971389060485883&_qi=RTM1381637"
+    },
+    {
+      "url": "http://www.eltiempo.es/talavera-de-la-reina.html"
+    },
+    {
+      "url": "http://www.free.fr/adsl/index.html"
+    },
+    {
+      "url": "http://www.voila.fr/"
+    },
+    {
+      "url": "http://www.leboncoin.fr/annonces/offres/limousin/"
+    },
+    {
+      "url": "http://www.orange.fr/"
+    },
+    {
+      "url": "http://www.uol.com.br/",
+      "why": "#5 site in Brazil"
+    },
+    {
+      "url": "http://produto.mercadolivre.com.br/MLB-468424957-pelicula-protetora-smartphone-h5500-e-h5300-43-frete-free-_JM",
+      "why": "#10 site in Brazil"
+    }
+  ]
+}

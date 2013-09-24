@@ -1,0 +1,61 @@
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This comment is for the dictionaries namespace.
+namespace dictionaries {
+  // Documentation for ComplexType.
+  dictionary InnerType {
+    // Documentation for the String s.
+    DOMString s;
+
+    // Documentation for the boolean b.
+    int b;
+
+    // Documentation for the int i.
+    int i;
+
+    // Documentation for the long l.
+    long l;
+
+    // Documentation for the double d.
+    double d;
+
+    // Documentation for the file entry f.
+    [instanceOf=FileEntry] object f;
+
+    // Documentation for the optional String s.
+    DOMString? os;
+
+    // Documentation for the optional boolean ob.
+    int ob;
+
+    // Documentation for the optional int i.
+    int? oi;
+
+    // Documentation for the optional long l.
+    long? ol;
+
+    // Documentation for the optional double d.
+    double? od;
+
+    // Documentation for the optional file entry f.
+    [instanceOf=FileEntry] object? of;
+  };
+
+  dictionary OuterType {
+    // Documentation for the array of InnerTypes items.
+    InnerType[] items;
+
+    // Documentation for the optional array of Inner Types oitems.
+    InnerType[]? oitems;
+  };
+
+  dictionary ComplexType {
+    // Documentation for the int i.
+    int i;
+
+    // Documentation for the ComplexType c.
+    ComplexType c;
+  };
+};

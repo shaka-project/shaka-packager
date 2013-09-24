@@ -1,0 +1,62 @@
+{
+  "description": "10 Pages chosen from Alexa top sites.",
+  "archive_data_file": "../data/top_10.json",
+  "credentials_path": "../data/credentials.json",
+  "user_agent_type": "desktop",
+  "smoothness": { "action": "scroll" },
+  "pages": [
+    {
+      "url": "https://www.google.com/#hl=en&q=barack+obama",
+      "why": "top google property; a google tab is often open",
+      "wait_for_element_with_text": "Next"
+    },
+    {
+      "url": "https://mail.google.com/mail/",
+      "why": "productivity, top google properties",
+      "credentials": "google",
+      "wait_for_javascript_expression": "window.gmonkey !== undefined && document.getElementById('gb') !== null"
+    },
+    {
+      "url": "https://www.google.com/calendar/",
+      "why": "productivity, top google properties",
+      "credentials": "google",
+      "wait_for_element_with_selector": "div[class~=\"navForward\"]",
+      "post_navigate_javascript_to_execute": "(function() { var elem = document.createElement('meta');elem.name='viewport';elem.content='initial-scale=1';document.body.appendChild(elem); })();",
+      "wait_seconds": 2
+    },
+    {
+      "url": "http://www.youtube.com",
+      "why": "#3 (Alexa global)",
+      "wait_seconds": 2,
+      "credentials": "google"
+    },
+    {
+      "name": "Facebook",
+      "url": "http://www.facebook.com/barackobama",
+      "why": "top social,Public profile",
+      "credentials": "facebook",
+      "wait_for_element_with_text": "About"
+    },
+    {
+      "name": "Wikipedia (1 tab)",
+      "url": "http://en.wikipedia.org/wiki/Wikipedia",
+      "why": "#6 (Alexa) most visited worldwide,Picked an interesting page"
+    },
+    {
+      "url": "http://www.amazon.com",
+      "why": "#1 world commerce website by visits; #3 commerce in the US by time spent"
+    },
+    {
+      "url": "http://www.yahoo.com/",
+      "why": "#4 Alexa"
+    },
+    {
+      "url": "http://www.bing.com/",
+      "why": "#16 Alexa"
+    },
+    {
+      "url": "http://www.ask.com/",
+      "why": "#20 Alexa"
+    }
+  ]
+}

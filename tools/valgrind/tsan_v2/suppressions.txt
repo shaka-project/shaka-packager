@@ -1,0 +1,121 @@
+# False positives in libflashplayer.so and libglib.so. Since we don't
+# instrument them, we cannot reason about the synchronization in them.
+race:libflashplayer.so
+race:libglib*.so
+
+# Intentional race in ToolsSanityTest.DataRace in base_unittests.
+race:base/tools_sanity_unittest.cc
+
+# Data race on WatchdogCounter [test-only]
+race:base/threading/watchdog_unittest.cc
+
+# Races in libevent, http://crbug.com/23244
+race:libevent/event.c
+
+# http://crbug.com/46840
+race:history::HistoryBackend::DeleteFTSIndexDatabases
+race:history::InMemoryHistoryBackend::Init
+
+# http://crbug.com/84094
+race:sqlite3StatusSet
+race:pcache1EnforceMaxPage
+race:pcache1AllocPage
+
+# http://crbug.com/102327.
+# Test-only race, won't fix.
+race:tracked_objects::ThreadData::ShutdownSingleThreadedCleanup
+
+# http://crbug.com/115540
+race:*GetCurrentThreadIdentifier
+
+# http://crbug.com/120808
+race:base/threading/watchdog.cc
+
+# http://crbug.com/157586
+race:third_party/libvpx/source/libvpx/vp8/decoder/threading.c
+
+# http://crbug.com/158718
+race:third_party/ffmpeg/libavcodec/pthread.c
+race:third_party/ffmpeg/libavcodec/vp8.c
+race:third_party/ffmpeg/libavutil/mem.c
+race:*HashFrameForTesting
+race:third_party/ffmpeg/libavcodec/h264pred.c
+race:media::ReleaseData
+
+# http://crbug.com/158922
+race:third_party/libvpx/source/libvpx/vp8/encoder/*
+
+# See http://crbug.com/181502
+race:_M_rep
+race:_M_is_leaked
+
+# http://crbug.com/189177
+race:thread_manager
+race:v8::Locker::Initialize
+
+# http://crbug.com/223352
+race:uprv_malloc_46
+race:uprv_realloc_46
+
+# http://crbug.com/223955
+race:PassRefPtr
+
+# http://crbug.com/224617
+race:base::debug::TraceEventTestFixture_TraceSampling_Test::TestBody
+
+# http://crbug.com/244368
+race:skia::BeginPlatformPaint
+
+# http://crbug.com/244385
+race:unixTempFileDir
+
+# http://crbug.com/244774
+race:webrtc::RTPReceiver::ProcessBitrate
+race:webrtc::RTPSender::ProcessBitrate
+race:webrtc::VideoCodingModuleImpl::Decode
+race:webrtc::RTPSender::SendOutgoingData
+race:webrtc::VP8EncoderImpl::GetEncodedPartitions
+race:webrtc::VP8EncoderImpl::Encode
+race:webrtc::ViEEncoder::DeliverFrame
+
+# http://crbug.com/246968
+race:webrtc::VideoCodingModuleImpl::RegisterPacketRequestCallback
+
+# http://crbug.com/246970
+race:webrtc::EventPosix::StartTimer
+
+# http://crbug.com/246974
+race:content::GpuWatchdogThread::CheckArmed
+
+# http://crbug.com/248101
+race:sqlite3Config
+race:mem0
+
+# http://crbug.com/257396
+race:base::debug::TraceEventTestFixture_TraceSamplingScope_Test::TestBody
+
+# http://crbug.com/257543
+race:*GetObjectFromEntryAddress
+
+# http://crbug.com/268924
+race:base::g_power_monitor
+race:base::PowerMonitor::PowerMonitor
+race:base::PowerMonitor::AddObserver
+
+# http://crbug.com/268941
+race:tracked_objects::ThreadData::tls_index_
+
+# http://crbug.com/268946
+race:CommandLine::HasSwitch
+
+# http://crbug.com/269965
+race:DesktopMediaPickerModelTest_UpdateThumbnail_Test
+
+# http://crbug.com/270037
+race:gLibCleanupFunctions
+
+# http://crbug.com/270675
+race:net::RuleBasedHostResolverProc::Resolve
+
+# http://crbug.com/272095
+race:base::g_top_manager

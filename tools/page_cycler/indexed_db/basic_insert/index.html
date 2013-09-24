@@ -1,0 +1,91 @@
+<!DOCTYPE HTML>
+<html>
+<title>Basic Insert</title>
+<script src="../head.js"></script>
+<script src="../common.js"></script>
+<script>
+  var RECORDS = 3000;
+
+  var failed = false;
+  function error(event) {
+    log('Error ' + event.target.errorCode + ': '
+        + event.target.webkitErrorMessage);
+
+    if (!failed)
+      testComplete(TEST_FAILED);
+    failed = true;
+  }
+
+  function start() {
+    if (!setup())
+      testComplete(SETUP_FAILED);
+
+    var request = indexedDB.deleteDatabase('idb_basic_insert');
+    request.onsuccess = onDelete;
+    request.onerror = error;
+    request.onblocked = function(e) {
+      console.log("delete got blocked event");
+    };
+  }
+
+  function onDelete() {
+    request = indexedDB.open('idb_basic_insert');
+    request.onblocked = function(e) { console.log("open got blocked event"); };
+    request.onerror = error;
+    request.onupgradeneeded = function(e) {
+      createObjectStores(e.target.result);
+    };
+    request.onsuccess = function(e) {
+      db = request.result;
+      var curVersion = db.version;
+      if (curVersion !== 1) {
+        // Old reference build that doesn't have upgradeneeded.
+        // TODO(dgrogan): Remove when reference build is version 23 or later.
+        var setVersionRequest = db.setVersion("1");
+        setVersionRequest.onerror = error;
+        setVersionRequest.onsuccess = function(e) {
+          createObjectStores(db);
+          var versionTransaction = setVersionRequest.result;
+          versionTransaction.onerror = error;
+          versionTransaction.oncomplete = storeCreated;
+        }
+      } else {
+        storeCreated();
+      }
+    };
+  }
+
+  function createObjectStores(db) {
+    db.createObjectStore('store');
+  }
+
+  function storeCreated() {
+    var transaction = db.transaction(['store'], 'readwrite');
+    transaction.oncomplete = insertsDone;
+    transaction.onabort = function(e) {
+      console.log("readwrite transaction aborted");
+    };
+
+    var objectStore = transaction.objectStore('store');
+    log('Inserting ' + RECORDS + ' records with explicit key.');
+    startTime = new Date();
+    for (var i = 0; i < RECORDS; i++) {
+      var x = Math.floor(Math.random() * 1000000);
+      objectStore.put(x, x).onerror = error;
+    }
+  }
+
+  function insertsDone() {
+    var now = Date.now();
+    var diff = now - startTime;
+    log('Inserted ' + RECORDS + ' records in ' + diff + ' ms (' + diff /
+        RECORDS + ' ms per record)');
+
+    if (!failed)
+      testComplete(now - startTime);
+  }
+</script>
+
+<body onLoad="start()">
+</body>
+</html>

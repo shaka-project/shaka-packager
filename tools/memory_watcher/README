@@ -1,0 +1,17 @@
+memory_watcher is a library that can be linked into chromium to trace the
+memory allocations. It works by hooking the system allocation/deallocation
+functions, and recording the actions.
+
+To use memory_watcher in chromium:
+
+(1) Compile the memory_watcher library (it is part of the solution by default)
+
+(2) Run chromium with these flags "--memory-profile -no-sandbox"
+(The instrumentation doesn't work with the sandbox)
+
+(3) Hit ctrl-alt-D  to generate a dump of the memory allocations.
+This will create a log file called memorywatcher.logXXXX for every
+chromium process (where XXXX is the pid).
+
+The log file is a human readable text format, which can be further analyzed
+using the helpers in the "scripts/" directory.

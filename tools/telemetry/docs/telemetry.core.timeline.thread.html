@@ -1,0 +1,118 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module telemetry.core.timeline.thread</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="telemetry.html"><font color="#ffffff">telemetry</font></a>.<a href="telemetry.core.html"><font color="#ffffff">core</font></a>.<a href="telemetry.core.timeline.html"><font color="#ffffff">timeline</font></a>.thread</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="../telemetry/core/timeline/thread.py">telemetry/core/timeline/thread.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;Copyright&nbsp;2013&nbsp;The&nbsp;Chromium&nbsp;Authors.&nbsp;All&nbsp;rights&nbsp;reserved.<br>
+#&nbsp;Use&nbsp;of&nbsp;this&nbsp;source&nbsp;code&nbsp;is&nbsp;governed&nbsp;by&nbsp;a&nbsp;BSD-style&nbsp;license&nbsp;that&nbsp;can&nbsp;be<br>
+#&nbsp;found&nbsp;in&nbsp;the&nbsp;LICENSE&nbsp;file.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#aa55cc">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Modules</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#aa55cc"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><table width="100%" summary="list"><tr><td width="25%" valign=top><a href="telemetry.core.timeline.event_container.html">telemetry.core.timeline.event_container</a><br>
+</td><td width="25%" valign=top><a href="telemetry.core.timeline.sample.html">telemetry.core.timeline.sample</a><br>
+</td><td width="25%" valign=top><a href="telemetry.core.timeline.slice.html">telemetry.core.timeline.slice</a><br>
+</td><td width="25%" valign=top></td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="telemetry.core.timeline.event_container.html#TimelineEventContainer">telemetry.core.timeline.event_container.TimelineEventContainer</a>(<a href="__builtin__.html#object">__builtin__.object</a>)
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.core.timeline.thread.html#Thread">Thread</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="Thread">class <strong>Thread</strong></a>(<a href="telemetry.core.timeline.event_container.html#TimelineEventContainer">telemetry.core.timeline.event_container.TimelineEventContainer</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>A&nbsp;<a href="#Thread">Thread</a>&nbsp;stores&nbsp;all&nbsp;the&nbsp;trace&nbsp;events&nbsp;collected&nbsp;for&nbsp;a&nbsp;particular<br>
+thread.&nbsp;We&nbsp;organize&nbsp;the&nbsp;synchronous&nbsp;slices&nbsp;on&nbsp;a&nbsp;thread&nbsp;by&nbsp;"subrows,"&nbsp;where<br>
+subrow&nbsp;0&nbsp;has&nbsp;all&nbsp;the&nbsp;root&nbsp;slices,&nbsp;subrow&nbsp;1&nbsp;those&nbsp;nested&nbsp;1&nbsp;deep,&nbsp;and&nbsp;so&nbsp;on.<br>
+The&nbsp;asynchronous&nbsp;slices&nbsp;are&nbsp;stored&nbsp;in&nbsp;an&nbsp;AsyncSliceGroup&nbsp;object.<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%"><dl><dt>Method resolution order:</dt>
+<dd><a href="telemetry.core.timeline.thread.html#Thread">Thread</a></dd>
+<dd><a href="telemetry.core.timeline.event_container.html#TimelineEventContainer">telemetry.core.timeline.event_container.TimelineEventContainer</a></dd>
+<dd><a href="__builtin__.html#object">__builtin__.object</a></dd>
+</dl>
+<hr>
+Methods defined here:<br>
+<dl><dt><a name="Thread-AddAsyncSlice"><strong>AddAsyncSlice</strong></a>(self, async_slice)</dt></dl>
+
+<dl><dt><a name="Thread-AddSample"><strong>AddSample</strong></a>(self, category, name, timestamp, args<font color="#909090">=None</font>)</dt></dl>
+
+<dl><dt><a name="Thread-AutoCloseOpenSlices"><strong>AutoCloseOpenSlices</strong></a>(self, max_timestamp)</dt></dl>
+
+<dl><dt><a name="Thread-BeginSlice"><strong>BeginSlice</strong></a>(self, category, name, timestamp, args<font color="#909090">=None</font>)</dt><dd><tt>Opens&nbsp;a&nbsp;new&nbsp;slice&nbsp;for&nbsp;the&nbsp;thread.<br>
+Calls&nbsp;to&nbsp;beginSlice&nbsp;and&nbsp;endSlice&nbsp;must&nbsp;be&nbsp;made&nbsp;with<br>
+non-monotonically-decreasing&nbsp;timestamps.<br>
+&nbsp;<br>
+*&nbsp;category:&nbsp;Category&nbsp;to&nbsp;which&nbsp;the&nbsp;slice&nbsp;belongs.<br>
+*&nbsp;name:&nbsp;Name&nbsp;of&nbsp;the&nbsp;slice&nbsp;to&nbsp;add.<br>
+*&nbsp;timestamp:&nbsp;The&nbsp;timetsamp&nbsp;of&nbsp;the&nbsp;slice,&nbsp;in&nbsp;milliseconds.<br>
+*&nbsp;args:&nbsp;Arguments&nbsp;associated&nbsp;with<br>
+&nbsp;<br>
+Returns&nbsp;newly&nbsp;opened&nbsp;slice</tt></dd></dl>
+
+<dl><dt><a name="Thread-EndSlice"><strong>EndSlice</strong></a>(self, end_timestamp)</dt><dd><tt>Ends&nbsp;the&nbsp;last&nbsp;begun&nbsp;slice&nbsp;in&nbsp;this&nbsp;group&nbsp;and&nbsp;pushes&nbsp;it&nbsp;onto&nbsp;the&nbsp;slice<br>
+array.<br>
+&nbsp;<br>
+*&nbsp;end_timestamp:&nbsp;Timestamp&nbsp;when&nbsp;the&nbsp;slice&nbsp;ended&nbsp;in&nbsp;milliseconds<br>
+&nbsp;<br>
+returns&nbsp;completed&nbsp;slice.</tt></dd></dl>
+
+<dl><dt><a name="Thread-FinalizeImport"><strong>FinalizeImport</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Thread-IsTimestampValidForBeginOrEnd"><strong>IsTimestampValidForBeginOrEnd</strong></a>(self, timestamp)</dt></dl>
+
+<dl><dt><a name="Thread-IterAllSlices"><strong>IterAllSlices</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Thread-IterChildContainers"><strong>IterChildContainers</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Thread-IterEventsInThisContainer"><strong>IterEventsInThisContainer</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="Thread-PushSlice"><strong>PushSlice</strong></a>(self, new_slice)</dt></dl>
+
+<dl><dt><a name="Thread-__init__"><strong>__init__</strong></a>(self, process, tid)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>all_slices</strong></dt>
+</dl>
+<dl><dt><strong>async_slices</strong></dt>
+</dl>
+<dl><dt><strong>open_slice_count</strong></dt>
+</dl>
+<dl><dt><strong>samples</strong></dt>
+</dl>
+<dl><dt><strong>toplevel_slices</strong></dt>
+</dl>
+<hr>
+Data descriptors inherited from <a href="telemetry.core.timeline.event_container.html#TimelineEventContainer">telemetry.core.timeline.event_container.TimelineEventContainer</a>:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+</td></tr></table></td></tr></table>
+</body></html>

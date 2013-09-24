@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="AllTests" tests="" failures="" disabled="" errors="" time="">
+  <!-- See comments in gtest_results.xml0 for what the different suites represent -->
+  <testsuite name="Suite0" tests="1" failures="" disabled="" errors="" time="">
+  </testsuite>
+  <testsuite name="Suite1" tests="1" failures="" disabled="" errors="" time="">
+    <testcase name="Test0" status="run" time="1" classname="Suite1">
+      <failure message="" type="" ignored="true"></failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="Suite2" tests="2" failures="" disabled="" errors="" time="">
+    <testcase name="Test1" status="run" time="0" classname="Suite2" />
+  </testsuite>
+  <testsuite name="Suite3" tests="1" failures="" disabled="" errors="" time="">
+    <testcase name="Test0" status="run" time="0" classname="Suite3">
+      <failure message="" type="" ignored="true"></failure>
+    </testcase>
+  </testsuite>
+</testsuites>

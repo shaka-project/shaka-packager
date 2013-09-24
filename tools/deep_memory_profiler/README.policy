@@ -1,0 +1,56 @@
+Policy files contains a classification policy for dmprof.py.
+
+Each line indicates a group to be classified and conditions for classifying
+in the following format.
+  Format: <group-name> <region-type> <pattern>
+
+<group-name> is a name for the group to be classified.  Same names can appear
+in the same policy file multiple times.  <region-type> represents a type of
+the memory region.  It's one of {malloc, mmap, default, optional}.  <pattern>
+is a Python-style regular expression to match with calling stack frames.
+
+For each memory chunks allocated by malloc, its calling stack frame of malloc
+is compared with these classification policies whose <region-type> is 'malloc'
+from the top.  If <pattern> of the policy matches the frame, the memory chunk
+is classified into <group-name>.  The same way for 'mmap'.
+
+Policy lines whose <region-type>s are 'optional' and 'default' are used by
+dmprof.py internally.  'optional' policies can be disabled by removing or
+commenting-out.
+
+
+Guidelines to write a new policy.
+
+Better policies would classify memory on a single layer, or simple combination
+of layers.  For example,
+- Large-level components (V8, WebKit, ...)
+- Mid-level components (Font, FileAPI, ...)
+- Low-level libraries (StringImpl, HashTable, ...)
+- Mid-level libraries (SharedBuf, XHR, ...)
+
+For example of combinations,
+- How about SharedBuf in Font API v.s. other APIs?
+- How about Strings in IndexedDB v.s. File APIs?
+
+
+Deprecated policies for references.
+
+total-vm                       optional        optional
+anonymous-vm                   optional        optional
+filemapped-vm                  optional        optional
+other-vm                       optional        optional
+vm-profiler                    optional        optional
+vm-total                       optional        optional
+mmap-v8-heap-new               mmap    .*v8::.*::ReserveInitialChunk.*
+mmap-v8-heap-coderange         mmap    .*v8::.*::CodeRange::Setup.*
+mmap-v8-heap-old-evacuate      mmap    .*v8::.*::OldSpace::.* v8::internal::ScavengingVisitor::EvacuateObject.*
+mmap-v8-heap-old               mmap    .*v8::.*::OldSpace::.*
+mmap-v8-heap-largeobj          mmap    .*v8::.*::LargeObjectChunk::New.*
+mmap-v8-heap-other             mmap    .*VirtualMemory.*
+mmap-v8-heap-other             mmap    .*v8::internal::OS::Allocate.*
+mmap-v8-nonheap                        mmap    .*v8::.*
+mmap-webkit                    mmap    .*(WTF::|WebCore::|WebKit::).*
+mmap-sqlite                    mmap    .*sqlite3MemMalloc.*
+mmap-pl-arena                  mmap    .*PL_ArenaAllocate.*
+mmap-sk                        mmap    .*sk_malloc_flags.*
+mmap-total-record-vm           default default

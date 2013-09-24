@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html>
+<title>Update transactions</title>
+<script src="../head.js"></script>
+<script src="../common.js"></script>
+<script>
+var randomString = getRandomString();
+var idCounter = 0;
+
+function transactionCallback(tx) {
+  tx.executeSql('UPDATE Test SET Foo = ? WHERE ID = ?',
+                [randomString, idCounter++],
+                function(tx, data) {}, function(tx, error) {});
+}
+</script>
+
+<body>
+<script>
+  runPerformanceTest({
+    dbName: "UpdateTransactions",
+    readOnly: false,
+    insertRowsAtSetup: true,
+    transactionCallback: transactionCallback,
+    customRunTransactions: null
+  });
+</script>
+</body>
+</html>

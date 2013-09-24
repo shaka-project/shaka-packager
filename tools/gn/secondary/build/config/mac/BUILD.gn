@@ -1,0 +1,76 @@
+# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# On Mac, this is usefor everything except static libraries.
+config("mac_dynamic_flags") {
+  ldflags = [
+    "-Wl,-search_paths_first",
+  ]
+}
+
+cc = "../../third_party/llvm-build/Release+Asserts/bin/clang"
+cxx = "../../third_party/llvm-build/Release+Asserts/bin/clang++"
+ld = cxx
+
+toolchain("clang") {
+  tool("cc") {
+    command = "$cc -MMD -MF \$out.d \$defines \$includes \$cflags \$cflags_c \$cflags_pch_c -c \$in -o \$out"
+    description = "CC \$out"
+    depfile = "\$out.d"
+    deps = "gcc"
+  }
+  tool("cxx") {
+    command = "$cxx -MMD -MF \$out.d \$defines \$includes \$cflags \$cflags_cc \$cflags_pch_cc -c \$in -o \$out"
+    description = "CXX \$out"
+    depfile = "\$out.d"
+    deps = "gcc"
+  }
+  tool("objc") {
+    command = "$cc -MMD -MF \$out.d \$defines \$includes \$cflags \$cflags_c \$cflags_objc \$cflags_pch_objc -c \$in -o \$out"
+    description = "OBJC \$out"
+    depfile = "\$out.d"
+    deps = "gcc"
+  }
+  tool("objcxx") {
+    command = "$cxx -MMD -MF \$out.d \$defines \$includes \$cflags \$cflags_cc \$cflags_objcc \$cflags_pch_objcc -c \$in -o \$out"
+    description = "OBJCXX \$out"
+    depfile = "\$out.d"
+    deps = "gcc"
+  }
+  tool("alink") {
+    command = "rm -f \$out && ./gyp-mac-tool filter-libtool libtool \$libtool_flags -static -o \$out \$in \$postbuilds"
+    description = "LIBTOOL-STATIC \$out, POSTBUILDS"
+  }
+  tool("solink") {
+    command = "if [ ! -e \$lib -o ! -e \${lib}.TOC ] || otool -l \$lib | grep -q LC_REEXPORT_DYLIB ; then $ld -shared \$ldflags -o \$lib \$in \$solibs \$libs \$postbuilds && { otool -l \$lib | grep LC_ID_DYLIB -A 5; nm -gP \$lib | cut -f1-2 -d' ' | grep -v U\$\$; true; } > \${lib}.TOC; else $ld -shared \$ldflags -o \$lib \$in \$solibs \$libs \$postbuilds && { otool -l \$lib | grep LC_ID_DYLIB -A 5; nm -gP \$lib | cut -f1-2 -d' ' | grep -v U\$\$; true; } > \${lib}.tmp && if ! cmp -s \${lib}.tmp \${lib}.TOC; then mv \${lib}.tmp \${lib}.TOC ; fi; fi"
+    description = "SOLINK \$lib, POSTBUILDS"
+    #pool = "link_pool"
+    restat = "1"
+  }
+  tool("link") {
+    command = "$ld \$ldflags -o \$out \$in \$solibs \$libs \$postbuilds"
+    description = "LINK \$out, POSTBUILDS"
+    #pool = "link_pool"
+  }
+  #tool("infoplist") {
+  #  command = "$cc -E -P -Wno-trigraphs -x c \$defines \$in -o \$out && plutil -convert xml1 \$out \$out"
+  #  description = "INFOPLIST \$out"
+  #}
+  #tool("mac_tool") {
+  #  command = "\$env ./gyp-mac-tool \$mactool_cmd \$in \$out"
+  #  description = "MACTOOL \$mactool_cmd \$in"
+  #}
+  #tool("package_framework") {
+  #  command = "./gyp-mac-tool package-framework \$out \$version \$postbuilds && touch \$out"
+  #  description = "PACKAGE FRAMEWORK \$out, POSTBUILDS"
+  #}
+  tool("stamp") {
+    command = "\${postbuilds}touch \$out"
+    description = "STAMP \$out"
+  }
+  tool("copy") {
+    command = "ln -f \$in \$out 2>/dev/null || (rm -rf \$out && cp -af \$in \$out)"
+    description = "COPY \$in \$out"
+  }
+}

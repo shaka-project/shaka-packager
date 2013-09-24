@@ -1,0 +1,12 @@
+{
+  "description": "A directed benchmark of image decoding performance",
+  "post_navigate_javascript_to_execute": "runBenchmark();",
+  "wait_for_javascript_expression": "isDone",
+  "image_decoding_measurement_limit_results_to_min_iterations": true,
+  "pages": [
+    { "url": "file:///../../../chrome/test/data/image_decoding/image_decoding.html?gif" },
+    { "url": "file:///../../../chrome/test/data/image_decoding/image_decoding.html?jpg" },
+    { "url": "file:///../../../chrome/test/data/image_decoding/image_decoding.html?png" },
+    { "url": "file:///../../../chrome/test/data/image_decoding/image_decoding.html?webp" }
+  ]
+}

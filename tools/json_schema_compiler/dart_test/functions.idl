@@ -1,0 +1,55 @@
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// A comment for the functions namespace.
+namespace functions {
+  callback SimpleCallback = void ();
+
+  callback PrimitiveCallback = void (int i);
+
+  callback DictCallback = void ([instanceOf=DictType] object dict);
+
+  dictionary DictType {
+    // A field.
+    int a;
+
+    // A parameter.
+    static void voidFunc();
+  };
+
+  interface Functions {
+    // Simple function.
+    static void voidFunc();
+
+    // Function taking a non-optional argument.
+    static void argFunc(DOMString s);
+
+    // Function taking an optional argument.
+    static void optionalArgFunc(optional DOMString s);
+
+    // Function taking a non-optional dictionary argument.
+    static void dictArgFunc(DictType d);
+
+    // Function taking an optional dictionary argument.
+    static void optionalDictArgFunc(optional DictType d);
+
+    // Function taking an entry argument.
+    static void entryArgFunc([intanceOf=FileEntry] object entry);
+
+    // Function taking a simple callback.
+    static void callbackFunc(SimpleCallback c);
+
+    // Function taking an optional simple callback.
+    static void optionalCallbackFunc(optional SimpleCallback c);
+
+    // Function taking a primitive callback.
+    static void primitiveCallbackFunc(PrimitiveCallback c);
+
+    // Function taking a dictionary callback.
+    static void dictCallbackFunc(DictCallback c);
+
+    // Function returning a dictionary.
+    static DictType dictRetFunc();
+  };
+};

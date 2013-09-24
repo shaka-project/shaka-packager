@@ -1,0 +1,73 @@
+{
+  "description": "Popular pages in Japanese and Chinese.",
+  "archive_data_file": "../data/intl_ja_zh.json",
+  "user_agent_type": "desktop",
+  "smoothness": { "action": "scroll" },
+  "pages": [
+    {
+      "url": "http://www.amazon.co.jp",
+      "why": "#5 Japanese site"
+    },
+    {
+      "url": "http://mixi.jp/"
+    },
+    {
+      "url": "http://dtiblog.com/"
+    },
+    {
+      "url": "http://2ch.net/"
+    },
+    {
+      "url": "http://jugem.jp/"
+    },
+    {
+      "url": "http://hatena.ne.jp/"
+    },
+    {
+      "url": "http://goo.ne.jp/"
+    },
+    {
+      "url": "http://www.yahoo.co.jp/",
+      "why": "#1 Japanese site"
+    },
+    {
+      "url": "http://fc2.com/ja/",
+      "why": "#3 Japanese site"
+    },
+    {
+      "url": "http://kakaku.com/"
+    },
+    {
+      "url": "http://zol.com.cn/"
+    },
+    {
+      "url": "http://cn.yahoo.com/"
+    },
+    {
+      "url": "http://www.baidu.com/s?wd=%D0%C2%20%CE%C5",
+      "why": "#1 Chinese site"
+    },
+    {
+      "url": "http://www.qq.com/",
+      "why": "#2 Chinese site"
+    },
+    {
+      "url": "http://www.taobao.com/index_global.php",
+      "why": "#3 Chinese site"
+    },
+    {
+      "url": "http://www.sina.com.cn/",
+      "why": "#4 Chinese site"
+    },
+    {
+      "url": "http://www.google.com.hk/#q=%E9%82%84%E6%8F%90%E4%BE%9B&fp=c44d333e710cb480",
+      "why": "#5 Chinese site"
+    },
+    {
+      "url": "http://udn.com/NEWS/mainpage.shtml"
+    },
+    {
+      "url": "http://ruten.com.tw/"
+    }
+  ]
+}

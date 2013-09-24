@@ -1,0 +1,46 @@
+{
+  "description": "Popular pages in Hindi and Russian.",
+  "archive_data_file": "../data/intl_hi_ru.json",
+  "user_agent_type": "desktop",
+  "smoothness": { "action": "scroll" },
+  "pages": [
+    {
+      "url": "http://www.rambler.ru/",
+      "why": "#12 site in Russia"
+    },
+    {
+      "url": "http://apeha.ru/"
+    },
+    {
+      "url": "http://yandex.ru/yandsearch?lr=102567&text=%D0%9F%D0%BE%D0%B3%D0%BE%D0%B4%D0%B0"
+    },
+    {
+      "url": "http://photofile.ru/"
+    },
+    {
+      "url": "http://ru.wikipedia.org/"
+    },
+    {
+      "url": "http://narod.yandex.ru/"
+    },
+    {
+      "url": "http://rutracker.org/forum/index.php",
+      "why": "#15 in Russia"
+    },
+    {
+      "url": "http://hindi.webdunia.com/"
+    },
+    {
+      "url": "http://hindi.oneindia.in/",
+      "why": "#49 site in India"
+    },
+    {
+      "url": "http://www.indiatimes.com/",
+      "why": "#9 site in India"
+    },
+    {
+      "url": "http://news.google.co.in/nwshp?tab=in&hl=hi",
+      "why": "#2 site in India"
+    }
+  ]
+}

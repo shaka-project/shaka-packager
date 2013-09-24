@@ -1,0 +1,8 @@
+{
+    "description": "Dromaeo JSLib traverse prototype JavaScript benchmark",
+    "pages": [
+        {
+            "url": "file:///../../../../chrome/test/data/dromaeo/index.html?jslib-traverse-prototype&automated"
+        }
+    ]
+}

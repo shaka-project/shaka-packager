@@ -1,0 +1,107 @@
+{
+  "type": "sorter",
+  "version": 1,
+  "world": "vm",
+  "name": "map",
+  "root": true,
+  "order": {},
+  "rules": [
+    {
+      "name": "mmap-profiler",
+      "backtrace_function": ".*(ProfilerMalloc|MemoryRegionMap::).*",
+      "mmap": true,
+      "hidden": true
+    },
+    {
+      "name": "mmap-type-profiler",
+      "backtrace_function": ".*(TypeProfilerMalloc).*",
+      "mmap": true,
+      "hidden": true
+    },
+    {
+      "name": "unhooked-anonymous",
+      "mapped_pathname": "^$",
+      "mmap": false
+    },
+    {
+      "name": "unhooked-file-exec",
+      "mapped_pathname": "^/.*",
+      "mapped_permission": "..x.",
+      "mmap": false
+    },
+    {
+      "name": "unhooked-file-nonexec",
+      "mapped_pathname": "^/.*",
+      "mmap": false
+    },
+    {
+      "name": "unhooked-stack",
+      "mapped_pathname": ".stack.",
+      "mmap": false
+    },
+    {
+      "name": "unhooked-other",
+      "mapped_pathname": ".*",
+      "mmap": false
+    },
+    {
+      "name": "mmap-tcmalloc",
+      "backtrace_function": ".*(DoAllocWithArena|SbrkSysAllocator::Alloc|MmapSysAllocator::Alloc|LowLevelAlloc::Alloc|LowLevelAlloc::AllocWithArena).*",
+      "subs": [
+        [ "malloc", "component" ],
+        [ "malloc", "type" ]
+      ],
+      "mmap": true
+    },
+    {
+      "name": "mmap-v8-heap-newspace",
+      "backtrace_function": ".*v8::internal::NewSpace::SetUp.*",
+      "mmap": true
+    },
+    {
+      "name": "mmap-v8-heap-coderange",
+      "backtrace_function": ".*v8::internal::CodeRange::SetUp.*",
+      "mmap": true
+    },
+    {
+      "name": "mmap-v8-heap-pagedspace",
+      "backtrace_function": ".*v8::internal::PagedSpace::AllocateRaw.*",
+      "mmap": true
+    },
+    {
+      "name": "mmap-v8-other",
+      "backtrace_function": ".*v8::.*",
+      "mmap": true
+    },
+    {
+      "name": "mmap-gpu-mappedmemorymanager",
+      "backtrace_function": ".*gpu::MappedMemoryManager::Alloc.*",
+      "mmap": true
+    },
+    {
+      "name": "mmap-gpu-command-ringbuffer",
+      "backtrace_function": ".*gpu::CommandBufferHelper::AllocateRingBuffer.*",
+      "mmap": true
+    },
+    {
+      "name": "mmap-gpu-transfer-ringbuffer",
+      "backtrace_function": ".*gpu::TransferBuffer::AllocateRingBuffer.*",
+      "mmap": true
+    },
+    {
+      "name": "mmap-gpu-gles2-createbuffer",
+      "backtrace_function": ".*gpu::gles2::BufferTracker::CreateBuffer.*",
+      "mmap": true
+    },
+    {
+      "name": "mmap-skia-font",
+      "backtrace_function": ".*SkTypeface::openStream.*",
+      "mmap": true
+    },
+    {
+      "name": "mmap-catch-all",
+      "backtrace_function": ".*",
+      "mmap": true
+    }
+  ]
+}

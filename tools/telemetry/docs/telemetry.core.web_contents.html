@@ -1,0 +1,94 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html><head><title>Python: module telemetry.core.web_contents</title>
+</head><body bgcolor="#f0f0f8">
+
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="heading">
+<tr bgcolor="#7799ee">
+<td valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial">&nbsp;<br><big><big><strong><a href="telemetry.html"><font color="#ffffff">telemetry</font></a>.<a href="telemetry.core.html"><font color="#ffffff">core</font></a>.web_contents</strong></big></big></font></td
+><td align=right valign=bottom
+><font color="#ffffff" face="helvetica, arial"><a href=".">index</a><br><a href="../telemetry/core/web_contents.py">telemetry/core/web_contents.py</a></font></td></tr></table>
+    <p><tt>#&nbsp;Copyright&nbsp;(c)&nbsp;2012&nbsp;The&nbsp;Chromium&nbsp;Authors.&nbsp;All&nbsp;rights&nbsp;reserved.<br>
+#&nbsp;Use&nbsp;of&nbsp;this&nbsp;source&nbsp;code&nbsp;is&nbsp;governed&nbsp;by&nbsp;a&nbsp;BSD-style&nbsp;license&nbsp;that&nbsp;can&nbsp;be<br>
+#&nbsp;found&nbsp;in&nbsp;the&nbsp;LICENSE&nbsp;file.</tt></p>
+<p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ee77aa">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Classes</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#ee77aa"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><dl>
+<dt><font face="helvetica, arial"><a href="__builtin__.html#object">__builtin__.object</a>
+</font></dt><dd>
+<dl>
+<dt><font face="helvetica, arial"><a href="telemetry.core.web_contents.html#WebContents">WebContents</a>
+</font></dt></dl>
+</dd>
+</dl>
+ <p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#ffc8d8">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#000000" face="helvetica, arial"><a name="WebContents">class <strong>WebContents</strong></a>(<a href="__builtin__.html#object">__builtin__.object</a>)</font></td></tr>
+    
+<tr bgcolor="#ffc8d8"><td rowspan=2><tt>&nbsp;&nbsp;&nbsp;</tt></td>
+<td colspan=2><tt>Represents&nbsp;web&nbsp;contents&nbsp;in&nbsp;the&nbsp;browser<br>&nbsp;</tt></td></tr>
+<tr><td>&nbsp;</td>
+<td width="100%">Methods defined here:<br>
+<dl><dt><a name="WebContents-Close"><strong>Close</strong></a>(self)</dt><dd><tt>Closes&nbsp;this&nbsp;page.<br>
+&nbsp;<br>
+Not&nbsp;all&nbsp;browsers&nbsp;or&nbsp;browser&nbsp;versions&nbsp;support&nbsp;this&nbsp;method.<br>
+Be&nbsp;sure&nbsp;to&nbsp;check&nbsp;browser.supports_tab_control.</tt></dd></dl>
+
+<dl><dt><a name="WebContents-Disconnect"><strong>Disconnect</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="WebContents-EvaluateJavaScript"><strong>EvaluateJavaScript</strong></a>(self, expr, timeout<font color="#909090">=60</font>)</dt><dd><tt>Evalutes&nbsp;expr&nbsp;in&nbsp;JavaScript&nbsp;and&nbsp;returns&nbsp;the&nbsp;JSONized&nbsp;result.<br>
+&nbsp;<br>
+Consider&nbsp;using&nbsp;ExecuteJavaScript&nbsp;for&nbsp;cases&nbsp;where&nbsp;the&nbsp;result&nbsp;of&nbsp;the<br>
+expression&nbsp;is&nbsp;not&nbsp;needed.<br>
+&nbsp;<br>
+If&nbsp;evaluation&nbsp;throws&nbsp;in&nbsp;JavaScript,&nbsp;a&nbsp;Python&nbsp;EvaluateException&nbsp;will<br>
+be&nbsp;raised.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;result&nbsp;of&nbsp;the&nbsp;evaluation&nbsp;cannot&nbsp;be&nbsp;JSONized,&nbsp;then&nbsp;an<br>
+EvaluationException&nbsp;will&nbsp;be&nbsp;raised.</tt></dd></dl>
+
+<dl><dt><a name="WebContents-ExecuteJavaScript"><strong>ExecuteJavaScript</strong></a>(self, expr, timeout<font color="#909090">=60</font>)</dt><dd><tt>Executes&nbsp;expr&nbsp;in&nbsp;JavaScript.&nbsp;Does&nbsp;not&nbsp;return&nbsp;the&nbsp;result.<br>
+&nbsp;<br>
+If&nbsp;the&nbsp;expression&nbsp;failed&nbsp;to&nbsp;evaluate,&nbsp;EvaluateException&nbsp;will&nbsp;be&nbsp;raised.</tt></dd></dl>
+
+<dl><dt><a name="WebContents-StartTimelineRecording"><strong>StartTimelineRecording</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="WebContents-StopTimelineRecording"><strong>StopTimelineRecording</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="WebContents-WaitForDocumentReadyStateToBeComplete"><strong>WaitForDocumentReadyStateToBeComplete</strong></a>(self, timeout<font color="#909090">=60</font>)</dt></dl>
+
+<dl><dt><a name="WebContents-WaitForDocumentReadyStateToBeInteractiveOrBetter"><strong>WaitForDocumentReadyStateToBeInteractiveOrBetter</strong></a>(self, timeout<font color="#909090">=60</font>)</dt></dl>
+
+<dl><dt><a name="WebContents-__del__"><strong>__del__</strong></a>(self)</dt></dl>
+
+<dl><dt><a name="WebContents-__init__"><strong>__init__</strong></a>(self, inspector_backend)</dt></dl>
+
+<hr>
+Data descriptors defined here:<br>
+<dl><dt><strong>__dict__</strong></dt>
+<dd><tt>dictionary&nbsp;for&nbsp;instance&nbsp;variables&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>__weakref__</strong></dt>
+<dd><tt>list&nbsp;of&nbsp;weak&nbsp;references&nbsp;to&nbsp;the&nbsp;object&nbsp;(if&nbsp;defined)</tt></dd>
+</dl>
+<dl><dt><strong>message_output_stream</strong></dt>
+</dl>
+<dl><dt><strong>timeline_model</strong></dt>
+</dl>
+</td></tr></table></td></tr></table><p>
+<table width="100%" cellspacing=0 cellpadding=2 border=0 summary="section">
+<tr bgcolor="#55aa55">
+<td colspan=3 valign=bottom>&nbsp;<br>
+<font color="#ffffff" face="helvetica, arial"><big><strong>Data</strong></big></font></td></tr>
+    
+<tr><td bgcolor="#55aa55"><tt>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</tt></td><td>&nbsp;</td>
+<td width="100%"><strong>DEFAULT_WEB_CONTENTS_TIMEOUT</strong> = 60</td></tr></table>
+</body></html>

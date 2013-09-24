@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (C) 2005-2008 The Android Open Source Project
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+
+<project default="-dex">
+  <property name="verbose" value="false" />
+  <property name="out.dir" location="${OUT_DIR}" />
+  <!-- Output directories -->
+  <property name="out.dir" value="bin" />
+  <property name="out.absolute.dir" location="${out.dir}" />
+  <property name="out.classes.absolute.dir" location="${out.dir}/classes" />
+  <property name="out.dexed.absolute.dir" location="${out.dir}/dexedLibs" />
+  <property name="out.manifest.abs.file" location="${out.dir}/AndroidManifest.xml" />
+
+  <!-- tools location -->
+  <property name="sdk.dir" location="${ANDROID_SDK_ROOT}"/>
+  <property name="target" value="android-${ANDROID_SDK_VERSION}"/>
+  <property name="android.tools.dir" location="${sdk.dir}/tools" />
+  <property name="android.platform.tools.dir" location="${sdk.dir}/platform-tools" />
+
+  <property name="project.target.android.jar" location="${ANDROID_SDK_JAR}" />
+  <path id="project.target.class.path">
+    <pathelement location="${project.target.android.jar}" />
+  </path>
+
+
+  <!-- jar file from where the tasks are loaded -->
+  <path id="android.antlibs">
+      <pathelement path="${sdk.dir}/tools/lib/ant-tasks.jar" />
+  </path>
+
+  <!-- Custom tasks -->
+  <taskdef resource="anttasks.properties" classpathref="android.antlibs" />
+
+
+  <path id="javac.srcdirs.additional">
+    <filelist files="${ADDITIONAL_SRC_DIRS}"/>
+    <filelist files="${GENERATED_SRC_DIRS}"/>
+  </path>
+
+  <!-- Classpath for javac -->
+  <path id="javac.custom.classpath">
+    <filelist files="${INPUT_JARS_PATHS}"/>
+  </path>
+
+  <!--
+    TODO(cjhopman): This is wrong for proguard builds. In that case, it should be just the
+    obfuscated jar.
+  -->
+  <path id="out.dex.jar.input.ref">
+    <path refid="javac.custom.classpath"/>
+  </path>
+
+  <!-- compilation options -->
+  <property name="java.encoding" value="UTF-8" />
+  <property name="java.target" value="1.5" />
+  <property name="java.source" value="1.5" />
+  <property name="java.compilerargs" value="" />
+
+  <property name="source.dir" value="${SOURCE_DIR}" />
+  <property name="source.absolute.dir" location="${source.dir}" />
+  <property name="gen.absolute.dir" value="${out.dir}/gen"/>
+
+  <property name="dx" location="${android.platform.tools.dir}/dx" />
+
+  <property name="need.javac.fork" value="false" />
+  <condition property="project.is.testapp" value="true" else="false">
+    <equals arg1="${IS_TEST_APK}" arg2="1" />
+  </condition>
+
+  <!--
+    Override the -compile target.
+    This target requires 'javac.custom.classpath' to be set to reference
+    of classpath to be used for javac. Also accepts custom path for
+    sources: 'javac.custom.sourcepath'.
+  -->
+  <!-- Compiles this project's .java files into .class files. -->
+  <target name="-compile">
+
+    <mkdir dir="${out.classes.absolute.dir}" />
+    <mkdir dir="${out.dexed.absolute.dir}" />
+    <delete>
+      <fileset dir="${out.classes.absolute.dir}" includes="**/*.class"/>
+    </delete>
+
+    <javac
+        bootclasspathref="project.target.class.path"
+        classpathref="javac.custom.classpath"
+        debug="true"
+        destdir="${out.classes.absolute.dir}"
+        encoding="${java.encoding}"
+        extdirs=""
+        fork="${need.javac.fork}"
+        includeantruntime="false"
+        source="${java.source}"
+        target="${java.target}"
+        verbose="${verbose}">
+      <src path="${source.absolute.dir}"/>
+      <src path="${gen.absolute.dir}"/>
+      <src>
+        <path refid="javac.srcdirs.additional"/>
+      </src>
+      <compilerarg value="-Xlint:unchecked"/>
+      <compilerarg line="${java.compilerargs}"/>
+    </javac>
+
+    <if condition="${project.is.testapp}">
+      <then>
+        <!-- get the project manifest package -->
+        <xpath input="${out.manifest.abs.file}"
+                expression="/manifest/@package" output="project.app.package" />
+        <property name="create.test.jar.file"
+          location="${CREATE_TEST_JAR_PATH}" />
+        <script language="javascript" src="${create.test.jar.file}"/>
+      </then>
+    </if>
+
+    <!-- Package all the compiled .class files into a .jar. -->
+    <jar
+      jarfile="${JAR_PATH}"
+      basedir="${out.classes.absolute.dir}"
+    />
+  </target>
+
+  <property name="proguard.enabled" value="${PROGUARD_ENABLED}" />
+  <property name="proguard.config" value="${PROGUARD_FLAGS}" />
+
+  <!-- Obfuscate target
+      This is only active in release builds when proguard.config is defined
+      in default.properties.
+
+  -->
+  <!--
+    Override obfuscate target to pass javac.custom.classpath to Proguard. SDK tools do not provide
+    any way to pass custom class paths to Proguard.
+   -->
+  <target name="-obfuscate" depends="-compile">
+    <if condition="${proguard.enabled}">
+      <then>
+        <path id="out.dex.jar.input.ref" />
+        <property name="obfuscate.absolute.dir" location="${out.absolute.dir}/proguard"/>
+        <property name="preobfuscate.jar.file" value="${obfuscate.absolute.dir}/original.jar"/>
+        <property name="obfuscated.jar.file" value="${obfuscate.absolute.dir}/obfuscated.jar"/>
+        <!-- input for dex will be proguard's output -->
+        <property name="out.dex.input.absolute.dir" value="${obfuscated.jar.file}"/>
+
+        <!-- Add Proguard Tasks -->
+        <property name="proguard.jar" location="${android.tools.dir}/proguard/lib/proguard.jar"/>
+        <taskdef name="proguard" classname="proguard.ant.ProGuardTask" classpath="${proguard.jar}"/>
+
+        <!-- Set the android classpath Path object into a single property. It'll be
+                 all the jar files separated by a platform path-separator.
+                 Each path must be quoted if it contains spaces.
+        -->
+        <pathconvert property="project.target.classpath.value" refid="project.target.class.path">
+          <firstmatchmapper>
+            <regexpmapper from='^([^ ]*)( .*)$$' to='"\1\2"'/>
+            <identitymapper/>
+          </firstmatchmapper>
+        </pathconvert>
+
+        <!-- Build a path object with all the jar files that must be obfuscated.
+             This include the project compiled source code and any 3rd party jar
+             files. -->
+        <path id="project.all.classes.path">
+          <pathelement location="${preobfuscate.jar.file}"/>
+          <!-- Pass javac.custom.classpath for apks. -->
+          <path refid="javac.custom.classpath"/>
+        </path>
+        <!-- Set the project jar files Path object into a single property. It'll be
+             all the jar files separated by a platform path-separator.
+             Each path must be quoted if it contains spaces.
+        -->
+        <pathconvert property="project.all.classes.value" refid="project.all.classes.path">
+          <firstmatchmapper>
+            <regexpmapper from='^([^ ]*)( .*)$$' to='"\1\2"'/>
+            <identitymapper/>
+          </firstmatchmapper>
+        </pathconvert>
+
+        <!-- Turn the path property ${proguard.config} from an A:B:C property
+             into a series of includes: -include A -include B -include C
+             suitable for processing by the ProGuard task. Note - this does
+             not include the leading '-include "' or the closing '"'; those
+             are added under the <proguard> call below.
+        -->
+        <path id="proguard.configpath">
+          <pathelement path="${proguard.config}"/>
+        </path>
+        <pathconvert pathsep='" -include "' property="proguard.configcmd"
+          refid="proguard.configpath"/>
+
+        <mkdir   dir="${obfuscate.absolute.dir}"/>
+        <delete file="${preobfuscate.jar.file}"/>
+        <delete file="${obfuscated.jar.file}"/>
+        <jar basedir="${out.classes.absolute.dir}"
+          destfile="${preobfuscate.jar.file}"/>
+        <proguard>
+          -include      "${proguard.configcmd}"
+          -include      "${out.absolute.dir}/proguard.txt"
+          -injars       ${project.all.classes.value}
+          -outjars      "${obfuscated.jar.file}"
+          -libraryjars  ${project.target.classpath.value}
+          -dump         "${obfuscate.absolute.dir}/dump.txt"
+          -printseeds   "${obfuscate.absolute.dir}/seeds.txt"
+          -printusage   "${obfuscate.absolute.dir}/usage.txt"
+          -printmapping "${obfuscate.absolute.dir}/mapping.txt"
+        </proguard>
+      </then>
+    </if>
+  </target>
+
+  <property name="dex.file.name" value="classes.dex" />
+  <property name="intermediate.dex.file" location="${out.absolute.dir}/${dex.file.name}" />
+
+  <!-- Converts this project's .class files into .dex files -->
+  <target name="-dex" depends="-obfuscate">
+      <!-- sets the primary input for dex. If a pre-dex task sets it to
+           something else this has no effect -->
+      <property name="out.dex.input.absolute.dir" value="${out.classes.absolute.dir}" />
+      <property name="dex.force.jumbo" value="false" />
+
+      <dex executable="${dx}"
+              output="${intermediate.dex.file}"
+              dexedlibs="${out.dexed.absolute.dir}"
+              nolocals="false"
+              forceJumbo="${dex.force.jumbo}"
+              verbose="${verbose}">
+          <path path="${out.dex.input.absolute.dir}"/>
+          <path refid="out.dex.jar.input.ref" />
+      </dex>
+      <touch file="${STAMP}" />
+  </target>
+</project>

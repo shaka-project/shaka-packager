@@ -1,0 +1,184 @@
+# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Should only be running on Windows.
+assert(is_win)
+
+# Setup the Visual Studio state.
+#
+# Its argument is the location to write the environment files.
+# It will write "environment.x86" and "environment.x64" to this directory,
+# and return a list to us.
+#
+# The list contains the include path as its only element. (I'm expecting to
+# add more so it's currently a list inside a list.)
+msvc_config = [["foo"]]
+#exec_script("get_msvc_config.py",
+                     #     [relative_root_output_dir],
+                     #     "value")
+
+# 32-bit toolchain -------------------------------------------------------------
+
+toolchain("32") {
+  tool("cc") {
+    command = "ninja -t msvc -e \$arch -- cl.exe /nologo /showIncludes /FC @\$out.rsp /c \$in /Fo\$out /Fd\$pdbname"
+    description = "CC \$out"
+    rspfile = "\$out.rsp"
+    rspfile_content = "\$defines \$includes \$cflags \$cflags_c"
+    deps = "msvc"
+  }
+  tool("cxx") {
+    command = "ninja -t msvc -e \$arch -- cl.exe /nologo /showIncludes /FC @\$out.rsp /c \$in /Fo\$out /Fd\$pdbname"
+    description = "CXX \$out"
+    rspfile = "\$out.rsp"
+    rspfile_content = "\$defines \$includes \$cflags \$cflags_cc"
+    deps = "msvc"
+  }
+  #tool("idl") {
+  #  command = $python_path gyp-win-tool midl-wrapper \$arch \$outdir \$tlb \$h \$dlldata \$iid \$
+  #      \$proxy \$in \$idlflags
+  #  description = IDL \$in
+  #}
+  #tool("rc") {
+  #  command = $python_path gyp-win-tool rc-wrapper \$arch rc.exe \$defines \$includes \$rcflags \$
+  #      /fo\$out \$in
+  #  description = RC \$in
+  #}
+  #tool("asm") {
+  #  command = $python_path gyp-win-tool asm-wrapper \$arch ml.exe \$defines \$includes /c /Fo \$
+  #      \$out \$in
+  #  description = ASM \$in
+  #}
+  tool("alink") {
+    command = "$python_path gyp-win-tool link-wrapper \$arch lib.exe /nologo /ignore:4221 /OUT:\$out @\$out.rsp"
+    description = "LIB \$out"
+    rspfile = "\$out.rsp"
+    rspfile_content = "\$in_newline \$libflags"
+  }
+  #tool("solink_embed_inc") {
+  #  command = cmd /c $python_path gyp-win-tool link-wrapper \$arch link.exe /nologo \$implibflag \$
+  #      /DLL /OUT:\$dll /PDB:\$dll.pdb @\$dll.rsp && $python_path gyp-win-tool \$
+  #      manifest-wrapper \$arch cmd /c if exist \$dll.manifest del \$dll.manifest && \$
+  #      $python_path gyp-win-tool manifest-wrapper \$arch mt.exe -nologo -manifest \$manifests \$
+  #      -out:\$dll.manifest && $python_path gyp-win-tool manifest-to-rc \$arch \$dll.manifest \$
+  #      \$dll.manifest.rc 2 && $python_path gyp-win-tool rc-wrapper \$arch rc.exe \$
+  #      \$dll.manifest.rc && $python_path gyp-win-tool link-wrapper \$arch link.exe /nologo \$
+  #      \$implibflag /DLL /OUT:\$dll /PDB:\$dll.pdb @\$dll.rsp \$dll.manifest.res
+  #  description = LINK_EMBED_INC(DLL) \$dll
+  #  restat = 1
+  #  rspfile = \$dll.rsp
+  #  rspfile_content = \$libs \$in_newline \$ldflags
+  #}
+  #tool("solink_module_embed_inc") {
+  #  command = cmd /c $python_path gyp-win-tool link-wrapper \$arch link.exe /nologo \$implibflag \$
+  #      /DLL /OUT:\$dll /PDB:\$dll.pdb @\$dll.rsp && $python_path gyp-win-tool \$
+  #      manifest-wrapper \$arch cmd /c if exist \$dll.manifest del \$dll.manifest && \$
+  #      $python_path gyp-win-tool manifest-wrapper \$arch mt.exe -nologo -manifest \$manifests \$
+  #      -out:\$dll.manifest && $python_path gyp-win-tool manifest-to-rc \$arch \$dll.manifest \$
+  #      \$dll.manifest.rc 2 && $python_path gyp-win-tool rc-wrapper \$arch rc.exe \$
+  #      \$dll.manifest.rc && $python_path gyp-win-tool link-wrapper \$arch link.exe /nologo \$
+  #      \$implibflag /DLL /OUT:\$dll /PDB:\$dll.pdb @\$dll.rsp \$dll.manifest.res
+  #  description = LINK_EMBED_INC(DLL) \$dll
+  #  restat = 1
+  #  rspfile = \$dll.rsp
+  #  rspfile_content = \$libs \$in_newline \$ldflags
+  #}
+  #rule link_embed_inc
+  #  command = cmd /c $python_path gyp-win-tool link-wrapper \$arch link.exe /nologo /OUT:\$out \$
+  #      /PDB:\$out.pdb @\$out.rsp && $python_path gyp-win-tool manifest-wrapper \$arch cmd /c \$
+  #      if exist \$out.manifest del \$out.manifest && $python_path gyp-win-tool \$
+  #      manifest-wrapper \$arch mt.exe -nologo -manifest \$manifests -out:\$out.manifest && \$
+  #      $python_path gyp-win-tool manifest-to-rc \$arch \$out.manifest \$out.manifest.rc 1 && \$
+  #      $python_path gyp-win-tool rc-wrapper \$arch rc.exe \$out.manifest.rc && \$
+  #      $python_path gyp-win-tool link-wrapper \$arch link.exe /nologo /OUT:\$out /PDB:\$out.pdb \$
+  #      @\$out.rsp \$out.manifest.res
+  #  description = LINK_EMBED_INC \$out
+  #  rspfile = \$out.rsp
+  #  rspfile_content = \$in_newline \$libs \$ldflags
+  #rule solink_embed
+  #  command = cmd /c $python_path gyp-win-tool link-wrapper \$arch link.exe /nologo \$implibflag \$
+  #      /DLL /OUT:\$dll /PDB:\$dll.pdb @\$dll.rsp && $python_path gyp-win-tool \$
+  #      manifest-wrapper \$arch cmd /c if exist \$dll.manifest del \$dll.manifest && \$
+  #      $python_path gyp-win-tool manifest-wrapper \$arch mt.exe -nologo -manifest \$manifests \$
+  #      -outputresource:\$dll;2
+  #  description = LINK_EMBED(DLL) \$dll
+  #  restat = 1
+  #  rspfile = \$dll.rsp
+  #  rspfile_content = \$libs \$in_newline \$ldflags
+  #rule solink_module_embed
+  #  command = cmd /c $python_path gyp-win-tool link-wrapper \$arch link.exe /nologo \$implibflag \$
+  #      /DLL /OUT:\$dll /PDB:\$dll.pdb @\$dll.rsp && $python_path gyp-win-tool \$
+  #      manifest-wrapper \$arch cmd /c if exist \$dll.manifest del \$dll.manifest && \$
+  #      $python_path gyp-win-tool manifest-wrapper \$arch mt.exe -nologo -manifest \$manifests \$
+  #      -outputresource:\$dll;2
+  #  description = LINK_EMBED(DLL) \$dll
+  #  restat = 1
+  #  rspfile = \$dll.rsp
+  #  rspfile_content = \$libs \$in_newline \$ldflags
+  #rule link_embed
+  #  command = cmd /c $python_path gyp-win-tool link-wrapper \$arch link.exe /nologo /OUT:\$out \$
+  #      /PDB:\$out.pdb @\$out.rsp && $python_path gyp-win-tool manifest-wrapper \$arch cmd /c \$
+  #      if exist \$out.manifest del \$out.manifest && $python_path gyp-win-tool \$
+  #      manifest-wrapper \$arch mt.exe -nologo -manifest \$manifests -outputresource:\$out;1
+  #  description = LINK_EMBED \$out
+  #  rspfile = \$out.rsp
+  #  rspfile_content = \$in_newline \$libs \$ldflags
+  tool("solink") {
+    command = "cmd /c $python_path gyp-win-tool link-wrapper \$arch link.exe /nologo \$implibflag /DLL /OUT:\$dll /PDB:\$dll.pdb @\$dll.rsp && $python_path gyp-win-tool manifest-wrapper \$arch cmd /c if exist \$dll.manifest del \$dll.manifest && $python_path gyp-win-tool manifest-wrapper \$arch mt.exe -nologo -manifest \$manifests -out:\$dll.manifest"
+    description = "LINK(DLL) \$dll"
+    restat = "1"
+    rspfile = "\$dll.rsp"
+    rspfile_content = "\$libs \$in_newline \$ldflags"
+  }
+  tool("solink_module") {
+    command = "cmd /c $python_path gyp-win-tool link-wrapper \$arch link.exe /nologo \$implibflag /DLL /OUT:\$dll /PDB:\$dll.pdb @\$dll.rsp && $python_path gyp-win-tool manifest-wrapper \$arch cmd /c if exist \$dll.manifest del \$dll.manifest && $python_path gyp-win-tool manifest-wrapper \$arch mt.exe -nologo -manifest \$manifests -out:\$dll.manifet"
+    description = "LINK(DLL) \$dll"
+    restat = "1"
+    rspfile = "\$dll.rsp"
+    rspfile_content = "\$libs \$in_newline \$ldflags"
+  }
+  tool("link") {
+    command = "cmd /c $python_path gyp-win-tool link-wrapper \$arch link.exe /nologo /OUT:\$out /PDB:\$out.pdb @\$out.rsp && $python_path gyp-win-tool manifest-wrapper \$arch cmd /c if exist \$out.manifest del \$out.manifest && $python_path gyp-win-tool manifest-wrapper \$arch mt.exe -nologo -manifest \$manifests -out:\$out.manifest"
+    description = "LINK \$out"
+    rspfile = "\$out.rsp"
+    rspfile_content = "\$in_newline \$libs \$ldflags"
+  }
+  tool("stamp") {
+    command = "$python_path gyp-win-tool stamp \$out"
+    description = "STAMP \$out"
+  }
+  tool("copy") {
+    command = "$python_path gyp-win-tool recursive-mirror \$in \$out"
+    description = "COPY \$in \$out"
+  }
+}
+
+# 64-bit toolchain -------------------------------------------------------------
+
+toolchain("64") {
+}
+
+# SDK setup --------------------------------------------------------------------
+
+config("sdk") {
+  # The include path is the stuff returned by the script plus out own WTL
+  # checkout.
+  # TODO(brettw) should adding WTL be at this level or should it be more on
+  # a per-project basis?
+  includes = msvc_config[0] + "../../third_party/wtl/include"
+
+  defines = [
+    "_ATL_NO_OPENGL",
+    "_SECURE_ATL",
+    "_WIN32_WINNT=0x0602",
+    "_WINDOWS",
+    "CERT_CHAIN_PARA_HAS_EXTRA_FIELDS",
+    "NOMINMAX",
+    "NTDDI_VERSION=0x06020000",
+    "PSAPI_VERSION=1",
+    "WIN32",
+    "WIN32_LEAN_AND_MEAN",
+    "WINVER=0x0602",
+  ]
+}

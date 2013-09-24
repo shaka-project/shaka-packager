@@ -1,0 +1,18 @@
+# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("find_bad_constructs") {
+  cflags = [
+    "-Xclang", "-load",
+    "-Xclang",
+
+    # TODO(brettw) express this in terms of a relative dir from the output.
+    # for now, assume the output dir is two levels deep under the source
+    # (like "out/Debug").
+    "../../third_party/llvm-build/Release+Asserts/lib/libFindBadConstructs.dylib",
+
+    "-Xclang", "-add-plugin",
+    "-Xclang", "find-bad-constructs",
+  ]
+}

@@ -1,0 +1,66 @@
+In file included from overridden_methods.cpp:5:
+./overridden_methods.h:48:28: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeMethod();
+                           ^
+                            OVERRIDE
+./overridden_methods.h:52:34: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeInlineMethod() {}
+                                 ^
+                                  OVERRIDE
+./overridden_methods.h:56:39: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeConstMethod() const {}
+                                      ^
+                                       OVERRIDE
+./overridden_methods.h:58:53: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeMethodWithExceptionSpec() throw() {}
+                                                    ^
+                                                     OVERRIDE
+./overridden_methods.h:61:67: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeConstMethodWithExceptionSpec() const throw(int) {}
+                                                                  ^
+                                                                   OVERRIDE
+./overridden_methods.h:63:39: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeNonPureBaseMethod() {}
+                                      ^
+                                       OVERRIDE
+./overridden_methods.h:65:39: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeMethodWithComment();  // This is a comment.
+                                      ^
+                                       OVERRIDE
+./overridden_methods.h:67:46: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeMethodWithCommentAndBody() {}  // This is a comment.
+                                             ^
+                                              OVERRIDE
+overridden_methods.cpp:24:28: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeMethod();
+                           ^
+                            OVERRIDE
+overridden_methods.cpp:28:34: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeInlineMethod() {}
+                                 ^
+                                  OVERRIDE
+overridden_methods.cpp:32:39: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeConstMethod() const {}
+                                      ^
+                                       OVERRIDE
+overridden_methods.cpp:34:53: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeMethodWithExceptionSpec() throw() {}
+                                                    ^
+                                                     OVERRIDE
+overridden_methods.cpp:37:67: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeConstMethodWithExceptionSpec() const throw(int) {}
+                                                                  ^
+                                                                   OVERRIDE
+overridden_methods.cpp:39:39: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeNonPureBaseMethod() {}
+                                      ^
+                                       OVERRIDE
+overridden_methods.cpp:41:39: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeMethodWithComment();  // This is a comment.
+                                      ^
+                                       OVERRIDE
+overridden_methods.cpp:43:46: warning: [chromium-style] Overriding method must be marked with OVERRIDE.
+  virtual void SomeMethodWithCommentAndBody() {}  // This is a comment.
+                                             ^
+                                              OVERRIDE
+16 warnings generated.

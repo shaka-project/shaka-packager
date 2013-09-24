@@ -1,0 +1,232 @@
+{
+  "description": "Key mobile sites",
+  "archive_data_file": "../data/key_mobile_sites.json",
+  "credentials_path": "../data/credentials.json",
+  "user_agent_type": "mobile",
+  "smoothness": { "action": "scroll" },
+  "pages": [
+    {
+      "url": "http://www.androidpolice.com/2012/10/03/rumor-evidence-mounts-that-an-lg-optimus-g-nexus-is-coming-along-with-a-nexus-phone-certification-program/",
+      "why": "crbug.com/242544"
+    },
+    {
+      "url": "http://nytimes.com/",
+      "why": "Top news site"
+    },
+    {
+      "url": "http://iphone.capitolvolkswagen.com/index.htm#new-inventory_p_2Fsb-new_p_2Ehtm_p_3Freset_p_3DInventoryListing",
+      "why": "Typical mobile business site",
+      "wait_for_element_with_text": "Next 35"
+    },
+    {
+      "url": "http://gsp.ro",
+      "why": "crbug.com/149958"
+    },
+    {
+      "url": "http://cuteoverload.com",
+      "why": "Image-heavy site"
+    },
+    {
+      "url": "http://theverge.com",
+      "why": "Top tech blog"
+    },
+    {
+      "url": "http://www.theverge.com/2012/10/28/3568746/amazon-7-inch-fire-hd-ipad-mini-ad-ballsy",
+      "why": "Top tech blog",
+      "wait_for_javascript_expression": "window.Chorus !== undefined && window.Chorus.Comments !== undefined && window.Chorus.Comments.Json !== undefined && (window.Chorus.Comments.loaded || window.Chorus.Comments.Json.load_comments())"
+    },
+    {
+      "url": "http://www.cnn.com/2012/10/03/politics/michelle-obama-debate/index.html",
+      "why": "Top news site",
+      "wait_seconds": 8
+    },
+    {
+      "url": "http://digg.com",
+      "why": "Top tech site"
+    },
+    {
+      "url": "https://www.google.com/#hl=en&q=barack+obama",
+      "why": "Top Google property; a Google tab is often open"
+    },
+    {
+      "url": "https://plus.google.com/app/basic/110031535020051778989/posts?source=apppromo",
+      "why": "Social; top Google property; Public profile; infinite scrolls",
+      "smoothness": {
+        "action": "scroll",
+        "scroll_is_infinite": true
+      }
+    },
+    {
+      "url": "https://facebook.com/barackobama",
+      "why": "#1 (Alexa global)",
+      "wait_for_javascript_expression": "document.getElementById('timelineBody') !== null"
+    },
+    {
+      "url": "http://m.youtube.com/watch?v=9hBpF_Zj4OA",
+      "why": "#3 (Alexa global)",
+      "wait_for_javascript_expression": "document.getElementById('paginatortarget') !== null"
+    },
+    {
+      "name": "Blogger",
+      "url": "http://googlewebmastercentral.blogspot.com/",
+      "why": "#11 (Alexa global), google property; some blogger layouts have infinite scroll but more interesting"
+    },
+    {
+      "name": "Wordpress",
+      "url": "http://en.blog.wordpress.com/2012/09/04/freshly-pressed-editors-picks-for-august-2012/",
+      "why": "#18 (Alexa global), Picked an interesting post"
+    },
+    {
+      "name": "LinkedIn",
+      "url": "https://www.linkedin.com/in/linustorvalds",
+      "why": "#12 (Alexa global),Public profile",
+      "post_navigate_javascript_to_execute": "getAppJs.noApp();",
+      "wait_for_javascript_expression": "document.getElementById('profile-view-scroller') !== null"
+    },
+    {
+      "name": "Wikipedia (1 tab)",
+      "url": "http://en.wikipedia.org/wiki/Wikipedia",
+      "why": "#6 (Alexa) most visited worldwide, picked an interesting page"
+    },
+    {
+      "disabled": "Forbidden (Rate Limit Exceeded)",
+      "name": "Twitter",
+      "url": "http://twitter.com/katyperry",
+      "why": "#8 (Alexa global), picked an interesting page"
+    },
+    {
+      "name": "Pinterest",
+      "url": "http://pinterest.com",
+      "why": "#37 (Alexa global)"
+    },
+    {
+      "disabled": "Fails often; crbug.com/249722",
+      "name": "ESPN",
+      "url": "http://espn.go.com",
+      "why": "#1 sports"
+    },
+    {
+      "url": "http://news.yahoo.com",
+      "why": "#1 news worldwide (Alexa global)"
+    },
+    {
+      "url": "http://www.cnn.com",
+      "why": "#2 news worldwide"
+    },
+    {
+      "url": "http://www.amazon.com/gp/aw/s/ref=is_box_?k=nicolas+cage",
+      "why": "#1 world commerce website by visits; #3 commerce in the US by time spent"
+    },
+    {
+      "url": "http://shop.mobileweb.ebay.com/searchresults?kw=viking+helmet",
+      "why": "#1 commerce website by time spent by users in US"
+    },
+    {
+      "url": "http://www.booking.com/searchresults.html?src=searchresults&latitude=65.0500&longitude=25.4667",
+      "why": "#1 Alexa recreation"
+    },
+    {
+      "url": "http://answers.yahoo.com/question/index?qid=20110117024343AAopj8f",
+      "why": "#1 Alexa reference"
+    },
+    {
+      "url": "http://sports.yahoo.com/",
+      "why": "#1 Alexa sports"
+    },
+    {
+      "url": "http://techcrunch.com",
+      "why": "Top tech blog"
+    },
+    {
+      "url": "https://mail.google.com/mail/",
+      "why": "productivity, top google properties",
+      "credentials": "google",
+      "wait_for_element_with_text": "Inbox",
+      "smoothness": {
+        "action": "scroll",
+        "scrollable_element_function": "function(callback) { callback(document.getElementById('views').childNodes[1].firstChild); }"
+      }
+    },
+    {
+      "url": "https://www.google.com/calendar/",
+      "why": "productivity, top google properties",
+      "credentials": "google",
+      "smoothness": {
+        "action": "scroll",
+        "scrollable_element_function": "function(callback) { callback(document.getElementById('scrolltimedeventswk')); }"
+      }
+    },
+    {
+      "url": "http://mlb.mlb.com/index.jsp",
+      "why": "#6 Alexa sports"
+    },
+    {
+      "url": "http://www.sfgate.com/",
+      "why": "#14 Alexa California"
+    },
+    {
+      "url": "http://slashdot.org/",
+      "why": "crbug.com/169827"
+    },
+    {
+      "url": "http://worldjournal.com/",
+      "why": "Non-latin character set"
+    },
+    {
+      "url": "http://www.wowwiki.com/World_of_Warcraft:_Mists_of_Pandaria",
+      "why": "Mobile wiki"
+    },
+    {
+      "url": "http://online.wsj.com/home-page",
+      "why": "#15 Alexa news"
+    },
+    {
+      "url": "http://www.deviantart.com/",
+      "why": "Image-heavy mobile site"
+    },
+    {
+      "url": "http://www.baidu.com/s?wd=barack+obama&rsv_bp=0&rsv_spt=3&rsv_sug3=9&rsv_sug=0&rsv_sug4=3824&rsv_sug1=3&inputT=4920",
+      "why": "Top search engine"
+    },
+    {
+      "url": "http://www.bing.com/search?q=sloths",
+      "why": "Top search engine"
+    },
+    {
+      "url": "http://www.reddit.com/r/programming/comments/1g96ve",
+      "why": "#5 Alexa news"
+    },
+    {
+      "url": "http://www.boingboing.net",
+      "why": "Problematic use of fixed position elements"
+    },
+    {
+      "url": "http://groupcloned.com",
+      "why": "crbug.com/172906",
+      "wait_for_javascript_expression": "document.getElementById('element-19') !== null && document.getElementById('element-19').contentDocument.getElementById('element-22') !== null",
+      "wait_seconds": 5,
+      "smoothness": {
+        "action": "scroll",
+        "scroll_requires_touch": true,
+        "remaining_scroll_distance_function": "function() { return Math.max(0, 1250 + document.getElementById('element-19').contentDocument.getElementById('element-22').getBoundingClientRect().top); }"
+      }
+    },
+    {
+      "url": "http://mobile-news.sandbox.google.com/news/p#2",
+      "why": "crbug.com/223726",
+      "wait_for_javascript_expression": "document.getElementById(':h') !== null",
+      "wait_seconds": 5,
+      "smoothness": {
+        "action": "scroll",
+        "scroll_requires_touch": true,
+        "scrollable_element_function": "function(callback) { callback(document.getElementById(':5')); }",
+        "remaining_scroll_distance_function": "function() { return Math.max(0, 1500 + document.getElementById(':h').getBoundingClientRect().top); }"
+      }
+    },
+    {
+      "disabled": "Doesn't scroll; crbug.com/249736",
+      "url": "http://forecast.io",
+      "why": "crbug.com/231413"
+    }
+  ]
+}

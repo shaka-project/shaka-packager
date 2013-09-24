@@ -1,0 +1,8 @@
+{
+    "description": "Dromaeo DOMCore query JavaScript benchmark",
+    "pages": [
+        {
+            "url": "file:///../../../../chrome/test/data/dromaeo/index.html?dom-query&automated"
+        }
+    ]
+}

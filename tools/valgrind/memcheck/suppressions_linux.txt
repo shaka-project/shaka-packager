@@ -1,0 +1,35 @@
+# There are three kinds of suppressions in this file:
+# 1. Third party stuff we have no control over.
+#
+# 2. Intentional unit test errors, stuff that is somehow a false positive
+# in our own code, or stuff that is so trivial it's not worth fixing.
+#
+# 3. Suppressions for real chromium bugs that are not yet fixed.
+# These should all be in chromium's bug tracking system.
+# Periodically we should sweep this file and the bug tracker clean by
+# running overnight and removing outdated bugs/suppressions.
+#
+# TODO(rnk): Should we move all of the Linux-only system library suppressions
+# over from suppressions.txt?  We'd avoid wasting time parsing and matching
+# suppressions on non-Linux, which is basically just Mac.
+#
+#-----------------------------------------------------------------------
+
+# 1. Third party stuff we have no control over.
+{
+   # The InvalidRead error in rc4_wordconv is intentional.
+   # https://bugzilla.mozilla.org/show_bug.cgi?id=341127
+   # TODO(wtc): This invalid read has been fixed in NSS 3.15.  Remove this
+   # suppression when the system NSS libraries in Linux distributions are
+   # version 3.15 or later.
+   bug_43113 (Intentional)
+   Memcheck:Unaddressable
+   fun:rc4_wordconv
+   fun:RC4_Encrypt
+}
+
+# 2. Intentional unit test errors, stuff that is somehow a false positive
+# in our own code, or stuff that is so trivial it's not worth fixing.
+
+# 3. Suppressions for real chromium bugs that are not yet fixed.
+

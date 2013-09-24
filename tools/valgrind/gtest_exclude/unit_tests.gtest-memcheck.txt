@@ -1,0 +1,12 @@
+# Takes too long and may cause bots to time out. http://crbug.com/134400
+# This test alone takes 10-15 minutes.
+Convolver.SIMDVerification
+
+# Timing issues. http://crbug.com/241051
+ExtensionAlarmsTest.*
+
+# SEGV_MAPERR. http://crbug.com/245797
+ClientSideDetectionHostTest.NavigationCancelsShouldClassifyUrl
+
+# Test fails on CrOS memcheck only. http://crbug.com/247440
+NotificationAudioControllerTest.MultiProfiles

@@ -1,0 +1,15 @@
+{
+    "description": "More JS page_cycler benchmark",
+    "serving_dirs": ["../../../../data/page_cycler/morejs"],
+    "pages": [
+        { "url": "file:///../../../../data/page_cycler/morejs/blog.chromium.org/" },
+        { "url": "file:///../../../../data/page_cycler/morejs/dev.chromium.org/" },
+        { "url": "file:///../../../../data/page_cycler/morejs/googleblog.blogspot.com1/" },
+        { "url": "file:///../../../../data/page_cycler/morejs/googleblog.blogspot.com2/" },
+        { "url": "file:///../../../../data/page_cycler/morejs/test.blogspot.com/" },
+        { "url": "file:///../../../../data/page_cycler/morejs/www.igoogle.com/" },
+        { "url": "file:///../../../../data/page_cycler/morejs/www.techcrunch.com/" },
+        { "url": "file:///../../../../data/page_cycler/morejs/www.webkit.org/" },
+        { "url": "file:///../../../../data/page_cycler/morejs/www.yahoo.com/" }
+    ]
+}

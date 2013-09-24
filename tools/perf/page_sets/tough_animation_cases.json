@@ -1,0 +1,22 @@
+{
+  "description": "A collection of animation performance tests",
+  "smoothness": { "action": "wait", "condition": "duration", "seconds": 5 },
+  "pages": [
+    {
+      "url": "file:///tough_animation_cases/keyframed_animations.html",
+      "why": "Tests various keyframed animations."
+    },
+    {
+      "url": "file:///tough_animation_cases/transform_transitions.html",
+      "why": "Tests various transitions."
+    },
+    {
+      "url": "http://ie.microsoft.com/testdrive/performance/robohornetpro/",
+      "why": "Login page is slow because of ineffecient transform operations"
+    },
+    {
+      "url": "file:///tough_animation_cases/transform_transition_js_block.html",
+      "why": "JS execution blocks CSS transition unless initial transform is set"
+    }
+  ]
+}

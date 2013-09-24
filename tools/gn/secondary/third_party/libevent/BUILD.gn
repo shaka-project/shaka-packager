@@ -1,0 +1,42 @@
+# Copyright (c) 2013 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("libevent") {
+  sources = [
+    "buffer.c",
+    "epoll.c",
+    "epoll_sub.c",
+    "evbuffer.c",
+    "evdns.c",
+    "event.c",
+    "event_tagging.c",
+    "evrpc.c",
+    "evutil.c",
+    "http.c",
+    "kqueue.c",
+    "log.c",
+    "poll.c",
+    "select.c",
+    "signal.c",
+    "strlcpy.c",
+  ]
+
+  defines = [ "HAVE_CONFIG_H" ]
+
+  if (is_linux) {
+    ldflags = [ "-lrt" ]
+  } else {
+    sources -= [ "epoll.c", "epoll_sub.c" ]
+  }
+
+  if (is_mac) {
+    includes = [ "mac" ]
+  } else if (is_linux) {
+    includes = [ "linux" ]
+    sources -= [ "kqueue.c" ]
+  }
+
+  configs -= "//build/config/compiler:chromium_code"
+  configs += "//build/config/compiler:no_chromium_code"
+}

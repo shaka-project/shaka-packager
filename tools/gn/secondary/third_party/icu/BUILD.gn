@@ -1,0 +1,5 @@
+
+component("icui18n") {
+}
+component("icuuc") {
+}

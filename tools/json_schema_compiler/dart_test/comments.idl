@@ -1,0 +1,32 @@
+// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This comment is for the comments namespace.
+namespace comments {
+  // This comments the "Functions" block, and should be ignored.
+  interface Functions {
+    // This comment is separated by at least one blank line from the start of
+    // the function, and should be ignored.
+  
+    //
+    // There's a blank line at the start of this comment.
+    // 
+    // Documentation for basicFunction.
+    // BasicFunction() is a great function.
+    // There is a newline after this.
+    //
+    // It works like so:
+    //        +-----+
+    //        |     |     +--+
+    //        |     |     |  |
+    //        +-----+ --> +--+
+    //
+    // Some other stuff here.
+    //    This paragraph starts with whitespace.
+    //    Overall, its a great function.
+    // There's also a blank line at the end of this comment.
+    //
+    static void basicFunction();
+  };
+};

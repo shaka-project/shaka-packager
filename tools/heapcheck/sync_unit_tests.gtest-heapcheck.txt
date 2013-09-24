@@ -1,0 +1,3 @@
+# http://crbug.com/118203
+InvalidationNotifierTest.Basic
+NonBlockingInvalidationNotifierTest.Basic

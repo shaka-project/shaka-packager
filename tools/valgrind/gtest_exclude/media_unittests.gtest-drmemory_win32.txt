@@ -1,0 +1,4 @@
+# Hangs under Dr. Memory
+# http://code.google.com/p/drmemory/issues/detail?id=978
+WinAudioTest.SyncSocketBasic
+AudioBusTest.CopyTo
