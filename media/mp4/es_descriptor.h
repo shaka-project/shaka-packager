@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "base/basictypes.h"
-#include "media/base/media_export.h"
 
 namespace media {
 
@@ -28,17 +27,17 @@ enum ObjectType {
 // This class parse object type and decoder specific information from an
 // elementary stream descriptor, which is usually contained in an esds box.
 // Please refer to ISO 14496 Part 1 7.2.6.5 for more details.
-class MEDIA_EXPORT ESDescriptor {
+class ESDescriptor {
  public:
   // Utility function to check if the given object type is AAC.
-  static bool IsAAC(uint8 object_type);
+  static bool IsAAC(ObjectType object_type);
 
   ESDescriptor();
   ~ESDescriptor();
 
   bool Parse(const std::vector<uint8>& data);
 
-  uint8 object_type() const;
+  ObjectType object_type() const;
   const std::vector<uint8>& decoder_specific_info() const;
 
  private:
@@ -51,7 +50,7 @@ class MEDIA_EXPORT ESDescriptor {
   bool ParseDecoderConfigDescriptor(BitReader* reader);
   bool ParseDecoderSpecificInfo(BitReader* reader);
 
-  uint8 object_type_;
+  ObjectType object_type_;
   std::vector<uint8> decoder_specific_info_;
 };
 

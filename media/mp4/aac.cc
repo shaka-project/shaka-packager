@@ -10,43 +10,26 @@
 #include "media/base/bit_reader.h"
 #include "media/mp4/rcheck.h"
 
-// The following conversion table is extracted from ISO 14496 Part 3 -
-// Table 1.16 - Sampling Frequency Index.
-static const int kFrequencyMap[] = {
+namespace {
+
+// Sampling Frequency Index table, from ISO 14496-3 Table 1.16
+static const int kSampleRates[] = {
   96000, 88200, 64000, 48000, 44100, 32000, 24000,
   22050, 16000, 12000, 11025, 8000, 7350
 };
 
+// Channel Configuration table, from ISO 14496-3 Table 1.17
+const uint32 kChannelConfigs[] = {0, 1, 2, 3, 4, 5, 6, 8};
+
+}  // namespace
+
 namespace media {
-
-static ChannelLayout ConvertChannelConfigToLayout(uint8 channel_config) {
-  switch (channel_config) {
-    case 1:
-      return CHANNEL_LAYOUT_MONO;
-    case 2:
-      return CHANNEL_LAYOUT_STEREO;
-    case 3:
-      return CHANNEL_LAYOUT_SURROUND;
-    case 4:
-      return CHANNEL_LAYOUT_4_0;
-    case 5:
-      return CHANNEL_LAYOUT_5_0;
-    case 6:
-      return CHANNEL_LAYOUT_5_1;
-    case 8:
-      return CHANNEL_LAYOUT_7_1;
-    default:
-      break;
-  }
-
-  return CHANNEL_LAYOUT_UNSUPPORTED;
-}
 
 namespace mp4 {
 
 AAC::AAC()
     : profile_(0), frequency_index_(0), channel_config_(0), frequency_(0),
-      extension_frequency_(0), channel_layout_(CHANNEL_LAYOUT_UNSUPPORTED) {
+      extension_frequency_(0), num_channels_(0) {
 }
 
 AAC::~AAC() {
@@ -122,24 +105,26 @@ bool AAC::Parse(const std::vector<uint8>& data) {
   }
 
   if (frequency_ == 0) {
-    RCHECK(frequency_index_ < arraysize(kFrequencyMap));
-    frequency_ = kFrequencyMap[frequency_index_];
+    RCHECK(frequency_index_ < arraysize(kSampleRates));
+    frequency_ = kSampleRates[frequency_index_];
   }
 
   if (extension_frequency_ == 0 && extension_frequency_index != 0xff) {
-    RCHECK(extension_frequency_index < arraysize(kFrequencyMap));
-    extension_frequency_ = kFrequencyMap[extension_frequency_index];
+    RCHECK(extension_frequency_index < arraysize(kSampleRates));
+    extension_frequency_ = kSampleRates[extension_frequency_index];
   }
 
+  // TODO(kqyang): should we care about whether Parametric Stereo is on?
   // When Parametric Stereo is on, mono will be played as stereo.
   if (ps_present && channel_config_ == 1)
-    channel_layout_ = CHANNEL_LAYOUT_STEREO;
-  else
-    channel_layout_ = ConvertChannelConfigToLayout(channel_config_);
+    num_channels_ = 2;  // CHANNEL_LAYOUT_STEREO
+  else {
+    RCHECK(channel_config_ < arraysize(kChannelConfigs));
+    num_channels_ = kChannelConfigs[channel_config_];
+  }
 
-  return frequency_ != 0 && channel_layout_ != CHANNEL_LAYOUT_UNSUPPORTED &&
-      profile_ >= 1 && profile_ <= 4 && frequency_index_ != 0xf &&
-      channel_config_ <= 7;
+  return frequency_ != 0 && num_channels_ != 0 && profile_ >= 1 &&
+         profile_ <= 4 && frequency_index_ != 0xf && channel_config_ <= 7;
 }
 
 int AAC::GetOutputSamplesPerSecond(bool sbr_in_mimetype) const {
@@ -157,17 +142,17 @@ int AAC::GetOutputSamplesPerSecond(bool sbr_in_mimetype) const {
   return std::min(2 * frequency_, 48000);
 }
 
-ChannelLayout AAC::GetChannelLayout(bool sbr_in_mimetype) const {
+int AAC::GetNumChannels(bool sbr_in_mimetype) const {
   // Check for implicit signalling of HE-AAC and indicate stereo output
   // if the mono channel configuration is signalled.
   // See ISO-14496-3 Section 1.6.6.1.2 for details about this special casing.
   if (sbr_in_mimetype && channel_config_ == 1)
-    return CHANNEL_LAYOUT_STEREO;
+    return 2;  // CHANNEL_LAYOUT_STEREO
 
-  return channel_layout_;
+  return num_channels_;
 }
 
-bool AAC::ConvertEsdsToADTS(std::vector<uint8>* buffer) const {
+bool AAC::ConvertToADTS(std::vector<uint8>* buffer) const {
   size_t size = buffer->size() + kADTSHeaderSize;
 
   DCHECK(profile_ >= 1 && profile_ <= 4 && frequency_index_ != 0xf &&

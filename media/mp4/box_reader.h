@@ -10,8 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "media/base/media_export.h"
-#include "media/base/media_log.h"
 #include "media/mp4/fourccs.h"
 #include "media/mp4/rcheck.h"
 
@@ -20,13 +18,13 @@ namespace mp4 {
 
 class BoxReader;
 
-struct MEDIA_EXPORT Box {
+struct Box {
   virtual ~Box();
   virtual bool Parse(BoxReader* reader) = 0;
   virtual FourCC BoxType() const = 0;
 };
 
-class MEDIA_EXPORT BufferReader {
+class BufferReader {
  public:
   BufferReader(const uint8* buf, const int size)
     : buf_(buf), size_(size), pos_(0) {}
@@ -67,7 +65,7 @@ class MEDIA_EXPORT BufferReader {
   template<typename T> bool Read(T* t) WARN_UNUSED_RESULT;
 };
 
-class MEDIA_EXPORT BoxReader : public BufferReader {
+class BoxReader : public BufferReader {
  public:
   ~BoxReader();
 
@@ -79,7 +77,6 @@ class MEDIA_EXPORT BoxReader : public BufferReader {
   // |buf| is retained but not owned, and must outlive the BoxReader instance.
   static BoxReader* ReadTopLevelBox(const uint8* buf,
                                     const int buf_size,
-                                    const LogCB& log_cb,
                                     bool* err);
 
   // Read the box header from the current buffer. This function returns true if
@@ -90,7 +87,6 @@ class MEDIA_EXPORT BoxReader : public BufferReader {
   // |buf| is not retained.
   static bool StartTopLevelBox(const uint8* buf,
                                const int buf_size,
-                               const LogCB& log_cb,
                                FourCC* type,
                                int* box_size,
                                bool* err) WARN_UNUSED_RESULT;
@@ -98,8 +94,7 @@ class MEDIA_EXPORT BoxReader : public BufferReader {
   // Returns true if |type| is recognized to be a top-level box, false
   // otherwise. This returns true for some boxes which we do not parse.
   // Helpful in debugging misaligned appends.
-  static bool IsValidTopLevelBox(const FourCC& type,
-                                 const LogCB& log_cb);
+  static bool IsValidTopLevelBox(const FourCC& type);
 
   // Scan through all boxes within the current box, starting at the current
   // buffer position. Must be called before any of the *Child functions work.
@@ -137,7 +132,7 @@ class MEDIA_EXPORT BoxReader : public BufferReader {
   uint32 flags() const  { return flags_; }
 
  private:
-  BoxReader(const uint8* buf, const int size, const LogCB& log_cb);
+  BoxReader(const uint8* buf, const int size);
 
   // Must be called immediately after init. If the return is false, this
   // indicates that the box header and its contents were not available in the
@@ -148,7 +143,6 @@ class MEDIA_EXPORT BoxReader : public BufferReader {
   // true, the error is unrecoverable and the stream should be aborted.
   bool ReadHeader(bool* err);
 
-  LogCB log_cb_;
   FourCC type_;
   uint8 version_;
   uint32 flags_;
@@ -197,7 +191,7 @@ bool BoxReader::ReadAllChildren(std::vector<T>* children) {
 
   bool err = false;
   while (pos() < size()) {
-    BoxReader child_reader(&buf_[pos_], size_ - pos_, log_cb_);
+    BoxReader child_reader(&buf_[pos_], size_ - pos_);
     if (!child_reader.ReadHeader(&err)) break;
     T child;
     RCHECK(child.Parse(&child_reader));

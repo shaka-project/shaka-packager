@@ -8,8 +8,6 @@
 #include <vector>
 
 #include "base/basictypes.h"
-#include "media/base/channel_layout.h"
-#include "media/base/media_export.h"
 
 namespace media {
 
@@ -21,7 +19,9 @@ namespace mp4 {
 // embedded in the esds box in an ISO BMFF file.
 // Please refer to ISO 14496 Part 3 Table 1.13 - Syntax of AudioSpecificConfig
 // for more details.
-class MEDIA_EXPORT AAC {
+// TODO(kqyang): the class name is not appropriate, it should be
+// AACAudioSpecificConfig instead.
+class AAC {
  public:
   AAC();
   ~AAC();
@@ -35,22 +35,18 @@ class MEDIA_EXPORT AAC {
   // Gets the output sample rate for the AAC stream.
   // |sbr_in_mimetype| should be set to true if the SBR mode is
   // signalled in the mimetype. (ie mp4a.40.5 in the codecs parameter).
-  // Returns the samples_per_second value that should used in an
-  // AudioDecoderConfig.
   int GetOutputSamplesPerSecond(bool sbr_in_mimetype) const;
 
-  // Gets the channel layout for the AAC stream.
+  // Gets number of channels for the AAC stream.
   // |sbr_in_mimetype| should be set to true if the SBR mode is
   // signalled in the mimetype. (ie mp4a.40.5 in the codecs parameter).
-  // Returns the channel_layout value that should used in an
-  // AudioDecoderConfig.
-  ChannelLayout GetChannelLayout(bool sbr_in_mimetype) const;
+  int GetNumChannels(bool sbr_in_mimetype) const;
 
   // This function converts a raw AAC frame into an AAC frame with an ADTS
   // header. On success, the function returns true and stores the converted data
   // in the buffer. The function returns false on failure and leaves the buffer
   // unchanged.
-  bool ConvertEsdsToADTS(std::vector<uint8>* buffer) const;
+  bool ConvertToADTS(std::vector<uint8>* buffer) const;
 
 #if defined(OS_ANDROID)
   // Returns the codec specific data needed by android MediaCodec.
@@ -78,13 +74,12 @@ class MEDIA_EXPORT AAC {
   std::vector<uint8> codec_specific_data_;
 #endif
 
-  // The following variables store audio configuration information that
-  // can be used by Chromium. They are based on the AAC specific
-  // configuration but can be overridden by extensions in elementary
-  // stream descriptor.
+  // The following variables store audio configuration information.
+  // They are based on the AAC specific configuration but can be overridden
+  // by extensions in elementary stream descriptor.
   int frequency_;
   int extension_frequency_;
-  ChannelLayout channel_layout_;
+  int num_channels_;
 };
 
 }  // namespace mp4

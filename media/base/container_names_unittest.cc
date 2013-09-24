@@ -9,8 +9,6 @@
 
 namespace media {
 
-namespace container_names {
-
 // Using a macros to simplify tests. Since EXPECT_EQ outputs the second argument
 // as a string when it fails, this lets the output identify what item actually
 // failed.
@@ -214,7 +212,5 @@ TEST(ContainerNamesTest, FileCheckUNKNOWN) {
   TestFile(CONTAINER_UNKNOWN, GetTestDataFilePath("bali_640x360_RGB24.rgb"));
   TestFile(CONTAINER_UNKNOWN, GetTestDataFilePath("webm_vp8_track_entry"));
 }
-
-}  // namespace container_names
 
 }  // namespace media

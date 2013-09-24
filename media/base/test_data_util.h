@@ -9,12 +9,8 @@
 
 #include "base/basictypes.h"
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_ptr.h"
 
 namespace media {
-
-class DecoderBuffer;
 
 // Returns a file path for a file in the media/test/data directory.
 base::FilePath GetTestDataFilePath(const std::string& name);
@@ -25,7 +21,7 @@ base::FilePath GetTestDataFilePath(const std::string& name);
 //
 //  |name| - The name of the file.
 //  |buffer| - The contents of the file.
-scoped_refptr<DecoderBuffer> ReadTestDataFile(const std::string& name);
+std::vector<uint8> ReadTestDataFile(const std::string& name);
 
 }  // namespace media
 

@@ -32,7 +32,7 @@ namespace media {
 namespace mp4 {
 
 // static
-bool ESDescriptor::IsAAC(uint8 object_type) {
+bool ESDescriptor::IsAAC(ObjectType object_type) {
   return object_type == kISO_14496_3 || object_type == kISO_13818_7_AAC_LC;
 }
 
@@ -72,7 +72,7 @@ bool ESDescriptor::Parse(const std::vector<uint8>& data) {
   return true;
 }
 
-uint8 ESDescriptor::object_type() const {
+ObjectType ESDescriptor::object_type() const {
   return object_type_;
 }
 

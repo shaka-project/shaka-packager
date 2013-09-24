@@ -10,7 +10,6 @@
 
 #include "base/basictypes.h"
 #include "base/memory/scoped_ptr.h"
-#include "media/base/media_export.h"
 
 namespace media {
 
@@ -29,7 +28,7 @@ struct SubsampleEntry {
 };
 
 // Contains all information that a decryptor needs to decrypt a media sample.
-class MEDIA_EXPORT DecryptConfig {
+class DecryptConfig {
  public:
   // Keys are always 128 bits.
   static const int kDecryptionKeySize = 16;

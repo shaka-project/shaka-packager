@@ -19,7 +19,7 @@ TEST(AACTest, BasicProfileTest) {
 
   EXPECT_TRUE(aac.Parse(data));
   EXPECT_EQ(aac.GetOutputSamplesPerSecond(false), 44100);
-  EXPECT_EQ(aac.GetChannelLayout(false), CHANNEL_LAYOUT_STEREO);
+  EXPECT_EQ(aac.GetNumChannels(false), 2);
 }
 
 TEST(AACTest, ExtensionTest) {
@@ -32,7 +32,7 @@ TEST(AACTest, ExtensionTest) {
   EXPECT_TRUE(aac.Parse(data));
   EXPECT_EQ(aac.GetOutputSamplesPerSecond(false), 48000);
   EXPECT_EQ(aac.GetOutputSamplesPerSecond(true), 48000);
-  EXPECT_EQ(aac.GetChannelLayout(false), CHANNEL_LAYOUT_STEREO);
+  EXPECT_EQ(aac.GetNumChannels(false), 2);
 }
 
 // Test implicit SBR with mono channel config.
@@ -50,11 +50,11 @@ TEST(AACTest, ImplicitSBR_ChannelConfig0) {
 
   // Test w/o implict SBR.
   EXPECT_EQ(aac.GetOutputSamplesPerSecond(false), 24000);
-  EXPECT_EQ(aac.GetChannelLayout(false), CHANNEL_LAYOUT_MONO);
+  EXPECT_EQ(aac.GetNumChannels(false), 1);
 
   // Test implicit SBR.
   EXPECT_EQ(aac.GetOutputSamplesPerSecond(true), 48000);
-  EXPECT_EQ(aac.GetChannelLayout(true), CHANNEL_LAYOUT_STEREO);
+  EXPECT_EQ(aac.GetNumChannels(true), 2);
 }
 
 // Tests implicit SBR with a stereo channel config.
@@ -69,11 +69,11 @@ TEST(AACTest, ImplicitSBR_ChannelConfig1) {
 
   // Test w/o implict SBR.
   EXPECT_EQ(aac.GetOutputSamplesPerSecond(false), 24000);
-  EXPECT_EQ(aac.GetChannelLayout(false), CHANNEL_LAYOUT_STEREO);
+  EXPECT_EQ(aac.GetNumChannels(false), 2);
 
   // Test implicit SBR.
   EXPECT_EQ(aac.GetOutputSamplesPerSecond(true), 48000);
-  EXPECT_EQ(aac.GetChannelLayout(true), CHANNEL_LAYOUT_STEREO);
+  EXPECT_EQ(aac.GetNumChannels(true), 2);
 }
 
 TEST(AACTest, SixChannelTest) {
@@ -85,7 +85,7 @@ TEST(AACTest, SixChannelTest) {
 
   EXPECT_TRUE(aac.Parse(data));
   EXPECT_EQ(aac.GetOutputSamplesPerSecond(false), 48000);
-  EXPECT_EQ(aac.GetChannelLayout(false), CHANNEL_LAYOUT_5_1);
+  EXPECT_EQ(aac.GetNumChannels(false), 6);
 }
 
 TEST(AACTest, DataTooShortTest) {

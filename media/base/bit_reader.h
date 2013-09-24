@@ -9,12 +9,11 @@
 
 #include "base/basictypes.h"
 #include "base/logging.h"
-#include "media/base/media_export.h"
 
 namespace media {
 
 // A class to read bit streams.
-class MEDIA_EXPORT BitReader {
+class BitReader {
  public:
   // Initialize the reader to start reading at |data|, |size| being size
   // of |data| in bytes.

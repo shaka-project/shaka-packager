@@ -6,11 +6,8 @@
 #define MEDIA_BASE_CONTAINER_NAMES_H_
 
 #include "base/basictypes.h"
-#include "media/base/media_export.h"
 
 namespace media {
-
-namespace container_names {
 
 // This is the set of input container formats detected for logging purposes. Not
 // all of these are enabled (and it varies by product). Any additions need to be
@@ -60,10 +57,7 @@ enum MediaContainerName {
 };
 
 // Determine the container type.
-MEDIA_EXPORT MediaContainerName DetermineContainer(const uint8* buffer,
-                                                   int buffer_size);
-
-}  // namespace container_names
+MediaContainerName DetermineContainer(const uint8* buffer, int buffer_size);
 
 }  // namespace media
 

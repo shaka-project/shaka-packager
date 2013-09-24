@@ -79,10 +79,8 @@ bool BufferReader::Read4sInto8s(int64* v) {
 }
 
 
-BoxReader::BoxReader(const uint8* buf, const int size,
-                     const LogCB& log_cb)
+BoxReader::BoxReader(const uint8* buf, const int size)
     : BufferReader(buf, size),
-      log_cb_(log_cb),
       type_(FOURCC_NULL),
       version_(0),
       flags_(0),
@@ -101,13 +99,12 @@ BoxReader::~BoxReader() {
 // static
 BoxReader* BoxReader::ReadTopLevelBox(const uint8* buf,
                                       const int buf_size,
-                                      const LogCB& log_cb,
                                       bool* err) {
-  scoped_ptr<BoxReader> reader(new BoxReader(buf, buf_size, log_cb));
+  scoped_ptr<BoxReader> reader(new BoxReader(buf, buf_size));
   if (!reader->ReadHeader(err))
     return NULL;
 
-  if (!IsValidTopLevelBox(reader->type(), log_cb)) {
+  if (!IsValidTopLevelBox(reader->type())) {
     *err = true;
     return NULL;
   }
@@ -121,13 +118,12 @@ BoxReader* BoxReader::ReadTopLevelBox(const uint8* buf,
 // static
 bool BoxReader::StartTopLevelBox(const uint8* buf,
                                  const int buf_size,
-                                 const LogCB& log_cb,
                                  FourCC* type,
                                  int* box_size,
                                  bool* err) {
-  BoxReader reader(buf, buf_size, log_cb);
+  BoxReader reader(buf, buf_size);
   if (!reader.ReadHeader(err)) return false;
-  if (!IsValidTopLevelBox(reader.type(), log_cb)) {
+  if (!IsValidTopLevelBox(reader.type())) {
     *err = true;
     return false;
   }
@@ -137,8 +133,7 @@ bool BoxReader::StartTopLevelBox(const uint8* buf,
 }
 
 // static
-bool BoxReader::IsValidTopLevelBox(const FourCC& type,
-                                   const LogCB& log_cb) {
+bool BoxReader::IsValidTopLevelBox(const FourCC& type) {
   switch (type) {
     case FOURCC_FTYP:
     case FOURCC_PDIN:
@@ -158,8 +153,7 @@ bool BoxReader::IsValidTopLevelBox(const FourCC& type,
       return true;
     default:
       // Hex is used to show nonprintable characters and aid in debugging
-      MEDIA_LOG(log_cb) << "Unrecognized top-level box type 0x"
-                        << std::hex << type;
+      LOG(ERROR) << "Unrecognized top-level box type 0x" << std::hex << type;
       return false;
   }
 }
@@ -170,7 +164,7 @@ bool BoxReader::ScanChildren() {
 
   bool err = false;
   while (pos() < size()) {
-    BoxReader child(&buf_[pos_], size_ - pos_, log_cb_);
+    BoxReader child(&buf_[pos_], size_ - pos_);
     if (!child.ReadHeader(&err)) break;
 
     children_.insert(std::pair<FourCC, BoxReader>(child.type(), child));

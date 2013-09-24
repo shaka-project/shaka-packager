@@ -8,9 +8,6 @@
 #include <vector>
 
 #include "base/memory/scoped_ptr.h"
-#include "base/time/time.h"
-#include "media/base/media_export.h"
-#include "media/base/media_log.h"
 #include "media/mp4/box_definitions.h"
 #include "media/mp4/cenc.h"
 
@@ -20,17 +17,14 @@ class DecryptConfig;
 
 namespace mp4 {
 
-using base::TimeDelta;
-base::TimeDelta MEDIA_EXPORT TimeDeltaFromRational(int64 numer, int64 denom);
-
 struct SampleInfo;
 struct TrackRunInfo;
 
-class MEDIA_EXPORT TrackRunIterator {
+class TrackRunIterator {
  public:
   // Create a new TrackRunIterator. A reference to |moov| will be retained for
   // the lifetime of this object.
-  TrackRunIterator(const Movie* moov, const LogCB& log_cb);
+  explicit TrackRunIterator(const Movie* moov);
   ~TrackRunIterator();
 
   // Sets up the iterator to handle all the runs from the current fragment.
@@ -74,9 +68,9 @@ class MEDIA_EXPORT TrackRunIterator {
   // Properties of the current sample. Only valid if IsSampleValid().
   int64 sample_offset() const;
   int sample_size() const;
-  TimeDelta dts() const;
-  TimeDelta cts() const;
-  TimeDelta duration() const;
+  int64 dts() const;
+  int64 cts() const;
+  int64 duration() const;
   bool is_keyframe() const;
 
   // Only call when is_encrypted() is true and AuxInfoNeedsToBeCached() is
@@ -88,7 +82,6 @@ class MEDIA_EXPORT TrackRunIterator {
   const TrackEncryption& track_encryption() const;
 
   const Movie* moov_;
-  LogCB log_cb_;
 
   std::vector<TrackRunInfo> runs_;
   std::vector<TrackRunInfo>::const_iterator run_itr_;

@@ -13,8 +13,6 @@
 
 namespace media {
 
-namespace container_names {
-
 #define TAG(a, b, c, d) \
     ((static_cast<uint8>(a) << 24) | (static_cast<uint8>(b) << 16) | \
      (static_cast<uint8>(c) << 8) | (static_cast<uint8>(d)))
@@ -1665,7 +1663,5 @@ MediaContainerName DetermineContainer(const uint8* buffer, int buffer_size) {
 
   return CONTAINER_UNKNOWN;
 }
-
-}  // namespace container_names
 
 }  // namespace media

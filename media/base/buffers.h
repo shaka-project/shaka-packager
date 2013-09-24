@@ -22,21 +22,19 @@
 #define MEDIA_BASE_BUFFERS_H_
 
 #include "base/basictypes.h"
-#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "media/base/media_export.h"
 
 namespace media {
 
 // TODO(scherkus): Move the contents of this file elsewhere.
 
 // Indicates an invalid or missing timestamp.
-MEDIA_EXPORT extern inline base::TimeDelta kNoTimestamp() {
+extern inline base::TimeDelta kNoTimestamp() {
   return base::TimeDelta::FromMicroseconds(kint64min);
 }
 
 // Represents an infinite stream duration.
-MEDIA_EXPORT extern inline base::TimeDelta kInfiniteDuration() {
+extern inline base::TimeDelta kInfiniteDuration() {
   return base::TimeDelta::FromMicroseconds(kint64max);
 }
 

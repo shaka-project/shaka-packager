@@ -7,7 +7,6 @@
 #include "base/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "media/base/decoder_buffer.h"
 
 namespace media {
 
@@ -21,7 +20,7 @@ base::FilePath GetTestDataFilePath(const std::string& name) {
   return file_path;
 }
 
-scoped_refptr<DecoderBuffer> ReadTestDataFile(const std::string& name) {
+std::vector<uint8> ReadTestDataFile(const std::string& name) {
   base::FilePath file_path;
   CHECK(PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
 
@@ -34,11 +33,11 @@ scoped_refptr<DecoderBuffer> ReadTestDataFile(const std::string& name) {
       << "Failed to get file size for '" << name << "'";
 
   int file_size = static_cast<int>(tmp);
+  std::vector<uint8> buffer(file_size);
 
-  scoped_refptr<DecoderBuffer> buffer(new DecoderBuffer(file_size));
   CHECK_EQ(file_size,
            file_util::ReadFile(
-               file_path, reinterpret_cast<char*>(buffer->writable_data()),
+               file_path, reinterpret_cast<char*>(buffer.data()),
                file_size)) << "Failed to read '" << name << "'";
 
   return buffer;

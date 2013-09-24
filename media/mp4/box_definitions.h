@@ -8,11 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/basictypes.h"
-#include "base/compiler_specific.h"
-#include "media/base/media_export.h"
 #include "media/mp4/aac.h"
-#include "media/mp4/avc.h"
 #include "media/mp4/box_reader.h"
 #include "media/mp4/fourccs.h"
 
@@ -32,27 +28,27 @@ enum TrackType {
   virtual bool Parse(BoxReader* reader) OVERRIDE; \
   virtual FourCC BoxType() const OVERRIDE; \
 
-struct MEDIA_EXPORT FileType : Box {
+struct FileType : Box {
   DECLARE_BOX_METHODS(FileType);
 
   FourCC major_brand;
   uint32 minor_version;
 };
 
-struct MEDIA_EXPORT ProtectionSystemSpecificHeader : Box {
+struct ProtectionSystemSpecificHeader : Box {
   DECLARE_BOX_METHODS(ProtectionSystemSpecificHeader);
 
   std::vector<uint8> system_id;
   std::vector<uint8> raw_box;
 };
 
-struct MEDIA_EXPORT SampleAuxiliaryInformationOffset : Box {
+struct SampleAuxiliaryInformationOffset : Box {
   DECLARE_BOX_METHODS(SampleAuxiliaryInformationOffset);
 
   std::vector<uint64> offsets;
 };
 
-struct MEDIA_EXPORT SampleAuxiliaryInformationSize : Box {
+struct SampleAuxiliaryInformationSize : Box {
   DECLARE_BOX_METHODS(SampleAuxiliaryInformationSize);
 
   uint8 default_sample_info_size;
@@ -60,20 +56,20 @@ struct MEDIA_EXPORT SampleAuxiliaryInformationSize : Box {
   std::vector<uint8> sample_info_sizes;
 };
 
-struct MEDIA_EXPORT OriginalFormat : Box {
+struct OriginalFormat : Box {
   DECLARE_BOX_METHODS(OriginalFormat);
 
   FourCC format;
 };
 
-struct MEDIA_EXPORT SchemeType : Box {
+struct SchemeType : Box {
   DECLARE_BOX_METHODS(SchemeType);
 
   FourCC type;
   uint32 version;
 };
 
-struct MEDIA_EXPORT TrackEncryption : Box {
+struct TrackEncryption : Box {
   DECLARE_BOX_METHODS(TrackEncryption);
 
   // Note: this definition is specific to the CENC protection type.
@@ -82,13 +78,13 @@ struct MEDIA_EXPORT TrackEncryption : Box {
   std::vector<uint8> default_kid;
 };
 
-struct MEDIA_EXPORT SchemeInfo : Box {
+struct SchemeInfo : Box {
   DECLARE_BOX_METHODS(SchemeInfo);
 
   TrackEncryption track_encryption;
 };
 
-struct MEDIA_EXPORT ProtectionSchemeInfo : Box {
+struct ProtectionSchemeInfo : Box {
   DECLARE_BOX_METHODS(ProtectionSchemeInfo);
 
   OriginalFormat format;
@@ -96,7 +92,7 @@ struct MEDIA_EXPORT ProtectionSchemeInfo : Box {
   SchemeInfo info;
 };
 
-struct MEDIA_EXPORT MovieHeader : Box {
+struct MovieHeader : Box {
   DECLARE_BOX_METHODS(MovieHeader);
 
   uint64 creation_time;
@@ -108,7 +104,7 @@ struct MEDIA_EXPORT MovieHeader : Box {
   uint32 next_track_id;
 };
 
-struct MEDIA_EXPORT TrackHeader : Box {
+struct TrackHeader : Box {
   DECLARE_BOX_METHODS(TrackHeader);
 
   uint64 creation_time;
@@ -122,32 +118,32 @@ struct MEDIA_EXPORT TrackHeader : Box {
   uint32 height;
 };
 
-struct MEDIA_EXPORT EditListEntry {
+struct EditListEntry {
   uint64 segment_duration;
   int64 media_time;
   int16 media_rate_integer;
   int16 media_rate_fraction;
 };
 
-struct MEDIA_EXPORT EditList : Box {
+struct EditList : Box {
   DECLARE_BOX_METHODS(EditList);
 
   std::vector<EditListEntry> edits;
 };
 
-struct MEDIA_EXPORT Edit : Box {
+struct Edit : Box {
   DECLARE_BOX_METHODS(Edit);
 
   EditList list;
 };
 
-struct MEDIA_EXPORT HandlerReference : Box {
+struct HandlerReference : Box {
   DECLARE_BOX_METHODS(HandlerReference);
 
   TrackType type;
 };
 
-struct MEDIA_EXPORT AVCDecoderConfigurationRecord : Box {
+struct AVCDecoderConfigurationRecord : Box {
   DECLARE_BOX_METHODS(AVCDecoderConfigurationRecord);
 
   uint8 version;
@@ -163,14 +159,14 @@ struct MEDIA_EXPORT AVCDecoderConfigurationRecord : Box {
   std::vector<PPS> pps_list;
 };
 
-struct MEDIA_EXPORT PixelAspectRatioBox : Box {
+struct PixelAspectRatioBox : Box {
   DECLARE_BOX_METHODS(PixelAspectRatioBox);
 
   uint32 h_spacing;
   uint32 v_spacing;
 };
 
-struct MEDIA_EXPORT VideoSampleEntry : Box {
+struct VideoSampleEntry : Box {
   DECLARE_BOX_METHODS(VideoSampleEntry);
 
   FourCC format;
@@ -185,14 +181,14 @@ struct MEDIA_EXPORT VideoSampleEntry : Box {
   AVCDecoderConfigurationRecord avcc;
 };
 
-struct MEDIA_EXPORT ElementaryStreamDescriptor : Box {
+struct ElementaryStreamDescriptor : Box {
   DECLARE_BOX_METHODS(ElementaryStreamDescriptor);
 
   uint8 object_type;
   AAC aac;
 };
 
-struct MEDIA_EXPORT AudioSampleEntry : Box {
+struct AudioSampleEntry : Box {
   DECLARE_BOX_METHODS(AudioSampleEntry);
 
   FourCC format;
@@ -205,7 +201,7 @@ struct MEDIA_EXPORT AudioSampleEntry : Box {
   ElementaryStreamDescriptor esds;
 };
 
-struct MEDIA_EXPORT SampleDescription : Box {
+struct SampleDescription : Box {
   DECLARE_BOX_METHODS(SampleDescription);
 
   TrackType type;
@@ -213,7 +209,7 @@ struct MEDIA_EXPORT SampleDescription : Box {
   std::vector<AudioSampleEntry> audio_entries;
 };
 
-struct MEDIA_EXPORT SampleTable : Box {
+struct SampleTable : Box {
   DECLARE_BOX_METHODS(SampleTable);
 
   // Media Source specific: we ignore many of the sub-boxes in this box,
@@ -223,7 +219,7 @@ struct MEDIA_EXPORT SampleTable : Box {
   SampleDescription description;
 };
 
-struct MEDIA_EXPORT MediaHeader : Box {
+struct MediaHeader : Box {
   DECLARE_BOX_METHODS(MediaHeader);
 
   uint64 creation_time;
@@ -232,13 +228,13 @@ struct MEDIA_EXPORT MediaHeader : Box {
   uint64 duration;
 };
 
-struct MEDIA_EXPORT MediaInformation : Box {
+struct MediaInformation : Box {
   DECLARE_BOX_METHODS(MediaInformation);
 
   SampleTable sample_table;
 };
 
-struct MEDIA_EXPORT Media : Box {
+struct Media : Box {
   DECLARE_BOX_METHODS(Media);
 
   MediaHeader header;
@@ -246,7 +242,7 @@ struct MEDIA_EXPORT Media : Box {
   MediaInformation information;
 };
 
-struct MEDIA_EXPORT Track : Box {
+struct Track : Box {
   DECLARE_BOX_METHODS(Track);
 
   TrackHeader header;
@@ -254,13 +250,13 @@ struct MEDIA_EXPORT Track : Box {
   Edit edit;
 };
 
-struct MEDIA_EXPORT MovieExtendsHeader : Box {
+struct MovieExtendsHeader : Box {
   DECLARE_BOX_METHODS(MovieExtendsHeader);
 
   uint64 fragment_duration;
 };
 
-struct MEDIA_EXPORT TrackExtends : Box {
+struct TrackExtends : Box {
   DECLARE_BOX_METHODS(TrackExtends);
 
   uint32 track_id;
@@ -270,14 +266,14 @@ struct MEDIA_EXPORT TrackExtends : Box {
   uint32 default_sample_flags;
 };
 
-struct MEDIA_EXPORT MovieExtends : Box {
+struct MovieExtends : Box {
   DECLARE_BOX_METHODS(MovieExtends);
 
   MovieExtendsHeader header;
   std::vector<TrackExtends> tracks;
 };
 
-struct MEDIA_EXPORT Movie : Box {
+struct Movie : Box {
   DECLARE_BOX_METHODS(Movie);
 
   bool fragmented;
@@ -287,19 +283,19 @@ struct MEDIA_EXPORT Movie : Box {
   std::vector<ProtectionSystemSpecificHeader> pssh;
 };
 
-struct MEDIA_EXPORT TrackFragmentDecodeTime : Box {
+struct TrackFragmentDecodeTime : Box {
   DECLARE_BOX_METHODS(TrackFragmentDecodeTime);
 
   uint64 decode_time;
 };
 
-struct MEDIA_EXPORT MovieFragmentHeader : Box {
+struct MovieFragmentHeader : Box {
   DECLARE_BOX_METHODS(MovieFragmentHeader);
 
   uint32 sequence_number;
 };
 
-struct MEDIA_EXPORT TrackFragmentHeader : Box {
+struct TrackFragmentHeader : Box {
   DECLARE_BOX_METHODS(TrackFragmentHeader);
 
   uint32 track_id;
@@ -314,7 +310,7 @@ struct MEDIA_EXPORT TrackFragmentHeader : Box {
   bool has_default_sample_flags;
 };
 
-struct MEDIA_EXPORT TrackFragmentRun : Box {
+struct TrackFragmentRun : Box {
   DECLARE_BOX_METHODS(TrackFragmentRun);
 
   uint32 sample_count;
@@ -325,7 +321,7 @@ struct MEDIA_EXPORT TrackFragmentRun : Box {
   std::vector<int32> sample_composition_time_offsets;
 };
 
-struct MEDIA_EXPORT TrackFragment : Box {
+struct TrackFragment : Box {
   DECLARE_BOX_METHODS(TrackFragment);
 
   TrackFragmentHeader header;
@@ -335,7 +331,7 @@ struct MEDIA_EXPORT TrackFragment : Box {
   SampleAuxiliaryInformationSize auxiliary_size;
 };
 
-struct MEDIA_EXPORT MovieFragment : Box {
+struct MovieFragment : Box {
   DECLARE_BOX_METHODS(MovieFragment);
 
   MovieFragmentHeader header;

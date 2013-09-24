@@ -7,7 +7,6 @@
 
 #include "base/basictypes.h"
 #include "media/base/byte_queue.h"
-#include "media/base/media_export.h"
 
 namespace media {
 
@@ -15,7 +14,7 @@ namespace media {
 // monotonically-increasing offset. All buffer access is done by passing these
 // offsets into this class, going some way towards preventing the proliferation
 // of many different meanings of "offset", "head", etc.
-class MEDIA_EXPORT OffsetByteQueue {
+class OffsetByteQueue {
  public:
   OffsetByteQueue();
   ~OffsetByteQueue();
@@ -63,4 +62,4 @@ class MEDIA_EXPORT OffsetByteQueue {
 
 }  // namespace media
 
-#endif  // MEDIA_MP4_MP4_STREAM_PARSER_H_
+#endif  // MEDIA_MP4_OFFSET_BYTE_QUEUE_H_

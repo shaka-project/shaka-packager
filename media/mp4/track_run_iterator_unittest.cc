@@ -48,7 +48,6 @@ class TrackRunIteratorTest : public testing::Test {
 
  protected:
   Movie moov_;
-  LogCB log_cb_;
   scoped_ptr<TrackRunIterator> iter_;
 
   void CreateMovie() {
@@ -154,14 +153,14 @@ class TrackRunIteratorTest : public testing::Test {
 };
 
 TEST_F(TrackRunIteratorTest, NoRunsTest) {
-  iter_.reset(new TrackRunIterator(&moov_, log_cb_));
+  iter_.reset(new TrackRunIterator(&moov_));
   ASSERT_TRUE(iter_->Init(MovieFragment()));
   EXPECT_FALSE(iter_->IsRunValid());
   EXPECT_FALSE(iter_->IsSampleValid());
 }
 
 TEST_F(TrackRunIteratorTest, BasicOperationTest) {
-  iter_.reset(new TrackRunIterator(&moov_, log_cb_));
+  iter_.reset(new TrackRunIterator(&moov_));
   MovieFragment moof = CreateFragment();
 
   // Test that runs are sorted correctly, and that properties of the initial
@@ -172,9 +171,9 @@ TEST_F(TrackRunIteratorTest, BasicOperationTest) {
   EXPECT_EQ(iter_->track_id(), 1u);
   EXPECT_EQ(iter_->sample_offset(), 100);
   EXPECT_EQ(iter_->sample_size(), 1);
-  EXPECT_EQ(iter_->dts(), TimeDeltaFromRational(0, kAudioScale));
-  EXPECT_EQ(iter_->cts(), TimeDeltaFromRational(0, kAudioScale));
-  EXPECT_EQ(iter_->duration(), TimeDeltaFromRational(1024, kAudioScale));
+  EXPECT_EQ(iter_->dts(), 0);
+  EXPECT_EQ(iter_->cts(), 0);
+  EXPECT_EQ(iter_->duration(), 1024);
   EXPECT_TRUE(iter_->is_keyframe());
 
   // Advance to the last sample in the current run, and test its properties
@@ -182,8 +181,8 @@ TEST_F(TrackRunIteratorTest, BasicOperationTest) {
   EXPECT_EQ(iter_->track_id(), 1u);
   EXPECT_EQ(iter_->sample_offset(), 100 + kSumAscending1);
   EXPECT_EQ(iter_->sample_size(), 10);
-  EXPECT_EQ(iter_->dts(), TimeDeltaFromRational(1024 * 9, kAudioScale));
-  EXPECT_EQ(iter_->duration(), TimeDeltaFromRational(1024, kAudioScale));
+  EXPECT_EQ(iter_->dts(), 1024 * 9);
+  EXPECT_EQ(iter_->duration(), 1024);
   EXPECT_TRUE(iter_->is_keyframe());
 
   // Test end-of-run
@@ -198,14 +197,14 @@ TEST_F(TrackRunIteratorTest, BasicOperationTest) {
   EXPECT_EQ(iter_->sample_offset(), 200 + kSumAscending1);
   EXPECT_EQ(iter_->sample_size(), 10);
   int64 base_dts = kSumAscending1 + moof.tracks[1].decode_time.decode_time;
-  EXPECT_EQ(iter_->dts(), TimeDeltaFromRational(base_dts, kVideoScale));
-  EXPECT_EQ(iter_->duration(), TimeDeltaFromRational(10, kVideoScale));
+  EXPECT_EQ(iter_->dts(), base_dts);
+  EXPECT_EQ(iter_->duration(), 10);
   EXPECT_FALSE(iter_->is_keyframe());
 
   // Test final run
   iter_->AdvanceRun();
   EXPECT_EQ(iter_->track_id(), 1u);
-  EXPECT_EQ(iter_->dts(), TimeDeltaFromRational(1024 * 10, kAudioScale));
+  EXPECT_EQ(iter_->dts(), 1024 * 10);
   iter_->AdvanceSample();
   EXPECT_EQ(moof.tracks[0].runs[1].data_offset +
             moof.tracks[0].header.default_sample_size,
@@ -219,7 +218,7 @@ TEST_F(TrackRunIteratorTest, TrackExtendsDefaultsTest) {
   moov_.extends.tracks[0].default_sample_size = 3;
   moov_.extends.tracks[0].default_sample_flags =
     kSampleIsDifferenceSampleFlagMask;
-  iter_.reset(new TrackRunIterator(&moov_, log_cb_));
+  iter_.reset(new TrackRunIterator(&moov_));
   MovieFragment moof = CreateFragment();
   moof.tracks[0].header.has_default_sample_flags = false;
   moof.tracks[0].header.default_sample_size = 0;
@@ -230,15 +229,15 @@ TEST_F(TrackRunIteratorTest, TrackExtendsDefaultsTest) {
   EXPECT_FALSE(iter_->is_keyframe());
   EXPECT_EQ(iter_->sample_size(), 3);
   EXPECT_EQ(iter_->sample_offset(), moof.tracks[0].runs[0].data_offset + 3);
-  EXPECT_EQ(iter_->duration(), TimeDeltaFromRational(50, kAudioScale));
-  EXPECT_EQ(iter_->dts(), TimeDeltaFromRational(50, kAudioScale));
+  EXPECT_EQ(iter_->duration(), 50);
+  EXPECT_EQ(iter_->dts(), 50);
 }
 
 TEST_F(TrackRunIteratorTest, FirstSampleFlagTest) {
   // Ensure that keyframes are flagged correctly in the face of BMFF boxes which
   // explicitly specify the flags for the first sample in a run and rely on
   // defaults for all subsequent samples
-  iter_.reset(new TrackRunIterator(&moov_, log_cb_));
+  iter_.reset(new TrackRunIterator(&moov_));
   MovieFragment moof = CreateFragment();
   moof.tracks[1].header.has_default_sample_flags = true;
   moof.tracks[1].header.default_sample_flags =
@@ -267,7 +266,7 @@ TEST_F(TrackRunIteratorTest, ReorderingTest) {
   // (that is, 2 / kVideoTimescale) and a duration of zero (which is treated as
   // infinite according to 14496-12:2012). This will cause the first 80ms of the
   // media timeline - which will be empty, due to CTS biasing - to be discarded.
-  iter_.reset(new TrackRunIterator(&moov_, log_cb_));
+  iter_.reset(new TrackRunIterator(&moov_));
   EditListEntry entry;
   entry.segment_duration = 0;
   entry.media_time = 2;
@@ -290,21 +289,21 @@ TEST_F(TrackRunIteratorTest, ReorderingTest) {
 
   ASSERT_TRUE(iter_->Init(moof));
   iter_->AdvanceRun();
-  EXPECT_EQ(iter_->dts(), TimeDeltaFromRational(0, kVideoScale));
-  EXPECT_EQ(iter_->cts(), TimeDeltaFromRational(0, kVideoScale));
-  EXPECT_EQ(iter_->duration(), TimeDeltaFromRational(1, kVideoScale));
+  EXPECT_EQ(iter_->dts(), 0);
+  EXPECT_EQ(iter_->cts(), 0);
+  EXPECT_EQ(iter_->duration(), 1);
   iter_->AdvanceSample();
-  EXPECT_EQ(iter_->dts(), TimeDeltaFromRational(1, kVideoScale));
-  EXPECT_EQ(iter_->cts(), TimeDeltaFromRational(4, kVideoScale));
-  EXPECT_EQ(iter_->duration(), TimeDeltaFromRational(2, kVideoScale));
+  EXPECT_EQ(iter_->dts(), 1);
+  EXPECT_EQ(iter_->cts(), 4);
+  EXPECT_EQ(iter_->duration(), 2);
   iter_->AdvanceSample();
-  EXPECT_EQ(iter_->dts(), TimeDeltaFromRational(3, kVideoScale));
-  EXPECT_EQ(iter_->cts(), TimeDeltaFromRational(1, kVideoScale));
-  EXPECT_EQ(iter_->duration(), TimeDeltaFromRational(3, kVideoScale));
+  EXPECT_EQ(iter_->dts(), 3);
+  EXPECT_EQ(iter_->cts(), 1);
+  EXPECT_EQ(iter_->duration(), 3);
 }
 
 TEST_F(TrackRunIteratorTest, IgnoreUnknownAuxInfoTest) {
-  iter_.reset(new TrackRunIterator(&moov_, log_cb_));
+  iter_.reset(new TrackRunIterator(&moov_));
   MovieFragment moof = CreateFragment();
   moof.tracks[1].auxiliary_offset.offsets.push_back(50);
   moof.tracks[1].auxiliary_size.default_sample_info_size = 2;
@@ -317,7 +316,7 @@ TEST_F(TrackRunIteratorTest, IgnoreUnknownAuxInfoTest) {
 
 TEST_F(TrackRunIteratorTest, DecryptConfigTest) {
   AddEncryption(&moov_.tracks[1]);
-  iter_.reset(new TrackRunIterator(&moov_, log_cb_));
+  iter_.reset(new TrackRunIterator(&moov_));
 
   MovieFragment moof = CreateFragment();
   AddAuxInfoHeaders(50, &moof.tracks[1]);
@@ -357,7 +356,7 @@ TEST_F(TrackRunIteratorTest, DecryptConfigTest) {
 TEST_F(TrackRunIteratorTest, SharedAuxInfoTest) {
   AddEncryption(&moov_.tracks[0]);
   AddEncryption(&moov_.tracks[1]);
-  iter_.reset(new TrackRunIterator(&moov_, log_cb_));
+  iter_.reset(new TrackRunIterator(&moov_));
 
   MovieFragment moof = CreateFragment();
   moof.tracks[0].runs.resize(1);
@@ -399,7 +398,7 @@ TEST_F(TrackRunIteratorTest, SharedAuxInfoTest) {
 TEST_F(TrackRunIteratorTest, UnexpectedOrderingTest) {
   AddEncryption(&moov_.tracks[0]);
   AddEncryption(&moov_.tracks[1]);
-  iter_.reset(new TrackRunIterator(&moov_, log_cb_));
+  iter_.reset(new TrackRunIterator(&moov_));
 
   MovieFragment moof = CreateFragment();
   AddAuxInfoHeaders(20000, &moof.tracks[0]);

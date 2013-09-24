@@ -6,8 +6,6 @@
 
 #include <algorithm>
 
-#include "media/base/buffers.h"
-#include "media/base/stream_parser_buffer.h"
 #include "media/mp4/rcheck.h"
 
 namespace {
@@ -56,16 +54,8 @@ TrackRunInfo::TrackRunInfo()
 }
 TrackRunInfo::~TrackRunInfo() {}
 
-TimeDelta TimeDeltaFromRational(int64 numer, int64 denom) {
-  DCHECK_LT((numer > 0 ? numer : -numer),
-            kint64max / base::Time::kMicrosecondsPerSecond);
-  return TimeDelta::FromMicroseconds(
-        base::Time::kMicrosecondsPerSecond * numer / denom);
-}
-
-TrackRunIterator::TrackRunIterator(const Movie* moov,
-                                   const LogCB& log_cb)
-    : moov_(moov), log_cb_(log_cb), sample_offset_(0) {
+TrackRunIterator::TrackRunIterator(const Movie* moov)
+    : moov_(moov), sample_offset_(0) {
   CHECK(moov);
 }
 
@@ -388,20 +378,19 @@ int TrackRunIterator::sample_size() const {
   return sample_itr_->size;
 }
 
-TimeDelta TrackRunIterator::dts() const {
+int64 TrackRunIterator::dts() const {
   DCHECK(IsSampleValid());
-  return TimeDeltaFromRational(sample_dts_, run_itr_->timescale);
+  return sample_dts_;
 }
 
-TimeDelta TrackRunIterator::cts() const {
+int64 TrackRunIterator::cts() const {
   DCHECK(IsSampleValid());
-  return TimeDeltaFromRational(sample_dts_ + sample_itr_->cts_offset,
-                               run_itr_->timescale);
+  return sample_dts_ + sample_itr_->cts_offset;
 }
 
-TimeDelta TrackRunIterator::duration() const {
+int64 TrackRunIterator::duration() const {
   DCHECK(IsSampleValid());
-  return TimeDeltaFromRational(sample_itr_->duration, run_itr_->timescale);
+  return sample_itr_->duration;
 }
 
 bool TrackRunIterator::is_keyframe() const {
@@ -424,7 +413,7 @@ scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
   if (!cenc_info.subsamples.empty() &&
       (cenc_info.GetTotalSizeOfSubsamples() !=
        static_cast<size_t>(sample_size()))) {
-    MEDIA_LOG(log_cb_) << "Incorrect CENC subsample size.";
+    LOG(ERROR) << "Incorrect CENC subsample size.";
     return scoped_ptr<DecryptConfig>();
   }
 
