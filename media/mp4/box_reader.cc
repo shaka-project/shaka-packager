@@ -187,6 +187,10 @@ bool BoxReader::ReadChild(Box* child) {
   return true;
 }
 
+bool BoxReader::ChildExist(Box* child) {
+  return children_.count(child->BoxType()) > 0;
+}
+
 bool BoxReader::MaybeReadChild(Box* child) {
   if (!children_.count(child->BoxType())) return true;
   return ReadChild(child);

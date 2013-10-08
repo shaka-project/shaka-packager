@@ -100,6 +100,9 @@ class BoxReader : public BufferReader {
   // buffer position. Must be called before any of the *Child functions work.
   bool ScanChildren() WARN_UNUSED_RESULT;
 
+  // Return true if child with type |child.BoxType()| exists.
+  bool ChildExist(Box* child) WARN_UNUSED_RESULT;
+
   // Read exactly one child box from the set of children. The type of the child
   // will be determined by the BoxType() method of |child|.
   bool ReadChild(Box* child) WARN_UNUSED_RESULT;

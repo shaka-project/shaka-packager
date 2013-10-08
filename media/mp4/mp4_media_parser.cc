@@ -114,14 +114,14 @@ bool MP4MediaParser::ParseBox(bool* err) {
   scoped_ptr<BoxReader> reader(BoxReader::ReadTopLevelBox(buf, size, err));
   if (reader.get() == NULL) return false;
 
+  // Set up mdat offset for ReadMDATsUntil().
+  mdat_tail_ = queue_.head() + reader->size();
+
   if (reader->type() == FOURCC_MOOV) {
     *err = !ParseMoov(reader.get());
   } else if (reader->type() == FOURCC_MOOF) {
     moof_head_ = queue_.head();
     *err = !ParseMoof(reader.get());
-
-    // Set up first mdat offset for ReadMDATsUntil().
-    mdat_tail_ = queue_.head() + reader->size();
 
     // Return early to avoid evicting 'moof' data from queue. Auxiliary info may
     // be located anywhere in the file, including inside the 'moof' itself.
@@ -160,12 +160,22 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
     // a codec reconfiguration for fragments using a sample description index
     // different from the previous one
     size_t desc_idx = 0;
-    for (size_t t = 0; t < moov_->extends.tracks.size(); t++) {
-      const TrackExtends& trex = moov_->extends.tracks[t];
-      if (trex.track_id == track->header.track_id) {
-        desc_idx = trex.default_sample_description_index;
-        break;
+
+    // Read sample description index from mvex if it exists otherwise read
+    // from the first entry in Sample To Chunk box.
+    if (moov_->extends.tracks.size() > 0) {
+      for (size_t t = 0; t < moov_->extends.tracks.size(); t++) {
+        const TrackExtends& trex = moov_->extends.tracks[t];
+        if (trex.track_id == track->header.track_id) {
+          desc_idx = trex.default_sample_description_index;
+          break;
+        }
       }
+    } else {
+      const std::vector<ChunkInfo>& chunk_info =
+          track->media.information.sample_table.sample_to_chunk.chunk_info;
+      RCHECK(chunk_info.size() > 0);
+      desc_idx = chunk_info[0].sample_description_index;
     }
     RCHECK(desc_idx > 0);
     desc_idx -= 1;  // BMFF descriptor index is one-based
@@ -287,15 +297,17 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
   init_cb_.Run(true, streams);
 
   EmitNeedKeyIfNecessary(moov_->pssh);
+  runs_.reset(new TrackRunIterator(moov_.get()));
+  RCHECK(runs_->Init());
+  ChangeState(kEmittingSamples);
   return true;
 }
 
 bool MP4MediaParser::ParseMoof(BoxReader* reader) {
-  RCHECK(moov_.get());  // Must already have initialization segment
+  // Must already have initialization segment.
+  RCHECK(moov_.get() && runs_.get());
   MovieFragment moof;
   RCHECK(moof.Parse(reader));
-  if (!runs_)
-    runs_.reset(new TrackRunIterator(moov_.get()));
   RCHECK(runs_->Init(moof));
   EmitNeedKeyIfNecessary(moof.pssh);
   ChangeState(kEmittingSamples);

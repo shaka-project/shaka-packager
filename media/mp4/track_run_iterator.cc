@@ -6,7 +6,11 @@
 
 #include <algorithm>
 
+#include "media/mp4/chunk_info_iterator.h"
+#include "media/mp4/composition_offset_iterator.h"
+#include "media/mp4/decoding_time_iterator.h"
 #include "media/mp4/rcheck.h"
+#include "media/mp4/sync_sample_iterator.h"
 
 namespace {
 static const uint32 kSampleIsDifferenceSampleFlagMask = 0x10000;
@@ -49,8 +53,8 @@ TrackRunInfo::TrackRunInfo()
       sample_start_offset(-1),
       is_audio(false),
       aux_info_start_offset(-1),
-      aux_info_default_size(-1),
-      aux_info_total_size(-1) {
+      aux_info_default_size(0),
+      aux_info_total_size(0) {
 }
 TrackRunInfo::~TrackRunInfo() {}
 
@@ -127,6 +131,144 @@ class CompareMinTrackRunDataOffset {
     return a_lesser < b_lesser;
   }
 };
+
+bool TrackRunIterator::Init() {
+  runs_.clear();
+
+  for (std::vector<Track>::const_iterator trak = moov_->tracks.begin();
+      trak != moov_->tracks.end(); ++trak) {
+    const SampleDescription& stsd =
+        trak->media.information.sample_table.description;
+    if (stsd.type != kAudio && stsd.type != kVideo) {
+      DVLOG(1) << "Skipping unhandled track type";
+      continue;
+    }
+
+    // Process edit list to remove CTS offset introduced in the presence of
+    // B-frames (those that contain a single edit with a nonnegative media
+    // time). Other uses of edit lists are not supported, as they are
+    // both uncommon and better served by higher-level protocols.
+    int64 edit_list_offset = 0;
+    const std::vector<EditListEntry>& edits = trak->edit.list.edits;
+    if (!edits.empty()) {
+      if (edits.size() > 1)
+        DVLOG(1) << "Multi-entry edit box detected; some components ignored.";
+
+      if (edits[0].media_time < 0) {
+        DVLOG(1) << "Empty edit list entry ignored.";
+      } else {
+        edit_list_offset = -edits[0].media_time;
+      }
+    }
+
+    DecodingTimeIterator decoding_time(
+        trak->media.information.sample_table.decoding_time_to_sample);
+    CompositionOffsetIterator composition_offset(
+        trak->media.information.sample_table.composition_time_to_sample);
+    bool has_composition_offset = composition_offset.IsValid();
+    ChunkInfoIterator chunk_info(
+        trak->media.information.sample_table.sample_to_chunk);
+    SyncSampleIterator sync_sample(
+        trak->media.information.sample_table.sync_sample);
+    // Skip processing saiz and saio boxes for non-fragmented mp4 as we
+    // don't support encrypted non-fragmented mp4.
+
+    const SampleSize& sample_size =
+        trak->media.information.sample_table.sample_size;
+    const std::vector<uint64>& chunk_offset_vector =
+        trak->media.information.sample_table.chunk_offset.offsets;
+
+    int64 run_start_dts = 0;
+    int64 run_data_offset = 0;
+
+    uint32 num_samples = sample_size.sample_count;
+    uint32 num_chunks = chunk_offset_vector.size();
+
+    // Check that total number of samples match.
+    DCHECK(num_samples == decoding_time.NumSamples() &&
+           num_samples == composition_offset.NumSamples() &&
+           (num_chunks == 0 ||
+               num_samples == chunk_info.NumSamples(1, num_chunks)) &&
+           num_chunks >= chunk_info.LastFirstChunk());
+
+    if (num_samples > 0) {
+      // Verify relevant tables are not empty.
+      RCHECK(decoding_time.IsValid() &&
+             composition_offset.IsValid() &&
+             chunk_info.IsValid());
+    }
+
+    uint32 sample_index = 0;
+    for (uint32 chunk_index = 0; chunk_index < num_chunks; ++chunk_index) {
+      RCHECK(chunk_info.current_chunk() == chunk_index + 1);
+
+      TrackRunInfo tri;
+      tri.track_id = trak->header.track_id;
+      tri.timescale = trak->media.header.timescale;
+      tri.start_dts = run_start_dts;
+      tri.sample_start_offset = chunk_offset_vector[chunk_index];
+
+      uint32 desc_idx = chunk_info.sample_description_index();
+      RCHECK(desc_idx > 0);  // Descriptions are one-indexed in the file.
+      desc_idx -= 1;
+
+      tri.is_audio = (stsd.type == kAudio);
+      if (tri.is_audio) {
+        RCHECK(!stsd.audio_entries.empty());
+        if (desc_idx > stsd.audio_entries.size())
+          desc_idx = 0;
+        tri.audio_description = &stsd.audio_entries[desc_idx];
+        // We don't support encrypted non-fragmented mp4 for now.
+        RCHECK(!tri.audio_description->sinf.info.track_encryption.is_encrypted);
+      } else {
+        RCHECK(!stsd.video_entries.empty());
+        if (desc_idx > stsd.video_entries.size())
+          desc_idx = 0;
+        tri.video_description = &stsd.video_entries[desc_idx];
+        // We don't support encrypted non-fragmented mp4 for now.
+        RCHECK(!tri.video_description->sinf.info.track_encryption.is_encrypted);
+      }
+
+      uint32 samples_per_chunk = chunk_info.samples_per_chunk();
+      tri.samples.resize(samples_per_chunk);
+      for (uint32 k = 0; k < samples_per_chunk; ++k) {
+        SampleInfo& sample = tri.samples[k];
+        sample.size =
+            sample_size.sample_size != 0 ?
+                sample_size.sample_size : sample_size.sizes[sample_index];
+        sample.duration = decoding_time.sample_delta();
+        sample.cts_offset =
+            has_composition_offset ? composition_offset.sample_offset() : 0;
+        sample.cts_offset += edit_list_offset;
+        sample.is_keyframe = sync_sample.IsSyncSample();
+
+        run_start_dts += sample.duration;
+
+        // Advance to next sample. Should success except for last sample.
+        ++sample_index;
+        RCHECK(chunk_info.AdvanceSample() && sync_sample.AdvanceSample());
+        if (sample_index == num_samples) {
+          // We should hit end of tables for decoding time and composition
+          // offset.
+          RCHECK(!decoding_time.AdvanceSample());
+          if (has_composition_offset)
+            RCHECK(!composition_offset.AdvanceSample());
+        } else {
+          RCHECK(decoding_time.AdvanceSample());
+          if (has_composition_offset)
+            RCHECK(composition_offset.AdvanceSample());
+        }
+      }
+
+      runs_.push_back(tri);
+    }
+  }
+
+  std::sort(runs_.begin(), runs_.end(), CompareMinTrackRunDataOffset());
+  run_itr_ = runs_.begin();
+  ResetRun();
+  return true;
+}
 
 bool TrackRunIterator::Init(const MovieFragment& moof) {
   runs_.clear();

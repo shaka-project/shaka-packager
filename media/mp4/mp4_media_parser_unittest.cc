@@ -117,12 +117,12 @@ TEST_F(MP4MediaParserTest, Reinitialization) {
 }
 
 TEST_F(MP4MediaParserTest, MPEG2_AAC_LC) {
-  parser_.reset(new MP4MediaParser());
   ParseMP4File("bear-mpeg2-aac-only_frag.mp4", 512);
 }
 
-// TODO(strobe): Create and test media which uses CENC auxiliary info stored
-// inside a private box
+TEST_F(MP4MediaParserTest, NON_FRAGMENTED_MP4) {
+  ParseMP4File("bear-1280x720.mp4", 512);
+}
 
 }  // namespace mp4
 }  // namespace media

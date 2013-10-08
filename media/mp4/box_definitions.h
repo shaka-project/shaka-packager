@@ -209,14 +209,95 @@ struct SampleDescription : Box {
   std::vector<AudioSampleEntry> audio_entries;
 };
 
+struct DecodingTime {
+  uint32 sample_count;
+  uint32 sample_delta;
+};
+
+// stts.
+struct DecodingTimeToSample : Box {
+  DECLARE_BOX_METHODS(DecodingTimeToSample);
+
+  std::vector<DecodingTime> decoding_time;
+};
+
+struct CompositionOffset {
+  uint32 sample_count;
+  // If version == 0, sample_offset is uint32;
+  // If version == 1, sample_offset is int32.
+  // Let us always use signed version, which should work unless the offset
+  // exceeds 31 bits, which shouldn't happen.
+  int32 sample_offset;
+};
+
+// ctts. Optional.
+struct CompositionTimeToSample : Box {
+  DECLARE_BOX_METHODS(CompositionTimeToSample);
+
+  std::vector<CompositionOffset> composition_offset;
+};
+
+struct ChunkInfo {
+  uint32 first_chunk;
+  uint32 samples_per_chunk;
+  uint32 sample_description_index;
+};
+
+// stsc.
+struct SampleToChunk : Box {
+  DECLARE_BOX_METHODS(SampleToChunk);
+
+  std::vector<ChunkInfo> chunk_info;
+};
+
+// stsz.
+struct SampleSize : Box {
+  DECLARE_BOX_METHODS(SampleSize);
+
+  uint32 sample_size;
+  uint32 sample_count;
+  std::vector<uint32> sizes;
+};
+
+// stz2.
+struct CompactSampleSize : SampleSize {
+  DECLARE_BOX_METHODS(CompactSampleSize);
+};
+
+// stco.
+struct ChunkOffset : Box {
+  DECLARE_BOX_METHODS(ChunkOffset);
+
+  // Chunk byte offsets into mdat relative to the beginning of the file.
+  // Use 64 bits instead of 32 bits so it is large enough to hold
+  // ChunkLargeOffset data.
+  std::vector<uint64> offsets;
+};
+
+// co64.
+struct ChunkLargeOffset : ChunkOffset {
+  DECLARE_BOX_METHODS(ChunkLargeOffset);
+};
+
+// stss. Optional.
+struct SyncSample : Box {
+  DECLARE_BOX_METHODS(SyncSample);
+
+  std::vector<uint32> sample_number;
+};
+
 struct SampleTable : Box {
   DECLARE_BOX_METHODS(SampleTable);
 
-  // Media Source specific: we ignore many of the sub-boxes in this box,
-  // including some that are required to be present in the BMFF spec. This
-  // includes the 'stts', 'stsc', and 'stco' boxes, which must contain no
-  // samples in order to be compliant files.
   SampleDescription description;
+  DecodingTimeToSample decoding_time_to_sample;
+  CompositionTimeToSample composition_time_to_sample;
+  SampleToChunk sample_to_chunk;
+  // Either SampleSize or CompactSampleSize must present. Store in SampleSize.
+  SampleSize sample_size;
+  // Either ChunkOffset or ChunkLargeOffset must present. Store in ChunkOffset.
+  ChunkOffset chunk_offset;
+  SyncSample sync_sample;
 };
 
 struct MediaHeader : Box {

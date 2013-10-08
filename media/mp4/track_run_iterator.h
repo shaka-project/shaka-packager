@@ -27,6 +27,13 @@ class TrackRunIterator {
   explicit TrackRunIterator(const Movie* moov);
   ~TrackRunIterator();
 
+  // For non-fragmented mp4, moov contains all the chunks information; This
+  // function sets up the iterator to handle all the chunks.
+  // For fragmented mp4, chunk and sample information are generally contained
+  // in moof. This function is a no-op in this case. Init(moof) will be called
+  // later after parsing moof.
+  bool Init();
+
   // Sets up the iterator to handle all the runs from the current fragment.
   bool Init(const MovieFragment& moof);
 

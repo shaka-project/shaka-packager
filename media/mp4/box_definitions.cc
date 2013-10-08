@@ -245,13 +245,198 @@ bool SampleDescription::Parse(BoxReader* reader) {
   return true;
 }
 
+DecodingTimeToSample::DecodingTimeToSample() {}
+DecodingTimeToSample::~DecodingTimeToSample() {}
+FourCC DecodingTimeToSample::BoxType() const { return FOURCC_STTS; }
+
+bool DecodingTimeToSample::Parse(BoxReader* reader) {
+  uint32 count;
+  RCHECK(reader->ReadFullBoxHeader() &&
+         reader->Read4(&count));
+
+  decoding_time.resize(count);
+  for (int i = 0; i < count; ++i) {
+    RCHECK(reader->Read4(&decoding_time[i].sample_count) &&
+           reader->Read4(&decoding_time[i].sample_delta));
+  }
+  return true;
+}
+
+CompositionTimeToSample::CompositionTimeToSample() {}
+CompositionTimeToSample::~CompositionTimeToSample() {}
+FourCC CompositionTimeToSample::BoxType() const { return FOURCC_CTTS; }
+
+bool CompositionTimeToSample::Parse(BoxReader* reader) {
+  uint32 count;
+  RCHECK(reader->ReadFullBoxHeader() &&
+         reader->Read4(&count));
+
+  composition_offset.resize(count);
+  for (int i = 0; i < count; ++i) {
+    RCHECK(reader->Read4(&composition_offset[i].sample_count) &&
+           reader->Read4s(&composition_offset[i].sample_offset));
+  }
+  return true;
+}
+
+SampleToChunk::SampleToChunk() {}
+SampleToChunk::~SampleToChunk() {}
+FourCC SampleToChunk::BoxType() const { return FOURCC_STSC; }
+
+bool SampleToChunk::Parse(BoxReader* reader) {
+  uint32 count;
+  RCHECK(reader->ReadFullBoxHeader() &&
+         reader->Read4(&count));
+
+  chunk_info.resize(count);
+  for (int i = 0; i < count; ++i) {
+    RCHECK(reader->Read4(&chunk_info[i].first_chunk) &&
+           reader->Read4(&chunk_info[i].samples_per_chunk) &&
+           reader->Read4(&chunk_info[i].sample_description_index));
+    // first_chunk values are always increasing.
+    DCHECK(i == 0 ? chunk_info[i].first_chunk == 1
+                  : chunk_info[i].first_chunk > chunk_info[i - 1].first_chunk);
+  }
+  return true;
+}
+
+SampleSize::SampleSize() : sample_size(0), sample_count(0) {}
+SampleSize::~SampleSize() {}
+FourCC SampleSize::BoxType() const { return FOURCC_STSZ; }
+
+bool SampleSize::Parse(BoxReader* reader) {
+  RCHECK(reader->ReadFullBoxHeader() &&
+         reader->Read4(&sample_size) &&
+         reader->Read4(&sample_count));
+
+  if (sample_size == 0) {
+    sizes.resize(sample_count);
+    for (int i = 0; i < sample_count; ++i)
+      RCHECK(reader->Read4(&sizes[i]));
+  }
+  return true;
+}
+
+CompactSampleSize::CompactSampleSize() : SampleSize() {}
+CompactSampleSize::~CompactSampleSize() {}
+FourCC CompactSampleSize::BoxType() const { return FOURCC_STZ2; }
+
+bool CompactSampleSize::Parse(BoxReader* reader) {
+  uint8 field_size;
+  RCHECK(reader->ReadFullBoxHeader() &&
+         reader->SkipBytes(3) &&
+         reader->Read1(&field_size) &&
+         reader->Read4(&sample_count));
+
+  // Reserve one more entry if field size is 4 bits.
+  sizes.resize(sample_count + (field_size == 4 ? 1 : 0));
+  switch (field_size) {
+    case 4:
+      for (int i = 0; i < sample_count; ++i) {
+        uint8 size;
+        RCHECK(reader->Read1(&size));
+        sizes[i] = size >> 4;
+        sizes[++i] = size & 0x0F;
+      }
+      break;
+    case 8:
+      for (int i = 0; i < sample_count; ++i) {
+        uint8 size;
+        RCHECK(reader->Read1(&size));
+        sizes[i] = size;
+      }
+      break;
+    case 16:
+      for (int i = 0; i < sample_count; ++i) {
+        uint16 size;
+        RCHECK(reader->Read2(&size));
+        sizes[i] = size;
+      }
+      break;
+    default:
+      RCHECK(false);
+  }
+  sizes.resize(sample_count);
+  return true;
+}
+
+ChunkOffset::ChunkOffset() {}
+ChunkOffset::~ChunkOffset() {}
+FourCC ChunkOffset::BoxType() const { return FOURCC_STCO; }
+
+bool ChunkOffset::Parse(BoxReader* reader) {
+  uint32 count;
+  RCHECK(reader->ReadFullBoxHeader() &&
+         reader->Read4(&count));
+
+  offsets.resize(count);
+  for (int i = 0; i < count; ++i)
+    RCHECK(reader->Read4Into8(&offsets[i]));
+  return true;
+}
+
+ChunkLargeOffset::ChunkLargeOffset() {}
+ChunkLargeOffset::~ChunkLargeOffset() {}
+FourCC ChunkLargeOffset::BoxType() const { return FOURCC_CO64; }
+
+bool ChunkLargeOffset::Parse(BoxReader* reader) {
+  uint32 count;
+  RCHECK(reader->ReadFullBoxHeader() &&
+         reader->Read4(&count));
+
+  offsets.resize(count);
+  for (int i = 0; i < count; ++i)
+    RCHECK(reader->Read8(&offsets[i]));
+  return true;
+}
+
+SyncSample::SyncSample() {}
+SyncSample::~SyncSample() {}
+FourCC SyncSample::BoxType() const { return FOURCC_STSS; }
+
+bool SyncSample::Parse(BoxReader* reader) {
+  uint32 count;
+  RCHECK(reader->ReadFullBoxHeader() &&
+         reader->Read4(&count));
+
+  sample_number.resize(count);
+  for (int i = 0; i < count; ++i)
+    RCHECK(reader->Read4(&sample_number[i]));
+  return true;
+}
+
 SampleTable::SampleTable() {}
 SampleTable::~SampleTable() {}
 FourCC SampleTable::BoxType() const { return FOURCC_STBL; }
 
 bool SampleTable::Parse(BoxReader* reader) {
-  return reader->ScanChildren() &&
-         reader->ReadChild(&description);
+  RCHECK(reader->ScanChildren() &&
+         reader->ReadChild(&description) &&
+         reader->ReadChild(&decoding_time_to_sample) &&
+         reader->MaybeReadChild(&composition_time_to_sample) &&
+         reader->MaybeReadChild(&sync_sample) &&
+         reader->ReadChild(&sample_to_chunk));
+
+  // Either SampleSize or CompactSampleSize must present.
+  if (reader->ChildExist(&sample_size)) {
+    RCHECK(reader->ReadChild(&sample_size));
+  } else {
+    CompactSampleSize compact_sample_size;
+    RCHECK(reader->ReadChild(&compact_sample_size));
+    sample_size.sample_size = compact_sample_size.sample_size;
+    sample_size.sample_count = compact_sample_size.sample_count;
+    sample_size.sizes.swap(compact_sample_size.sizes);
+  }
+
+  // Either ChunkOffset or ChunkLargeOffset must present.
+  if (reader->ChildExist(&chunk_offset)) {
+    RCHECK(reader->ReadChild(&chunk_offset));
+  } else {
+    ChunkLargeOffset chunk_large_offset;
+    RCHECK(reader->ReadChild(&chunk_large_offset));
+    chunk_offset.offsets.swap(chunk_large_offset.offsets);
+  }
+  return true;
 }
 
 EditList::EditList() {}
@@ -592,7 +777,7 @@ bool Movie::Parse(BoxReader* reader) {
          reader->ReadChild(&header) &&
          reader->ReadChildren(&tracks) &&
          // Media Source specific: 'mvex' required
-         reader->ReadChild(&extends) &&
+         reader->MaybeReadChild(&extends) &&
          reader->MaybeReadChildren(&pssh);
 }
 
