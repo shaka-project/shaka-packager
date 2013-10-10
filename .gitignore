@@ -1,0 +1,6 @@
+.cproject
+.project
+.pydevproject
+.repo
+.settings
+out/*
