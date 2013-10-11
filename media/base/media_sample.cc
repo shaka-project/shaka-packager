@@ -55,7 +55,7 @@ scoped_refptr<MediaSample> MediaSample::CreateEOSBuffer() {
   return make_scoped_refptr(new MediaSample(NULL, 0, NULL, 0, false));
 }
 
-std::string MediaSample::ToString() {
+std::string MediaSample::ToString() const {
   if (end_of_stream()) {
     return "end of stream";
   }

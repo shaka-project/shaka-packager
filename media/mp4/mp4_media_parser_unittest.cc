@@ -48,9 +48,8 @@ class MP4MediaParserTest : public testing::Test {
     return true;
   }
 
-  void InitF(bool init_ok, std::vector<scoped_refptr<StreamInfo> >& streams) {
-    DVLOG(1) << "InitF: ok=" << init_ok;
-    if (init_ok && streams.size() > 0)
+  void InitF(const std::vector<scoped_refptr<StreamInfo> >& streams) {
+    if (streams.size() > 0)
       configs_received_ = true;
   }
 

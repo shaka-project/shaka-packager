@@ -121,7 +121,7 @@ class MediaSample
   }
 
   // Returns a human-readable string describing |*this|.
-  std::string ToString();
+  std::string ToString() const;
 
  protected:
   friend class base::RefCountedThreadSafe<MediaSample>;

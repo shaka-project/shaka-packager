@@ -304,8 +304,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
     }
   }
 
-  init_cb_.Run(true, streams);
-
+  init_cb_.Run(streams);
   EmitNeedKeyIfNecessary(moov_->pssh);
   runs_.reset(new TrackRunIterator(moov_.get()));
   RCHECK(runs_->Init());

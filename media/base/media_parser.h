@@ -24,16 +24,13 @@ class MediaParser {
   virtual ~MediaParser() {}
 
   // Indicates completion of parser initialization.
-  // First parameter - Indicates initialization success. Set to true if
-  //                   initialization was successful. False if an error
-  //                   occurred.
-  // Second parameter - A vector of all the elementary streams within this file.
-  typedef base::Callback<void(bool, std::vector<scoped_refptr<StreamInfo> >&)>
+  // First parameter - A vector of all the elementary streams within this file.
+  typedef base::Callback<void(const std::vector<scoped_refptr<StreamInfo> >&)>
       InitCB;
 
   // New stream sample have been parsed.
   // First parameter - The track id of the new sample.
-  // Second parameter - The new media sample;
+  // Second parameter - The new media sample.
   // Return value - True indicates that the sample is accepted.
   //                False if something was wrong with the sample and a parsing
   //                error should be signaled.

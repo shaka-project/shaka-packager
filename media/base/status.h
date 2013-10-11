@@ -1,0 +1,156 @@
+// Copyright (c) 2013 Google Inc. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef MEDIA_BASE_STATUS_H_
+#define MEDIA_BASE_STATUS_H_
+
+#include <string>
+
+#include "base/logging.h"
+
+namespace media {
+
+namespace error {
+
+// Error codes for the packager APIs.
+enum Code {
+  // Not an error; returned on success
+  OK,
+
+  // Unknown error.  An example of where this error may be returned is
+  // errors raised by APIs that do not return enough error information
+  // may be converted to this error.
+  UNKNOWN,
+
+  // The operation was cancelled (typically by the caller).
+  CANCELLED,
+
+  // Client specified an invalid argument. INVALID_ARGUMENT indicates
+  // arguments that are problematic regardless of the state of the system
+  // (e.g. a malformed file name).
+  INVALID_ARGUMENT,
+
+  // Operation is not implemented or not supported/enabled.
+  UNIMPLEMENTED,
+
+  // Cannot open file.
+  FILE_FAILURE,
+
+  // End of file.
+  EOF,
+
+  // Unable to parse the media file.
+  PARSER_FAILURE,
+
+  // TODO(kqyang): define packager specific error codes.
+};
+
+}  // namespace error
+
+class Status {
+ public:
+  // Creates a "successful" status.
+  Status() : error_code_(error::OK) {}
+
+  // Create a status with the specified code, and error message. If "code == 0",
+  // error_message is ignored and a Status object identical to Status::OK is
+  // constructed.
+  Status(error::Code error_code, const std::string& error_message) :
+    error_code_(error_code) {
+    if (!ok())
+      error_message_ = error_message;
+  }
+
+  //Status(const Status&);
+  //Status& operator=(const Status& x);
+  ~Status() {}
+
+  // Some pre-defined Status objects.
+  static const Status& OK;             // Identical to 0-arg constructor.
+  static const Status& UNKNOWN;
+
+  // Store the specified error in this Status object.
+  // If "error_code == error::OK", error_message is ignored and a Status object
+  // identical to Status::OK is constructed.
+  void SetError(error::Code error_code, const std::string& error_message) {
+    if (error_code == error::OK) {
+      Clear();
+    } else {
+      error_code_ = error_code;
+      error_message_ = error_message;
+    }
+  }
+
+  // If "ok()", stores "new_status" into *this.  If "!ok()", preserves
+  // the current "error_code()/error_message()",
+  //
+  // Convenient way of keeping track of the first error encountered.
+  // Instead of:
+  //   if (overall_status.ok()) overall_status = new_status
+  // Use:
+  //   overall_status.Update(new_status);
+  void Update(const Status& new_status) {
+    if (ok())
+      *this = new_status;
+  }
+
+  // Clear this status object to contain the OK code and no error message.
+  void Clear() {
+    error_code_ = error::OK;
+    error_message_ = "";
+  }
+
+  // Accessor.
+  bool ok() const {
+    return error_code_ == error::OK;
+  }
+  error::Code error_code() const {
+    return error_code_;
+  }
+  const std::string& error_message() const {
+    return error_message_;
+  }
+
+  bool operator==(const Status& x) const {
+    return error_code_ == x.error_code() && error_message_ == x.error_message();
+  }
+  bool operator!=(const Status& x) const {
+    return !(*this == x);
+  }
+
+  // Returns true iff this has the same error_code as "x".  I.e., the two
+  // Status objects are identical except possibly for the error message.
+  bool Matches(const Status& x) const {
+    return error_code_ == x.error_code();
+  }
+
+  // Return a combination of the error code name and message.
+  std::string ToString() const;
+
+  void Swap(Status* other) {
+    error::Code error_code = error_code_;
+    error_code_ = other->error_code_;
+    other->error_code_ = error_code;
+    error_message_.swap(other->error_message_);
+  }
+
+ private:
+  error::Code error_code_;
+  std::string error_message_;
+
+  // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
+  // generated copy constructor and assignment operator.
+};
+
+extern std::ostream& operator<<(std::ostream& os, const Status& x);
+
+// Status success comparison.
+// This is better than CHECK((val).ok()) because the embedded
+// error string gets printed by the CHECK_EQ.
+#define CHECK_OK(val) CHECK_EQ(Status::OK, (val))
+#define DCHECK_OK(val) DCHECK_EQ(Status::OK, (val))
+
+}  // namespace media
+
+#endif  // MEDIA_BASE_STATUS_H_
