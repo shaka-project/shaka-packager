@@ -27,10 +27,13 @@ class VideoStreamInfo : public StreamInfo {
   // Constructs an initialized object. It is acceptable to pass in NULL for
   // |extra_data|, otherwise the memory is copied.
   VideoStreamInfo(int track_id,
-                  int time_scale,
+                  uint32 time_scale,
+                  uint64 duration,
                   VideoCodec codec,
-                  int width,
-                  int height,
+                  const std::string& codec_string,
+                  const std::string& language,
+                  uint16 width,
+                  uint16 height,
                   const uint8* extra_data,
                   size_t extra_data_size,
                   bool is_encrypted);
@@ -39,19 +42,24 @@ class VideoStreamInfo : public StreamInfo {
 
   // Returns true if this object has appropriate configuration values, false
   // otherwise.
-  virtual bool IsValidConfig() const;
+  virtual bool IsValidConfig() const OVERRIDE;
 
   // Returns a human-readable string describing |*this|.
-  virtual std::string ToString();
+  virtual std::string ToString() const OVERRIDE;
 
   VideoCodec codec() const { return codec_; }
-  int width() const { return width_; }
-  int height() const { return height_; }
+  uint16 width() const { return width_; }
+  uint16 height() const { return height_; }
+
+  // Returns the codec string. The parameters beyond codec are only used by
+  // H.264 codec.
+  static std::string GetCodecString(VideoCodec codec, uint8 profile,
+                                    uint8 compatible_profiles, uint8 level);
 
  private:
   VideoCodec codec_;
-  int width_;
-  int height_;
+  uint16 width_;
+  uint16 height_;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the extra data is

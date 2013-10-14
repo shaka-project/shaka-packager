@@ -30,17 +30,18 @@ class AAC {
   // The function will parse the data and get the ElementaryStreamDescriptor,
   // then it will parse the ElementaryStreamDescriptor to get audio stream
   // configurations.
+  // |data| is always copied to |codec_specific_data_|.
   bool Parse(const std::vector<uint8>& data);
 
   // Gets the output sample rate for the AAC stream.
   // |sbr_in_mimetype| should be set to true if the SBR mode is
   // signalled in the mimetype. (ie mp4a.40.5 in the codecs parameter).
-  int GetOutputSamplesPerSecond(bool sbr_in_mimetype) const;
+  uint32 GetOutputSamplesPerSecond(bool sbr_in_mimetype) const;
 
   // Gets number of channels for the AAC stream.
   // |sbr_in_mimetype| should be set to true if the SBR mode is
   // signalled in the mimetype. (ie mp4a.40.5 in the codecs parameter).
-  int GetNumChannels(bool sbr_in_mimetype) const;
+  uint8 GetNumChannels(bool sbr_in_mimetype) const;
 
   // This function converts a raw AAC frame into an AAC frame with an ADTS
   // header. On success, the function returns true and stores the converted data
@@ -48,12 +49,22 @@ class AAC {
   // unchanged.
   bool ConvertToADTS(std::vector<uint8>* buffer) const;
 
-#if defined(OS_ANDROID)
-  // Returns the codec specific data needed by android MediaCodec.
+  uint8 audio_object_type() const {
+    return audio_object_type_;
+  }
+
+  uint32 frequency() const {
+    return frequency_;
+  }
+
+  uint8 num_channels() const {
+    return num_channels_;
+  }
+
+  // Returns the codec specific data.
   std::vector<uint8> codec_specific_data() const {
     return codec_specific_data_;
   }
-#endif
 
   // Size in bytes of the ADTS header added by ConvertEsdsToADTS().
   static const size_t kADTSHeaderSize = 7;
@@ -65,21 +76,20 @@ class AAC {
 
   // The following variables store the AAC specific configuration information
   // that are used to generate the ADTS header.
-  uint8 profile_;
+  uint8 audio_object_type_;
   uint8 frequency_index_;
   uint8 channel_config_;
+  // Is Parametric Stereo on?
+  bool ps_present_;
 
-#if defined(OS_ANDROID)
-  // The codec specific data needed by the android MediaCodec.
   std::vector<uint8> codec_specific_data_;
-#endif
 
   // The following variables store audio configuration information.
   // They are based on the AAC specific configuration but can be overridden
   // by extensions in elementary stream descriptor.
-  int frequency_;
-  int extension_frequency_;
-  int num_channels_;
+  uint32 frequency_;
+  uint32 extension_frequency_;
+  uint8 num_channels_;
 };
 
 }  // namespace mp4

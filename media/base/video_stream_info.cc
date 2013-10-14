@@ -6,21 +6,29 @@
 
 #include <sstream>
 
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "media/base/limits.h"
 
 namespace media {
 
 VideoStreamInfo::VideoStreamInfo(int track_id,
-                                 int time_scale,
+                                 uint32 time_scale,
+                                 uint64 duration,
                                  VideoCodec codec,
-                                 int width,
-                                 int height,
+                                 const std::string& codec_string,
+                                 const std::string& language,
+                                 uint16 width,
+                                 uint16 height,
                                  const uint8* extra_data,
                                  size_t extra_data_size,
                                  bool is_encrypted)
     : StreamInfo(kStreamVideo,
                  track_id,
                  time_scale,
+                 duration,
+                 codec_string,
+                 language,
                  extra_data,
                  extra_data_size,
                  is_encrypted),
@@ -36,13 +44,33 @@ bool VideoStreamInfo::IsValidConfig() const {
          height_ > 0 && height_ <= limits::kMaxDimension;
 }
 
-std::string VideoStreamInfo::ToString() {
+std::string VideoStreamInfo::ToString() const {
   std::ostringstream s;
   s << "codec: " << codec_
     << " width: " << width_
     << " height: " << height_
     << " " << StreamInfo::ToString();
   return s.str();
+}
+
+std::string VideoStreamInfo::GetCodecString(VideoCodec codec,
+                                            uint8 profile,
+                                            uint8 compatible_profiles,
+                                            uint8 level) {
+  switch (codec) {
+    case kCodecVP8:
+      return "vp8";
+    case kCodecVP9:
+      return "vp9";
+    case kCodecH264: {
+      const uint8 bytes[] = {profile, compatible_profiles, level};
+      return "avc1."
+          + StringToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));
+    }
+    default:
+      NOTIMPLEMENTED() << "Codec: " << codec;
+      return "unknown";
+  }
 }
 
 }  // namespace media

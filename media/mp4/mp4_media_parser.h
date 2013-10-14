@@ -16,13 +16,9 @@
 
 namespace media {
 
-class SubsampleEntry;
-
 namespace mp4 {
 
 struct Movie;
-class AAC;
-class AVCDecoderConfigurationRecord;
 class BoxReader;
 class ProtectionSystemSpecificHeader;
 class TrackRunIterator;
@@ -92,7 +88,6 @@ class MP4MediaParser : public MediaParser {
   bool has_video_;
   uint32 audio_track_id_;
   uint32 video_track_id_;
-  bool has_sbr_;
   bool is_audio_track_encrypted_;
   bool is_video_track_encrypted_;
 

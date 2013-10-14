@@ -8,9 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/time/time.h"
 #include "media/base/audio_stream_info.h"
-#include "media/base/buffers.h"
 #include "media/base/media_sample.h"
 #include "media/base/video_stream_info.h"
 #include "media/mp4/box_definitions.h"
@@ -21,11 +19,8 @@
 
 namespace {
 
-base::TimeDelta TimeDeltaFromRational(int64 numer, int64 denom) {
-  DCHECK_LT((numer > 0 ? numer : -numer),
-            kint64max / base::Time::kMicrosecondsPerSecond);
-  return base::TimeDelta::FromMicroseconds(base::Time::kMicrosecondsPerSecond *
-                                           numer / denom);
+uint64 Rescale(uint64 time_in_old_scale, uint32 old_scale, uint32 new_scale) {
+  return (static_cast<double>(time_in_old_scale) / old_scale) * new_scale;
 }
 
 }  // namespace
@@ -41,8 +36,6 @@ MP4MediaParser::MP4MediaParser()
       has_video_(false),
       audio_track_id_(0),
       video_track_id_(0),
-      // TODO(kqyang): do we need to care about it??
-      has_sbr_(false),
       is_audio_track_encrypted_(false),
       is_video_track_encrypted_(false) {
 }
@@ -150,6 +143,23 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
 
   for (std::vector<Track>::const_iterator track = moov_->tracks.begin();
        track != moov_->tracks.end(); ++track) {
+    const uint32 timescale = track->media.header.timescale;
+
+    // Calculate duration (based on timescale).
+    uint64 duration = 0;
+    if (track->media.header.duration > 0) {
+      duration = track->media.header.duration;
+    } else if (moov_->extends.header.fragment_duration > 0) {
+      DCHECK(moov_->header.timescale != 0);
+      duration = Rescale(moov_->extends.header.fragment_duration,
+                         moov_->header.timescale, timescale);
+    } else if (moov_->header.duration > 0 &&
+               moov_->header.duration != kuint64max) {
+      DCHECK(moov_->header.timescale != 0);
+      duration = Rescale(moov_->header.duration, moov_->header.timescale,
+                         timescale);
+    }
+
     // TODO(strobe): Only the first audio and video track present in a file are
     // used. (Track selection is better accomplished via Source IDs, though, so
     // adding support for track selection within a stream is low-priority.)
@@ -209,22 +219,22 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       }
 
       AudioCodec codec = kUnknownAudioCodec;
-      int num_channels = 0;
-      int sample_per_second = 0;
+      uint8 num_channels = 0;
+      uint32 sampling_frequency = 0;
+      uint8 audio_object_type = 0;
       std::vector<uint8> extra_data;
       // Check if it is MPEG4 AAC defined in ISO 14496 Part 3 or
-      // supported MPEG2 AAC varients.
+      // supported MPEG2 AAC variants.
       if (ESDescriptor::IsAAC(audio_type)) {
         codec = kCodecAAC;
-        num_channels = aac.GetNumChannels(has_sbr_);
-        sample_per_second = aac.GetOutputSamplesPerSecond(has_sbr_);
-#if defined(OS_ANDROID)
+        num_channels = aac.num_channels();
+        sampling_frequency = aac.frequency();
+        audio_object_type = aac.audio_object_type();
         extra_data = aac.codec_specific_data();
-#endif
       } else if (audio_type == kEAC3) {
         codec = kCodecEAC3;
         num_channels = entry.channelcount;
-        sample_per_second = entry.samplerate;
+        sampling_frequency = entry.samplerate;
       } else {
         LOG(ERROR) << "Unsupported audio object type 0x"
                    << std::hex << audio_type << " in esds.";
@@ -234,15 +244,19 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       is_audio_track_encrypted_ = entry.sinf.info.track_encryption.is_encrypted;
       DVLOG(1) << "is_audio_track_encrypted_: " << is_audio_track_encrypted_;
       streams.push_back(
-          new AudioStreamInfo(track->header.track_id,
-                              track->media.header.timescale,
-                              codec,
-                              entry.samplesize / 8,
-                              num_channels,
-                              sample_per_second,
-                              extra_data.size() ? &extra_data[0] : NULL,
-                              extra_data.size(),
-                              is_audio_track_encrypted_));
+          new AudioStreamInfo(
+              track->header.track_id,
+              timescale,
+              duration,
+              codec,
+              AudioStreamInfo::GetCodecString(codec, audio_object_type),
+              track->media.header.language,
+              entry.samplesize,
+              num_channels,
+              sampling_frequency,
+              extra_data.size() ? &extra_data[0] : NULL,
+              extra_data.size(),
+              is_audio_track_encrypted_));
       has_audio_ = true;
       audio_track_id_ = track->header.track_id;
     }
@@ -265,33 +279,29 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         return false;
       }
 
+      const std::string codec_string =
+          VideoStreamInfo::GetCodecString(
+              kCodecH264, entry.avcc.profile_indication,
+              entry.avcc.profile_compatibility, entry.avcc.avc_level);
+
       is_video_track_encrypted_ = entry.sinf.info.track_encryption.is_encrypted;
       DVLOG(1) << "is_video_track_encrypted_: " << is_video_track_encrypted_;
       streams.push_back(
-          new VideoStreamInfo(track->header.track_id,
-                              track->media.header.timescale,
-                              kCodecH264,
-                              entry.width,
-                              entry.height,
-                              // No decoder-specific buffer needed for AVC.
-                              NULL, 0,
-                              is_video_track_encrypted_));
+          new VideoStreamInfo(
+              track->header.track_id,
+              timescale,
+              duration,
+              kCodecH264,
+              codec_string,
+              track->media.header.language,
+              entry.width,
+              entry.height,
+              &entry.avcc.data[0],
+              entry.avcc.data.size(),
+              is_video_track_encrypted_));
       has_video_ = true;
       video_track_id_ = track->header.track_id;
     }
-  }
-
-  // TODO(kqyang): figure out how to get duration for every tracks/streams.
-  base::TimeDelta duration;
-  if (moov_->extends.header.fragment_duration > 0) {
-    duration = TimeDeltaFromRational(moov_->extends.header.fragment_duration,
-                                     moov_->header.timescale);
-  } else if (moov_->header.duration > 0 &&
-             moov_->header.duration != kuint64max) {
-    duration = TimeDeltaFromRational(moov_->header.duration,
-                                     moov_->header.timescale);
-  } else {
-    duration = kInfiniteDuration();
   }
 
   init_cb_.Run(true, streams);

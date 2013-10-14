@@ -145,6 +145,13 @@ struct HandlerReference : Box {
 
 struct AVCDecoderConfigurationRecord : Box {
   DECLARE_BOX_METHODS(AVCDecoderConfigurationRecord);
+  bool ParseData(BufferReader* reader);
+
+  // Contains full avc decoder configuration record as defined in iso14496-15
+  // 5.2.4.1, including possible extension bytes described in paragraph 3.
+  // Known fields defined in the spec are also parsed and included in this
+  // structure.
+  std::vector<uint8> data;
 
   uint8 version;
   uint8 profile_indication;
@@ -307,6 +314,8 @@ struct MediaHeader : Box {
   uint64 modification_time;
   uint32 timescale;
   uint64 duration;
+  // 3-char language code + 1 null terminating char.
+  char language[4];
 };
 
 struct MediaInformation : Box {

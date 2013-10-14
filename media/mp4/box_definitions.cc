@@ -5,6 +5,7 @@
 #include "media/mp4/box_definitions.h"
 
 #include "base/logging.h"
+#include "media/base/bit_reader.h"
 #include "media/mp4/es_descriptor.h"
 #include "media/mp4/rcheck.h"
 
@@ -506,6 +507,13 @@ AVCDecoderConfigurationRecord::~AVCDecoderConfigurationRecord() {}
 FourCC AVCDecoderConfigurationRecord::BoxType() const { return FOURCC_AVCC; }
 
 bool AVCDecoderConfigurationRecord::Parse(BoxReader* reader) {
+  RCHECK(reader->ReadVec(&data, reader->size() - 8));
+
+  BufferReader buffer_reader(&data[0], data.size());
+  return ParseData(&buffer_reader);
+}
+
+bool AVCDecoderConfigurationRecord::ParseData(BufferReader* reader) {
   RCHECK(reader->Read1(&version) && version == 1 &&
          reader->Read1(&profile_indication) &&
          reader->Read1(&profile_compatibility) &&
@@ -679,8 +687,21 @@ bool MediaHeader::Parse(BoxReader* reader) {
            reader->Read4(&timescale) &&
            reader->Read4Into8(&duration));
   }
-  // Skip language information
-  return reader->SkipBytes(4);
+
+  // Read language codes into temp first then use BitReader to read the values.
+  // ISO-639-2/T language code: unsigned int(5)[3] language (2 bytes).
+  std::vector<uint8> temp;
+  RCHECK(reader->ReadVec(&temp, 2));
+
+  BitReader bit_reader(&temp[0], 2);
+  bit_reader.SkipBits(1);
+  for (int i = 0; i < 3; ++i) {
+    CHECK(bit_reader.ReadBits(5, &language[i]));
+    language[i] += 0x60;
+  }
+  language[3] = '\0';
+
+  return reader->SkipBytes(2);
 }
 
 MediaInformation::MediaInformation() {}

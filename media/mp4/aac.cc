@@ -13,13 +13,13 @@
 namespace {
 
 // Sampling Frequency Index table, from ISO 14496-3 Table 1.16
-static const int kSampleRates[] = {
+static const uint32 kSampleRates[] = {
   96000, 88200, 64000, 48000, 44100, 32000, 24000,
   22050, 16000, 12000, 11025, 8000, 7350
 };
 
 // Channel Configuration table, from ISO 14496-3 Table 1.17
-const uint32 kChannelConfigs[] = {0, 1, 2, 3, 4, 5, 6, 8};
+const uint8 kChannelConfigs[] = {0, 1, 2, 3, 4, 5, 6, 8};
 
 }  // namespace
 
@@ -28,46 +28,51 @@ namespace media {
 namespace mp4 {
 
 AAC::AAC()
-    : profile_(0), frequency_index_(0), channel_config_(0), frequency_(0),
-      extension_frequency_(0), num_channels_(0) {
+    : audio_object_type_(0), frequency_index_(0), channel_config_(0),
+      ps_present_(false), frequency_(0), extension_frequency_(0),
+      num_channels_(0) {
 }
 
 AAC::~AAC() {
 }
 
 bool AAC::Parse(const std::vector<uint8>& data) {
-#if defined(OS_ANDROID)
   codec_specific_data_ = data;
-#endif
+
   if (data.empty())
     return false;
 
   BitReader reader(&data[0], data.size());
   uint8 extension_type = 0;
-  bool ps_present = false;
   uint8 extension_frequency_index = 0xff;
 
+  ps_present_ = false;
   frequency_ = 0;
   extension_frequency_ = 0;
 
   // The following code is written according to ISO 14496 Part 3 Table 1.13 -
   // Syntax of AudioSpecificConfig.
 
-  // Read base configuration
-  RCHECK(reader.ReadBits(5, &profile_));
+  // Read base configuration.
+  // Audio Object Types specified in ISO 14496-3, Table 1.15.
+  RCHECK(reader.ReadBits(5, &audio_object_type_));
+  // Audio objects type >=31 is not supported yet.
+  RCHECK(audio_object_type_ < 31);
   RCHECK(reader.ReadBits(4, &frequency_index_));
   if (frequency_index_ == 0xf)
     RCHECK(reader.ReadBits(24, &frequency_));
   RCHECK(reader.ReadBits(4, &channel_config_));
 
   // Read extension configuration.
-  if (profile_ == 5 || profile_ == 29) {
-    ps_present = (profile_ == 29);
+  if (audio_object_type_ == 5 || audio_object_type_ == 29) {
+    ps_present_ = (audio_object_type_ == 29);
     extension_type = 5;
     RCHECK(reader.ReadBits(4, &extension_frequency_index));
     if (extension_frequency_index == 0xf)
       RCHECK(reader.ReadBits(24, &extension_frequency_));
-    RCHECK(reader.ReadBits(5, &profile_));
+    RCHECK(reader.ReadBits(5, &audio_object_type_));
+    // Audio objects type >=31 is not supported yet.
+    RCHECK(audio_object_type_ < 31);
   }
 
   RCHECK(SkipDecoderGASpecificConfig(&reader));
@@ -96,7 +101,7 @@ bool AAC::Parse(const std::vector<uint8>& data) {
             RCHECK(reader.ReadBits(11, &sync_extension_type));
             if (sync_extension_type == 0x548) {
               RCHECK(reader.ReadBits(1, &ps_present_flag));
-              ps_present = ps_present_flag != 0;
+              ps_present_ = ps_present_flag != 0;
             }
           }
         }
@@ -114,20 +119,15 @@ bool AAC::Parse(const std::vector<uint8>& data) {
     extension_frequency_ = kSampleRates[extension_frequency_index];
   }
 
-  // TODO(kqyang): should we care about whether Parametric Stereo is on?
-  // When Parametric Stereo is on, mono will be played as stereo.
-  if (ps_present && channel_config_ == 1)
-    num_channels_ = 2;  // CHANNEL_LAYOUT_STEREO
-  else {
-    RCHECK(channel_config_ < arraysize(kChannelConfigs));
-    num_channels_ = kChannelConfigs[channel_config_];
-  }
+  RCHECK(channel_config_ < arraysize(kChannelConfigs));
+  num_channels_ = kChannelConfigs[channel_config_];
 
-  return frequency_ != 0 && num_channels_ != 0 && profile_ >= 1 &&
-         profile_ <= 4 && frequency_index_ != 0xf && channel_config_ <= 7;
+  return frequency_ != 0 && num_channels_ != 0 && audio_object_type_ >= 1 &&
+         audio_object_type_ <= 4 && frequency_index_ != 0xf &&
+         channel_config_ <= 7;
 }
 
-int AAC::GetOutputSamplesPerSecond(bool sbr_in_mimetype) const {
+uint32 AAC::GetOutputSamplesPerSecond(bool sbr_in_mimetype) const {
   if (extension_frequency_ > 0)
     return extension_frequency_;
 
@@ -139,14 +139,18 @@ int AAC::GetOutputSamplesPerSecond(bool sbr_in_mimetype) const {
   // to SBR doubling the AAC sample rate.)
   // TODO(acolwell) : Extend sample rate cap to 96kHz for Level 5 content.
   DCHECK_GT(frequency_, 0);
-  return std::min(2 * frequency_, 48000);
+  return std::min(2 * frequency_, 48000u);
 }
 
-int AAC::GetNumChannels(bool sbr_in_mimetype) const {
+uint8 AAC::GetNumChannels(bool sbr_in_mimetype) const {
   // Check for implicit signalling of HE-AAC and indicate stereo output
   // if the mono channel configuration is signalled.
   // See ISO-14496-3 Section 1.6.6.1.2 for details about this special casing.
   if (sbr_in_mimetype && channel_config_ == 1)
+    return 2;  // CHANNEL_LAYOUT_STEREO
+
+  // When Parametric Stereo is on, mono will be played as stereo.
+  if (ps_present_ && channel_config_ == 1)
     return 2;  // CHANNEL_LAYOUT_STEREO
 
   return num_channels_;
@@ -155,8 +159,8 @@ int AAC::GetNumChannels(bool sbr_in_mimetype) const {
 bool AAC::ConvertToADTS(std::vector<uint8>* buffer) const {
   size_t size = buffer->size() + kADTSHeaderSize;
 
-  DCHECK(profile_ >= 1 && profile_ <= 4 && frequency_index_ != 0xf &&
-         channel_config_ <= 7);
+  DCHECK(audio_object_type_ >= 1 && audio_object_type_ <= 4 &&
+         frequency_index_ != 0xf && channel_config_ <= 7);
 
   // ADTS header uses 13 bits for packet size.
   if (size >= (1 << 13))
@@ -167,7 +171,7 @@ bool AAC::ConvertToADTS(std::vector<uint8>* buffer) const {
   adts.insert(buffer->begin(), kADTSHeaderSize, 0);
   adts[0] = 0xff;
   adts[1] = 0xf1;
-  adts[2] = ((profile_ - 1) << 6) + (frequency_index_ << 2) +
+  adts[2] = ((audio_object_type_ - 1) << 6) + (frequency_index_ << 2) +
       (channel_config_ >> 2);
   adts[3] = ((channel_config_ & 0x3) << 6) + (size >> 11);
   adts[4] = (size & 0x7ff) >> 3;
@@ -180,7 +184,7 @@ bool AAC::ConvertToADTS(std::vector<uint8>* buffer) const {
 // Currently this function only support GASpecificConfig defined in
 // ISO 14496 Part 3 Table 4.1 - Syntax of GASpecificConfig()
 bool AAC::SkipDecoderGASpecificConfig(BitReader* bit_reader) const {
-  switch (profile_) {
+  switch (audio_object_type_) {
     case 1:
     case 2:
     case 3:
@@ -202,7 +206,7 @@ bool AAC::SkipDecoderGASpecificConfig(BitReader* bit_reader) const {
 }
 
 bool AAC::SkipErrorSpecificConfig() const {
-  switch (profile_) {
+  switch (audio_object_type_) {
     case 17:
     case 19:
     case 20:
@@ -236,16 +240,17 @@ bool AAC::SkipGASpecificConfig(BitReader* bit_reader) const {
   RCHECK(bit_reader->ReadBits(1, &extension_flag));
   RCHECK(channel_config_ != 0);
 
-  if (profile_ == 6 || profile_ == 20)
+  if (audio_object_type_ == 6 || audio_object_type_ == 20)
     RCHECK(bit_reader->ReadBits(3, &dummy));  // layerNr
 
   if (extension_flag) {
-    if (profile_ == 22) {
+    if (audio_object_type_ == 22) {
       RCHECK(bit_reader->ReadBits(5, &dummy));  // numOfSubFrame
       RCHECK(bit_reader->ReadBits(11, &dummy));  // layer_length
     }
 
-    if (profile_ == 17 || profile_ == 19 || profile_ == 20 || profile_ == 23) {
+    if (audio_object_type_ == 17 || audio_object_type_ == 19 ||
+        audio_object_type_ == 20 || audio_object_type_ == 23) {
       RCHECK(bit_reader->ReadBits(3, &dummy));  // resilience flags
     }
 
