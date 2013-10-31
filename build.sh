@@ -20,6 +20,8 @@
 # ninja -C out/Debug   {Module}       # Again, Module is optional.
 # ninja -C out/Release {Module}       # Again, Module is optional.
 
+set -e
+
 function setup_packager_env() {
   if [ $# -lt 1 ]; then
     local type="Debug"
