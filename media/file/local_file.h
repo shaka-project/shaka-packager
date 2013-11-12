@@ -31,7 +31,6 @@ class LocalFile : public File {
   virtual bool Open() OVERRIDE;
 
  private:
-  std::string file_name_;
   std::string file_mode_;
   FILE* internal_file_;
 

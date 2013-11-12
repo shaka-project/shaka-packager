@@ -10,8 +10,8 @@
 
 namespace media {
 
-Muxer::Muxer(const Options& options, EncryptorSource* encrytor_source) :
-  encryptor_source_(encrytor_source), encryptor_(NULL) {}
+Muxer::Muxer(const MuxerOptions& options, EncryptorSource* encrytor_source)
+    : options_(options), encryptor_source_(encrytor_source) {}
 
 Muxer::~Muxer() {}
 
@@ -25,7 +25,6 @@ Status Muxer::Run() {
   DCHECK(!streams_.empty());
 
   Status status;
-
   // Start the streams.
   for (std::vector<MediaStream*>::iterator it = streams_.begin();
        it != streams_.end();
@@ -35,15 +34,21 @@ Status Muxer::Run() {
       return status;
   }
 
+  uint32 current_stream_id = 0;
   while (status.ok()) {
-    // TODO(kqyang): Need to do some proper synchronization between streams.
     scoped_refptr<MediaSample> sample;
-    status = streams_[0]->PullSample(&sample);
+    status = streams_[current_stream_id]->PullSample(&sample);
     if (!status.ok())
       break;
-    status = AddSample(streams_[0], sample);
+    status = AddSample(streams_[current_stream_id], sample);
+
+    // Switch to next stream if the current stream is ready for fragmentation.
+    if (status.Matches(Status(error::FRAGMENT_FINALIZED, ""))) {
+      current_stream_id = (current_stream_id + 1) % streams_.size();
+      status.Clear();
+    }
   }
-  return status.Matches(Status(error::EOF, "")) ? Status::OK : status;
+  return status.Matches(Status(error::END_OF_STREAM, "")) ? Status::OK : status;
 }
 
 }  // namespace media

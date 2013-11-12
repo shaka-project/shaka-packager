@@ -7,6 +7,8 @@
 #ifndef PACKAGER_FILE_FILE_H_
 #define PACKAGER_FILE_FILE_H_
 
+#include <string>
+
 #include "base/basictypes.h"
 
 namespace media {
@@ -55,6 +57,9 @@ class File {
   // Return whether we're currently at eof.
   virtual bool Eof() = 0;
 
+  // Return the file name.
+  const std::string& file_name() const { return file_name_; }
+
   // ************************************************************
   // * Static Methods: File-on-the-filesystem status
   // ************************************************************
@@ -64,7 +69,7 @@ class File {
   static int64 GetFileSize(const char* fname);
 
  protected:
-  File() {}
+  explicit File(const std::string& file_name) : file_name_(file_name) {}
   // Do *not* call the destructor directly (with the "delete" keyword)
   // nor use scoped_ptr; instead use Close().
   virtual ~File() {}
@@ -77,6 +82,7 @@ class File {
   // LocalFile, MemFile based on prefix.
   static File* Create(const char* fname, const char* mode);
 
+  std::string file_name_;
   DISALLOW_COPY_AND_ASSIGN(File);
 };
 

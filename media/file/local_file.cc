@@ -10,11 +10,11 @@
 namespace media {
 
 LocalFile::LocalFile(const char* name, const char* mode)
-    : File(), file_name_(name), file_mode_(mode), internal_file_(NULL) {}
+    : File(name), file_mode_(mode), internal_file_(NULL) {}
 
 bool LocalFile::Open() {
   internal_file_ =
-      file_util::OpenFile(base::FilePath(file_name_), file_mode_.c_str());
+      file_util::OpenFile(base::FilePath(file_name()), file_mode_.c_str());
   return (internal_file_ != NULL);
 }
 
@@ -50,7 +50,7 @@ int64 LocalFile::Size() {
   }
 
   int64 file_size;
-  if (!file_util::GetFileSize(base::FilePath(file_name_), &file_size)) {
+  if (!file_util::GetFileSize(base::FilePath(file_name()), &file_size)) {
     LOG(ERROR) << "Cannot get file size.";
     return -1;
   }
