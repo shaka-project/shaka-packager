@@ -37,8 +37,7 @@ MP4MediaParser::MP4MediaParser()
       audio_track_id_(0),
       video_track_id_(0),
       is_audio_track_encrypted_(false),
-      is_video_track_encrypted_(false) {
-}
+      is_video_track_encrypted_(false) {}
 
 MP4MediaParser::~MP4MediaParser() {}
 
@@ -102,10 +101,12 @@ bool MP4MediaParser::ParseBox(bool* err) {
   const uint8* buf;
   int size;
   queue_.Peek(&buf, &size);
-  if (!size) return false;
+  if (!size)
+    return false;
 
   scoped_ptr<BoxReader> reader(BoxReader::ReadTopLevelBox(buf, size, err));
-  if (reader.get() == NULL) return false;
+  if (reader.get() == NULL)
+    return false;
 
   // Set up mdat offset for ReadMDATsUntil().
   mdat_tail_ = queue_.head() + reader->size();
@@ -130,7 +131,6 @@ bool MP4MediaParser::ParseBox(bool* err) {
   return !(*err);
 }
 
-
 bool MP4MediaParser::ParseMoov(BoxReader* reader) {
   moov_.reset(new Movie);
   RCHECK(moov_->Parse(reader));
@@ -152,12 +152,13 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
     } else if (moov_->extends.header.fragment_duration > 0) {
       DCHECK(moov_->header.timescale != 0);
       duration = Rescale(moov_->extends.header.fragment_duration,
-                         moov_->header.timescale, timescale);
+                         moov_->header.timescale,
+                         timescale);
     } else if (moov_->header.duration > 0 &&
                moov_->header.duration != kuint64max) {
       DCHECK(moov_->header.timescale != 0);
-      duration = Rescale(moov_->header.duration, moov_->header.timescale,
-                         timescale);
+      duration =
+          Rescale(moov_->header.duration, moov_->header.timescale, timescale);
     }
 
     // TODO(strobe): Only the first audio and video track present in a file are
@@ -202,7 +203,6 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       if (desc_idx >= samp_descr.audio_entries.size())
         desc_idx = 0;
       const AudioSampleEntry& entry = samp_descr.audio_entries[desc_idx];
-      const AAC& aac = entry.esds.aac;
 
       if (!(entry.format == FOURCC_MP4A || entry.format == FOURCC_EAC3 ||
             (entry.format == FOURCC_ENCA &&
@@ -212,7 +212,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         return false;
       }
 
-      ObjectType audio_type = static_cast<ObjectType>(entry.esds.object_type);
+      ObjectType audio_type = entry.esds.es_descriptor.object_type();
       DVLOG(1) << "audio_type " << std::hex << audio_type;
       if (audio_type == kForbidden && entry.format == FOURCC_EAC3) {
         audio_type = kEAC3;
@@ -225,12 +225,13 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       std::vector<uint8> extra_data;
       // Check if it is MPEG4 AAC defined in ISO 14496 Part 3 or
       // supported MPEG2 AAC variants.
-      if (ESDescriptor::IsAAC(audio_type)) {
+      if (entry.esds.es_descriptor.IsAAC()) {
         codec = kCodecAAC;
+        const AAC& aac = entry.esds.aac;
         num_channels = aac.num_channels();
         sampling_frequency = aac.frequency();
         audio_object_type = aac.audio_object_type();
-        extra_data = aac.codec_specific_data();
+        extra_data = entry.esds.es_descriptor.decoder_specific_info();
       } else if (audio_type == kEAC3) {
         codec = kCodecEAC3;
         num_channels = entry.channelcount;
@@ -243,20 +244,19 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
 
       is_audio_track_encrypted_ = entry.sinf.info.track_encryption.is_encrypted;
       DVLOG(1) << "is_audio_track_encrypted_: " << is_audio_track_encrypted_;
-      streams.push_back(
-          new AudioStreamInfo(
-              track->header.track_id,
-              timescale,
-              duration,
-              codec,
-              AudioStreamInfo::GetCodecString(codec, audio_object_type),
-              track->media.header.language,
-              entry.samplesize,
-              num_channels,
-              sampling_frequency,
-              extra_data.size() ? &extra_data[0] : NULL,
-              extra_data.size(),
-              is_audio_track_encrypted_));
+      streams.push_back(new AudioStreamInfo(
+          track->header.track_id,
+          timescale,
+          duration,
+          codec,
+          AudioStreamInfo::GetCodecString(codec, audio_object_type),
+          track->media.header.language,
+          entry.samplesize,
+          num_channels,
+          sampling_frequency,
+          extra_data.size() ? &extra_data[0] : NULL,
+          extra_data.size(),
+          is_audio_track_encrypted_));
       has_audio_ = true;
       audio_track_id_ = track->header.track_id;
     }
@@ -280,25 +280,25 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       }
 
       const std::string codec_string =
-          VideoStreamInfo::GetCodecString(
-              kCodecH264, entry.avcc.profile_indication,
-              entry.avcc.profile_compatibility, entry.avcc.avc_level);
+          VideoStreamInfo::GetCodecString(kCodecH264,
+                                          entry.avcc.profile_indication,
+                                          entry.avcc.profile_compatibility,
+                                          entry.avcc.avc_level);
 
       is_video_track_encrypted_ = entry.sinf.info.track_encryption.is_encrypted;
       DVLOG(1) << "is_video_track_encrypted_: " << is_video_track_encrypted_;
-      streams.push_back(
-          new VideoStreamInfo(
-              track->header.track_id,
-              timescale,
-              duration,
-              kCodecH264,
-              codec_string,
-              track->media.header.language,
-              entry.width,
-              entry.height,
-              &entry.avcc.data[0],
-              entry.avcc.data.size(),
-              is_video_track_encrypted_));
+      streams.push_back(new VideoStreamInfo(track->header.track_id,
+                                            timescale,
+                                            duration,
+                                            kCodecH264,
+                                            codec_string,
+                                            track->media.header.language,
+                                            entry.width,
+                                            entry.height,
+                                            entry.avcc.length_size,
+                                            &entry.avcc.data[0],
+                                            entry.avcc.data.size(),
+                                            is_video_track_encrypted_));
       has_video_ = true;
       video_track_id_ = track->header.track_id;
     }
@@ -338,7 +338,8 @@ void MP4MediaParser::EmitNeedKeyIfNecessary(
   scoped_ptr<uint8[]> init_data(new uint8[total_size]);
   size_t pos = 0;
   for (size_t i = 0; i < headers.size(); i++) {
-    memcpy(&init_data.get()[pos], &headers[i].raw_box[0],
+    memcpy(&init_data.get()[pos],
+           &headers[i].raw_box[0],
            headers[i].raw_box.size());
     pos += headers[i].raw_box.size();
   }
@@ -366,7 +367,8 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
   const uint8* buf;
   int buf_size;
   queue_.Peek(&buf, &buf_size);
-  if (!buf_size) return false;
+  if (!buf_size)
+    return false;
 
   bool audio = has_audio_ && audio_track_id_ == runs_->track_id();
   bool video = has_video_ && video_track_id_ == runs_->track_id();
@@ -384,13 +386,15 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
   // portion of the total system memory.
   if (runs_->AuxInfoNeedsToBeCached()) {
     queue_.PeekAt(runs_->aux_info_offset() + moof_head_, &buf, &buf_size);
-    if (buf_size < runs_->aux_info_size()) return false;
+    if (buf_size < runs_->aux_info_size())
+      return false;
     *err = !runs_->CacheAuxInfo(buf, buf_size);
     return !*err;
   }
 
   queue_.PeekAt(runs_->sample_offset() + moof_head_, &buf, &buf_size);
-  if (buf_size < runs_->sample_size()) return false;
+  if (buf_size < runs_->sample_size())
+    return false;
 
   scoped_ptr<DecryptConfig> decrypt_config;
   std::vector<SubsampleEntry> subsamples;
@@ -405,12 +409,11 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
 
   if (decrypt_config) {
     if (!subsamples.empty()) {
-    // Create a new config with the updated subsamples.
-    decrypt_config.reset(new DecryptConfig(
-        decrypt_config->key_id(),
-        decrypt_config->iv(),
-        decrypt_config->data_offset(),
-        subsamples));
+      // Create a new config with the updated subsamples.
+      decrypt_config.reset(new DecryptConfig(decrypt_config->key_id(),
+                                             decrypt_config->iv(),
+                                             decrypt_config->data_offset(),
+                                             subsamples));
     }
     // else, use the existing config.
   }

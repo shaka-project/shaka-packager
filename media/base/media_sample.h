@@ -20,8 +20,7 @@ class DecryptConfig;
 
 // Holds media sample. Also includes decoder specific functionality for
 // decryption.
-class MediaSample
-    : public base::RefCountedThreadSafe<MediaSample> {
+class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
  public:
   // Create a MediaSample whose |data_| is copied from |data|.
   // |data| must not be NULL and |size| >= 0.
@@ -82,12 +81,12 @@ class MediaSample
 
   const uint8* data() const {
     DCHECK(!end_of_stream());
-    return data_.data();
+    return &data_[0];
   }
 
   uint8* writable_data() {
     DCHECK(!end_of_stream());
-    return data_.data();
+    return &data_[0];
   }
 
   int data_size() const {
@@ -97,7 +96,7 @@ class MediaSample
 
   const uint8* side_data() const {
     DCHECK(!end_of_stream());
-    return side_data_.data();
+    return &side_data_[0];
   }
 
   int side_data_size() const {
@@ -116,9 +115,7 @@ class MediaSample
   }
 
   // If there's no data in this buffer, it represents end of stream.
-  bool end_of_stream() const {
-    return data_.size() == 0;
-  }
+  bool end_of_stream() const { return data_.size() == 0; }
 
   // Returns a human-readable string describing |*this|.
   std::string ToString() const;

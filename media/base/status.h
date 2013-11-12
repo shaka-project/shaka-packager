@@ -37,11 +37,17 @@ enum Code {
   // Cannot open file.
   FILE_FAILURE,
 
-  // End of file.
-  EOF,
+  // End of stream.
+  END_OF_STREAM,
 
   // Unable to parse the media file.
   PARSER_FAILURE,
+
+  // Fail to mux the media file.
+  MUXER_FAILURE,
+
+  // This track fragment is finalized.
+  FRAGMENT_FINALIZED,
 
   // TODO(kqyang): define packager specific error codes.
 };
@@ -56,18 +62,16 @@ class Status {
   // Create a status with the specified code, and error message. If "code == 0",
   // error_message is ignored and a Status object identical to Status::OK is
   // constructed.
-  Status(error::Code error_code, const std::string& error_message) :
-    error_code_(error_code) {
+  Status(error::Code error_code, const std::string& error_message)
+      : error_code_(error_code) {
     if (!ok())
       error_message_ = error_message;
   }
 
-  //Status(const Status&);
-  //Status& operator=(const Status& x);
   ~Status() {}
 
   // Some pre-defined Status objects.
-  static const Status& OK;             // Identical to 0-arg constructor.
+  static const Status& OK;  // Identical to 0-arg constructor.
   static const Status& UNKNOWN;
 
   // Store the specified error in this Status object.
@@ -102,28 +106,18 @@ class Status {
   }
 
   // Accessor.
-  bool ok() const {
-    return error_code_ == error::OK;
-  }
-  error::Code error_code() const {
-    return error_code_;
-  }
-  const std::string& error_message() const {
-    return error_message_;
-  }
+  bool ok() const { return error_code_ == error::OK; }
+  error::Code error_code() const { return error_code_; }
+  const std::string& error_message() const { return error_message_; }
 
   bool operator==(const Status& x) const {
     return error_code_ == x.error_code() && error_message_ == x.error_message();
   }
-  bool operator!=(const Status& x) const {
-    return !(*this == x);
-  }
+  bool operator!=(const Status& x) const { return !(*this == x); }
 
   // Returns true iff this has the same error_code as "x".  I.e., the two
   // Status objects are identical except possibly for the error message.
-  bool Matches(const Status& x) const {
-    return error_code_ == x.error_code();
-  }
+  bool Matches(const Status& x) const { return error_code_ == x.error_code(); }
 
   // Return a combination of the error code name and message.
   std::string ToString() const;

@@ -20,6 +20,7 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
                                  const std::string& language,
                                  uint16 width,
                                  uint16 height,
+                                 uint8 nalu_length_size,
                                  const uint8* extra_data,
                                  size_t extra_data_size,
                                  bool is_encrypted)
@@ -34,14 +35,16 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
                  is_encrypted),
       codec_(codec),
       width_(width),
-      height_(height) {}
+      height_(height),
+      nalu_length_size_(nalu_length_size) {}
 
 VideoStreamInfo::~VideoStreamInfo() {}
 
 bool VideoStreamInfo::IsValidConfig() const {
   return codec_ != kUnknownVideoCodec &&
          width_ > 0 && width_ <= limits::kMaxDimension &&
-         height_ > 0 && height_ <= limits::kMaxDimension;
+         height_ > 0 && height_ <= limits::kMaxDimension &&
+         (nalu_length_size_ <= 2 || nalu_length_size_ == 4);
 }
 
 std::string VideoStreamInfo::ToString() const {
@@ -49,6 +52,7 @@ std::string VideoStreamInfo::ToString() const {
   s << "codec: " << codec_
     << " width: " << width_
     << " height: " << height_
+    << " nalu_length_size_: " << static_cast<int>(nalu_length_size_)
     << " " << StreamInfo::ToString();
   return s.str();
 }
@@ -64,8 +68,8 @@ std::string VideoStreamInfo::GetCodecString(VideoCodec codec,
       return "vp9";
     case kCodecH264: {
       const uint8 bytes[] = {profile, compatible_profiles, level};
-      return "avc1."
-          + StringToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));
+      return "avc1." +
+             StringToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));
     }
     default:
       NOTIMPLEMENTED() << "Codec: " << codec;

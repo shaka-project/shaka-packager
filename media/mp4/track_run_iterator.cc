@@ -12,10 +12,6 @@
 #include "media/mp4/rcheck.h"
 #include "media/mp4/sync_sample_iterator.h"
 
-namespace {
-static const uint32 kSampleIsDifferenceSampleFlagMask = 0x10000;
-}
-
 namespace media {
 namespace mp4 {
 
@@ -54,12 +50,11 @@ TrackRunInfo::TrackRunInfo()
       is_audio(false),
       aux_info_start_offset(-1),
       aux_info_default_size(0),
-      aux_info_total_size(0) {
-}
+      aux_info_total_size(0) {}
 TrackRunInfo::~TrackRunInfo() {}
 
 TrackRunIterator::TrackRunIterator(const Movie* moov)
-    : moov_(moov), sample_offset_(0) {
+    : moov_(moov), sample_dts_(0), sample_offset_(0) {
   CHECK(moov);
 }
 
@@ -68,7 +63,6 @@ TrackRunIterator::~TrackRunIterator() {}
 static void PopulateSampleInfo(const TrackExtends& trex,
                                const TrackFragmentHeader& tfhd,
                                const TrackFragmentRun& trun,
-                               const int64 edit_list_offset,
                                const uint32 i,
                                SampleInfo* sample_info) {
   if (i < trun.sample_sizes.size()) {
@@ -92,17 +86,16 @@ static void PopulateSampleInfo(const TrackExtends& trex,
   } else {
     sample_info->cts_offset = 0;
   }
-  sample_info->cts_offset += edit_list_offset;
 
   uint32 flags;
   if (i < trun.sample_flags.size()) {
     flags = trun.sample_flags[i];
-  } else if (tfhd.has_default_sample_flags) {
+  } else if (tfhd.flags & kDefaultSampleFlagsPresentMask) {
     flags = tfhd.default_sample_flags;
   } else {
     flags = trex.default_sample_flags;
   }
-  sample_info->is_keyframe = !(flags & kSampleIsDifferenceSampleFlagMask);
+  sample_info->is_keyframe = !(flags & kNonKeySampleMask);
 }
 
 // In well-structured encrypted media, each track run will be immediately
@@ -127,7 +120,8 @@ class CompareMinTrackRunDataOffset {
     int64 b_lesser = std::min(b_aux, b.sample_start_offset);
     int64 b_greater = std::max(b_aux, b.sample_start_offset);
 
-    if (a_lesser == b_lesser) return a_greater < b_greater;
+    if (a_lesser == b_lesser)
+      return a_greater < b_greater;
     return a_lesser < b_lesser;
   }
 };
@@ -136,7 +130,7 @@ bool TrackRunIterator::Init() {
   runs_.clear();
 
   for (std::vector<Track>::const_iterator trak = moov_->tracks.begin();
-      trak != moov_->tracks.end(); ++trak) {
+       trak != moov_->tracks.end(); ++trak) {
     const SampleDescription& stsd =
         trak->media.information.sample_table.description;
     if (stsd.type != kAudio && stsd.type != kVideo) {
@@ -144,21 +138,17 @@ bool TrackRunIterator::Init() {
       continue;
     }
 
-    // Process edit list to remove CTS offset introduced in the presence of
-    // B-frames (those that contain a single edit with a nonnegative media
-    // time). Other uses of edit lists are not supported, as they are
-    // both uncommon and better served by higher-level protocols.
-    int64 edit_list_offset = 0;
+    // Edit list is ignored.
+    // We may consider supporting the single edit with a nonnegative media time
+    // if it is required. Just need to pass the media_time to Muxer and
+    // generate the edit list.
     const std::vector<EditListEntry>& edits = trak->edit.list.edits;
     if (!edits.empty()) {
       if (edits.size() > 1)
-        DVLOG(1) << "Multi-entry edit box detected; some components ignored.";
+        DVLOG(1) << "Multi-entry edit box detected.";
 
-      if (edits[0].media_time < 0) {
-        DVLOG(1) << "Empty edit list entry ignored.";
-      } else {
-        edit_list_offset = -edits[0].media_time;
-      }
+      LOG(INFO) << "Edit list with media time " << edits[0].media_time
+                << " ignored.";
     }
 
     DecodingTimeIterator decoding_time(
@@ -176,7 +166,7 @@ bool TrackRunIterator::Init() {
     const SampleSize& sample_size =
         trak->media.information.sample_table.sample_size;
     const std::vector<uint64>& chunk_offset_vector =
-        trak->media.information.sample_table.chunk_offset.offsets;
+        trak->media.information.sample_table.chunk_large_offset.offsets;
 
     int64 run_start_dts = 0;
     int64 run_data_offset = 0;
@@ -188,7 +178,7 @@ bool TrackRunIterator::Init() {
     DCHECK(num_samples == decoding_time.NumSamples() &&
            num_samples == composition_offset.NumSamples() &&
            (num_chunks == 0 ||
-               num_samples == chunk_info.NumSamples(1, num_chunks)) &&
+            num_samples == chunk_info.NumSamples(1, num_chunks)) &&
            num_chunks >= chunk_info.LastFirstChunk());
 
     if (num_samples > 0) {
@@ -233,13 +223,12 @@ bool TrackRunIterator::Init() {
       tri.samples.resize(samples_per_chunk);
       for (uint32 k = 0; k < samples_per_chunk; ++k) {
         SampleInfo& sample = tri.samples[k];
-        sample.size =
-            sample_size.sample_size != 0 ?
-                sample_size.sample_size : sample_size.sizes[sample_index];
+        sample.size = sample_size.sample_size != 0
+                          ? sample_size.sample_size
+                          : sample_size.sizes[sample_index];
         sample.duration = decoding_time.sample_delta();
         sample.cts_offset =
             has_composition_offset ? composition_offset.sample_offset() : 0;
-        sample.cts_offset += edit_list_offset;
         sample.is_keyframe = sync_sample.IsSyncSample();
 
         run_start_dts += sample.duration;
@@ -297,26 +286,10 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
       continue;
     }
     size_t desc_idx = traf.header.sample_description_index;
-    if (!desc_idx) desc_idx = trex->default_sample_description_index;
+    if (!desc_idx)
+      desc_idx = trex->default_sample_description_index;
     RCHECK(desc_idx > 0);  // Descriptions are one-indexed in the file
     desc_idx -= 1;
-
-    // Process edit list to remove CTS offset introduced in the presence of
-    // B-frames (those that contain a single edit with a nonnegative media
-    // time). Other uses of edit lists are not supported, as they are
-    // both uncommon and better served by higher-level protocols.
-    int64 edit_list_offset = 0;
-    const std::vector<EditListEntry>& edits = trak->edit.list.edits;
-    if (!edits.empty()) {
-      if (edits.size() > 1)
-        DVLOG(1) << "Multi-entry edit box detected; some components ignored.";
-
-      if (edits[0].media_time < 0) {
-        DVLOG(1) << "Empty edit list entry ignored.";
-      } else {
-        edit_list_offset = -edits[0].media_time;
-      }
-    }
 
     int64 run_start_dts = traf.decode_time.decode_time;
     int sample_count_sum = 0;
@@ -356,7 +329,8 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
         if (tri.aux_info_default_size == 0) {
           const std::vector<uint8>& sizes =
               traf.auxiliary_size.sample_info_sizes;
-          tri.aux_info_sizes.insert(tri.aux_info_sizes.begin(),
+          tri.aux_info_sizes.insert(
+              tri.aux_info_sizes.begin(),
               sizes.begin() + sample_count_sum,
               sizes.begin() + sample_count_sum + trun.sample_count);
         }
@@ -380,8 +354,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
 
       tri.samples.resize(trun.sample_count);
       for (size_t k = 0; k < trun.sample_count; k++) {
-        PopulateSampleInfo(*trex, traf.header, trun, edit_list_offset,
-                           k, &tri.samples[k]);
+        PopulateSampleInfo(*trex, traf.header, trun, k, &tri.samples[k]);
         run_start_dts += tri.samples[k].duration;
       }
       runs_.push_back(tri);
@@ -401,7 +374,8 @@ void TrackRunIterator::AdvanceRun() {
 }
 
 void TrackRunIterator::ResetRun() {
-  if (!IsRunValid()) return;
+  if (!IsRunValid())
+    return;
   sample_dts_ = run_itr_->start_dts;
   sample_offset_ = run_itr_->sample_start_offset;
   sample_itr_ = run_itr_->samples.begin();
@@ -441,9 +415,7 @@ bool TrackRunIterator::CacheAuxInfo(const uint8* buf, int buf_size) {
   return true;
 }
 
-bool TrackRunIterator::IsRunValid() const {
-  return run_itr_ != runs_.end();
-}
+bool TrackRunIterator::IsRunValid() const { return run_itr_ != runs_.end(); }
 
 bool TrackRunIterator::IsSampleValid() const {
   return IsRunValid() && (sample_itr_ != run_itr_->samples.end());
@@ -471,7 +443,8 @@ int64 TrackRunIterator::GetMaxClearOffset() {
         offset = std::min(offset, next_run->aux_info_start_offset);
     }
   }
-  if (offset == kint64max) return 0;
+  if (offset == kint64max)
+    return 0;
   return offset;
 }
 
@@ -552,9 +525,8 @@ scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
   const FrameCENCInfo& cenc_info = cenc_info_[sample_idx];
   DCHECK(is_encrypted() && !AuxInfoNeedsToBeCached());
 
-  if (!cenc_info.subsamples.empty() &&
-      (cenc_info.GetTotalSizeOfSubsamples() !=
-       static_cast<size_t>(sample_size()))) {
+  if (!cenc_info.subsamples.empty() && (cenc_info.GetTotalSizeOfSubsamples() !=
+                                        static_cast<size_t>(sample_size()))) {
     LOG(ERROR) << "Incorrect CENC subsample size.";
     return scoped_ptr<DecryptConfig>();
   }
@@ -562,8 +534,7 @@ scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
   const std::vector<uint8>& kid = track_encryption().default_kid;
   return scoped_ptr<DecryptConfig>(new DecryptConfig(
       std::string(reinterpret_cast<const char*>(&kid[0]), kid.size()),
-      std::string(reinterpret_cast<const char*>(cenc_info.iv),
-                  arraysize(cenc_info.iv)),
+      std::string(cenc_info.iv.begin(), cenc_info.iv.end()),
       0,  // No offset to start of media data in MP4 using CENC.
       cenc_info.subsamples));
 }

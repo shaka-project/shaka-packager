@@ -60,10 +60,9 @@ Status Demuxer::Initialize() {
       return Status(error::UNIMPLEMENTED, "Container not supported.");
   }
 
-  parser_->Init(
-      base::Bind(&Demuxer::ParserInitEvent, base::Unretained(this)),
-      base::Bind(&Demuxer::NewSampleEvent, base::Unretained(this)),
-      base::Bind(&Demuxer::KeyNeededEvent, base::Unretained(this)));
+  parser_->Init(base::Bind(&Demuxer::ParserInitEvent, base::Unretained(this)),
+                base::Bind(&Demuxer::NewSampleEvent, base::Unretained(this)),
+                base::Bind(&Demuxer::KeyNeededEvent, base::Unretained(this)));
 
   if (!parser_->Parse(buffer_.get(), bytes_read))
     return Status(error::PARSER_FAILURE,
@@ -72,7 +71,8 @@ Status Demuxer::Initialize() {
   // TODO(kqyang): Does not look clean. Consider refactoring later.
   Status status;
   while (!init_event_received_) {
-    if (!(status = Parse()).ok()) break;
+    if (!(status = Parse()).ok())
+      break;
   }
   return status;
 }
@@ -87,8 +87,8 @@ void Demuxer::ParserInitEvent(
   }
 }
 
-bool Demuxer::NewSampleEvent(
-    uint32 track_id, const scoped_refptr<MediaSample>& sample) {
+bool Demuxer::NewSampleEvent(uint32 track_id,
+                             const scoped_refptr<MediaSample>& sample) {
   std::vector<MediaStream*>::iterator it = streams_.begin();
   for (; it != streams_.end(); ++it) {
     if (track_id == (*it)->info()->track_id()) {
@@ -98,9 +98,9 @@ bool Demuxer::NewSampleEvent(
   return false;
 }
 
-void Demuxer::KeyNeededEvent(
-    MediaContainerName container, scoped_ptr<uint8[]> init_data,
-    int init_data_size) {
+void Demuxer::KeyNeededEvent(MediaContainerName container,
+                             scoped_ptr<uint8[]> init_data,
+                             int init_data_size) {
   NOTIMPLEMENTED();
 }
 
@@ -116,8 +116,9 @@ Status Demuxer::Run() {
       return status;
   }
 
-  while ((status = Parse()).ok()) continue;
-  return status.Matches(Status(error::EOF, "")) ? Status::OK : status;
+  while ((status = Parse()).ok())
+    continue;
+  return status.Matches(Status(error::END_OF_STREAM, "")) ? Status::OK : status;
 }
 
 Status Demuxer::Parse() {
@@ -127,9 +128,9 @@ Status Demuxer::Parse() {
 
   int64 bytes_read = media_file_->Read(buffer_.get(), kBufSize);
   if (bytes_read <= 0) {
-    return media_file_->Eof() ?
-        Status(error::EOF, "End of file") :
-        Status(error::FILE_FAILURE, "Cannot read file " + file_name_);
+    return media_file_->Eof()
+               ? Status(error::END_OF_STREAM, "End of stream.")
+               : Status(error::FILE_FAILURE, "Cannot read file " + file_name_);
   }
 
   return parser_->Parse(buffer_.get(), bytes_read)

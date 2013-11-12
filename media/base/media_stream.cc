@@ -59,7 +59,6 @@ Status MediaStream::Start(MediaStreamOperation operation) {
   DCHECK(demuxer_ != NULL);
   DCHECK(operation == kPush || operation == kPull);
 
-
   switch (state_) {
     case kIdle:
       // Disconnect the stream if it is not connected to a muxer.
@@ -79,8 +78,8 @@ Status MediaStream::Start(MediaStreamOperation operation) {
       } else {
         // We need to disconnect all its peer streams which are not connected
         // to a muxer.
-        for (int i = 0; i < demuxer_->num_streams(); ++i) {
-          Status status = demuxer_->streams(i)->Start(operation);
+        for (int i = 0; i < demuxer_->streams().size(); ++i) {
+          Status status = demuxer_->streams()[i]->Start(operation);
           if (!status.ok())
             return status;
         }
@@ -95,14 +94,11 @@ Status MediaStream::Start(MediaStreamOperation operation) {
   }
 }
 
-scoped_refptr<StreamInfo> MediaStream::info() {
-  return info_;
-}
+const scoped_refptr<StreamInfo> MediaStream::info() const { return info_; }
 
 std::string MediaStream::ToString() const {
   std::ostringstream s;
-  s << "state: " << state_
-    << " samples in the queue: " << samples_.size()
+  s << "state: " << state_ << " samples in the queue: " << samples_.size()
     << " " << info_->ToString();
   return s.str();
 }

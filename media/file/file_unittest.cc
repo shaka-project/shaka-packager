@@ -4,8 +4,6 @@
 
 #include "media/file/file.h"
 
-#include <vector>
-
 #include "base/file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

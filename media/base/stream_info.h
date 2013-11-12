@@ -17,7 +17,7 @@ enum StreamType {
   kStreamVideo,
 };
 
-class StreamInfo : public base::RefCountedThreadSafe<StreamInfo>  {
+class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
  public:
   StreamInfo(StreamType stream_type,
              int track_id,
@@ -46,12 +46,7 @@ class StreamInfo : public base::RefCountedThreadSafe<StreamInfo>  {
 
   bool is_encrypted() const { return is_encrypted_; }
 
-  const uint8* extra_data() const {
-    return extra_data_.empty() ? NULL : &extra_data_[0];
-  }
-  size_t extra_data_size() const {
-    return extra_data_.size();
-  }
+  const std::vector<uint8>& extra_data() const { return extra_data_; }
 
   void set_duration(int duration) { duration_ = duration; }
 

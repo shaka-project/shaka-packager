@@ -17,34 +17,29 @@ static const int kSumAscending1 = 45;
 static const int kAudioScale = 48000;
 static const int kVideoScale = 25;
 
-static const uint32 kSampleIsDifferenceSampleFlagMask = 0x10000;
-
 static const uint8 kAuxInfo[] = {
-  0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x31,
-  0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x32,
-  0x00, 0x02,
-  0x00, 0x01, 0x00, 0x00, 0x00, 0x02,
-  0x00, 0x03, 0x00, 0x00, 0x00, 0x04
-};
+    // Sample 1: IV (no subsumples).
+    0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x31,
+    // Sample 2: IV.
+    0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x32,
+    // Sample 2: Subsample count.
+    0x00, 0x02,
+    // Sample 2: Subsample 1.
+    0x00, 0x01, 0x00, 0x00, 0x00, 0x02,
+    // Sample 2: Subsample 2.
+    0x00, 0x03, 0x00, 0x00, 0x00, 0x04};
 
-static const char kIv1[] = {
-  0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x31,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-};
+static const char kIv1[] = {0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x31, };
 
-static const uint8 kKeyId[] = {
-  0x41, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x54,
-  0x65, 0x73, 0x74, 0x4b, 0x65, 0x79, 0x49, 0x44
-};
+static const uint8 kKeyId[] = {0x41, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x54,
+                               0x65, 0x73, 0x74, 0x4b, 0x65, 0x79, 0x49, 0x44};
 
 namespace media {
 namespace mp4 {
 
 class TrackRunIteratorTest : public testing::Test {
  public:
-  TrackRunIteratorTest() {
-    CreateMovie();
-  }
+  TrackRunIteratorTest() { CreateMovie(); }
 
  protected:
   Movie moov_;
@@ -87,7 +82,7 @@ class TrackRunIteratorTest : public testing::Test {
     moof.tracks.resize(2);
     moof.tracks[0].decode_time.decode_time = 0;
     moof.tracks[0].header.track_id = 1;
-    moof.tracks[0].header.has_default_sample_flags = true;
+    moof.tracks[0].header.flags = kDefaultSampleFlagsPresentMask;
     moof.tracks[0].header.default_sample_duration = 1024;
     moof.tracks[0].header.default_sample_size = 4;
     moof.tracks[0].runs.resize(2);
@@ -99,7 +94,7 @@ class TrackRunIteratorTest : public testing::Test {
     moof.tracks[0].runs[1].data_offset = 10000;
 
     moof.tracks[1].header.track_id = 2;
-    moof.tracks[1].header.has_default_sample_flags = false;
+    moof.tracks[1].header.flags = 0;
     moof.tracks[1].decode_time.decode_time = 10;
     moof.tracks[1].runs.resize(1);
     moof.tracks[1].runs[0].sample_count = 10;
@@ -108,8 +103,7 @@ class TrackRunIteratorTest : public testing::Test {
     SetAscending(&moof.tracks[1].runs[0].sample_durations);
     moof.tracks[1].runs[0].sample_flags.resize(10);
     for (size_t i = 1; i < moof.tracks[1].runs[0].sample_flags.size(); i++) {
-      moof.tracks[1].runs[0].sample_flags[i] =
-          kSampleIsDifferenceSampleFlagMask;
+      moof.tracks[1].runs[0].sample_flags[i] = kNonKeySampleMask;
     }
 
     return moof;
@@ -121,17 +115,16 @@ class TrackRunIteratorTest : public testing::Test {
         &track->media.information.sample_table.description;
     ProtectionSchemeInfo* sinf;
     if (!stsd->video_entries.empty()) {
-       sinf = &stsd->video_entries[0].sinf;
+      sinf = &stsd->video_entries[0].sinf;
     } else {
-       sinf = &stsd->audio_entries[0].sinf;
+      sinf = &stsd->audio_entries[0].sinf;
     }
 
     sinf->type.type = FOURCC_CENC;
     sinf->info.track_encryption.is_encrypted = true;
     sinf->info.track_encryption.default_iv_size = 8;
-    sinf->info.track_encryption.default_kid.insert(
-        sinf->info.track_encryption.default_kid.begin(),
-        kKeyId, kKeyId + arraysize(kKeyId));
+    sinf->info.track_encryption.default_kid.assign(kKeyId,
+                                                   kKeyId + arraysize(kKeyId));
   }
 
   // Add aux info covering the first track run to a TrackFragment, and update
@@ -148,7 +141,7 @@ class TrackRunIteratorTest : public testing::Test {
   void SetAscending(std::vector<uint32>* vec) {
     vec->resize(10);
     for (size_t i = 0; i < vec->size(); i++)
-      (*vec)[i] = i+1;
+      (*vec)[i] = i + 1;
   }
 };
 
@@ -177,7 +170,8 @@ TEST_F(TrackRunIteratorTest, BasicOperationTest) {
   EXPECT_TRUE(iter_->is_keyframe());
 
   // Advance to the last sample in the current run, and test its properties
-  for (int i = 0; i < 9; i++) iter_->AdvanceSample();
+  for (int i = 0; i < 9; i++)
+    iter_->AdvanceSample();
   EXPECT_EQ(iter_->track_id(), 1u);
   EXPECT_EQ(iter_->sample_offset(), 100 + kSumAscending1);
   EXPECT_EQ(iter_->sample_size(), 10);
@@ -192,7 +186,8 @@ TEST_F(TrackRunIteratorTest, BasicOperationTest) {
   // Test last sample of next run
   iter_->AdvanceRun();
   EXPECT_TRUE(iter_->is_keyframe());
-  for (int i = 0; i < 9; i++) iter_->AdvanceSample();
+  for (int i = 0; i < 9; i++)
+    iter_->AdvanceSample();
   EXPECT_EQ(iter_->track_id(), 2u);
   EXPECT_EQ(iter_->sample_offset(), 200 + kSumAscending1);
   EXPECT_EQ(iter_->sample_size(), 10);
@@ -207,7 +202,7 @@ TEST_F(TrackRunIteratorTest, BasicOperationTest) {
   EXPECT_EQ(iter_->dts(), 1024 * 10);
   iter_->AdvanceSample();
   EXPECT_EQ(moof.tracks[0].runs[1].data_offset +
-            moof.tracks[0].header.default_sample_size,
+                moof.tracks[0].header.default_sample_size,
             iter_->sample_offset());
   iter_->AdvanceRun();
   EXPECT_FALSE(iter_->IsRunValid());
@@ -216,11 +211,10 @@ TEST_F(TrackRunIteratorTest, BasicOperationTest) {
 TEST_F(TrackRunIteratorTest, TrackExtendsDefaultsTest) {
   moov_.extends.tracks[0].default_sample_duration = 50;
   moov_.extends.tracks[0].default_sample_size = 3;
-  moov_.extends.tracks[0].default_sample_flags =
-    kSampleIsDifferenceSampleFlagMask;
+  moov_.extends.tracks[0].default_sample_flags = kNonKeySampleMask;
   iter_.reset(new TrackRunIterator(&moov_));
   MovieFragment moof = CreateFragment();
-  moof.tracks[0].header.has_default_sample_flags = false;
+  moof.tracks[0].header.flags = 0;
   moof.tracks[0].header.default_sample_size = 0;
   moof.tracks[0].header.default_sample_duration = 0;
   moof.tracks[0].runs[0].sample_sizes.clear();
@@ -239,9 +233,8 @@ TEST_F(TrackRunIteratorTest, FirstSampleFlagTest) {
   // defaults for all subsequent samples
   iter_.reset(new TrackRunIterator(&moov_));
   MovieFragment moof = CreateFragment();
-  moof.tracks[1].header.has_default_sample_flags = true;
-  moof.tracks[1].header.default_sample_flags =
-    kSampleIsDifferenceSampleFlagMask;
+  moof.tracks[1].header.flags = kDefaultSampleFlagsPresentMask;
+  moof.tracks[1].header.default_sample_flags = kNonKeySampleMask;
   moof.tracks[1].runs[0].sample_flags.resize(1);
   ASSERT_TRUE(iter_->Init(moof));
   iter_->AdvanceRun();
@@ -251,7 +244,7 @@ TEST_F(TrackRunIteratorTest, FirstSampleFlagTest) {
 }
 
 TEST_F(TrackRunIteratorTest, ReorderingTest) {
-  // Test frame reordering and edit list support. The frames have the following
+  // Test frame reordering. The frames have the following
   // decode timestamps:
   //
   //   0ms 40ms   120ms     240ms
@@ -261,26 +254,14 @@ TEST_F(TrackRunIteratorTest, ReorderingTest) {
   //
   //   0ms 40ms       160ms  240ms
   //   | 0 | 2  -  -  | 1 - |
-
-  // Create an edit list with one entry, with an initial start time of 80ms
-  // (that is, 2 / kVideoTimescale) and a duration of zero (which is treated as
-  // infinite according to 14496-12:2012). This will cause the first 80ms of the
-  // media timeline - which will be empty, due to CTS biasing - to be discarded.
   iter_.reset(new TrackRunIterator(&moov_));
-  EditListEntry entry;
-  entry.segment_duration = 0;
-  entry.media_time = 2;
-  entry.media_rate_integer = 1;
-  entry.media_rate_fraction = 0;
-  moov_.tracks[1].edit.list.edits.push_back(entry);
 
   // Add CTS offsets. Without bias, the CTS offsets for the first three frames
   // would simply be [0, 3, -2]. Since CTS offsets should be non-negative for
-  // maximum compatibility, these values are biased up to [2, 5, 0], and the
-  // extra 80ms is removed via the edit list.
+  // maximum compatibility, these values are biased up to [2, 5, 0].
   MovieFragment moof = CreateFragment();
   std::vector<int32>& cts_offsets =
-    moof.tracks[1].runs[0].sample_composition_time_offsets;
+      moof.tracks[1].runs[0].sample_composition_time_offsets;
   cts_offsets.resize(10);
   cts_offsets[0] = 2;
   cts_offsets[1] = 5;
@@ -290,15 +271,15 @@ TEST_F(TrackRunIteratorTest, ReorderingTest) {
   ASSERT_TRUE(iter_->Init(moof));
   iter_->AdvanceRun();
   EXPECT_EQ(iter_->dts(), 0);
-  EXPECT_EQ(iter_->cts(), 0);
+  EXPECT_EQ(iter_->cts(), 2);
   EXPECT_EQ(iter_->duration(), 1);
   iter_->AdvanceSample();
   EXPECT_EQ(iter_->dts(), 1);
-  EXPECT_EQ(iter_->cts(), 4);
+  EXPECT_EQ(iter_->cts(), 6);
   EXPECT_EQ(iter_->duration(), 2);
   iter_->AdvanceSample();
   EXPECT_EQ(iter_->dts(), 3);
-  EXPECT_EQ(iter_->cts(), 1);
+  EXPECT_EQ(iter_->cts(), 3);
   EXPECT_EQ(iter_->duration(), 3);
 }
 
@@ -340,8 +321,8 @@ TEST_F(TrackRunIteratorTest, DecryptConfigTest) {
   EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[0].runs[0].data_offset);
   scoped_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
   ASSERT_EQ(arraysize(kKeyId), config->key_id().size());
-  EXPECT_TRUE(!memcmp(kKeyId, config->key_id().data(),
-                      config->key_id().size()));
+  EXPECT_TRUE(
+      !memcmp(kKeyId, config->key_id().data(), config->key_id().size()));
   ASSERT_EQ(arraysize(kIv1), config->iv().size());
   EXPECT_TRUE(!memcmp(kIv1, config->iv().data(), config->iv().size()));
   EXPECT_TRUE(config->subsamples().empty());

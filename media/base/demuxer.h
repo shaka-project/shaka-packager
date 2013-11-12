@@ -43,16 +43,10 @@ class Demuxer {
   // Reads from the source and send it to the parser.
   Status Parse();
 
-  uint32 num_streams() const {
-    return streams_.size();
-  }
-
-  // Demuxer retains the ownership of streams.
-  MediaStream* streams(uint32 index) {
-    if (index >= streams_.size())
-      return NULL;
-    return streams_[index];
-  }
+  // Returns the vector of streams in this Demuxer. The caller cannot add or
+  // remove streams from the returned vector, but the caller could change
+  // the internal state of the streams in the vector through MediaStream APIs.
+  const std::vector<MediaStream*>& streams() { return streams_; }
 
  private:
   // Parser event handlers.
@@ -73,7 +67,6 @@ class Demuxer {
 
   DISALLOW_COPY_AND_ASSIGN(Demuxer);
 };
-
 }
 
 #endif  // MEDIA_BASE_DEMUXER_H_

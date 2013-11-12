@@ -43,13 +43,9 @@ class MediaStream {
   // Pull sample from Demuxer (triggered by Muxer).
   Status PullSample(scoped_refptr<MediaSample>* sample);
 
-  Demuxer* demuxer() {
-    return demuxer_;
-  }
-  Muxer* muxer() {
-    return muxer_;
-  }
-  scoped_refptr<StreamInfo> info();
+  Demuxer* demuxer() { return demuxer_; }
+  Muxer* muxer() { return muxer_; }
+  const scoped_refptr<StreamInfo> info() const;
 
   // Returns a human-readable string describing |*this|.
   std::string ToString() const;

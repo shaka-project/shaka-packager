@@ -15,8 +15,9 @@ base::FilePath GetTestDataFilePath(const std::string& name) {
   CHECK(PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
 
   file_path = file_path.Append(FILE_PATH_LITERAL("media"))
-      .Append(FILE_PATH_LITERAL("test")).Append(FILE_PATH_LITERAL("data"))
-      .AppendASCII(name);
+                  .Append(FILE_PATH_LITERAL("test"))
+                  .Append(FILE_PATH_LITERAL("data"))
+                  .AppendASCII(name);
   return file_path;
 }
 
@@ -25,8 +26,9 @@ std::vector<uint8> ReadTestDataFile(const std::string& name) {
   CHECK(PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
 
   file_path = file_path.Append(FILE_PATH_LITERAL("media"))
-      .Append(FILE_PATH_LITERAL("test")).Append(FILE_PATH_LITERAL("data"))
-      .AppendASCII(name);
+                  .Append(FILE_PATH_LITERAL("test"))
+                  .Append(FILE_PATH_LITERAL("data"))
+                  .AppendASCII(name);
 
   int64 tmp = 0;
   CHECK(file_util::GetFileSize(file_path, &tmp))
@@ -37,8 +39,8 @@ std::vector<uint8> ReadTestDataFile(const std::string& name) {
 
   CHECK_EQ(file_size,
            file_util::ReadFile(
-               file_path, reinterpret_cast<char*>(buffer.data()),
-               file_size)) << "Failed to read '" << name << "'";
+               file_path, reinterpret_cast<char*>(&buffer[0]), file_size))
+      << "Failed to read '" << name << "'";
 
   return buffer;
 }
