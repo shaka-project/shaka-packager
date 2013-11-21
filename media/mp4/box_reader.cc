@@ -19,66 +19,6 @@ namespace mp4 {
 
 Box::~Box() {}
 
-bool BufferReader::Read1(uint8* v) {
-  RCHECK(HasBytes(1));
-  *v = buf_[pos_++];
-  return true;
-}
-
-// Internal implementation of multi-byte reads
-template<typename T> bool BufferReader::Read(T* v) {
-  RCHECK(HasBytes(sizeof(T)));
-
-  T tmp = 0;
-  for (size_t i = 0; i < sizeof(T); i++) {
-    tmp <<= 8;
-    tmp += buf_[pos_++];
-  }
-  *v = tmp;
-  return true;
-}
-
-bool BufferReader::Read2(uint16* v) { return Read(v); }
-bool BufferReader::Read2s(int16* v) { return Read(v); }
-bool BufferReader::Read4(uint32* v) { return Read(v); }
-bool BufferReader::Read4s(int32* v) { return Read(v); }
-bool BufferReader::Read8(uint64* v) { return Read(v); }
-bool BufferReader::Read8s(int64* v) { return Read(v); }
-
-bool BufferReader::ReadFourCC(FourCC* v) {
-  return Read4(reinterpret_cast<uint32*>(v));
-}
-
-bool BufferReader::ReadVec(std::vector<uint8>* vec, int count) {
-  RCHECK(HasBytes(count));
-  vec->clear();
-  vec->insert(vec->end(), buf_ + pos_, buf_ + pos_ + count);
-  pos_ += count;
-  return true;
-}
-
-bool BufferReader::SkipBytes(int bytes) {
-  RCHECK(HasBytes(bytes));
-  pos_ += bytes;
-  return true;
-}
-
-bool BufferReader::Read4Into8(uint64* v) {
-  uint32 tmp;
-  RCHECK(Read4(&tmp));
-  *v = tmp;
-  return true;
-}
-
-bool BufferReader::Read4sInto8s(int64* v) {
-  // Beware of the need for sign extension.
-  int32 tmp;
-  RCHECK(Read4s(&tmp));
-  *v = tmp;
-  return true;
-}
-
-
 BoxReader::BoxReader(const uint8* buf, const int size)
     : BufferReader(buf, size),
       type_(FOURCC_NULL),

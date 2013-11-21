@@ -10,6 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "media/base/buffer_reader.h"
 #include "media/mp4/fourccs.h"
 #include "media/mp4/rcheck.h"
 
@@ -22,47 +23,6 @@ struct Box {
   virtual ~Box();
   virtual bool Parse(BoxReader* reader) = 0;
   virtual FourCC BoxType() const = 0;
-};
-
-class BufferReader {
- public:
-  BufferReader(const uint8* buf, const int size)
-    : buf_(buf), size_(size), pos_(0) {}
-
-  bool HasBytes(int count) { return (pos() + count <= size()); }
-
-  // Read a value from the stream, perfoming endian correction, and advance the
-  // stream pointer.
-  bool Read1(uint8* v)  WARN_UNUSED_RESULT;
-  bool Read2(uint16* v) WARN_UNUSED_RESULT;
-  bool Read2s(int16* v) WARN_UNUSED_RESULT;
-  bool Read4(uint32* v) WARN_UNUSED_RESULT;
-  bool Read4s(int32* v) WARN_UNUSED_RESULT;
-  bool Read8(uint64* v) WARN_UNUSED_RESULT;
-  bool Read8s(int64* v) WARN_UNUSED_RESULT;
-
-  bool ReadFourCC(FourCC* v) WARN_UNUSED_RESULT;
-
-  bool ReadVec(std::vector<uint8>* t, int count) WARN_UNUSED_RESULT;
-
-  // These variants read a 4-byte integer of the corresponding signedness and
-  // store it in the 8-byte return type.
-  bool Read4Into8(uint64* v) WARN_UNUSED_RESULT;
-  bool Read4sInto8s(int64* v) WARN_UNUSED_RESULT;
-
-  // Advance the stream by this many bytes.
-  bool SkipBytes(int nbytes) WARN_UNUSED_RESULT;
-
-  const uint8* data() const { return buf_; }
-  int size() const { return size_; }
-  int pos() const { return pos_; }
-
- protected:
-  const uint8* buf_;
-  int size_;
-  int pos_;
-
-  template<typename T> bool Read(T* t) WARN_UNUSED_RESULT;
 };
 
 class BoxReader : public BufferReader {

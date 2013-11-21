@@ -44,7 +44,7 @@ class Demuxer {
   Status Parse();
 
   // Returns the vector of streams in this Demuxer. The caller cannot add or
-  // remove streams from the returned vector, but the caller could change
+  // remove streams from the returned vector, but the caller is safe to change
   // the internal state of the streams in the vector through MediaStream APIs.
   const std::vector<MediaStream*>& streams() { return streams_; }
 
@@ -67,6 +67,7 @@ class Demuxer {
 
   DISALLOW_COPY_AND_ASSIGN(Demuxer);
 };
-}
+
+}  // namespace media
 
 #endif  // MEDIA_BASE_DEMUXER_H_
