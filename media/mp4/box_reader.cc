@@ -4,34 +4,25 @@
 
 #include "media/mp4/box_reader.h"
 
-#include <string.h>
-#include <algorithm>
-#include <map>
-#include <set>
-
 #include "base/logging.h"
 #include "base/memory/scoped_ptr.h"
-#include "media/mp4/box_definitions.h"
-#include "media/mp4/rcheck.h"
+#include "media/mp4/box.h"
 
 namespace media {
 namespace mp4 {
 
-Box::~Box() {}
-
-BoxReader::BoxReader(const uint8* buf, const int size)
-    : BufferReader(buf, size),
-      type_(FOURCC_NULL),
-      version_(0),
-      flags_(0),
-      scanned_(false) {
+BoxReader::BoxReader(const uint8* buf, size_t size)
+    : BufferReader(buf, size), type_(FOURCC_NULL), scanned_(false) {
+  DCHECK(buf);
+  DCHECK_LT(0, size);
 }
 
 BoxReader::~BoxReader() {
   if (scanned_ && !children_.empty()) {
-    for (ChildMap::iterator itr = children_.begin();
-         itr != children_.end(); ++itr) {
+    for (ChildMap::iterator itr = children_.begin(); itr != children_.end();
+         ++itr) {
       DVLOG(1) << "Skipping unknown box: " << FourCCToString(itr->first);
+      delete itr->second;
     }
   }
 }
@@ -62,7 +53,8 @@ bool BoxReader::StartTopLevelBox(const uint8* buf,
                                  int* box_size,
                                  bool* err) {
   BoxReader reader(buf, buf_size);
-  if (!reader.ReadHeader(err)) return false;
+  if (!reader.ReadHeader(err))
+    return false;
   if (!IsValidTopLevelBox(reader.type())) {
     *err = true;
     return false;
@@ -102,17 +94,20 @@ bool BoxReader::ScanChildren() {
   DCHECK(!scanned_);
   scanned_ = true;
 
-  bool err = false;
   while (pos() < size()) {
-    BoxReader child(&buf_[pos_], size_ - pos_);
-    if (!child.ReadHeader(&err)) break;
+    scoped_ptr<BoxReader> child(
+        new BoxReader(&data()[pos()], size() - pos()));
+    bool err;
+    if (!child->ReadHeader(&err))
+      return false;
 
-    children_.insert(std::pair<FourCC, BoxReader>(child.type(), child));
-    pos_ += child.size();
+    FourCC box_type = child->type();
+    size_t box_size = child->size();
+    children_.insert(std::pair<FourCC, BoxReader*>(box_type, child.release()));
+    RCHECK(SkipBytes(box_size));
   }
 
-  DCHECK(!err);
-  return !err && pos() == size();
+  return true;
 }
 
 bool BoxReader::ReadChild(Box* child) {
@@ -122,7 +117,8 @@ bool BoxReader::ReadChild(Box* child) {
   ChildMap::iterator itr = children_.find(child_type);
   RCHECK(itr != children_.end());
   DVLOG(2) << "Found a " << FourCCToString(child_type) << " box.";
-  RCHECK(child->Parse(&itr->second));
+  RCHECK(child->Parse(itr->second));
+  delete itr->second;
   children_.erase(itr);
   return true;
 }
@@ -131,38 +127,31 @@ bool BoxReader::ChildExist(Box* child) {
   return children_.count(child->BoxType()) > 0;
 }
 
-bool BoxReader::MaybeReadChild(Box* child) {
-  if (!children_.count(child->BoxType())) return true;
+bool BoxReader::TryReadChild(Box* child) {
+  if (!children_.count(child->BoxType()))
+    return true;
   return ReadChild(child);
-}
-
-bool BoxReader::ReadFullBoxHeader() {
-  uint32 vflags;
-  RCHECK(Read4(&vflags));
-  version_ = vflags >> 24;
-  flags_ = vflags & 0xffffff;
-  return true;
 }
 
 bool BoxReader::ReadHeader(bool* err) {
   uint64 size = 0;
   *err = false;
 
-  if (!HasBytes(8)) return false;
-  CHECK(Read4Into8(&size) && ReadFourCC(&type_));
+  if (!ReadNBytesInto8(&size, sizeof(uint32)) || !ReadFourCC(&type_))
+    return false;
 
   if (size == 0) {
     // Media Source specific: we do not support boxes that run to EOS.
     *err = true;
     return false;
   } else if (size == 1) {
-    if (!HasBytes(8)) return false;
-    CHECK(Read8(&size));
+    if (!Read8(&size))
+      return false;
   }
 
   // Implementation-specific: support for boxes larger than 2^31 has been
   // removed.
-  if (size < static_cast<uint64>(pos_) ||
+  if (size < static_cast<uint64>(pos()) ||
       size > static_cast<uint64>(kint32max)) {
     *err = true;
     return false;
@@ -170,7 +159,7 @@ bool BoxReader::ReadHeader(bool* err) {
 
   // Note that the pos_ head has advanced to the byte immediately after the
   // header, which is where we want it.
-  size_ = size;
+  set_size(size);
   return true;
 }
 

@@ -7,7 +7,7 @@
 #include "base/basictypes.h"
 #include "base/logging.h"
 #include "base/memory/scoped_ptr.h"
-#include "media/mp4/box_reader.h"
+#include "media/mp4/box_buffer.h"
 #include "media/mp4/rcheck.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -15,65 +15,74 @@ namespace media {
 namespace mp4 {
 
 static const uint8 kSkipBox[] = {
-  // Top-level test box containing three children
-  0x00, 0x00, 0x00, 0x40, 's', 'k', 'i', 'p',
-  0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
-  0xf9, 0x0a, 0x0b, 0x0c, 0xfd, 0x0e, 0x0f, 0x10,
-  // Ordinary (8-byte header) child box
-  0x00, 0x00, 0x00, 0x0c,  'p',  's',  's',  'h', 0xde, 0xad, 0xbe, 0xef,
-  // Extended-size header child box
-  0x00, 0x00, 0x00, 0x01,  'p',  's',  's',  'h',
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x14,
-  0xfa, 0xce, 0xca, 0xfe,
-  // Empty free box
-  0x00, 0x00, 0x00, 0x08,  'f',  'r',  'e',  'e',
-  // Trailing garbage
-  0x00 };
+    // Top-level test box containing three children.
+    0x00, 0x00, 0x00, 0x40, 's',  'k',  'i',  'p',  0x01, 0x02, 0x03, 0x04,
+    0x05, 0x06, 0x07, 0x08, 0xf9, 0x0a, 0x0b, 0x0c, 0xfd, 0x0e, 0x0f, 0x10,
+    // Ordinary (8-byte header) child box.
+    0x00, 0x00, 0x00, 0x0c, 'p',  's',  's',  'h',  0xde, 0xad, 0xbe, 0xef,
+    // Extended-size header child box.
+    0x00, 0x00, 0x00, 0x01, 'p',  's',  's',  'h',  0x00, 0x00, 0x00, 0x00,
+    0x00, 0x00, 0x00, 0x14, 0xfa, 0xce, 0xca, 0xfe,
+    // Empty free box.
+    0x00, 0x00, 0x00, 0x08, 'f',  'r',  'e',  'e',
+    // Trailing garbage.
+    0x00};
 
 struct FreeBox : Box {
-  virtual bool Parse(BoxReader* reader) OVERRIDE {
+  virtual bool ReadWrite(BoxBuffer* buffer) OVERRIDE {
     return true;
   }
   virtual FourCC BoxType() const OVERRIDE { return FOURCC_FREE; }
+  virtual uint32 ComputeSize() {
+    NOTIMPLEMENTED();
+    return 0;
+  }
 };
 
 struct PsshBox : Box {
-  uint32 val;
-
-  virtual bool Parse(BoxReader* reader) OVERRIDE {
-    return reader->Read4(&val);
+  virtual bool ReadWrite(BoxBuffer* buffer) OVERRIDE {
+    return buffer->ReadWriteUInt32(&val);
   }
   virtual FourCC BoxType() const OVERRIDE { return FOURCC_PSSH; }
+  virtual uint32 ComputeSize() {
+    NOTIMPLEMENTED();
+    return 0;
+  }
+
+  uint32 val;
 };
 
-struct SkipBox : Box {
+struct SkipBox : FullBox {
+  virtual bool ReadWrite(BoxBuffer* buffer) OVERRIDE {
+    RCHECK(FullBox::ReadWrite(buffer) &&
+           buffer->ReadWriteUInt8(&a) &&
+           buffer->ReadWriteUInt8(&b) &&
+           buffer->ReadWriteUInt16(&c) &&
+           buffer->ReadWriteInt32(&d) &&
+           buffer->ReadWriteInt64NBytes(&e, sizeof(uint32)));
+    RCHECK(buffer->PrepareChildren());
+    if (buffer->Reading()) {
+      DCHECK(buffer->reader());
+      RCHECK(buffer->reader()->ReadChildren(&kids));
+    } else {
+      NOTIMPLEMENTED();
+    }
+    return buffer->TryReadWriteChild(&empty);
+  }
+  virtual FourCC BoxType() const OVERRIDE { return FOURCC_SKIP; }
+  virtual uint32 ComputeSize() {
+    NOTIMPLEMENTED();
+    return 0;
+  }
+
   uint8 a, b;
   uint16 c;
   int32 d;
   int64 e;
 
   std::vector<PsshBox> kids;
-  FreeBox mpty;
-
-  virtual bool Parse(BoxReader* reader) OVERRIDE {
-    RCHECK(reader->ReadFullBoxHeader() &&
-           reader->Read1(&a) &&
-           reader->Read1(&b) &&
-           reader->Read2(&c) &&
-           reader->Read4s(&d) &&
-           reader->Read4sInto8s(&e));
-    return reader->ScanChildren() &&
-           reader->ReadChildren(&kids) &&
-           reader->MaybeReadChild(&mpty);
-  }
-  virtual FourCC BoxType() const OVERRIDE { return FOURCC_SKIP; }
-
-  SkipBox();
-  virtual ~SkipBox();
+  FreeBox empty;
 };
-
-SkipBox::SkipBox() {}
-SkipBox::~SkipBox() {}
 
 class BoxReaderTest : public testing::Test {
  protected:
@@ -92,8 +101,8 @@ TEST_F(BoxReaderTest, ExpectedOperationTest) {
 
   SkipBox box;
   EXPECT_TRUE(box.Parse(reader.get()));
-  EXPECT_EQ(0x01, reader->version());
-  EXPECT_EQ(0x020304u, reader->flags());
+  EXPECT_EQ(0x01, box.version);
+  EXPECT_EQ(0x020304u, box.flags);
   EXPECT_EQ(0x05, box.a);
   EXPECT_EQ(0x06, box.b);
   EXPECT_EQ(0x0708, box.c);
@@ -104,7 +113,7 @@ TEST_F(BoxReaderTest, ExpectedOperationTest) {
   EXPECT_EQ(0xdeadbeef, box.kids[0].val);
   EXPECT_EQ(0xfacecafe, box.kids[1].val);
 
-  // Accounting for the extra byte outside of the box above
+  // Accounting for the extra byte outside of the box above.
   EXPECT_EQ(buf.size(), static_cast<uint64>(reader->size() + 1));
 }
 
@@ -156,7 +165,7 @@ TEST_F(BoxReaderTest, ScanChildrenTest) {
   FreeBox free;
   EXPECT_TRUE(reader->ReadChild(&free));
   EXPECT_FALSE(reader->ReadChild(&free));
-  EXPECT_TRUE(reader->MaybeReadChild(&free));
+  EXPECT_TRUE(reader->TryReadChild(&free));
 
   std::vector<PsshBox> kids;
 
@@ -164,12 +173,12 @@ TEST_F(BoxReaderTest, ScanChildrenTest) {
   EXPECT_EQ(2u, kids.size());
   kids.clear();
   EXPECT_FALSE(reader->ReadChildren(&kids));
-  EXPECT_TRUE(reader->MaybeReadChildren(&kids));
+  EXPECT_TRUE(reader->TryReadChildren(&kids));
 }
 
 TEST_F(BoxReaderTest, ReadAllChildrenTest) {
   std::vector<uint8> buf = GetBuf();
-  // Modify buffer to exclude its last 'free' box
+  // Modify buffer to exclude its last 'free' box.
   buf[3] = 0x38;
   bool err;
   scoped_ptr<BoxReader> reader(
@@ -178,13 +187,13 @@ TEST_F(BoxReaderTest, ReadAllChildrenTest) {
   std::vector<PsshBox> kids;
   EXPECT_TRUE(reader->SkipBytes(16) && reader->ReadAllChildren(&kids));
   EXPECT_EQ(2u, kids.size());
-  EXPECT_EQ(kids[0].val, 0xdeadbeef);   // Ensure order is preserved
+  EXPECT_EQ(kids[0].val, 0xdeadbeef);   // Ensure order is preserved.
 }
 
 TEST_F(BoxReaderTest, SkippingBloc) {
-  static const uint8 kData[] = {
-    0x00, 0x00, 0x00, 0x09,  'b',  'l',  'o',  'c', 0x00
-  };
+  static const uint8 kData[] = {0x00, 0x00, 0x00, 0x09,  // Box size.
+                                'b',  'l',  'o',  'c',   // FourCC.
+                                0x00};                   // Reserved byte.
 
   std::vector<uint8> buf(kData, kData + sizeof(kData));
 

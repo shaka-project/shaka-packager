@@ -17,13 +17,7 @@
 namespace media {
 namespace mp4 {
 
-class BoxReader;
-
-struct Box {
-  virtual ~Box();
-  virtual bool Parse(BoxReader* reader) = 0;
-  virtual FourCC BoxType() const = 0;
-};
+class Box;
 
 class BoxReader : public BufferReader {
  public:
@@ -69,33 +63,34 @@ class BoxReader : public BufferReader {
 
   // Read one child if available. Returns false on error, true on successful
   // read or on child absent.
-  bool MaybeReadChild(Box* child) WARN_UNUSED_RESULT;
+  bool TryReadChild(Box* child) WARN_UNUSED_RESULT;
 
   // Read at least one child. False means error or no such child present.
-  template<typename T> bool ReadChildren(
-      std::vector<T>* children) WARN_UNUSED_RESULT;
+  template <typename T>
+  bool ReadChildren(std::vector<T>* children) WARN_UNUSED_RESULT;
 
   // Read any number of children. False means error.
-  template<typename T> bool MaybeReadChildren(
-      std::vector<T>* children) WARN_UNUSED_RESULT;
+  template <typename T>
+  bool TryReadChildren(std::vector<T>* children) WARN_UNUSED_RESULT;
 
   // Read all children, regardless of FourCC. This is used from exactly one box,
   // corresponding to a rather significant inconsistency in the BMFF spec.
   // Note that this method is mutually exclusive with ScanChildren().
-  template<typename T> bool ReadAllChildren(
-      std::vector<T>* children) WARN_UNUSED_RESULT;
+  template <typename T>
+  bool ReadAllChildren(std::vector<T>* children) WARN_UNUSED_RESULT;
 
-  // Populate the values of 'version()' and 'flags()' from a full box header.
-  // Many boxes, but not all, use these values. This call should happen after
-  // the box has been initialized, and does not re-read the main box header.
-  bool ReadFullBoxHeader() WARN_UNUSED_RESULT;
+  bool ReadFourCC(FourCC* fourcc) {
+    uint32 val;
+    if (!Read4(&val))
+      return false;
+    *fourcc = static_cast<FourCC>(val);
+    return true;
+  }
 
-  FourCC type() const   { return type_; }
-  uint8 version() const { return version_; }
-  uint32 flags() const  { return flags_; }
+  FourCC type() const { return type_; }
 
  private:
-  BoxReader(const uint8* buf, const int size);
+  BoxReader(const uint8* buf, size_t size);
 
   // Must be called immediately after init. If the return is false, this
   // indicates that the box header and its contents were not available in the
@@ -107,25 +102,26 @@ class BoxReader : public BufferReader {
   bool ReadHeader(bool* err);
 
   FourCC type_;
-  uint8 version_;
-  uint32 flags_;
 
-  typedef std::multimap<FourCC, BoxReader> ChildMap;
+  typedef std::multimap<FourCC, BoxReader*> ChildMap;
 
   // The set of child box FourCCs and their corresponding buffer readers. Only
   // valid if scanned_ is true.
   ChildMap children_;
   bool scanned_;
+
+  DISALLOW_COPY_AND_ASSIGN(BoxReader);
 };
 
-// Template definitions
-template<typename T> bool BoxReader::ReadChildren(std::vector<T>* children) {
-  RCHECK(MaybeReadChildren(children) && !children->empty());
+// Template definitions.
+template <typename T>
+bool BoxReader::ReadChildren(std::vector<T>* children) {
+  RCHECK(TryReadChildren(children) && !children->empty());
   return true;
 }
 
-template<typename T>
-bool BoxReader::MaybeReadChildren(std::vector<T>* children) {
+template <typename T>
+bool BoxReader::TryReadChildren(std::vector<T>* children) {
   DCHECK(scanned_);
   DCHECK(children->empty());
 
@@ -137,32 +133,35 @@ bool BoxReader::MaybeReadChildren(std::vector<T>* children) {
   children->resize(std::distance(start_itr, end_itr));
   typename std::vector<T>::iterator child_itr = children->begin();
   for (ChildMap::iterator itr = start_itr; itr != end_itr; ++itr) {
-    RCHECK(child_itr->Parse(&itr->second));
+    RCHECK(child_itr->Parse(itr->second));
+    delete itr->second;
     ++child_itr;
   }
   children_.erase(start_itr, end_itr);
 
-  DVLOG(2) << "Found " << children->size() << " "
-           << FourCCToString(child_type) << " boxes.";
+  DVLOG(2) << "Found " << children->size() << " " << FourCCToString(child_type)
+           << " boxes.";
   return true;
 }
 
-template<typename T>
+template <typename T>
 bool BoxReader::ReadAllChildren(std::vector<T>* children) {
   DCHECK(!scanned_);
   scanned_ = true;
 
-  bool err = false;
   while (pos() < size()) {
-    BoxReader child_reader(&buf_[pos_], size_ - pos_);
-    if (!child_reader.ReadHeader(&err)) break;
+    BoxReader child_reader(&data()[pos()], size() - pos());
+    bool err;
+    if (!child_reader.ReadHeader(&err))
+      return false;
+
     T child;
     RCHECK(child.Parse(&child_reader));
     children->push_back(child);
-    pos_ += child_reader.size();
+    RCHECK(SkipBytes(child_reader.size()));
   }
 
-  return !err;
+  return true;
 }
 
 }  // namespace mp4
