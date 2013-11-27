@@ -82,7 +82,8 @@ class TrackRunIteratorTest : public testing::Test {
     moof.tracks.resize(2);
     moof.tracks[0].decode_time.decode_time = 0;
     moof.tracks[0].header.track_id = 1;
-    moof.tracks[0].header.flags = kDefaultSampleFlagsPresentMask;
+    moof.tracks[0].header.flags =
+        TrackFragmentHeader::kDefaultSampleFlagsPresentMask;
     moof.tracks[0].header.default_sample_duration = 1024;
     moof.tracks[0].header.default_sample_size = 4;
     moof.tracks[0].runs.resize(2);
@@ -103,7 +104,8 @@ class TrackRunIteratorTest : public testing::Test {
     SetAscending(&moof.tracks[1].runs[0].sample_durations);
     moof.tracks[1].runs[0].sample_flags.resize(10);
     for (size_t i = 1; i < moof.tracks[1].runs[0].sample_flags.size(); i++) {
-      moof.tracks[1].runs[0].sample_flags[i] = kNonKeySampleMask;
+      moof.tracks[1].runs[0].sample_flags[i] =
+          TrackFragmentHeader::kNonKeySampleMask;
     }
 
     return moof;
@@ -211,7 +213,8 @@ TEST_F(TrackRunIteratorTest, BasicOperationTest) {
 TEST_F(TrackRunIteratorTest, TrackExtendsDefaultsTest) {
   moov_.extends.tracks[0].default_sample_duration = 50;
   moov_.extends.tracks[0].default_sample_size = 3;
-  moov_.extends.tracks[0].default_sample_flags = kNonKeySampleMask;
+  moov_.extends.tracks[0].default_sample_flags =
+      TrackFragmentHeader::kNonKeySampleMask;
   iter_.reset(new TrackRunIterator(&moov_));
   MovieFragment moof = CreateFragment();
   moof.tracks[0].header.flags = 0;
@@ -233,8 +236,10 @@ TEST_F(TrackRunIteratorTest, FirstSampleFlagTest) {
   // defaults for all subsequent samples
   iter_.reset(new TrackRunIterator(&moov_));
   MovieFragment moof = CreateFragment();
-  moof.tracks[1].header.flags = kDefaultSampleFlagsPresentMask;
-  moof.tracks[1].header.default_sample_flags = kNonKeySampleMask;
+  moof.tracks[1].header.flags =
+      TrackFragmentHeader::kDefaultSampleFlagsPresentMask;
+  moof.tracks[1].header.default_sample_flags =
+      TrackFragmentHeader::kNonKeySampleMask;
   moof.tracks[1].runs[0].sample_flags.resize(1);
   ASSERT_TRUE(iter_->Init(moof));
   iter_->AdvanceRun();

@@ -7,12 +7,12 @@
 
 #include "base/logging.h"
 
-#define RCHECK(x) \
-    do { \
-      if (!(x)) { \
-        DLOG(ERROR) << "Failure while parsing MP4: " << #x; \
-        return false; \
-      } \
-    } while (0)
+#define RCHECK(x)                                           \
+  do {                                                      \
+    if (!(x)) {                                             \
+      LOG(ERROR) << "Failure while processing MP4: " << #x; \
+      return false;                                         \
+    }                                                       \
+  } while (0)
 
 #endif  // MEDIA_MP4_RCHECK_H_

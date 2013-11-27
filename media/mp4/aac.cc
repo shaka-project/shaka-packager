@@ -37,8 +37,6 @@ AAC::~AAC() {
 }
 
 bool AAC::Parse(const std::vector<uint8>& data) {
-  codec_specific_data_ = data;
-
   if (data.empty())
     return false;
 

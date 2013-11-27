@@ -30,7 +30,6 @@ class AAC {
   // The function will parse the data and get the ElementaryStreamDescriptor,
   // then it will parse the ElementaryStreamDescriptor to get audio stream
   // configurations.
-  // |data| is always copied to |codec_specific_data_|.
   bool Parse(const std::vector<uint8>& data);
 
   // Gets the output sample rate for the AAC stream.
@@ -61,11 +60,6 @@ class AAC {
     return num_channels_;
   }
 
-  // Returns the codec specific data.
-  std::vector<uint8> codec_specific_data() const {
-    return codec_specific_data_;
-  }
-
   // Size in bytes of the ADTS header added by ConvertEsdsToADTS().
   static const size_t kADTSHeaderSize = 7;
 
@@ -81,8 +75,6 @@ class AAC {
   uint8 channel_config_;
   // Is Parametric Stereo on?
   bool ps_present_;
-
-  std::vector<uint8> codec_specific_data_;
 
   // The following variables store audio configuration information.
   // They are based on the AAC specific configuration but can be overridden

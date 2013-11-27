@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "media/base/buffer_reader.h"
 #include "media/mp4/chunk_info_iterator.h"
 #include "media/mp4/composition_offset_iterator.h"
 #include "media/mp4/decoding_time_iterator.h"
@@ -90,12 +91,12 @@ static void PopulateSampleInfo(const TrackExtends& trex,
   uint32 flags;
   if (i < trun.sample_flags.size()) {
     flags = trun.sample_flags[i];
-  } else if (tfhd.flags & kDefaultSampleFlagsPresentMask) {
+  } else if (tfhd.flags & TrackFragmentHeader::kDefaultSampleFlagsPresentMask) {
     flags = tfhd.default_sample_flags;
   } else {
     flags = trex.default_sample_flags;
   }
-  sample_info->is_keyframe = !(flags & kNonKeySampleMask);
+  sample_info->is_keyframe = !(flags & TrackFragmentHeader::kNonKeySampleMask);
 }
 
 // In well-structured encrypted media, each track run will be immediately
@@ -396,6 +397,7 @@ bool TrackRunIterator::AuxInfoNeedsToBeCached() {
   return is_encrypted() && aux_info_size() > 0 && cenc_info_.size() == 0;
 }
 
+// TODO(kqyang): Revisit later. We might not need to cache cenc info.
 // This implementation currently only caches CENC auxiliary info.
 bool TrackRunIterator::CacheAuxInfo(const uint8* buf, int buf_size) {
   RCHECK(AuxInfoNeedsToBeCached() && buf_size >= aux_info_size());
@@ -525,8 +527,9 @@ scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
   const FrameCENCInfo& cenc_info = cenc_info_[sample_idx];
   DCHECK(is_encrypted() && !AuxInfoNeedsToBeCached());
 
-  if (!cenc_info.subsamples.empty() && (cenc_info.GetTotalSizeOfSubsamples() !=
-                                        static_cast<size_t>(sample_size()))) {
+  const size_t total_size_of_subsamples = cenc_info.GetTotalSizeOfSubsamples();
+  if (total_size_of_subsamples != 0 &&
+      total_size_of_subsamples != static_cast<size_t>(sample_size())) {
     LOG(ERROR) << "Incorrect CENC subsample size.";
     return scoped_ptr<DecryptConfig>();
   }
@@ -534,9 +537,9 @@ scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
   const std::vector<uint8>& kid = track_encryption().default_kid;
   return scoped_ptr<DecryptConfig>(new DecryptConfig(
       std::string(reinterpret_cast<const char*>(&kid[0]), kid.size()),
-      std::string(cenc_info.iv.begin(), cenc_info.iv.end()),
+      std::string(cenc_info.iv().begin(), cenc_info.iv().end()),
       0,  // No offset to start of media data in MP4 using CENC.
-      cenc_info.subsamples));
+      cenc_info.subsamples()));
 }
 
 }  // namespace mp4

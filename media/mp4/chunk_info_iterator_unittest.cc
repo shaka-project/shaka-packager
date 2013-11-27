@@ -4,6 +4,7 @@
 
 #include "media/mp4/chunk_info_iterator.h"
 
+#include "base/logging.h"
 #include "base/memory/scoped_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,8 +19,8 @@ namespace media {
 namespace mp4 {
 
 const uint32 kNumChunks = 100;
-const ChunkInfo kChunkInfos[] =
-    {{1, 8, 1}, {9, 5, 1}, {25, 7, 2}, {48, 63, 2}, {80, 2, 1}};
+const ChunkInfo kChunkInfos[] = {
+    {1, 8, 1}, {9, 5, 1}, {25, 7, 2}, {48, 63, 2}, {80, 2, 1}};
 
 class ChunkInfoIteratorTest : public testing::Test {
  public:
@@ -33,9 +34,8 @@ class ChunkInfoIteratorTest : public testing::Test {
       uint32 next_first_chunk =
           (i == length - 1) ? kNumChunks + 1 : kChunkInfos[i + 1].first_chunk;
       for (; chunk_index < next_first_chunk; ++chunk_index) {
-        ChunkProperty chunk = {kChunkInfos[i].samples_per_chunk, kChunkInfos[i].sample_description_index};
-        //chunk.samples_per_chunk = kChunkInfos[i].samples_per_chunk;
-        //chunk.sample_description_index = kChunkInfos[i].sample_description_index;
+        ChunkProperty chunk = {kChunkInfos[i].samples_per_chunk,
+                               kChunkInfos[i].sample_description_index};
         chunk_info_table_.push_back(chunk);
       }
     }

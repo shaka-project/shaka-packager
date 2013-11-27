@@ -23,7 +23,7 @@ namespace media {
 // result, and then copying each byte from the decrypted block over the
 // position of the corresponding encrypted byte.
 struct SubsampleEntry {
-  uint32 clear_bytes;
+  uint16 clear_bytes;
   uint32 cypher_bytes;
 };
 
@@ -31,12 +31,10 @@ struct SubsampleEntry {
 class DecryptConfig {
  public:
   // Keys are always 128 bits.
-  static const int kDecryptionKeySize = 16;
+  static const size_t kDecryptionKeySize = 16;
 
   // |key_id| is the ID that references the decryption key for this sample.
   // |iv| is the initialization vector defined by the encrypted format.
-  //   Currently |iv| must be 16 bytes as defined by WebM and ISO. Or must be
-  //   empty which signals an unencrypted frame.
   // |data_offset| is the amount of data that should be discarded from the
   //   head of the sample buffer before applying subsample information. A
   //   decrypted buffer will be shorter than an encrypted buffer by this amount.
