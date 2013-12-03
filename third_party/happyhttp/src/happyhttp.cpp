@@ -49,7 +49,7 @@
 #include <string>
 #include <algorithm>
 
-#ifdef __APPLE__
+#ifndef _WIN32
 	#define _stricmp strcasecmp
 #endif
 

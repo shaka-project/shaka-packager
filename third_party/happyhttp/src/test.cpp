@@ -31,7 +31,7 @@ void Test1()
 {
 	puts("-----------------Test1------------------------" );
 	// simple simple GET
-	happyhttp::Connection conn( "www.scumways.com", 80 );
+	happyhttp::Connection conn( "scumways.com", 80 );
 	conn.setcallbacks( OnBegin, OnData, OnComplete, 0 );
 
 	conn.request( "GET", "/happyhttp/test.php", 0, 0,0 );
@@ -57,7 +57,7 @@ void Test2()
 
 	const char* body = "answer=42&name=Bubba";
 	
-	happyhttp::Connection conn( "www.scumways.com", 80 );
+	happyhttp::Connection conn( "scumways.com", 80 );
 	conn.setcallbacks( OnBegin, OnData, OnComplete, 0 );
 	conn.request( "POST",
 			"/happyhttp/test.php",
@@ -77,7 +77,7 @@ void Test3()
 	const char* params = "answer=42&foo=bar";
 	int l = strlen(params);
 
-	happyhttp::Connection conn( "www.scumways.com", 80 );
+	happyhttp::Connection conn( "scumways.com", 80 );
 	conn.setcallbacks( OnBegin, OnData, OnComplete, 0 );
 
 	conn.putrequest( "POST", "/happyhttp/test.php" );
