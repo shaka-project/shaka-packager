@@ -17,20 +17,20 @@ message MediaInfo {
     optional string codec = 1;
     optional uint32 width = 2;
     optional uint32 height = 3;
-
+    optional uint32 time_scale = 4;
     // Relative to |time_scale|. IOW |time_scale| / |frame_duration| is the
     // framerate.
-    optional uint64 frame_duration = 4;
-
-    optional bytes decoder_config = 5;
+    optional uint64 frame_duration = 5;
+    optional bytes decoder_config = 6;
   }
 
   message AudioInfo {
     optional string codec = 1;
     optional uint32 sampling_frequency = 2;
-    optional uint32 num_channels = 3;
-    optional string language = 4;
-    optional bytes decoder_config = 5;
+    optional uint32 time_scale = 3;
+    optional uint32 num_channels = 4;
+    optional string language = 5;
+    optional bytes decoder_config = 6;
   }
 
   message TextInfo {
@@ -44,28 +44,24 @@ message MediaInfo {
   }
 
   optional uint32 bandwidth = 1;
-  optional uint32 time_scale = 2;
-  repeated VideoInfo video_info = 3;
-  repeated AudioInfo audio_info = 4;
-  repeated TextInfo text_info = 5;
-  repeated ContentProtection content_protections = 6;
+  repeated VideoInfo video_info = 2;
+  repeated AudioInfo audio_info = 3;
+  repeated TextInfo text_info = 4;
+  repeated ContentProtection content_protections = 5;
 
   // VOD only.
-  optional Range init_range = 7;
-  optional Range index_range = 8;
-  optional string media_file_name = 9;
-
-  // This value is relative to |time_scale|.
-  optional uint64 media_duration = 10;
+  optional Range init_range = 6;
+  optional Range index_range = 7;
+  optional string media_file_name = 8;
+  optional float media_duration_seconds = 9;
   // END VOD only.
 
   // LIVE only.
-  optional string init_segment_name = 11;
-  optional string segment_template = 12;
-
+  optional string init_segment_name = 10;
+  optional string segment_template = 11;
   // This value is the user input “segment duration”.
   // This value is not necessarily the same as the value passed to
   // MpdNotifier::NotifyNewSegment().
-  optional uint64 segment_duration = 13;
+  optional float segment_duration_seconds = 12;
   // END LIVE only.
 }
