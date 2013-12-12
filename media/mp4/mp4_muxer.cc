@@ -11,6 +11,7 @@
 #include "media/base/media_sample.h"
 #include "media/base/media_stream.h"
 #include "media/base/video_stream_info.h"
+#include "media/event/muxer_listener.h"
 #include "media/file/file.h"
 #include "media/mp4/box_definitions.h"
 #include "media/mp4/es_descriptor.h"
@@ -27,6 +28,16 @@ uint64 IsoTimeNow() {
   // Time in seconds from Jan. 1, 1904 to epoch time, i.e. Jan. 1, 1970.
   const uint64 kIsomTimeOffset = 2082844800l;
   return kIsomTimeOffset + base::Time::Now().ToDoubleT();
+}
+
+// Sets the range start and end value from offset and size.
+// |start| and |end| are for byte-range-spec specified in RFC2616.
+void SetStartAndEndFromOffsetAndSize(size_t offset, size_t size,
+                                     uint32* start, uint32* end) {
+  DCHECK(start && end);
+  *start = static_cast<uint32>(offset);
+  // Note that ranges are inclusive. So we need - 1.
+  *end = *start + static_cast<uint32>(size) - 1;
 }
 }  // namespace
 
@@ -96,13 +107,26 @@ Status MP4Muxer::Initialize() {
     segmenter_.reset(
         new MP4GeneralSegmenter(options(), ftyp.Pass(), moov.Pass()));
   }
-  return segmenter_->Initialize(
+
+  Status segmenter_initialized = segmenter_->Initialize(
       encryptor_source(), clear_lead_in_seconds(), streams());
+
+  if (!segmenter_initialized.ok())
+    return segmenter_initialized;
+
+  FireOnMediaStartEvent();
+  return Status::OK;
 }
 
 Status MP4Muxer::Finalize() {
   DCHECK(segmenter_ != NULL);
-  return segmenter_->Finalize();
+  Status segmenter_finalized = segmenter_->Finalize();
+
+  if (!segmenter_finalized.ok())
+    return segmenter_finalized;
+
+  FireOnMediaEndEvent();
+  return Status::OK;
 }
 
 Status MP4Muxer::AddSample(const MediaStream* stream,
@@ -112,7 +136,7 @@ Status MP4Muxer::AddSample(const MediaStream* stream,
 }
 
 void MP4Muxer::InitializeTrak(const StreamInfo* info, Track* trak) {
-  uint64 now = IsoTimeNow();
+  int64 now = IsoTimeNow();
   trak->header.creation_time = now;
   trak->header.modification_time = now;
   trak->header.duration = 0;
@@ -214,6 +238,89 @@ void MP4Muxer::GenerateSinf(ProtectionSchemeInfo* sinf, FourCC old_type) {
   sinf->info.track_encryption.is_encrypted = true;
   sinf->info.track_encryption.default_iv_size = encryptor_source()->iv_size();
   sinf->info.track_encryption.default_kid = encryptor_source()->key_id();
+}
+
+void MP4Muxer::GetStreamInfo(std::vector<StreamInfo*>* stream_infos) {
+  DCHECK(stream_infos);
+  const std::vector<MediaStream*>& media_stream_vec = streams();
+  stream_infos->reserve(media_stream_vec.size());
+  for (size_t i = 0; i < media_stream_vec.size(); ++i) {
+    stream_infos->push_back(media_stream_vec[i]->info().get());
+  }
+}
+
+bool MP4Muxer::GetInitRangeStartAndEnd(uint32* start, uint32* end) {
+  DCHECK(start && end);
+  size_t range_offset = 0;
+  size_t range_size = 0;
+  const bool has_range =
+      segmenter_->GetInitRange(&range_offset, &range_size);
+
+  if (!has_range)
+    return false;
+
+  SetStartAndEndFromOffsetAndSize(range_offset, range_size, start, end);
+  return true;
+}
+
+bool MP4Muxer::GetIndexRangeStartAndEnd(uint32* start, uint32* end) {
+  DCHECK(start && end);
+  size_t range_offset = 0;
+  size_t range_size = 0;
+  const bool has_range =
+      segmenter_->GetIndexRange(&range_offset, &range_size);
+
+  if (!has_range)
+    return false;
+
+  SetStartAndEndFromOffsetAndSize(range_offset, range_size, start, end);
+  return true;
+}
+
+void MP4Muxer::FireOnMediaStartEvent() {
+  if (!muxer_listener())
+    return;
+
+  std::vector<StreamInfo*> stream_info_vec;
+  GetStreamInfo(&stream_info_vec);
+  const uint32 timescale = segmenter_->GetReferenceTimeScale();
+  muxer_listener()->OnMediaStart(options(), stream_info_vec, timescale);
+}
+
+void MP4Muxer::FireOnMediaEndEvent() {
+  if (!muxer_listener())
+    return;
+
+  std::vector<StreamInfo*> stream_info_vec;
+  GetStreamInfo(&stream_info_vec);
+
+  uint32 init_range_start = 0;
+  uint32 init_range_end = 0;
+  const bool has_init_range =
+      GetInitRangeStartAndEnd(&init_range_start, &init_range_end);
+
+  uint32 index_range_start = 0;
+  uint32 index_range_end = 0;
+  const bool has_index_range =
+      GetIndexRangeStartAndEnd(&index_range_start, &index_range_end);
+
+  const float duration_seconds = static_cast<float>(segmenter_->GetDuration());
+
+  const int64 file_size = File::GetFileSize(options().output_file_name.c_str());
+  if (file_size <= 0) {
+    LOG(ERROR) << "Invalid file size: " << file_size;
+    return;
+  }
+
+  muxer_listener()->OnMediaEnd(stream_info_vec,
+                               has_init_range,
+                               init_range_start,
+                               init_range_end,
+                               has_index_range,
+                               index_range_start,
+                               index_range_end,
+                               duration_seconds,
+                               file_size);
 }
 
 }  // namespace mp4

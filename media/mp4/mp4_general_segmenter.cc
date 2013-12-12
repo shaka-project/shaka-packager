@@ -55,6 +55,19 @@ Status MP4GeneralSegmenter::Initialize(
   return status;
 }
 
+// TODO(rkuroiwa): Maybe GetInitRange() should return true. Init segment does
+// exist and we know the size and offset.
+bool MP4GeneralSegmenter::GetInitRange(size_t* offset, size_t* size) {
+  DLOG(INFO) << "MP4GeneralSegmenter outputs init segment: "
+             << options().output_file_name;
+  return false;
+}
+
+bool MP4GeneralSegmenter::GetIndexRange(size_t* offset, size_t* size) {
+  DLOG(INFO) << "MP4GeneralSegmenter does not have index range.";
+  return false;
+}
+
 Status MP4GeneralSegmenter::FinalizeSegment() {
   Status status = MP4Segmenter::FinalizeSegment();
   if (!status.ok())

@@ -7,6 +7,8 @@
 #ifndef MEDIA_MP4_MP4_MUXER_H_
 #define MEDIA_MP4_MP4_MUXER_H_
 
+#include <vector>
+
 #include "media/base/muxer.h"
 #include "media/mp4/fourccs.h"
 
@@ -53,6 +55,21 @@ class MP4Muxer : public Muxer {
 
   // Should we enable encrytion?
   bool IsEncryptionRequired() { return (encryptor_source() != NULL); }
+
+  // Helper functions for events.
+  void GetStreamInfo(std::vector<StreamInfo*>* stream_infos);
+
+  // Gets |start| and |end| initialization range. Returns true if there is an
+  // init range and sets start-end byte-range-spec specified in RFC2616.
+  bool GetInitRangeStartAndEnd(uint32* start, uint32* end);
+
+  // Gets |start| and |end| index range. Returns true if there is an index range
+  // and sets start-end byte-range-spec specified in RFC2616.
+  bool GetIndexRangeStartAndEnd(uint32* start, uint32* end);
+
+  // Fire events if there are no errors and Muxer::muxer_listener() is not NULL.
+  void FireOnMediaStartEvent();
+  void FireOnMediaEndEvent();
 
   scoped_ptr<MP4Segmenter> segmenter_;
 

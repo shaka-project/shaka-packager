@@ -11,7 +11,10 @@
 namespace media {
 
 Muxer::Muxer(const MuxerOptions& options)
-    : options_(options), encryptor_source_(NULL), clear_lead_in_seconds_(0) {}
+    : options_(options),
+      encryptor_source_(NULL),
+      clear_lead_in_seconds_(0),
+      muxer_listener_(NULL) {}
 
 Muxer::~Muxer() {}
 
@@ -55,6 +58,10 @@ Status Muxer::Run() {
     }
   }
   return status.Matches(Status(error::END_OF_STREAM, "")) ? Status::OK : status;
+}
+
+void Muxer::SetMuxerListener(media::event::MuxerListener* muxer_listener) {
+  muxer_listener_ = muxer_listener;
 }
 
 }  // namespace media

@@ -47,6 +47,8 @@ class MP4Segmenter {
 
   // Initialize the segmenter. Caller retains the ownership of
   // |encryptor_source|. |encryptor_source| can be NULL.
+  // Calling other public methods of this class without this method returning
+  // Status::OK, results in an undefined behavior.
   virtual Status Initialize(EncryptorSource* encryptor_source,
                             double clear_lead_in_seconds,
                             const std::vector<MediaStream*>& streams);
@@ -55,6 +57,21 @@ class MP4Segmenter {
 
   virtual Status AddSample(const MediaStream* stream,
                            scoped_refptr<MediaSample> sample);
+
+  // Returns false if it does not apply.
+  // If it has an initialization byte range this returns true and set |offset|
+  // and |size|, otherwise returns false.
+  virtual bool GetInitRange(size_t* offset, size_t* size) = 0;
+
+  // Returns false if it does not apply.
+  // If it has an index byte range this returns true and set |offset| and
+  // |size|, otherwise returns false.
+  virtual bool GetIndexRange(size_t* offset, size_t* size) = 0;
+
+  uint32 GetReferenceTimeScale() const;
+
+  // Returns the total length, in seconds, of segmented media files.
+  double GetDuration() const;
 
  protected:
   void InitializeSegment();

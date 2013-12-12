@@ -20,6 +20,10 @@ class EncryptorSource;
 class MediaSample;
 class MediaStream;
 
+namespace event {
+class MuxerListener;
+}
+
 class Muxer {
  public:
   explicit Muxer(const MuxerOptions& options);
@@ -46,18 +50,25 @@ class Muxer {
   // Drives the remuxing from muxer side (pull).
   virtual Status Run();
 
+  // Set a MuxerListener event handler for this object. Ownership does not
+  // transfer.
+  void SetMuxerListener(event::MuxerListener* muxer_listener);
+
   const std::vector<MediaStream*>& streams() const { return streams_; }
 
  protected:
   const MuxerOptions& options() const { return options_; }
   EncryptorSource* encryptor_source() { return encryptor_source_; }
   double clear_lead_in_seconds() const { return clear_lead_in_seconds_; }
+  event::MuxerListener* muxer_listener() { return muxer_listener_; }
 
  private:
   MuxerOptions options_;
   std::vector<MediaStream*> streams_;
   EncryptorSource* encryptor_source_;
   double clear_lead_in_seconds_;
+
+  event::MuxerListener* muxer_listener_;
 
   DISALLOW_COPY_AND_ASSIGN(Muxer);
 };

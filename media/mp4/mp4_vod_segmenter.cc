@@ -89,6 +89,21 @@ Status MP4VODSegmenter::Finalize() {
   return Status::OK;
 }
 
+bool MP4VODSegmenter::GetInitRange(size_t* offset, size_t* size) {
+  // In Finalize, ftyp and moov gets written first so offset must be 0.
+  *offset = 0;
+  *size = ftyp()->ComputeSize() + moov()->ComputeSize();
+  return true;
+}
+
+bool MP4VODSegmenter::GetIndexRange(size_t* offset, size_t* size) {
+  // Index range is right after init range so the offset must be the size of
+  // ftyp and moov.
+  *offset = ftyp()->ComputeSize() + moov()->ComputeSize();
+  *size = vod_sidx_->ComputeSize();
+  return true;
+}
+
 Status MP4VODSegmenter::FinalizeSegment() {
   Status status = MP4Segmenter::FinalizeSegment();
   if (!status.ok())

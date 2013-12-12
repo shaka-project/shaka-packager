@@ -37,6 +37,9 @@ class MP4VODSegmenter : public MP4Segmenter {
                             const std::vector<MediaStream*>& streams) OVERRIDE;
   virtual Status Finalize() OVERRIDE;
 
+  virtual bool GetInitRange(size_t* offset, size_t* size) OVERRIDE;
+  virtual bool GetIndexRange(size_t* offset, size_t* size) OVERRIDE;
+
  protected:
   virtual Status FinalizeSegment() OVERRIDE;
 

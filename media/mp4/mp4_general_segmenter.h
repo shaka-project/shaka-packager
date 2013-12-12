@@ -39,6 +39,9 @@ class MP4GeneralSegmenter : public MP4Segmenter {
                             double clear_lead_in_seconds,
                             const std::vector<MediaStream*>& streams) OVERRIDE;
 
+  virtual bool GetInitRange(size_t* offset, size_t* size) OVERRIDE;
+  virtual bool GetIndexRange(size_t* offset, size_t* size) OVERRIDE;
+
  protected:
   virtual Status FinalizeSegment() OVERRIDE;
 

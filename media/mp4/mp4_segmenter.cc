@@ -164,6 +164,19 @@ Status MP4Segmenter::AddSample(const MediaStream* stream,
   return Status::OK;
 }
 
+uint32 MP4Segmenter::GetReferenceTimeScale() const {
+  return moov_->header.timescale;
+}
+
+double MP4Segmenter::GetDuration() const {
+  if (moov_->header.timescale == 0) {
+    // Handling the case where this is not properly initialized.
+    return 0.0;
+  }
+
+  return static_cast<double>(moov_->header.duration) / moov_->header.timescale;
+}
+
 void MP4Segmenter::InitializeSegment() {
   sidx_->references.clear();
   end_of_segment_ = false;
