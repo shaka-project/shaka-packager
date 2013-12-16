@@ -40,6 +40,9 @@ enum Code {
   // End of stream.
   END_OF_STREAM,
 
+  // Failure to get HTTP response successfully,
+  HTTP_FAILURE,
+
   // Unable to parse the media file.
   PARSER_FAILURE,
 
