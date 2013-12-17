@@ -45,7 +45,7 @@ void XmlNode::SetStringAttribute(const char* attribute_name,
   xmlNewProp(node_.get(), BAD_CAST attribute_name, BAD_CAST attribute.c_str());
 }
 
-void XmlNode::SetNumberAttribute(const char* attribute_name, uint64 number) {
+void XmlNode::SetIntegerAttribute(const char* attribute_name, uint64 number) {
   DCHECK(node_);
   DCHECK(attribute_name);
   xmlNewProp(node_.get(),
@@ -53,8 +53,17 @@ void XmlNode::SetNumberAttribute(const char* attribute_name, uint64 number) {
              BAD_CAST (base::Uint64ToString(number).c_str()));
 }
 
+void XmlNode::SetFloatingPointAttribute(const char* attribute_name,
+                                        double number) {
+  DCHECK(node_);
+  DCHECK(attribute_name);
+  xmlNewProp(node_.get(),
+             BAD_CAST attribute_name,
+             BAD_CAST (base::DoubleToString(number).c_str()));
+}
+
 void XmlNode::SetId(uint32 id) {
-  SetNumberAttribute("id", id);
+  SetIntegerAttribute("id", id);
 }
 
 void XmlNode::SetContent(const std::string& content) {
@@ -152,10 +161,10 @@ bool RepresentationXmlNode::AddVideoInfo(
   }
 
   if (width != 0)
-    SetNumberAttribute("width", width);
+    SetIntegerAttribute("width", width);
 
   if (height != 0)
-    SetNumberAttribute("height", height);
+    SetIntegerAttribute("height", height);
 
   return true;
 }
@@ -175,8 +184,8 @@ bool RepresentationXmlNode::AddAudioInfo(
 // classes should do this or maybe in this class.
 bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
   const bool need_segment_base = media_info.has_index_range() ||
-                                 media_info.has_time_scale() ||
-                                 media_info.has_init_range();
+                                 media_info.has_init_range() ||
+                                 media_info.has_reference_time_scale();
 
   if (need_segment_base) {
     XmlNode segment_base("SegmentBase");
@@ -185,8 +194,10 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
                                       RangeToString(media_info.index_range()));
     }
 
-    if (media_info.has_time_scale())
-      segment_base.SetNumberAttribute("timescale", media_info.time_scale());
+    if (media_info.has_reference_time_scale()) {
+      segment_base.SetIntegerAttribute("timescale",
+                                       media_info.reference_time_scale());
+    }
 
     if (media_info.has_init_range()) {
       XmlNode initialization("Initialization");
@@ -209,10 +220,10 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
       return false;
   }
 
-  if (media_info.has_media_duration()) {
+  if (media_info.has_media_duration_seconds()) {
     // Adding 'duration' attribute, so that this information can be used when
     // generating one MPD file. This should be removed from the final MPD.
-    SetNumberAttribute("duration", media_info.media_duration());
+    SetFloatingPointAttribute("duration", media_info.media_duration_seconds());
   }
 
   return true;
@@ -236,7 +247,7 @@ bool RepresentationXmlNode::AddAudioChannelInfo(
         "urn:mpeg:dash:23003:3:audio_channel_configuration:2011";
     audio_channel_config.SetStringAttribute("schemeIdUri",
                                             kAudioChannelConfigScheme);
-    audio_channel_config.SetNumberAttribute("value", *num_channels_it);
+    audio_channel_config.SetIntegerAttribute("value", *num_channels_it);
 
     if (!AddChild(audio_channel_config.PassScopedPtr()))
       return false;
@@ -268,7 +279,7 @@ void RepresentationXmlNode::AddAudioSamplingRateInfo(
 
   if (has_sampling_frequency) {
     if (min_sampling_frequency == max_sampling_frequency) {
-      SetNumberAttribute("audioSamplingRate", min_sampling_frequency);
+      SetIntegerAttribute("audioSamplingRate", min_sampling_frequency);
     } else {
       std::string sample_rate_string =
           base::UintToString(min_sampling_frequency) + " " +

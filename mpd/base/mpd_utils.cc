@@ -34,12 +34,14 @@ namespace dash_packager {
 
 bool HasVODOnlyFields(const MediaInfo& media_info) {
   return media_info.has_init_range() || media_info.has_index_range() ||
-         media_info.has_media_file_name() || media_info.has_media_duration();
+         media_info.has_media_file_name() ||
+         media_info.has_media_duration_seconds();
 }
 
 bool HasLiveOnlyFields(const MediaInfo& media_info) {
   return media_info.has_init_segment_name() ||
-         media_info.has_segment_template() || media_info.has_segment_duration();
+         media_info.has_segment_template() ||
+         media_info.has_segment_duration_seconds();
 }
 
 void RemoveDuplicateAttributes(

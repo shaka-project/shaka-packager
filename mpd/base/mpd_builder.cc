@@ -279,7 +279,7 @@ xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
 
   // Two 'Mandatory' fields for Representation.
   representation.SetId(id_);
-  representation.SetNumberAttribute("bandwidth", media_info_.bandwidth());
+  representation.SetIntegerAttribute("bandwidth", media_info_.bandwidth());
 
   const bool has_video_info = media_info_.video_info_size() > 0;
   const bool has_audio_info = media_info_.audio_info_size() > 0;

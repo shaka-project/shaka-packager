@@ -30,7 +30,8 @@ class XmlNode {
   void SetStringAttribute(const char* attribute_name,
                           const std::string& attribute);
 
-  void SetNumberAttribute(const char* attribute_name, uint64 number);
+  void SetIntegerAttribute(const char* attribute_name, uint64 number);
+  void SetFloatingPointAttribute(const char* attribute_name, double number);
 
   void SetId(uint32 id);
 
