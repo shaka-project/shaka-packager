@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/scoped_ptr.h"
+#include "base/stl_util.h"
 
 struct aes_key_st;
 typedef struct aes_key_st AES_KEY;
@@ -23,12 +24,15 @@ class AesCtrEncryptor {
   ~AesCtrEncryptor();
 
   // Initialize the encryptor with specified key. A random iv will be generated.
-  // |key| size should be 16. |iv_size| should be either 8 or 16.
+  // Return false if either the key or the initialization vector cannot be
+  // used. A valid |key| should be 16 bytes in size. A valid |iv_size| should be
+  // either 8 or 16.
   // |block_offset_| is set to 0.
   bool InitializeWithRandomIv(const std::vector<uint8>& key, uint8 iv_size);
 
-  // Initialize the encryptor with specified key and iv.
-  // |key| size should be 16. |iv| size should be either 8 or 16.
+  // Initialize the encryptor with specified key and iv. Return false if either
+  // the key or the initialization vector cannot be used. A valid |key| should
+  // be 16 bytes in size. A valid |iv| should be 8 bytes or 16 bytes in size.
   // |block_offset_| is set to 0.
   bool InitializeWithIv(const std::vector<uint8>& key,
                         const std::vector<uint8>& iv);
@@ -49,7 +53,7 @@ class AesCtrEncryptor {
     ciphertext->resize(plaintext.size());
     return Encrypt(reinterpret_cast<const uint8*>(plaintext.data()),
                    plaintext.size(),
-                   reinterpret_cast<uint8*>(&(*ciphertext)[0]));
+                   reinterpret_cast<uint8*>(string_as_array(ciphertext)));
   }
 
   // For AES CTR, encryption and decryption are identical.
@@ -74,8 +78,8 @@ class AesCtrEncryptor {
   //   For 128-bit IV size, new_iv = old_iv + previous_sample_block_count.
   void UpdateIv();
 
-  // Set IV. |block_offset_| is reset to 0.
-  void SetIv(const std::vector<uint8>& iv);
+  // Set IV. |block_offset_| is reset to 0. Return false if |iv| is invalid.
+  bool SetIv(const std::vector<uint8>& iv);
 
   const std::vector<uint8>& iv() const { return iv_; }
 
@@ -98,7 +102,59 @@ class AesCtrEncryptor {
   DISALLOW_COPY_AND_ASSIGN(AesCtrEncryptor);
 };
 
-// TODO(kqyang): implement AesCbcEncryptor.
+class AesCbcEncryptor {
+ public:
+  AesCbcEncryptor();
+  ~AesCbcEncryptor();
+
+  // Initialize the encryptor with specified key and iv.
+  // Return false if either the key or the initialization vector cannot be used.
+  // A valid |key| should be 128 bits or 192 bits or 256 bits in size as defined
+  // in AES. A valid |iv| should be 16 bytes in size.
+  bool InitializeWithIv(const std::vector<uint8>& key,
+                        const std::vector<uint8>& iv);
+
+  // |plaintext| will be PKCS5 padded before being encrypted.
+  void Encrypt(const std::string& plaintext, std::string* ciphertext);
+
+  // Set IV. Return false if |iv| is invalid.
+  bool SetIv(const std::vector<uint8>& iv);
+
+  const std::vector<uint8>& iv() const { return iv_; }
+
+ private:
+  std::vector<uint8> iv_;
+  scoped_ptr<AES_KEY> encrypt_key_;
+
+  DISALLOW_COPY_AND_ASSIGN(AesCbcEncryptor);
+};
+
+class AesCbcDecryptor {
+ public:
+  AesCbcDecryptor();
+  ~AesCbcDecryptor();
+
+  // Initialize the decryptor with specified key and iv.
+  // Return false if either the key or the initialization vector cannot be used.
+  // A valid |key| should be 128 bits or 192 bits or 256 bits in size as defined
+  // in AES. A valid |iv| should be 16 bytes in size.
+  bool InitializeWithIv(const std::vector<uint8>& key,
+                        const std::vector<uint8>& iv);
+
+  // We expect |ciphertext| generated with PKCS5 padding. Return false it not.
+  bool Decrypt(const std::string& ciphertext, std::string* plaintext);
+
+  // Set IV. Return false if |iv| is invalid.
+  bool SetIv(const std::vector<uint8>& iv);
+
+  const std::vector<uint8>& iv() const { return iv_; }
+
+ private:
+  std::vector<uint8> iv_;
+  scoped_ptr<AES_KEY> decrypt_key_;
+
+  DISALLOW_COPY_AND_ASSIGN(AesCbcDecryptor);
+};
 
 }  // namespace
 
