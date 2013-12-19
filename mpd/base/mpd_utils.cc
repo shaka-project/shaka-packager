@@ -76,7 +76,7 @@ std::string GetCodecs(const MediaInfo& media_info) {
 }
 
 std::string SecondsToXmlDuration(uint32 seconds) {
-  return "P" + base::UintToString(seconds) + "S";
+  return "PT" + base::UintToString(seconds) + "S";
 }
 
 bool GetDurationAttribute(xmlNodePtr node, uint32* duration) {

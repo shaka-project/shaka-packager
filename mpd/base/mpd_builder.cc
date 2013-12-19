@@ -89,8 +89,9 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
       "urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd";
   mpd.SetStringAttribute("xsi:schemaLocation", kDashSchemaMpd2011);
 
-  static const char kMinBufferTimeTwoSeconds[] = "PT2S";
-  mpd.SetStringAttribute("minBufferTime", kMinBufferTimeTwoSeconds);
+  // Currently set to 2. Does this need calculation?
+  const int kMinBufferTime = 2;
+  mpd.SetStringAttribute("minBufferTime", SecondsToXmlDuration(kMinBufferTime));
 
   // Iterate thru AdaptationSets and add them to one big Period element.
   XmlNode period("Period");
