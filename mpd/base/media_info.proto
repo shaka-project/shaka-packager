@@ -49,6 +49,10 @@ message MediaInfo {
   repeated TextInfo text_info = 4;
   repeated ContentProtection content_protections = 5;
 
+  // This is the reference time scale if there are multiple VideoInfo and/or
+  // AudioInfo.
+  optional uint32 reference_time_scale = 13;
+
   // VOD only.
   optional Range init_range = 6;
   optional Range index_range = 7;
