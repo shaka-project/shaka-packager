@@ -5,12 +5,20 @@
 
 #include "base/memory/scoped_ptr.h"
 #include "third_party/libxml/src/include/libxml/tree.h"
+#include "third_party/libxml/src/include/libxml/xmlschemas.h"
 
 namespace dash_packager {
 namespace xml {
 
 struct XmlDeleter {
   // Called by scoped_ptr. http://goo.gl/YaLbcS
+  inline void operator()(xmlSchemaParserCtxtPtr ptr) const {
+    xmlSchemaFreeParserCtxt(ptr);
+  }
+  inline void operator()(xmlSchemaValidCtxtPtr ptr) const {
+    xmlSchemaFreeValidCtxt(ptr);
+  }
+  inline void operator()(xmlSchemaPtr ptr) const { xmlSchemaFree(ptr); }
   inline void operator()(xmlNodePtr ptr) const { xmlFreeNode(ptr); }
   inline void operator()(xmlDocPtr ptr) const { xmlFreeDoc(ptr); }
   inline void operator()(xmlChar* ptr) const { xmlFree(ptr); }

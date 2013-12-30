@@ -165,7 +165,7 @@ uint32 MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
 
   xmlNodePtr period_node = xmlFirstElementChild(mpd_node->GetRawPtr());
   DCHECK(period_node);
-  DCHECK_NE(strcmp(reinterpret_cast<const char*>(period_node->name), "Period"),
+  DCHECK_EQ(strcmp(reinterpret_cast<const char*>(period_node->name), "Period"),
             0);
 
   // TODO(rkuroiwa): Update this so that the duration for each Representation is

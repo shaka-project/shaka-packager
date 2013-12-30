@@ -1,6 +1,11 @@
 # GYP file for any MPD generation targets.
 
 {
+  'target_defaults': {
+    'include_dirs': [
+      '..',
+    ],
+  },
   'targets': [
     {
       'target_name': 'media_info_proto',
@@ -28,13 +33,27 @@
         'base/xml/xml_node.cc',
         'base/xml/xml_node.h',
       ],
-      'include_dirs': [
-        '..',
-      ],
       'dependencies': [
         '../base/base.gyp:base',
         '../third_party/libxml/libxml.gyp:libxml',
         'media_info_proto',
+      ],
+      'export_dependent_settings': [
+        '../third_party/libxml/libxml.gyp:libxml',
+        'media_info_proto',
+      ],
+    },
+    {
+      'target_name': 'mpd_unittest',
+      'type': 'executable',
+      'sources': [
+        'base/mpd_builder_unittest.cc',
+      ],
+      'dependencies': [
+        '../base/base.gyp:base',
+        '../base/base.gyp:run_all_unittests',
+        '../testing/gtest.gyp:gtest',
+        'mpd_builder',
       ],
     },
   ],
