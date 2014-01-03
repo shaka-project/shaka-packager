@@ -19,6 +19,27 @@ using xml::AdaptationSetXmlNode;
 
 namespace {
 
+std::string GetMimeType(
+    const std::string& prefix,
+    MediaInfo::ContainerType container_type) {
+  switch (container_type) {
+    case MediaInfo::CONTAINER_MP4:
+      return prefix + "/mp4";
+    case MediaInfo::CONTAINER_MPEG2_TS:
+      // TODO(rkuroiwa): Find out whether uppercase or lowercase should be used
+      // for mp2t. DASH MPD spec uses lowercase but RFC3555 says uppercase.
+      return prefix + "/MP2T";
+    case MediaInfo::CONTAINER_WEBM:
+      return prefix + "/webm";
+    default:
+      break;
+  }
+
+  // Unsupported container types should be rejected/handled by the caller.
+  NOTREACHED() << "Unrecognized container type: " << container_type;
+  return std::string();
+}
+
 void AddMpdNameSpaceInfo(XmlNode* mpd) {
   DCHECK(mpd);
 
@@ -101,8 +122,8 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
   XmlNode mpd("MPD");
   AddMpdNameSpaceInfo(&mpd);
 
-  // Currently set to 2. Does this need calculation?
-  const int kMinBufferTime = 2;
+  // TODO(rkuroiwa): Currently set to 2. Does this need calculation?
+  const float kMinBufferTime = 2.0f;
   mpd.SetStringAttribute("minBufferTime", SecondsToXmlDuration(kMinBufferTime));
 
   // Iterate thru AdaptationSets and add them to one big Period element.
@@ -159,7 +180,7 @@ void MpdBuilder::AddStaticMpdInfo(XmlNode* mpd_node) {
       SecondsToXmlDuration(GetStaticMpdDuration(mpd_node)));
 }
 
-uint32 MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
+float MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
   DCHECK(mpd_node);
   DCHECK_EQ(MpdBuilder::kStatic, type_);
 
@@ -168,19 +189,17 @@ uint32 MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
   DCHECK_EQ(strcmp(reinterpret_cast<const char*>(period_node->name), "Period"),
             0);
 
-  // TODO(rkuroiwa): Update this so that the duration for each Representation is
-  // (duration / timescale).
   // Attribute mediaPresentationDuration must be present for 'static' MPD. So
-  // setting "P0S" is still required if none of the representaions had a
-  // duration attribute.
-  uint32 max_duration = 0;
+  // setting "PT0S" is required even if none of the representaions have duration
+  // attribute.
+  float max_duration = 0.0f;
   for (xmlNodePtr adaptation_set = xmlFirstElementChild(period_node);
        adaptation_set;
        adaptation_set = xmlNextElementSibling(adaptation_set)) {
     for (xmlNodePtr representation = xmlFirstElementChild(adaptation_set);
          representation;
          representation = xmlNextElementSibling(representation)) {
-      uint32 duration = 0;
+      float duration = 0.0f;
       if (GetDurationAttribute(representation, &duration)) {
         max_duration = max_duration > duration ? max_duration : duration;
 
@@ -206,20 +225,12 @@ AdaptationSet::~AdaptationSet() {}
 
 Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
   base::AutoLock scoped_lock(lock_);
-  if (HasVODOnlyFields(media_info) && HasLiveOnlyFields(media_info)) {
-    LOG(ERROR) << "MediaInfo cannot have both VOD and Live fields.";
-    return NULL;
-  }
-
-  if (!media_info.has_bandwidth()) {
-    LOG(ERROR) << "MediaInfo missing required bandwidth field.";
-    return NULL;
-  }
-
   scoped_ptr<Representation> representation(
       new Representation(media_info, representation_counter_->GetNext()));
 
-  DCHECK(representation);
+  if (!representation->Init())
+    return NULL;
+
   representations_.push_back(representation.get());
   return representation.release();
 }
@@ -260,6 +271,43 @@ Representation::Representation(const MediaInfo& media_info, uint32 id)
 
 Representation::~Representation() {}
 
+bool Representation::Init() {
+  if (!HasRequiredMediaInfoFields())
+    return false;
+
+  codecs_ = GetCodecs(media_info_);
+  if (codecs_.empty()) {
+    LOG(ERROR) << "Missing codec info in MediaInfo.";
+    return false;
+  }
+
+  const bool has_video_info = media_info_.video_info_size() > 0;
+  const bool has_audio_info = media_info_.audio_info_size() > 0;
+
+  if (!has_video_info && !has_audio_info) {
+    // TODO(rkuroiwa): Allow text input.
+    LOG(ERROR) << "Representation needs video or audio.";
+    return false;
+  }
+
+  if (!media_info_.container_type() == MediaInfo::CONTAINER_UNKNOWN) {
+    // TODO(rkuroiwa): This might not be the right behavior. Maybe somehow
+    // infer from something else like media file name?
+    LOG(ERROR) << "'container_type' in MediaInfo cannot be CONTAINER_UNKNOWN.";
+    return false;
+  }
+
+  // Check video and then audio. Usually when there is audio + video, we take
+  // video/<type>.
+  if (has_video_info) {
+    mime_type_ = GetVideoMimeType();
+  } else if (has_audio_info) {
+    mime_type_ = GetAudioMimeType();
+  }
+
+  return true;
+}
+
 void Representation::AddContentProtectionElement(
     const ContentProtectionElement& content_protection_element) {
   base::AutoLock scoped_lock(lock_);
@@ -289,38 +337,65 @@ xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
     return xml::ScopedXmlPtr<xmlNode>::type();
   }
 
-  // Two 'Mandatory' fields for Representation.
+  // Mandatory fields for Representation.
   representation.SetId(id_);
   representation.SetIntegerAttribute("bandwidth", media_info_.bandwidth());
+  representation.SetStringAttribute("codecs", codecs_);
+  representation.SetStringAttribute("mimeType", mime_type_);
 
   const bool has_video_info = media_info_.video_info_size() > 0;
   const bool has_audio_info = media_info_.audio_info_size() > 0;
-  if (has_video_info || has_audio_info) {
-    const std::string codecs = GetCodecs(media_info_);
-    if (!codecs.empty())
-      representation.SetStringAttribute("codecs", codecs);
 
-    if (has_video_info) {
-      if (!representation.AddVideoInfo(media_info_.video_info()))
-        return xml::ScopedXmlPtr<xmlNode>::type();
-    }
+  if (has_video_info &&
+      !representation.AddVideoInfo(media_info_.video_info())) {
+    LOG(ERROR) << "Failed to add video info to Representation XML.";
+    return xml::ScopedXmlPtr<xmlNode>::type();
+  }
 
-    if (has_audio_info) {
-      if (!representation.AddAudioInfo(media_info_.audio_info()))
-        return xml::ScopedXmlPtr<xmlNode>::type();
-    }
+  if (has_audio_info &&
+      !representation.AddAudioInfo(media_info_.audio_info())) {
+    LOG(ERROR) << "Failed to add audio info to Representation XML.";
+    return xml::ScopedXmlPtr<xmlNode>::type();
   }
 
   // TODO(rkuroiwa): Add TextInfo.
   // TODO(rkuroiwa): Add ContentProtection info.
-  if (HasVODOnlyFields(media_info_)) {
-    if (!representation.AddVODOnlyInfo(media_info_))
-      return xml::ScopedXmlPtr<xmlNode>::type();
+  if (HasVODOnlyFields(media_info_) &&
+      !representation.AddVODOnlyInfo(media_info_)) {
+    LOG(ERROR) << "Failed to add VOD info.";
+    return xml::ScopedXmlPtr<xmlNode>::type();
   }
 
   // TODO(rkuroiwa): Handle Live case. Handle data in
   // segment_starttime_duration_pairs_.
   return representation.PassScopedPtr();
+}
+
+bool Representation::HasRequiredMediaInfoFields() {
+  if (HasVODOnlyFields(media_info_) && HasLiveOnlyFields(media_info_)) {
+    LOG(ERROR) << "MediaInfo cannot have both VOD and Live fields.";
+    return false;
+  }
+
+  if (!media_info_.has_bandwidth()) {
+    LOG(ERROR) << "MediaInfo missing required field: bandwidth.";
+    return false;
+  }
+
+  if (!media_info_.has_container_type()) {
+    LOG(ERROR) << "MediaInfo missing required field: container_type.";
+    return false;
+  }
+
+  return true;
+}
+
+std::string Representation::GetVideoMimeType() const {
+  return GetMimeType("video", media_info_.container_type());
+}
+
+std::string Representation::GetAudioMimeType() const {
+  return GetMimeType("audio", media_info_.container_type());
 }
 
 }  // namespace dash_packager

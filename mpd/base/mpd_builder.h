@@ -63,7 +63,7 @@ class MpdBuilder {
   // Adds 'static' MPD attributes and elements to |mpd_node|. This assumes that
   // the first child element is a Period element.
   void AddStaticMpdInfo(xml::XmlNode* mpd_node);
-  uint32 GetStaticMpdDuration(xml::XmlNode* mpd_node);
+  float GetStaticMpdDuration(xml::XmlNode* mpd_node);
 
   MpdType type_;
   std::list<AdaptationSet*> adaptation_sets_;
@@ -122,6 +122,8 @@ class Representation {
   Representation(const MediaInfo& media_info, uint32 representation_id);
   ~Representation();
 
+  bool Init();
+
   // If |element| has {value, schemeIdUri} set and has
   // {“value”, “schemeIdUri”} as key for additional_attributes,
   // then the former is used.
@@ -140,6 +142,15 @@ class Representation {
   }
 
  private:
+  // Returns whether |media_info_| has required fields to generate a valid
+  // Representation. Returns true on success, otherwise returns false.
+  bool HasRequiredMediaInfoFields();
+
+  // Note: Because 'mimeType' is a required field for a valid MPD, these return
+  // strings.
+  std::string GetVideoMimeType() const;
+  std::string GetAudioMimeType() const;
+
   MediaInfo media_info_;
   std::list<ContentProtectionElement> content_protection_elements_;
   std::list<std::pair<uint64, uint64> > segment_starttime_duration_pairs_;
@@ -147,6 +158,8 @@ class Representation {
   base::Lock lock_;
 
   const uint32 id_;
+  std::string mime_type_;
+  std::string codecs_;
 
   DISALLOW_COPY_AND_ASSIGN(Representation);
 };

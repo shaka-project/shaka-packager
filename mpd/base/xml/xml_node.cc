@@ -180,8 +180,6 @@ bool RepresentationXmlNode::AddAudioInfo(
   return true;
 }
 
-// TODO(rkuroiwa): Add 'mimeType' field to this element. Maybe MPD builder
-// classes should do this or maybe in this class.
 bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
   const bool need_segment_base = media_info.has_index_range() ||
                                  media_info.has_init_range() ||

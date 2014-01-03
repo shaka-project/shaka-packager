@@ -26,12 +26,10 @@ void RemoveDuplicateAttributes(
 // comma.
 std::string GetCodecs(const MediaInfo& media_info);
 
-// TODO(rkuroiwa): This probably needs to change to floating point number.
-// Returns "P<seconds>S".
-std::string SecondsToXmlDuration(uint32 seconds);
+std::string SecondsToXmlDuration(float seconds);
 
 // Tries to get "duration" attribute from |node|. On success |duration| is set.
-bool GetDurationAttribute(xmlNodePtr node, uint32* duration);
+bool GetDurationAttribute(xmlNodePtr node, float* duration);
 
 }  // namespace dash_packager
 

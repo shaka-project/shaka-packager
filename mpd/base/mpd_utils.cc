@@ -77,11 +77,11 @@ std::string GetCodecs(const MediaInfo& media_info) {
   return "";
 }
 
-std::string SecondsToXmlDuration(uint32 seconds) {
-  return "PT" + base::UintToString(seconds) + "S";
+std::string SecondsToXmlDuration(float seconds) {
+  return "PT" + base::DoubleToString(seconds) + "S";
 }
 
-bool GetDurationAttribute(xmlNodePtr node, uint32* duration) {
+bool GetDurationAttribute(xmlNodePtr node, float* duration) {
   DCHECK(node);
   DCHECK(duration);
   static const char kDuration[] = "duration";
@@ -91,8 +91,14 @@ bool GetDurationAttribute(xmlNodePtr node, uint32* duration) {
   if (!duration_value)
     return false;
 
-  return base::StringToUint(reinterpret_cast<const char*>(duration_value.get()),
-                            duration);
+  double duration_double_precision = 0.0;
+  if (!base::StringToDouble(reinterpret_cast<const char*>(duration_value.get()),
+                            &duration_double_precision)) {
+    return false;
+  }
+
+  *duration = static_cast<float>(duration_double_precision);
+  return true;
 }
 
 }  // namespace dash_packager
