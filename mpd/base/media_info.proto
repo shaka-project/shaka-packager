@@ -13,6 +13,13 @@ message Range {
 }
 
 message MediaInfo {
+  enum ContainerType {
+    CONTAINER_UNKNOWN = 0;
+    CONTAINER_MP4 = 1;
+    CONTAINER_MPEG2_TS= 2;
+    CONTAINER_WEBM = 3;
+  }
+
   message VideoInfo {
     optional string codec = 1;
     optional uint32 width = 2;
@@ -64,6 +71,7 @@ message MediaInfo {
   // This is the reference time scale if there are multiple VideoInfo and/or
   // AudioInfo.
   optional uint32 reference_time_scale = 13;
+  optional ContainerType container_type = 14 [default = CONTAINER_UNKNOWN];
 
   // VOD only.
   optional Range init_range = 6;
