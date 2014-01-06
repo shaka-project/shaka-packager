@@ -1,0 +1,27 @@
+URL: http://code.google.com/p/gflags/
+Version: 2.0
+License: New BSD
+License File: LICENSE
+
+Description:
+The gflags package contains a library that implements commandline
+flags processing. As such it's a replacement for getopt(). It has
+increased flexibility, including built-in support for C++ types like
+string, and the ability to define flags in the source file in which
+they're used.
+
+Local Modifications: None
+
+Refer to README.webrtc on how to update platform configuration files.
+
+A brief description of the source files:
+
+README.packager: this file.
+
+Files under src/:
+  Cloned from https://github.com/schuhschuh/gflags
+  SHA eb92d6edceb2bfde33cb1b6e1c74a432b63017e7.
+
+All other files:
+  Fetched from webrtc:
+  https://code.google.com/p/webrtc/source/browse/trunk/third_party/gflags r5342.
