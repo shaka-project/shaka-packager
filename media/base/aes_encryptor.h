@@ -156,6 +156,6 @@ class AesCbcDecryptor {
   DISALLOW_COPY_AND_ASSIGN(AesCbcDecryptor);
 };
 
-}  // namespace
+}  // namespace media
 
 #endif  // MEDIA_BASE_AES_ENCRYPTOR_H_

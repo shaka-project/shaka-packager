@@ -47,6 +47,8 @@
         'media/base/media_stream.h',
         'media/base/muxer.cc',
         'media/base/muxer.h',
+        'media/base/rsa_key.cc',
+        'media/base/rsa_key.h',
         'media/base/status.cc',
         'media/base/status.h',
         'media/base/stream_info.cc',
@@ -81,6 +83,11 @@
         'media/base/bit_reader_unittest.cc',
         'media/base/buffer_writer_unittest.cc',
         'media/base/container_names_unittest.cc',
+        'media/base/fake_prng.cc',  # For rsa_key_unittest
+        'media/base/fake_prng.h',   # For rsa_key_unittest
+        'media/base/rsa_key_unittest.cc',
+        'media/base/rsa_test_data.cc',  # For rsa_key_unittest
+        'media/base/rsa_test_data.h',   # For rsa_key_unittest
         'media/base/status_test_util.h',
         'media/base/status_test_util_unittest.cc',
         'media/base/status_unittest.cc',
