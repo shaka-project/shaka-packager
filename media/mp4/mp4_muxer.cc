@@ -93,10 +93,10 @@ Status MP4Muxer::Initialize() {
 
   if (options().single_segment) {
     segmenter_.reset(
-        new MP4VODSegmenter(options(), ftyp.release(), moov.release()));
+        new MP4VODSegmenter(options(), ftyp.Pass(), moov.Pass()));
   } else {
     segmenter_.reset(
-        new MP4GeneralSegmenter(options(), ftyp.release(), moov.release()));
+        new MP4GeneralSegmenter(options(), ftyp.Pass(), moov.Pass()));
   }
   return segmenter_->Initialize(encryptor_source(), streams());
 }

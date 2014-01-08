@@ -14,9 +14,9 @@ namespace media {
 namespace mp4 {
 
 MP4VODSegmenter::MP4VODSegmenter(const MuxerOptions& options,
-                                 FileType* ftyp,
-                                 Movie* moov)
-    : MP4Segmenter(options, ftyp, moov) {}
+                                 scoped_ptr<FileType> ftyp,
+                                 scoped_ptr<Movie> moov)
+    : MP4Segmenter(options, ftyp.Pass(), moov.Pass()) {}
 MP4VODSegmenter::~MP4VODSegmenter() {}
 
 Status MP4VODSegmenter::Initialize(EncryptorSource* encryptor_source,

@@ -26,7 +26,9 @@ namespace mp4 {
 class MP4VODSegmenter : public MP4Segmenter {
  public:
   // Caller transfers the ownership of |ftyp| and |moov| to this class.
-  MP4VODSegmenter(const MuxerOptions& options, FileType* ftyp, Movie* moov);
+  MP4VODSegmenter(const MuxerOptions& options,
+                  scoped_ptr<FileType> ftyp,
+                  scoped_ptr<Movie> moov);
   ~MP4VODSegmenter();
 
   // MP4Segmenter implementations.

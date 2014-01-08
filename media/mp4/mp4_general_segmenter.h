@@ -29,7 +29,9 @@ struct SegmentType;
 class MP4GeneralSegmenter : public MP4Segmenter {
  public:
   // Caller transfers the ownership of |ftyp| and |moov| to this class.
-  MP4GeneralSegmenter(const MuxerOptions& options, FileType* ftyp, Movie* moov);
+  MP4GeneralSegmenter(const MuxerOptions& options,
+                      scoped_ptr<FileType> ftyp,
+                      scoped_ptr<Movie> moov);
   ~MP4GeneralSegmenter();
 
   // MP4Segmenter implementations.

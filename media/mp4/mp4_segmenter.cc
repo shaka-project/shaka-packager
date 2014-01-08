@@ -26,12 +26,12 @@ namespace media {
 namespace mp4 {
 
 MP4Segmenter::MP4Segmenter(const MuxerOptions& options,
-                           FileType* ftyp,
-                           Movie* moov)
+                           scoped_ptr<FileType> ftyp,
+                           scoped_ptr<Movie> moov)
     : options_(options),
       fragment_buffer_(new BufferWriter()),
-      ftyp_(ftyp),
-      moov_(moov),
+      ftyp_(ftyp.Pass()),
+      moov_(moov.Pass()),
       moof_(new MovieFragment()),
       sidx_(new SegmentIndex()),
       segment_initialized_(false),

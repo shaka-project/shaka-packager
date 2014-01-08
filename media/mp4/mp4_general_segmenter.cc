@@ -16,14 +16,14 @@ namespace media {
 namespace mp4 {
 
 MP4GeneralSegmenter::MP4GeneralSegmenter(const MuxerOptions& options,
-                                         FileType* ftyp,
-                                         Movie* moov)
-    : MP4Segmenter(options, ftyp, moov),
+                                         scoped_ptr<FileType> ftyp,
+                                         scoped_ptr<Movie> moov)
+    : MP4Segmenter(options, ftyp.Pass(), moov.Pass()),
       styp_(new SegmentType),
       num_segments_(0) {
   // Use the same brands for styp as ftyp.
-  styp_->major_brand = ftyp->major_brand;
-  styp_->compatible_brands = ftyp->compatible_brands;
+  styp_->major_brand = MP4Segmenter::ftyp()->major_brand;
+  styp_->compatible_brands = MP4Segmenter::ftyp()->compatible_brands;
 }
 
 MP4GeneralSegmenter::~MP4GeneralSegmenter() {}
