@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_TEST_DATA_UTIL_H_
-#define MEDIA_BASE_TEST_DATA_UTIL_H_
+#ifndef MEDIA_TEST_TEST_DATA_UTIL_H_
+#define MEDIA_TEST_TEST_DATA_UTIL_H_
 
 #include <string>
 
@@ -15,14 +15,9 @@ namespace media {
 // Returns a file path for a file in the media/test/data directory.
 base::FilePath GetTestDataFilePath(const std::string& name);
 
-// Reads a test file from media/test/data directory and stores it in
-// a DecoderBuffer.  Use DecoderBuffer vs DataBuffer to ensure no matter
-// what a test does, it's safe to use FFmpeg methods.
-//
-//  |name| - The name of the file.
-//  |buffer| - The contents of the file.
+// Reads a test file from media/test/data directory and returns its content.
 std::vector<uint8> ReadTestDataFile(const std::string& name);
 
 }  // namespace media
 
-#endif  // MEDIA_BASE_TEST_DATA_UTIL_H_
+#endif  // MEDIA_TEST_TEST_DATA_UTIL_H_

@@ -64,10 +64,9 @@
       'target_name': 'media_test_support',
       'type': 'static_library',
       'sources': [
-        # TODO(kqyang): move these files to test directory.
-        'media/base/run_tests_with_atexit_manager.cc',
-        'media/base/test_data_util.cc',
-        'media/base/test_data_util.h',
+        'media/test/run_tests_with_atexit_manager.cc',
+        'media/test/test_data_util.cc',
+        'media/test/test_data_util.h',
       ],
       'dependencies': [
         'base/base.gyp:base',

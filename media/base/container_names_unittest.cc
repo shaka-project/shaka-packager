@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/file_util.h"
 #include "media/base/container_names.h"
-#include "media/base/test_data_util.h"
+
+#include "base/file_util.h"
+#include "media/test/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

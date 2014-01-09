@@ -11,8 +11,8 @@
 #include "media/base/muxer_options.h"
 #include "media/base/status_test_util.h"
 #include "media/base/stream_info.h"
-#include "media/base/test_data_util.h"
 #include "media/mp4/mp4_muxer.h"
+#include "media/test/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::Combine;

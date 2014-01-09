@@ -4,18 +4,10 @@
 
 #include "media/mp4/mp4_media_parser.h"
 
-#include <algorithm>
-#include <string>
-
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted.h"
-#include "base/time/time.h"
 #include "media/base/media_sample.h"
-#include "media/base/stream_info.h"
-#include "media/base/test_data_util.h"
-#include "media/mp4/es_descriptor.h"
+#include "media/test/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
