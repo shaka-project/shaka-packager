@@ -17,6 +17,24 @@ using xml::XmlNode;
 using xml::RepresentationXmlNode;
 using xml::AdaptationSetXmlNode;
 
+namespace {
+
+void AddMpdNameSpaceInfo(XmlNode* mpd) {
+  DCHECK(mpd);
+
+  static const char kXmlNamespace[] = "urn:mpeg:DASH:schema:MPD:2011";
+  mpd->SetStringAttribute("xmlns", kXmlNamespace);
+  static const char kXmlNamespaceXsi[] = "http://www.w3.org/2001/XMLSchema-instance";
+  mpd->SetStringAttribute("xmlns:xsi", kXmlNamespaceXsi);
+  static const char kXmlNamespaceXlink[] = "http://www.w3.org/1999/xlink";
+  mpd->SetStringAttribute("xmlns:xlink", kXmlNamespaceXlink);
+  static const char kDashSchemaMpd2011[] =
+      "urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd";
+  mpd->SetStringAttribute("xsi:schemaLocation", kDashSchemaMpd2011);
+}
+
+}  // namespace
+
 MpdBuilder::MpdBuilder(MpdType type)
     : type_(type),
       adaptation_sets_deleter_(&adaptation_sets_) {}
@@ -81,13 +99,7 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
   static const char kXmlVersion[] = "1.0";
   xml::ScopedXmlPtr<xmlDoc>::type doc(xmlNewDoc(BAD_CAST kXmlVersion));
   XmlNode mpd("MPD");
-
-  static const char kXmlSchema[] = "http://www.w3.org/2001/XMLSchema-instance";
-  mpd.SetStringAttribute("xmlns:xsi", kXmlSchema);
-
-  static const char kDashSchemaMpd2011[] =
-      "urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd";
-  mpd.SetStringAttribute("xsi:schemaLocation", kDashSchemaMpd2011);
+  AddMpdNameSpaceInfo(&mpd);
 
   // Currently set to 2. Does this need calculation?
   const int kMinBufferTime = 2;
