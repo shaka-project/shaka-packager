@@ -38,16 +38,28 @@ message MediaInfo {
     optional string language = 2;
   }
 
-  message ContentProtection {
-    optional bytes key_id = 1;
-    optional bytes pssh = 2;
+  message ContentProtectionXml {
+    message AttributeNameValuePair {
+      optional string name = 1;
+      optional string value = 2;
+    }
+
+    message Element {
+      repeated AttributeNameValuePair attributes = 1;
+      repeated Element subelements = 2;
+    }
+
+    optional string scheme_id_uri = 1;
+    optional string value = 2;
+    repeated AttributeNameValuePair attributes = 3;
+    repeated Element subelements = 4;
   }
 
   optional uint32 bandwidth = 1;
   repeated VideoInfo video_info = 2;
   repeated AudioInfo audio_info = 3;
   repeated TextInfo text_info = 4;
-  repeated ContentProtection content_protections = 5;
+  repeated ContentProtectionXml content_protections = 5;
 
   // This is the reference time scale if there are multiple VideoInfo and/or
   // AudioInfo.
