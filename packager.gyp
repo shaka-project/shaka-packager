@@ -98,8 +98,8 @@
       'target_name': 'mp4',
       'type': 'static_library',
       'sources': [
-        'media/mp4/aac.cc',
-        'media/mp4/aac.h',
+        'media/mp4/aac_audio_specific_config.cc',
+        'media/mp4/aac_audio_specific_config.h',
         'media/mp4/box.cc',
         'media/mp4/box.h',
         'media/mp4/box_buffer_interface.h',
@@ -147,7 +147,7 @@
       'target_name': 'mp4_unittest',
       'type': 'executable',
       'sources': [
-        'media/mp4/aac_unittest.cc',
+        'media/mp4/aac_audio_specific_config_unittest.cc',
         'media/mp4/box_definitions_unittest.cc',
         'media/mp4/box_reader_unittest.cc',
         'media/mp4/chunk_info_iterator_unittest.cc',

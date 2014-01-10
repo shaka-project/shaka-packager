@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "media/mp4/aac.h"
+#include "media/mp4/aac_audio_specific_config.h"
 #include "media/mp4/box.h"
 #include "media/mp4/es_descriptor.h"
 #include "media/mp4/fourccs.h"
@@ -210,7 +210,7 @@ struct VideoSampleEntry : Box {
 struct ElementaryStreamDescriptor : FullBox {
   DECLARE_BOX_METHODS(ElementaryStreamDescriptor);
 
-  AAC aac;
+  AACAudioSpecificConfig aac_audio_specific_config;
   ESDescriptor es_descriptor;
 };
 

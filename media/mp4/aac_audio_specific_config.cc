@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/mp4/aac.h"
+#include "media/mp4/aac_audio_specific_config.h"
 
 #include <algorithm>
 
@@ -27,16 +27,18 @@ namespace media {
 
 namespace mp4 {
 
-AAC::AAC()
-    : audio_object_type_(0), frequency_index_(0), channel_config_(0),
-      ps_present_(false), frequency_(0), extension_frequency_(0),
-      num_channels_(0) {
-}
+AACAudioSpecificConfig::AACAudioSpecificConfig()
+    : audio_object_type_(0),
+      frequency_index_(0),
+      channel_config_(0),
+      ps_present_(false),
+      frequency_(0),
+      extension_frequency_(0),
+      num_channels_(0) {}
 
-AAC::~AAC() {
-}
+AACAudioSpecificConfig::~AACAudioSpecificConfig() {}
 
-bool AAC::Parse(const std::vector<uint8>& data) {
+bool AACAudioSpecificConfig::Parse(const std::vector<uint8>& data) {
   if (data.empty())
     return false;
 
@@ -125,7 +127,8 @@ bool AAC::Parse(const std::vector<uint8>& data) {
          channel_config_ <= 7;
 }
 
-uint32 AAC::GetOutputSamplesPerSecond(bool sbr_in_mimetype) const {
+uint32 AACAudioSpecificConfig::GetOutputSamplesPerSecond(bool sbr_in_mimetype)
+    const {
   if (extension_frequency_ > 0)
     return extension_frequency_;
 
@@ -140,7 +143,7 @@ uint32 AAC::GetOutputSamplesPerSecond(bool sbr_in_mimetype) const {
   return std::min(2 * frequency_, 48000u);
 }
 
-uint8 AAC::GetNumChannels(bool sbr_in_mimetype) const {
+uint8 AACAudioSpecificConfig::GetNumChannels(bool sbr_in_mimetype) const {
   // Check for implicit signalling of HE-AAC and indicate stereo output
   // if the mono channel configuration is signalled.
   // See ISO-14496-3 Section 1.6.6.1.2 for details about this special casing.
@@ -154,7 +157,7 @@ uint8 AAC::GetNumChannels(bool sbr_in_mimetype) const {
   return num_channels_;
 }
 
-bool AAC::ConvertToADTS(std::vector<uint8>* buffer) const {
+bool AACAudioSpecificConfig::ConvertToADTS(std::vector<uint8>* buffer) const {
   size_t size = buffer->size() + kADTSHeaderSize;
 
   DCHECK(audio_object_type_ >= 1 && audio_object_type_ <= 4 &&
@@ -181,7 +184,7 @@ bool AAC::ConvertToADTS(std::vector<uint8>* buffer) const {
 
 // Currently this function only support GASpecificConfig defined in
 // ISO 14496 Part 3 Table 4.1 - Syntax of GASpecificConfig()
-bool AAC::SkipDecoderGASpecificConfig(BitReader* bit_reader) const {
+bool AACAudioSpecificConfig::SkipDecoderGASpecificConfig(BitReader* bit_reader) const {
   switch (audio_object_type_) {
     case 1:
     case 2:
@@ -203,7 +206,7 @@ bool AAC::SkipDecoderGASpecificConfig(BitReader* bit_reader) const {
   return false;
 }
 
-bool AAC::SkipErrorSpecificConfig() const {
+bool AACAudioSpecificConfig::SkipErrorSpecificConfig() const {
   switch (audio_object_type_) {
     case 17:
     case 19:
@@ -225,7 +228,7 @@ bool AAC::SkipErrorSpecificConfig() const {
 
 // The following code is written according to ISO 14496 part 3 Table 4.1 -
 // GASpecificConfig.
-bool AAC::SkipGASpecificConfig(BitReader* bit_reader) const {
+bool AACAudioSpecificConfig::SkipGASpecificConfig(BitReader* bit_reader) const {
   uint8 extension_flag = 0;
   uint8 depends_on_core_coder;
   uint16 dummy;

@@ -983,8 +983,10 @@ bool ElementaryStreamDescriptor::ReadWrite(BoxBuffer* buffer) {
     std::vector<uint8> data;
     RCHECK(buffer->ReadWriteVector(&data, buffer->Size() - buffer->Pos()));
     RCHECK(es_descriptor.Parse(data));
-    if (es_descriptor.IsAAC())
-      RCHECK(aac.Parse(es_descriptor.decoder_specific_info()));
+    if (es_descriptor.IsAAC()) {
+      RCHECK(aac_audio_specific_config.Parse(
+          es_descriptor.decoder_specific_info()));
+    }
   } else {
     DCHECK(buffer->writer());
     es_descriptor.Write(buffer->writer());

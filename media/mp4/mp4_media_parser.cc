@@ -227,10 +227,11 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       // supported MPEG2 AAC variants.
       if (entry.esds.es_descriptor.IsAAC()) {
         codec = kCodecAAC;
-        const AAC& aac = entry.esds.aac;
-        num_channels = aac.num_channels();
-        sampling_frequency = aac.frequency();
-        audio_object_type = aac.audio_object_type();
+        const AACAudioSpecificConfig& aac_audio_specific_config =
+            entry.esds.aac_audio_specific_config;
+        num_channels = aac_audio_specific_config.num_channels();
+        sampling_frequency = aac_audio_specific_config.frequency();
+        audio_object_type = aac_audio_specific_config.audio_object_type();
         extra_data = entry.esds.es_descriptor.decoder_specific_info();
       } else if (audio_type == kEAC3) {
         codec = kCodecEAC3;

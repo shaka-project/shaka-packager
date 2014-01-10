@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_MP4_AAC_H_
-#define MEDIA_MP4_AAC_H_
+#ifndef MEDIA_MP4_AAC_AUDIO_SPECIFIC_CONFIG_H_
+#define MEDIA_MP4_AAC_AUDIO_SPECIFIC_CONFIG_H_
 
 #include <vector>
 
@@ -19,12 +19,10 @@ namespace mp4 {
 // embedded in the esds box in an ISO BMFF file.
 // Please refer to ISO 14496 Part 3 Table 1.13 - Syntax of AudioSpecificConfig
 // for more details.
-// TODO(kqyang): the class name is not appropriate, it should be
-// AACAudioSpecificConfig instead.
-class AAC {
+class AACAudioSpecificConfig {
  public:
-  AAC();
-  ~AAC();
+  AACAudioSpecificConfig();
+  ~AACAudioSpecificConfig();
 
   // Parse the AAC config from the raw binary data embedded in esds box.
   // The function will parse the data and get the ElementaryStreamDescriptor,
@@ -32,12 +30,12 @@ class AAC {
   // configurations.
   bool Parse(const std::vector<uint8>& data);
 
-  // Gets the output sample rate for the AAC stream.
+  // Get the output sample rate for the AAC stream.
   // |sbr_in_mimetype| should be set to true if the SBR mode is
   // signalled in the mimetype. (ie mp4a.40.5 in the codecs parameter).
   uint32 GetOutputSamplesPerSecond(bool sbr_in_mimetype) const;
 
-  // Gets number of channels for the AAC stream.
+  // Get number of channels for the AAC stream.
   // |sbr_in_mimetype| should be set to true if the SBR mode is
   // signalled in the mimetype. (ie mp4a.40.5 in the codecs parameter).
   uint8 GetNumChannels(bool sbr_in_mimetype) const;
@@ -85,7 +83,6 @@ class AAC {
 };
 
 }  // namespace mp4
-
 }  // namespace media
 
-#endif  // MEDIA_MP4_AAC_H_
+#endif  // MEDIA_MP4_AAC_AUDIO_SPECIFIC_CONFIG_H_
