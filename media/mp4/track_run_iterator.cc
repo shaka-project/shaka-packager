@@ -176,17 +176,17 @@ bool TrackRunIterator::Init() {
     uint32 num_chunks = chunk_offset_vector.size();
 
     // Check that total number of samples match.
-    DCHECK(num_samples == decoding_time.NumSamples() &&
-           num_samples == composition_offset.NumSamples() &&
-           (num_chunks == 0 ||
-            num_samples == chunk_info.NumSamples(1, num_chunks)) &&
-           num_chunks >= chunk_info.LastFirstChunk());
+    DCHECK_EQ(num_samples, decoding_time.NumSamples());
+    if (has_composition_offset)
+      DCHECK_EQ(num_samples, composition_offset.NumSamples());
+    if (num_chunks > 0)
+      DCHECK_EQ(num_samples, chunk_info.NumSamples(1, num_chunks));
+    DCHECK_GE(num_chunks, chunk_info.LastFirstChunk());
 
     if (num_samples > 0) {
       // Verify relevant tables are not empty.
-      RCHECK(decoding_time.IsValid() &&
-             composition_offset.IsValid() &&
-             chunk_info.IsValid());
+      RCHECK(decoding_time.IsValid());
+      RCHECK(chunk_info.IsValid());
     }
 
     uint32 sample_index = 0;
