@@ -25,9 +25,6 @@
 
 namespace {
 
-// The size of generated IV for this encryptor source.
-const uint8 kIvSize = 8;
-
 bool Base64StringToBytes(const std::string& base64_string,
                          std::vector<uint8>* bytes) {
   DCHECK(bytes);
@@ -117,7 +114,7 @@ bool WidevineEncryptorSource::SetAesSigningKey(const std::string& signer,
   }
 
   scoped_ptr<AesCbcEncryptor> encryptor(new AesCbcEncryptor());
-  if (!encryptor->Initialize(aes_key, iv)) {
+  if (!encryptor->InitializeWithIv(aes_key, iv)) {
     LOG(ERROR) << "Failed to initialize encryptor with key: " << aes_key_hex
                << " iv:" << iv_hex;
     return false;
@@ -166,11 +163,6 @@ Status WidevineEncryptorSource::Initialize() {
                   "Failed to extract encryption key from '" + response + "'.");
   }
 
-  // TODO(kqyang): Move the creation of encryptor to Muxer.
-  scoped_ptr<AesCtrEncryptor> encryptor(new AesCtrEncryptor());
-  CHECK(encryptor->InitializeWithRandomIv(key, kIvSize));
-
-  set_encryptor(encryptor.Pass());
   set_key_id(key_id);
   set_key(key);
   set_pssh(pssh);

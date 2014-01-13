@@ -15,8 +15,7 @@ class FixedEncryptorSource : public EncryptorSource {
  public:
   FixedEncryptorSource(const std::string& key_id_hex,
                        const std::string& key_hex,
-                       const std::string& pssh_hex,
-                       uint32 clear_milliseconds);
+                       const std::string& pssh_hex);
   virtual ~FixedEncryptorSource();
 
   // EncryptorSource implementation.
