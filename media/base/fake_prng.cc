@@ -8,7 +8,7 @@
 
 #include "base/file_util.h"
 #include "base/logging.h"
-#include "media/base/test_data_util.h"
+#include "media/test/test_data_util.h"
 
 namespace {
 
