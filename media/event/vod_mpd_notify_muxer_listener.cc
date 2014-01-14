@@ -22,7 +22,8 @@ VodMpdNotifyMuxerListener::~VodMpdNotifyMuxerListener() {}
 
 void VodMpdNotifyMuxerListener::OnMediaStart(
     const MuxerOptions& muxer_options,
-    const std::vector<StreamInfo*>& stream_infos) {}
+    const std::vector<StreamInfo*>& stream_infos,
+    uint32 time_scale) {}
 
 void VodMpdNotifyMuxerListener::OnMediaEnd(
     const std::vector<StreamInfo*>& stream_infos,
@@ -53,8 +54,7 @@ void VodMpdNotifyMuxerListener::OnMediaEnd(
   mpd_notifier_->NotifyNewContainer(media_info, &id);
 }
 
-void VodMpdNotifyMuxerListener::OnNewSegment(uint32 time_scale,
-                                             uint64 start_time,
+void VodMpdNotifyMuxerListener::OnNewSegment(uint64 start_time,
                                              uint64 duration,
                                              uint64 segment_file_size) {}
 

@@ -13,6 +13,8 @@ class StreamInfo;
 
 namespace event {
 
+// TODO(rkuroiwa): Need a solution to report a problem to the user. One idea is
+// to add GetStatus() method somewhere (maybe in MuxerListener, maybe not).
 class MuxerListener {
  public:
   MuxerListener() {};
