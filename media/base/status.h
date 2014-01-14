@@ -52,7 +52,11 @@ enum Code {
   // This track fragment is finalized.
   FRAGMENT_FINALIZED,
 
-  // TODO(kqyang): define packager specific error codes.
+  // Server errors. Receives malformed response from server.
+  SERVER_ERROR,
+
+  // Internal errors. Some invariants have been broken.
+  INTERNAL_ERROR,
 };
 
 }  // namespace error

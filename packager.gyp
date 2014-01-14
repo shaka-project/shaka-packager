@@ -10,6 +10,41 @@
   },
   'targets': [
     {
+      'target_name': 'httpfetcher',
+      'type': 'static_library',
+      'sources': [
+        'media/base/httpfetcher.cc',
+        'media/base/httpfetcher.h',
+        'media/base/status.cc',
+      ],
+      'cflags!': [ '-fno-exceptions' ],
+      'cflags_cc!': [ '-fno-exceptions' ],
+      'conditions': [
+        ['OS=="mac"', {
+          'xcode_settings': {
+            'GCC_ENABLE_CPP_EXCEPTIONS': 'YES'
+          }
+        }]
+      ],
+      'dependencies': [
+        'third_party/happyhttp/happyhttp.gyp:happyhttp_lib',
+      ],
+    },
+    {
+      # Note that this test performs real http requests to a http server.
+      'target_name': 'httpfetcher_unittest',
+      'type': 'executable',
+      'sources': [
+        'media/base/httpfetcher_unittest.cc',
+      ],
+      'dependencies': [
+        'base/base.gyp:base',
+        'httpfetcher',
+        'testing/gtest.gyp:gtest',
+        'testing/gtest.gyp:gtest_main',
+      ],
+    },
+    {
       'target_name': 'media_base',
       'type': 'static_library',
       'sources': [
@@ -49,6 +84,8 @@
         'media/base/muxer.h',
         'media/base/muxer_options.cc',
         'media/base/muxer_options.h',
+        'media/base/request_signer.cc',
+        'media/base/request_signer.h',
         'media/base/rsa_key.cc',
         'media/base/rsa_key.h',
         'media/base/status.cc',
@@ -58,9 +95,12 @@
         'media/base/text_track.h',
         'media/base/video_stream_info.cc',
         'media/base/video_stream_info.h',
+        'media/base/widevine_encryptor_source.cc',
+        'media/base/widevine_encryptor_source.h',
       ],
       'dependencies': [
         'base/base.gyp:base',
+        'httpfetcher',
         'third_party/openssl/openssl.gyp:openssl',
       ],
     },
@@ -110,7 +150,7 @@
         'media/mp4/aac_audio_specific_config.h',
         'media/mp4/box.cc',
         'media/mp4/box.h',
-        'media/mp4/box_buffer_interface.h',
+        'media/mp4/box_buffer.h',
         'media/mp4/box_definitions.cc',
         'media/mp4/box_definitions.h',
         'media/mp4/box_reader.cc',

@@ -7,11 +7,9 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/sha1.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
-#include "media/base/aes_encryptor.h"
 #include "media/base/httpfetcher.h"
+#include "media/base/request_signer.h"
 
 // TODO(kqyang): Move media/mp4/rcheck.h to media/base/.
 //               Remove this definition and use RCHECK in rcheck.h instead.
@@ -87,50 +85,15 @@ namespace media {
 
 WidevineEncryptorSource::WidevineEncryptorSource(const std::string& server_url,
                                                  const std::string& content_id,
-                                                 TrackType track_type)
+                                                 TrackType track_type,
+                                                 scoped_ptr<RequestSigner> signer)
     : server_url_(server_url),
       content_id_(content_id),
-      track_type_(track_type) {
-  DCHECK(!server_url.empty());
-  DCHECK(!content_id.empty());
+      track_type_(track_type),
+      signer_(signer.Pass()) {
+  DCHECK(signer_);
 }
 WidevineEncryptorSource::~WidevineEncryptorSource() {}
-
-bool WidevineEncryptorSource::SetAesSigningKey(const std::string& signer,
-                                               const std::string& aes_key_hex,
-                                               const std::string& iv_hex) {
-  DCHECK(!aes_cbc_encryptor_);
-  signer_ = signer;
-
-  std::vector<uint8> aes_key;
-  if (!base::HexStringToBytes(aes_key_hex, &aes_key)) {
-    LOG(ERROR) << "Failed to convert hex string to bytes: " << aes_key_hex;
-    return false;
-  }
-  std::vector<uint8> iv;
-  if (!base::HexStringToBytes(iv_hex, &iv)) {
-    LOG(ERROR) << "Failed to convert hex string to bytes: " << iv_hex;
-    return false;
-  }
-
-  scoped_ptr<AesCbcEncryptor> encryptor(new AesCbcEncryptor());
-  if (!encryptor->InitializeWithIv(aes_key, iv)) {
-    LOG(ERROR) << "Failed to initialize encryptor with key: " << aes_key_hex
-               << " iv:" << iv_hex;
-    return false;
-  }
-  aes_cbc_encryptor_ = encryptor.Pass();
-  return true;
-}
-
-bool WidevineEncryptorSource::SetRsaSigningKey(
-    const std::string& signer,
-    const std::string& pkcs8_rsa_key) {
-  DCHECK(!aes_cbc_encryptor_);
-  // TODO(kqyang): Implement it.
-  NOTIMPLEMENTED();
-  return false;
-}
 
 Status WidevineEncryptorSource::Initialize() {
   std::string request;
@@ -169,13 +132,17 @@ Status WidevineEncryptorSource::Initialize() {
   return Status::OK;
 }
 
-void WidevineEncryptorSource::GenerateSignature(const std::string& message,
-                                                std::string* signature) {
-  DCHECK(signature);
-  if (aes_cbc_encryptor_)
-    aes_cbc_encryptor_->Encrypt(base::SHA1HashString(message), signature);
-  else
-    NOTIMPLEMENTED() << "Rsa signing is not implemented yet.";
+WidevineEncryptorSource::TrackType
+WidevineEncryptorSource::GetTrackTypeFromString(
+    const std::string& track_type_string) {
+  if (track_type_string == "SD")
+    return TRACK_TYPE_SD;
+  if (track_type_string == "HD")
+    return TRACK_TYPE_HD;
+  if (track_type_string == "AUDIO")
+    return TRACK_TYPE_AUDIO;
+  LOG(WARNING) << "Unexpected track type: " << track_type_string;
+  return TRACK_TYPE_UNKNOWN;
 }
 
 void WidevineEncryptorSource::FillRequest(const std::string& content_id,
@@ -219,7 +186,8 @@ Status WidevineEncryptorSource::SignRequest(const std::string& request,
 
   // Sign the request.
   std::string signature;
-  GenerateSignature(request, &signature);
+  if (!signer_->GenerateSignature(request, &signature))
+    return Status(error::INTERNAL_ERROR, "Signature generation failed.");
 
   // Encode request and signature using Base64 encoding.
   std::string request_base64_string;
@@ -231,7 +199,7 @@ Status WidevineEncryptorSource::SignRequest(const std::string& request,
   base::DictionaryValue signed_request_dict;
   signed_request_dict.SetString("request", request_base64_string);
   signed_request_dict.SetString("signature", signature_base64_string);
-  signed_request_dict.SetString("signer", signer_);
+  signed_request_dict.SetString("signer", signer_->signer_name());
 
   base::JSONWriter::Write(&signed_request_dict, signed_request);
   return Status::OK;
@@ -258,17 +226,7 @@ bool WidevineEncryptorSource::DecodeResponse(const std::string& raw_response,
 
 bool WidevineEncryptorSource::IsExpectedTrackType(
     const std::string& track_type_string) {
-  switch (track_type_) {
-    case TRACK_TYPE_SD:
-      return track_type_string == "SD";
-    case TRACK_TYPE_HD:
-      return track_type_string == "HD";
-    case TRACK_TYPE_AUDIO:
-      return track_type_string == "AUDIO";
-    default:
-      NOTREACHED() << "Unexpected track type " << track_type_;
-      return false;
-  }
+  return track_type_ == GetTrackTypeFromString(track_type_string);
 }
 
 bool WidevineEncryptorSource::ExtractEncryptionKey(const std::string& response,

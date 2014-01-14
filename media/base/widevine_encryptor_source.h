@@ -5,9 +5,12 @@
 #ifndef MEDIA_BASE_WIDEVINE_ENCRYPTOR_SOURCE_H_
 #define MEDIA_BASE_WIDEVINE_ENCRYPTOR_SOURCE_H_
 
+#include "base/basictypes.h"
 #include "media/base/encryptor_source.h"
 
 namespace media {
+
+class RequestSigner;
 
 // Defines an encryptor source which talks to Widevine encryption server.
 class WidevineEncryptorSource : public EncryptorSource {
@@ -19,29 +22,20 @@ class WidevineEncryptorSource : public EncryptorSource {
     TRACK_TYPE_AUDIO
   };
 
+  // Caller transfers the ownership of |signer|, which should not be NULL.
   WidevineEncryptorSource(const std::string& server_url,
                           const std::string& content_id,
-                          TrackType track_type);
-  ~WidevineEncryptorSource();
-
-  // Set AES Signing Key. Use AES-CBC signing for the encryption request.
-  bool SetAesSigningKey(const std::string& signer,
-                        const std::string& aes_key_hex,
-                        const std::string& iv_hex);
-
-  // Set RSA Signing Key. Use RSA-PSS signing for the encryption request.
-  bool SetRsaSigningKey(const std::string& signer,
-                        const std::string& pkcs8_rsa_key);
+                          TrackType track_type,
+                          scoped_ptr<RequestSigner> signer);
+  virtual ~WidevineEncryptorSource();
 
   // EncryptorSource implementation.
-  // Note: SetAesSigningKey or SetRsaSigningKey (exclusive) must be called
-  //       before calling Initialize.
   virtual Status Initialize() OVERRIDE;
 
+  static WidevineEncryptorSource::TrackType GetTrackTypeFromString(
+      const std::string& track_type_string);
+
  private:
-  // Generate signature using AES-CBC or RSA-PSS.
-  // |signature| should not be NULL.
-  void GenerateSignature(const std::string& message, std::string* signature);
   // Fill |request| with necessary fields for Widevine encryption request.
   // |request| should not be NULL.
   void FillRequest(const std::string& content_id, std::string* request);
@@ -63,9 +57,7 @@ class WidevineEncryptorSource : public EncryptorSource {
   std::string server_url_;
   std::string content_id_;
   TrackType track_type_;
-
-  std::string signer_;
-  scoped_ptr<AesCbcEncryptor> aes_cbc_encryptor_;
+  scoped_ptr<RequestSigner> signer_;
 
   DISALLOW_COPY_AND_ASSIGN(WidevineEncryptorSource);
 };
