@@ -52,10 +52,14 @@ message MediaInfo {
     }
 
     message Element {
-      repeated AttributeNameValuePair attributes = 1;
-      repeated Element subelements = 2;
+      optional string name = 1;
+      repeated AttributeNameValuePair attributes = 2;
+      repeated Element subelements = 3;
     }
 
+    // These two string fields are specified by the MPD spec. Just for
+    // clarification, the string set in |value| is the rhs of 'value' field in
+    // <ContentProtection>.
     optional string scheme_id_uri = 1;
     optional string value = 2;
     repeated AttributeNameValuePair attributes = 3;
