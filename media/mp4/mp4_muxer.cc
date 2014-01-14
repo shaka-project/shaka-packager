@@ -33,9 +33,7 @@ uint64 IsoTimeNow() {
 namespace media {
 namespace mp4 {
 
-MP4Muxer::MP4Muxer(const MuxerOptions& options,
-                   EncryptorSource* encryptor_source)
-    : Muxer(options, encryptor_source) {}
+MP4Muxer::MP4Muxer(const MuxerOptions& options) : Muxer(options) {}
 MP4Muxer::~MP4Muxer() {}
 
 Status MP4Muxer::Initialize() {
@@ -98,7 +96,8 @@ Status MP4Muxer::Initialize() {
     segmenter_.reset(
         new MP4GeneralSegmenter(options(), ftyp.Pass(), moov.Pass()));
   }
-  return segmenter_->Initialize(encryptor_source(), streams());
+  return segmenter_->Initialize(
+      encryptor_source(), clear_lead_in_seconds(), streams());
 }
 
 Status MP4Muxer::Finalize() {
@@ -152,7 +151,7 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   if (IsEncryptionRequired()) {
     DCHECK(encryptor_source() != NULL);
     // Add a second entry for clear content if needed.
-    if (encryptor_source()->clear_milliseconds() > 0)
+    if (clear_lead_in_seconds() > 0)
       sample_description.video_entries.push_back(video);
 
     VideoSampleEntry& encrypted_video = sample_description.video_entries[0];
@@ -192,7 +191,7 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
   if (IsEncryptionRequired()) {
     DCHECK(encryptor_source() != NULL);
     // Add a second entry for clear content if needed.
-    if (encryptor_source()->clear_milliseconds() > 0)
+    if (clear_lead_in_seconds() > 0)
       sample_description.audio_entries.push_back(audio);
 
     AudioSampleEntry& encrypted_audio = sample_description.audio_entries[0];
@@ -209,13 +208,11 @@ void MP4Muxer::GeneratePssh(ProtectionSystemSpecificHeader* pssh) {
 
 void MP4Muxer::GenerateSinf(ProtectionSchemeInfo* sinf, FourCC old_type) {
   DCHECK(encryptor_source() != NULL);
-  DCHECK(encryptor_source()->encryptor() != NULL);
   sinf->format.format = old_type;
   sinf->type.type = FOURCC_CENC;
   sinf->type.version = kCencSchemeVersion;
   sinf->info.track_encryption.is_encrypted = true;
-  sinf->info.track_encryption.default_iv_size =
-      encryptor_source()->encryptor()->iv().size();
+  sinf->info.track_encryption.default_iv_size = encryptor_source()->iv_size();
   sinf->info.track_encryption.default_kid = encryptor_source()->key_id();
 }
 

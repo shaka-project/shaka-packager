@@ -40,6 +40,7 @@ MP4Segmenter::MP4Segmenter(const MuxerOptions& options,
 MP4Segmenter::~MP4Segmenter() { STLDeleteElements(&fragmenters_); }
 
 Status MP4Segmenter::Initialize(EncryptorSource* encryptor_source,
+                                double clear_lead_in_seconds,
                                 const std::vector<MediaStream*>& streams) {
   DCHECK_LT(0, streams.size());
   moof_->header.sequence_number = 0;
@@ -59,13 +60,17 @@ Status MP4Segmenter::Initialize(EncryptorSource* encryptor_source,
       if (sidx_->reference_id == 0)
         sidx_->reference_id = i + 1;
     }
-    int64 clear_time = 0;
+    scoped_ptr<AesCtrEncryptor> encryptor;
     if (encryptor_source) {
-      clear_time = encryptor_source->clear_milliseconds() / 1000.0 *
-                   streams[i]->info()->time_scale();
+      encryptor = encryptor_source->CreateEncryptor();
+      if (!encryptor)
+        return Status(error::MUXER_FAILURE, "Failed to create the encryptor.");
     }
     fragmenters_[i] = new MP4Fragmenter(
-        &moof_->tracks[i], encryptor_source, clear_time, nalu_length_size);
+        &moof_->tracks[i],
+        encryptor.Pass(),
+        clear_lead_in_seconds * streams[i]->info()->time_scale(),
+        nalu_length_size);
   }
 
   // Choose the first stream if there is no VIDEO.

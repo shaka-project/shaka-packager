@@ -33,6 +33,7 @@ class MP4VODSegmenter : public MP4Segmenter {
 
   // MP4Segmenter implementations.
   virtual Status Initialize(EncryptorSource* encryptor_source,
+                            double clear_lead_in_seconds,
                             const std::vector<MediaStream*>& streams) OVERRIDE;
   virtual Status Finalize() OVERRIDE;
 

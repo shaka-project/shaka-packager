@@ -48,6 +48,7 @@ class MP4Segmenter {
   // Initialize the segmenter. Caller retains the ownership of
   // |encryptor_source|. |encryptor_source| can be NULL.
   virtual Status Initialize(EncryptorSource* encryptor_source,
+                            double clear_lead_in_seconds,
                             const std::vector<MediaStream*>& streams);
 
   virtual Status Finalize();

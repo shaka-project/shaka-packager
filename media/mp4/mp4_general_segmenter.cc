@@ -30,8 +30,10 @@ MP4GeneralSegmenter::~MP4GeneralSegmenter() {}
 
 Status MP4GeneralSegmenter::Initialize(
     EncryptorSource* encryptor_source,
+    double clear_lead_in_seconds,
     const std::vector<MediaStream*>& streams) {
-  Status status = MP4Segmenter::Initialize(encryptor_source, streams);
+  Status status = MP4Segmenter::Initialize(
+      encryptor_source, clear_lead_in_seconds, streams);
   if (!status.ok())
     return status;
 

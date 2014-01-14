@@ -26,7 +26,7 @@ struct Track;
 
 class MP4Muxer : public Muxer {
  public:
-  MP4Muxer(const MuxerOptions& options, EncryptorSource* encryptor_source);
+  explicit MP4Muxer(const MuxerOptions& options);
   virtual ~MP4Muxer();
 
   // Muxer implementations.

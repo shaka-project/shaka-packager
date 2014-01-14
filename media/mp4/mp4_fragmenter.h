@@ -17,8 +17,8 @@
 
 namespace media {
 
+class AesCtrEncryptor;
 class BufferWriter;
-class EncryptorSource;
 class MediaSample;
 
 namespace mp4 {
@@ -28,12 +28,12 @@ class TrackFragment;
 
 class MP4Fragmenter {
  public:
-  // Caller retains the ownership of |traf| and |encryptor_source|.
-  // |clear_time| specifies clear time in the current track timescale.
-  // |nalu_length_size| specifies NAL unit length size, for subsample
-  // encryption.
+  // Caller retains the ownership of |traf| and transfers ownership of
+  // |encryptor|. |clear_time| specifies clear time in the current track
+  // timescale. |nalu_length_size| specifies NAL unit length size, for
+  // subsample encryption.
   MP4Fragmenter(TrackFragment* traf,
-                EncryptorSource* encryptor_source,
+                scoped_ptr<AesCtrEncryptor> encryptor,
                 int64 clear_time,
                 uint8 nalu_length_size);
   ~MP4Fragmenter();
@@ -64,7 +64,7 @@ class MP4Fragmenter {
 
   // Should we enable encrytion for the current fragment?
   bool ShouldEncryptFragment() {
-    return (encryptor_source_ != NULL && clear_time_ <= 0);
+    return (encryptor_ != NULL && clear_time_ <= 0);
   }
 
   // Should we enable subsample encryption?
@@ -73,7 +73,7 @@ class MP4Fragmenter {
   // Check if the current fragment starts with SAP.
   bool StartsWithSAP();
 
-  EncryptorSource* encryptor_source_;
+  scoped_ptr<AesCtrEncryptor> encryptor_;
   // If this stream contains AVC, subsample encryption specifies that the size
   // and type of NAL units remain unencrypted. This field specifies the size of
   // the size field. Can be 1, 2 or 4 bytes.

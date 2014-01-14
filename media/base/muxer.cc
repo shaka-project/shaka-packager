@@ -10,10 +10,16 @@
 
 namespace media {
 
-Muxer::Muxer(const MuxerOptions& options, EncryptorSource* encrytor_source)
-    : options_(options), encryptor_source_(encrytor_source) {}
+Muxer::Muxer(const MuxerOptions& options)
+    : options_(options), encryptor_source_(NULL), clear_lead_in_seconds_(0) {}
 
 Muxer::~Muxer() {}
+
+void Muxer::SetEncryptorSource(EncryptorSource* encryptor_source,
+                               double clear_lead_in_seconds) {
+  encryptor_source_ = encryptor_source;
+  clear_lead_in_seconds_ = clear_lead_in_seconds;
+}
 
 Status Muxer::AddStream(MediaStream* stream) {
   stream->Connect(this);

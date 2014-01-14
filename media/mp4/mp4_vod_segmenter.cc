@@ -20,8 +20,10 @@ MP4VODSegmenter::MP4VODSegmenter(const MuxerOptions& options,
 MP4VODSegmenter::~MP4VODSegmenter() {}
 
 Status MP4VODSegmenter::Initialize(EncryptorSource* encryptor_source,
+                                   double clear_lead_in_seconds,
                                    const std::vector<MediaStream*>& streams) {
-  Status status = MP4Segmenter::Initialize(encryptor_source, streams);
+  Status status = MP4Segmenter::Initialize(
+      encryptor_source, clear_lead_in_seconds, streams);
   if (!status.ok())
     return status;
   temp_file_.reset(File::Open(options().temp_file_name.c_str(), "w"));

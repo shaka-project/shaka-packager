@@ -7,7 +7,6 @@
 #include "media/base/aes_encryptor.h"
 #include "media/base/buffer_reader.h"
 #include "media/base/buffer_writer.h"
-#include "media/base/encryptor_source.h"
 #include "media/base/media_sample.h"
 #include "media/mp4/box_definitions.h"
 #include "media/mp4/cenc.h"
@@ -40,10 +39,10 @@ namespace media {
 namespace mp4 {
 
 MP4Fragmenter::MP4Fragmenter(TrackFragment* traf,
-                             EncryptorSource* encryptor_source,
+                             scoped_ptr<AesCtrEncryptor> encryptor,
                              int64 clear_time,
                              uint8 nalu_length_size)
-    : encryptor_source_(encryptor_source),
+    : encryptor_(encryptor.Pass()),
       nalu_length_size_(nalu_length_size),
       traf_(traf),
       fragment_finalized_(false),
@@ -106,16 +105,15 @@ void MP4Fragmenter::InitializeFragment() {
 
   if (ShouldEncryptFragment()) {
     if (!IsSubsampleEncryptionRequired()) {
-      DCHECK(encryptor_source_ != NULL);
-      traf_->auxiliary_size.default_sample_info_size =
-          encryptor_source_->encryptor()->iv().size();
+      DCHECK(encryptor_);
+      traf_->auxiliary_size.default_sample_info_size = encryptor_->iv().size();
     }
   }
 }
 
 void MP4Fragmenter::FinalizeFragment() {
   if (ShouldEncryptFragment()) {
-    DCHECK(encryptor_source_ != NULL);
+    DCHECK(encryptor_);
 
     // The offset will be adjusted in Segmenter when we know moof size.
     traf_->auxiliary_offset.offsets.push_back(0);
@@ -129,7 +127,7 @@ void MP4Fragmenter::FinalizeFragment() {
         saiz.default_sample_info_size = 0;
       }
     }
-  } else if (encryptor_source_ && clear_time_ > 0) {
+  } else if (encryptor_ && clear_time_ > 0) {
     // This fragment should be in clear.
     // We generate at most two sample description entries, encrypted entry and
     // clear entry. The 1-based clear entry index is always 2.
@@ -182,13 +180,14 @@ void MP4Fragmenter::GenerateSegmentReference(SegmentReference* reference) {
 }
 
 void MP4Fragmenter::EncryptBytes(uint8* data, uint32 size) {
-  CHECK(encryptor_source_->encryptor()->Encrypt(data, size, data));
+  DCHECK(encryptor_);
+  CHECK(encryptor_->Encrypt(data, size, data));
 }
 
 Status MP4Fragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
-  DCHECK(encryptor_source_ != NULL && encryptor_source_->encryptor() != NULL);
+  DCHECK(encryptor_);
 
-  FrameCENCInfo cenc_info(encryptor_source_->encryptor()->iv());
+  FrameCENCInfo cenc_info(encryptor_->iv());
   uint8* data = sample->writable_data();
   if (!IsSubsampleEncryptionRequired()) {
     EncryptBytes(data, sample->data_size());
@@ -217,7 +216,7 @@ Status MP4Fragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
   }
 
   cenc_info.Write(aux_data_.get());
-  encryptor_source_->encryptor()->UpdateIv();
+  encryptor_->UpdateIv();
   return Status::OK;
 }
 

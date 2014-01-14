@@ -22,8 +22,13 @@ class MediaStream;
 
 class Muxer {
  public:
-  Muxer(const MuxerOptions& options, EncryptorSource* encryptor_source);
+  explicit Muxer(const MuxerOptions& options);
   virtual ~Muxer();
+
+  // Set encryptor source. Caller retains ownership of |encryptor_source|.
+  // Should be called before calling Initialize().
+  void SetEncryptorSource(EncryptorSource* encryptor_source,
+                          double clear_lead_in_seconds);
 
   // Initialize the muxer. Must be called after connecting all the streams.
   virtual Status Initialize() = 0;
@@ -46,11 +51,13 @@ class Muxer {
  protected:
   const MuxerOptions& options() const { return options_; }
   EncryptorSource* encryptor_source() { return encryptor_source_; }
+  double clear_lead_in_seconds() const { return clear_lead_in_seconds_; }
 
  private:
   MuxerOptions options_;
   std::vector<MediaStream*> streams_;
-  EncryptorSource* const encryptor_source_;
+  EncryptorSource* encryptor_source_;
+  double clear_lead_in_seconds_;
 
   DISALLOW_COPY_AND_ASSIGN(Muxer);
 };
