@@ -68,6 +68,10 @@ class RepresentationBaseXmlNode : public XmlNode {
   bool AddContentProtectionElements(
       const std::list<ContentProtectionElement>& content_protection_elements);
 
+  // Return true on success. If content_protections size is 0 in |media_info|,
+  // this will return true. Otherwise return false.
+  bool AddContentProtectionElementsFromMediaInfo(const MediaInfo& media_info);
+
  protected:
   explicit RepresentationBaseXmlNode(const char* name);
 

@@ -323,7 +323,9 @@ bool Representation::AddNewSegment(uint64 start_time, uint64 duration) {
 }
 
 // TODO(rkuroiwa): We don't need to create a node every single time. Make an
-// internal copy of this element.
+// internal copy of this element. Then move most of the logic to
+// RepresentationXmlNode so that all the work is done in it so that this class
+// just becomes a thin layer.
 // Uses info in |media_info_| and |content_protection_elements_| to create a
 // "Representation" node.
 xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
@@ -336,6 +338,9 @@ xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
            content_protection_elements_)) {
     return xml::ScopedXmlPtr<xmlNode>::type();
   }
+
+  if (!representation.AddContentProtectionElementsFromMediaInfo(media_info_))
+    return xml::ScopedXmlPtr<xmlNode>::type();
 
   // Mandatory fields for Representation.
   representation.SetId(id_);

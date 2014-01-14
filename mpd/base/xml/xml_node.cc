@@ -6,12 +6,143 @@
 #include "base/strings/string_number_conversions.h"
 #include "mpd/base/media_info.pb.h"
 
+using dash_packager::xml::XmlNode;
+
+using dash_packager::MediaInfo;
+typedef MediaInfo::ContentProtectionXml ContentProtectionXml;
+typedef ContentProtectionXml::AttributeNameValuePair AttributeNameValuePair;
 
 namespace {
 
 std::string RangeToString(const dash_packager::Range& range) {
   return base::Uint64ToString(range.begin()) + "-" +
          base::Uint64ToString(range.end());
+}
+
+bool SetAttributes(const google::protobuf::RepeatedPtrField<
+                       AttributeNameValuePair>& attributes,
+                   XmlNode* xml_node) {
+  DCHECK(xml_node);
+  for (int i = 0; i < attributes.size(); ++i) {
+    const AttributeNameValuePair& attribute = attributes.Get(i);
+    const std::string& name = attribute.name();
+    const std::string& value = attribute.value();
+
+    if (name.empty()) {
+      LOG(ERROR) << "For element "
+                 << reinterpret_cast<const char*>(xml_node->GetRawPtr()->name)
+                 << ", no name specified for attribute with value: " << value;
+      return false;
+    }
+
+    xml_node->SetStringAttribute(name.c_str(), value);
+  }
+
+  return true;
+}
+
+// This function is recursive. Note that elements.size() == 0 is a terminating
+// condition.
+bool AddSubelements(const google::protobuf::RepeatedPtrField<
+                        ContentProtectionXml::Element>& elements,
+                    XmlNode* xml_node) {
+  DCHECK(xml_node);
+  for (int i = 0; i < elements.size(); ++i) {
+    const ContentProtectionXml::Element& subelement = elements.Get(i);
+    const std::string& subelement_name = subelement.name();
+    if (subelement_name.empty()) {
+      LOG(ERROR) << "Subelement name was not specified for node "
+                 << reinterpret_cast<const char*>(xml_node->GetRawPtr()->name);
+      return false;
+    }
+
+    XmlNode subelement_xml_node(subelement_name.c_str());
+    if (!SetAttributes(subelement.attributes(), &subelement_xml_node)) {
+      LOG(ERROR) << "Failed to set attributes for " << subelement_name;
+      return false;
+    }
+
+    if (!AddSubelements(subelement.subelements(), &subelement_xml_node)) {
+      LOG(ERROR) << "Failed to add subelements to " << subelement_name;
+      return false;
+    }
+
+    if (!xml_node->AddChild(subelement_xml_node.PassScopedPtr())) {
+      LOG(ERROR) << "Failed to add subelement " << subelement_name << " to "
+                 << reinterpret_cast<const char*>(xml_node->GetRawPtr()->name);
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// Returns true if 'schemeIdUri' is set in |content_protection_xml| and sets
+// |scheme_id_uri_output|. This function checks
+// ContentProtectionXml::scheme_id_uri before searching thru attributes.
+bool GetSchemeIdAttribute(const ContentProtectionXml& content_protection_xml,
+                          std::string* scheme_id_uri_output) {
+  // Common case where 'schemeIdUri' is set directly.
+  if (content_protection_xml.has_scheme_id_uri()) {
+    scheme_id_uri_output->assign(content_protection_xml.scheme_id_uri());
+    return true;
+  }
+
+  // 'schemeIdUri' is one of the attributes.
+  for (int i = 0; i < content_protection_xml.attributes().size(); ++i) {
+    const AttributeNameValuePair& attribute =
+        content_protection_xml.attributes(i);
+    const std::string& name = attribute.name();
+    const std::string& value = attribute.value();
+    if (name == "schemeIdUri") {
+      if (value.empty())
+        LOG(WARNING) << "schemeIdUri is specified with an empty string.";
+
+      // 'schemeIdUri' is a mandatory field but MPD doesn't care what the actual
+      // value is, proceed.
+      scheme_id_uri_output->assign(value);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+// Translates ContentProtectionXml to XmlNode.
+// content_protection_xml.scheme_id_uri and content_protection_xml.value takes
+// precedence over attributes in content_protection_xml.attributes.
+bool TranslateToContentProtectionXmlNode(
+    const ContentProtectionXml& content_protection_xml,
+    XmlNode* xml_node_content_protection) {
+  std::string scheme_id_uri;
+  if (!GetSchemeIdAttribute(content_protection_xml, &scheme_id_uri)) {
+    LOG(ERROR) << "ContentProtection element requires schemeIdUri.";
+    return false;
+  }
+
+  if (!SetAttributes(content_protection_xml.attributes(),
+                     xml_node_content_protection)) {
+    LOG(ERROR) << "Failed to set attributes for ContentProtection.";
+    return false;
+  }
+
+  if (!AddSubelements(content_protection_xml.subelements(),
+                      xml_node_content_protection)) {
+    LOG(ERROR) << "Failed to add sublements to ContentProtection.";
+    return false;
+  }
+
+  // Add 'schemeIdUri' and 'value' attributes after SetAttributes() to avoid
+  // being overridden by content_protection_xml.attributes().
+  xml_node_content_protection->SetStringAttribute("schemeIdUri", scheme_id_uri);
+
+  if (content_protection_xml.has_value()) {
+    // Note that |value| is an optional field.
+    xml_node_content_protection->SetStringAttribute(
+        "value", content_protection_xml.value());
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -99,6 +230,33 @@ bool RepresentationBaseXmlNode::AddContentProtectionElements(
        ++content_protection_it) {
     if (!AddContentProtectionElement(*content_protection_it))
       return false;
+  }
+
+  return true;
+}
+
+bool RepresentationBaseXmlNode::AddContentProtectionElementsFromMediaInfo(
+    const MediaInfo& media_info) {
+  const bool has_content_protections =
+      media_info.content_protections().size() > 0;
+
+  if (!has_content_protections)
+    return true;
+
+  for (int i = 0; i < media_info.content_protections().size(); ++i) {
+    const ContentProtectionXml& content_protection_xml =
+        media_info.content_protections(i);
+    XmlNode content_protection_node("ContentProtection");
+    if (!TranslateToContentProtectionXmlNode(content_protection_xml,
+                                             &content_protection_node)) {
+      LOG(ERROR) << "Failed to make ContentProtection element from MediaInfo.";
+      return false;
+    }
+
+    if (!AddChild(content_protection_node.PassScopedPtr())) {
+      LOG(ERROR) << "Failed to add ContentProtection to Representation.";
+      return false;
+    }
   }
 
   return true;

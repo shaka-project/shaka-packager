@@ -117,6 +117,8 @@ class AdaptationSet {
   DISALLOW_COPY_AND_ASSIGN(AdaptationSet);
 };
 
+// In |media_info|, ContentProtectionXml::{schemeIdUri,value} takes precedence
+// over schemeIdUri and value specified in ContentProtectionXml::attributes.
 class Representation {
  public:
   Representation(const MediaInfo& media_info, uint32 representation_id);
