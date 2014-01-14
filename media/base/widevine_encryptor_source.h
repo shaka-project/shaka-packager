@@ -47,12 +47,11 @@ class WidevineEncryptorSource : public EncryptorSource {
   bool DecodeResponse(const std::string& raw_response, std::string* response);
   bool IsExpectedTrackType(const std::string& track_type_string);
   // Extract encryption key from |response|, which is expected to be properly
-  // formatted.
-  // |key_id|, |key| and |pssh| should not be NULL.
+  // formatted. |transient_error| will be set to true if it fails and the
+  // failure is because of a transient error from the server. |transient_error|
+  // should not be NULL.
   bool ExtractEncryptionKey(const std::string& response,
-                            std::vector<uint8>* key_id,
-                            std::vector<uint8>* key,
-                            std::vector<uint8>* pssh);
+                            bool* transient_error);
 
   std::string server_url_;
   std::string content_id_;

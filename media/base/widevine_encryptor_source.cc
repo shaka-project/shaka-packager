@@ -7,6 +7,8 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/time/time.h"
+#include "base/threading/platform_thread.h"
 #include "base/values.h"
 #include "media/base/httpfetcher.h"
 #include "media/base/request_signer.h"
@@ -22,6 +24,16 @@
   } while (0)
 
 namespace {
+
+const char kLicenseStatusOK[] = "OK";
+// Server may return INTERNAL_ERROR intermittently, which is a transient error
+// and the next client request may succeed without problem.
+const char kLicenseStatusTransientError[] = "INTERNAL_ERROR";
+
+// Number of times to retry requesting keys in case of a transient error from
+// the server.
+const int kNumTransientErrorRetries = 5;
+const int kFirstRetryDelayMilliseconds = 1000;
 
 bool Base64StringToBytes(const std::string& base64_string,
                          std::vector<uint8>* bytes) {
@@ -41,12 +53,12 @@ bool GetKeyAndKeyId(const base::DictionaryValue& track_dict,
 
   std::string key_base64_string;
   RCHECK(track_dict.GetString("key", &key_base64_string));
-  VLOG(1) << "Key:" << key_base64_string;
+  VLOG(2) << "Key:" << key_base64_string;
   RCHECK(Base64StringToBytes(key_base64_string, key));
 
   std::string key_id_base64_string;
   RCHECK(track_dict.GetString("key_id", &key_id_base64_string));
-  VLOG(1) << "Keyid:" << key_id_base64_string;
+  VLOG(2) << "Keyid:" << key_id_base64_string;
   RCHECK(Base64StringToBytes(key_id_base64_string, key_id));
 
   return true;
@@ -74,7 +86,7 @@ bool GetPssh(const base::DictionaryValue& track_dict,
   std::string pssh_base64_string;
   RCHECK(pssh_dict->GetString("data", &pssh_base64_string));
 
-  VLOG(1) << "Pssh:" << pssh_base64_string;
+  VLOG(2) << "Pssh:" << pssh_base64_string;
   RCHECK(Base64StringToBytes(pssh_base64_string, pssh));
   return true;
 }
@@ -83,10 +95,11 @@ bool GetPssh(const base::DictionaryValue& track_dict,
 
 namespace media {
 
-WidevineEncryptorSource::WidevineEncryptorSource(const std::string& server_url,
-                                                 const std::string& content_id,
-                                                 TrackType track_type,
-                                                 scoped_ptr<RequestSigner> signer)
+WidevineEncryptorSource::WidevineEncryptorSource(
+    const std::string& server_url,
+    const std::string& content_id,
+    TrackType track_type,
+    scoped_ptr<RequestSigner> signer)
     : server_url_(server_url),
       content_id_(content_id),
       track_type_(track_type),
@@ -103,33 +116,45 @@ Status WidevineEncryptorSource::Initialize() {
   Status status = SignRequest(request, &message);
   if (!status.ok())
     return status;
-  DLOG(INFO) << "Message: " << message;
+  VLOG(1) << "Message: " << message;
 
   HTTPFetcher fetcher;
   std::string raw_response;
-  status = fetcher.Post(server_url_, message, &raw_response);
-  if (!status.ok())
-    return status;
-  DLOG(INFO) << "Response:" << raw_response;
+  int64 sleep_duration = kFirstRetryDelayMilliseconds;
 
-  std::string response;
-  if (!DecodeResponse(raw_response, &response)) {
-    return Status(error::INVALID_ARGUMENT,
-                  "Failed to decode response '" + raw_response + "'.");
+  // Perform client side retries if seeing server transient error to workaround
+  // server limitation.
+  for (int i = 0; i < kNumTransientErrorRetries; ++i) {
+    status = fetcher.Post(server_url_, message, &raw_response);
+    if (!status.ok())
+      return status;
+    VLOG(1) << "Retry [" << i << "] Response:" << raw_response;
+
+    std::string response;
+    if (!DecodeResponse(raw_response, &response)) {
+      return Status(error::SERVER_ERROR,
+                    "Failed to decode response '" + raw_response + "'.");
+    }
+
+    bool transient_error = false;
+    if (ExtractEncryptionKey(response, &transient_error))
+      return Status::OK;
+
+    if (!transient_error) {
+      return Status(
+          error::SERVER_ERROR,
+          "Failed to extract encryption key from '" + response + "'.");
+    }
+
+    // Exponential backoff.
+    if (i != kNumTransientErrorRetries - 1) {
+      base::PlatformThread::Sleep(
+          base::TimeDelta::FromMilliseconds(sleep_duration));
+      sleep_duration *= 2;
+    }
   }
-
-  std::vector<uint8> key_id;
-  std::vector<uint8> key;
-  std::vector<uint8> pssh;
-  if (!ExtractEncryptionKey(response, &key_id, &key, &pssh)) {
-    return Status(error::INVALID_ARGUMENT,
-                  "Failed to extract encryption key from '" + response + "'.");
-  }
-
-  set_key_id(key_id);
-  set_key(key);
-  set_pssh(pssh);
-  return Status::OK;
+  return Status(error::SERVER_ERROR,
+                "Failed to recover from server internal error.");
 }
 
 WidevineEncryptorSource::TrackType
@@ -229,10 +254,12 @@ bool WidevineEncryptorSource::IsExpectedTrackType(
   return track_type_ == GetTrackTypeFromString(track_type_string);
 }
 
-bool WidevineEncryptorSource::ExtractEncryptionKey(const std::string& response,
-                                                   std::vector<uint8>* key_id,
-                                                   std::vector<uint8>* key,
-                                                   std::vector<uint8>* pssh) {
+bool WidevineEncryptorSource::ExtractEncryptionKey(
+    const std::string& response,
+    bool* transient_error) {
+  DCHECK(transient_error);
+  *transient_error = false;
+
   scoped_ptr<base::Value> root(base::JSONReader::Read(response));
   if (!root) {
     LOG(ERROR) << "'" << response << "' is not in JSON format.";
@@ -244,8 +271,9 @@ bool WidevineEncryptorSource::ExtractEncryptionKey(const std::string& response,
 
   std::string license_status;
   RCHECK(license_dict->GetString("status", &license_status));
-  if (license_status != "OK") {
+  if (license_status != kLicenseStatusOK) {
     LOG(ERROR) << "Received non-OK license response: " << response;
+    *transient_error = (license_status == kLicenseStatusTransientError);
     return false;
   }
 
@@ -263,8 +291,17 @@ bool WidevineEncryptorSource::ExtractEncryptionKey(const std::string& response,
     if (!IsExpectedTrackType(track_type))
       continue;
 
-    return GetKeyAndKeyId(*track_dict, key, key_id) &&
-           GetPssh(*track_dict, pssh);
+    std::vector<uint8> key_id;
+    std::vector<uint8> key;
+    std::vector<uint8> pssh;
+    if (!GetKeyAndKeyId(*track_dict, &key, &key_id) ||
+        !GetPssh(*track_dict, &pssh))
+      return false;
+
+    set_key_id(key_id);
+    set_key(key);
+    set_pssh(pssh);
+    return true;
   }
   LOG(ERROR) << "Cannot find key of type " << track_type_ << " from '"
              << response << "'.";
