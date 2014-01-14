@@ -2,7 +2,7 @@
 #ifndef MEDIA_EVENT_VOD_MPD_NOTIFY_MUXER_LISTENER_H_
 #define MEDIA_EVENT_VOD_MPD_NOTIFY_MUXER_LISTENER_H_
 
-#include <list>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "media/event/muxer_listener.h"
@@ -12,9 +12,6 @@ class MpdNotifier;
 }  // namespace dash_packager
 
 namespace media {
-
-class StreamInfo;
-
 namespace event {
 
 class VodMpdNotifyMuxerListener : public MuxerListener {
@@ -27,15 +24,15 @@ class VodMpdNotifyMuxerListener : public MuxerListener {
   // MuxerListener implementation.
   virtual void OnMediaStart(
       const MuxerOptions& muxer_options,
-      const std::list<StreamInfo*>& stream_info_list) OVERRIDE;
+      const std::vector<StreamInfo*>& stream_infos) OVERRIDE;
 
-  virtual void OnMediaEnd(const std::list<StreamInfo*>& stream_info_list,
+  virtual void OnMediaEnd(const std::vector<StreamInfo*>& stream_infos,
                           bool has_init_range,
-                          uint32 init_range_start,
-                          uint32 init_range_end,
+                          uint64 init_range_start,
+                          uint64 init_range_end,
                           bool has_index_range,
-                          uint32 index_range_start,
-                          uint32 index_range_end,
+                          uint64 index_range_start,
+                          uint64 index_range_end,
                           float duration_seconds,
                           uint64 file_size) OVERRIDE;
 
