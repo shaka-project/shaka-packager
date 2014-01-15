@@ -64,5 +64,16 @@
         'mpd_builder',
       ],
     },
+    {
+      'target_name': 'mpd_util',
+      'type': '<(component)',
+      'sources': [
+        'util/mpd_writer.cc',
+        'util/mpd_writer.h',
+      ],
+      'dependencies': [
+        'mpd_builder',
+      ],
+    },
   ],
 }
