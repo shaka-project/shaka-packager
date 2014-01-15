@@ -20,7 +20,7 @@ class File {
   // Open the specified file, or return NULL on error.
   // This is actually a file factory method, it opens a proper file, e.g.
   // LocalFile, MemFile automatically based on prefix.
-  static File* Open(const char* name, const char* mode);
+  static File* Open(const char* file_name, const char* mode);
 
   // Flush() and de-allocate resources associated with this file, and
   // delete this File object.  THIS IS THE ONE TRUE WAY TO DEALLOCATE
@@ -65,8 +65,12 @@ class File {
   // ************************************************************
 
   // Returns the size of a file in bytes, and opens and closes the file
-  // in the process. Returns -1 on failure.
-  static int64 GetFileSize(const char* fname);
+  // in the process. Returns a value < 0 on failure.
+  static int64 GetFileSize(const char* file_name);
+
+  // Read the file at |file_name| into |contents|, returning true on success.
+  // |contents| should not be NULL.
+  static bool ReadFileToString(const char* file_name, std::string* contents);
 
  protected:
   explicit File(const std::string& file_name) : file_name_(file_name) {}
@@ -80,7 +84,7 @@ class File {
  private:
   // This is a file factory method, it creates a proper file, e.g.
   // LocalFile, MemFile based on prefix.
-  static File* Create(const char* fname, const char* mode);
+  static File* Create(const char* file_name, const char* mode);
 
   std::string file_name_;
   DISALLOW_COPY_AND_ASSIGN(File);
