@@ -55,6 +55,7 @@
       'type': 'executable',
       'sources': [
         'base/mpd_builder_unittest.cc',
+        'base/xml/xml_node_unittest.cc',
       ],
       'dependencies': [
         '../base/base.gyp:base',
