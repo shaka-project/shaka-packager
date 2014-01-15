@@ -272,5 +272,17 @@
         'testing/gtest.gyp:gtest',
       ],
     },
+    {
+      'target_name': 'packager_main',
+      'type': 'executable',
+      'sources': [
+        'app/packager_main.cc',
+      ],
+      'dependencies': [
+        'file',
+        'mp4',
+        'third_party/gflags/gflags.gyp:gflags',
+      ],
+    },
   ],
 }
