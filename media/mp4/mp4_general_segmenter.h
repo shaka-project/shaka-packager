@@ -32,7 +32,7 @@ class MP4GeneralSegmenter : public MP4Segmenter {
   MP4GeneralSegmenter(const MuxerOptions& options,
                       scoped_ptr<FileType> ftyp,
                       scoped_ptr<Movie> moov);
-  ~MP4GeneralSegmenter();
+  virtual ~MP4GeneralSegmenter();
 
   // MP4Segmenter implementations.
   virtual Status Initialize(EncryptorSource* encryptor_source,

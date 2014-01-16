@@ -6,6 +6,7 @@
 
 #include <sstream>
 
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/limits.h"
 
@@ -66,8 +67,10 @@ std::string AudioStreamInfo::GetCodecString(AudioCodec codec,
       return "opus";
     case kCodecAAC:
       return "mp4a.40." + base::UintToString(audio_object_type);
+    default:
+      NOTIMPLEMENTED() << "Codec: " << codec;
+      return "unknown";
   }
-  return "unknown";
 }
 
 }  // namespace media

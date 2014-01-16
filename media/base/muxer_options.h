@@ -10,6 +10,9 @@
 namespace media {
 
 struct MuxerOptions {
+  MuxerOptions();
+  ~MuxerOptions();
+
   // Generate a single segment for each media presentation. This option
   // should be set for on demand profile.
   bool single_segment;

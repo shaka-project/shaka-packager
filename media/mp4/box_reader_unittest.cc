@@ -33,7 +33,7 @@ struct FreeBox : Box {
     return true;
   }
   virtual FourCC BoxType() const OVERRIDE { return FOURCC_FREE; }
-  virtual uint32 ComputeSize() {
+  virtual uint32 ComputeSize() OVERRIDE {
     NOTIMPLEMENTED();
     return 0;
   }
@@ -44,7 +44,7 @@ struct PsshBox : Box {
     return buffer->ReadWriteUInt32(&val);
   }
   virtual FourCC BoxType() const OVERRIDE { return FOURCC_PSSH; }
-  virtual uint32 ComputeSize() {
+  virtual uint32 ComputeSize() OVERRIDE {
     NOTIMPLEMENTED();
     return 0;
   }
@@ -70,7 +70,7 @@ struct SkipBox : FullBox {
     return buffer->TryReadWriteChild(&empty);
   }
   virtual FourCC BoxType() const OVERRIDE { return FOURCC_SKIP; }
-  virtual uint32 ComputeSize() {
+  virtual uint32 ComputeSize() OVERRIDE {
     NOTIMPLEMENTED();
     return 0;
   }

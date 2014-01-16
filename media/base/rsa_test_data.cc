@@ -443,6 +443,9 @@ const uint8 kTestSignature_2048[] = {
 
 namespace media {
 
+RsaTestSet::RsaTestSet() {}
+RsaTestSet::~RsaTestSet() {}
+
 RsaTestData::RsaTestData() {
   test_set_3072_bits_.test_message = kTestMessage;
   test_set_3072_bits_.public_key.assign(

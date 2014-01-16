@@ -47,6 +47,8 @@
         'media/base/media_stream.h',
         'media/base/muxer.cc',
         'media/base/muxer.h',
+        'media/base/muxer_options.cc',
+        'media/base/muxer_options.h',
         'media/base/rsa_key.cc',
         'media/base/rsa_key.h',
         'media/base/status.cc',

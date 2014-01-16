@@ -28,7 +28,6 @@ class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
              const uint8* extra_data,
              size_t extra_data_size,
              bool is_encrypted);
-  virtual ~StreamInfo();
 
   // Returns true if this object has appropriate configuration values, false
   // otherwise.
@@ -49,6 +48,10 @@ class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
   const std::vector<uint8>& extra_data() const { return extra_data_; }
 
   void set_duration(int duration) { duration_ = duration; }
+
+ protected:
+  friend class base::RefCountedThreadSafe<StreamInfo>;
+  virtual ~StreamInfo();
 
  private:
   // Whether the stream is Audio or Video.

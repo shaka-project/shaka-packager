@@ -538,19 +538,20 @@ bool CompactSampleSize::ReadWrite(BoxBuffer* buffer) {
          buffer->ReadWriteUInt32(&sample_count));
 
   // Reserve one more entry if field size is 4 bits.
-  sizes.resize(sample_count + (field_size == 4 ? 1 : 0));
+  sizes.resize(sample_count + (field_size == 4 ? 1 : 0), 0);
   switch (field_size) {
     case 4:
-      for (uint32 i = 0; i < sample_count; ++i) {
-        uint8 size;
-        if (!buffer->Reading()) {
-          DCHECK(sizes[i] < 16 && sizes[i+1] < 16);
-          size = (sizes[i] << 4) | (++i < sample_count ? sizes[i] : 0);
-        }
-        RCHECK(buffer->ReadWriteUInt8(&size));
+      for (uint32 i = 0; i < sample_count; i += 2) {
         if (buffer->Reading()) {
+          uint8 size = 0;
+          RCHECK(buffer->ReadWriteUInt8(&size));
           sizes[i] = size >> 4;
-          sizes[++i] = size & 0x0F;
+          sizes[i + 1] = size & 0x0F;
+        } else {
+          DCHECK_LT(sizes[i], 16);
+          DCHECK_LT(sizes[i + 1], 16);
+          uint8 size = (sizes[i] << 4) | sizes[i + 1];
+          RCHECK(buffer->ReadWriteUInt8(&size));
         }
       }
       break;

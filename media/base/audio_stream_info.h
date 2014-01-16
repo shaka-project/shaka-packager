@@ -47,8 +47,6 @@ class AudioStreamInfo : public StreamInfo {
                   size_t extra_data_size,
                   bool is_encrypted);
 
-  virtual ~AudioStreamInfo();
-
   // Returns true if this object has appropriate configuration values, false
   // otherwise.
   virtual bool IsValidConfig() const OVERRIDE;
@@ -69,6 +67,8 @@ class AudioStreamInfo : public StreamInfo {
   static std::string GetCodecString(AudioCodec codec, uint8 audio_object_type);
 
  private:
+  virtual ~AudioStreamInfo();
+
   AudioCodec codec_;
   uint8 sample_bits_;
   uint8 num_channels_;

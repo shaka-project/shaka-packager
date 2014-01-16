@@ -29,7 +29,7 @@ class MP4VODSegmenter : public MP4Segmenter {
   MP4VODSegmenter(const MuxerOptions& options,
                   scoped_ptr<FileType> ftyp,
                   scoped_ptr<Movie> moov);
-  ~MP4VODSegmenter();
+  virtual ~MP4VODSegmenter();
 
   // MP4Segmenter implementations.
   virtual Status Initialize(EncryptorSource* encryptor_source,

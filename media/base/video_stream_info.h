@@ -38,8 +38,6 @@ class VideoStreamInfo : public StreamInfo {
                   size_t extra_data_size,
                   bool is_encrypted);
 
-  virtual ~VideoStreamInfo();
-
   // Returns true if this object has appropriate configuration values, false
   // otherwise.
   virtual bool IsValidConfig() const OVERRIDE;
@@ -60,6 +58,8 @@ class VideoStreamInfo : public StreamInfo {
                                     uint8 level);
 
  private:
+  virtual ~VideoStreamInfo();
+
   VideoCodec codec_;
   uint16 width_;
   uint16 height_;

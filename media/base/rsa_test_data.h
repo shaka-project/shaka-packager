@@ -15,6 +15,9 @@ namespace media {
 
 // Self generated test vector to verify algorithm stability.
 struct RsaTestSet {
+  RsaTestSet();
+  ~RsaTestSet();
+
   std::string public_key;
   std::string private_key;
   std::string test_message;

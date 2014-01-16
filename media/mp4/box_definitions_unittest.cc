@@ -752,39 +752,39 @@ TYPED_TEST_CASE(BoxDefinitionsTestGeneral, Boxes);
 TYPED_TEST(BoxDefinitionsTestGeneral, WriteReadbackCompare) {
   TypeParam box;
   LOG(INFO) << "Processing " << FourCCToString(box.BoxType());
-  Fill(&box);
+  this->Fill(&box);
   box.Write(this->buffer_.get());
 
   TypeParam box_readback;
-  ASSERT_TRUE(ReadBack(&box_readback));
+  ASSERT_TRUE(this->ReadBack(&box_readback));
   ASSERT_EQ(box, box_readback);
 }
 
 TYPED_TEST(BoxDefinitionsTestGeneral, WriteModifyWrite) {
   TypeParam box;
   LOG(INFO) << "Processing " << FourCCToString(box.BoxType());
-  Fill(&box);
+  this->Fill(&box);
   // Save the expected version set earlier in function |Fill|, then clear
   // the version, expecting box.Write set version as expected.
-  uint8 version = GetAndClearVersion(&box);
+  uint8 version = this->GetAndClearVersion(&box);
   box.Write(this->buffer_.get());
-  EXPECT_EQ(version, GetAndClearVersion(&box));
+  EXPECT_EQ(version, this->GetAndClearVersion(&box));
 
   this->buffer_->Clear();
-  Modify(&box);
-  version = GetAndClearVersion(&box);
+  this->Modify(&box);
+  version = this->GetAndClearVersion(&box);
   box.Write(this->buffer_.get());
-  EXPECT_EQ(version, GetAndClearVersion(&box));
+  EXPECT_EQ(version, this->GetAndClearVersion(&box));
 
   TypeParam box_readback;
-  ASSERT_TRUE(ReadBack(&box_readback));
+  ASSERT_TRUE(this->ReadBack(&box_readback));
   ASSERT_EQ(box, box_readback);
 }
 
 TYPED_TEST(BoxDefinitionsTestGeneral, Empty) {
   TypeParam box;
   LOG(INFO) << "Processing " << FourCCToString(box.BoxType());
-  if (IsOptional(&box)) {
+  if (this->IsOptional(&box)) {
     ASSERT_EQ(0, box.ComputeSize());
   } else {
     ASSERT_NE(0, box.ComputeSize());
