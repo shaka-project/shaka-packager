@@ -290,7 +290,7 @@ bool Representation::Init() {
     return false;
   }
 
-  if (!media_info_.container_type() == MediaInfo::CONTAINER_UNKNOWN) {
+  if (media_info_.container_type() == MediaInfo::CONTAINER_UNKNOWN) {
     // TODO(rkuroiwa): This might not be the right behavior. Maybe somehow
     // infer from something else like media file name?
     LOG(ERROR) << "'container_type' in MediaInfo cannot be CONTAINER_UNKNOWN.";

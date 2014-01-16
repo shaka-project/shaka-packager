@@ -30,6 +30,7 @@
       'target_name': 'mpd_builder',
       'type': 'static_library',
       'sources': [
+        'base/content_protection_element.cc',
         'base/content_protection_element.h',
         'base/mpd_builder.cc',
         'base/mpd_builder.h',

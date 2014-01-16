@@ -12,6 +12,9 @@
 namespace dash_packager {
 
 struct ContentProtectionElement {
+  ContentProtectionElement();
+  ~ContentProtectionElement();
+
   std::string value;  // Will be set for 'value' attribute.
   std::string scheme_id_uri;  // Will be set for 'schemeIdUri' attribute.
 
