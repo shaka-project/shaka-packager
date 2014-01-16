@@ -5,3 +5,7 @@
 .repo
 .settings
 out/*
+
+# Ignore llvm-build. This is only when you are using clang. Address Sanitizer
+# requires clang.
+/third_party/llvm-build/
