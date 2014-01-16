@@ -34,7 +34,9 @@ function setup_packager_env() {
     fi
   fi
 
-  export GYP_DEFINES="linux_use_gold_flags=0 use_openssl=1"
+  # Note: You'd have to run ./tools/clang/scripts/update.sh before you run GYP
+  # with clang=1 flag.
+  export GYP_DEFINES="clang=1 use_openssl=1"
   export BUILDTYPE="${type}"
 
   export BUILD_OUT="."
@@ -44,4 +46,7 @@ function setup_packager_env() {
 
 export GYP_GENERATORS="ninja"
 setup_packager_env $@
+
+# Note: If this fails due to some error about "not having clang", read the note
+# above.
 ninja -C "out/${BUILDTYPE}" $2
