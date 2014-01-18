@@ -35,12 +35,14 @@ Status MP4VODSegmenter::Initialize(EncryptorSource* encryptor_source,
 }
 
 Status MP4VODSegmenter::Finalize() {
-  DCHECK(temp_file_ != NULL && ftyp() != NULL && moov() != NULL &&
-         vod_sidx_ != NULL);
-
   Status status = MP4Segmenter::Finalize();
   if (!status.ok())
     return status;
+
+  DCHECK(temp_file_);
+  DCHECK(ftyp());
+  DCHECK(moov());
+  DCHECK(vod_sidx_);
 
   // Close the temp file to prepare for reading later.
   if (!temp_file_.release()->Close()) {

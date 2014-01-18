@@ -30,6 +30,7 @@ const char kOutputFileName2[] = "output_file2";
 const char kSegmentTemplate[] = "template$Number$.m4s";
 const char kSegmentTemplateOutputFile[] = "template1.m4s";
 const char kTempFileName[] = "temp_file";
+const char kTempFileName2[] = "temp_file2";
 
 // Encryption constants.
 const char kKeyIdHex[] = "e5007e6e9dcd5ac095202ed3758382cd";
@@ -82,9 +83,15 @@ class PackagerTest : public ::testing::TestWithParam<const char*> {
     ASSERT_OK(muxer->AddStream(demuxer.streams()[0]));
     ASSERT_OK(muxer->Initialize());
 
-    // Starts remuxing process.
+    // Start remuxing process.
     ASSERT_OK(demuxer.Run());
     ASSERT_OK(muxer->Finalize());
+  }
+
+  // Check |input_file| is a valid media file and can be initialized by Demuxer.
+  void CheckMediaFile(const std::string input_file) {
+    Demuxer demuxer(input_file, NULL);
+    ASSERT_OK(demuxer.Initialize());
   }
 
  protected:
@@ -107,8 +114,46 @@ TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencrypted) {
   muxer.reset(new mp4::MP4Muxer(options_));
   ASSERT_NO_FATAL_FAILURE(Remux(new_input_media_file, muxer.get()));
 
+  // TODO(kqyang): This comparison might be flaky due to timestamp difference.
+  //               Compare data beyond moov box only?
   EXPECT_TRUE(base::ContentsEqual(base::FilePath(new_input_media_file),
                                   base::FilePath(options_.output_file_name)));
+}
+
+TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencryptedSeparateAudioVideo) {
+  options_.single_segment = true;
+
+  const std::string input_media_file = GetTestDataFilePath(GetParam()).value();
+
+  Demuxer demuxer(input_media_file, NULL);
+  ASSERT_OK(demuxer.Initialize());
+  ASSERT_EQ(2, demuxer.streams().size());
+
+  // Create and initialize the first muxer.
+  scoped_ptr<Muxer> muxer(new mp4::MP4Muxer(options_));
+  ASSERT_OK(muxer->AddStream(demuxer.streams()[0]));
+  ASSERT_OK(muxer->Initialize());
+
+  // Create and initialize the second muxer.
+  MuxerOptions options2 = options_;
+  options2.output_file_name =
+      test_directory_.AppendASCII(kOutputFileName2).value();
+  options2.temp_file_name =
+      test_directory_.AppendASCII(kTempFileName2).value();
+  scoped_ptr<Muxer> muxer2(new mp4::MP4Muxer(options2));
+
+  ASSERT_OK(muxer2->AddStream(demuxer.streams()[1]));
+  ASSERT_OK(muxer2->Initialize());
+
+  // Start remuxing process.
+  ASSERT_OK(demuxer.Run());
+  ASSERT_OK(muxer->Finalize());
+  ASSERT_OK(muxer2->Finalize());
+
+  // Check output file is valid.
+  // TODO(kqyang): Compare the output with a known good output.
+  ASSERT_NO_FATAL_FAILURE(CheckMediaFile(options_.output_file_name));
+  ASSERT_NO_FATAL_FAILURE(CheckMediaFile(options2.output_file_name));
 }
 
 TEST_P(PackagerTest, MP4MuxerSingleSegmentEncrypted) {
