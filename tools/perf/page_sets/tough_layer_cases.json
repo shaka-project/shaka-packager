@@ -1,6 +1,0 @@
-{
-  "description": "A collection of tests to measure layer performance",
-  "pages": [
-    { "url": "file://layer_stress_tests/opacity.html" }
-  ]
-}

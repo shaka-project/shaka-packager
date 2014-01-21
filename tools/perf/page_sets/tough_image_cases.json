@@ -1,8 +1,0 @@
-{
-  "description": "A collection of image-heavy sites.",
-  "user_agent_type": "desktop",
-  "pages": [
-    { "url": "http://www.free-pictures-photos.com/aviation/airplane-306.jpg" },
-    { "url": "http://upload.wikimedia.org/wikipedia/commons/c/cb/General_history%2C_Alaska_Yukon_Pacific_Exposition%2C_fully_illustrated_-_meet_me_in_Seattle_1909_-_Page_78.jpg" }
-  ]
-}
