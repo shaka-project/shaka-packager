@@ -70,7 +70,8 @@ Status MP4Segmenter::Initialize(EncryptorSource* encryptor_source,
         &moof_->tracks[i],
         encryptor.Pass(),
         clear_lead_in_seconds * streams[i]->info()->time_scale(),
-        nalu_length_size);
+        nalu_length_size,
+        options_.normalize_presentation_timestamp);
   }
 
   // Choose the first stream if there is no VIDEO.

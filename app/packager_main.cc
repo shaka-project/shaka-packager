@@ -88,6 +88,8 @@ bool GetMuxerOptions(MuxerOptions* muxer_options) {
   muxer_options->fragment_duration = FLAGS_fragment_duration;
   muxer_options->segment_sap_aligned = FLAGS_segment_sap_aligned;
   muxer_options->fragment_sap_aligned = FLAGS_fragment_sap_aligned;
+  muxer_options->normalize_presentation_timestamp =
+      FLAGS_normalize_presentation_timestamp;
   muxer_options->num_subsegments_per_sidx = FLAGS_num_subsegments_per_sidx;
   muxer_options->output_file_name = FLAGS_output;
   muxer_options->segment_template = FLAGS_segment_template;

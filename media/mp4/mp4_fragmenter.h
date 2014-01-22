@@ -31,11 +31,13 @@ class MP4Fragmenter {
   // Caller retains the ownership of |traf| and transfers ownership of
   // |encryptor|. |clear_time| specifies clear time in the current track
   // timescale. |nalu_length_size| specifies NAL unit length size, for
-  // subsample encryption.
+  // subsample encryption. |normalize_presentation_timestamp| defines whether
+  // PTS should be normalized to start from zero.
   MP4Fragmenter(TrackFragment* traf,
                 scoped_ptr<AesCtrEncryptor> encryptor,
                 int64 clear_time,
-                uint8 nalu_length_size);
+                uint8 nalu_length_size,
+                bool normalize_presentation_timestamp);
   ~MP4Fragmenter();
 
   virtual Status AddSample(scoped_refptr<MediaSample> sample);
@@ -81,6 +83,8 @@ class MP4Fragmenter {
   TrackFragment* traf_;
   bool fragment_finalized_;
   uint64 fragment_duration_;
+  bool normalize_presentation_timestamp_;
+  int64 presentation_start_time_;
   uint64 earliest_presentation_time_;
   uint64 first_sap_time_;
   int64 clear_time_;

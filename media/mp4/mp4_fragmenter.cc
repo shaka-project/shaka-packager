@@ -42,14 +42,17 @@ namespace mp4 {
 MP4Fragmenter::MP4Fragmenter(TrackFragment* traf,
                              scoped_ptr<AesCtrEncryptor> encryptor,
                              int64 clear_time,
-                             uint8 nalu_length_size)
+                             uint8 nalu_length_size,
+                             bool normalize_presentation_timestamp)
     : encryptor_(encryptor.Pass()),
       nalu_length_size_(nalu_length_size),
       traf_(traf),
       fragment_finalized_(false),
       fragment_duration_(0),
-      earliest_presentation_time_(0),
-      first_sap_time_(0),
+      normalize_presentation_timestamp_(normalize_presentation_timestamp),
+      presentation_start_time_(kInvalidTime),
+      earliest_presentation_time_(kInvalidTime),
+      first_sap_time_(kInvalidTime),
       clear_time_(clear_time) {}
 
 MP4Fragmenter::~MP4Fragmenter() {}
@@ -78,12 +81,30 @@ Status MP4Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   data_->AppendArray(sample->data(), sample->data_size());
   fragment_duration_ += sample->duration();
 
-  if (earliest_presentation_time_ > sample->pts())
-    earliest_presentation_time_ = sample->pts();
+  int64 pts = sample->pts();
+  if (normalize_presentation_timestamp_) {
+    // Normalize PTS to start from 0. Some players do not like non-zero
+    // presentation starting time.
+    // TODO(kqyang): Do we need to add an EditList?
+    if (presentation_start_time_ == kInvalidTime) {
+      presentation_start_time_ = pts;
+      pts = 0;
+    } else {
+      // Can we safely assume the first sample in the media has the earliest
+      // presentation timestamp?
+      DCHECK_GT(pts, presentation_start_time_);
+      pts -= presentation_start_time_;
+    }
+  }
+
+  // Set |earliest_presentation_time_| to |pts| if |pts| is smaller or if it is
+  // not yet initialized (kInvalidTime > pts is always true).
+  if (earliest_presentation_time_ > pts)
+    earliest_presentation_time_ = pts;
 
   if (sample->is_key_frame()) {
-    if (kInvalidTime == first_sap_time_)
-      first_sap_time_ = sample->pts();
+    if (first_sap_time_ == kInvalidTime)
+      first_sap_time_ = pts;
   }
   return Status::OK;
 }
