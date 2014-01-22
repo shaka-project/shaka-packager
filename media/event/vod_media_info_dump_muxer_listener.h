@@ -22,6 +22,7 @@ class MuxerOptions;
 namespace event {
 
 class VodMediaInfoDumpMuxerListener : public MuxerListener {
+ public:
   // This object does not own |output_file|. The file has to be open and be
   // ready for Write(). This will Flush() the file on write but it does not
   // Close() the file.

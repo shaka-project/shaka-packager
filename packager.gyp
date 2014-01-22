@@ -192,25 +192,6 @@
       ],
     },
     {
-      'target_name': 'media_event',
-      'type': 'static_library',
-      'sources': [
-        'media/event/muxer_listener.h',
-        'media/event/vod_media_info_dump_muxer_listener.cc',
-        'media/event/vod_media_info_dump_muxer_listener.h',
-        'media/event/vod_mpd_notify_muxer_listener.cc',
-        'media/event/vod_mpd_notify_muxer_listener.h',
-        'media/event/vod_muxer_listener_internal.cc',
-        'media/event/vod_muxer_listener_internal.h',
-      ],
-      'dependencies': [
-        'media_base',
-        'mpd/mpd.gyp:media_info_proto',
-        # Depends on full protobuf to read/write with TextFormat.
-        'third_party/protobuf/protobuf.gyp:protobuf_full_do_not_use',
-      ],
-    },
-    {
       'target_name': 'mp4_unittest',
       'type': 'executable',
       'sources': [
@@ -270,6 +251,42 @@
         'media_test_support',
         'mp4',
         'testing/gtest.gyp:gtest',
+      ],
+    },
+    {
+      'target_name': 'media_event',
+      'type': '<(component)',
+      'sources': [
+        'media/event/muxer_listener.h',
+        'media/event/vod_media_info_dump_muxer_listener.cc',
+        'media/event/vod_media_info_dump_muxer_listener.h',
+        'media/event/vod_mpd_notify_muxer_listener.cc',
+        'media/event/vod_mpd_notify_muxer_listener.h',
+        'media/event/vod_muxer_listener_internal.cc',
+        'media/event/vod_muxer_listener_internal.h',
+      ],
+      'dependencies': [
+        'media_base',
+        'mpd/mpd.gyp:media_info_proto',
+        # Depends on full protobuf to read/write with TextFormat.
+        'third_party/protobuf/protobuf.gyp:protobuf_full_do_not_use',
+      ],
+    },
+    {
+      'target_name': 'media_event_unittest',
+      'type': '<(gtest_target_type)',
+      'sources': [
+        'media/event/vod_media_info_dump_muxer_listener_unittest.cc',
+      ],
+      'dependencies': [
+        'base/base.gyp:base',
+        'base/base.gyp:run_all_unittests',
+        'file',
+        'media_event',
+        'mpd/mpd.gyp:media_info_proto',
+        'testing/gtest.gyp:gtest',
+        # Depends on full protobuf to read/write with TextFormat.
+        'third_party/protobuf/protobuf.gyp:protobuf_full_do_not_use',
       ],
     },
     {
