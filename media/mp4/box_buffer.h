@@ -15,45 +15,47 @@
 namespace media {
 namespace mp4 {
 
-// Defines a wrapper for mp4 box reading/writing, which is symmetric in most
-// cases, i.e. we can use one single routine for the reading and writing.
-// BoxBuffer wraps either BoxReader for reading or BufferWriter for writing.
-// Thus it is capable of doing either reading or writing, but not both.
+/// Class for MP4 box I/O. Box I/O is symmetric and exclusive, so we can define
+/// a single method to do either reading or writing box objects.
+/// BoxBuffer wraps either BoxReader for reading or BufferWriter for writing.
+/// Thus it is capable of doing either reading or writing, but not both.
 class BoxBuffer {
  public:
-  // Creates a "reader" version of the BoxBuffer.
-  // Caller retains |reader| ownership. |reader| should not be NULL.
+  /// Create a reader version of the BoxBuffer.
+  /// @param reader should not be NULL.
   explicit BoxBuffer(BoxReader* reader) : reader_(reader), writer_(NULL) {
     DCHECK(reader);
   }
-  // Creates a "writer" version of the BoxBuffer.
-  // Caller retains |writer| ownership. |writer| should not be NULL.
+  /// Create a writer version of the BoxBuffer.
+  /// @param writer should not be NULL.
   explicit BoxBuffer(BufferWriter* writer) : reader_(NULL), writer_(writer) {
     DCHECK(writer);
   }
   ~BoxBuffer() {}
 
-  // Reading or writing?
+  /// @return true for reader, false for writer.
   bool Reading() const { return reader_ != NULL; }
 
-  // Returns current read/write position. In read mode, this is the current
-  // read position. In write mode, it is the same as Size().
+  /// @return Current read/write position. In read mode, this is the current
+  ///         read position. In write mode, it is the same as Size().
   size_t Pos() const {
     if (reader_)
       return reader_->pos();
     return writer_->Size();
   }
 
-  // Returns total buffer size.In read mode, it includes data that has already
-  // been read or skipped, and will not change. In write mode, it includes all
-  // data that has been written, and will change as data is written.
+  /// @return Total buffer size. In read mode, it includes data that has already
+  ///         been read or skipped, and will not change. In write mode, it
+  ///         includes all data that has been written, and will change as more
+  ///         data is written.
   size_t Size() const {
     if (reader_)
       return reader_->size();
     return writer_->Size();
   }
 
-  // Read/write integers of various size and unsigned/signed.
+  /// @name Read/write integers of various sizes and signedness.
+  /// @{
   bool ReadWriteUInt8(uint8* v) {
     if (reader_)
       return reader_->Read1(v);
@@ -96,9 +98,11 @@ class BoxBuffer {
     writer_->AppendInt(*v);
     return true;
   }
+  /// @}
 
-  // Read/write the least significant |num_bytes| of |v| from/to buffer.
-  // |num_bytes| should not be larger than sizeof(v), i.e. 8.
+  /// Read/write the least significant |num_bytes| of |v| from/to the buffer.
+  /// @param num_bytes should not be larger than sizeof(v), i.e. 8.
+  /// @return true on success, false otherwise.
   bool ReadWriteUInt64NBytes(uint64* v, size_t num_bytes) {
     if (reader_)
       return reader_->ReadNBytesInto8(v, num_bytes);
@@ -125,7 +129,8 @@ class BoxBuffer {
     return true;
   }
 
-  // Prepare child boxes for read/write.
+  /// Prepare child boxes for reading/writing.
+  /// @return true on success, false otherwise.
   bool PrepareChildren() {
     if (reader_)
       return reader_->ScanChildren();
@@ -133,7 +138,8 @@ class BoxBuffer {
     return true;
   }
 
-  // Read/write child box.
+  /// Read/write child box.
+  /// @return true on success, false otherwise.
   bool ReadWriteChild(Box* box) {
     if (reader_)
       return reader_->ReadChild(box);
@@ -143,7 +149,8 @@ class BoxBuffer {
     return true;
   }
 
-  // Read/write child box if exist.
+  /// Read/write child box if exists.
+  /// @return true on success, false otherwise.
   bool TryReadWriteChild(Box* box) {
     if (reader_)
       return reader_->TryReadChild(box);
@@ -153,7 +160,9 @@ class BoxBuffer {
     return true;
   }
 
-  // Skip |num_bytes| in read mode, otherwise fill with |num_bytes| of '\0'.
+  /// @param num_bytes specifies number of bytes to skip in read mode or number
+  ///        of bytes to be padded with zero in write mode.
+  /// @return true on success, false otherwise.
   bool IgnoreBytes(size_t num_bytes) {
     if (reader_)
       return reader_->SkipBytes(num_bytes);
@@ -162,7 +171,9 @@ class BoxBuffer {
     return true;
   }
 
+  /// @return A pointer to the inner reader object.
   BoxReader* reader() { return reader_; }
+  /// @return A pointer to the inner writer object.
   BufferWriter* writer() { return writer_; }
 
  private:

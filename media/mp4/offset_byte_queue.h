@@ -10,42 +10,46 @@
 
 namespace media {
 
-// A wrapper around a ByteQueue which maintains a notion of a
-// monotonically-increasing offset. All buffer access is done by passing these
-// offsets into this class, going some way towards preventing the proliferation
-// of many different meanings of "offset", "head", etc.
+/// Wrapper around ByteQueue, which encapsulates the notion of a
+/// monotonically-increasing byte offset. All buffer access is done by passing
+/// these offsets into this class, reducing the proliferation of many different
+/// meanings of "offset", "head", etc.
 class OffsetByteQueue {
  public:
   OffsetByteQueue();
   ~OffsetByteQueue();
 
-  // These work like their underlying ByteQueue counterparts.
+  /// @name These work like their underlying ByteQueue counterparts.
+  /// @{
   void Reset();
   void Push(const uint8* buf, int size);
   void Peek(const uint8** buf, int* size);
   void Pop(int count);
+  /// @}
 
-  // Sets |buf| to point at the first buffered byte corresponding to |offset|,
-  // and |size| to the number of bytes available starting from that offset.
-  //
-  // It is an error if the offset is before the current head. It's not an error
-  // if the current offset is beyond tail(), but you will of course get back
-  // a null |buf| and a |size| of zero.
+  /// Set @a buf to point at the first buffered byte corresponding to @a offset,
+  /// and @a size to the number of bytes available starting from that offset.
+  ///
+  /// It is an error if the offset is before the current head. It's not an error
+  /// if the current offset is beyond tail(), but you will of course get back
+  /// a null @a buf and a @a size of zero.
   void PeekAt(int64 offset, const uint8** buf, int* size);
 
-  // Marks the bytes up to (but not including) |max_offset| as ready for
-  // deletion. This is relatively inexpensive, but will not necessarily reduce
-  // the resident buffer size right away (or ever).
-  //
-  // Returns true if the full range of bytes were successfully trimmed,
-  // including the case where |max_offset| is less than the current head.
-  // Returns false if |max_offset| > tail() (although all bytes currently
-  // buffered are still cleared).
+  /// Mark the bytes up to (but not including) @a max_offset as ready for
+  /// deletion. This is relatively inexpensive, but will not necessarily reduce
+  /// the resident buffer size right away (or ever).
+  ///
+  /// @return true if the full range of bytes were successfully trimmed,
+  ///         including the case where @a max_offset is less than the current
+  ///         head.
+  /// @return false if @a max_offset > tail() (although all bytes currently
+  ///         buffered are still cleared).
   bool Trim(int64 max_offset);
 
-  // The head and tail positions, in terms of the file's absolute offsets.
-  // tail() is an exclusive bound.
+  /// @return The head position, in terms of the file's absolute offset.
   int64 head() { return head_; }
+  /// @return The tail position (exclusive), in terms of the file's absolute
+  ///         offset.
   int64 tail() { return head_ + size_; }
 
  private:

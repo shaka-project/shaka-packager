@@ -20,32 +20,39 @@ namespace mp4 {
 class BoxBuffer;
 class BoxReader;
 
-// Defines Box and FullBox, the two base ISO BMFF box objects as defined in
-// ISO 14496-12:2012 ISO BMFF section 4.2. All ISO BMFF compatible boxes
-// inherits either Box or FullBox.
+/// Defines the base ISO BMFF box objects as defined in ISO 14496-12:2012
+/// ISO BMFF section 4.2. All ISO BMFF compatible boxes inherit from either
+/// Box or FullBox.
 struct Box {
  public:
   Box();
   virtual ~Box();
+  /// Parse the mp4 box.
+  /// @param reader points to a BoxReader object which parses the box.
   bool Parse(BoxReader* reader);
-  // Write the box to buffer.
-  // The function calls ComputeSize internally to compute box size.
+  /// Write the box to buffer.
+  /// This function calls ComputeSize internally to compute box size.
+  /// @param writer points to a BufferWriter object which wraps the buffer for
+  ///        writing.
   void Write(BufferWriter* writer);
-  // Computer box size.
-  // The calculated size will be saved in |atom_size| for consumption later.
+  /// Compute the size of this box.
+  /// The calculated size will be saved in |atom_size| for later consumption.
   virtual uint32 ComputeSize() = 0;
   virtual FourCC BoxType() const = 0;
 
  protected:
   friend class BoxBuffer;
-  // Read or write the mp4 box through BoxBuffer.
+  /// Read/write the mp4 box from/to BoxBuffer.
   virtual bool ReadWrite(BoxBuffer* buffer);
 
-  // We don't support 64-bit atom size. 32-bit should be large enough for our
-  // current needs.
+  /// We don't support 64-bit atom sizes. 32-bit should be large enough for our
+  /// current needs.
   uint32 atom_size;
 };
 
+/// Defines FullBox, the other base ISO BMFF box objects as defined in
+/// ISO 14496-12:2012 ISO BMFF section 4.2. All ISO BMFF compatible boxes
+/// inherit from either Box or FullBox.
 struct FullBox : Box {
  public:
   FullBox();

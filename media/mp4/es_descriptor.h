@@ -25,9 +25,9 @@ enum ObjectType {
   kEAC3 = 0xa6                 // Dolby Digital Plus
 };
 
-// This class parse object type and decoder specific information from an
-// elementary stream descriptor, which is usually contained in an esds box.
-// Please refer to ISO 14496 Part 1 7.2.6.5 for more details.
+/// This class parses object type and decoder specific information from an
+/// elementary stream descriptor, which is usually contained in an esds
+/// box. Please refer to ISO 14496 Part 1 7.2.6.5 for more details.
 class ESDescriptor {
  public:
   ESDescriptor();
@@ -51,7 +51,7 @@ class ESDescriptor {
     decoder_specific_info_ = decoder_specific_info;
   }
 
-  // Check if the stream is AAC.
+  /// @return true if the stream is AAC.
   bool IsAAC() const {
     return object_type_ == kISO_14496_3 || object_type_ == kISO_13818_7_AAC_LC;
   }

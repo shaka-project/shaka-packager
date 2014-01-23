@@ -3,11 +3,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
-//
-// Implements a wrapper around Decoding Time to Sample Box (STTS) to iterate
-// through the compressed table. This class also provides convenient functions
-// to query total number of samples and the duration from start_sample to
-// end_sample.
 
 #ifndef MEDIA_MP4_DECODING_TIME_ITERATOR_H_
 #define MEDIA_MP4_DECODING_TIME_ITERATOR_H_
@@ -19,26 +14,31 @@
 namespace media {
 namespace mp4 {
 
+/// Decoding time to sample box (STTS) iterator used to iterate through the
+/// compressed table. This class also provides convenient functions to query
+/// total number of samples and the duration from start_sample to end_sample.
 class DecodingTimeIterator {
  public:
+  /// Create DecodingTimeIterator from decoding time to sample box.
   explicit DecodingTimeIterator(
       const DecodingTimeToSample& decoding_time_to_sample);
   ~DecodingTimeIterator();
 
-  // Advance the properties to refer to the next sample. Return status
-  // indicating whether the sample is still valid.
+  /// Advance to the next sample.
+  /// @return true if not past the last sample, false otherwise.
   bool AdvanceSample();
 
-  // Return whether the current sample is valid.
+  /// @return true if the iterator is still valid, false if past the last
+  ///         sample.
   bool IsValid() const;
 
-  // Return sample delta for current sample.
+  /// @return Sample delta for current sample.
   uint32 sample_delta() const { return iterator_->sample_delta; }
 
-  // Return duration from start_sample to end_sample, both 1-based, inclusive.
+  /// @return Duration from start_sample to end_sample, both 1-based, inclusive.
   uint64 Duration(uint32 start_sample, uint32 end_sample) const;
 
-  // Return total number of samples in the table.
+  /// @return Total number of samples in the table.
   uint32 NumSamples() const;
 
  private:

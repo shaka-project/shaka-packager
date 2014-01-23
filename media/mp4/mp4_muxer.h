@@ -3,8 +3,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
-//
-// Implements MP4 Muxer.
 
 #ifndef MEDIA_MP4_MP4_MUXER_H_
 #define MEDIA_MP4_MP4_MUXER_H_
@@ -28,16 +26,21 @@ struct ProtectionSchemeInfo;
 struct ProtectionSystemSpecificHeader;
 struct Track;
 
+/// Implements MP4 Muxer for ISO-BMFF. Please refer to ISO/IEC 14496-12: ISO
+/// base media file format for details.
 class MP4Muxer : public Muxer {
  public:
+  /// Create a MP4Muxer object from MuxerOptions.
   explicit MP4Muxer(const MuxerOptions& options);
   virtual ~MP4Muxer();
 
-  // Muxer implementations.
+  /// @name Muxer implementation overrides.
+  /// @{
   virtual Status Initialize() OVERRIDE;
   virtual Status Finalize() OVERRIDE;
   virtual Status AddSample(const MediaStream* stream,
                            scoped_refptr<MediaSample> sample) OVERRIDE;
+  /// @}
 
  private:
   // Generate Audio/Video Track atom.

@@ -3,10 +3,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
-//
-// MP4Fragmenter is responsible for the generation of MP4 fragments, i.e. traf
-// and the corresponding mdat. The samples are also encrypted if encryption is
-// requested.
 
 #ifndef MEDIA_MP4_MP4_FRAGMENTER_H_
 #define MEDIA_MP4_MP4_FRAGMENTER_H_
@@ -28,13 +24,20 @@ namespace mp4 {
 class SegmentReference;
 class TrackFragment;
 
+/// MP4Fragmenter is responsible for the generation of MP4 fragments, i.e. traf
+/// box and corresponding mdat box. The samples are also encrypted if encryption
+/// is requested.
 class MP4Fragmenter {
  public:
-  // Caller retains the ownership of |traf| and transfers ownership of
-  // |encryptor|. |clear_time| specifies clear time in the current track
-  // timescale. |nalu_length_size| specifies NAL unit length size, for
-  // subsample encryption. |normalize_presentation_timestamp| defines whether
-  // PTS should be normalized to start from zero.
+  /// @param traf points to a TrackFragment box.
+  /// @param encryptor handles encryption of the samples. It can be NULL, which
+  ///        indicates no encryption is required.
+  /// @param clear_time specifies clear lead duration in units of the current
+  ///        track's timescale.
+  /// @param nalu_length_size NAL unit length size, in bytes, for subsample
+  ///        encryption.
+  /// @param normalize_presentation_timestamp defines whether PTS should be
+  ///        normalized to start from zero.
   MP4Fragmenter(TrackFragment* traf,
                 scoped_ptr<AesCtrEncryptor> encryptor,
                 int64 clear_time,
@@ -42,15 +45,16 @@ class MP4Fragmenter {
                 bool normalize_presentation_timestamp);
   ~MP4Fragmenter();
 
+  /// Add a sample to the fragmenter.
   virtual Status AddSample(scoped_refptr<MediaSample> sample);
 
-  // Initialize the fragment with default data.
+  /// Initialize the fragment with default data.
   void InitializeFragment();
 
-  // Finalize and optimize the fragment.
+  /// Finalize and optimize the fragment.
   void FinalizeFragment();
 
-  // Fill in |reference| with current fragment information.
+  /// Fill @a reference with current fragment information.
   void GenerateSegmentReference(SegmentReference* reference);
 
   uint64 fragment_duration() const { return fragment_duration_; }

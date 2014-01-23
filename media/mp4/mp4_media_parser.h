@@ -30,10 +30,13 @@ class MP4MediaParser : public MediaParser {
   MP4MediaParser();
   virtual ~MP4MediaParser();
 
+  /// @name MediaParser implementation overrides.
+  /// @{
   virtual void Init(const InitCB& init_cb,
                     const NewSampleCB& new_sample_cb,
                     const NeedKeyCB& need_key_cb) OVERRIDE;
   virtual bool Parse(const uint8* buf, int size) OVERRIDE;
+  /// @}
 
  private:
   enum State {

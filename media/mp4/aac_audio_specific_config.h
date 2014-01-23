@@ -15,50 +15,56 @@ class BitReader;
 
 namespace mp4 {
 
-// This class parses the AAC information from decoder specific information
-// embedded in the esds box in an ISO BMFF file.
-// Please refer to ISO 14496 Part 3 Table 1.13 - Syntax of AudioSpecificConfig
-// for more details.
+/// This class parses the AAC information from decoder specific information
+/// embedded in the @b esds box in an ISO BMFF file.
+/// Please refer to ISO 14496 Part 3 Table 1.13 - Syntax of AudioSpecificConfig
+/// for more details.
 class AACAudioSpecificConfig {
  public:
   AACAudioSpecificConfig();
   ~AACAudioSpecificConfig();
 
-  // Parse the AAC config from the raw binary data embedded in esds box.
-  // The function will parse the data and get the ElementaryStreamDescriptor,
-  // then it will parse the ElementaryStreamDescriptor to get audio stream
-  // configurations.
+  /// Parse the AAC config from decoder specific information embedded in an @b
+  /// esds box. The function will parse the data and get the
+  /// ElementaryStreamDescriptor, then it will parse the
+  /// ElementaryStreamDescriptor to get audio stream configurations.
+  /// @param data contains decoder specific information from an @b esds box.
+  /// @return true if successful, false otherwise.
   bool Parse(const std::vector<uint8>& data);
 
-  // Get the output sample rate for the AAC stream.
-  // |sbr_in_mimetype| should be set to true if the SBR mode is
-  // signalled in the mimetype. (ie mp4a.40.5 in the codecs parameter).
+  /// @param sbr_in_mimetype indicates whether SBR mode is specified in the
+  ///        mimetype, i.e. codecs parameter contains mp4a.40.5.
+  /// @return Output sample rate for the AAC stream.
   uint32 GetOutputSamplesPerSecond(bool sbr_in_mimetype) const;
 
-  // Get number of channels for the AAC stream.
-  // |sbr_in_mimetype| should be set to true if the SBR mode is
-  // signalled in the mimetype. (ie mp4a.40.5 in the codecs parameter).
+  /// @param sbr_in_mimetype indicates whether SBR mode is specified in the
+  ///        mimetype, i.e. codecs parameter contains mp4a.40.5.
+  /// @return Number of channels for the AAC stream.
   uint8 GetNumChannels(bool sbr_in_mimetype) const;
 
-  // This function converts a raw AAC frame into an AAC frame with an ADTS
-  // header. On success, the function returns true and stores the converted data
-  // in the buffer. The function returns false on failure and leaves the buffer
-  // unchanged.
+  /// Convert a raw AAC frame into an AAC frame with an ADTS header.
+  /// @param[in,out] buffer contains the raw AAC frame on input, and the
+  ///                converted frame on output if successful; it is untouched
+  ///                on failure.
+  /// @return true on success, false otherwise.
   bool ConvertToADTS(std::vector<uint8>* buffer) const;
 
+  /// @return The audio object type for this AAC config.
   uint8 audio_object_type() const {
     return audio_object_type_;
   }
 
+  /// @return The sampling frequency for this AAC config.
   uint32 frequency() const {
     return frequency_;
   }
 
+  /// @return Number of channels for this AAC config.
   uint8 num_channels() const {
     return num_channels_;
   }
 
-  // Size in bytes of the ADTS header added by ConvertEsdsToADTS().
+  /// Size in bytes of the ADTS header added by ConvertEsdsToADTS().
   static const size_t kADTSHeaderSize = 7;
 
  private:
