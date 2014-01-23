@@ -111,7 +111,8 @@ Status MP4VODSegmenter::FinalizeSegment() {
   if (!status.ok())
     return status;
 
-  DCHECK(sidx() != NULL && fragment_buffer() != NULL);
+  DCHECK(sidx());
+  DCHECK(fragment_buffer());
   // sidx() contains pre-generated segment references with one reference per
   // fragment. In VOD, this segment is converted into a subsegment, i.e. one
   // reference, which contains all the fragments in sidx().

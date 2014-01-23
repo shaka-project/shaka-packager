@@ -119,7 +119,7 @@ Status MP4Muxer::Initialize() {
 }
 
 Status MP4Muxer::Finalize() {
-  DCHECK(segmenter_ != NULL);
+  DCHECK(segmenter_);
   Status segmenter_finalized = segmenter_->Finalize();
 
   if (!segmenter_finalized.ok())
@@ -131,7 +131,7 @@ Status MP4Muxer::Finalize() {
 
 Status MP4Muxer::AddSample(const MediaStream* stream,
                            scoped_refptr<MediaSample> sample) {
-  DCHECK(segmenter_ != NULL);
+  DCHECK(segmenter_);
   return segmenter_->AddSample(stream, sample);
 }
 
@@ -173,7 +173,7 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   sample_description.video_entries.push_back(video);
 
   if (IsEncryptionRequired()) {
-    DCHECK(encryptor_source() != NULL);
+    DCHECK(encryptor_source());
     // Add a second entry for clear content if needed.
     if (clear_lead_in_seconds() > 0)
       sample_description.video_entries.push_back(video);
@@ -213,7 +213,7 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
   sample_description.audio_entries.push_back(audio);
 
   if (IsEncryptionRequired()) {
-    DCHECK(encryptor_source() != NULL);
+    DCHECK(encryptor_source());
     // Add a second entry for clear content if needed.
     if (clear_lead_in_seconds() > 0)
       sample_description.audio_entries.push_back(audio);
@@ -225,13 +225,13 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
 }
 
 void MP4Muxer::GeneratePssh(ProtectionSystemSpecificHeader* pssh) {
-  DCHECK(encryptor_source() != NULL);
+  DCHECK(encryptor_source());
   pssh->system_id = encryptor_source()->key_system_id();
   pssh->data = encryptor_source()->pssh();
 }
 
 void MP4Muxer::GenerateSinf(ProtectionSchemeInfo* sinf, FourCC old_type) {
-  DCHECK(encryptor_source() != NULL);
+  DCHECK(encryptor_source());
   sinf->format.format = old_type;
   sinf->type.type = FOURCC_CENC;
   sinf->type.version = kCencSchemeVersion;

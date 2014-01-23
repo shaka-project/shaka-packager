@@ -37,7 +37,8 @@ Status MP4GeneralSegmenter::Initialize(
   if (!status.ok())
     return status;
 
-  DCHECK(ftyp() != NULL && moov() != NULL);
+  DCHECK(ftyp());
+  DCHECK(moov());
   // Generate the output file with init segment.
   File* file = File::Open(options().output_file_name.c_str(), "w");
   if (file == NULL) {
@@ -73,7 +74,7 @@ Status MP4GeneralSegmenter::FinalizeSegment() {
   if (!status.ok())
     return status;
 
-  DCHECK(sidx() != NULL);
+  DCHECK(sidx());
   // earliest_presentation_time is the earliest presentation time of any
   // access unit in the reference stream in the first subsegment.
   // It will be re-calculated later when subsegments are finalized.
@@ -134,7 +135,9 @@ Status MP4GeneralSegmenter::FinalizeSegment() {
 }
 
 Status MP4GeneralSegmenter::WriteSegment() {
-  DCHECK(sidx() != NULL && fragment_buffer() != NULL && styp_ != NULL);
+  DCHECK(sidx());
+  DCHECK(fragment_buffer());
+  DCHECK(styp_);
 
   scoped_ptr<BufferWriter> buffer(new BufferWriter());
   File* file;

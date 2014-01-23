@@ -19,7 +19,8 @@ const uint64 kInvalidTime = kuint64max;
 // otherwise it is a NOP. Return true if the table is optimized.
 template <typename T>
 bool OptimizeSampleEntries(std::vector<T>* entries, T* default_value) {
-  DCHECK(entries != NULL && default_value != NULL);
+  DCHECK(entries);
+  DCHECK(default_value);
   DCHECK(!entries->empty());
 
   typename std::vector<T>::const_iterator it = entries->begin();
@@ -54,8 +55,7 @@ MP4Fragmenter::MP4Fragmenter(TrackFragment* traf,
 MP4Fragmenter::~MP4Fragmenter() {}
 
 Status MP4Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
-  CHECK(sample->pts() >= sample->dts());
-  CHECK(sample->duration() > 0);
+  CHECK_GT(sample->duration(), 0);
 
   if (ShouldEncryptFragment()) {
     Status status = EncryptSample(sample);

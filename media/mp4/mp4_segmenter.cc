@@ -113,7 +113,8 @@ Status MP4Segmenter::Finalize() {
 Status MP4Segmenter::AddSample(const MediaStream* stream,
                                scoped_refptr<MediaSample> sample) {
   // Find the fragmenter for this stream.
-  DCHECK(stream != NULL && stream_map_.find(stream) != stream_map_.end());
+  DCHECK(stream);
+  DCHECK(stream_map_.find(stream) != stream_map_.end());
   uint32 stream_id = stream_map_[stream];
   MP4Fragmenter* fragmenter = fragmenters_[stream_id];
 
@@ -191,7 +192,7 @@ Status MP4Segmenter::FinalizeSegment() {
 }
 
 uint32 MP4Segmenter::GetReferenceStreamId() {
-  DCHECK(sidx_ != NULL);
+  DCHECK(sidx_);
   return sidx_->reference_id - 1;
 }
 
