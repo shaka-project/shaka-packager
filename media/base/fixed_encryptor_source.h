@@ -3,8 +3,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
-//
-// Defines a fixed encryptor source with keys provided by user.
 
 #ifndef MEDIA_BASE_FIXED_ENCRYPTOR_SOURCE_H_
 #define MEDIA_BASE_FIXED_ENCRYPTOR_SOURCE_H_
@@ -13,6 +11,7 @@
 
 namespace media {
 
+/// Defines a fixed encryptor source with keys provided by the user.
 class FixedEncryptorSource : public EncryptorSource {
  public:
   FixedEncryptorSource(const std::string& key_id_hex,
@@ -20,7 +19,7 @@ class FixedEncryptorSource : public EncryptorSource {
                        const std::string& pssh_hex);
   virtual ~FixedEncryptorSource();
 
-  // EncryptorSource implementation.
+  /// EncryptorSource implementation override.
   virtual Status Initialize() OVERRIDE;
 
  private:

@@ -20,29 +20,37 @@ namespace media {
 
 class DecryptConfig;
 
-// Holds media sample. Also includes decoder specific functionality for
-// decryption.
+/// Class to hold a media sample.
 class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
  public:
-  // Create a MediaSample whose |data_| is copied from |data|.
-  // |data| must not be NULL and |size| >= 0.
+  /// Create a MediaSample object from input.
+  /// @param data points to the buffer containing the sample data.
+  ///        Must not be NULL.
+  /// @param size indicates sample size in bytes. Must not be negative.
+  /// @param is_key_frame indicates whether the sample is a key frame.
   static scoped_refptr<MediaSample> CopyFrom(const uint8* data,
                                              int size,
                                              bool is_key_frame);
 
-  // Create a MediaSample whose |data_| is copied from |data| and |side_data_|
-  // is copied from |side_data|. Data pointers must not be NULL and sizes
-  // must be >= 0.
+  /// Create a MediaSample object from input.
+  /// @param data points to the buffer containing the sample data.
+  ///        Must not be NULL.
+  /// @param side_data points to the buffer containing the additional data.
+  ///        Some containers allow additional data to be specified.
+  ///        Must not be NULL.
+  /// @param size indicates sample size in bytes. Must not be negative.
+  /// @param side_data_size indicates additional sample data size in bytes.
+  ///        Must not be negative.
+  /// @param is_key_frame indicates whether the sample is a key frame.
   static scoped_refptr<MediaSample> CopyFrom(const uint8* data,
                                              int size,
                                              const uint8* side_data,
                                              int side_data_size,
                                              bool is_key_frame);
 
-  // Create a MediaSample indicating we've reached end of stream.
-  //
-  // Calling any method other than end_of_stream() on the resulting buffer
-  // is disallowed.
+  /// Create a MediaSample indicating we've reached end of stream.
+  /// Calling any method other than end_of_stream() on the resulting buffer
+  /// is disallowed.
   static scoped_refptr<MediaSample> CreateEOSBuffer();
 
   int64 dts() const {
@@ -118,15 +126,15 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   // If there's no data in this buffer, it represents end of stream.
   bool end_of_stream() const { return data_.size() == 0; }
 
-  // Returns a human-readable string describing |*this|.
+  /// @return a human-readable string describing |*this|.
   std::string ToString() const;
 
  protected:
   friend class base::RefCountedThreadSafe<MediaSample>;
 
-  // Allocates a buffer of size |size| >= 0 and copies |data| into it.  Buffer
-  // will be padded and aligned as necessary.  If |data| is NULL then |data_| is
-  // set to NULL and |buffer_size_| to 0.
+  /// Create a MediaSample. Buffer will be padded and aligned as necessary.
+  /// @param data,side_data can be NULL, which indicates an empty sample.
+  /// @param size,side_data_size should not be negative.
   MediaSample(const uint8* data,
               int size,
               const uint8* side_data,

@@ -9,11 +9,8 @@
 
 namespace media {
 
-// This is the set of input container formats detected for logging purposes. Not
-// all of these are enabled (and it varies by product). Any additions need to be
-// done at the end of the list (before CONTAINER_MAX). This list must be kept in
-// sync with the enum definition "MediaContainers" in
-// tools/metrics/histograms/histograms.xml.
+/// Container formats supported by this utility function. New formats should be
+/// added at the end of the list (before CONTAINER_MAX).
 enum MediaContainerName {
   CONTAINER_UNKNOWN,          // Unknown
   CONTAINER_AAC,              // AAC (Advanced Audio Coding)
@@ -56,7 +53,7 @@ enum MediaContainerName {
   CONTAINER_MAX               // Must be last
 };
 
-// Determine the container type.
+/// Determine the container type.
 MediaContainerName DetermineContainer(const uint8* buffer, int buffer_size);
 
 }  // namespace media

@@ -25,39 +25,38 @@ class MediaParser {
   MediaParser() {}
   virtual ~MediaParser() {}
 
-  // Indicates completion of parser initialization.
-  // First parameter - A vector of all the elementary streams within this file.
-  typedef base::Callback<void(const std::vector<scoped_refptr<StreamInfo> >&)>
-      InitCB;
-
-  // New stream sample have been parsed.
-  // First parameter - The track id of the new sample.
-  // Second parameter - The new media sample.
-  // Return value - True indicates that the sample is accepted.
-  //                False if something was wrong with the sample and a parsing
-  //                error should be signaled.
+  /// Called upon completion of parser initialization.
+  /// @param stream_info contains the stream info of all the elementary streams
+  ///        within this file.
   typedef base::Callback<
-      bool(uint32 track_id, const scoped_refptr<MediaSample>&)>
+      void(const std::vector<scoped_refptr<StreamInfo> >& stream_info)> InitCB;
+
+  /// Called when a new media sample has been parsed.
+  /// @param track_id is the track id of the new sample.
+  /// @param media_sample is the new media sample.
+  /// @return true if the sample is accepted, false if something was wrong
+  ///         with the sample and a parsing error should be signaled.
+  typedef base::Callback<
+      bool(uint32 track_id, const scoped_refptr<MediaSample>& media_sample)>
       NewSampleCB;
 
-  // A new potentially encrypted stream has been parsed.
-  // First Parameter - Container name.
-  // Second parameter - The initialization data associated with the stream.
-  // Third parameter - Number of bytes of the initialization data.
-  typedef base::Callback<void(MediaContainerName, scoped_ptr<uint8[]>, int)>
-      NeedKeyCB;
+  /// Called when a new potentially encrypted stream has been parsed.
+  /// @param init_data is the initialization data associated with the stream.
+  /// @param init_data_size is the number of bytes of the initialization data.
+  typedef base::Callback<void(MediaContainerName container_name,
+                              scoped_ptr<uint8[]> init_data,
+                              int init_data_size)> NeedKeyCB;
 
-  // Initialize the parser with necessary callbacks. Must be called before any
-  // data is passed to Parse(). |init_cb| will be called once enough data has
-  // been parsed to determine the initial stream configurations.
+  /// Initialize the parser with necessary callbacks. Must be called before any
+  /// data is passed to Parse().
+  /// @param init_cb will be called once enough data has been parsed to
+  ///        determine the initial stream configurations.
   virtual void Init(const InitCB& init_cb,
                     const NewSampleCB& new_sample_cb,
                     const NeedKeyCB& need_key_cb) = 0;
 
-  // Called when there is new data to parse.
-  //
-  // Returns true if the parse succeeds.
-  // NOTE: Change to return Status.
+  /// Should be called when there is new data to parse.
+  /// @return true if successful.
   virtual bool Parse(const uint8* buf, int size) = 0;
 
  private:

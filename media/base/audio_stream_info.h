@@ -32,10 +32,10 @@ enum AudioCodec {
   kNumAudioCodec
 };
 
+/// Holds audio stream information.
 class AudioStreamInfo : public StreamInfo {
  public:
-  // Constructs an initialized object. It is acceptable to pass in NULL for
-  // |extra_data|, otherwise the memory is copied.
+  /// Construct an initialized audio stream info object.
   AudioStreamInfo(int track_id,
                   uint32 time_scale,
                   uint64 duration,
@@ -49,12 +49,11 @@ class AudioStreamInfo : public StreamInfo {
                   size_t extra_data_size,
                   bool is_encrypted);
 
-  // Returns true if this object has appropriate configuration values, false
-  // otherwise.
+  /// @name StreamInfo implementation overrides.
+  /// @{
   virtual bool IsValidConfig() const OVERRIDE;
-
-  // Returns a human-readable string describing |*this|.
   virtual std::string ToString() const OVERRIDE;
+  /// @}
 
   AudioCodec codec() const { return codec_; }
   uint8 sample_bits() const { return sample_bits_; }
@@ -65,7 +64,8 @@ class AudioStreamInfo : public StreamInfo {
     return static_cast<uint32>(num_channels_) * sample_bits_ / 8;
   }
 
-  // Returns the codec string. The second parameter is only used by AAC Codec.
+  /// @param audio_object_type is only used by AAC Codec, ignored otherwise.
+  /// @return The codec string.
   static std::string GetCodecString(AudioCodec codec, uint8 audio_object_type);
 
  private:

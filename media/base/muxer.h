@@ -30,43 +30,47 @@ namespace event {
 class MuxerListener;
 }
 
+/// Muxer is responsible for taking elementary stream samples and producing
+/// media containers. An optional EncryptorSource can be provided to Muxer to
+/// generate encrypted outputs.
 class Muxer {
  public:
   explicit Muxer(const MuxerOptions& options);
   virtual ~Muxer();
 
-  // Set encryptor source. Caller retains ownership of |encryptor_source|.
-  // Should be called before calling Initialize().
+  /// Set encryptor source. Should be called before calling Initialize().
+  /// @param encryptor_source should not be NULL.
   void SetEncryptorSource(EncryptorSource* encryptor_source,
                           double clear_lead_in_seconds);
 
-  // Initialize the muxer. Must be called after connecting all the streams.
+  /// Initialize the muxer. Must be called after connecting all the streams.
   virtual Status Initialize() = 0;
 
-  // Final clean up.
+  /// Final clean up.
   virtual Status Finalize() = 0;
 
-  // Adds video/audio stream.
+  /// Add video/audio stream.
   virtual Status AddStream(MediaStream* stream);
 
-  // Adds new media sample.
+  /// Add new media sample.
   virtual Status AddSample(const MediaStream* stream,
                            scoped_refptr<MediaSample> sample) = 0;
 
-  // Drives the remuxing from muxer side (pull).
+  /// Drive the remuxing from muxer side (pull).
   virtual Status Run();
 
-  // Set a MuxerListener event handler for this object. Ownership does not
-  // transfer.
+  /// Set a MuxerListener event handler for this object.
+  /// @param muxer_listener should not be NULL.
   void SetMuxerListener(event::MuxerListener* muxer_listener);
 
   const std::vector<MediaStream*>& streams() const { return streams_; }
 
-  // Inject clock, mainly used for testing.
-  // The injected clock will be used to generate the creation time-stamp and
-  // modification time-stamp of the muxer output.
-  // If no clock is injected, the code uses base::Time::Now() to generate the
-  // time-stamps.
+  /// Inject clock, mainly used for testing.
+  /// The injected clock will be used to generate the creation time-stamp and
+  /// modification time-stamp of the muxer output.
+  /// If no clock is injected, the code uses base::Time::Now() to generate the
+  /// time-stamps.
+  /// @param clock is the Clock to be injected.
   void set_clock(base::Clock* clock) {
     clock_ = clock;
   }

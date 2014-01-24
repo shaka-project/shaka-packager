@@ -13,36 +13,36 @@
 
 namespace media {
 
-// The Common Encryption spec provides for subsample encryption, where portions
-// of a sample are set in cleartext. A SubsampleEntry specifies the number of
-// clear and encrypted bytes in each subsample. For decryption, all of the
-// encrypted bytes in a sample should be considered a single logical stream,
-// regardless of how they are divided into subsamples, and the clear bytes
-// should not be considered as part of decryption. This is logically equivalent
-// to concatenating all 'cypher_bytes' portions of subsamples, decrypting that
-// result, and then copying each byte from the decrypted block over the
-// position of the corresponding encrypted byte.
+/// The Common Encryption spec provides for subsample encryption, where portions
+/// of a sample are not encrypted. A SubsampleEntry specifies the number of
+/// clear and encrypted bytes in each subsample. For decryption, all of the
+/// encrypted bytes in a sample should be considered a single logical stream,
+/// regardless of how they are divided into subsamples, and the clear bytes
+/// should not be considered as part of decryption. This is logically equivalent
+/// to concatenating all @a cypher_bytes portions of subsamples, decrypting that
+/// result, and then copying each byte from the decrypted block over the
+/// corresponding encrypted byte.
 struct SubsampleEntry {
   uint16 clear_bytes;
   uint32 cypher_bytes;
 };
 
-// Contains all information that a decryptor needs to decrypt a media sample.
+/// Contains all the information that a decryptor needs to decrypt a media
+/// sample.
 class DecryptConfig {
  public:
-  // Keys are always 128 bits.
+  /// Keys are always 128 bits.
   static const size_t kDecryptionKeySize = 16;
 
-  // |key_id| is the ID that references the decryption key for this sample.
-  // |iv| is the initialization vector defined by the encrypted format.
-  // |data_offset| is the amount of data that should be discarded from the
-  //   head of the sample buffer before applying subsample information. A
-  //   decrypted buffer will be shorter than an encrypted buffer by this amount.
-  // |subsamples| defines the clear and encrypted portions of the sample as
-  //   described above. A decrypted buffer will be equal in size to the sum
-  //   of the subsample sizes.
-  //
-  // |data_offset| is applied before |subsamples|.
+  /// @param key_id is the ID that references the decryption key.
+  /// @param iv is the initialization vector defined by the encryptor.
+  /// @param data_offset is the amount of data that should be discarded from
+  ///        the head of the sample buffer before applying subsample
+  ///        information. A decrypted buffer will be shorter than an encrypted
+  ///        buffer by this amount.
+  /// @param subsamples defines the clear and encrypted portions of the sample
+  ///        as described in SubsampleEntry. A decrypted buffer will be equal
+  ///        in size to the sum of the subsample sizes.
   DecryptConfig(const std::string& key_id,
                 const std::string& iv,
                 const int data_offset,

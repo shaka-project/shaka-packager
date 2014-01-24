@@ -13,7 +13,7 @@
 
 namespace media {
 
-// Specifies the varieties of text tracks.
+/// Specifies the varieties of text tracks.
 enum TextKind {
   kTextSubtitles,
   kTextCaptions,

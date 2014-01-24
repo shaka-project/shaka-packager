@@ -23,10 +23,10 @@ enum VideoCodec {
   kNumVideoCodec
 };
 
+/// Holds video stream information.
 class VideoStreamInfo : public StreamInfo {
  public:
-  // Constructs an initialized object. It is acceptable to pass in NULL for
-  // |extra_data|, otherwise the memory is copied.
+  /// Construct an initialized video stream info object.
   VideoStreamInfo(int track_id,
                   uint32 time_scale,
                   uint64 duration,
@@ -40,20 +40,19 @@ class VideoStreamInfo : public StreamInfo {
                   size_t extra_data_size,
                   bool is_encrypted);
 
-  // Returns true if this object has appropriate configuration values, false
-  // otherwise.
+  /// @name StreamInfo implementation overrides.
+  /// @{
   virtual bool IsValidConfig() const OVERRIDE;
-
-  // Returns a human-readable string describing |*this|.
   virtual std::string ToString() const OVERRIDE;
+  /// @}
 
   VideoCodec codec() const { return codec_; }
   uint16 width() const { return width_; }
   uint16 height() const { return height_; }
   uint8 nalu_length_size() const { return nalu_length_size_; }
 
-  // Returns the codec string. The parameters beyond codec are only used by
-  // H.264 codec.
+  /// @param profile,compatible_profiles,level are only used by H.264 codec.
+  /// @return The codec string.
   static std::string GetCodecString(VideoCodec codec,
                                     uint8 profile,
                                     uint8 compatible_profiles,

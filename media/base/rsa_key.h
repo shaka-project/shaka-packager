@@ -19,21 +19,24 @@ typedef struct rsa_st RSA;
 
 namespace media {
 
+/// Rsa private key, used for message signing and decryption.
 class RsaPrivateKey {
  public:
   ~RsaPrivateKey();
 
-  // Create an RsaPrivateKey object using a DER encoded PKCS#1 RSAPrivateKey.
-  // Return NULL on failure.
+  /// Create an RsaPrivateKey object using a DER encoded PKCS#1 RSAPrivateKey.
+  /// @return The created RsaPrivateKey object on success, NULL otherwise.
   static RsaPrivateKey* Create(const std::string& serialized_key);
 
-  // Decrypt a message using RSA-OAEP. Caller retains ownership of all
-  // parameters. Return true if successful, false otherwise.
+  /// Decrypt a message using RSA-OAEP.
+  /// @param decrypted_message must not be NULL.
+  /// @return true if successful, false otherwise.
   bool Decrypt(const std::string& encrypted_message,
                std::string* decrypted_message);
 
-  // Generate RSASSA-PSS signature. Caller retains ownership of all parameters.
-  // Return true if successful, false otherwise.
+  /// Generate RSASSA-PSS signature.
+  /// @param signature must not be NULL.
+  /// @return true if successful, false otherwise.
   bool GenerateSignature(const std::string& message, std::string* signature);
 
  private:
@@ -45,21 +48,23 @@ class RsaPrivateKey {
   DISALLOW_COPY_AND_ASSIGN(RsaPrivateKey);
 };
 
+/// Rsa public key, used for signature verification and encryption.
 class RsaPublicKey {
  public:
   ~RsaPublicKey();
 
-  // Create an RsaPublicKey object using a DER encoded PKCS#1 RSAPublicKey.
-  // Return NULL on failure.
+  /// Create an RsaPublicKey object using a DER encoded PKCS#1 RSAPublicKey.
+  /// @return The created RsaPrivateKey object on success, NULL otherwise.
   static RsaPublicKey* Create(const std::string& serialized_key);
 
-  // Encrypt a message using RSA-OAEP. Caller retains ownership of all
-  // parameters. Return true if successful, false otherwise.
+  /// Encrypt a message using RSA-OAEP.
+  /// @param encrypted_message must not be NULL.
+  /// @return true if successful, false otherwise.
   bool Encrypt(const std::string& clear_message,
                std::string* encrypted_message);
 
-  // Verify RSASSA-PSS signature. Caller retains ownership of all parameters.
-  // Return true if validation succeeds, false otherwise.
+  /// Verify RSASSA-PSS signature.
+  /// @return true if verification succeeds, false otherwise.
   bool VerifySignature(const std::string& message,
                        const std::string& signature);
 

@@ -15,7 +15,7 @@ namespace media {
 
 namespace error {
 
-// Error codes for the packager APIs.
+/// Error codes for the packager APIs.
 enum Code {
   // Not an error; returned on success
   OK,
@@ -65,12 +65,12 @@ enum Code {
 
 class Status {
  public:
-  // Creates a "successful" status.
+  /// Creates a "successful" status.
   Status() : error_code_(error::OK) {}
 
-  // Create a status with the specified code, and error message. If "code == 0",
-  // error_message is ignored and a Status object identical to Status::OK is
-  // constructed.
+  /// Create a status with the specified code, and error message.
+  /// If "error_code == error::OK", error_message is ignored and a Status
+  /// object identical to Status::OK is constructed.
   Status(error::Code error_code, const std::string& error_message)
       : error_code_(error_code) {
     if (!ok())
@@ -79,13 +79,15 @@ class Status {
 
   ~Status() {}
 
-  // Some pre-defined Status objects.
+  /// @name Some pre-defined Status objects.
+  /// @{
   static const Status& OK;  // Identical to 0-arg constructor.
   static const Status& UNKNOWN;
+  /// @}
 
-  // Store the specified error in this Status object.
-  // If "error_code == error::OK", error_message is ignored and a Status object
-  // identical to Status::OK is constructed.
+  /// Store the specified error in this Status object.
+  /// If "error_code == error::OK", error_message is ignored and a Status
+  /// object identical to Status::OK is constructed.
   void SetError(error::Code error_code, const std::string& error_message) {
     if (error_code == error::OK) {
       Clear();
@@ -95,26 +97,25 @@ class Status {
     }
   }
 
-  // If "ok()", stores "new_status" into *this.  If "!ok()", preserves
-  // the current "error_code()/error_message()",
-  //
-  // Convenient way of keeping track of the first error encountered.
-  // Instead of:
-  //   if (overall_status.ok()) overall_status = new_status
-  // Use:
-  //   overall_status.Update(new_status);
+  /// If "ok()", stores "new_status" into *this.  If "!ok()", preserves
+  /// the current "error_code()/error_message()",
+  ///
+  /// Convenient way of keeping track of the first error encountered.
+  /// Instead of:
+  ///   if (overall_status.ok()) overall_status = new_status
+  /// Use:
+  ///   overall_status.Update(new_status);
   void Update(const Status& new_status) {
     if (ok())
       *this = new_status;
   }
 
-  // Clear this status object to contain the OK code and no error message.
+  /// Clear this status object to contain the OK code and no error message.
   void Clear() {
     error_code_ = error::OK;
     error_message_ = "";
   }
 
-  // Accessor.
   bool ok() const { return error_code_ == error::OK; }
   error::Code error_code() const { return error_code_; }
   const std::string& error_message() const { return error_message_; }
@@ -124,11 +125,12 @@ class Status {
   }
   bool operator!=(const Status& x) const { return !(*this == x); }
 
-  // Returns true iff this has the same error_code as "x".  I.e., the two
-  // Status objects are identical except possibly for the error message.
+  /// @return true iff this has the same error_code as "x", i.e., the two
+  ///         Status objects are identical except possibly for the error
+  ///         message.
   bool Matches(const Status& x) const { return error_code_ == x.error_code(); }
 
-  // Return a combination of the error code name and message.
+  /// @return A combination of the error code name and message.
   std::string ToString() const;
 
   void Swap(Status* other) {

@@ -12,11 +12,11 @@
 namespace media {
 namespace fake_prng {
 
-// Start using fake, deterministic PRNG for OpenSSL.
-// Return true if successful.
+/// Start using fake, deterministic PRNG for OpenSSL.
+/// @return true if successful, false otherwise.
 bool StartFakePrng();
 
-// Stop using fake, deterministic PRNG for OpenSSL.
+/// Stop using fake, deterministic PRNG for OpenSSL.
 void StopFakePrng();
 
 }  // namespace fake_prng

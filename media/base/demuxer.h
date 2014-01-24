@@ -24,30 +24,36 @@ class MediaSample;
 class MediaStream;
 class StreamInfo;
 
+/// Demuxer is responsible for extracting elementary stream samples from a
+/// media file, e.g. an ISO BMFF file.
 class Demuxer {
  public:
-  // |file_name| specifies the input source. It uses prefix matching to create
-  // a proper File object. The user can extend File to support their custom
-  // File objects with its own prefix.
-  // decryptor_source generates decryptor(s) when init_data is available.
-  // Demuxer does not take over the ownership of decryptor_source.
+  /// @param file_name specifies the input source. It uses prefix matching to
+  ///        create a proper File object. The user can extend File to support
+  ///        a custom File object with its own prefix.
+  /// @param decryptor_source generates decryptor(s) from decryption
+  ///        initialization data. It can be NULL if the media is not encrypted.
   Demuxer(const std::string& file_name, DecryptorSource* decryptor_source);
   ~Demuxer();
 
-  // Initializes corresponding MediaParser, Decryptor, instantiates
-  // MediaStream(s) etc.
+  /// Initialize the Demuxer. Calling other public methods of this class
+  /// without this method returning OK, results in an undefined behavior.
+  /// This method primes the demuxer by parsing portions of the media file to
+  /// extract stream information.
+  /// @return OK on success.
   Status Initialize();
 
-  // Drives the remuxing from demuxer side (push): Reads the file and push
-  // the Data to Muxer until Eof.
+  /// Drive the remuxing from demuxer side (push). Read the file and push
+  /// the Data to Muxer until Eof.
   Status Run();
 
-  // Reads from the source and send it to the parser.
+  /// Read from the source and send it to the parser.
   Status Parse();
 
-  // Returns the vector of streams in this Demuxer. The caller cannot add or
-  // remove streams from the returned vector, but the caller is safe to change
-  // the internal state of the streams in the vector through MediaStream APIs.
+  /// @return Streams in the media container being demuxed. The caller cannot
+  ///         add or remove streams from the returned vector, but the caller is
+  ///         allowed to change the internal state of the streams in the vector
+  ///         through MediaStream APIs.
   const std::vector<MediaStream*>& streams() { return streams_; }
 
  private:

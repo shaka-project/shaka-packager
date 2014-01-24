@@ -19,6 +19,7 @@ enum StreamType {
   kStreamVideo,
 };
 
+/// Abstract class holds stream information.
 class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
  public:
   StreamInfo(StreamType stream_type,
@@ -31,11 +32,11 @@ class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
              size_t extra_data_size,
              bool is_encrypted);
 
-  // Returns true if this object has appropriate configuration values, false
-  // otherwise.
+  /// @return true if this object has appropriate configuration values, false
+  ///         otherwise.
   virtual bool IsValidConfig() const = 0;
 
-  // Returns a human-readable string describing |*this|.
+  /// @return A human-readable string describing the stream info.
   virtual std::string ToString() const;
 
   StreamType stream_type() const { return stream_type_; }

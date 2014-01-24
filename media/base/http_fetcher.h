@@ -12,21 +12,24 @@
 
 namespace media {
 
+/// Defines a generic http fetcher interface.
 class HttpFetcher {
  public:
   HttpFetcher();
   virtual ~HttpFetcher();
 
-  // Fetch |response| from |url| using HTTP GET.
-  // |response| should not be NULL, will contain the body of the http response
-  // on success.
-  // Return OK on success.
+  /// Fetch content using HTTP GET.
+  /// @param url specifies the content URL.
+  /// @param[out] response will contain the body of the http response on
+  ///             success. It should not be NULL.
+  /// @return OK on success.
   virtual Status Get(const std::string& url, std::string* response) = 0;
 
-  // Fetch |response| from |url| using HTTP POST.
-  // |response| should not be NULL, will contain the body of the http response
-  // on success.
-  // Return OK on success.
+  /// Fetch content using HTTP POST.
+  /// @param url specifies the content URL.
+  /// @param[out] response will contain the body of the http response on
+  ///             success. It should not be NULL.
+  /// @return OK on success.
   virtual Status Post(const std::string& url,
                       const std::string& data,
                       std::string* response) = 0;
@@ -35,7 +38,7 @@ class HttpFetcher {
   DISALLOW_COPY_AND_ASSIGN(HttpFetcher);
 };
 
-// A simple HttpFetcher implementation using happyhttp.
+/// A simple HttpFetcher implementation using happyhttp.
 class SimpleHttpFetcher : public HttpFetcher {
  public:
   SimpleHttpFetcher();

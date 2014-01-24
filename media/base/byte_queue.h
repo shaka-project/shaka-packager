@@ -10,28 +10,28 @@
 
 namespace media {
 
-// Represents a queue of bytes.
-// Data is added to the end of the queue via an Push() call and removed via
-// Pop(). The contents of the queue can be observed via the Peek() method.
-// This class manages the underlying storage of the queue and tries to minimize
-// the number of buffer copies when data is appended and removed.
+/// Represents a queue of bytes.
+/// Data is added to the end of the queue via an Push() and removed via Pop().
+/// The contents of the queue can be observed via the Peek() method. This class
+/// manages the underlying storage of the queue and tries to minimize the
+/// number of buffer copies when data is appended and removed.
 class ByteQueue {
  public:
   ByteQueue();
   ~ByteQueue();
 
-  // Reset the queue to the empty state.
+  /// Reset the queue to the empty state.
   void Reset();
 
-  // Appends new bytes onto the end of the queue.
+  /// Append new bytes to the end of the queue.
   void Push(const uint8* data, int size);
 
-  // Get a pointer to the front of the queue and the queue size.
-  // These values are only valid until the next Push() or
-  // Pop() call.
+  /// Get a pointer to the front of the queue and the queue size.
+  /// These values are only valid until the next Push() or Pop() call.
   void Peek(const uint8** data, int* size) const;
 
-  // Remove |count| bytes from the front of the queue.
+  /// Remove a number of bytes from the front of the queue.
+  /// @param count specifies number of bytes to be popped.
   void Pop(int count);
 
  private:

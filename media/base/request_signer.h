@@ -17,13 +17,14 @@ namespace media {
 class AesCbcEncryptor;
 class RsaPrivateKey;
 
-// Define an abstract signer class for signature generation.
+/// Abstract class used for signature generation.
 class RequestSigner {
  public:
   virtual ~RequestSigner();
 
-  // Generate signature for |message|. |signature| should not be NULL.
-  // Return true on success.
+  /// Generate signature for the input message.
+  /// @param signature should not be NULL.
+  /// @return true on success, false otherwise.
   virtual bool GenerateSignature(const std::string& message,
                                  std::string* signature) = 0;
 
@@ -38,17 +39,18 @@ class RequestSigner {
   DISALLOW_COPY_AND_ASSIGN(RequestSigner);
 };
 
-// AesRequestSigner uses AES-CBC signing.
+/// AesRequestSigner uses AES-CBC signing.
 class AesRequestSigner : public RequestSigner {
  public:
   virtual ~AesRequestSigner();
 
-  // Create an AesSigner object from key and iv in hex.
-  // Return NULL on failure.
+  /// Create an AesSigner object from key and iv in hex.
+  /// @return The created AesRequestSigner object on success, NULL otherwise.
   static AesRequestSigner* CreateSigner(const std::string& signer_name,
                                         const std::string& aes_key_hex,
                                         const std::string& iv_hex);
 
+  /// RequestSigner implementation override.
   virtual bool GenerateSignature(const std::string& message,
                                  std::string* signature) OVERRIDE;
 
@@ -61,16 +63,17 @@ class AesRequestSigner : public RequestSigner {
   DISALLOW_COPY_AND_ASSIGN(AesRequestSigner);
 };
 
-// RsaRequestSigner uses RSA-PSS signing.
+/// RsaRequestSigner uses RSA-PSS signing.
 class RsaRequestSigner : public RequestSigner {
  public:
   virtual ~RsaRequestSigner();
 
-  // Create an RsaSigner object using a DER encoded PKCS#1 RSAPrivateKey.
-  // Return NULL on failure.
+  /// Create an RsaSigner object using a DER encoded PKCS#1 RSAPrivateKey.
+  /// @return The created RsaRequestSigner object on success, NULL otherwise.
   static RsaRequestSigner* CreateSigner(const std::string& signer_name,
                                         const std::string& pkcs1_rsa_key);
 
+  /// RequestSigner implementation override.
   virtual bool GenerateSignature(const std::string& message,
                                  std::string* signature) OVERRIDE;
 

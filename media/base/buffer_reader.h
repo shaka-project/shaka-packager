@@ -14,19 +14,23 @@
 
 namespace media {
 
-// A simple buffer reader implementation, which reads data of various type
-// from a fixed byte array.
+/// A simple buffer reader implementation, which reads data of various types
+/// from a fixed byte array.
 class BufferReader {
  public:
+  /// Create a BufferReader from a raw buffer.
   BufferReader(const uint8* buf, size_t size)
       : buf_(buf), size_(size), pos_(0) {}
   ~BufferReader() {}
 
+  /// @return true if there are more than @a count bytes in the stream, false
+  ///         otherwise.
   bool HasBytes(size_t count) { return pos() + count <= size(); }
 
-  // Read a value from the stream, performing endian correction, and advance
-  // the stream pointer.
-  // Return false if there are not enough bytes in the buffer.
+  /// Read a value from the stream, performing endian correction, and advance
+  /// the stream pointer.
+  /// @return false if there are not enough bytes in the buffer.
+  /// @{
   bool Read1(uint8* v) WARN_UNUSED_RESULT;
   bool Read2(uint16* v) WARN_UNUSED_RESULT;
   bool Read2s(int16* v) WARN_UNUSED_RESULT;
@@ -34,16 +38,21 @@ class BufferReader {
   bool Read4s(int32* v) WARN_UNUSED_RESULT;
   bool Read8(uint64* v) WARN_UNUSED_RESULT;
   bool Read8s(int64* v) WARN_UNUSED_RESULT;
-  // Read a N-byte integer of the corresponding signedness and store it in the
-  // 8-byte return type. |num_bytes| should not be larger than 8 bytes.
-  // Return false if there are not enough bytes in the buffer.
+  /// @}
+
+  /// Read N-byte integer of the corresponding signedness and store it in the
+  /// 8-byte return type.
+  /// @param num_bytes should not be larger than 8 bytes.
+  /// @return false if there are not enough bytes in the buffer, true otherwise.
+  /// @{
   bool ReadNBytesInto8(uint64* v, size_t num_bytes) WARN_UNUSED_RESULT;
   bool ReadNBytesInto8s(int64* v, size_t num_bytes) WARN_UNUSED_RESULT;
+  /// @}
 
   bool ReadToVector(std::vector<uint8>* t, size_t count) WARN_UNUSED_RESULT;
 
-  // Advance the stream by this many bytes.
-  // Return false if there are not enough bytes in the buffer.
+  /// Advance the stream by this many bytes.
+  /// @return false if there are not enough bytes in the buffer, true otherwise.
   bool SkipBytes(size_t num_bytes) WARN_UNUSED_RESULT;
 
   const uint8* data() const { return buf_; }

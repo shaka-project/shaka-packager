@@ -12,22 +12,24 @@
 
 namespace media {
 
-// A class to read bit streams.
+/// A class to read bit streams.
 class BitReader {
  public:
-  // Initialize the reader to start reading at |data|, |size| being size
-  // of |data| in bytes.
+  /// Initialize the BitReader object to read a data buffer.
+  /// @param data points to the beginning of the buffer.
+  /// @param size is the buffer size in bytes.
   BitReader(const uint8* data, off_t size);
   ~BitReader();
 
-  // Read |num_bits| next bits from stream and return in |*out|, first bit
-  // from the stream starting at |num_bits| position in |*out|.
-  // |num_bits| cannot be larger than the bits the type can hold.
-  // Return false if the given number of bits cannot be read (not enough
-  // bits in the stream), true otherwise. When return false, the stream will
-  // enter a state where further ReadBits/SkipBits operations will always
-  // return false unless |num_bits| is 0. The type |T| has to be a primitive
-  // integer type.
+  /// Read a number of bits from stream.
+  /// @param num_bits specifies the number of bits to read. It cannot be larger
+  ///        than the number of bits the type can hold.
+  /// @param[out] out stores the output. The type @b T has to be a primitive
+  ///             integer type.
+  /// @return false if the given number of bits cannot be read (not enough
+  ///         bits in the stream), true otherwise. When false is returned, the
+  ///         stream will enter a state where further ReadBits/SkipBits
+  ///         operations will always return false unless @a num_bits is 0.
   template<typename T> bool ReadBits(int num_bits, T *out) {
     DCHECK_LE(num_bits, static_cast<int>(sizeof(T) * 8));
     uint64 temp;
@@ -36,13 +38,15 @@ class BitReader {
     return ret;
   }
 
-  // Skip |num_bits| next bits from stream. Return false if the given number of
-  // bits cannot be skipped (not enough bits in the stream), true otherwise.
-  // When return false, the stream will enter a state where further ReadBits/
-  // SkipBits operations will always return false unless |num_bits| is 0.
+  /// Skip a number of bits from stream.
+  /// @param num_bits specifies the number of bits to be skipped.
+  /// @return false if the given number of bits cannot be skipped (not enough
+  ///         bits in the stream), true otherwise. When false is returned, the
+  ///         stream will enter a state where further ReadBits/SkipBits
+  ///         operations will always return false unless |num_bits| is 0.
   bool SkipBits(int num_bits);
 
-  // Returns the number of bits available for reading.
+  /// @return The number of bits available for reading.
   int bits_available() const;
 
  private:

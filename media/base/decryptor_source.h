@@ -3,8 +3,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
-//
-// DecryptorSource is responsible for decryption key acquisition.
 
 #ifndef MEDIA_BASE_DECRYPTOR_SOURCE_H_
 #define MEDIA_BASE_DECRYPTOR_SOURCE_H_
@@ -15,11 +13,17 @@
 
 namespace media {
 
+/// DecryptorSource is responsible for decryption key acquisition.
 class DecryptorSource {
  public:
   DecryptorSource() {}
   virtual ~DecryptorSource() {}
 
+  /// NeedKey event handler.
+  /// @param container indicates the container format.
+  /// @param init_data specifies container dependent initialization data that
+  ///        is used to initialize the decryption key.
+  /// @return OK on success, an adequate status on error.
   virtual Status OnNeedKey(MediaContainerName container,
                            const std::string& init_data) = 0;
 
@@ -27,6 +31,6 @@ class DecryptorSource {
   DISALLOW_COPY_AND_ASSIGN(DecryptorSource);
 };
 
-}
+}  // namespace media
 
 #endif  // MEDIA_BASE_DECRYPTOR_SOURCE_H_
