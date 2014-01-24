@@ -125,7 +125,7 @@ bool AddStreamToMuxer(const std::vector<MediaStream*>& streams, Muxer* muxer) {
   DCHECK(muxer);
 
   if (!FLAGS_video && !FLAGS_audio) {
-    LOG(ERROR) << "Required: add_video_stream or add_audio_stream.";
+    LOG(ERROR) << "Required: --audio or --video.";
     return false;
   }
 
