@@ -11,14 +11,8 @@
 
 namespace media {
 
-LocalFile::LocalFile(const char* name, const char* mode)
-    : File(name), file_mode_(mode), internal_file_(NULL) {}
-
-bool LocalFile::Open() {
-  internal_file_ =
-      base::OpenFile(base::FilePath(file_name()), file_mode_.c_str());
-  return (internal_file_ != NULL);
-}
+LocalFile::LocalFile(const char* file_name, const char* mode)
+    : File(file_name), file_mode_(mode), internal_file_(NULL) {}
 
 bool LocalFile::Close() {
   bool result = true;
@@ -67,6 +61,14 @@ bool LocalFile::Flush() {
 bool LocalFile::Eof() {
   DCHECK(internal_file_ != NULL);
   return static_cast<bool>(feof(internal_file_));
+}
+
+LocalFile::~LocalFile() {}
+
+bool LocalFile::Open() {
+  internal_file_ =
+      base::OpenFile(base::FilePath(file_name()), file_mode_.c_str());
+  return (internal_file_ != NULL);
 }
 
 }  // namespace media

@@ -3,8 +3,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
-//
-// Implements LocalFile.
 
 #ifndef PACKAGER_FILE_LOCAL_FILE_H_
 #define PACKAGER_FILE_LOCAL_FILE_H_
@@ -17,19 +15,27 @@
 
 namespace media {
 
+/// Implement LocalFile which deals with local storage.
 class LocalFile : public File {
  public:
-  LocalFile(const char* name, const char* mode);
+  /// @param file_name C string containing the name of the file to be accessed.
+  /// @param mode C string containing a file access mode, refer to fopen for
+  ///        the available modes.
+  LocalFile(const char* file_name, const char* mode);
 
-  // File implementations.
+  /// @name File implementation overrides.
+  /// @{
   virtual bool Close() OVERRIDE;
   virtual int64 Read(void* buffer, uint64 length) OVERRIDE;
   virtual int64 Write(const void* buffer, uint64 length) OVERRIDE;
   virtual int64 Size() OVERRIDE;
   virtual bool Flush() OVERRIDE;
   virtual bool Eof() OVERRIDE;
+  /// @}
 
  protected:
+  ~LocalFile();
+
   virtual bool Open() OVERRIDE;
 
  private:

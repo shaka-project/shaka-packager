@@ -3,8 +3,6 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
-//
-// Defines an abstract file interface.
 
 #ifndef PACKAGER_FILE_FILE_H_
 #define PACKAGER_FILE_FILE_H_
@@ -17,70 +15,76 @@ namespace media {
 
 extern const char* kLocalFilePrefix;
 
+/// Define an abstract file interface.
 class File {
  public:
-  // Open the specified file, or return NULL on error.
-  // This is actually a file factory method, it opens a proper file, e.g.
-  // LocalFile, MemFile automatically based on prefix.
+  /// Open the specified file.
+  /// This is a file factory method, it opens a proper file automatically
+  /// based on prefix, e.g. "file://" for LocalFile.
+  /// @param file_name contains the name of the file to be accessed.
+  /// @param mode contains file access mode. Implementation dependent.
+  /// @return A File pointer on success, false otherwise.
   static File* Open(const char* file_name, const char* mode);
 
-  // Flush() and de-allocate resources associated with this file, and
-  // delete this File object.  THIS IS THE ONE TRUE WAY TO DEALLOCATE
-  // THIS OBJECT.
-  // Returns true on success.
-  // For writable files, returning false MAY INDICATE DATA LOSS.
+  /// Flush() and de-allocate resources associated with this file, and
+  /// delete this File object.  THIS IS THE ONE TRUE WAY TO DEALLOCATE
+  /// THIS OBJECT.
+  /// @return true on success. For writable files, returning false MAY
+  ///         INDICATE DATA LOSS.
   virtual bool Close() = 0;
 
-  // Reads data and returns it in buffer. Returns a value < 0 on error,
-  // or the number of bytes read otherwise. Returns zero on end-of-file,
-  // or if 'length' is zero.
+  /// Read data and return it in buffer.
+  /// @param[out] buffer points to a block of memory with a size of at least
+  ///             @a length bytes.
+  /// @param length indicates number of bytes to be read.
+  /// @return Number of bytes read, or a value < 0 on error.
+  ///         Zero on end-of-file, or if 'length' is zero.
   virtual int64 Read(void* buffer, uint64 length) = 0;
 
-  // Write 'length' bytes from 'buffer', returning the number of bytes
-  // that were actually written.  Return < 0 on error.
-  //
-  // For a file open in append mode (i.e., "a" or "a+"), Write()
-  // always appends to the end of the file. For files opened in other
-  // write modes (i.e., "w", or "w+"), writes occur at the
-  // current file offset.
+  /// Write block of data.
+  /// @param buffer points to a block of memory with at least @a length bytes.
+  /// @param length indicates number of bytes to write.
+  /// @return Number of bytes written, or a value < 0 on error.
   virtual int64 Write(const void* buffer, uint64 length) = 0;
 
-  // Return the size of the file in bytes.
-  // A return value less than zero indicates a problem getting the
-  // size.
+  /// @return Size of the file in bytes. A return value less than zero
+  ///         indicates a problem getting the size.
   virtual int64 Size() = 0;
 
-  // Flushes the file so that recently written data will survive an
-  // application crash (but not necessarily an OS crash).  For
-  // instance, in localfile the data is flushed into the OS but not
-  // necessarily to disk.
+  /// Flush the file so that recently written data will survive an
+  /// application crash (but not necessarily an OS crash). For
+  /// instance, in LocalFile the data is flushed into the OS but not
+  /// necessarily to disk.
+  /// @return true on success, false otherwise.
   virtual bool Flush() = 0;
 
-  // Return whether we're currently at eof.
+  /// @return true if the file reaches eof, false otherwise.
   virtual bool Eof() = 0;
 
-  // Return the file name.
+  /// @return The file name.
   const std::string& file_name() const { return file_name_; }
 
   // ************************************************************
   // * Static Methods: File-on-the-filesystem status
   // ************************************************************
 
-  // Returns the size of a file in bytes, and opens and closes the file
-  // in the process. Returns a value < 0 on failure.
+  /// @return The size of a file in bytes on success, a value < 0 otherwise.
+  ///         The file will be opened and closed in the process.
   static int64 GetFileSize(const char* file_name);
 
-  // Read the file at |file_name| into |contents|, returning true on success.
-  // |contents| should not be NULL.
+  /// Read the file into string.
+  /// @param file_name is the file to be read. It should be a valid file.
+  /// @param contents[out] points to the output string. Should not be NULL.
+  /// @return true on success, false otherwise.
   static bool ReadFileToString(const char* file_name, std::string* contents);
 
  protected:
   explicit File(const std::string& file_name) : file_name_(file_name) {}
-  // Do *not* call the destructor directly (with the "delete" keyword)
-  // nor use scoped_ptr; instead use Close().
+  /// Do *not* call the destructor directly (with the "delete" keyword)
+  /// nor use scoped_ptr; instead use Close().
   virtual ~File() {}
 
-  // Internal open. Should not be used directly.
+  /// Internal open. Should not be used directly.
   virtual bool Open() = 0;
 
  private:

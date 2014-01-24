@@ -12,7 +12,8 @@
 
 namespace media {
 
-// Use by scoped_ptr to automatically close the file when it goes out of scope.
+/// Used by scoped_ptr to automatically close the file when it goes out of
+/// scope.
 struct FileCloser {
   inline void operator()(File* file) const {
     if (file != NULL && !file->Close()) {
