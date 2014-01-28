@@ -4,6 +4,7 @@
 
 #include "base/logging.h"
 #include "media/base/audio_stream_info.h"
+#include "media/base/muxer_options.h"
 #include "media/base/video_stream_info.h"
 #include "mpd/base/media_info.pb.h"
 #include "mpd/base/mpd_notifier.h"
@@ -36,23 +37,13 @@ void SetRange(uint64 begin, uint64 end, Range* range) {
   range->set_end(end);
 }
 
-void SetMediaInfoCommonInfo(bool has_init_range,
-                            uint64 init_range_start,
-                            uint64 init_range_end,
-                            bool has_index_range,
-                            uint64 index_range_start,
-                            uint64 index_range_end,
-                            float duration_seconds,
-                            uint64 file_size,
-                            MediaInfo* media_info) {
-  DCHECK(media_info);
-  DCHECK_GT(file_size, 0);
-  DCHECK_GT(duration_seconds, 0.0f);
-
-  media_info->set_media_duration_seconds(duration_seconds);
-  media_info->set_bandwidth(
-      EstimateRequiredBandwidth(file_size, duration_seconds));
-
+void SetMediaInfoRanges(bool has_init_range,
+                        uint64 init_range_start,
+                        uint64 init_range_end,
+                        bool has_index_range,
+                        uint64 index_range_start,
+                        uint64 index_range_end,
+                        MediaInfo* media_info) {
   if (has_init_range) {
     SetRange(
         init_range_start, init_range_end, media_info->mutable_init_range());
@@ -62,6 +53,44 @@ void SetMediaInfoCommonInfo(bool has_init_range,
     SetRange(
         index_range_start, index_range_end, media_info->mutable_index_range());
   }
+}
+
+void SetMediaInfoContainerType(MuxerListener::ContainerType container_type,
+                               MediaInfo* media_info) {
+  DCHECK(media_info);
+  switch (container_type) {
+    case MuxerListener::kContainerUnknown:
+      media_info->set_container_type(MediaInfo::CONTAINER_UNKNOWN);
+      break;
+    case MuxerListener::kContainerMp4:
+      media_info->set_container_type(MediaInfo::CONTAINER_MP4);
+      break;
+    case MuxerListener::kContainerMpeg2ts:
+      media_info->set_container_type(MediaInfo::CONTAINER_MPEG2_TS);
+      break;
+    case MuxerListener::kContainerWebM:
+      media_info->set_container_type(MediaInfo::CONTAINER_WEBM);
+      break;
+    default:
+      NOTREACHED() << "Unknown container type " << container_type;
+  }
+}
+
+void SetMediaInfoCommonInfo(float duration_seconds,
+                            uint64 file_size,
+                            uint32 reference_time_scale,
+                            MuxerListener::ContainerType container_type,
+                            MediaInfo* media_info) {
+  DCHECK(media_info);
+  DCHECK_GT(file_size, 0);
+  DCHECK_GT(duration_seconds, 0.0f);
+
+  media_info->set_media_duration_seconds(duration_seconds);
+  media_info->set_bandwidth(
+      EstimateRequiredBandwidth(file_size, duration_seconds));
+
+  media_info->set_reference_time_scale(reference_time_scale);
+  SetMediaInfoContainerType(container_type, media_info);
 }
 
 void AddVideoInfo(const VideoStreamInfo* video_stream_info,
@@ -124,9 +153,16 @@ void SetMediaInfoStreamInfo(const std::vector<StreamInfo*>& stream_infos,
   }
 }
 
+void SetMediaInfoMuxerOptions(const MuxerOptions& muxer_options,
+                              MediaInfo* media_info) {
+  DCHECK(media_info);
+  media_info->set_media_file_name(muxer_options.output_file_name);
+}
+
 }  // namespace
 
-bool GenerateMediaInfo(const std::vector<StreamInfo*>& stream_infos,
+bool GenerateMediaInfo(const MuxerOptions& muxer_options,
+                       const std::vector<StreamInfo*>& stream_infos,
                        bool has_init_range,
                        uint64 init_range_start,
                        uint64 init_range_end,
@@ -135,10 +171,12 @@ bool GenerateMediaInfo(const std::vector<StreamInfo*>& stream_infos,
                        uint64 index_range_end,
                        float duration_seconds,
                        uint64 file_size,
+                       uint32 reference_time_scale,
+                       MuxerListener::ContainerType container_type,
                        MediaInfo* media_info) {
   DCHECK(media_info);
   if (file_size == 0) {
-    // TODO(rkurowia); bandwidth is a required field for MPD. But without the
+    // TODO(rkuroiwa): bandwidth is a required field for MPD. But without the
     // file size, AFAIK there's not much I can do. Fail silently?
     LOG(ERROR) << "File size not specified.";
     return false;
@@ -150,14 +188,18 @@ bool GenerateMediaInfo(const std::vector<StreamInfo*>& stream_infos,
     return false;;
   }
 
-  SetMediaInfoCommonInfo(has_init_range,
-                         init_range_start,
-                         init_range_end,
-                         has_index_range,
-                         index_range_start,
-                         index_range_end,
-                         duration_seconds,
+  SetMediaInfoMuxerOptions(muxer_options, media_info);
+  SetMediaInfoRanges(has_init_range,
+                     init_range_start,
+                     init_range_end,
+                     has_index_range,
+                     index_range_start,
+                     index_range_end,
+                     media_info);
+  SetMediaInfoCommonInfo(duration_seconds,
                          file_size,
+                         reference_time_scale,
+                         container_type,
                          media_info);
   SetMediaInfoStreamInfo(stream_infos, media_info);
   return true;

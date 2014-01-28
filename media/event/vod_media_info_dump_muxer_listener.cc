@@ -1,6 +1,7 @@
 #include "media/event/vod_media_info_dump_muxer_listener.h"
 
 #include "base/logging.h"
+#include "media/base/muxer_options.h"
 #include "media/base/stream_info.h"
 #include "media/event/vod_muxer_listener_internal.h"
 #include "media/file/file.h"
@@ -25,7 +26,9 @@ bool IsAnyStreamEncrypted(const std::vector<StreamInfo*>& stream_infos) {
 }  // namespace
 
 VodMediaInfoDumpMuxerListener::VodMediaInfoDumpMuxerListener(File* output_file)
-    : file_(output_file) {}
+    : file_(output_file),
+      reference_time_scale_(0),
+      container_type_(kContainerUnknown) {}
 
 VodMediaInfoDumpMuxerListener::~VodMediaInfoDumpMuxerListener() {}
 
@@ -39,8 +42,9 @@ void VodMediaInfoDumpMuxerListener::OnMediaStart(
     const std::vector<StreamInfo*>& stream_infos,
     uint32 time_scale,
     ContainerType container_type) {
-  DLOG(INFO)
-      << "VodMediaInfoDumpMuxerListener does not care about OnMediaStart.";
+  muxer_options_ = muxer_options;
+  reference_time_scale_ = time_scale;
+  container_type_ = container_type;
 }
 
 void VodMediaInfoDumpMuxerListener::OnMediaEnd(
@@ -54,7 +58,8 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(
     float duration_seconds,
     uint64 file_size) {
   MediaInfo media_info;
-  if (!internal::GenerateMediaInfo(stream_infos,
+  if (!internal::GenerateMediaInfo(muxer_options_,
+                                   stream_infos,
                                    has_init_range,
                                    init_range_start,
                                    init_range_end,
@@ -63,6 +68,8 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(
                                    index_range_end,
                                    duration_seconds,
                                    file_size,
+                                   reference_time_scale_,
+                                   container_type_,
                                    &media_info)) {
     LOG(ERROR) << "Failed to generate MediaInfo from input.";
     return;

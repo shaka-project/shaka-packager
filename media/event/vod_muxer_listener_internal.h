@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "base/basictypes.h"
+#include "media/event/muxer_listener.h"
 
 namespace dash_packager {
 class MediaInfo;
@@ -11,6 +12,7 @@ class MediaInfo;
 
 namespace media {
 
+class MuxerOptions;
 class StreamInfo;
 
 namespace event {
@@ -18,7 +20,8 @@ namespace internal {
 
 // On success fill |media_info| with input data and return true, otherwise
 // return false.
-bool GenerateMediaInfo(const std::vector<StreamInfo*>& stream_infos,
+bool GenerateMediaInfo(const MuxerOptions& muxer_options,
+                       const std::vector<StreamInfo*>& stream_infos,
                        bool has_init_range,
                        uint64 init_range_start,
                        uint64 init_range_end,
@@ -27,6 +30,8 @@ bool GenerateMediaInfo(const std::vector<StreamInfo*>& stream_infos,
                        uint64 index_range_end,
                        float duration_seconds,
                        uint64 file_size,
+                       uint32 reference_time_scale_,
+                       MuxerListener::ContainerType container_type,
                        dash_packager::MediaInfo* media_info);
 
 }  // namespace internal

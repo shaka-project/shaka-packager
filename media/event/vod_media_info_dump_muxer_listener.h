@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "media/base/muxer_options.h"
 #include "media/event/muxer_listener.h"
 
 namespace dash_packager {
@@ -17,7 +18,6 @@ class MediaInfo;
 namespace media {
 
 class File;
-class MuxerOptions;
 
 namespace event {
 
@@ -58,6 +58,9 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
 
   File* file_;
   std::string scheme_id_uri_;
+  MuxerOptions muxer_options_;
+  uint32 reference_time_scale_;
+  ContainerType container_type_;
 
   DISALLOW_COPY_AND_ASSIGN(VodMediaInfoDumpMuxerListener);
 };
