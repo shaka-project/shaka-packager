@@ -24,7 +24,8 @@ class VodMpdNotifyMuxerListener : public MuxerListener {
   // MuxerListener implementation.
   virtual void OnMediaStart(const MuxerOptions& muxer_options,
                             const std::vector<StreamInfo*>& stream_infos,
-                            uint32 time_scale) OVERRIDE;
+                            uint32 time_scale,
+                            ContainerType container_type) OVERRIDE;
 
   virtual void OnMediaEnd(const std::vector<StreamInfo*>& stream_infos,
                           bool has_init_range,

@@ -284,7 +284,10 @@ void MP4Muxer::FireOnMediaStartEvent() {
   std::vector<StreamInfo*> stream_info_vec;
   GetStreamInfo(&stream_info_vec);
   const uint32 timescale = segmenter_->GetReferenceTimeScale();
-  muxer_listener()->OnMediaStart(options(), stream_info_vec, timescale);
+  muxer_listener()->OnMediaStart(options(),
+                                 stream_info_vec,
+                                 timescale,
+                                 event::MuxerListener::kContainerMp4);
 }
 
 void MP4Muxer::FireOnMediaEndEvent() {

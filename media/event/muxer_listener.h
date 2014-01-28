@@ -17,8 +17,12 @@ namespace event {
 // to add GetStatus() method somewhere (maybe in MuxerListener, maybe not).
 class MuxerListener {
  public:
-  MuxerListener() {};
-  virtual ~MuxerListener() {};
+  enum ContainerType {
+    kContainerUnknown = 0,
+    kContainerMp4,
+    kContainerMpeg2ts,
+    kContainerWebM
+  };
 
   // Called when muxing starts. This event happens before any other events.
   // For MPEG DASH Live profile, the initialization segment information is
@@ -27,7 +31,8 @@ class MuxerListener {
   // specified in |stream_infos|.
   virtual void OnMediaStart(const MuxerOptions& muxer_options,
                             const std::vector<StreamInfo*>& stream_infos,
-                            uint32 time_scale) = 0;
+                            uint32 time_scale,
+                            ContainerType container_type) = 0;
 
   // Called when all files are written out and the muxer object does not output
   // any more files.
@@ -57,6 +62,9 @@ class MuxerListener {
   virtual void OnNewSegment(uint64 start_time,
                             uint64 duration,
                             uint64 segment_file_size) = 0;
+ protected:
+  MuxerListener() {};
+  virtual ~MuxerListener() {};
 };
 
 }  // namespace event

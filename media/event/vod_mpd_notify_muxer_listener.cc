@@ -23,7 +23,8 @@ VodMpdNotifyMuxerListener::~VodMpdNotifyMuxerListener() {}
 void VodMpdNotifyMuxerListener::OnMediaStart(
     const MuxerOptions& muxer_options,
     const std::vector<StreamInfo*>& stream_infos,
-    uint32 time_scale) {}
+    uint32 time_scale,
+    ContainerType container_type) {}
 
 void VodMpdNotifyMuxerListener::OnMediaEnd(
     const std::vector<StreamInfo*>& stream_infos,
