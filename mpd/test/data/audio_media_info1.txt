@@ -1,0 +1,11 @@
+bandwidth: 400
+audio_info {
+  codec: "mp4a.40.2"
+  sampling_frequency: 44100
+  time_scale: 1200
+  num_channels: 2
+}
+reference_time_scale: 50
+container_type: 1
+media_file_name: "test_output_file_name_audio1.mp4"
+media_duration_seconds: 10.5

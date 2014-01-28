@@ -52,16 +52,19 @@
     },
     {
       'target_name': 'mpd_unittest',
-      'type': 'executable',
+      'type': '<(gtest_target_type)',
       'sources': [
         'base/mpd_builder_unittest.cc',
         'base/xml/xml_node_unittest.cc',
+        'util/mpd_writer_unittest.cc',
       ],
       'dependencies': [
         '../base/base.gyp:base',
         '../base/base.gyp:run_all_unittests',
+        '../packager.gyp:file',
         '../testing/gtest.gyp:gtest',
         'mpd_builder',
+        'mpd_util',
       ],
     },
     {

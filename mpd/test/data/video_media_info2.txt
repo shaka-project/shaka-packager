@@ -1,0 +1,19 @@
+bandwidth: 5000
+video_info {
+  codec: "avc1.010101"
+  width: 480
+  height: 360
+  time_scale: 20
+}
+init_range {
+  begin: 0
+  end: 53
+}
+index_range {
+  begin: 54
+  end: 100
+}
+reference_time_scale: 50
+container_type: 1
+media_file_name: "test_output_file_name2.mp4"
+media_duration_seconds: 10.5
