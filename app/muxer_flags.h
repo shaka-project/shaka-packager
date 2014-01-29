@@ -67,4 +67,18 @@ DEFINE_string(temp_file,
               "not specified, a new file will be created in an OS-dependent "
               "temporary directory.");
 
+// Flags for MuxerListener.
+DEFINE_bool(output_media_info,
+            true,
+            "Create a human readable format of MediaInfo. The output file name "
+            "will be the name specified by output flag, suffixed with "
+            "'.media_info'.");
+DEFINE_string(scheme_id_uri,
+              "",
+              "This flag only applies if output_media_info is true. This value "
+              "will be set in MediaInfo if the stream is encrypted. "
+              "Use scheme_id_uri when you generate an MPD. If the "
+              "stream is encrypted, MPD requires a <ContentProtection> "
+              "element which requires the schemeIdUri attribute.");
+
 #endif  // APP_MUXER_FLAGS_H_

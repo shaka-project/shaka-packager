@@ -297,6 +297,7 @@
       ],
       'dependencies': [
         'file',
+        'media_event',
         'mp4',
         'third_party/gflags/gflags.gyp:gflags',
       ],

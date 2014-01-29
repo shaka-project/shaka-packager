@@ -24,6 +24,8 @@ class MuxerListener {
     kContainerWebM
   };
 
+  virtual ~MuxerListener() {};
+
   // Called when muxing starts. This event happens before any other events.
   // For MPEG DASH Live profile, the initialization segment information is
   // available from StreamInfo.
@@ -64,7 +66,6 @@ class MuxerListener {
                             uint64 segment_file_size) = 0;
  protected:
   MuxerListener() {};
-  virtual ~MuxerListener() {};
 };
 
 }  // namespace event

@@ -18,7 +18,9 @@
 #include "media/base/muxer_options.h"
 #include "media/base/request_signer.h"
 #include "media/base/stream_info.h"
+#include "media/event/vod_media_info_dump_muxer_listener.h"
 #include "media/file/file.h"
+#include "media/file/file_closer.h"
 #include "media/mp4/mp4_muxer.h"
 
 DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
@@ -171,6 +173,24 @@ bool RunPackager(const std::string& input) {
     return false;
 
   scoped_ptr<Muxer> muxer(new mp4::MP4Muxer(muxer_options));
+  scoped_ptr<event::MuxerListener> muxer_listener;
+  scoped_ptr<File, FileCloser> mpd_file;
+  if (FLAGS_output_media_info) {
+    std::string output_mpd_file_name = FLAGS_output + ".media_info";
+    mpd_file.reset(File::Open(output_mpd_file_name.c_str(), "w"));
+    if (!mpd_file) {
+      LOG(ERROR) << "Failed to open " << output_mpd_file_name;
+      return false;
+    }
+
+    scoped_ptr<event::VodMediaInfoDumpMuxerListener> media_info_muxer_listener(
+        new event::VodMediaInfoDumpMuxerListener(mpd_file.get()));
+    media_info_muxer_listener->SetContentProtectionSchemeIdUri(
+        FLAGS_scheme_id_uri);
+    muxer_listener = media_info_muxer_listener.Pass();
+    muxer->SetMuxerListener(muxer_listener.get());
+  }
+
   if (!AddStreamToMuxer(demuxer.streams(), muxer.get()))
     return false;
 
