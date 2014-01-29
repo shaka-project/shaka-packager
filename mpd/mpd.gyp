@@ -75,6 +75,7 @@
         'util/mpd_writer.h',
       ],
       'dependencies': [
+        '../packager.gyp:file',
         'mpd_builder',
       ],
     },

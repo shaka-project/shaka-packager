@@ -302,5 +302,18 @@
         'third_party/gflags/gflags.gyp:gflags',
       ],
     },
+    {
+      'target_name': 'mpd_generator',
+      'type': 'executable',
+      'sources': [
+        'app/mpd_generator.cc',
+        'app/mpd_generator_flags.h',
+      ],
+      'dependencies': [
+        'base/base.gyp:base',
+        'mpd/mpd.gyp:mpd_util',
+        'third_party/gflags/gflags.gyp:gflags',
+      ],
+    },
   ],
 }
