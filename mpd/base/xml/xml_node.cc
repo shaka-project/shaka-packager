@@ -339,6 +339,14 @@ bool RepresentationXmlNode::AddAudioInfo(
 }
 
 bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
+  if (media_info.has_media_file_name()) {
+    XmlNode base_url("BaseURL");
+    base_url.SetContent(media_info.media_file_name());
+
+    if (!AddChild(base_url.PassScopedPtr()))
+      return false;
+  }
+
   const bool need_segment_base = media_info.has_index_range() ||
                                  media_info.has_init_range() ||
                                  media_info.has_reference_time_scale();
@@ -365,14 +373,6 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
     }
 
     if (!AddChild(segment_base.PassScopedPtr()))
-      return false;
-  }
-
-  if (media_info.has_media_file_name()) {
-    XmlNode base_url("BaseURL");
-    base_url.SetContent(media_info.media_file_name());
-
-    if (!AddChild(base_url.PassScopedPtr()))
       return false;
   }
 
