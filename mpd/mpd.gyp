@@ -51,6 +51,7 @@
       ],
       'dependencies': [
         '../base/base.gyp:base',
+        '../media/file/file.gyp:file',
         '../third_party/libxml/libxml.gyp:libxml',
         'media_info_proto',
       ],

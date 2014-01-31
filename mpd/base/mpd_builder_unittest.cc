@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "media/file/file.h"
 #include "mpd/base/mpd_builder.h"
 #include "mpd/base/mpd_utils.h"
 #include "mpd/test/mpd_builder_test_helper.h"
@@ -360,6 +361,31 @@ TEST_F(StaticMpdBuilderTest, MediaInfoMissingBandwidth) {
 
   std::string mpd_doc;
   ASSERT_FALSE(mpd_.ToString(&mpd_doc));
+}
+
+TEST_F(StaticMpdBuilderTest, WriteToFile) {
+  MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
+  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet();
+  ASSERT_TRUE(video_adaptation_set);
+
+  Representation* video_representation =
+      video_adaptation_set->AddRepresentation(video_media_info);
+  ASSERT_TRUE(video_representation);
+
+  base::FilePath file_path;
+  ASSERT_TRUE(base::CreateTemporaryFile(&file_path));
+  media::File* file = media::File::Open(file_path.value().data(), "w");
+  ASSERT_TRUE(file);
+  ASSERT_TRUE(mpd_.WriteMpdToFile(file));
+  ASSERT_TRUE(file->Close());
+
+  std::string file_content;
+  ASSERT_TRUE(base::ReadFileToString(file_path, &file_content));
+  ASSERT_NO_FATAL_FAILURE(ExpectMpdToEqualExpectedOutputFile(
+      file_content, kFileNameExpectedMpdOutputVideo1));
+
+  const bool kNonRecursive = false;
+  EXPECT_TRUE(DeleteFile(file_path, kNonRecursive));
 }
 
 // Check whether the attributes are set correctly for dynamic <MPD> element.

@@ -15,6 +15,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "media/file/file.h"
 #include "mpd/base/content_protection_element.h"
 #include "mpd/base/mpd_utils.h"
 #include "mpd/base/xml/xml_node.h"
@@ -156,6 +157,29 @@ int SearchTimedOutRepeatIndex(uint64 timeshift_limit,
   return (timeshift_limit - segment_info.start_time) / segment_info.duration;
 }
 
+// Overload this function to support different types of |output|.
+// Note that this could be done by call MpdBuilder::ToString() and use the
+// result to write to a file, it requires an extra copy.
+bool WriteXmlCharArrayToOutput(xmlChar* doc,
+                               int doc_size,
+                               std::string* output) {
+  DCHECK(doc);
+  DCHECK(output);
+  output->assign(doc, doc + doc_size);
+  return true;
+}
+
+bool WriteXmlCharArrayToOutput(xmlChar* doc,
+                               int doc_size,
+                               media::File* output) {
+  DCHECK(doc);
+  DCHECK(output);
+  if (output->Write(doc, doc_size) < doc_size)
+    return false;
+
+  return output->Flush();
+}
+
 }  // namespace
 
 MpdOptions::MpdOptions()
@@ -190,12 +214,20 @@ AdaptationSet* MpdBuilder::AddAdaptationSet() {
   return adaptation_set.release();
 }
 
-bool MpdBuilder::ToString(std::string* output) {
+bool MpdBuilder::WriteMpdToFile(media::File* output_file) {
   base::AutoLock scoped_lock(lock_);
-  return ToStringImpl(output);
+  DCHECK(output_file);
+  return WriteMpdToOutput(output_file);
 }
 
-bool MpdBuilder::ToStringImpl(std::string* output) {
+bool MpdBuilder::ToString(std::string* output) {
+  base::AutoLock scoped_lock(lock_);
+  DCHECK(output);
+  return WriteMpdToOutput(output);
+}
+
+template <typename OutputType>
+bool MpdBuilder::WriteMpdToOutput(OutputType* output) {
   xmlInitParser();
   xml::ScopedXmlPtr<xmlDoc>::type doc(GenerateMpd());
   if (!doc.get())
@@ -207,15 +239,13 @@ bool MpdBuilder::ToStringImpl(std::string* output) {
   xmlDocDumpFormatMemoryEnc(
       doc.get(), &doc_str, &doc_str_size, "UTF-8", kNiceFormat);
 
-  output->assign(doc_str, doc_str + doc_str_size);
+  bool result = WriteXmlCharArrayToOutput(doc_str, doc_str_size, output);
   xmlFree(doc_str);
-
-  DLOG(INFO) << *output;
 
   // Cleanup, free the doc then cleanup parser.
   doc.reset();
   xmlCleanupParser();
-  return true;
+  return result;
 }
 
 xmlDocPtr MpdBuilder::GenerateMpd() {

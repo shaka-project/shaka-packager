@@ -25,6 +25,13 @@
 #include "mpd/base/segment_info.h"
 #include "mpd/base/xml/scoped_xml_ptr.h"
 
+namespace media {
+class File;
+}
+
+// TODO(rkuroiwa): For classes with |id_|, consider removing the field and let
+// the MPD (XML) generation functions take care of assigning an ID to each
+// element.
 namespace dash_packager {
 
 class AdaptationSet;
@@ -70,6 +77,12 @@ class MpdBuilder {
   /// @return The new adaptation set, which is owned by this instance.
   AdaptationSet* AddAdaptationSet();
 
+  /// Write the MPD to specified file.
+  /// @param[out] output_file is MPD destination. output_file will be
+  ///             flushed but not closed.
+  /// @return true on success, false otherwise.
+  bool WriteMpdToFile(media::File* output_file);
+
   /// Writes the MPD to the given string.
   /// @param[out] output is an output string where the MPD gets written.
   /// @return true on success, false otherwise.
@@ -84,6 +97,11 @@ class MpdBuilder {
   friend class DynamicMpdBuilderTest;
 
   bool ToStringImpl(std::string* output);
+
+  // This is a helper method for writing out MPDs, called from WriteMpdToFile()
+  // and ToString().
+  template <typename OutputType>
+  bool WriteMpdToOutput(OutputType* output);
 
   // Returns the document pointer to the MPD. This must be freed by the caller
   // using appropriate xmlDocPtr freeing function.
