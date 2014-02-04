@@ -9,6 +9,7 @@
 #include "mpd/base/mpd_utils.h"
 #include "mpd/base/xml/xml_node.h"
 #include "third_party/libxml/src/include/libxml/tree.h"
+#include "third_party/libxml/src/include/libxml/xmlstring.h"
 
 // TODO(rkuroiwa): If performance is a problem work on fine grained locking.
 namespace dash_packager {
@@ -52,6 +53,29 @@ void AddMpdNameSpaceInfo(XmlNode* mpd) {
   static const char kDashSchemaMpd2011[] =
       "urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd";
   mpd->SetStringAttribute("xsi:schemaLocation", kDashSchemaMpd2011);
+}
+
+bool IsPeriodNode(xmlNodePtr node) {
+  DCHECK(node);
+  int kEqual = 0;
+  return xmlStrcmp(node->name, reinterpret_cast<const xmlChar*>("Period")) ==
+         kEqual;
+}
+
+// Find the first <Period> element. This does not recurse down the tree,
+// only checks direct children. Returns the pointer to Period element on
+// success, otherwise returns false.
+// As noted here, we must traverse.
+// http://www.xmlsoft.org/tutorial/ar01s04.html
+xmlNodePtr FindPeriodNode(XmlNode* xml_node) {
+  for (xmlNodePtr node = xml_node->GetRawPtr()->xmlChildrenNode;
+       node != NULL;
+       node = node->next) {
+    if (IsPeriodNode(node))
+      return node;
+  }
+
+  return NULL;
 }
 
 }  // namespace
@@ -184,10 +208,9 @@ float MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
   DCHECK(mpd_node);
   DCHECK_EQ(MpdBuilder::kStatic, type_);
 
-  xmlNodePtr period_node = xmlFirstElementChild(mpd_node->GetRawPtr());
-  DCHECK(period_node);
-  DCHECK_EQ(strcmp(reinterpret_cast<const char*>(period_node->name), "Period"),
-            0);
+  xmlNodePtr period_node = FindPeriodNode(mpd_node);
+  DCHECK(period_node) << "Period element must be a child of mpd_node.";
+  DCHECK(IsPeriodNode(period_node));
 
   // Attribute mediaPresentationDuration must be present for 'static' MPD. So
   // setting "PT0S" is required even if none of the representaions have duration
