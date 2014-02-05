@@ -62,6 +62,8 @@
       'sources': [
         'base/mpd_builder_unittest.cc',
         'base/xml/xml_node_unittest.cc',
+        'test/mpd_builder_test_helper.cc',
+        'test/mpd_builder_test_helper.h',
         'util/mpd_writer_unittest.cc',
       ],
       'dependencies': [
