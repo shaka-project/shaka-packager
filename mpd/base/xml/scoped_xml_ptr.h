@@ -17,6 +17,8 @@
 namespace dash_packager {
 namespace xml {
 
+/// Deleter functor for deleting libxml2 pointers. This is used with
+/// ScopedXmlPtr.
 struct XmlDeleter {
   // Called by scoped_ptr. http://goo.gl/YaLbcS
   inline void operator()(xmlSchemaParserCtxtPtr ptr) const {
@@ -33,6 +35,7 @@ struct XmlDeleter {
 
 // C++11 allows template alias but standards before it do not. This struct is
 // for aliasing scoped_ptr with libxml2 object deleter.
+/// scoped_ptr for libxml2 resources.
 template <typename XmlType>
 struct ScopedXmlPtr {
   typedef scoped_ptr<XmlType, XmlDeleter> type;

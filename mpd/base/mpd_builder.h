@@ -7,7 +7,6 @@
 // This file contains the MpdBuilder, AdaptationSet, and Representation class
 // declarations.
 // http://goo.gl/UrsSlF
-
 #ifndef MPD_BASE_MPD_BUILDER_H_
 #define MPD_BASE_MPD_BUILDER_H_
 
@@ -34,6 +33,7 @@ class XmlNode;
 
 }  // namespace xml
 
+/// This class generates DASH MPDs (Media Presentation Descriptions).
 class MpdBuilder {
  public:
   enum MpdType {
@@ -41,16 +41,23 @@ class MpdBuilder {
     kDynamic
   };
 
+  /// Constructs MpdBuilder.
+  /// @param type indicates whether the MPD should be for VOD or live content
+  ///        (kStatic for VOD profile, or kDynamic for live profile).
   explicit MpdBuilder(MpdType type);
   ~MpdBuilder();
 
+  /// Add <BaseURL> entry to the MPD.
+  /// @param base_url URL for <BaseURL> entry.
   void AddBaseUrl(const std::string& base_url);
 
-  // The returned pointer is owned by this object.
+  /// Adds <AdaptationSet> to the MPD.
+  /// @return The new adaptation set, which is owned by this instance.
   AdaptationSet* AddAdaptationSet();
 
-  // This will write to stdout until File interface is defined.
-  bool WriteMpd();
+  /// Writes the MPD to the given string.
+  /// @param[out] output is an output string where the MPD gets written.
+  /// @return true on success, false otherwise.
   bool ToString(std::string* output);
 
  private:
@@ -79,23 +86,35 @@ class MpdBuilder {
   DISALLOW_COPY_AND_ASSIGN(MpdBuilder);
 };
 
+/// AdaptationSet class provides methods to add Representations and
+/// <ContentProtection> elements to the AdaptationSet element.
 class AdaptationSet {
  public:
+  /// @param adaptation_set_id is an ID number for this AdaptationSet.
+  /// @param representation_counter is a Counter for assigning ID numbers to
+  ///                               Representation. It can not be NULL.
   AdaptationSet(uint32 adaptation_set_id,
                 base::AtomicSequenceNumber* representation_counter);
   ~AdaptationSet();
 
-  // The returned pointer is owned by this object.
+  /// Create a Representation instance using @a media_info.
+  /// @param media_info is a MediaInfo object used to initialize the returned
+  ///        Representation instance.
+  /// @return On success, returns a pointer to Representation. Otherwise returns
+  ///         NULL. The returned pointer is owned by the AdaptationSet instance.
   Representation* AddRepresentation(const MediaInfo& media_info);
 
-  // If |element| has {value, schemeIdUri} set and has
-  // {“value”, “schemeIdUri”} as key for additional_attributes,
-  // then the former is used.
+  /// Add a ContenProtection element to the adaptation set.
+  /// @param element contains the ContentProtection element contents.
+  ///        If @a element has {value, schemeIdUri} set and has
+  ///        {“value”, “schemeIdUri”} as key for @a additional_attributes,
+  ///        then the former is used.
   void AddContentProtectionElement(const ContentProtectionElement& element);
 
-  // Makes a copy of AdaptationSet xml element with its child elements, which
-  // are Representation elements. On success this returns non-NULL ScopedXmlPtr,
-  // otherwise returns NULL ScopedXmlPtr.
+  /// Makes a copy of AdaptationSet xml element with its child Representation
+  /// and ContentProtection elements.
+  /// @return On success returns a non-NULL ScopedXmlPtr. Otherwise returns a
+  ///         NULL ScopedXmlPtr.
   xml::ScopedXmlPtr<xmlNode>::type GetXml();
 
   // Must be unique in the Period.
@@ -117,35 +136,46 @@ class AdaptationSet {
   DISALLOW_COPY_AND_ASSIGN(AdaptationSet);
 };
 
-// In |media_info|, ContentProtectionXml::{schemeIdUri,value} takes precedence
-// over schemeIdUri and value specified in ContentProtectionXml::attributes.
+/// Representation class contains references to a single media stream, as
+/// well as optional ContentProtection elements for that stream.
 class Representation {
  public:
+  /// @param media_info is a MediaInfo containing information on the media.
+  /// @param representation_id is the numeric ID for the <Representation>.
   Representation(const MediaInfo& media_info, uint32 representation_id);
   ~Representation();
 
+  /// Tries to initialize the instance. If this does not succeed, the instance
+  /// should not be used.
+  /// @return true on success, false otherwise.
   bool Init();
 
-  // If |element| has {value, schemeIdUri} set and has
-  // {“value”, “schemeIdUri”} as key for additional_attributes,
-  // then the former is used.
+  /// Add a ContenProtection element to the representation.
+  /// @param element contains the ContentProtection element contents.
+  ///        If @a element has {value, schemeIdUri} set and has
+  ///        {“value”, “schemeIdUri”} as key for @a additional_attributes,
+  ///        then the former is used.
   void AddContentProtectionElement(const ContentProtectionElement& element);
 
+  /// Add a media segment to the representation.
+  /// @param start_time is the start time for the segment, in units of the
+  ///        stream's time scale.
+  /// @param duration is the duration of the segment, in units of the stream's
+  ///        time scale.
+  /// @return true on success, false otherwise.
   bool AddNewSegment(uint64 start_time, uint64 duration);
 
-  // Makes a copy of the current XML. Note that this is a copy. The caller is
-  // responsible for cleaning up the allocated resource.
+  /// @return Copy of <Representation>.
   xml::ScopedXmlPtr<xmlNode>::type GetXml();
 
-  // Must be unique amongst other Representations in the MPD file.
-  // As the MPD spec says.
+  /// @return ID number for <Representation>.
   uint32 id() const {
     return id_;
   }
 
  private:
-  // Returns whether |media_info_| has required fields to generate a valid
-  // Representation. Returns true on success, otherwise returns false.
+  // Returns true if |media_info_| has required fields to generate a valid
+  // Representation. Otherwise returns false.
   bool HasRequiredMediaInfoFields();
 
   // Note: Because 'mimeType' is a required field for a valid MPD, these return

@@ -105,15 +105,6 @@ AdaptationSet* MpdBuilder::AddAdaptationSet() {
   return adaptation_set.release();
 }
 
-bool MpdBuilder::WriteMpd() {
-  base::AutoLock scoped_lock(lock_);
-  std::string mpd;
-  bool result = ToStringImpl(&mpd);
-
-  // NOTE: Write to file, after interface change.
-  return result;
-}
-
 bool MpdBuilder::ToString(std::string* output) {
   base::AutoLock scoped_lock(lock_);
   return ToStringImpl(output);

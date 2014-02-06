@@ -17,6 +17,8 @@
 
 namespace dash_packager {
 
+/// Structure to represent <ContentProtection> element in DASH MPD spec (ISO
+/// 23009-1:2012 MPD and Segment Formats).
 struct ContentProtectionElement {
   ContentProtectionElement();
   ~ContentProtectionElement();
