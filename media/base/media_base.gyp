@@ -1,0 +1,141 @@
+# Copyright (c) 2013 Google Inc. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+{
+  'target_defaults': {
+    'include_dirs': [
+      '../..',
+    ],
+  },
+  'targets': [
+    {
+      'target_name': 'status',
+      'type': '<(component)',
+      'sources': [
+        'status.cc',
+        'status.h',
+      ],
+      'dependencies': [
+        '../../base/base.gyp:base',
+      ],
+    },
+    {
+      'target_name': 'httpfetcher',
+      'type': '<(component)',
+      'sources': [
+        'httpfetcher.cc',
+        'httpfetcher.h',
+      ],
+      'cflags!': [ '-fno-exceptions' ],
+      'cflags_cc!': [ '-fno-exceptions' ],
+      'conditions': [
+        ['OS=="mac"', {
+          'xcode_settings': {
+            'GCC_ENABLE_CPP_EXCEPTIONS': 'YES'
+          }
+        }]
+      ],
+      'dependencies': [
+        '../../third_party/happyhttp/happyhttp.gyp:happyhttp_lib',
+        'status',
+      ],
+    },
+    {
+      # Note that this test performs real http requests to a http server.
+      'target_name': 'httpfetcher_unittest',
+      'type': '<(gtest_target_type)',
+      'sources': [
+        'httpfetcher_unittest.cc',
+      ],
+      'dependencies': [
+        '../../base/base.gyp:base',
+        '../../testing/gtest.gyp:gtest',
+        '../../testing/gtest.gyp:gtest_main',
+        'httpfetcher',
+      ],
+    },
+    {
+      'target_name': 'base',
+      'type': '<(component)',
+      'sources': [
+        'aes_encryptor.cc',
+        'aes_encryptor.h',
+        'audio_stream_info.cc',
+        'audio_stream_info.h',
+        'bit_reader.cc',
+        'bit_reader.h',
+        'buffers.h',
+        'buffer_reader.cc',
+        'buffer_reader.h',
+        'buffer_writer.cc',
+        'buffer_writer.h',
+        'byte_queue.cc',
+        'byte_queue.h',
+        'container_names.cc',
+        'container_names.h',
+        'demuxer.cc',
+        'demuxer.h',
+        'decrypt_config.cc',
+        'decrypt_config.h',
+        'decryptor_source.h',
+        'encryptor_source.cc',
+        'encryptor_source.h',
+        'fixed_encryptor_source.cc',
+        'fixed_encryptor_source.h',
+        'limits.h',
+        'media_parser.h',
+        'media_sample.cc',
+        'media_sample.h',
+        'media_stream.cc',
+        'media_stream.h',
+        'muxer.cc',
+        'muxer.h',
+        'muxer_options.cc',
+        'muxer_options.h',
+        'request_signer.cc',
+        'request_signer.h',
+        'rsa_key.cc',
+        'rsa_key.h',
+        'stream_info.cc',
+        'stream_info.h',
+        'text_track.h',
+        'video_stream_info.cc',
+        'video_stream_info.h',
+        'widevine_encryptor_source.cc',
+        'widevine_encryptor_source.h',
+      ],
+      'dependencies': [
+        '../../base/base.gyp:base',
+        '../../third_party/openssl/openssl.gyp:openssl',
+        'httpfetcher',
+        'status',
+      ],
+    },
+    {
+      'target_name': 'media_base_unittest',
+      'type': '<(gtest_target_type)',
+      'sources': [
+        'aes_encryptor_unittest.cc',
+        'bit_reader_unittest.cc',
+        'buffer_writer_unittest.cc',
+        'container_names_unittest.cc',
+        'fake_prng.cc',  # For rsa_key_unittest
+        'fake_prng.h',   # For rsa_key_unittest
+        'rsa_key_unittest.cc',
+        'rsa_test_data.cc',  # For rsa_key_unittest
+        'rsa_test_data.h',   # For rsa_key_unittest
+        'status_test_util.h',
+        'status_test_util_unittest.cc',
+        'status_unittest.cc',
+      ],
+      'dependencies': [
+        '../../testing/gtest.gyp:gtest',
+        '../../testing/gmock.gyp:gmock',
+        '../file/file.gyp:file',
+        '../test/media_test.gyp:media_test_support',
+        'base',
+      ],
+    },
+  ],
+}

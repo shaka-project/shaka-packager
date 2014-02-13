@@ -61,7 +61,7 @@
       'dependencies': [
         '../base/base.gyp:base',
         '../base/base.gyp:run_all_unittests',
-        '../packager.gyp:file',
+        '../media/file/file.gyp:file',
         '../testing/gtest.gyp:gtest',
         'mpd_builder',
         'mpd_util',
@@ -75,7 +75,7 @@
         'util/mpd_writer.h',
       ],
       'dependencies': [
-        '../packager.gyp:file',
+        '../media/file/file.gyp:file',
         'mpd_builder',
       ],
     },
