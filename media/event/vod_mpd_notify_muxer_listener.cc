@@ -47,7 +47,8 @@ void VodMpdNotifyMuxerListener::OnMediaEnd(
     uint64 index_range_start,
     uint64 index_range_end,
     float duration_seconds,
-    uint64 file_size) {
+    uint64 file_size,
+    bool is_encrypted) {
   dash_packager::MediaInfo media_info;
   if (!internal::GenerateMediaInfo(muxer_options_,
                                    stream_infos,

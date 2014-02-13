@@ -21,7 +21,7 @@ const char kUsage[] =
     " There will be at most 3 AdaptationSets in the MPD, i.e. 1 video, 1 "
     "audio, and 1 text.\n"
     "Sample Usage:\n"
-    "%s --input=\"video1.txt,video2.txt,audio1.txt\" "
+    "%s --input=\"video1.media_info,video2.media_info,audio1.media_info\" "
     "--output=\"video_audio.mpd\"";
 
 enum ExitStatus {

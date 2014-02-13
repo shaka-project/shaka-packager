@@ -325,7 +325,8 @@ void MP4Muxer::FireOnMediaEndEvent() {
                                index_range_start,
                                index_range_end,
                                duration_seconds,
-                               file_size);
+                               file_size,
+                               IsEncryptionRequired());
 }
 
 }  // namespace mp4

@@ -46,6 +46,7 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
                             uint32 time_scale,
                             ContainerType container_type) OVERRIDE;
 
+  // TODO(rkuroiwa): Make an Event structure for passing parameters.
   virtual void OnMediaEnd(const std::vector<StreamInfo*>& stream_infos,
                           bool has_init_range,
                           uint64 init_range_start,
@@ -54,7 +55,8 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
                           uint64 index_range_start,
                           uint64 index_range_end,
                           float duration_seconds,
-                          uint64 file_size) OVERRIDE;
+                          uint64 file_size,
+                          bool is_encrypted) OVERRIDE;
 
   virtual void OnNewSegment(uint64 start_time,
                             uint64 duration,

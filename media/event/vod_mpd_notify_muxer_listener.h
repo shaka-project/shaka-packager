@@ -43,7 +43,8 @@ class VodMpdNotifyMuxerListener : public MuxerListener {
                           uint64 index_range_start,
                           uint64 index_range_end,
                           float duration_seconds,
-                          uint64 file_size) OVERRIDE;
+                          uint64 file_size,
+                          bool is_encrypted) OVERRIDE;
 
   virtual void OnNewSegment(uint64 start_time,
                             uint64 duration,

@@ -62,7 +62,8 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(
     uint64 index_range_start,
     uint64 index_range_end,
     float duration_seconds,
-    uint64 file_size) {
+    uint64 file_size,
+    bool is_encrypted) {
   MediaInfo media_info;
   if (!internal::GenerateMediaInfo(muxer_options_,
                                    stream_infos,
@@ -81,7 +82,7 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(
     return;
   }
 
-  if (IsAnyStreamEncrypted(stream_infos)) {
+  if (is_encrypted) {
     if (scheme_id_uri_.empty()) {
       LOG(ERROR) << "The stream is encrypted but no schemeIdUri specified for "
                     "ContentProtection.";

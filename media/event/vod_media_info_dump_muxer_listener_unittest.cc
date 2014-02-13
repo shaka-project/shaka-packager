@@ -46,6 +46,7 @@ struct OnMediaEndParameters {
   uint64 index_range_end;
   float duration_seconds;
   uint64 file_size;
+  bool is_encrypted;
 };
 
 scoped_refptr<StreamInfo> CreateVideoStreamInfo(
@@ -185,7 +186,8 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
                           params.index_range_start,
                           params.index_range_end,
                           params.duration_seconds,
-                          params.file_size);
+                          params.file_size,
+                          params.is_encrypted);
   }
 
   void ExpectTempFileToEqual(const std::string& expected_protobuf) {

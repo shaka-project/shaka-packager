@@ -61,7 +61,8 @@ class MuxerListener {
                           uint64 index_range_start,
                           uint64 index_range_end,
                           float duration_seconds,
-                          uint64 file_size) = 0;
+                          uint64 file_size,
+                          bool is_encrypted) = 0;
 
   // Called when a segment has been muxed and the file has been written.
   // Note: For video on demand (VOD), this would be for subsegments.
