@@ -74,11 +74,13 @@ VideoStreamInfoParameters GetDefaultVideoStreamInfoParams() {
   const std::vector<uint8> kExtraData;
   const bool kEncryptedFlag = false;
 
-  return {kTrackId, kTimeScale, kVideoStreamDuration, kH264Codec,
-          VideoStreamInfo::GetCodecString(
-              kCodecH264, kH264Profile, kH264CompatibleProfile, kH264Level),
-          kLanuageUndefined, kWidth, kHeight, kNaluLengthSize, kExtraData,
-          kEncryptedFlag};
+  VideoStreamInfoParameters param = {
+      kTrackId, kTimeScale, kVideoStreamDuration, kH264Codec,
+      VideoStreamInfo::GetCodecString(
+          kCodecH264, kH264Profile, kH264CompatibleProfile, kH264Level),
+      kLanuageUndefined, kWidth, kHeight, kNaluLengthSize, kExtraData,
+      kEncryptedFlag};
+  return param;
 }
 
 OnMediaEndParameters GetDefaultOnMediaEndParams() {
@@ -92,8 +94,10 @@ OnMediaEndParameters GetDefaultOnMediaEndParams() {
   const uint64 kIndexRangeEnd = kIndexRangeStart + 100;
   const float kMediaDuration = 10.5f;
   const uint64 kFileSize = 10000;
-  return {kHasInitRange,    kInitRangeStart, kInitRangeEnd,  kHasIndexRange,
-          kIndexRangeStart, kIndexRangeEnd,  kMediaDuration, kFileSize};
+  OnMediaEndParameters param = {
+      kHasInitRange,    kInitRangeStart, kInitRangeEnd,  kHasIndexRange,
+      kIndexRangeStart, kIndexRangeEnd,  kMediaDuration, kFileSize};
+  return param;
 }
 
 void SetDefaultMuxerOptionsValues(MuxerOptions* muxer_options) {
