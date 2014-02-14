@@ -1,5 +1,12 @@
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 // Classes to wrap XML operations. XmlNode is a generic wrapper class for
 // XmlNode in libxml2. There are also MPD XML specific classes as well.
+
 #ifndef MPD_BASE_XML_XML_NODE_H_
 #define MPD_BASE_XML_XML_NODE_H_
 

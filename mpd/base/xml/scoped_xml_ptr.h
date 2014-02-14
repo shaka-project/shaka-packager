@@ -1,5 +1,12 @@
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 // scoped_ptr alias for libxml2 objects. Deleters for the objects are also
 // defined in this file.
+
 #ifndef MPD_BASE_XML_SCOPED_XML_PTR_H_
 #define MPD_BASE_XML_SCOPED_XML_PTR_H_
 

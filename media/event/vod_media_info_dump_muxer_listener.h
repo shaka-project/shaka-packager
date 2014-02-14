@@ -1,6 +1,13 @@
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
 // Implementation of MuxerListener that converts the info to a MediaInfo
 // protobuf and dumps it to a file.
 // This is specifically for VOD.
+
 #ifndef MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_
 #define MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_
 

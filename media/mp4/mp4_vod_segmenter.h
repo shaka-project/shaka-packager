@@ -1,6 +1,8 @@
-// Copyright (c) 2013 Google Inc. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 //
 // Segmenter for MP4 Dash Video-On-Demand profile. A single MP4 file with a
 // single segment is created, i.e. with only one SIDX box. The generated media

@@ -1,6 +1,8 @@
-// Copyright (c) 2013 Google Inc. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 //
 // This class defines the MP4 Segmenter which is responsible for organizing
 // MP4 fragments into segments/subsegments and package into a MP4 file.

@@ -1,6 +1,8 @@
-// Copyright (c) 2013 Google Inc. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 //
 // MP4Fragmenter is responsible for the generation of MP4 fragments, i.e. traf
 // and the corresponding mdat. The samples are also encrypted if encryption is
