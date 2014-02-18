@@ -1,3 +1,0 @@
-# Striped64 uses reflection to access some local fields.
--dontnote com.google.common.cache.Striped64
--dontnote com.google.common.cache.Striped64$Cell

@@ -1,2 +1,0 @@
-# src/third_party/guava/guava.gyp:guava_javalib
--dontwarn sun.misc.Unsafe

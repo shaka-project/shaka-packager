@@ -4,6 +4,8 @@
 .pydevproject
 .repo
 .settings
+base/
+build/
 docs/
 out/
 third_party/gold/
