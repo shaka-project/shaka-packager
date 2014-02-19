@@ -209,81 +209,79 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
   DISALLOW_COPY_AND_ASSIGN(VodMediaInfoDumpMuxerListenerTest);
 };
 
-// TODO(rkuroiwa): Enable these when implemented.
-TEST_F(VodMediaInfoDumpMuxerListenerTest, DISABLED_UnencryptedStream_Normal) {
-  VideoStreamInfoParameters params = GetDefaultVideoStreamInfoParams();
-  params.is_encrypted = false;
-
+TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal) {
+  scoped_refptr<StreamInfo> stream_info =
+      CreateVideoStreamInfo(GetDefaultVideoStreamInfoParams());
   std::vector<StreamInfo*> stream_infos;
-  scoped_refptr<StreamInfo> stream_info = CreateVideoStreamInfo(params);
   stream_infos.push_back(stream_info.get());
 
   FireOnMediaStartWithDefaultValues(stream_infos);
-  FireOnMediaEndWithParams(stream_infos,
-                           GetDefaultOnMediaEndParams());
+  OnMediaEndParameters media_end_param = GetDefaultOnMediaEndParams();
+  media_end_param.is_encrypted = false;
+  FireOnMediaEndWithParams(stream_infos, media_end_param);
   ASSERT_TRUE(temp_file_->Close());
 
-  const char* kExpectedProtobufOutput = "\
-      bandwidth: 7620\n\
-      video_info {\n\
-        codec: \"avc1.010101\"\n\
-        width: 720\n\
-        height: 480\n\
-        time_scale: 10\n\
-      }\n\
-      init_range {\n\
-        begin: 0\n\
-        end: 120\n\
-      }\n\
-      index_range {\n\
-        begin: 121\n\
-        end: 221\n\
-      }\n\
-      reference_time_scale: 1000\n\
-      container_type: 1\n\
-      media_file_name: \"test_output_file_name.mp4\"\n\
-      media_duration_seconds: 10.5\n";
+  const char kExpectedProtobufOutput[] =
+      "bandwidth: 7620\n"
+      "video_info {\n"
+      "  codec: \"avc1.010101\"\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "}\n"
+      "init_range {\n"
+      "  begin: 0\n"
+      "  end: 120\n"
+      "}\n"
+      "index_range {\n"
+      "  begin: 121\n"
+      "  end: 221\n"
+      "}\n"
+      "reference_time_scale: 1000\n"
+      "container_type: 1\n"
+      "media_file_name: \"test_output_file_name.mp4\"\n"
+      "media_duration_seconds: 10.5\n";
   ASSERT_NO_FATAL_FAILURE(ExpectTempFileToEqual(kExpectedProtobufOutput));
 }
 
-TEST_F(VodMediaInfoDumpMuxerListenerTest, DISABLED_EncryptedStream_Normal) {
+TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
   listener_->SetContentProtectionSchemeIdUri("http://foo.com/bar");
 
-  VideoStreamInfoParameters params = GetDefaultVideoStreamInfoParams();
-  params.is_encrypted = true;
-
+  scoped_refptr<StreamInfo> stream_info =
+      CreateVideoStreamInfo(GetDefaultVideoStreamInfoParams());
   std::vector<StreamInfo*> stream_infos;
-  scoped_refptr<StreamInfo> stream_info = CreateVideoStreamInfo(params);
   stream_infos.push_back(stream_info.get());
 
   FireOnMediaStartWithDefaultValues(stream_infos);
-  FireOnMediaEndWithParams(stream_infos,
-                           GetDefaultOnMediaEndParams());
+
+  OnMediaEndParameters media_end_param = GetDefaultOnMediaEndParams();
+  media_end_param.is_encrypted = true;
+  FireOnMediaEndWithParams(stream_infos, media_end_param);
   ASSERT_TRUE(temp_file_->Close());
 
-  const char* kExpectedProtobufOutput = "\
-      bandwidth: 7620\n\
-      video_info {\n\
-        codec: \"avc1.010101\"\n\
-        width: 720\n\
-        height: 480\n\
-        time_scale: 10\n\
-      }\n\
-      content_protections {\n\
-        scheme_id_uri: \"http://foo.com/bar\"\n\
-      }\n\
-      init_range {\n\
-        begin: 0\n\
-        end: 120\n\
-      }\n\
-      index_range {\n\
-        begin: 121\n\
-        end: 221\n\
-      }\n\
-      reference_time_scale: 1000\n\
-      container_type: 1\n\
-      media_file_name: \"test_output_file_name.mp4\"\n\
-      media_duration_seconds: 10.5\n";
+  const char kExpectedProtobufOutput[] =
+      "bandwidth: 7620\n"
+      "video_info {\n"
+      "  codec: \"avc1.010101\"\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "}\n"
+      "content_protections {\n"
+      "  scheme_id_uri: \"http://foo.com/bar\"\n"
+      "}\n"
+      "init_range {\n"
+      "  begin: 0\n"
+      "  end: 120\n"
+      "}\n"
+      "index_range {\n"
+      "  begin: 121\n"
+      "  end: 221\n"
+      "}\n"
+      "reference_time_scale: 1000\n"
+      "container_type: 1\n"
+      "media_file_name: \"test_output_file_name.mp4\"\n"
+      "media_duration_seconds: 10.5\n";
   ASSERT_NO_FATAL_FAILURE(ExpectTempFileToEqual(kExpectedProtobufOutput));
 }
 
