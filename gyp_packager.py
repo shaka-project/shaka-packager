@@ -36,11 +36,17 @@ import sys
 
 src_dir = os.path.dirname(os.path.realpath(__file__))
 
+sys.path.insert(0, os.path.join(src_dir, 'build'))
+import gyp_helper
+
 sys.path.insert(0, os.path.join(src_dir, 'tools', 'gyp', 'pylib'))
 import gyp
 
 if __name__ == '__main__':
   args = sys.argv[1:]
+
+  # Allow src/.../chromium.gyp_env to define GYP variables.
+  gyp_helper.apply_chromium_gyp_env()
 
   # If we didn't get a gyp file, then fall back to assuming 'packager.gyp' from
   # the same directory as the script.
