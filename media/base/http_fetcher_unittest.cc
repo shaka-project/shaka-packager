@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/httpfetcher.h"
+#include "media/base/http_fetcher.h"
 
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -30,7 +30,7 @@ namespace media {
 
 static void CheckHttpGet(const std::string& url,
                          const std::string& expected_response) {
-  HTTPFetcher fetcher;
+  SimpleHttpFetcher fetcher;
   std::string response;
   ASSERT_OK(fetcher.Get(url, &response));
   base::RemoveChars(response, "\r\n\t ", &response);
@@ -39,7 +39,7 @@ static void CheckHttpGet(const std::string& url,
 
 static void CheckHttpPost(const std::string& url, const std::string& data,
                           const std::string& expected_response) {
-  HTTPFetcher fetcher;
+  SimpleHttpFetcher fetcher;
   std::string response;
   ASSERT_OK(fetcher.Post(url, data, &response));
   base::RemoveChars(response, "\r\n\t ", &response);
@@ -47,16 +47,16 @@ static void CheckHttpPost(const std::string& url, const std::string& data,
 }
 
 
-TEST(HTTPFetcherTest, HttpGet) {
+TEST(HttpFetcherTest, HttpGet) {
   CheckHttpGet(kTestUrl, kExpectedGetResponse);
 }
 
-TEST(HTTPFetcherTest, HttpPost) {
+TEST(HttpFetcherTest, HttpPost) {
   CheckHttpPost(kTestUrl, kPostData, kExpectedPostResponse);
 }
 
-TEST(HTTPFetcherTest, InvalidUrl) {
-  HTTPFetcher fetcher;
+TEST(HttpFetcherTest, InvalidUrl) {
+  SimpleHttpFetcher fetcher;
   std::string response;
   const std::string invalid_url(kTestUrl, sizeof(kTestUrl) - 2);
   Status status = fetcher.Get(invalid_url, &response);
@@ -65,7 +65,7 @@ TEST(HTTPFetcherTest, InvalidUrl) {
       EndsWith(status.error_message(), base::IntToString(kHttpNotFound), true));
 }
 
-TEST(HTTPFetcherTest, UrlWithPort) {
+TEST(HttpFetcherTest, UrlWithPort) {
   CheckHttpGet(kTestUrlWithPort, kExpectedGetResponse);
 }
 

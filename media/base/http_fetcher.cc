@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/httpfetcher.h"
+#include "media/base/http_fetcher.h"
 
 #ifdef WIN32
 #include <winsock2.h>
@@ -16,7 +16,7 @@
 
 namespace {
 
-struct HTTPResult {
+struct HttpResult {
   int status_code;
   std::string status_message;
   std::string response;
@@ -74,7 +74,7 @@ void OnBegin(const happyhttp::Response* response, void* userdata) {
   DLOG(INFO) << "BEGIN (" << response->getstatus() << ", "
              << response->getreason() << ").";
 
-  HTTPResult* result = static_cast<HTTPResult*>(userdata);
+  HttpResult* result = static_cast<HttpResult*>(userdata);
   result->status_code = response->getstatus();
   result->status_message = response->getreason();
   result->response.clear();
@@ -85,13 +85,13 @@ void OnData(const happyhttp::Response* response,
             const unsigned char* data,
             int num_bytes) {
   DCHECK(response && userdata && data);
-  HTTPResult* result = static_cast<HTTPResult*>(userdata);
+  HttpResult* result = static_cast<HttpResult*>(userdata);
   result->response.append(reinterpret_cast<const char*>(data), num_bytes);
 }
 
 void OnComplete(const happyhttp::Response* response, void* userdata) {
   DCHECK(response && userdata);
-  HTTPResult* result = static_cast<HTTPResult*>(userdata);
+  HttpResult* result = static_cast<HttpResult*>(userdata);
   DLOG(INFO) << "COMPLETE (" << result->response.size() << " bytes).";
 }
 
@@ -101,7 +101,10 @@ const int kHttpOK = 200;
 
 namespace media {
 
-HTTPFetcher::HTTPFetcher() {
+HttpFetcher::HttpFetcher() {}
+HttpFetcher::~HttpFetcher() {}
+
+SimpleHttpFetcher::SimpleHttpFetcher() {
 #ifdef WIN32
   WSAData wsa_data;
   int code = WSAStartup(MAKEWORD(1, 1), &wsa_data);
@@ -111,26 +114,27 @@ HTTPFetcher::HTTPFetcher() {
 #endif  // WIN32
 }
 
-HTTPFetcher::~HTTPFetcher() {
+SimpleHttpFetcher::~SimpleHttpFetcher() {
 #ifdef WIN32
   if (wsa_startup_succeeded_)
     WSACleanup();
 #endif  // WIN32
 }
 
-Status HTTPFetcher::Get(const std::string& path, std::string* response) {
+Status SimpleHttpFetcher::Get(const std::string& path, std::string* response) {
   return FetchInternal("GET", path, "", response);
 }
 
-Status HTTPFetcher::Post(const std::string& path, const std::string& data,
-                         std::string* response) {
+Status SimpleHttpFetcher::Post(const std::string& path,
+                               const std::string& data,
+                               std::string* response) {
   return FetchInternal("POST", path, data, response);
 }
 
-Status HTTPFetcher::FetchInternal(const std::string& method,
-                                  const std::string& url,
-                                  const std::string& data,
-                                  std::string* response) {
+Status SimpleHttpFetcher::FetchInternal(const std::string& method,
+                                        const std::string& url,
+                                        const std::string& data,
+                                        std::string* response) {
   DCHECK(response);
 
   int status_code = 0;
@@ -145,7 +149,7 @@ Status HTTPFetcher::FetchInternal(const std::string& method,
   }
 
   try {
-    HTTPResult result;
+    HttpResult result;
     happyhttp::Connection connection(host.data(), port);
     connection.setcallbacks(OnBegin, OnData, OnComplete, &result);
 

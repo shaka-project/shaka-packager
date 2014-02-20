@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
-#include "media/base/httpfetcher.h"
+#include "media/base/http_fetcher.h"
 #include "media/base/request_signer.h"
 
 // TODO(kqyang): Move media/mp4/rcheck.h to media/base/.
@@ -102,7 +102,8 @@ WidevineEncryptorSource::WidevineEncryptorSource(
     const std::string& content_id,
     TrackType track_type,
     scoped_ptr<RequestSigner> signer)
-    : server_url_(server_url),
+    : http_fetcher_(new SimpleHttpFetcher()),
+      server_url_(server_url),
       content_id_(content_id),
       track_type_(track_type),
       signer_(signer.Pass()) {
@@ -120,14 +121,13 @@ Status WidevineEncryptorSource::Initialize() {
     return status;
   VLOG(1) << "Message: " << message;
 
-  HTTPFetcher fetcher;
   std::string raw_response;
   int64 sleep_duration = kFirstRetryDelayMilliseconds;
 
   // Perform client side retries if seeing server transient error to workaround
   // server limitation.
   for (int i = 0; i < kNumTransientErrorRetries; ++i) {
-    status = fetcher.Post(server_url_, message, &raw_response);
+    status = http_fetcher_->Post(server_url_, message, &raw_response);
     if (!status.ok())
       return status;
     VLOG(1) << "Retry [" << i << "] Response:" << raw_response;
@@ -170,6 +170,11 @@ WidevineEncryptorSource::GetTrackTypeFromString(
     return TRACK_TYPE_AUDIO;
   LOG(WARNING) << "Unexpected track type: " << track_type_string;
   return TRACK_TYPE_UNKNOWN;
+}
+
+void WidevineEncryptorSource::set_http_fetcher(
+    scoped_ptr<HttpFetcher> http_fetcher) {
+  http_fetcher_ = http_fetcher.Pass();
 }
 
 void WidevineEncryptorSource::FillRequest(const std::string& content_id,
@@ -256,9 +261,8 @@ bool WidevineEncryptorSource::IsExpectedTrackType(
   return track_type_ == GetTrackTypeFromString(track_type_string);
 }
 
-bool WidevineEncryptorSource::ExtractEncryptionKey(
-    const std::string& response,
-    bool* transient_error) {
+bool WidevineEncryptorSource::ExtractEncryptionKey(const std::string& response,
+                                                   bool* transient_error) {
   DCHECK(transient_error);
   *transient_error = false;
 

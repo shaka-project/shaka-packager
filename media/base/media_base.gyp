@@ -23,11 +23,11 @@
       ],
     },
     {
-      'target_name': 'httpfetcher',
+      'target_name': 'http_fetcher',
       'type': '<(component)',
       'sources': [
-        'httpfetcher.cc',
-        'httpfetcher.h',
+        'http_fetcher.cc',
+        'http_fetcher.h',
       ],
       'cflags!': [ '-fno-exceptions' ],
       'cflags_cc!': [ '-fno-exceptions' ],
@@ -45,16 +45,16 @@
     },
     {
       # Note that this test performs real http requests to a http server.
-      'target_name': 'httpfetcher_unittest',
+      'target_name': 'http_fetcher_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
-        'httpfetcher_unittest.cc',
+        'http_fetcher_unittest.cc',
       ],
       'dependencies': [
         '../../base/base.gyp:base',
         '../../testing/gtest.gyp:gtest',
         '../../testing/gtest.gyp:gtest_main',
-        'httpfetcher',
+        'http_fetcher',
       ],
     },
     {
@@ -110,7 +110,7 @@
       'dependencies': [
         '../../base/base.gyp:base',
         '../../third_party/openssl/openssl.gyp:openssl',
-        'httpfetcher',
+        'http_fetcher',
         'status',
       ],
     },
@@ -130,6 +130,7 @@
         'status_test_util.h',
         'status_test_util_unittest.cc',
         'status_unittest.cc',
+        'widevine_encryptor_source_unittest.cc',
       ],
       'dependencies': [
         '../../testing/gtest.gyp:gtest',

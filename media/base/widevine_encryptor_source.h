@@ -8,10 +8,12 @@
 #define MEDIA_BASE_WIDEVINE_ENCRYPTOR_SOURCE_H_
 
 #include "base/basictypes.h"
+#include "base/memory/scoped_ptr.h"
 #include "media/base/encryptor_source.h"
 
 namespace media {
 
+class HttpFetcher;
 class RequestSigner;
 
 // Defines an encryptor source which talks to Widevine encryption server.
@@ -37,6 +39,8 @@ class WidevineEncryptorSource : public EncryptorSource {
   static WidevineEncryptorSource::TrackType GetTrackTypeFromString(
       const std::string& track_type_string);
 
+  void set_http_fetcher(scoped_ptr<HttpFetcher> http_fetcher);
+
  private:
   // Fill |request| with necessary fields for Widevine encryption request.
   // |request| should not be NULL.
@@ -55,6 +59,10 @@ class WidevineEncryptorSource : public EncryptorSource {
   bool ExtractEncryptionKey(const std::string& response,
                             bool* transient_error);
 
+  // The fetcher object used to fetch HTTP response from server.
+  // It is initialized to a default fetcher on class initialization.
+  // Can be overridden using set_http_fetcher for testing or other purposes.
+  scoped_ptr<HttpFetcher> http_fetcher_;
   std::string server_url_;
   std::string content_id_;
   TrackType track_type_;
