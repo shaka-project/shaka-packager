@@ -29,18 +29,16 @@ class CompositionOffsetIterator {
   bool AdvanceSample();
 
   // Return whether the current sample is valid.
-  bool IsValid();
+  bool IsValid() const;
 
   // Return sample offset for current sample.
-  uint32 sample_offset() {
-    return iterator_->sample_offset;
-  }
+  uint32 sample_offset() const { return iterator_->sample_offset; }
 
   // Return sample offset @ sample, 1-based.
-  uint32 SampleOffset(uint32 sample);
+  uint32 SampleOffset(uint32 sample) const;
 
   // Return total number of samples.
-  uint32 NumSamples();
+  uint32 NumSamples() const;
 
  private:
   uint32 sample_index_;

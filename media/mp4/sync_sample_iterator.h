@@ -27,10 +27,10 @@ class SyncSampleIterator {
   bool AdvanceSample();
 
   // Return whether the current sample is a sync sample.
-  bool IsSyncSample();
+  bool IsSyncSample() const;
 
   // Return whether sample (1-based) is a sync sample.
-  bool IsSyncSample(uint32 sample);
+  bool IsSyncSample(uint32 sample) const;
 
  private:
   uint32 sample_number_;

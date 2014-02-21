@@ -29,18 +29,16 @@ class DecodingTimeIterator {
   bool AdvanceSample();
 
   // Return whether the current sample is valid.
-  bool IsValid();
+  bool IsValid() const;
 
   // Return sample delta for current sample.
-  uint32 sample_delta() {
-    return iterator_->sample_delta;
-  }
+  uint32 sample_delta() const { return iterator_->sample_delta; }
 
   // Return duration from start_sample to end_sample, both 1-based, inclusive.
-  uint64 Duration(uint32 start_sample, uint32 end_sample);
+  uint64 Duration(uint32 start_sample, uint32 end_sample) const;
 
   // Return total number of samples in the table.
-  uint32 NumSamples();
+  uint32 NumSamples() const;
 
  private:
   uint32 sample_index_;

@@ -15,8 +15,7 @@ SyncSampleIterator::SyncSampleIterator(const SyncSample& sync_sample)
     : sample_number_(1),
       sync_sample_vector_(sync_sample.sample_number),
       iterator_(sync_sample_vector_.begin()),
-      is_empty_(iterator_ == sync_sample_vector_.end()) {
-}
+      is_empty_(iterator_ == sync_sample_vector_.end()) {}
 
 bool SyncSampleIterator::AdvanceSample() {
   if (iterator_ != sync_sample_vector_.end() && sample_number_ == *iterator_)
@@ -25,19 +24,19 @@ bool SyncSampleIterator::AdvanceSample() {
   return true;
 }
 
-bool SyncSampleIterator::IsSyncSample() {
+bool SyncSampleIterator::IsSyncSample() const {
   // If the sync sample box is not present, every sample is a sync sample.
   if (is_empty_)
     return true;
   return iterator_ != sync_sample_vector_.end() && sample_number_ == *iterator_;
 }
 
-bool SyncSampleIterator::IsSyncSample(uint32 sample) {
+bool SyncSampleIterator::IsSyncSample(uint32 sample) const {
   // If the sync sample box is not present, every sample is a sync sample.
   if (is_empty_)
     return true;
-  return std::binary_search(sync_sample_vector_.begin(),
-                            sync_sample_vector_.end(), sample);
+  return std::binary_search(
+      sync_sample_vector_.begin(), sync_sample_vector_.end(), sample);
 }
 
 }  // namespace mp4

@@ -31,32 +31,27 @@ class ChunkInfoIterator {
   bool AdvanceSample();
 
   // Return whether the current chunk is valid.
-  bool IsValid();
+  bool IsValid() const;
 
   // Return current chunk.
-  uint32 current_chunk() {
-    return current_chunk_;
-  }
+  uint32 current_chunk() const { return current_chunk_; }
 
   // Return samples per chunk for current chunk.
-  uint32 samples_per_chunk() {
-    return iterator_->samples_per_chunk;
-  }
+  uint32 samples_per_chunk() const { return iterator_->samples_per_chunk; }
 
   // Return sample description index for current chunk.
-  uint32 sample_description_index() {
+  uint32 sample_description_index() const {
     return iterator_->sample_description_index;
   }
 
   // Return number of samples from start_chunk to end_chunk, both 1-based,
   // inclusive.
-  uint32 NumSamples(uint32 start_chunk, uint32 end_chunk);
+  uint32 NumSamples(uint32 start_chunk, uint32 end_chunk) const;
 
   // Return the last first_chunk in chunk_info_table.
-  uint32 LastFirstChunk() {
-    if (chunk_info_table_.size() == 0)
-      return 0;
-    return (chunk_info_table_.end() - 1)->first_chunk;
+  uint32 LastFirstChunk() const {
+    return chunk_info_table_.empty() ? 0
+                                     : chunk_info_table_.back().first_chunk;
   }
 
  private:

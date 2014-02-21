@@ -40,24 +40,27 @@ bool ChunkInfoIterator::AdvanceSample() {
   return true;
 }
 
-bool ChunkInfoIterator::IsValid() {
-  return iterator_ != chunk_info_table_.end()
-      && chunk_sample_index_ < iterator_->samples_per_chunk;
+bool ChunkInfoIterator::IsValid() const {
+  return iterator_ != chunk_info_table_.end() &&
+         chunk_sample_index_ < iterator_->samples_per_chunk;
 }
 
-uint32 ChunkInfoIterator::NumSamples(uint32 start_chunk, uint32 end_chunk) {
-  DCHECK(start_chunk <= end_chunk);
+uint32 ChunkInfoIterator::NumSamples(uint32 start_chunk,
+                                     uint32 end_chunk) const {
+  DCHECK_LE(start_chunk, end_chunk);
+
   uint32 last_chunk = 0;
   uint32 num_samples = 0;
   for (std::vector<ChunkInfo>::const_iterator it = chunk_info_table_.begin();
-      it != chunk_info_table_.end(); ++it) {
-    last_chunk = (
-        (it + 1 == chunk_info_table_.end()) ?
-            std::numeric_limits<uint32>::max() : (it + 1)->first_chunk) - 1;
+       it != chunk_info_table_.end();
+       ++it) {
+    last_chunk = (it + 1 == chunk_info_table_.end())
+                     ? std::numeric_limits<uint32>::max()
+                     : (it + 1)->first_chunk - 1;
     if (last_chunk >= start_chunk) {
-      num_samples += (std::min(end_chunk, last_chunk)
-          - std::max(start_chunk, it->first_chunk) + 1)
-          * it->samples_per_chunk;
+      num_samples += (std::min(end_chunk, last_chunk) -
+                      std::max(start_chunk, it->first_chunk) + 1) *
+                     it->samples_per_chunk;
       if (last_chunk >= end_chunk)
         break;
     }
