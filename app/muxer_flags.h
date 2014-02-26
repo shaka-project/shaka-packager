@@ -76,11 +76,12 @@ DEFINE_bool(output_media_info,
             "will be the name specified by output flag, suffixed with "
             "'.media_info'.");
 DEFINE_string(scheme_id_uri,
-              "",
+              "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed",
               "This flag only applies if output_media_info is true. This value "
               "will be set in MediaInfo if the stream is encrypted. "
-              "Use scheme_id_uri when you generate an MPD. If the "
-              "stream is encrypted, MPD requires a <ContentProtection> "
-              "element which requires the schemeIdUri attribute.");
+              "If the stream is encrypted, MPD requires a <ContentProtection> "
+              "element which requires the schemeIdUri attribute. "
+              "Default value is Widevine PSSH system ID, and it is valid only "
+              "for ISO BMFF.");
 
 #endif  // APP_MUXER_FLAGS_H_

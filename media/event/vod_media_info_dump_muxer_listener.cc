@@ -20,6 +20,10 @@ namespace event {
 using dash_packager::MediaInfo;
 
 namespace {
+
+const char kEncryptedMp4Uri[] = "urn:mpeg:dash:mp4protection:2011";
+const char kEncryptedMp4Value[] = "cenc";
+
 bool IsAnyStreamEncrypted(const std::vector<StreamInfo*>& stream_infos) {
   typedef std::vector<StreamInfo*>::const_iterator Iterator;
   for (Iterator it = stream_infos.begin(); it != stream_infos.end(); ++it) {
@@ -29,6 +33,44 @@ bool IsAnyStreamEncrypted(const std::vector<StreamInfo*>& stream_infos) {
 
   return false;
 }
+
+// |user_scheme_id_uri| is the user specified schemeIdUri for ContentProtection.
+// This adds a default ContentProtection element if the container is MP4.
+// Returns true if a ContentProtectionXml is added to |media_info|, otherwise
+// false.
+bool AddContentProtectionElements(MuxerListener::ContainerType container_type,
+                                  const std::string& user_scheme_id_uri,
+                                  MediaInfo* media_info) {
+  DCHECK(media_info);
+
+  // DASH MPD spec specifies a default ContentProtection element for ISO BMFF
+  // (MP4) files.
+  const bool is_mp4_container = container_type == MuxerListener::kContainerMp4;
+  if (is_mp4_container) {
+    MediaInfo::ContentProtectionXml* mp4_protection =
+        media_info->add_content_protections();
+    mp4_protection->set_scheme_id_uri(kEncryptedMp4Uri);
+    mp4_protection->set_value(kEncryptedMp4Value);
+  }
+
+  if (!user_scheme_id_uri.empty()) {
+    MediaInfo::ContentProtectionXml* content_protection =
+        media_info->add_content_protections();
+    content_protection->set_scheme_id_uri(user_scheme_id_uri);
+  } else if (is_mp4_container) {
+    LOG(WARNING) << "schemeIdUri is not specified. Added default "
+                    "ContentProtection only.";
+  }
+
+  if (media_info->content_protections_size() == 0) {
+    LOG(ERROR) << "The stream is encrypted but no schemeIdUri specified for "
+                  "ContentProtection.";
+    return false;
+  }
+
+  return true;
+}
+
 }  // namespace
 
 VodMediaInfoDumpMuxerListener::VodMediaInfoDumpMuxerListener(File* output_file)
@@ -83,15 +125,8 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(
   }
 
   if (is_encrypted) {
-    if (scheme_id_uri_.empty()) {
-      LOG(ERROR) << "The stream is encrypted but no schemeIdUri specified for "
-                    "ContentProtection.";
-      return;
-    }
-
-    MediaInfo::ContentProtectionXml* content_protection =
-        media_info.add_content_protections();
-    content_protection->set_scheme_id_uri(scheme_id_uri_);
+    // TODO(rkuroiwa): Use the return value to set error status.
+    AddContentProtectionElements(container_type_, scheme_id_uri_, &media_info);
   }
 
   SerializeMediaInfoToFile(media_info);
