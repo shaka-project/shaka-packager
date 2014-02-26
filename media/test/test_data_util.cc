@@ -23,7 +23,7 @@ base::FilePath GetTestDataFilePath(const std::string& name) {
 
 std::vector<uint8> ReadTestDataFile(const std::string& name) {
   std::string buffer;
-  CHECK(file_util::ReadFileToString(GetTestDataFilePath(name), &buffer));
+  CHECK(base::ReadFileToString(GetTestDataFilePath(name), &buffer));
   return std::vector<uint8>(buffer.begin(), buffer.end());
 }
 

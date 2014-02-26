@@ -177,7 +177,7 @@ void WidevineEncryptorSource::FillRequest(const std::string& content_id,
   DCHECK(request);
 
   std::string content_id_base64_string;
-  CHECK(base::Base64Encode(content_id, &content_id_base64_string));
+  base::Base64Encode(content_id, &content_id_base64_string);
 
   base::DictionaryValue request_dict;
   request_dict.SetString("content_id", content_id_base64_string);
@@ -218,10 +218,10 @@ Status WidevineEncryptorSource::SignRequest(const std::string& request,
 
   // Encode request and signature using Base64 encoding.
   std::string request_base64_string;
-  CHECK(base::Base64Encode(request, &request_base64_string));
+  base::Base64Encode(request, &request_base64_string);
 
   std::string signature_base64_string;
-  CHECK(base::Base64Encode(signature, &signature_base64_string));
+  base::Base64Encode(signature, &signature_base64_string);
 
   base::DictionaryValue signed_request_dict;
   signed_request_dict.SetString("request", request_base64_string);

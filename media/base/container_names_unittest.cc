@@ -108,9 +108,9 @@ void TestFile(MediaContainerName expected, const base::FilePath& filename) {
   // so use file length if file less than 8192 bytes (http://crbug.com/243885).
   int read_size = sizeof(buffer);
   int64 actual_size;
-  if (file_util::GetFileSize(filename, &actual_size) && actual_size < read_size)
+  if (base::GetFileSize(filename, &actual_size) && actual_size < read_size)
     read_size = actual_size;
-  int read = file_util::ReadFile(filename, buffer, read_size);
+  int read = base::ReadFile(filename, buffer, read_size);
 
   // Now verify the type.
   EXPECT_EQ(expected,

@@ -22,6 +22,7 @@ ChunkInfoIterator::ChunkInfoIterator(const SampleToChunk& sample_to_chunk)
   if (iterator_ != chunk_info_table_.end())
     current_chunk_ = iterator_->first_chunk;
 }
+ChunkInfoIterator::~ChunkInfoIterator() {}
 
 bool ChunkInfoIterator::AdvanceChunk() {
   ++current_chunk_;

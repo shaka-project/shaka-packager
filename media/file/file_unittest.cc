@@ -64,7 +64,7 @@ TEST_F(LocalFileTest, Write) {
   // Read file using file_util API.
   std::string read_data(kDataSize, 0);
   ASSERT_EQ(kDataSize,
-            file_util::ReadFile(test_file_path_, &read_data[0], kDataSize));
+            base::ReadFile(test_file_path_, &read_data[0], kDataSize));
 
   // Compare data written and read.
   EXPECT_EQ(data_, read_data);

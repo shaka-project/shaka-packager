@@ -18,6 +18,7 @@ DecodingTimeIterator::DecodingTimeIterator(
     : sample_index_(0),
       decoding_time_table_(decoding_time_to_sample.decoding_time),
       iterator_(decoding_time_table_.begin()) {}
+DecodingTimeIterator::~DecodingTimeIterator() {}
 
 bool DecodingTimeIterator::AdvanceSample() {
   ++sample_index_;

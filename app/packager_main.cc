@@ -102,7 +102,7 @@ bool GetMuxerOptions(MuxerOptions* muxer_options) {
   // Create a temp file if needed.
   if (muxer_options->single_segment && muxer_options->temp_file_name.empty()) {
     base::FilePath path;
-    if (!file_util::CreateTemporaryFile(&path)) {
+    if (!base::CreateTemporaryFile(&path)) {
       LOG(ERROR) << "Failed to create a temporary file.";
       return false;
     }

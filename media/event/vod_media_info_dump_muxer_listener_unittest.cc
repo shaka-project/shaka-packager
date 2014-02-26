@@ -8,6 +8,7 @@
 
 #include "base/file_util.h"
 #include "base/files/file_path.h"
+#include "base/stl_util.h"
 #include "media/event/vod_media_info_dump_muxer_listener.h"
 #include "media/file/file.h"
 #include "media/base/muxer_options.h"
@@ -61,7 +62,7 @@ scoped_refptr<StreamInfo> CreateVideoStreamInfo(
                           param.width,
                           param.height,
                           param.nalu_length_size,
-                          &param.extra_data[0],
+                          vector_as_array(&param.extra_data),
                           param.extra_data.size(),
                           param.is_encrypted));
 }
@@ -152,7 +153,7 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
   virtual ~VodMediaInfoDumpMuxerListenerTest() {}
 
   virtual void SetUp() OVERRIDE {
-    ASSERT_TRUE(file_util::CreateTemporaryFile(&temp_file_path_));
+    ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
     DLOG(INFO) << "Created temp file: " << temp_file_path_.value();
 
     temp_file_ = File::Open(temp_file_path_.value().c_str(), "w");

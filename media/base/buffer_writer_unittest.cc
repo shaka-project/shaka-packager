@@ -36,9 +36,11 @@ namespace media {
 
 class BufferWriterTest : public testing::Test {
  public:
-  BufferWriterTest()
-      : writer_(new BufferWriter(kReservedBufferCapacity)),
-        reader_(new BufferReader(writer_->Buffer(), kReservedBufferCapacity)) {}
+  BufferWriterTest() : writer_(new BufferWriter(kReservedBufferCapacity)) {}
+
+  void CreateReader() {
+    reader_.reset(new BufferReader(writer_->Buffer(), writer_->Size()));
+  }
 
   bool ReadInt(uint8* v) { return reader_->Read1(v); }
   bool ReadInt(uint16* v) { return reader_->Read2(v); }
@@ -61,6 +63,8 @@ class BufferWriterTest : public testing::Test {
     writer_->AppendInt(max);
     writer_->AppendInt(val);
     ASSERT_EQ(sizeof(min) + sizeof(max) + sizeof(val), writer_->Size());
+
+    CreateReader();
     ReadAndExpect(min);
     ReadAndExpect(max);
     ReadAndExpect(val);
@@ -86,6 +90,8 @@ TEST_F(BufferWriterTest, AppendNBytes) {
   // Write the least significant four bytes and verify the result.
   writer_->AppendNBytes(kuint64, sizeof(uint32));
   ASSERT_EQ(sizeof(uint32), writer_->Size());
+
+  CreateReader();
   ReadAndExpect(static_cast<uint32>(kuint64 & 0xFFFFFFFF));
 }
 
@@ -100,6 +106,7 @@ TEST_F(BufferWriterTest, AppendVector) {
   writer_->AppendVector(v);
   ASSERT_EQ(sizeof(kuint8Array), writer_->Size());
 
+  CreateReader();
   std::vector<uint8> data_read;
   ASSERT_TRUE(reader_->ReadToVector(&data_read, sizeof(kuint8Array)));
   ASSERT_EQ(v, data_read);
@@ -109,6 +116,7 @@ TEST_F(BufferWriterTest, AppendArray) {
   writer_->AppendArray(kuint8Array, sizeof(kuint8Array));
   ASSERT_EQ(sizeof(kuint8Array), writer_->Size());
 
+  CreateReader();
   std::vector<uint8> data_read;
   ASSERT_TRUE(reader_->ReadToVector(&data_read, sizeof(kuint8Array)));
   for (size_t i = 0; i < sizeof(kuint8Array); ++i)
@@ -124,6 +132,7 @@ TEST_F(BufferWriterTest, AppendBufferWriter) {
   ASSERT_EQ(sizeof(kuint16) + sizeof(kint64) + sizeof(kuint32),
             writer_->Size());
 
+  CreateReader();
   ASSERT_NO_FATAL_FAILURE(ReadAndExpect(kuint16));
   ASSERT_NO_FATAL_FAILURE(ReadAndExpect(kint64));
   ASSERT_NO_FATAL_FAILURE(ReadAndExpect(kuint32));
@@ -139,7 +148,7 @@ TEST_F(BufferWriterTest, Swap) {
   ASSERT_EQ(sizeof(kuint16) + sizeof(kint64), writer_->Size());
   ASSERT_EQ(sizeof(kuint32), local_writer.Size());
 
-  reader_.reset(new BufferReader(writer_->Buffer(), writer_->Size()));
+  CreateReader();
   ASSERT_NO_FATAL_FAILURE(ReadAndExpect(kuint16));
   ASSERT_NO_FATAL_FAILURE(ReadAndExpect(kint64));
 }
@@ -153,7 +162,7 @@ TEST_F(BufferWriterTest, Clear) {
 
 TEST_F(BufferWriterTest, WriteToFile) {
   base::FilePath path;
-  ASSERT_TRUE(file_util::CreateTemporaryFile(&path));
+  ASSERT_TRUE(base::CreateTemporaryFile(&path));
   LOG(INFO) << "Created temporary file: " << path.value();
 
   // Append an array to buffer and then write to the temporary file.

@@ -21,6 +21,7 @@ namespace mp4 {
 class SyncSampleIterator {
  public:
   explicit SyncSampleIterator(const SyncSample& sync_sample);
+  ~SyncSampleIterator();
 
   // Advance the properties to refer to the next sample. Return status
   // indicating whether the sample is still valid.

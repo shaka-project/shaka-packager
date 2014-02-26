@@ -1,0 +1,7 @@
+Description:
+This directory is included to resolve base/metrics/stats_table.cc dependency
+on ipc/ipc_descriptors.h.
+
+File(s):
+ipc/ipc_descritors.h
+

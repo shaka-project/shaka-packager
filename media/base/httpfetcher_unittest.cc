@@ -33,7 +33,7 @@ static void CheckHttpGet(const std::string& url,
   HTTPFetcher fetcher;
   std::string response;
   ASSERT_OK(fetcher.Get(url, &response));
-  RemoveChars(response, "\r\n\t ", &response);
+  base::RemoveChars(response, "\r\n\t ", &response);
   EXPECT_EQ(expected_response, response);
 }
 
@@ -42,7 +42,7 @@ static void CheckHttpPost(const std::string& url, const std::string& data,
   HTTPFetcher fetcher;
   std::string response;
   ASSERT_OK(fetcher.Post(url, data, &response));
-  RemoveChars(response, "\r\n\t ", &response);
+  base::RemoveChars(response, "\r\n\t ", &response);
   EXPECT_EQ(expected_response, response);
 }
 

@@ -40,7 +40,7 @@ base::FilePath GetSchemaPath() {
 
 std::string GetPathContent(const base::FilePath& file_path) {
   std::string content;
-  bool file_read_to_string = file_util::ReadFileToString(file_path, &content);
+  bool file_read_to_string = base::ReadFileToString(file_path, &content);
   DCHECK(file_read_to_string);
   return content;
 }
@@ -99,8 +99,8 @@ void ExpectMpdToEqualExpectedOutputFile(
     const std::string& mpd_string,
     const std::string& expected_output_file) {
   std::string expected_mpd;
-  ASSERT_TRUE(file_util::ReadFileToString(
-      GetTestDataFilePath(expected_output_file), &expected_mpd))
+  ASSERT_TRUE(base::ReadFileToString(GetTestDataFilePath(expected_output_file),
+                                     &expected_mpd))
       << "Failed to read: " << expected_output_file;
 
   // Adding extra << here to get a formatted output.

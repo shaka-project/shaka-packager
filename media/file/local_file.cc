@@ -16,14 +16,14 @@ LocalFile::LocalFile(const char* name, const char* mode)
 
 bool LocalFile::Open() {
   internal_file_ =
-      file_util::OpenFile(base::FilePath(file_name()), file_mode_.c_str());
+      base::OpenFile(base::FilePath(file_name()), file_mode_.c_str());
   return (internal_file_ != NULL);
 }
 
 bool LocalFile::Close() {
   bool result = true;
   if (internal_file_) {
-    result = file_util::CloseFile(internal_file_);
+    result = base::CloseFile(internal_file_);
     internal_file_ = NULL;
   }
   delete this;
@@ -52,7 +52,7 @@ int64 LocalFile::Size() {
   }
 
   int64 file_size;
-  if (!file_util::GetFileSize(base::FilePath(file_name()), &file_size)) {
+  if (!base::GetFileSize(base::FilePath(file_name()), &file_size)) {
     LOG(ERROR) << "Cannot get file size.";
     return -1;
   }

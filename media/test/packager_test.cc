@@ -51,8 +51,7 @@ class PackagerTest : public ::testing::TestWithParam<const char*> {
  public:
   virtual void SetUp() OVERRIDE {
     // Create a test directory for testing, will be deleted after test.
-    ASSERT_TRUE(
-        file_util::CreateNewTempDirectory("packager_", &test_directory_));
+    ASSERT_TRUE(base::CreateNewTempDirectory("packager_", &test_directory_));
 
     options_.segment_duration = kSegmentDurationInSeconds;
     options_.fragment_duration = kFragmentDurationInSecodns;

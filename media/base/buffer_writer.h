@@ -12,6 +12,7 @@
 
 #include <vector>
 
+#include "base/stl_util.h"
 #include "media/base/status.h"
 
 namespace media {
@@ -48,8 +49,8 @@ class BufferWriter {
   void Swap(BufferWriter* buffer) { buf_.swap(buffer->buf_); }
   void Clear() { buf_.clear(); }
   size_t Size() const { return buf_.size(); }
-  // Return underlying buffer. Behavior is undefined if the buffer size is 0.
-  const uint8* Buffer() const { return &buf_[0]; }
+  // Return underlying buffer. Return NULL if the buffer is empty.
+  const uint8* Buffer() const { return vector_as_array(&buf_); }
 
   // Write the buffer to file. |file| should not be NULL.
   // Returns OK on success. The internal buffer will be cleared after writing.

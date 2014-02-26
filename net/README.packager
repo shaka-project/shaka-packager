@@ -1,0 +1,15 @@
+Description:
+This directory is included to resolve gyp dependency on *.isolate when parsing
+base.gyp. Although the involved target is supposed to compiled off, gyp
+still tries to locate the included *.isolate. Refer below for the dependency
+chain.
+
+Dependency Chain:
+base/base.gyp <= base/base_unittests.isolate <= base/base.isolate
+    <= build/linux/system.isolate <= net/third_party/nss/ssl.isolate
+    <= net/third_party/nss/ssl_base.isolate
+
+File(s):
+net/third_party/nss/ssl_base.isolate
+net/third_party/nss/ssl.isolate
+

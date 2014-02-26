@@ -16,6 +16,7 @@ SyncSampleIterator::SyncSampleIterator(const SyncSample& sync_sample)
       sync_sample_vector_(sync_sample.sample_number),
       iterator_(sync_sample_vector_.begin()),
       is_empty_(iterator_ == sync_sample_vector_.end()) {}
+SyncSampleIterator::~SyncSampleIterator() {}
 
 bool SyncSampleIterator::AdvanceSample() {
   if (iterator_ != sync_sample_vector_.end() && sample_number_ == *iterator_)

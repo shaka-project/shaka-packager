@@ -23,6 +23,7 @@ class CompositionOffsetIterator {
  public:
   explicit CompositionOffsetIterator(
       const CompositionTimeToSample& composition_time_to_sample);
+  ~CompositionOffsetIterator();
 
   // Advance the properties to refer to the next sample. Return status
   // indicating whether the sample is still valid.

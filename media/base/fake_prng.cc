@@ -50,7 +50,7 @@ bool StartFakePrng() {
 
   // Open deterministic random data file and set the OpenSSL PRNG.
   g_rand_source_fp =
-      file_util::OpenFile(GetTestDataFilePath(kFakePrngDataFile), "rb");
+      base::OpenFile(GetTestDataFilePath(kFakePrngDataFile), "rb");
   if (!g_rand_source_fp) {
     LOG(ERROR) << "Cannot open " << kFakePrngDataFile;
     return false;
@@ -61,7 +61,7 @@ bool StartFakePrng() {
 
 void StopFakePrng() {
   if (g_rand_source_fp) {
-    file_util::CloseFile(g_rand_source_fp);
+    base::CloseFile(g_rand_source_fp);
     g_rand_source_fp = NULL;
   } else {
     LOG(WARNING) << "Fake PRNG not started.";

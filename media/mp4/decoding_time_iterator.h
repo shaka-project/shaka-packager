@@ -23,6 +23,7 @@ class DecodingTimeIterator {
  public:
   explicit DecodingTimeIterator(
       const DecodingTimeToSample& decoding_time_to_sample);
+  ~DecodingTimeIterator();
 
   // Advance the properties to refer to the next sample. Return status
   // indicating whether the sample is still valid.

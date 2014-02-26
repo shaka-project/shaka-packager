@@ -16,6 +16,7 @@ CompositionOffsetIterator::CompositionOffsetIterator(
     : sample_index_(0),
       composition_offset_table_(composition_time_to_sample.composition_offset),
       iterator_(composition_offset_table_.begin()) {}
+CompositionOffsetIterator::~CompositionOffsetIterator() {}
 
 bool CompositionOffsetIterator::AdvanceSample() {
   ++sample_index_;

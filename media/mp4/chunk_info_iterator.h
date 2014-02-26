@@ -21,6 +21,7 @@ namespace mp4 {
 class ChunkInfoIterator {
  public:
   explicit ChunkInfoIterator(const SampleToChunk& sample_to_chunk);
+  ~ChunkInfoIterator();
 
   // Advance the properties to refer to the next chunk. Return status
   // indicating whether the chunk is still valid.
