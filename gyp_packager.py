@@ -14,12 +14,12 @@
 # 1. Setup gyp: ./gyp_packager.py
 #
 # clang is not enabled by default, which can be enabled by overriding
-# GYP_DEFINE environment variable, i.e. "GYP_DEFINES='clang=1
-# use_openssl=1' ./gyp_packager.py".
+# GYP_DEFINE environment variable, i.e.
+# "GYP_DEFINES='clang=1' ./gyp_packager.py".
 #
 # Ninja is the default build system. User can also change to make by
-# overriding GYP_GENERATORS to make, i.e. "GYP_GENERATORS='make'
-# ./gyp_packager.py".
+# overriding GYP_GENERATORS to make, i.e.
+# "GYP_GENERATORS='make' ./gyp_packager.py".
 #
 # 2. The first step generates the make files but does not start the
 # build process. Ninja is the default build system. Refer to Ninja
@@ -59,9 +59,16 @@ if __name__ == '__main__':
   # Gyp should run from current directory.
   args.append('--depth=.')
 
-  # Set GYP_DEFINES if it is not explicitly set yet.
-  if not os.environ.get('GYP_DEFINES'):
-    os.environ['GYP_DEFINES'] = 'use_openssl=1'
+  # Set these default GYP_DEFINES if user does not set the value explicitly.
+  _DEFAULT_DEFINES = {"test_isolation_mode" : "noop", "use_glib" : 0,
+                      "use_openssl" : 1, "use_x11" : 0}
+
+  gyp_defines = (os.environ['GYP_DEFINES'] if os.environ.get('GYP_DEFINES')
+                 else "")
+  for key in _DEFAULT_DEFINES:
+    if key not in gyp_defines:
+      gyp_defines += " {}={}".format(key, _DEFAULT_DEFINES[key])
+  os.environ['GYP_DEFINES'] = gyp_defines.strip()
 
   # There shouldn't be a circular dependency relationship between .gyp files,
   # but in Chromium's .gyp files, on non-Mac platforms, circular relationships

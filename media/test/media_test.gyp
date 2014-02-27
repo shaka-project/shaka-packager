@@ -12,16 +12,25 @@
   },
   'targets': [
     {
-      'target_name': 'media_test_support',
+      'target_name': 'run_all_unittests',
       'type': '<(component)',
       'sources': [
         'run_tests_with_atexit_manager.cc',
+      ],
+      'dependencies': [
+        '../../testing/gtest.gyp:gtest',
+      ],
+    },
+    {
+      'target_name': 'media_test_support',
+      'type': '<(component)',
+      'sources': [
         'test_data_util.cc',
         'test_data_util.h',
       ],
       'dependencies': [
         '../../base/base.gyp:base',
-        '../../testing/gtest.gyp:gtest',
+        'run_all_unittests',
       ],
     },
   ],

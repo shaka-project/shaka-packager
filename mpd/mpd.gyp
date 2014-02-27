@@ -68,8 +68,8 @@
       ],
       'dependencies': [
         '../base/base.gyp:base',
-        '../base/base.gyp:run_all_unittests',
         '../media/file/file.gyp:file',
+        '../media/test/media_test.gyp:run_all_unittests',
         '../testing/gtest.gyp:gtest',
         'mpd_builder',
         'mpd_util',

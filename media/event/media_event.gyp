@@ -38,9 +38,9 @@
       ],
       'dependencies': [
         '../../base/base.gyp:base',
-        '../../base/base.gyp:run_all_unittests',
         '../../mpd/mpd.gyp:media_info_proto',
         '../../testing/gtest.gyp:gtest',
+        '../../testing/gtest.gyp:gtest_main',
         # Depends on full protobuf to read/write with TextFormat.
         '../../third_party/protobuf/protobuf.gyp:protobuf_full_do_not_use',
         '../file/file.gyp:file',
