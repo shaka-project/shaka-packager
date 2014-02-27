@@ -37,10 +37,10 @@ import sys
 src_dir = os.path.dirname(os.path.realpath(__file__))
 
 sys.path.insert(0, os.path.join(src_dir, 'build'))
-import gyp_helper
+import gyp_helper  # Workaround the dynamic path. pylint: disable-msg=F0401
 
 sys.path.insert(0, os.path.join(src_dir, 'tools', 'gyp', 'pylib'))
-import gyp
+import gyp  # Workaround the dynamic path. pylint: disable-msg=F0401
 
 if __name__ == '__main__':
   args = sys.argv[1:]
