@@ -12,7 +12,9 @@
 
 namespace dash_packager {
 
-TEST(MpdWriterTest, ReadMediaInfoFile_VideoMediaInfo) {
+// Note that these tests look very similar to MpdBuilder tests but these can
+// only handle MediaInfos with 1 stream in each file.
+TEST(MpdWriterTest, VideoMediaInfo) {
   MpdWriter mpd_writer;
   base::FilePath media_info_file = GetTestDataFilePath(kFileNameVideoMediaInfo1);
 
@@ -26,7 +28,7 @@ TEST(MpdWriterTest, ReadMediaInfoFile_VideoMediaInfo) {
       kFileNameExpectedMpdOutputVideo1));
 }
 
-TEST(MpdWriterTest, ReadMediaInfoFile_TwoVideoMediaInfo) {
+TEST(MpdWriterTest, TwoVideoMediaInfo) {
   MpdWriter mpd_writer;
   base::FilePath media_info_file1 =
       GetTestDataFilePath(kFileNameVideoMediaInfo1);
@@ -45,7 +47,7 @@ TEST(MpdWriterTest, ReadMediaInfoFile_TwoVideoMediaInfo) {
       kFileNameExpectedMpdOutputVideo1And2));
 }
 
-TEST(MpdWriterTest, ReadMediaInfoFile_AudioMediaInfo) {
+TEST(MpdWriterTest, AudioMediaInfo) {
   MpdWriter mpd_writer;
   base::FilePath media_info_file = GetTestDataFilePath(kFileNameAudioMediaInfo1);
 
@@ -59,7 +61,7 @@ TEST(MpdWriterTest, ReadMediaInfoFile_AudioMediaInfo) {
       kFileNameExpectedMpdOutputAudio1));
 }
 
-TEST(MpdWriterTest, ReadMediaInfoFile_VideoAudioMediaInfo) {
+TEST(MpdWriterTest, VideoAudioMediaInfo) {
   MpdWriter mpd_writer;
   base::FilePath audio_media_info =
       GetTestDataFilePath(kFileNameAudioMediaInfo1);
@@ -76,6 +78,22 @@ TEST(MpdWriterTest, ReadMediaInfoFile_VideoAudioMediaInfo) {
   ASSERT_NO_FATAL_FAILURE(ExpectMpdToEqualExpectedOutputFile(
       generated_mpd,
       kFileNameExpectedMpdOutputAudio1AndVideo1));
+}
+
+// TODO(rkuroiwa): Enable this when implemented.
+TEST(MpdWriterTest, DISABLED_EncryptedAudioMediaInfo) {
+  MpdWriter mpd_writer;
+  base::FilePath encrypted_audio_media_info =
+      GetTestDataFilePath(kFileNameEncytpedAudioMediaInfo);
+
+  ASSERT_TRUE(mpd_writer.AddFile(encrypted_audio_media_info.value().c_str()));
+
+  std::string generated_mpd;
+  ASSERT_TRUE(mpd_writer.WriteMpdToString(&generated_mpd));
+  ASSERT_TRUE(ValidateMpdSchema(generated_mpd));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectMpdToEqualExpectedOutputFile(
+      generated_mpd, kFileNameExpectedMpdOutputEncryptedAudio));
 }
 
 }  // namespace dash_packager

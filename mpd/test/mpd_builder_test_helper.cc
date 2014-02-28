@@ -9,6 +9,7 @@
 #include "base/file_util.h"
 #include "base/path_service.h"
 #include "mpd/base/media_info.pb.h"
+#include "mpd/base/mpd_builder.h"
 #include "mpd/base/xml/scoped_xml_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/protobuf/src/google/protobuf/text_format.h"
