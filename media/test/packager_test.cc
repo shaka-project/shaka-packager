@@ -6,6 +6,8 @@
 
 #include "base/file_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/time/clock.h"
 #include "media/base/demuxer.h"
 #include "media/base/fixed_encryptor_source.h"
 #include "media/base/media_stream.h"
@@ -18,7 +20,9 @@
 
 using ::testing::ValuesIn;
 
+namespace media {
 namespace {
+
 const char* kMediaFiles[] = {"bear-1280x720.mp4", "bear-1280x720-av_frag.mp4"};
 
 // Muxer options.
@@ -27,12 +31,20 @@ const double kFragmentDurationInSecodns = 0.1;
 const bool kSegmentSapAligned = true;
 const bool kFragmentSapAligned = true;
 const int kNumSubsegmentsPerSidx = 2;
-const char kOutputFileName[] = "output_file";
-const char kOutputFileName2[] = "output_file2";
+
+const char kOutputVideo[] = "output_video";
+const char kOutputVideo2[] = "output_video_2";
+const char kOutputAudio[] = "output_audio";
+const char kOutputAudio2[] = "output_audio_2";
+const char kOutputNone[] = "";
+
 const char kSegmentTemplate[] = "template$Number$.m4s";
-const char kSegmentTemplateOutputFile[] = "template1.m4s";
-const char kTempFileName[] = "temp_file";
-const char kTempFileName2[] = "temp_file2";
+const char kSegmentTemplateOutputPattern[] = "template%d.m4s";
+
+const bool kSingleSegment = true;
+const bool kMultipleSegments = false;
+const bool kEnableEncryption = true;
+const bool kDisableEncryption = false;
 
 // Encryption constants.
 const char kKeyIdHex[] = "e5007e6e9dcd5ac095202ed3758382cd";
@@ -43,149 +55,250 @@ const char kPsshHex[] =
     "434f4e54454e545f49445f312a025344";
 const double kClearLeadInSeconds = 1.5;
 
+MediaStream* FindFirstStreamOfType(const std::vector<MediaStream*>& streams,
+                                   StreamType stream_type) {
+  typedef std::vector<MediaStream*>::const_iterator StreamIterator;
+  for (StreamIterator it = streams.begin(); it != streams.end(); ++it) {
+    if ((*it)->info()->stream_type() == stream_type)
+      return *it;
+  }
+  return NULL;
+}
+MediaStream* FindFirstVideoStream(const std::vector<MediaStream*>& streams) {
+  return FindFirstStreamOfType(streams, kStreamVideo);
+}
+MediaStream* FindFirstAudioStream(const std::vector<MediaStream*>& streams) {
+  return FindFirstStreamOfType(streams, kStreamAudio);
+}
+
 }  // namespace
 
-namespace media {
-
-class PackagerTest : public ::testing::TestWithParam<const char*> {
+class FakeClock : public base::Clock {
  public:
+  // Fake the clock to return NULL time.
+  virtual base::Time Now() OVERRIDE { return base::Time(); }
+};
+
+class PackagerTestBasic : public ::testing::TestWithParam<const char*> {
+ public:
+  PackagerTestBasic() : decryptor_source_(NULL) {}
+
   virtual void SetUp() OVERRIDE {
     // Create a test directory for testing, will be deleted after test.
     ASSERT_TRUE(base::CreateNewTempDirectory("packager_", &test_directory_));
 
-    options_.segment_duration = kSegmentDurationInSeconds;
-    options_.fragment_duration = kFragmentDurationInSecodns;
-    options_.segment_sap_aligned = kSegmentSapAligned;
-    options_.fragment_sap_aligned = kFragmentSapAligned;
-    options_.num_subsegments_per_sidx = kNumSubsegmentsPerSidx;
-
-    options_.output_file_name =
-        test_directory_.AppendASCII(kOutputFileName).value();
-    options_.segment_template =
-        test_directory_.AppendASCII(kSegmentTemplate).value();
-    options_.temp_file_name =
-        test_directory_.AppendASCII(kTempFileName).value();
+    // Copy the input to test directory for easy reference.
+    ASSERT_TRUE(base::CopyFile(GetTestDataFilePath(GetParam()),
+                               test_directory_.AppendASCII(GetParam())));
   }
 
   virtual void TearDown() OVERRIDE { base::DeleteFile(test_directory_, true); }
 
-  void Remux(const std::string& input_file, Muxer* muxer) {
-    DCHECK(muxer);
+  std::string GetFullPath(const std::string& file_name);
+  // Check if |file1| and |file2| are the same.
+  bool ContentsEqual(const std::string& file1, const std::string file2);
 
-    Demuxer demuxer(input_file, NULL);
-    ASSERT_OK(demuxer.Initialize());
-    ASSERT_LE(1, demuxer.streams().size());
-
-    VLOG(1) << "Num Streams: " << demuxer.streams().size();
-    for (size_t i = 0; i < demuxer.streams().size(); ++i) {
-      VLOG(1) << "Streams " << i << ": " << demuxer.streams()[i]->ToString();
-    }
-
-    ASSERT_OK(muxer->AddStream(demuxer.streams()[0]));
-    ASSERT_OK(muxer->Initialize());
-
-    // Start remuxing process.
-    ASSERT_OK(demuxer.Run());
-    ASSERT_OK(muxer->Finalize());
-  }
-
-  // Check |input_file| is a valid media file and can be initialized by Demuxer.
-  void CheckMediaFile(const std::string input_file) {
-    Demuxer demuxer(input_file, NULL);
-    ASSERT_OK(demuxer.Initialize());
-  }
+  MuxerOptions SetupOptions(const std::string& output, bool single_segment);
+  void Remux(const std::string& input,
+             const std::string& video_output,
+             const std::string& audio_output,
+             bool single_segment,
+             bool enable_encryption);
 
  protected:
   base::FilePath test_directory_;
-  MuxerOptions options_;
+  DecryptorSource* decryptor_source_;
+  FakeClock fake_clock_;
 };
 
-TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencrypted) {
-  options_.single_segment = true;
-
-  const std::string input_media_file = GetTestDataFilePath(GetParam()).value();
-  scoped_ptr<Muxer> muxer(new mp4::MP4Muxer(options_));
-  ASSERT_NO_FATAL_FAILURE(Remux(input_media_file, muxer.get()));
-
-  // Take the muxer output and feed into muxer again. The new muxer output
-  // should contain the same contents as the previous muxer output.
-  const std::string new_input_media_file = options_.output_file_name;
-  options_.output_file_name =
-      test_directory_.AppendASCII(kOutputFileName2).value();
-  muxer.reset(new mp4::MP4Muxer(options_));
-  ASSERT_NO_FATAL_FAILURE(Remux(new_input_media_file, muxer.get()));
-
-  // TODO(kqyang): This comparison might be flaky due to timestamp difference.
-  //               Compare data beyond moov box only?
-  EXPECT_TRUE(base::ContentsEqual(base::FilePath(new_input_media_file),
-                                  base::FilePath(options_.output_file_name)));
+std::string PackagerTestBasic::GetFullPath(const std::string& file_name) {
+  return test_directory_.AppendASCII(file_name).value();
 }
 
-TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencryptedSeparateAudioVideo) {
-  options_.single_segment = true;
+bool PackagerTestBasic::ContentsEqual(const std::string& file1,
+                                      const std::string file2) {
+  return base::ContentsEqual(test_directory_.AppendASCII(file1),
+                             test_directory_.AppendASCII(file2));
+}
 
-  const std::string input_media_file = GetTestDataFilePath(GetParam()).value();
+MuxerOptions PackagerTestBasic::SetupOptions(const std::string& output,
+                                             bool single_segment) {
+  MuxerOptions options;
+  options.single_segment = single_segment;
 
-  Demuxer demuxer(input_media_file, NULL);
+  options.segment_duration = kSegmentDurationInSeconds;
+  options.fragment_duration = kFragmentDurationInSecodns;
+  options.segment_sap_aligned = kSegmentSapAligned;
+  options.fragment_sap_aligned = kFragmentSapAligned;
+  options.num_subsegments_per_sidx = kNumSubsegmentsPerSidx;
+
+  options.output_file_name = GetFullPath(output);
+  options.segment_template = GetFullPath(kSegmentTemplate);
+  options.temp_file_name = GetFullPath(output + ".temp");
+  return options;
+}
+
+void PackagerTestBasic::Remux(const std::string& input,
+                              const std::string& video_output,
+                              const std::string& audio_output,
+                              bool single_segment,
+                              bool enable_encryption) {
+  CHECK(!video_output.empty() || !audio_output.empty());
+
+  Demuxer demuxer(GetFullPath(input), decryptor_source_);
   ASSERT_OK(demuxer.Initialize());
-  ASSERT_EQ(2, demuxer.streams().size());
-
-  // Create and initialize the first muxer.
-  scoped_ptr<Muxer> muxer(new mp4::MP4Muxer(options_));
-  ASSERT_OK(muxer->AddStream(demuxer.streams()[0]));
-  ASSERT_OK(muxer->Initialize());
-
-  // Create and initialize the second muxer.
-  MuxerOptions options2 = options_;
-  options2.output_file_name =
-      test_directory_.AppendASCII(kOutputFileName2).value();
-  options2.temp_file_name =
-      test_directory_.AppendASCII(kTempFileName2).value();
-  scoped_ptr<Muxer> muxer2(new mp4::MP4Muxer(options2));
-
-  ASSERT_OK(muxer2->AddStream(demuxer.streams()[1]));
-  ASSERT_OK(muxer2->Initialize());
-
-  // Start remuxing process.
-  ASSERT_OK(demuxer.Run());
-  ASSERT_OK(muxer->Finalize());
-  ASSERT_OK(muxer2->Finalize());
-
-  // Check output file is valid.
-  // TODO(kqyang): Compare the output with a known good output.
-  ASSERT_NO_FATAL_FAILURE(CheckMediaFile(options_.output_file_name));
-  ASSERT_NO_FATAL_FAILURE(CheckMediaFile(options2.output_file_name));
-}
-
-TEST_P(PackagerTest, MP4MuxerSingleSegmentEncrypted) {
-  options_.single_segment = true;
 
   FixedEncryptorSource encryptor_source(kKeyIdHex, kKeyHex, kPsshHex);
   ASSERT_OK(encryptor_source.Initialize());
 
-  const std::string input_media_file = GetTestDataFilePath(GetParam()).value();
-  scoped_ptr<Muxer> muxer(new mp4::MP4Muxer(options_));
-  muxer->SetEncryptorSource(&encryptor_source, kClearLeadInSeconds);
-  ASSERT_NO_FATAL_FAILURE(Remux(input_media_file, muxer.get()));
+  scoped_ptr<Muxer> muxer_video;
+  if (!video_output.empty()) {
+    muxer_video.reset(
+        new mp4::MP4Muxer(SetupOptions(video_output, single_segment)));
+    muxer_video->set_clock(&fake_clock_);
+
+    ASSERT_OK(muxer_video->AddStream(FindFirstVideoStream(demuxer.streams())));
+
+    if (enable_encryption)
+      muxer_video->SetEncryptorSource(&encryptor_source, kClearLeadInSeconds);
+
+    ASSERT_OK(muxer_video->Initialize());
+  }
+
+  scoped_ptr<Muxer> muxer_audio;
+  if (!audio_output.empty()) {
+    muxer_audio.reset(
+        new mp4::MP4Muxer(SetupOptions(audio_output, single_segment)));
+    muxer_audio->set_clock(&fake_clock_);
+
+    ASSERT_OK(muxer_audio->AddStream(FindFirstAudioStream(demuxer.streams())));
+
+    if (enable_encryption)
+      muxer_video->SetEncryptorSource(&encryptor_source, kClearLeadInSeconds);
+
+    ASSERT_OK(muxer_audio->Initialize());
+  }
+
+  // Start remuxing process.
+  ASSERT_OK(demuxer.Run());
+
+  if (muxer_video)
+    ASSERT_OK(muxer_video->Finalize());
+  if (muxer_audio)
+    ASSERT_OK(muxer_audio->Finalize());
+}
+
+TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentUnencrypted) {
+  ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
+                                kOutputVideo,
+                                kOutputNone,
+                                kSingleSegment,
+                                kDisableEncryption));
+}
+
+TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentEncrypted) {
+  ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
+                                kOutputVideo,
+                                kOutputNone,
+                                kSingleSegment,
+                                kEnableEncryption));
 
   // Expect the output to be encrypted.
-  Demuxer demuxer(options_.output_file_name, NULL);
+  Demuxer demuxer(GetFullPath(kOutputVideo), decryptor_source_);
   ASSERT_OK(demuxer.Initialize());
   ASSERT_EQ(1, demuxer.streams().size());
   EXPECT_TRUE(demuxer.streams()[0]->info()->is_encrypted());
 }
 
-TEST_P(PackagerTest, MP4MuxerMultipleSegmentsUnencrypted) {
-  options_.single_segment = false;
+class PackagerTest : public PackagerTestBasic {
+ public:
+  virtual void SetUp() OVERRIDE {
+    PackagerTestBasic::SetUp();
 
-  const std::string input_media_file = GetTestDataFilePath(GetParam()).value();
-  scoped_ptr<Muxer> muxer(new mp4::MP4Muxer(options_));
-  ASSERT_NO_FATAL_FAILURE(Remux(input_media_file, muxer.get()));
+    ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
+                                  kOutputVideo,
+                                  kOutputNone,
+                                  kSingleSegment,
+                                  kDisableEncryption));
 
-  EXPECT_TRUE(base::PathExists(
-      test_directory_.AppendASCII(kSegmentTemplateOutputFile)));
+    ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
+                                  kOutputNone,
+                                  kOutputAudio,
+                                  kSingleSegment,
+                                  kDisableEncryption));
+  }
+};
+
+TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencryptedAgain) {
+  // Take the muxer output and feed into muxer again. The new muxer output
+  // should contain the same contents as the previous muxer output.
+  ASSERT_NO_FATAL_FAILURE(Remux(kOutputVideo,
+                                kOutputVideo2,
+                                kOutputNone,
+                                kSingleSegment,
+                                kDisableEncryption));
+  EXPECT_TRUE(ContentsEqual(kOutputVideo, kOutputVideo2));
 }
 
+TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencryptedSeparateAudioVideo) {
+  ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
+                                kOutputVideo2,
+                                kOutputAudio2,
+                                kSingleSegment,
+                                kDisableEncryption));
+
+  // Compare the output with single muxer output. They should match.
+  EXPECT_TRUE(ContentsEqual(kOutputVideo, kOutputVideo2));
+  EXPECT_TRUE(ContentsEqual(kOutputAudio, kOutputAudio2));
+}
+
+TEST_P(PackagerTest, MP4MuxerMultipleSegmentsUnencrypted) {
+  ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
+                                kOutputVideo2,
+                                kOutputNone,
+                                kMultipleSegments,
+                                kDisableEncryption));
+
+  // Find and concatenates the segments.
+  const std::string kOutputVideoSegmentsCombined =
+      std::string(kOutputVideo) + "_combined";
+  base::FilePath output_path =
+      test_directory_.AppendASCII(kOutputVideoSegmentsCombined);
+  ASSERT_TRUE(
+      base::CopyFile(test_directory_.AppendASCII(kOutputVideo2), output_path));
+
+  const int kStartSegmentIndex = 1;  // start from one.
+  int segment_index = kStartSegmentIndex;
+  while (true) {
+    base::FilePath segment_path = test_directory_.AppendASCII(
+        base::StringPrintf(kSegmentTemplateOutputPattern, segment_index));
+    if (!base::PathExists(segment_path))
+      break;
+
+    std::string segment_content;
+    ASSERT_TRUE(file_util::ReadFileToString(segment_path, &segment_content));
+    int bytes_written = file_util::AppendToFile(
+        output_path, segment_content.data(), segment_content.size());
+    ASSERT_EQ(segment_content.size(), bytes_written);
+
+    ++segment_index;
+  }
+  // We should have at least one segment.
+  ASSERT_LT(kStartSegmentIndex, segment_index);
+
+  // Feed the combined file into muxer again. The new muxer output should be
+  // the same as by just feeding the input to muxer.
+  ASSERT_NO_FATAL_FAILURE(Remux(kOutputVideoSegmentsCombined,
+                                kOutputVideo2,
+                                kOutputNone,
+                                kSingleSegment,
+                                kDisableEncryption));
+  EXPECT_TRUE(ContentsEqual(kOutputVideo, kOutputVideo2));
+}
+
+INSTANTIATE_TEST_CASE_P(PackagerE2ETest,
+                        PackagerTestBasic,
+                        ValuesIn(kMediaFiles));
 INSTANTIATE_TEST_CASE_P(PackagerE2ETest, PackagerTest, ValuesIn(kMediaFiles));
 
 }  // namespace media

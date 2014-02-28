@@ -6,6 +6,7 @@
 
 #include "media/mp4/mp4_muxer.h"
 
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "media/base/aes_encryptor.h"
 #include "media/base/audio_stream_info.h"
@@ -25,17 +26,12 @@ namespace {
 // The version of cenc implemented here. CENC 4.
 const int kCencSchemeVersion = 0x00010000;
 
-// Get time in seconds since midnight, Jan. 1, 1904, in UTC Time.
-uint64 IsoTimeNow() {
-  // Time in seconds from Jan. 1, 1904 to epoch time, i.e. Jan. 1, 1970.
-  const uint64 kIsomTimeOffset = 2082844800l;
-  return kIsomTimeOffset + base::Time::Now().ToDoubleT();
-}
-
 // Sets the range start and end value from offset and size.
 // |start| and |end| are for byte-range-spec specified in RFC2616.
-void SetStartAndEndFromOffsetAndSize(size_t offset, size_t size,
-                                     uint32* start, uint32* end) {
+void SetStartAndEndFromOffsetAndSize(size_t offset,
+                                     size_t size,
+                                     uint32* start,
+                                     uint32* end) {
   DCHECK(start && end);
   *start = static_cast<uint32>(offset);
   // Note that ranges are inclusive. So we need - 1.
@@ -103,8 +99,7 @@ Status MP4Muxer::Initialize() {
   }
 
   if (options().single_segment) {
-    segmenter_.reset(
-        new MP4VODSegmenter(options(), ftyp.Pass(), moov.Pass()));
+    segmenter_.reset(new MP4VODSegmenter(options(), ftyp.Pass(), moov.Pass()));
   } else {
     segmenter_.reset(
         new MP4GeneralSegmenter(options(), ftyp.Pass(), moov.Pass()));
@@ -255,8 +250,7 @@ bool MP4Muxer::GetInitRangeStartAndEnd(uint32* start, uint32* end) {
   DCHECK(start && end);
   size_t range_offset = 0;
   size_t range_size = 0;
-  const bool has_range =
-      segmenter_->GetInitRange(&range_offset, &range_size);
+  const bool has_range = segmenter_->GetInitRange(&range_offset, &range_size);
 
   if (!has_range)
     return false;
@@ -269,8 +263,7 @@ bool MP4Muxer::GetIndexRangeStartAndEnd(uint32* start, uint32* end) {
   DCHECK(start && end);
   size_t range_offset = 0;
   size_t range_size = 0;
-  const bool has_range =
-      segmenter_->GetIndexRange(&range_offset, &range_size);
+  const bool has_range = segmenter_->GetIndexRange(&range_offset, &range_size);
 
   if (!has_range)
     return false;
@@ -327,6 +320,13 @@ void MP4Muxer::FireOnMediaEndEvent() {
                                duration_seconds,
                                file_size,
                                IsEncryptionRequired());
+}
+
+uint64 MP4Muxer::IsoTimeNow() {
+  // Time in seconds from Jan. 1, 1904 to epoch time, i.e. Jan. 1, 1970.
+  const uint64 kIsomTimeOffset = 2082844800l;
+  return kIsomTimeOffset +
+         (clock() ? clock()->Now() : base::Time::Now()).ToDoubleT();
 }
 
 }  // namespace mp4

@@ -16,7 +16,8 @@ Muxer::Muxer(const MuxerOptions& options)
     : options_(options),
       encryptor_source_(NULL),
       clear_lead_in_seconds_(0),
-      muxer_listener_(NULL) {}
+      muxer_listener_(NULL),
+      clock_(NULL) {}
 
 Muxer::~Muxer() {}
 

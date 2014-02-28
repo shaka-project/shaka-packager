@@ -76,6 +76,9 @@ class MP4Muxer : public Muxer {
   void FireOnMediaStartEvent();
   void FireOnMediaEndEvent();
 
+  // Get time in seconds since midnight, Jan. 1, 1904, in UTC Time.
+  uint64 IsoTimeNow();
+
   scoped_ptr<MP4Segmenter> segmenter_;
 
   DISALLOW_COPY_AND_ASSIGN(MP4Muxer);

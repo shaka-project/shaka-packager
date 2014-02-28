@@ -16,6 +16,10 @@
 #include "media/base/muxer_options.h"
 #include "media/base/status.h"
 
+namespace base {
+class Clock;
+}
+
 namespace media {
 
 class EncryptorSource;
@@ -58,11 +62,21 @@ class Muxer {
 
   const std::vector<MediaStream*>& streams() const { return streams_; }
 
+  // Inject clock, mainly used for testing.
+  // The injected clock will be used to generate the creation time-stamp and
+  // modification time-stamp of the muxer output.
+  // If no clock is injected, the code uses base::Time::Now() to generate the
+  // time-stamps.
+  void set_clock(base::Clock* clock) {
+    clock_ = clock;
+  }
+
  protected:
   const MuxerOptions& options() const { return options_; }
   EncryptorSource* encryptor_source() { return encryptor_source_; }
   double clear_lead_in_seconds() const { return clear_lead_in_seconds_; }
   event::MuxerListener* muxer_listener() { return muxer_listener_; }
+  base::Clock* clock() { return clock_; }
 
  private:
   MuxerOptions options_;
@@ -71,6 +85,8 @@ class Muxer {
   double clear_lead_in_seconds_;
 
   event::MuxerListener* muxer_listener_;
+  // An external injected clock, can be NULL.
+  base::Clock* clock_;
 
   DISALLOW_COPY_AND_ASSIGN(Muxer);
 };
