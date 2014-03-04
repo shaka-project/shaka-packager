@@ -15,7 +15,7 @@ namespace dash_packager {
 class StaticMpdBuilderTest : public ::testing::Test {
  public:
   StaticMpdBuilderTest() : mpd_(MpdBuilder::kStatic) {}
-  ~StaticMpdBuilderTest() {}
+  virtual ~StaticMpdBuilderTest() {}
 
   void CheckMpd(const std::string& expected_output_file) {
     std::string mpd_doc;
@@ -73,8 +73,7 @@ TEST_F(StaticMpdBuilderTest, VideoAndAudio) {
 // MPD schema has strict ordering. AudioChannelConfiguration must appear before
 // ContentProtection.
 // TODO(rkuroiwa): Enable this when implemented.
-TEST_F(StaticMpdBuilderTest,
-       DISABLED_AudioChannelConfigurationWithContentProtection) {
+TEST_F(StaticMpdBuilderTest, AudioChannelConfigurationWithContentProtection) {
   MediaInfo encrypted_audio_media_info =
       GetTestMediaInfo(kFileNameEncytpedAudioMediaInfo);
 

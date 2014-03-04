@@ -315,6 +315,9 @@ bool Representation::Init() {
 
   if (!has_video_info && !has_audio_info) {
     // TODO(rkuroiwa): Allow text input.
+    // This is an error. Segment information can be in AdaptationSet, Period, or
+    // MPD but the interface does not provide a way to set them.
+    // See 5.3.9.1 ISO 23009-1:2012 for segment info.
     LOG(ERROR) << "Representation needs video or audio.";
     return false;
   }
@@ -355,22 +358,19 @@ bool Representation::AddNewSegment(uint64 start_time, uint64 duration) {
 // internal copy of this element. Then move most of the logic to
 // RepresentationXmlNode so that all the work is done in it so that this class
 // just becomes a thin layer.
+//
 // Uses info in |media_info_| and |content_protection_elements_| to create a
 // "Representation" node.
+// MPD schema has strict ordering. The following must be done in order.
+// AddVideoInfo() (possibly adds FramePacking elements), AddAudioInfo() (Adds
+// AudioChannelConfig elements), AddContentProtectionElements*(), and
+// AddVODOnlyInfo() (Adds segment info).
 xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
   base::AutoLock scoped_lock(lock_);
   DCHECK(!(HasVODOnlyFields(media_info_) && HasLiveOnlyFields(media_info_)));
   DCHECK(media_info_.has_bandwidth());
 
   RepresentationXmlNode representation;
-  if (!representation.AddContentProtectionElements(
-           content_protection_elements_)) {
-    return xml::ScopedXmlPtr<xmlNode>::type();
-  }
-
-  if (!representation.AddContentProtectionElementsFromMediaInfo(media_info_))
-    return xml::ScopedXmlPtr<xmlNode>::type();
-
   // Mandatory fields for Representation.
   representation.SetId(id_);
   representation.SetIntegerAttribute("bandwidth", media_info_.bandwidth());
@@ -392,11 +392,17 @@ xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
     return xml::ScopedXmlPtr<xmlNode>::type();
   }
 
+  if (!representation.AddContentProtectionElements(
+           content_protection_elements_)) {
+    return xml::ScopedXmlPtr<xmlNode>::type();
+  }
+  if (!representation.AddContentProtectionElementsFromMediaInfo(media_info_))
+    return xml::ScopedXmlPtr<xmlNode>::type();
+
   // TODO(rkuroiwa): Add TextInfo.
-  // TODO(rkuroiwa): Add ContentProtection info.
   if (HasVODOnlyFields(media_info_) &&
       !representation.AddVODOnlyInfo(media_info_)) {
-    LOG(ERROR) << "Failed to add VOD info.";
+    LOG(ERROR) << "Failed to add VOD segment info.";
     return xml::ScopedXmlPtr<xmlNode>::type();
   }
 
