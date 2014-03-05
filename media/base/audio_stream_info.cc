@@ -6,13 +6,48 @@
 
 #include "media/base/audio_stream_info.h"
 
-#include <sstream>
-
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "media/base/limits.h"
 
 namespace media {
+
+namespace {
+std::string AudioCodecToString(AudioCodec audio_codec) {
+  switch (audio_codec) {
+    case kCodecAAC:
+      return "AAC";
+    case kCodecMP3:
+      return "MP3";
+    case kCodecPCM:
+      return "PCM";
+    case kCodecVorbis:
+      return "Vorbis";
+    case kCodecFLAC:
+      return "FLAC";
+    case kCodecAMR_NB:
+      return "AMR_NB";
+    case kCodecAMR_WB:
+      return "AMR_WB";
+    case kCodecPCM_MULAW:
+      return "PCM_MULAW";
+    case kCodecGSM_MS:
+      return "GSM_MS";
+    case kCodecPCM_S16BE:
+      return "PCM_S16BE";
+    case kCodecPCM_S24BE:
+      return "PCM_S24BE";
+    case kCodecOpus:
+      return "Opus";
+    case kCodecEAC3:
+      return "EAC3";
+    default:
+      NOTIMPLEMENTED() << "Unknown Audio Codec: " << audio_codec;
+      return "UnknownAudioCodec";
+  }
+}
+}  // namespace
 
 AudioStreamInfo::AudioStreamInfo(int track_id,
                                  uint32 time_scale,
@@ -51,13 +86,14 @@ bool AudioStreamInfo::IsValidConfig() const {
 }
 
 std::string AudioStreamInfo::ToString() const {
-  std::ostringstream s;
-  s << "codec: " << codec_
-    << " sample_bits: " << static_cast<int>(sample_bits_)
-    << " num_channels: " << static_cast<int>(num_channels_)
-    << " sampling_frequency: " << sampling_frequency_
-    << " " << StreamInfo::ToString();
-  return s.str();
+  return base::StringPrintf(
+      "%s codec: %s\n sample_bits: %d\n num_channels: %d\n "
+      "sampling_frequency: %d\n",
+      StreamInfo::ToString().c_str(),
+      AudioCodecToString(codec_).c_str(),
+      sample_bits_,
+      num_channels_,
+      sampling_frequency_);
 }
 
 std::string AudioStreamInfo::GetCodecString(AudioCodec codec,

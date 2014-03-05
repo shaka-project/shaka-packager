@@ -123,8 +123,8 @@ bool MP4MediaParser::ParseBox(bool* err) {
     // before the head of the 'moof', so keeping this box around is sufficient.)
     return !(*err);
   } else {
-    LOG(WARNING) << "Skipping unrecognized top-level box: "
-                 << FourCCToString(reader->type());
+    DLOG(WARNING) << "Skipping unrecognized top-level box: "
+                  << FourCCToString(reader->type());
   }
 
   queue_.Pop(reader->size());

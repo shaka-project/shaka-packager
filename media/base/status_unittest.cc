@@ -6,8 +6,7 @@
 
 #include "media/base/status.h"
 
-#include <sstream>
-
+#include "base/strings/string_number_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -25,10 +24,7 @@ static void CheckStatus(const Status& s,
   } else {
     EXPECT_TRUE(!s.ok());
     EXPECT_THAT(s.ToString(), testing::HasSubstr(message));
-
-    std::ostringstream string_stream;
-    string_stream << code << ":" << message;
-    EXPECT_EQ(string_stream.str(), s.ToString());
+    EXPECT_THAT(s.ToString(), testing::HasSubstr(base::UintToString(code)));
   }
 }
 

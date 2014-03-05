@@ -296,9 +296,9 @@ TEST_P(PackagerTest, MP4MuxerMultipleSegmentsUnencrypted) {
   EXPECT_TRUE(ContentsEqual(kOutputVideo, kOutputVideo2));
 }
 
-INSTANTIATE_TEST_CASE_P(PackagerE2ETest,
+INSTANTIATE_TEST_CASE_P(PackagerEndToEnd,
                         PackagerTestBasic,
                         ValuesIn(kMediaFiles));
-INSTANTIATE_TEST_CASE_P(PackagerE2ETest, PackagerTest, ValuesIn(kMediaFiles));
+INSTANTIATE_TEST_CASE_P(PackagerEndToEnd, PackagerTest, ValuesIn(kMediaFiles));
 
 }  // namespace media

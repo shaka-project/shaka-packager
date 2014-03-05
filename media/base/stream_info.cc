@@ -7,6 +7,7 @@
 #include "media/base/stream_info.h"
 
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 
 namespace media {
 
@@ -34,15 +35,16 @@ StreamInfo::StreamInfo(StreamType stream_type,
 StreamInfo::~StreamInfo() {}
 
 std::string StreamInfo::ToString() const {
-  std::ostringstream s;
-  s << "type: " << (stream_type_ == kStreamAudio ? "Audio" : "Video")
-    << " track_id: " << track_id_
-    << " time_scale: " << time_scale_
-    << " duration: " << duration_
-    << " codec_string: " << codec_string_
-    << " language: " << language_
-    << " is_encrypted: " << is_encrypted_;
-  return s.str();
+  return base::StringPrintf(
+      "type: %s\n codec_string: %s\n time_scale: %d\n duration: %d "
+      "(%.1f seconds)\n language: %s\n is_encrypted: %s\n",
+      (stream_type_ == kStreamAudio ? "Audio" : "Video"),
+      codec_string_.c_str(),
+      time_scale_,
+      duration_,
+      static_cast<double>(duration_) / time_scale_,
+      language_.c_str(),
+      is_encrypted_ ? "true" : "false");
 }
 
 }  // namespace media

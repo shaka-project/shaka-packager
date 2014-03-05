@@ -148,8 +148,8 @@ bool TrackRunIterator::Init() {
       if (edits.size() > 1)
         DVLOG(1) << "Multi-entry edit box detected.";
 
-      LOG(INFO) << "Edit list with media time " << edits[0].media_time
-                << " ignored.";
+      DLOG(INFO) << "Edit list with media time " << edits[0].media_time
+                 << " ignored.";
     }
 
     DecodingTimeIterator decoding_time(

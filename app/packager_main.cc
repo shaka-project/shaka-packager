@@ -35,9 +35,9 @@ const char kUsage[] =
 namespace media {
 
 void DumpStreamInfo(const std::vector<MediaStream*>& streams) {
-  std::cout << "Found " << streams.size() << " stream(s)." << std::endl;
+  printf("Found %d stream(s).\n", streams.size());
   for (size_t i = 0; i < streams.size(); ++i)
-    std::cout << "Stream [" << i << "] " << streams[i]->ToString() << std::endl;
+    printf("Stream [%d] %s\n", i, streams[i]->info()->ToString().c_str());
 }
 
 // Create and initialize encryptor source.
@@ -47,15 +47,15 @@ scoped_ptr<EncryptorSource> CreateEncryptorSource() {
     std::string rsa_private_key;
     if (!File::ReadFileToString(FLAGS_signing_key_path.c_str(),
                                 &rsa_private_key)) {
-      LOG(ERROR) << "Failed to read from rsa_key_file.";
+      LOG(ERROR) << "Failed to read from '" << FLAGS_signing_key_path << "'.";
       return scoped_ptr<EncryptorSource>();
     }
 
     scoped_ptr<RequestSigner> signer(
         RsaRequestSigner::CreateSigner(FLAGS_signer, rsa_private_key));
     if (!signer) {
-      LOG(ERROR) << "Cannot create signer object from "
-                 << FLAGS_signing_key_path;
+      LOG(ERROR) << "Cannot create signer object from '"
+                 << FLAGS_signing_key_path << "'.";
       return scoped_ptr<EncryptorSource>();
     }
 
@@ -222,7 +222,7 @@ bool RunPackager(const std::string& input) {
     return false;
   }
 
-  std::cout << "Packaging completed successfully." << std::endl;
+  printf("Packaging completed successfully.\n");
   return true;
 }
 

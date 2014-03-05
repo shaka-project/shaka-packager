@@ -6,13 +6,36 @@
 
 #include "media/base/video_stream_info.h"
 
-#include <sstream>
-
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "media/base/limits.h"
 
 namespace media {
+
+namespace {
+std::string VideoCodecToString(VideoCodec video_codec) {
+  switch (video_codec) {
+    case kCodecH264:
+      return "H264";
+    case kCodecVC1:
+      return "VC1";
+    case kCodecMPEG2:
+      return "MPEG2";
+    case kCodecMPEG4:
+      return "MPEG4";
+    case kCodecTheora:
+      return "Theora";
+    case kCodecVP8:
+      return "VP8";
+    case kCodecVP9:
+      return "VP9";
+    default:
+      NOTIMPLEMENTED() << "Unknown Video Codec: " << video_codec;
+      return "UnknownVideoCodec";
+  }
+}
+}  // namespace
 
 VideoStreamInfo::VideoStreamInfo(int track_id,
                                  uint32 time_scale,
@@ -50,13 +73,13 @@ bool VideoStreamInfo::IsValidConfig() const {
 }
 
 std::string VideoStreamInfo::ToString() const {
-  std::ostringstream s;
-  s << "codec: " << codec_
-    << " width: " << width_
-    << " height: " << height_
-    << " nalu_length_size_: " << static_cast<int>(nalu_length_size_)
-    << " " << StreamInfo::ToString();
-  return s.str();
+  return base::StringPrintf(
+      "%s codec: %s\n width: %d\n height: %d\n nalu_length_size: %d\n",
+      StreamInfo::ToString().c_str(),
+      VideoCodecToString(codec_).c_str(),
+      width_,
+      height_,
+      nalu_length_size_);
 }
 
 std::string VideoStreamInfo::GetCodecString(VideoCodec codec,
@@ -74,7 +97,7 @@ std::string VideoStreamInfo::GetCodecString(VideoCodec codec,
              StringToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));
     }
     default:
-      NOTIMPLEMENTED() << "Codec: " << codec;
+      NOTIMPLEMENTED() << "Unknown Codec: " << codec;
       return "unknown";
   }
 }
