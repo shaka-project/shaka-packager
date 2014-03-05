@@ -423,7 +423,7 @@ bool RepresentationXmlNode::AddAudioChannelInfo(
 void RepresentationXmlNode::AddAudioSamplingRateInfo(
     const RepeatedAudioInfo& repeated_audio_info) {
   bool has_sampling_frequency = false;
-  uint32 min_sampling_frequency = UINT32_MAX;
+  uint32 min_sampling_frequency = kuint32max;
   uint32 max_sampling_frequency = 0;
 
   for (int i = 0; i < repeated_audio_info.size(); ++i) {
