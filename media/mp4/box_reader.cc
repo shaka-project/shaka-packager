@@ -35,6 +35,10 @@ BoxReader* BoxReader::ReadTopLevelBox(const uint8* buf,
   if (!reader->ReadHeader(err))
     return NULL;
 
+  // We don't require the complete box to be available for MDAT box.
+  if (reader->type() == FOURCC_MDAT)
+    return reader.release();
+
   if (!IsValidTopLevelBox(reader->type())) {
     *err = true;
     return NULL;

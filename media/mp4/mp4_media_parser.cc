@@ -108,6 +108,17 @@ bool MP4MediaParser::ParseBox(bool* err) {
   if (reader.get() == NULL)
     return false;
 
+  if (reader->type() == FOURCC_MDAT) {
+    // The code ends up here only if a MOOV box is not yet seen.
+    DCHECK(!moov_);
+
+    NOTIMPLEMENTED() << " Files with MDAT before MOOV is not supported yet.";
+    *err = true;
+    // TODO: Change to return a status so upper level can take appropriate
+    // actions based on the returned status.
+    return false;
+  }
+
   // Set up mdat offset for ReadMDATsUntil().
   mdat_tail_ = queue_.head() + reader->size();
 

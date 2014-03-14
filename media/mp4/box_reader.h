@@ -30,7 +30,10 @@ class BoxReader : public BufferReader {
   /// @param buf_size indicates the size of the input buffer.
   /// @param[out] err is set to true if there was a stream-level error when
   ///             reading the box.
-  /// @return New box reader if successful, NULL otherwise.
+  /// @return New box reader if successful, NULL otherwise. Note that this
+  ///         function may return NULL if an intact, complete box is not
+  ///         available in the buffer. For MDAT box only, a BoxReader object is
+  ///         returned as long as the box header is available.
   static BoxReader* ReadTopLevelBox(const uint8* buf,
                                     const int buf_size,
                                     bool* err);
