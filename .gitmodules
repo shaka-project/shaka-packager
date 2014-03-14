@@ -23,3 +23,6 @@
 [submodule "tools/gyp"]
 	path = tools/gyp
 	url = https://chromium.googlesource.com/external/gyp.git
+[submodule "tools/valgrind"]
+	path = tools/valgrind
+	url = https://chromium.googlesource.com/chromium/src/tools/valgrind.git

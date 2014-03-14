@@ -1,3 +1,0 @@
-# http://code.google.com/p/drmemory/issues/detail?id=842
-# Failing and then crashing.
-HttpNetworkTransationSpdy21Test.HttpsProxySpdy*

@@ -1,2 +1,0 @@
-# These tests load mstscax.dll, which generates a bunch of race reports, see http://crbug.com/177832
-RdpClientTest.*

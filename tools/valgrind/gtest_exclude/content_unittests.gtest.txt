@@ -1,3 +1,0 @@
-# Flaky, see http://crbug.com/227278
-WebContentsVideoCaptureDeviceTest.WebContentsDestroyed
-CompositingIOSurfaceTransformerTest.*

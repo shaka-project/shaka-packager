@@ -1,2 +1,0 @@
-# http://crbug.com/222606
-RenderTextTest.DisplayRectShowsCursorLTR

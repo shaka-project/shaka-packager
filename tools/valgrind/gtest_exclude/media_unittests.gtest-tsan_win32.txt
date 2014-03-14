@@ -1,3 +1,0 @@
-# Win TSan disturbs ffmpeg's output, causing hash comparison assertion to fail.
-# http://crbug.com/120396
-PipelineIntegrationTest.BasicPlaybackHashed
