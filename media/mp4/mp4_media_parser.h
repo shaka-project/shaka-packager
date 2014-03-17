@@ -89,13 +89,6 @@ class MP4MediaParser : public MediaParser {
   scoped_ptr<Movie> moov_;
   scoped_ptr<TrackRunIterator> runs_;
 
-  bool has_audio_;
-  bool has_video_;
-  uint32 audio_track_id_;
-  uint32 video_track_id_;
-  bool is_audio_track_encrypted_;
-  bool is_video_track_encrypted_;
-
   DISALLOW_COPY_AND_ASSIGN(MP4MediaParser);
 };
 

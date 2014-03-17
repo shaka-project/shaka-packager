@@ -12,6 +12,7 @@
 #include "app/widevine_encryption_flags.h"
 #include "base/file_util.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/demuxer.h"
 #include "media/base/fixed_encryptor_source.h"
@@ -130,16 +131,29 @@ MediaStream* FindFirstAudioStream(const std::vector<MediaStream*>& streams) {
 bool AddStreamToMuxer(const std::vector<MediaStream*>& streams, Muxer* muxer) {
   DCHECK(muxer);
 
-  if (!FLAGS_video && !FLAGS_audio) {
-    LOG(ERROR) << "Required: --audio or --video.";
-    return false;
+  MediaStream* stream = NULL;
+  if (FLAGS_stream == "video") {
+    stream = FindFirstVideoStream(streams);
+  } else if (FLAGS_stream == "audio") {
+    stream = FindFirstAudioStream(streams);
+  } else {
+    // Expect FLAGS_stream to be a zero based stream id.
+    size_t stream_id;
+    if (!base::StringToSizeT(FLAGS_stream, &stream_id) ||
+        stream_id >= streams.size()) {
+      LOG(ERROR) << "Invalid argument --stream=" << FLAGS_stream << "; "
+                 << "should be 'audio', 'video', or a number within [0, "
+                 << streams.size() - 1 << "].";
+      return false;
+    }
+    stream = streams[stream_id];
+    DCHECK(stream);
   }
 
-  MediaStream* stream = FLAGS_video ? FindFirstVideoStream(streams)
-                                    : FindFirstAudioStream(streams);
+  // This could occur only if FLAGS_stream=audio|video and the corresponding
+  // stream does not exist in the input.
   if (!stream) {
-    LOG(ERROR) << "Cannot find a " << (FLAGS_video ? "video" : "audio")
-               << " stream to mux.";
+    LOG(ERROR) << "No " << FLAGS_stream << " stream found in the input.";
     return false;
   }
   Status status = muxer->AddStream(stream);

@@ -30,7 +30,7 @@ struct TrackRunInfo {
   int64 start_dts;
   int64 sample_start_offset;
 
-  bool is_audio;
+  TrackType track_type;
   const AudioSampleEntry* audio_description;
   const VideoSampleEntry* video_description;
 
@@ -48,7 +48,9 @@ TrackRunInfo::TrackRunInfo()
       timescale(-1),
       start_dts(-1),
       sample_start_offset(-1),
-      is_audio(false),
+      track_type(kInvalid),
+      audio_description(NULL),
+      video_description(NULL),
       aux_info_start_offset(-1),
       aux_info_default_size(0),
       aux_info_total_size(0) {}
@@ -203,15 +205,15 @@ bool TrackRunIterator::Init() {
       RCHECK(desc_idx > 0);  // Descriptions are one-indexed in the file.
       desc_idx -= 1;
 
-      tri.is_audio = (stsd.type == kAudio);
-      if (tri.is_audio) {
+      tri.track_type = stsd.type;
+      if (tri.track_type == kAudio) {
         RCHECK(!stsd.audio_entries.empty());
         if (desc_idx > stsd.audio_entries.size())
           desc_idx = 0;
         tri.audio_description = &stsd.audio_entries[desc_idx];
         // We don't support encrypted non-fragmented mp4 for now.
         RCHECK(!tri.audio_description->sinf.info.track_encryption.is_encrypted);
-      } else {
+      } else if (tri.track_type == kVideo) {
         RCHECK(!stsd.video_entries.empty());
         if (desc_idx > stsd.video_entries.size())
           desc_idx = 0;
@@ -303,13 +305,13 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
       tri.start_dts = run_start_dts;
       tri.sample_start_offset = trun.data_offset;
 
-      tri.is_audio = (stsd.type == kAudio);
-      if (tri.is_audio) {
+      tri.track_type = stsd.type;
+      if (tri.track_type == kAudio) {
         RCHECK(!stsd.audio_entries.empty());
         if (desc_idx > stsd.audio_entries.size())
           desc_idx = 0;
         tri.audio_description = &stsd.audio_entries[desc_idx];
-      } else {
+      } else if (tri.track_type == kVideo) {
         RCHECK(!stsd.video_entries.empty());
         if (desc_idx > stsd.video_entries.size())
           desc_idx = 0;
@@ -469,7 +471,12 @@ int TrackRunIterator::aux_info_size() const {
 
 bool TrackRunIterator::is_audio() const {
   DCHECK(IsRunValid());
-  return run_itr_->is_audio;
+  return run_itr_->track_type == kAudio;
+}
+
+bool TrackRunIterator::is_video() const {
+  DCHECK(IsRunValid());
+  return run_itr_->track_type == kVideo;
 }
 
 const AudioSampleEntry& TrackRunIterator::audio_description() const {
@@ -479,7 +486,7 @@ const AudioSampleEntry& TrackRunIterator::audio_description() const {
 }
 
 const VideoSampleEntry& TrackRunIterator::video_description() const {
-  DCHECK(!is_audio());
+  DCHECK(is_video());
   DCHECK(run_itr_->video_description);
   return *run_itr_->video_description;
 }
@@ -517,14 +524,16 @@ bool TrackRunIterator::is_keyframe() const {
 const TrackEncryption& TrackRunIterator::track_encryption() const {
   if (is_audio())
     return audio_description().sinf.info.track_encryption;
+  DCHECK(is_video());
   return video_description().sinf.info.track_encryption;
 }
 
 scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
   size_t sample_idx = sample_itr_ - run_itr_->samples.begin();
-  DCHECK(sample_idx < cenc_info_.size());
+  DCHECK_LT(sample_idx, cenc_info_.size());
   const FrameCENCInfo& cenc_info = cenc_info_[sample_idx];
-  DCHECK(is_encrypted() && !AuxInfoNeedsToBeCached());
+  DCHECK(is_encrypted());
+  DCHECK(!AuxInfoNeedsToBeCached());
 
   const size_t total_size_of_subsamples = cenc_info.GetTotalSizeOfSubsamples();
   if (total_size_of_subsamples != 0 &&

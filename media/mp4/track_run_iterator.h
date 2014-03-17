@@ -78,13 +78,13 @@ class TrackRunIterator {
   int aux_info_size() const;
   bool is_encrypted() const;
   bool is_audio() const;
+  bool is_video() const;
   /// @}
 
-  /// @name Only one is valid, based on the value of is_audio().
-  /// @{
+  /// Only valid if is_audio() is true.
   const AudioSampleEntry& audio_description() const;
+  /// Only valid if is_video() is true.
   const VideoSampleEntry& video_description() const;
-  /// @}
 
   /// @name Properties of the current sample. Only valid if IsSampleValid().
   /// @{

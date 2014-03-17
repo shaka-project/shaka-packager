@@ -11,8 +11,11 @@
 
 #include <gflags/gflags.h>
 
-DEFINE_bool(audio, false, "Add the first audio stream to muxer.");
-DEFINE_bool(video, false, "Add the first video stream to muxer.");
+DEFINE_string(stream,
+              "video",
+              "Add the specified stream to muxer. Allowed values, 'video' - "
+              "the first video stream; or 'audio' - the first audio stream; or "
+              "zero based stream id.");
 DEFINE_double(clear_lead,
               10.0,
               "Clear lead in seconds if encryption is enabled.");

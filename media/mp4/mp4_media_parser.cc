@@ -29,15 +29,7 @@ namespace media {
 namespace mp4 {
 
 MP4MediaParser::MP4MediaParser()
-    : state_(kWaitingForInit),
-      moof_head_(0),
-      mdat_tail_(0),
-      has_audio_(false),
-      has_video_(false),
-      audio_track_id_(0),
-      video_track_id_(0),
-      is_audio_track_encrypted_(false),
-      is_video_track_encrypted_(false) {}
+    : state_(kWaitingForInit), moof_head_(0), mdat_tail_(0) {}
 
 MP4MediaParser::~MP4MediaParser() {}
 
@@ -147,9 +139,6 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
   RCHECK(moov_->Parse(reader));
   runs_.reset();
 
-  has_audio_ = false;
-  has_video_ = false;
-
   std::vector<scoped_refptr<StreamInfo> > streams;
 
   for (std::vector<Track>::const_iterator track = moov_->tracks.begin();
@@ -200,8 +189,6 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
     desc_idx -= 1;  // BMFF descriptor index is one-based
 
     if (track->media.handler.type == kAudio) {
-      RCHECK(!has_audio_);
-
       RCHECK(!samp_descr.audio_entries.empty());
 
       // It is not uncommon to find otherwise-valid files with incorrect sample
@@ -249,8 +236,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         return false;
       }
 
-      is_audio_track_encrypted_ = entry.sinf.info.track_encryption.is_encrypted;
-      DVLOG(1) << "is_audio_track_encrypted_: " << is_audio_track_encrypted_;
+      bool is_encrypted = entry.sinf.info.track_encryption.is_encrypted;
+      DVLOG(1) << "is_audio_track_encrypted_: " << is_encrypted;
       streams.push_back(new AudioStreamInfo(
           track->header.track_id,
           timescale,
@@ -263,14 +250,10 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           sampling_frequency,
           extra_data.size() ? &extra_data[0] : NULL,
           extra_data.size(),
-          is_audio_track_encrypted_));
-      has_audio_ = true;
-      audio_track_id_ = track->header.track_id;
+          is_encrypted));
     }
 
     if (track->media.handler.type == kVideo) {
-      RCHECK(!has_video_);
-
       RCHECK(!samp_descr.video_entries.empty());
       if (desc_idx >= samp_descr.video_entries.size())
         desc_idx = 0;
@@ -290,8 +273,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                                           entry.avcc.profile_compatibility,
                                           entry.avcc.avc_level);
 
-      is_video_track_encrypted_ = entry.sinf.info.track_encryption.is_encrypted;
-      DVLOG(1) << "is_video_track_encrypted_: " << is_video_track_encrypted_;
+      bool is_encrypted = entry.sinf.info.track_encryption.is_encrypted;
+      DVLOG(1) << "is_video_track_encrypted_: " << is_encrypted;
       streams.push_back(new VideoStreamInfo(track->header.track_id,
                                             timescale,
                                             duration,
@@ -303,9 +286,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                                             entry.avcc.length_size,
                                             &entry.avcc.data[0],
                                             entry.avcc.data.size(),
-                                            is_video_track_encrypted_));
-      has_video_ = true;
-      video_track_id_ = track->header.track_id;
+                                            is_encrypted));
     }
   }
 
@@ -372,11 +353,8 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
   if (!buf_size)
     return false;
 
-  bool audio = has_audio_ && audio_track_id_ == runs_->track_id();
-  bool video = has_video_ && video_track_id_ == runs_->track_id();
-
-  // Skip this entire track if it's not one we're interested in
-  if (!audio && !video)
+  // Skip this entire track if it is not audio nor video.
+  if (!runs_->is_audio() && !runs_->is_video())
     runs_->AdvanceRun();
 
   // Attempt to cache the auxiliary information first. Aux info is usually
@@ -431,7 +409,7 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
   stream_sample->set_pts(runs_->cts());
   stream_sample->set_duration(runs_->duration());
 
-  DVLOG(3) << "Pushing frame: aud=" << audio
+  DVLOG(3) << "Pushing frame: "
            << ", key=" << runs_->is_keyframe()
            << ", dur=" << runs_->duration()
            << ", dts=" << runs_->dts()
