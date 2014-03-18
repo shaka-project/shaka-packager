@@ -4,8 +4,23 @@
 .pydevproject
 .repo
 .settings
+/base/
+/build/
 /docs/
 /out/
-# Ignore llvm-build. This is only when you are using clang. Address Sanitizer
-# requires clang.
+/testing/
+/third_party/gflags/
+/third_party/gold/
+/third_party/happyhttp/src/
+/third_party/icu/
+/third_party/libevent/
+/third_party/libxml/
 /third_party/llvm-build/
+/third_party/modp_b64/
+/third_party/openssl/
+/third_party/protobuf/
+/third_party/zlib/
+/tools/clang/
+/tools/gyp/
+/tools/protoc_wrapper/
+/tools/valgrind/

@@ -1,7 +1,7 @@
-diff --git a/third_party/happyhttp/src/test.cpp b/third_party/happyhttp/src/test.cpp
+diff --git a/src/third_party/happyhttp/src/test.cpp b/src/third_party/happyhttp/src/test.cpp
 index f3d39d1..3ce74b4 100644
---- a/third_party/happyhttp/src/test.cpp
-+++ b/third_party/happyhttp/src/test.cpp
+--- a/src/third_party/happyhttp/src/test.cpp
++++ b/src/third_party/happyhttp/src/test.cpp
 @@ -31,7 +31,7 @@ void Test1()
  {
  	puts("-----------------Test1------------------------" );

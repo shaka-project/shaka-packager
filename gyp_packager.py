@@ -54,10 +54,7 @@ if __name__ == '__main__':
     args.append(os.path.join(src_dir, 'packager.gyp'))
 
   # Always include common.gypi.
-  args.extend(['-I' + os.path.join(src_dir, 'build/common.gypi')])
-
-  # Gyp should run from current directory.
-  args.append('--depth=.')
+  args.extend(['-I' + os.path.join(src_dir, 'build', 'common.gypi')])
 
   # Set these default GYP_DEFINES if user does not set the value explicitly.
   _DEFAULT_DEFINES = {"test_isolation_mode" : "noop", "use_glib" : 0,

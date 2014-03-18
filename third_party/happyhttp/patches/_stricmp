@@ -1,7 +1,7 @@
-diff --git a/third_party/happyhttp/src/happyhttp.cpp b/third_party/happyhttp/src/happyhttp.cpp
+diff --git a/src/third_party/happyhttp/src/happyhttp.cpp b/src/third_party/happyhttp/src/happyhttp.cpp
 index 9e56673..8c8548f 100644
---- a/third_party/happyhttp/src/happyhttp.cpp
-+++ b/third_party/happyhttp/src/happyhttp.cpp
+--- a/src/third_party/happyhttp/src/happyhttp.cpp
++++ b/src/third_party/happyhttp/src/happyhttp.cpp
 @@ -49,7 +49,7 @@
  #include <string>
  #include <algorithm>
