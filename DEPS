@@ -28,6 +28,22 @@ deps = {
   "src/build":
     Var("chromium_svn") + "/src/build@" + Var("chromium_rev"),
 
+  # Required by base/metrics/stats_table.cc.
+  "src/ipc":
+    File(Var("chromium_svn") + "/src/ipc/ipc_descriptors.h@" + Var("chromium_rev")),
+
+  # Required by base isolate dependencies, although it is compiled off.
+  # Dependency chain:
+  # base/base.gyp <= base/base_unittests.isolate
+  #               <= base/base.isolate
+  #               <= build/linux/system.isolate
+  #               <= net/third_party/nss/ssl.isolate
+  #               <= net/third_party/nss/ssl_base.isolate
+  # We don't need to pull in the whole directory, but it doesn't seem possible
+  # to just pull in the two *.isolate files (ssl.isolate and ssl_base.isolate).
+  "src/net/third_party/nss":
+    Var("chromium_svn") + "/src/net/third_party/nss@" + Var("chromium_rev"),
+
   "src/testing":
     Var("chromium_svn") + "/src/testing@" + Var("chromium_rev"),
 
