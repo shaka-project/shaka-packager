@@ -1,3 +1,0 @@
-# Failing after Lucid migration. http://crbug.com/82715
-ProcessUtilTest.GetTerminationStatusExit
-SharedMemoryProcessTest.Tasks

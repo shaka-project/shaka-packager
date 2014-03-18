@@ -1,20 +1,13 @@
 Name: happyhttp
-URL: http://scumways.com/happyhttp/happyhttp.html
-Version: 0.1 SHA 7306b1606a09063ac38c264afe59f0ad0b441750
+URL: https://github.com/Zintinio/HappyHTTP
+Version: 0.1
 License: zlib/libpng
 License File: http://opensource.org/licenses/zlib-license.php
 
 Description:
-The src/ directory contains a snapshot of the happyhttp library
-with the patches in the patches/ directories applied.
-See the files in that directory for discussion of their effects.
+HappyHTTP is a simple C++ library for issuing HTTP requests and processing
+responses.
 
 Modifications:
 - Fix _stricmp undefined problem in linux. Use strcasecmp instead.
 - "www.scumways.com" should be "scumways.com" in test.cpp.
-
-To import a new snapshot of libxml:
-- Git clone from https://github.com/Zintinio/HappyHTTP.
-- Copy the files into src/ directory
-- Apply the patches in patches/ and fix any problems.
-- Update this README to reflect the new version number.
