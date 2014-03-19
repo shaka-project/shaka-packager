@@ -161,15 +161,12 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           Rescale(moov_->header.duration, moov_->header.timescale, timescale);
     }
 
-    // TODO(strobe): Only the first audio and video track present in a file are
-    // used. (Track selection is better accomplished via Source IDs, though, so
-    // adding support for track selection within a stream is low-priority.)
     const SampleDescription& samp_descr =
         track->media.information.sample_table.description;
 
-    // TODO(strobe): When codec reconfigurations are supported, detect and send
-    // a codec reconfiguration for fragments using a sample description index
-    // different from the previous one
+    // TODO: When codec reconfigurations are supported, detect and send a codec
+    // reconfiguration for fragments using a sample description index different
+    // from the previous one.
     size_t desc_idx = 0;
 
     // Read sample description index from mvex if it exists otherwise read
@@ -192,8 +189,6 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
     desc_idx -= 1;  // BMFF descriptor index is one-based
 
     if (track->media.handler.type == kAudio) {
-      // TODO(kqyang): do we need to support multiple audio or video streams in
-      // a single file?
       RCHECK(!has_audio_);
 
       RCHECK(!samp_descr.audio_entries.empty());
@@ -263,8 +258,6 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
     }
 
     if (track->media.handler.type == kVideo) {
-      // TODO(kqyang): do we need to support multiple audio or video streams in
-      // a single file?
       RCHECK(!has_video_);
 
       RCHECK(!samp_descr.video_entries.empty());
@@ -326,9 +319,6 @@ bool MP4MediaParser::ParseMoof(BoxReader* reader) {
 
 void MP4MediaParser::EmitNeedKeyIfNecessary(
     const std::vector<ProtectionSystemSpecificHeader>& headers) {
-  // TODO(strobe): ensure that the value of init_data (all PSSH headers
-  // concatenated in arbitrary order) matches the EME spec.
-  // See https://www.w3.org/Bugs/Public/show_bug.cgi?id=17673.
   if (headers.empty())
     return;
 

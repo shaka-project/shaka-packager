@@ -87,7 +87,7 @@ Status MP4Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   if (normalize_presentation_timestamp_) {
     // Normalize PTS to start from 0. Some players do not like non-zero
     // presentation starting time.
-    // TODO(kqyang): Do we need to add an EditList?
+    // TODO: Do we need to add an EditList?
     if (presentation_start_time_ == kInvalidTime) {
       presentation_start_time_ = pts;
       pts = 0;
@@ -188,7 +188,7 @@ void MP4Fragmenter::FinalizeFragment() {
 }
 
 void MP4Fragmenter::GenerateSegmentReference(SegmentReference* reference) {
-  // TODO(kqyang): support daisy chain??
+  // TODO: Support daisy chain?
   reference->reference_type = false;
   reference->subsegment_duration = fragment_duration_;
   reference->starts_with_sap = StartsWithSAP();

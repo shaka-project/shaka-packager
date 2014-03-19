@@ -1449,7 +1449,7 @@ bool TrackFragmentHeader::ReadWrite(BoxBuffer* buffer) {
   RCHECK(FullBox::ReadWrite(buffer) &&
          buffer->ReadWriteUInt32(&track_id));
 
-  // TODO(kqyang): we should support base-data-offset-present.
+  // TODO: We should support base-data-offset-present.
   // Media Source specific: reject tracks that set 'base-data-offset-present'.
   // Although the Media Source requires that 'default-base-is-moof' (14496-12
   // Amendment 2) be set, we omit this check as many otherwise-valid files in
@@ -1514,13 +1514,12 @@ bool TrackFragmentRun::ReadWrite(BoxBuffer* buffer) {
   if (data_offset_present) {
     RCHECK(buffer->ReadWriteUInt32(&data_offset));
   } else {
-    // TODO(kqyang): this is incorrect. If the data-offset is not present,
-    // then the data for this run starts immediately after the data of the
-    // previous run, or at the base-data-offset defined by the track fragment
-    // header if this is the first run in a track fragment, If the data-offset
-    // is present, it is relative to the base-data-offset established in the
-    // track fragment header.
-    // data_offset = 0;
+    // TODO: If the data-offset is not present, then the data for this run
+    // starts immediately after the data of the previous run, or at the
+    // base-data-offset defined by the track fragment header if this is the
+    // first run in a track fragment. If the data-offset is present, it is
+    // relative to the base-data-offset established in the track fragment
+    // header.
     NOTIMPLEMENTED();
   }
 

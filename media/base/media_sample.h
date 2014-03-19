@@ -43,7 +43,7 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   //
   // Calling any method other than end_of_stream() on the resulting buffer
   // is disallowed.
-  // TODO(kqyang): do we need it?
+  // TODO: Do we need it?
   static scoped_refptr<MediaSample> CreateEOSBuffer();
 
   int64 dts() const {

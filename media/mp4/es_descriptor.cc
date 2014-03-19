@@ -131,7 +131,7 @@ bool ESDescriptor::ParseDecoderSpecificInfo(BitReader* reader) {
 }
 
 void ESDescriptor::Write(BufferWriter* writer) const {
-  // TODO(kqyang): Consider writing Descriptor classes.
+  // TODO: Consider writing Descriptor classes.
   // ElementaryStreamDescriptor, DecoderConfigDescriptor, SLConfigDescriptor,
   // DecoderSpecificInfoDescriptor.
   DCHECK(writer);

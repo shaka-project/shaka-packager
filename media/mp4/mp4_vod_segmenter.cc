@@ -124,7 +124,7 @@ Status MP4VODSegmenter::FinalizeSegment() {
       refs[0].sap_delta_time + refs[0].earliest_presentation_time;
   for (uint32 i = 1; i < sidx()->references.size(); ++i) {
     vod_ref.referenced_size += refs[i].referenced_size;
-    // TODO(kqyang): should we calculate subsegment duration by subtracting
+    // TODO: Should we calculate subsegment duration by subtracting
     // earliest_presentation time instead?
     vod_ref.subsegment_duration += refs[i].subsegment_duration;
     vod_ref.earliest_presentation_time = std::min(

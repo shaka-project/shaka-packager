@@ -57,7 +57,7 @@ class MediaParser {
   // Called when there is new data to parse.
   //
   // Returns true if the parse succeeds.
-  // TODO(kqyang): change to return Status.
+  // TODO: Change to return Status.
   virtual bool Parse(const uint8* buf, int size) = 0;
 
  private:

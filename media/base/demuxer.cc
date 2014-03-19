@@ -70,7 +70,7 @@ Status Demuxer::Initialize() {
     return Status(error::PARSER_FAILURE,
                   "Cannot parse media file " + file_name_);
 
-  // TODO(kqyang): Does not look clean. Consider refactoring later.
+  // TODO: Does not look clean. Consider refactoring later.
   Status status;
   while (!init_event_received_) {
     if (!(status = Parse()).ok())

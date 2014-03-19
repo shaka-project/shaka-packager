@@ -51,7 +51,7 @@ TEST_F(StaticMpdBuilderTest, VideoAndAudio) {
   MediaInfo audio_media_info = GetTestMediaInfo(kFileNameAudioMediaInfo1);
 
   // The order matters here to check against expected output.
-  // TODO(rkuroiwa): Investigate if I can deal with IDs and order elements
+  // TODO: Investigate if I can deal with IDs and order elements
   // deterministically.
   AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet();
   ASSERT_TRUE(video_adaptation_set);
@@ -72,7 +72,6 @@ TEST_F(StaticMpdBuilderTest, VideoAndAudio) {
 
 // MPD schema has strict ordering. AudioChannelConfiguration must appear before
 // ContentProtection.
-// TODO(rkuroiwa): Enable this when implemented.
 TEST_F(StaticMpdBuilderTest, AudioChannelConfigurationWithContentProtection) {
   MediaInfo encrypted_audio_media_info =
       GetTestMediaInfo(kFileNameEncytpedAudioMediaInfo);

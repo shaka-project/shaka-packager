@@ -26,7 +26,7 @@
 
 namespace media {
 
-// TODO(scherkus): Move the contents of this file elsewhere.
+// TODO: Move the contents of this file elsewhere.
 
 // Indicates an invalid or missing timestamp.
 extern inline base::TimeDelta kNoTimestamp() {

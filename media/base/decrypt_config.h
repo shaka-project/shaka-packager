@@ -60,8 +60,7 @@ class DecryptConfig {
   // Initialization vector.
   const std::string iv_;
 
-  // TODO(fgalligan): Remove |data_offset_| if there is no plan to use it in
-  // the future.
+  // TODO: Remove |data_offset_| if there is no plan to use it in the future.
   // Amount of data to be discarded before applying subsample information.
   const int data_offset_;
 

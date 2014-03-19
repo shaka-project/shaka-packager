@@ -397,7 +397,6 @@ bool TrackRunIterator::AuxInfoNeedsToBeCached() {
   return is_encrypted() && aux_info_size() > 0 && cenc_info_.size() == 0;
 }
 
-// TODO(kqyang): Revisit later. We might not need to cache cenc info.
 // This implementation currently only caches CENC auxiliary info.
 bool TrackRunIterator::CacheAuxInfo(const uint8* buf, int buf_size) {
   RCHECK(AuxInfoNeedsToBeCached() && buf_size >= aux_info_size());

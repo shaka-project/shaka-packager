@@ -23,9 +23,8 @@
 #include "mpd/base/mpd_utils.h"
 #include "mpd/base/xml/scoped_xml_ptr.h"
 
-// TODO(rkuroiwa): For classes with |id_|, consider removing the field and let
-// the MPD (XML) generation functions take care of assigning an ID to each
-// element.
+// TODO: For classes with |id_|, consider removing the field and let the MPD
+// (XML) generation functions take care of assigning an ID to each element.
 namespace dash_packager {
 
 class AdaptationSet;
@@ -52,8 +51,8 @@ class MpdBuilder {
   // The returned pointer is owned by this object.
   AdaptationSet* AddAdaptationSet();
 
-  // TODO(rkuroiwa): Once File interface is defined, make this method take a
-  // pointer to a File.
+  // TODO: Once File interface is defined, make this method take a pointer to a
+  // File.
   // This will write to stdout until File interface is defined.
   bool WriteMpd();
   bool ToString(std::string* output);
@@ -77,7 +76,7 @@ class MpdBuilder {
 
   std::list<std::string> base_urls_;
 
-  // TODO(rkuroiwa): I don't like locks.
+  // TODO: Investigate alternatives to locks.
   base::Lock lock_;
   base::AtomicSequenceNumber adaptation_set_counter_;
   base::AtomicSequenceNumber representation_counter_;

@@ -138,7 +138,6 @@ uint32 AACAudioSpecificConfig::GetOutputSamplesPerSecond(bool sbr_in_mimetype)
   // The following code is written according to ISO 14496 Part 3 Table 1.11 and
   // Table 1.22. (Table 1.11 refers to the capping to 48000, Table 1.22 refers
   // to SBR doubling the AAC sample rate.)
-  // TODO(acolwell) : Extend sample rate cap to 96kHz for Level 5 content.
   DCHECK_GT(frequency_, 0);
   return std::min(2 * frequency_, 48000u);
 }

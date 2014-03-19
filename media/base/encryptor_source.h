@@ -30,7 +30,7 @@ class EncryptorSource {
   virtual Status Initialize() = 0;
 
   // Refresh the encryptor. NOP except for key rotation encryptor source.
-  // TODO(kqyang): Do we need to pass in duration or fragment number?
+  // TODO: Do we need to pass in duration or fragment number?
   virtual void RefreshEncryptor() {}
 
   // Create an encryptor from this encryptor source. The encryptor will be

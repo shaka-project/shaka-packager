@@ -113,7 +113,7 @@ void AddVideoInfo(const VideoStreamInfo* video_stream_info,
   if (!extra_data.empty()) {
     video_info->set_decoder_config(&extra_data[0], extra_data.size());
   }
-  // TODO(rkuroiwa): Get frame duration.
+  // TODO: Get frame duration.
 }
 
 void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
@@ -182,8 +182,8 @@ bool GenerateMediaInfo(const MuxerOptions& muxer_options,
                        MediaInfo* media_info) {
   DCHECK(media_info);
   if (file_size == 0) {
-    // TODO(rkuroiwa): bandwidth is a required field for MPD. But without the
-    // file size, AFAIK there's not much I can do. Fail silently?
+    // TODO: |bandwidth| is a required field for MPD. But without the file size,
+    // AFAIK there's not much I can do. Fail silently?
     LOG(ERROR) << "File size not specified.";
     return false;
   }

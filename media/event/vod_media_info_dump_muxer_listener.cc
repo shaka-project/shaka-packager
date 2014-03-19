@@ -125,7 +125,7 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(
   }
 
   if (is_encrypted) {
-    // TODO(rkuroiwa): Use the return value to set error status.
+    // TODO: Use the return value to set error status.
     AddContentProtectionElements(container_type_, scheme_id_uri_, &media_info);
   }
 

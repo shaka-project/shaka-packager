@@ -15,10 +15,9 @@ namespace xml {
 
 namespace {
 
-// TODO(rkuroiwa): Add XmlStringCompare() that does not care about the
-// prettiness of the string representation of the XML. We currently use
-// CollapseWhitespaceASCII() with carefully handcrafted expectations so that we
-// can compare the result.
+// TODO: Add XmlStringCompare() that does not care about the prettiness of the
+// string representation of the XML. We currently use CollapseWhitespaceASCII()
+// with carefully handcrafted expectations so that we can compare the result.
 
 // Template so that it works for ContentProtectionXml and
 // ContentProtectionXml::Element.

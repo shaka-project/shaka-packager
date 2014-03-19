@@ -20,7 +20,7 @@ namespace dash_packager {
 // container is for an AdaptationSet.
 class SimpleVodMpdNotifier : public MpdNotifier {
  public:
-  // TODO(rkuroiwa): Take File pointer for MPD output.
+  // TODO: Take File pointer for MPD output.
   // MpdBuilder must be initialized before passing a pointer to this object.
   // The ownership of |mpd_builder| does not transfer to this object and it must
   // be non-NULL.

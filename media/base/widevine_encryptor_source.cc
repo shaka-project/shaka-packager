@@ -15,8 +15,8 @@
 #include "media/base/http_fetcher.h"
 #include "media/base/request_signer.h"
 
-// TODO(kqyang): Move media/mp4/rcheck.h to media/base/.
-//               Remove this definition and use RCHECK in rcheck.h instead.
+// TODO: Move media/mp4/rcheck.h to media/base/. Remove this definition and use
+// RCHECK in rcheck.h instead.
 #define RCHECK(x)                                       \
   do {                                                  \
     if (!(x)) {                                         \
@@ -70,7 +70,7 @@ bool GetPssh(const base::DictionaryValue& track_dict,
              std::vector<uint8>* pssh) {
   DCHECK(pssh);
 
-  // TODO(kqyang): Add support for multiple pssh.
+  // TODO: Add support for multiple pssh.
   const base::ListValue* pssh_list;
   RCHECK(track_dict.GetList("pssh", &pssh_list));
   // Invariant check. We don't want to crash in release mode if possible.
@@ -186,7 +186,7 @@ void WidevineEncryptorSource::FillRequest(const std::string& content_id,
 
   base::DictionaryValue request_dict;
   request_dict.SetString("content_id", content_id_base64_string);
-  // TODO(kqyang): Do we care about policy?
+  // TODO: Determine the need for policy.
   request_dict.SetString("policy", "");
 
   // Build tracks.

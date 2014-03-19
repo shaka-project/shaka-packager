@@ -80,7 +80,6 @@ TEST(MpdWriterTest, VideoAudioMediaInfo) {
       kFileNameExpectedMpdOutputAudio1AndVideo1));
 }
 
-// TODO(rkuroiwa): Enable this when implemented.
 TEST(MpdWriterTest, EncryptedAudioMediaInfo) {
   MpdWriter mpd_writer;
   base::FilePath encrypted_audio_media_info =

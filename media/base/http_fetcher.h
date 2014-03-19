@@ -38,7 +38,7 @@ class HttpFetcher {
 // A simple HttpFetcher implementation using happyhttp.
 class SimpleHttpFetcher : public HttpFetcher {
  public:
-  // TODO(kqyang): Add timeout support.
+  // TODO: Add timeout support.
   SimpleHttpFetcher();
   virtual ~SimpleHttpFetcher();
 
