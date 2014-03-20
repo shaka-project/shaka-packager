@@ -276,7 +276,7 @@ TEST_P(PackagerTest, MP4MuxerMultipleSegmentsUnencrypted) {
       break;
 
     std::string segment_content;
-    ASSERT_TRUE(file_util::ReadFileToString(segment_path, &segment_content));
+    ASSERT_TRUE(base::ReadFileToString(segment_path, &segment_content));
     int bytes_written = file_util::AppendToFile(
         output_path, segment_content.data(), segment_content.size());
     ASSERT_EQ(segment_content.size(), bytes_written);
