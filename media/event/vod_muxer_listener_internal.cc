@@ -88,7 +88,7 @@ void SetMediaInfoCommonInfo(float duration_seconds,
                             MuxerListener::ContainerType container_type,
                             MediaInfo* media_info) {
   DCHECK(media_info);
-  DCHECK_GT(file_size, 0);
+  DCHECK_GT(file_size, 0u);
   DCHECK_GT(duration_seconds, 0.0f);
 
   media_info->set_media_duration_seconds(duration_seconds);

@@ -109,7 +109,7 @@ void AesCtrEncryptor::UpdateIv() {
     counter_ = iv_;
     counter_.resize(AES_BLOCK_SIZE, 0);
   } else {
-    DCHECK_EQ(16, iv_.size());
+    DCHECK_EQ(16u, iv_.size());
     // Even though the block counter portion of the counter (bytes 8 to 15) is
     // treated as a 64-bit number, it is recommended that the initialization
     // vector is treated as a 128-bit number when calculating the next

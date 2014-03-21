@@ -15,8 +15,8 @@
 
 namespace media {
 
-class MuxerOptions;
 class StreamInfo;
+struct MuxerOptions;
 
 namespace event {
 

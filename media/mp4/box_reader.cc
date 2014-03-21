@@ -14,7 +14,7 @@ namespace mp4 {
 BoxReader::BoxReader(const uint8* buf, size_t size)
     : BufferReader(buf, size), type_(FOURCC_NULL), scanned_(false) {
   DCHECK(buf);
-  DCHECK_LT(0, size);
+  DCHECK_LT(0u, size);
 }
 
 BoxReader::~BoxReader() {
@@ -29,7 +29,7 @@ BoxReader::~BoxReader() {
 
 // static
 BoxReader* BoxReader::ReadTopLevelBox(const uint8* buf,
-                                      const int buf_size,
+                                      const size_t buf_size,
                                       bool* err) {
   scoped_ptr<BoxReader> reader(new BoxReader(buf, buf_size));
   if (!reader->ReadHeader(err))
@@ -52,7 +52,7 @@ BoxReader* BoxReader::ReadTopLevelBox(const uint8* buf,
 
 // static
 bool BoxReader::StartTopLevelBox(const uint8* buf,
-                                 const int buf_size,
+                                 const size_t buf_size,
                                  FourCC* type,
                                  int* box_size,
                                  bool* err) {

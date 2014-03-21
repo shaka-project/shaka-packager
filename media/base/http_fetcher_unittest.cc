@@ -12,7 +12,6 @@
 #include "media/base/status_test_util.h"
 
 namespace {
-const int kHttpOK = 200;
 const int kHttpNotFound = 404;
 
 const char kTestUrl[] = "http://packager-test.appspot.com/http_test";

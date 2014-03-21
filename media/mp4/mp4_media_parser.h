@@ -20,10 +20,10 @@ namespace media {
 
 namespace mp4 {
 
-struct Movie;
 class BoxReader;
-class ProtectionSystemSpecificHeader;
 class TrackRunIterator;
+struct Movie;
+struct ProtectionSystemSpecificHeader;
 
 class MP4MediaParser : public MediaParser {
  public:

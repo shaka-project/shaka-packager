@@ -39,7 +39,7 @@ class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
   virtual std::string ToString() const;
 
   StreamType stream_type() const { return stream_type_; }
-  int track_id() const { return track_id_; }
+  uint32 track_id() const { return track_id_; }
   uint32 time_scale() const { return time_scale_; }
   uint64 duration() const { return duration_; }
   const std::string& codec_string() const { return codec_string_; }
@@ -58,7 +58,7 @@ class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
  private:
   // Whether the stream is Audio or Video.
   StreamType stream_type_;
-  int track_id_;
+  uint32 track_id_;
   // The actual time is calculated as time / time_scale_ in seconds.
   uint32 time_scale_;
   // Duration base on time_scale.

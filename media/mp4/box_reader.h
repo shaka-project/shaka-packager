@@ -17,7 +17,7 @@
 namespace media {
 namespace mp4 {
 
-class Box;
+struct Box;
 
 /// Class for reading MP4 boxes.
 class BoxReader : public BufferReader {
@@ -35,7 +35,7 @@ class BoxReader : public BufferReader {
   ///         available in the buffer. For MDAT box only, a BoxReader object is
   ///         returned as long as the box header is available.
   static BoxReader* ReadTopLevelBox(const uint8* buf,
-                                    const int buf_size,
+                                    const size_t buf_size,
                                     bool* err);
 
   /// Read the box header from the current buffer.
@@ -48,7 +48,7 @@ class BoxReader : public BufferReader {
   /// @return true if there is enough data to read the header and the header is
   ///         sane, which does not imply that the entire box is in the buffer.
   static bool StartTopLevelBox(const uint8* buf,
-                               const int buf_size,
+                               const size_t buf_size,
                                FourCC* type,
                                int* box_size,
                                bool* err) WARN_UNUSED_RESULT;

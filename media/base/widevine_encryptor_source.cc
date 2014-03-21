@@ -72,7 +72,7 @@ bool GetPssh(const base::DictionaryValue& track_dict,
   RCHECK(track_dict.GetList("pssh", &pssh_list));
   // Invariant check. We don't want to crash in release mode if possible.
   // The following code handles it gracefully if GetSize() does not return 1.
-  DCHECK_EQ(1, pssh_list->GetSize());
+  DCHECK_EQ(1u, pssh_list->GetSize());
 
   const base::DictionaryValue* pssh_dict;
   RCHECK(pssh_list->GetDictionary(0, &pssh_dict));

@@ -31,10 +31,10 @@ MP4Segmenter::MP4Segmenter(const MuxerOptions& options,
                            scoped_ptr<FileType> ftyp,
                            scoped_ptr<Movie> moov)
     : options_(options),
-      fragment_buffer_(new BufferWriter()),
       ftyp_(ftyp.Pass()),
       moov_(moov.Pass()),
       moof_(new MovieFragment()),
+      fragment_buffer_(new BufferWriter()),
       sidx_(new SegmentIndex()),
       segment_initialized_(false),
       end_of_segment_(false) {}
@@ -44,7 +44,7 @@ MP4Segmenter::~MP4Segmenter() { STLDeleteElements(&fragmenters_); }
 Status MP4Segmenter::Initialize(EncryptorSource* encryptor_source,
                                 double clear_lead_in_seconds,
                                 const std::vector<MediaStream*>& streams) {
-  DCHECK_LT(0, streams.size());
+  DCHECK_LT(0u, streams.size());
   moof_->header.sequence_number = 0;
 
   moof_->tracks.resize(streams.size());

@@ -23,7 +23,7 @@ int FakeBytes(uint8* buf, int num) {
   DCHECK(buf);
   DCHECK(g_rand_source_fp);
 
-  if (fread(buf, 1, num, g_rand_source_fp) < num) {
+  if (fread(buf, 1, num, g_rand_source_fp) < static_cast<size_t>(num)) {
     LOG(ERROR) << "Ran out of fake PRNG data";
     return 0;
   }

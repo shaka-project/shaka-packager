@@ -206,7 +206,7 @@ TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentEncrypted) {
   // Expect the output to be encrypted.
   Demuxer demuxer(GetFullPath(kOutputVideo), decryptor_source_);
   ASSERT_OK(demuxer.Initialize());
-  ASSERT_EQ(1, demuxer.streams().size());
+  ASSERT_EQ(1u, demuxer.streams().size());
   EXPECT_TRUE(demuxer.streams()[0]->info()->is_encrypted());
 }
 
@@ -279,7 +279,7 @@ TEST_P(PackagerTest, MP4MuxerMultipleSegmentsUnencrypted) {
     ASSERT_TRUE(base::ReadFileToString(segment_path, &segment_content));
     int bytes_written = file_util::AppendToFile(
         output_path, segment_content.data(), segment_content.size());
-    ASSERT_EQ(segment_content.size(), bytes_written);
+    ASSERT_EQ(segment_content.size(), static_cast<size_t>(bytes_written));
 
     ++segment_index;
   }

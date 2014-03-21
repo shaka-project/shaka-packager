@@ -17,7 +17,7 @@
 #include "media/mp4/mp4_media_parser.h"
 
 namespace {
-const int kBufSize = 0x40000;  // 256KB.
+const size_t kBufSize = 0x40000;  // 256KB.
 }
 
 namespace media {

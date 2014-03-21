@@ -24,16 +24,6 @@ namespace {
 const char kEncryptedMp4Uri[] = "urn:mpeg:dash:mp4protection:2011";
 const char kEncryptedMp4Value[] = "cenc";
 
-bool IsAnyStreamEncrypted(const std::vector<StreamInfo*>& stream_infos) {
-  typedef std::vector<StreamInfo*>::const_iterator Iterator;
-  for (Iterator it = stream_infos.begin(); it != stream_infos.end(); ++it) {
-    if ((*it)->is_encrypted())
-      return true;
-  }
-
-  return false;
-}
-
 // |user_scheme_id_uri| is the user specified schemeIdUri for ContentProtection.
 // This adds a default ContentProtection element if the container is MP4.
 // Returns true if a ContentProtectionXml is added to |media_info|, otherwise

@@ -80,7 +80,7 @@ Status MediaStream::Start(MediaStreamOperation operation) {
       } else {
         // We need to disconnect all its peer streams which are not connected
         // to a muxer.
-        for (int i = 0; i < demuxer_->streams().size(); ++i) {
+        for (size_t i = 0; i < demuxer_->streams().size(); ++i) {
           Status status = demuxer_->streams()[i]->Start(operation);
           if (!status.ok())
             return status;

@@ -98,7 +98,7 @@ TEST_F(BufferWriterTest, AppendNBytes) {
 TEST_F(BufferWriterTest, AppendEmptyVector) {
   std::vector<uint8> v;
   writer_->AppendVector(v);
-  ASSERT_EQ(0, writer_->Size());
+  ASSERT_EQ(0u, writer_->Size());
 }
 
 TEST_F(BufferWriterTest, AppendVector) {
@@ -157,7 +157,7 @@ TEST_F(BufferWriterTest, Clear) {
   writer_->AppendInt(kuint32);
   ASSERT_EQ(sizeof(kuint32), writer_->Size());
   writer_->Clear();
-  ASSERT_EQ(0, writer_->Size());
+  ASSERT_EQ(0u, writer_->Size());
 }
 
 TEST_F(BufferWriterTest, WriteToFile) {
@@ -170,15 +170,16 @@ TEST_F(BufferWriterTest, WriteToFile) {
   writer_->AppendArray(kuint8Array, sizeof(kuint8Array));
   ASSERT_EQ(sizeof(kuint8Array), writer_->Size());
   ASSERT_OK(writer_->WriteToFile(output_file));
-  ASSERT_EQ(0, writer_->Size());
+  ASSERT_EQ(0u, writer_->Size());
   ASSERT_TRUE(output_file->Close());
 
   // Read the file and verify.
   File* const input_file = File::Open(path.value().c_str(), "r");
   ASSERT_TRUE(input_file != NULL);
   std::vector<uint8> data_read(sizeof(kuint8Array), 0);
-  EXPECT_EQ(sizeof(kuint8Array),
-            input_file->Read(&data_read[0], data_read.size()));
+  EXPECT_EQ(
+      sizeof(kuint8Array),
+      static_cast<size_t>(input_file->Read(&data_read[0], data_read.size())));
   ASSERT_TRUE(input_file->Close());
 
   for (size_t i = 0; i < sizeof(kuint8Array); ++i)

@@ -47,7 +47,7 @@ TEST_F(DecodingTimeIteratorTest, EmptyDecodingTime) {
   DecodingTimeToSample decoding_time_to_sample;
   DecodingTimeIterator iterator(decoding_time_to_sample);
   EXPECT_FALSE(iterator.IsValid());
-  EXPECT_EQ(0, iterator.NumSamples());
+  EXPECT_EQ(0u, iterator.NumSamples());
 }
 
 TEST_F(DecodingTimeIteratorTest, NumSamples) {

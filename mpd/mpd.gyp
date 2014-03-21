@@ -7,6 +7,10 @@
 # GYP file for any MPD generation targets.
 
 {
+  'variables': {
+    # Compile as chromium code to enable warnings and warnings-as-errors.
+    'chromium_code': 1,
+  },
   'target_defaults': {
     'include_dirs': [
       '..',

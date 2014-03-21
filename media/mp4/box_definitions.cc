@@ -395,7 +395,7 @@ bool SampleDescription::ReadWrite(BoxBuffer* buffer) {
       RCHECK(audio_entries.size() == count);
     }
   } else {
-    DCHECK_LT(0, count);
+    DCHECK_LT(0u, count);
     if (type == kVideo) {
       for (uint32 i = 0; i < count; ++i)
         RCHECK(video_entries[i].ReadWrite(buffer));
@@ -548,8 +548,8 @@ bool CompactSampleSize::ReadWrite(BoxBuffer* buffer) {
           sizes[i] = size >> 4;
           sizes[i + 1] = size & 0x0F;
         } else {
-          DCHECK_LT(sizes[i], 16);
-          DCHECK_LT(sizes[i + 1], 16);
+          DCHECK_LT(sizes[i], 16u);
+          DCHECK_LT(sizes[i + 1], 16u);
           uint8 size = (sizes[i] << 4) | sizes[i + 1];
           RCHECK(buffer->ReadWriteUInt8(&size));
         }
@@ -778,7 +778,7 @@ HandlerReference::~HandlerReference() {}
 FourCC HandlerReference::BoxType() const { return FOURCC_HDLR; }
 
 bool HandlerReference::ReadWrite(BoxBuffer* buffer) {
-  FourCC hdlr_type;
+  FourCC hdlr_type = FOURCC_NULL;
   std::vector<uint8> handler_name;
   if (!buffer->Reading()) {
     if (type == kVideo) {
@@ -791,6 +791,7 @@ bool HandlerReference::ReadWrite(BoxBuffer* buffer) {
                           kAudioHandlerName + arraysize(kAudioHandlerName));
     } else {
       NOTIMPLEMENTED();
+      return false;
     }
   }
   RCHECK(FullBox::ReadWrite(buffer) &&

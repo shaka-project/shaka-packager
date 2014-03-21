@@ -36,9 +36,9 @@ const char kUsage[] =
 namespace media {
 
 void DumpStreamInfo(const std::vector<MediaStream*>& streams) {
-  printf("Found %d stream(s).\n", streams.size());
+  printf("Found %zu stream(s).\n", streams.size());
   for (size_t i = 0; i < streams.size(); ++i)
-    printf("Stream [%d] %s\n", i, streams[i]->info()->ToString().c_str());
+    printf("Stream [%zu] %s\n", i, streams[i]->info()->ToString().c_str());
 }
 
 // Create and initialize encryptor source.

@@ -41,7 +41,7 @@ TEST_F(StaticMpdBuilderTest, Video) {
 
   Representation* video_representation =
       video_adaptation_set->AddRepresentation(video_media_info);
-  ASSERT_TRUE(video_adaptation_set);
+  ASSERT_TRUE(video_representation);
 
   EXPECT_NO_FATAL_FAILURE(CheckMpd(kFileNameExpectedMpdOutputVideo1));
 }
@@ -63,7 +63,7 @@ TEST_F(StaticMpdBuilderTest, VideoAndAudio) {
 
   Representation* video_representation =
       video_adaptation_set->AddRepresentation(video_media_info);
-  ASSERT_TRUE(video_adaptation_set);
+  ASSERT_TRUE(video_representation);
 
   EXPECT_NO_FATAL_FAILURE(CheckMpd(kFileNameExpectedMpdOutputAudio1AndVideo1));
 }

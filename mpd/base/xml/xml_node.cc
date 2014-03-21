@@ -171,7 +171,7 @@ bool XmlNode::AddChild(ScopedXmlPtr<xmlNode>::type child) {
 
   // Reaching here means the ownership of |child| transfered to |node_|.
   // Release the pointer so that it doesn't get destructed in this scope.
-  child.release();
+  ignore_result(child.release());
   return true;
 }
 

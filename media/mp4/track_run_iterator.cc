@@ -172,7 +172,6 @@ bool TrackRunIterator::Init() {
         trak->media.information.sample_table.chunk_large_offset.offsets;
 
     int64 run_start_dts = 0;
-    int64 run_data_offset = 0;
 
     uint32 num_samples = sample_size.sample_count;
     uint32 num_chunks = chunk_offset_vector.size();

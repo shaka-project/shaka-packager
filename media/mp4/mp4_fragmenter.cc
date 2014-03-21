@@ -14,7 +14,7 @@
 #include "media/mp4/cenc.h"
 
 namespace {
-const uint64 kInvalidTime = kuint64max;
+const int64 kInvalidTime = kint64max;
 
 // Optimize sample entries table. If all values in |entries| are identical,
 // then |entries| is cleared and the value is assigned to |default_value|;

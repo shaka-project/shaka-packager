@@ -13,13 +13,12 @@ namespace media {
 namespace mp4 {
 
 const CompositionOffset kCompositionOffsets[] =
-    {{10, 8}, {9, 5}, {25, 7}, {48, 63}, {8, 2}};
+    {{10, -8}, {9, 5}, {25, 7}, {48, 63}, {8, 2}};
 
 class CompositionOffsetIteratorTest : public testing::Test {
  public:
   CompositionOffsetIteratorTest() {
     // Build composition offset table from kCompositionOffsets.
-    uint32 composition_offset = 0;
     uint32 length = sizeof(kCompositionOffsets) / sizeof(CompositionOffset);
     for (uint32 i = 0; i < length; ++i) {
       for (uint32 j = 0; j < kCompositionOffsets[i].sample_count; ++j) {
@@ -35,7 +34,7 @@ class CompositionOffsetIteratorTest : public testing::Test {
   }
 
  protected:
-  std::vector<uint32> composition_offset_table_;
+  std::vector<int32> composition_offset_table_;
   CompositionTimeToSample composition_time_to_sample_;
   scoped_ptr<CompositionOffsetIterator> composition_offset_iterator_;
 
@@ -47,7 +46,7 @@ TEST_F(CompositionOffsetIteratorTest, EmptyCompositionTime) {
   CompositionTimeToSample composition_time_to_sample;
   CompositionOffsetIterator iterator(composition_time_to_sample);
   EXPECT_FALSE(iterator.IsValid());
-  EXPECT_EQ(0, iterator.NumSamples());
+  EXPECT_EQ(0u, iterator.NumSamples());
 }
 
 TEST_F(CompositionOffsetIteratorTest, NumSamples) {

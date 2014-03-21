@@ -17,8 +17,8 @@ TEST(AACAudioSpecificConfigTest, BasicProfileTest) {
   data.assign(buffer, buffer + sizeof(buffer));
 
   EXPECT_TRUE(aac_audio_specific_config.Parse(data));
-  EXPECT_EQ(aac_audio_specific_config.GetOutputSamplesPerSecond(false), 44100);
-  EXPECT_EQ(aac_audio_specific_config.GetNumChannels(false), 2);
+  EXPECT_EQ(44100u, aac_audio_specific_config.GetOutputSamplesPerSecond(false));
+  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels(false));
 }
 
 TEST(AACAudioSpecificConfigTest, ExtensionTest) {
@@ -29,9 +29,9 @@ TEST(AACAudioSpecificConfigTest, ExtensionTest) {
   data.assign(buffer, buffer + sizeof(buffer));
 
   EXPECT_TRUE(aac_audio_specific_config.Parse(data));
-  EXPECT_EQ(aac_audio_specific_config.GetOutputSamplesPerSecond(false), 48000);
-  EXPECT_EQ(aac_audio_specific_config.GetOutputSamplesPerSecond(true), 48000);
-  EXPECT_EQ(aac_audio_specific_config.GetNumChannels(false), 2);
+  EXPECT_EQ(48000u, aac_audio_specific_config.GetOutputSamplesPerSecond(false));
+  EXPECT_EQ(48000u, aac_audio_specific_config.GetOutputSamplesPerSecond(true));
+  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels(false));
 }
 
 // Test implicit SBR with mono channel config.
@@ -48,12 +48,12 @@ TEST(AACAudioSpecificConfigTest, ImplicitSBR_ChannelConfig0) {
   EXPECT_TRUE(aac_audio_specific_config.Parse(data));
 
   // Test w/o implict SBR.
-  EXPECT_EQ(aac_audio_specific_config.GetOutputSamplesPerSecond(false), 24000);
-  EXPECT_EQ(aac_audio_specific_config.GetNumChannels(false), 1);
+  EXPECT_EQ(24000u, aac_audio_specific_config.GetOutputSamplesPerSecond(false));
+  EXPECT_EQ(1u, aac_audio_specific_config.GetNumChannels(false));
 
   // Test implicit SBR.
-  EXPECT_EQ(aac_audio_specific_config.GetOutputSamplesPerSecond(true), 48000);
-  EXPECT_EQ(aac_audio_specific_config.GetNumChannels(true), 2);
+  EXPECT_EQ(48000u, aac_audio_specific_config.GetOutputSamplesPerSecond(true));
+  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels(true));
 }
 
 // Tests implicit SBR with a stereo channel config.
@@ -67,12 +67,12 @@ TEST(AACAudioSpecificConfigTest, ImplicitSBR_ChannelConfig1) {
   EXPECT_TRUE(aac_audio_specific_config.Parse(data));
 
   // Test w/o implict SBR.
-  EXPECT_EQ(aac_audio_specific_config.GetOutputSamplesPerSecond(false), 24000);
-  EXPECT_EQ(aac_audio_specific_config.GetNumChannels(false), 2);
+  EXPECT_EQ(24000u, aac_audio_specific_config.GetOutputSamplesPerSecond(false));
+  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels(false));
 
   // Test implicit SBR.
-  EXPECT_EQ(aac_audio_specific_config.GetOutputSamplesPerSecond(true), 48000);
-  EXPECT_EQ(aac_audio_specific_config.GetNumChannels(true), 2);
+  EXPECT_EQ(48000u, aac_audio_specific_config.GetOutputSamplesPerSecond(true));
+  EXPECT_EQ(2u, aac_audio_specific_config.GetNumChannels(true));
 }
 
 TEST(AACAudioSpecificConfigTest, SixChannelTest) {
@@ -83,8 +83,8 @@ TEST(AACAudioSpecificConfigTest, SixChannelTest) {
   data.assign(buffer, buffer + sizeof(buffer));
 
   EXPECT_TRUE(aac_audio_specific_config.Parse(data));
-  EXPECT_EQ(aac_audio_specific_config.GetOutputSamplesPerSecond(false), 48000);
-  EXPECT_EQ(aac_audio_specific_config.GetNumChannels(false), 6);
+  EXPECT_EQ(48000u, aac_audio_specific_config.GetOutputSamplesPerSecond(false));
+  EXPECT_EQ(6u, aac_audio_specific_config.GetNumChannels(false));
 }
 
 TEST(AACAudioSpecificConfigTest, DataTooShortTest) {

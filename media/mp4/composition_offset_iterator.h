@@ -33,10 +33,10 @@ class CompositionOffsetIterator {
   bool IsValid() const;
 
   /// @return Sample offset for current sample.
-  uint32 sample_offset() const { return iterator_->sample_offset; }
+  int32 sample_offset() const { return iterator_->sample_offset; }
 
   /// @return Sample offset @a sample, 1-based.
-  uint32 SampleOffset(uint32 sample) const;
+  int32 SampleOffset(uint32 sample) const;
 
   /// @return Total number of samples.
   uint32 NumSamples() const;

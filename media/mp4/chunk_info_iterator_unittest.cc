@@ -59,7 +59,7 @@ TEST_F(ChunkInfoIteratorTest, EmptyChunkInfo) {
   SampleToChunk sample_to_chunk;
   ChunkInfoIterator iterator(sample_to_chunk);
   EXPECT_FALSE(iterator.IsValid());
-  EXPECT_EQ(0, iterator.LastFirstChunk());
+  EXPECT_EQ(0u, iterator.LastFirstChunk());
 }
 
 TEST_F(ChunkInfoIteratorTest, LastFirstChunk) {

@@ -787,9 +787,9 @@ TYPED_TEST(BoxDefinitionsTestGeneral, Empty) {
   TypeParam box;
   LOG(INFO) << "Processing " << FourCCToString(box.BoxType());
   if (this->IsOptional(&box)) {
-    ASSERT_EQ(0, box.ComputeSize());
+    ASSERT_EQ(0u, box.ComputeSize());
   } else {
-    ASSERT_NE(0, box.ComputeSize());
+    ASSERT_NE(0u, box.ComputeSize());
   }
 }
 
@@ -837,7 +837,7 @@ TEST_F(BoxDefinitionsTest, TrackFragmentHeader_NoSampleSize) {
 
   TrackFragmentHeader tfhd_readback;
   ASSERT_TRUE(ReadBack(&tfhd_readback));
-  EXPECT_EQ(0, tfhd_readback.default_sample_size);
+  EXPECT_EQ(0u, tfhd_readback.default_sample_size);
   tfhd.default_sample_size = 0;
   ASSERT_EQ(tfhd, tfhd_readback);
 }

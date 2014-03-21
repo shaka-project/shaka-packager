@@ -17,7 +17,7 @@
 
 namespace dash_packager {
 
-class ContentProtectionElement;
+struct ContentProtectionElement;
 
 bool HasVODOnlyFields(const MediaInfo& media_info);
 

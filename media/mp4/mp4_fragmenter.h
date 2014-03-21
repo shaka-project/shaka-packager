@@ -21,8 +21,8 @@ class MediaSample;
 
 namespace mp4 {
 
-class SegmentReference;
-class TrackFragment;
+struct SegmentReference;
+struct TrackFragment;
 
 /// MP4Fragmenter is responsible for the generation of MP4 fragments, i.e. traf
 /// box and corresponding mdat box. The samples are also encrypted if encryption
@@ -46,7 +46,7 @@ class MP4Fragmenter {
   ~MP4Fragmenter();
 
   /// Add a sample to the fragmenter.
-  virtual Status AddSample(scoped_refptr<MediaSample> sample);
+  Status AddSample(scoped_refptr<MediaSample> sample);
 
   /// Initialize the fragment with default data.
   void InitializeFragment();
@@ -91,8 +91,8 @@ class MP4Fragmenter {
   uint64 fragment_duration_;
   bool normalize_presentation_timestamp_;
   int64 presentation_start_time_;
-  uint64 earliest_presentation_time_;
-  uint64 first_sap_time_;
+  int64 earliest_presentation_time_;
+  int64 first_sap_time_;
   int64 clear_time_;
   scoped_ptr<BufferWriter> data_;
   scoped_ptr<BufferWriter> aux_data_;
