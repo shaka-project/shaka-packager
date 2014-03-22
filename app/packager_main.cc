@@ -45,19 +45,35 @@ void DumpStreamInfo(const std::vector<MediaStream*>& streams) {
 scoped_ptr<EncryptorSource> CreateEncryptorSource() {
   scoped_ptr<EncryptorSource> encryptor_source;
   if (FLAGS_enable_widevine_encryption) {
-    std::string rsa_private_key;
-    if (!File::ReadFileToString(FLAGS_signing_key_path.c_str(),
-                                &rsa_private_key)) {
-      LOG(ERROR) << "Failed to read from '" << FLAGS_signing_key_path << "'.";
-      return scoped_ptr<EncryptorSource>();
-    }
+    scoped_ptr<RequestSigner> signer;
+    DCHECK(!FLAGS_aes_signing_key.empty() ||
+           !FLAGS_rsa_signing_key_path.empty());
+    if (!FLAGS_aes_signing_key.empty()) {
+      signer.reset(
+          AesRequestSigner::CreateSigner(FLAGS_signer, FLAGS_aes_signing_key,
+                                         FLAGS_aes_signing_iv));
+      if (!signer) {
+        LOG(ERROR) << "Cannot create an AES signer object from '"
+                   << FLAGS_aes_signing_key << "':'" << FLAGS_aes_signing_iv
+                   << "'.";
+        return scoped_ptr<EncryptorSource>();
+      }
+    } else if (!FLAGS_rsa_signing_key_path.empty()) {
+      std::string rsa_private_key;
+      if (!File::ReadFileToString(FLAGS_rsa_signing_key_path.c_str(),
+                                  &rsa_private_key)) {
+        LOG(ERROR) << "Failed to read from '" << FLAGS_rsa_signing_key_path
+                   << "'.";
+        return scoped_ptr<EncryptorSource>();
+      }
 
-    scoped_ptr<RequestSigner> signer(
-        RsaRequestSigner::CreateSigner(FLAGS_signer, rsa_private_key));
-    if (!signer) {
-      LOG(ERROR) << "Cannot create signer object from '"
-                 << FLAGS_signing_key_path << "'.";
-      return scoped_ptr<EncryptorSource>();
+      signer.reset(
+          RsaRequestSigner::CreateSigner(FLAGS_signer, rsa_private_key));
+      if (!signer) {
+        LOG(ERROR) << "Cannot create a RSA signer object from '"
+                   << FLAGS_rsa_signing_key_path << "'.";
+        return scoped_ptr<EncryptorSource>();
+      }
     }
 
     WidevineEncryptorSource::TrackType track_type =
