@@ -1595,6 +1595,121 @@ uint32 TrackFragmentRun::ComputeSize() {
   return atom_size;
 }
 
+SampleToGroup::SampleToGroup() : grouping_type(0), grouping_type_parameter(0) {}
+SampleToGroup::~SampleToGroup() {}
+FourCC SampleToGroup::BoxType() const { return FOURCC_SBGP; }
+
+bool SampleToGroup::ReadWrite(BoxBuffer* buffer) {
+  RCHECK(FullBox::ReadWrite(buffer) &&
+         buffer->ReadWriteUInt32(&grouping_type));
+  if (version == 1)
+    RCHECK(buffer->ReadWriteUInt32(&grouping_type_parameter));
+
+  if (grouping_type != FOURCC_SEIG) {
+    DCHECK(buffer->Reading());
+    DLOG(WARNING) << "Sample group '" << grouping_type << "' is not supported.";
+    return true;
+  }
+
+  uint32 count = entries.size();
+  RCHECK(buffer->ReadWriteUInt32(&count));
+  entries.resize(count);
+  for (uint32 i = 0; i < count; ++i) {
+    RCHECK(buffer->ReadWriteUInt32(&entries[i].sample_count) &&
+           buffer->ReadWriteUInt32(&entries[i].group_description_index));
+  }
+  return true;
+}
+
+uint32 SampleToGroup::ComputeSize() {
+  // This box is optional. Skip it if it is not used.
+  atom_size = 0;
+  if (!entries.empty()) {
+    atom_size = kFullBoxSize + sizeof(grouping_type) +
+                (version == 1 ? sizeof(grouping_type_parameter) : 0) +
+                sizeof(uint32) + entries.size() * sizeof(entries[0]);
+  }
+  return atom_size;
+}
+
+CencSampleEncryptionInfoEntry::CencSampleEncryptionInfoEntry()
+    : is_encrypted(false), iv_size(0) {
+}
+CencSampleEncryptionInfoEntry::~CencSampleEncryptionInfoEntry() {};
+
+SampleGroupDescription::SampleGroupDescription() : grouping_type(0) {}
+SampleGroupDescription::~SampleGroupDescription() {}
+FourCC SampleGroupDescription::BoxType() const { return FOURCC_SGPD; }
+
+bool SampleGroupDescription::ReadWrite(BoxBuffer* buffer) {
+  RCHECK(FullBox::ReadWrite(buffer) &&
+         buffer->ReadWriteUInt32(&grouping_type));
+
+  if (grouping_type != FOURCC_SEIG) {
+    DCHECK(buffer->Reading());
+    DLOG(WARNING) << "Sample group '" << grouping_type << "' is not supported.";
+    return true;
+  }
+
+  const size_t kKeyIdSize = 16;
+  const size_t kEntrySize = sizeof(uint32) + kKeyIdSize;
+  uint32 default_length = 0;
+  if (version == 1) {
+    if (buffer->Reading()) {
+      RCHECK(buffer->ReadWriteUInt32(&default_length));
+      RCHECK(default_length == 0 || default_length == kEntrySize);
+    } else {
+      default_length = kEntrySize;
+      RCHECK(buffer->ReadWriteUInt32(&default_length));
+    }
+  }
+
+  uint32 count = entries.size();
+  RCHECK(buffer->ReadWriteUInt32(&count));
+  entries.resize(count);
+  for (uint32 i = 0; i < count; ++i) {
+    if (version == 1) {
+      if (buffer->Reading() && default_length == 0) {
+        uint32 description_length = 0;
+        RCHECK(buffer->ReadWriteUInt32(&description_length));
+        RCHECK(description_length == kEntrySize);
+      }
+    }
+
+    if (!buffer->Reading())
+      RCHECK(entries[i].key_id.size() == kKeyIdSize);
+
+    uint8 flag = entries[i].is_encrypted ? 1 : 0;
+    RCHECK(buffer->IgnoreBytes(2) &&  // reserved.
+           buffer->ReadWriteUInt8(&flag) &&
+           buffer->ReadWriteUInt8(&entries[i].iv_size) &&
+           buffer->ReadWriteVector(&entries[i].key_id, kKeyIdSize));
+
+    if (buffer->Reading()) {
+      entries[i].is_encrypted = (flag != 0);
+      if (entries[i].is_encrypted) {
+        RCHECK(entries[i].iv_size == 8 || entries[i].iv_size == 16);
+      } else {
+        RCHECK(entries[i].iv_size == 0);
+      }
+    }
+  }
+  return true;
+}
+
+uint32 SampleGroupDescription::ComputeSize() {
+  // This box is optional. Skip it if it is not used.
+  atom_size = 0;
+  if (!entries.empty()) {
+    const size_t kKeyIdSize = 16;
+    const size_t kEntrySize = sizeof(uint32) + kKeyIdSize;
+    atom_size = kFullBoxSize + sizeof(grouping_type) +
+                (version == 1 ? sizeof(uint32) : 0) +
+                sizeof(uint32) + entries.size() * kEntrySize;
+  }
+  return atom_size;
+}
+
 TrackFragment::TrackFragment() {}
 TrackFragment::~TrackFragment() {}
 FourCC TrackFragment::BoxType() const { return FOURCC_TRAF; }
@@ -1608,9 +1723,46 @@ bool TrackFragment::ReadWrite(BoxBuffer* buffer) {
   if (buffer->Reading()) {
     DCHECK(buffer->reader());
     RCHECK(buffer->reader()->TryReadChildren(&runs));
+
+    while (sample_to_group.grouping_type != FOURCC_SEIG &&
+           buffer->reader()->ChildExist(&sample_to_group)) {
+      RCHECK(buffer->reader()->ReadChild(&sample_to_group));
+    }
+    while (sample_group_description.grouping_type != FOURCC_SEIG &&
+           buffer->reader()->ChildExist(&sample_group_description)) {
+      RCHECK(buffer->reader()->ReadChild(&sample_group_description));
+    }
+    if (sample_to_group.grouping_type == FOURCC_SEIG) {
+      // SampleGroupDescription box can appear in either 'moov...stbl' or
+      // 'moov.traf'. The first case is not supported for now, so we require
+      // a companion SampleGroupDescription box to coexist with the
+      // SampleToGroup box.
+      if (sample_group_description.grouping_type != FOURCC_SEIG) {
+        NOTIMPLEMENTED()
+            << "SampleGroupDescription box in 'moov' is not supported.";
+        return false;
+      }
+      for (std::vector<SampleToGroupEntry>::iterator it =
+               sample_to_group.entries.begin();
+           it != sample_to_group.entries.end();
+           ++it) {
+        if ((it->group_description_index & 0x10000) == 0) {
+          NOTIMPLEMENTED()
+              << "SampleGroupDescription box in 'moov' is not supported.";
+          return false;
+        }
+        it->group_description_index &= 0x0FFFF;
+        RCHECK(it->group_description_index <=
+               sample_group_description.entries.size());
+      }
+    } else {
+      RCHECK(sample_group_description.grouping_type != FOURCC_SEIG);
+    }
   } else {
     for (uint32 i = 0; i < runs.size(); ++i)
       RCHECK(runs[i].ReadWrite(buffer));
+    RCHECK(buffer->TryReadWriteChild(&sample_to_group) &&
+           buffer->TryReadWriteChild(&sample_group_description));
   }
   return buffer->TryReadWriteChild(&auxiliary_size) &&
          buffer->TryReadWriteChild(&auxiliary_offset);
@@ -1618,6 +1770,8 @@ bool TrackFragment::ReadWrite(BoxBuffer* buffer) {
 
 uint32 TrackFragment::ComputeSize() {
   atom_size = kBoxSize + header.ComputeSize() + decode_time.ComputeSize() +
+              sample_to_group.ComputeSize() +
+              sample_group_description.ComputeSize() +
               auxiliary_size.ComputeSize() + auxiliary_offset.ComputeSize();
   for (uint32 i = 0; i < runs.size(); ++i)
     atom_size += runs[i].ComputeSize();

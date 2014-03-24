@@ -103,7 +103,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   void Modify(Box* box) {}
 
   // Is this box optional?
-  bool IsOptional(Box* box) { return false; }
+  bool IsOptional(const Box* box) { return false; }
 
   // Non-full box does not have version field.
   uint8 GetAndClearVersion(Box* box) { return 0; }
@@ -625,6 +625,37 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     trun->version = 1;
   }
 
+  void Fill(SampleToGroup* sbgp) {
+    sbgp->grouping_type = FOURCC_SEIG;
+    sbgp->entries.resize(2);
+    sbgp->entries[0].sample_count = 3;
+    sbgp->entries[0].group_description_index = 0x10002;
+    sbgp->entries[0].sample_count = 1212;
+    sbgp->entries[0].group_description_index = 0x10001;
+  }
+
+  void Modify(SampleToGroup* sbgp) {
+    sbgp->entries.resize(1);
+    sbgp->entries[0].group_description_index = 0x10001;
+  }
+
+  void Fill(SampleGroupDescription* sgpd) {
+    sgpd->grouping_type = FOURCC_SEIG;
+    sgpd->entries.resize(2);
+    sgpd->entries[0].is_encrypted = true;
+    sgpd->entries[0].iv_size = 8;
+    sgpd->entries[0].key_id.assign(kData16Bytes,
+                                   kData16Bytes + arraysize(kData16Bytes));
+    sgpd->entries[1].is_encrypted = false;
+    sgpd->entries[1].iv_size = 0;
+    sgpd->entries[1].key_id.resize(16);
+  }
+
+  void Modify(SampleGroupDescription* sbgp) {
+    sbgp->entries.resize(1);
+    sbgp->entries[0].key_id[4] = 88;
+  }
+
   void Fill(TrackFragment* traf) {
     Fill(&traf->header);
     traf->runs.resize(1);
@@ -680,18 +711,20 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     sidx->version = 1;
   }
 
-  bool IsOptional(SampleAuxiliaryInformationOffset* box) { return true; }
-  bool IsOptional(SampleAuxiliaryInformationSize* box) { return true; }
-  bool IsOptional(ProtectionSchemeInfo* box) { return true; }
-  bool IsOptional(EditList* box) { return true; }
-  bool IsOptional(Edit* box) { return true; }
-  bool IsOptional(AVCDecoderConfigurationRecord* box) { return true; }
-  bool IsOptional(PixelAspectRatioBox* box) { return true; }
-  bool IsOptional(ElementaryStreamDescriptor* box) { return true; }
-  bool IsOptional(CompositionTimeToSample* box) { return true; }
-  bool IsOptional(SyncSample* box) { return true; }
-  bool IsOptional(MovieExtendsHeader* box) { return true; }
-  bool IsOptional(MovieExtends* box) { return true; }
+  bool IsOptional(const SampleAuxiliaryInformationOffset* box) { return true; }
+  bool IsOptional(const SampleAuxiliaryInformationSize* box) { return true; }
+  bool IsOptional(const ProtectionSchemeInfo* box) { return true; }
+  bool IsOptional(const EditList* box) { return true; }
+  bool IsOptional(const Edit* box) { return true; }
+  bool IsOptional(const AVCDecoderConfigurationRecord* box) { return true; }
+  bool IsOptional(const PixelAspectRatioBox* box) { return true; }
+  bool IsOptional(const ElementaryStreamDescriptor* box) { return true; }
+  bool IsOptional(const CompositionTimeToSample* box) { return true; }
+  bool IsOptional(const SyncSample* box) { return true; }
+  bool IsOptional(const MovieExtendsHeader* box) { return true; }
+  bool IsOptional(const MovieExtends* box) { return true; }
+  bool IsOptional(const SampleToGroup* box) { return true; }
+  bool IsOptional(const SampleGroupDescription* box) { return true; }
 
  protected:
   scoped_ptr<BufferWriter> buffer_;
@@ -749,9 +782,15 @@ typedef testing::Types<
     MovieFragment,
     SegmentIndex> Boxes;
 
-TYPED_TEST_CASE(BoxDefinitionsTestGeneral, Boxes);
+// GTEST support a maximum of 50 types in the template list, so we have to
+// break it into two groups.
+typedef testing::Types<
+    SampleToGroup,
+    SampleGroupDescription> Boxes2;
 
-TYPED_TEST(BoxDefinitionsTestGeneral, WriteReadbackCompare) {
+TYPED_TEST_CASE_P(BoxDefinitionsTestGeneral);
+
+TYPED_TEST_P(BoxDefinitionsTestGeneral, WriteReadbackCompare) {
   TypeParam box;
   LOG(INFO) << "Processing " << FourCCToString(box.BoxType());
   this->Fill(&box);
@@ -762,7 +801,7 @@ TYPED_TEST(BoxDefinitionsTestGeneral, WriteReadbackCompare) {
   ASSERT_EQ(box, box_readback);
 }
 
-TYPED_TEST(BoxDefinitionsTestGeneral, WriteModifyWrite) {
+TYPED_TEST_P(BoxDefinitionsTestGeneral, WriteModifyWrite) {
   TypeParam box;
   LOG(INFO) << "Processing " << FourCCToString(box.BoxType());
   this->Fill(&box);
@@ -783,7 +822,7 @@ TYPED_TEST(BoxDefinitionsTestGeneral, WriteModifyWrite) {
   ASSERT_EQ(box, box_readback);
 }
 
-TYPED_TEST(BoxDefinitionsTestGeneral, Empty) {
+TYPED_TEST_P(BoxDefinitionsTestGeneral, Empty) {
   TypeParam box;
   LOG(INFO) << "Processing " << FourCCToString(box.BoxType());
   if (this->IsOptional(&box)) {
@@ -792,6 +831,18 @@ TYPED_TEST(BoxDefinitionsTestGeneral, Empty) {
     ASSERT_NE(0u, box.ComputeSize());
   }
 }
+
+REGISTER_TYPED_TEST_CASE_P(BoxDefinitionsTestGeneral,
+                           WriteReadbackCompare,
+                           WriteModifyWrite,
+                           Empty);
+
+INSTANTIATE_TYPED_TEST_CASE_P(BoxDefinitionTypedTests,
+                              BoxDefinitionsTestGeneral,
+                              Boxes);
+INSTANTIATE_TYPED_TEST_CASE_P(BoxDefinitionTypedTests2,
+                              BoxDefinitionsTestGeneral,
+                              Boxes2);
 
 // Test other cases of box input.
 class BoxDefinitionsTest : public BoxDefinitionsTestGeneral<Box> {};

@@ -303,6 +303,32 @@ inline bool operator==(const TrackFragmentRun& lhs,
              rhs.sample_composition_time_offsets;
 }
 
+inline bool operator==(const SampleToGroupEntry& lhs,
+                       const SampleToGroupEntry& rhs) {
+  return lhs.sample_count == rhs.sample_count &&
+         lhs.group_description_index == rhs.group_description_index;
+}
+
+inline bool operator==(const SampleToGroup& lhs,
+                       const SampleToGroup& rhs) {
+  return lhs.grouping_type == rhs.grouping_type &&
+         lhs.grouping_type_parameter == rhs.grouping_type_parameter &&
+         lhs.entries == rhs.entries;
+}
+
+inline bool operator==(const CencSampleEncryptionInfoEntry& lhs,
+                       const CencSampleEncryptionInfoEntry& rhs) {
+  return lhs.is_encrypted == rhs.is_encrypted &&
+         lhs.iv_size == rhs.iv_size &&
+         lhs.key_id == rhs.key_id;
+}
+
+inline bool operator==(const SampleGroupDescription& lhs,
+                       const SampleGroupDescription& rhs) {
+  return lhs.grouping_type == rhs.grouping_type &&
+         lhs.entries == rhs.entries;
+}
+
 inline bool operator==(const TrackFragment& lhs, const TrackFragment& rhs) {
   return lhs.header == rhs.header && lhs.runs == rhs.runs &&
          lhs.decode_time == rhs.decode_time &&

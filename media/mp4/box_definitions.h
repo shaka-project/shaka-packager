@@ -492,14 +492,50 @@ struct TrackFragmentRun : FullBox {
   std::vector<int32> sample_composition_time_offsets;
 };
 
+struct SampleToGroupEntry {
+  enum GroupDescriptionIndexBase {
+    kTrackGroupDescriptionIndexBase = 0,
+    kTrackFragmentGroupDescriptionIndexBase = 0x10000,
+  };
+
+  uint32 sample_count;
+  uint32 group_description_index;
+};
+
+struct SampleToGroup : FullBox {
+  DECLARE_BOX_METHODS(SampleToGroup);
+
+  uint32 grouping_type;
+  uint32 grouping_type_parameter;  // Version 1 only.
+  std::vector<SampleToGroupEntry> entries;
+};
+
+struct CencSampleEncryptionInfoEntry {
+  CencSampleEncryptionInfoEntry();
+  ~CencSampleEncryptionInfoEntry();
+
+  bool is_encrypted;
+  uint8 iv_size;
+  std::vector<uint8> key_id;
+};
+
+struct SampleGroupDescription : FullBox {
+  DECLARE_BOX_METHODS(SampleGroupDescription);
+
+  uint32 grouping_type;
+  std::vector<CencSampleEncryptionInfoEntry> entries;
+};
+
 struct TrackFragment : Box {
   DECLARE_BOX_METHODS(TrackFragment);
 
   TrackFragmentHeader header;
   std::vector<TrackFragmentRun> runs;
   TrackFragmentDecodeTime decode_time;
-  SampleAuxiliaryInformationOffset auxiliary_offset;
+  SampleToGroup sample_to_group;
+  SampleGroupDescription sample_group_description;
   SampleAuxiliaryInformationSize auxiliary_size;
+  SampleAuxiliaryInformationOffset auxiliary_offset;
 };
 
 struct MovieFragment : Box {
