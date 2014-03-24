@@ -18,7 +18,7 @@ vars = {
   "webrtc_rev": "5718",  # For gflags.
 
   "happyhttp_url": "https://github.com/Zintinio/HappyHTTP.git",
-  "happyhttp_rev": "7306b1606a09063ac38c264afe59f0ad0b441750",
+  "happyhttp_rev": "6b11b3b02cb3c8b649de9fffe8e08ae68c42bfd0",
 }
 
 deps = {
@@ -107,27 +107,7 @@ deps_os = {
   },
 }
 
-pre_deps_hooks = [
-  {
-    # Reset happyhttp so the sync could proceed.
-    # We cannot use "git apply --reverse" here as the source may not have been pulled.
-    # "git reset" does not work here either as we cannot change working directory.
-    "pattern": "third_party/happyhttp/src",
-    "action": ["python", "src/third_party/happyhttp/git_reset.py"],
-  },
-]
-
 hooks = [
-  {
-    # Patch happyhttp source.
-    "pattern": "third_party/happyhttp/src",
-    "action": ["git", "apply", "src/third_party/happyhttp/patches/_stricmp"],
-  },
-  {
-    # Patch happyhttp source.
-    "pattern": "third_party/happyhttp/src",
-    "action": ["git", "apply", "src/third_party/happyhttp/patches/server_url"],
-  },
   {
     # A change to a .gyp, .gypi, or to GYP itself should run the generator.
     "pattern": ".",

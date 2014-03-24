@@ -8,6 +8,4 @@ Description:
 HappyHTTP is a simple C++ library for issuing HTTP requests and processing
 responses.
 
-Modifications:
-- Fix _stricmp undefined problem in linux. Use strcasecmp instead.
-- "www.scumways.com" should be "scumways.com" in test.cpp.
+Local Modifications: None

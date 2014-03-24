@@ -44,20 +44,6 @@
       ],
     },
     {
-      # Note that this test performs real http requests to a http server.
-      'target_name': 'http_fetcher_unittest',
-      'type': '<(gtest_target_type)',
-      'sources': [
-        'http_fetcher_unittest.cc',
-      ],
-      'dependencies': [
-        '../../base/base.gyp:base',
-        '../../testing/gtest.gyp:gtest',
-        '../../testing/gtest.gyp:gtest_main',
-        'http_fetcher',
-      ],
-    },
-    {
       'target_name': 'base',
       'type': '<(component)',
       'sources': [
