@@ -55,9 +55,6 @@ class XmlNode {
   // any methods of this object, except the destructor, is undefined.
   xmlNodePtr Release();
 
-  // TODO: This isn't elegant. The only place this is used is when getting the
-  // duration of the MPD. Maybe make MpdXmlNode that does stuff internally, for
-  // example get 'duration' from all Representation nodes?
   xmlNodePtr GetRawPtr();
 
  private:
@@ -100,7 +97,6 @@ class AdaptationSetXmlNode : public RepresentationBaseXmlNode {
 };
 
 // RepresentationType in MPD.
-// TODO: Maybe provide methods to add mimetype, codecs, and bandwidth?
 class RepresentationXmlNode : public RepresentationBaseXmlNode {
  public:
   typedef ::google::protobuf::RepeatedPtrField<MediaInfo_VideoInfo>
@@ -119,7 +115,6 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
 
   // Check MediaInfo protobuf definition for which fields are specific to VOD.
   bool AddVODOnlyInfo(const MediaInfo& media_info);
-  // TODO: Add Live info.
 
  private:
   // Add AudioChannelConfiguration elements. This will add multiple

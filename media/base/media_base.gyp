@@ -67,7 +67,6 @@
         'audio_stream_info.h',
         'bit_reader.cc',
         'bit_reader.h',
-        'buffers.h',
         'buffer_reader.cc',
         'buffer_reader.h',
         'buffer_writer.cc',

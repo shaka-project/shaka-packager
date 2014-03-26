@@ -125,8 +125,11 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(
   }
 
   if (is_encrypted) {
-    // TODO: Use the return value to set error status.
-    AddContentProtectionElements(container_type_, scheme_id_uri_, &media_info);
+    if (!AddContentProtectionElements(
+            container_type_, scheme_id_uri_, &media_info)) {
+      LOG(ERROR) << "Failed to add content protection elements.";
+      return;
+    }
   }
 
   SerializeMediaInfoToFile(media_info);

@@ -17,7 +17,6 @@
 #include "third_party/libxml/src/include/libxml/tree.h"
 #include "third_party/libxml/src/include/libxml/xmlstring.h"
 
-// TODO: If performance is a problem, work on fine grained locking.
 namespace dash_packager {
 
 using xml::XmlNode;
@@ -33,8 +32,7 @@ std::string GetMimeType(
     case MediaInfo::CONTAINER_MP4:
       return prefix + "/mp4";
     case MediaInfo::CONTAINER_MPEG2_TS:
-      // TODO: Find out whether uppercase or lowercase should be used for mp2t.
-      // DASH MPD spec uses lowercase but RFC3555 says uppercase.
+      // NOTE: DASH MPD spec uses lowercase but RFC3555 says uppercase.
       return prefix + "/MP2T";
     case MediaInfo::CONTAINER_WEBM:
       return prefix + "/webm";
@@ -112,7 +110,7 @@ bool MpdBuilder::WriteMpd() {
   std::string mpd;
   bool result = ToStringImpl(&mpd);
 
-  // TODO: Write to file, after interface change.
+  // NOTE: Write to file, after interface change.
   return result;
 }
 
@@ -144,7 +142,6 @@ bool MpdBuilder::ToStringImpl(std::string* output) {
   return true;
 }
 
-// TODO: This function is too big.
 xmlDocPtr MpdBuilder::GenerateMpd() {
   // Setup nodes.
   static const char kXmlVersion[] = "1.0";
@@ -152,7 +149,6 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
   XmlNode mpd("MPD");
   AddMpdNameSpaceInfo(&mpd);
 
-  // TODO: Currently set to 2. Does this need calculation?
   const float kMinBufferTime = 2.0f;
   mpd.SetStringAttribute("minBufferTime", SecondsToXmlDuration(kMinBufferTime));
 
@@ -314,7 +310,6 @@ bool Representation::Init() {
   const bool has_audio_info = media_info_.audio_info_size() > 0;
 
   if (!has_video_info && !has_audio_info) {
-    // TODO: Allow text input.
     // This is an error. Segment information can be in AdaptationSet, Period, or
     // MPD but the interface does not provide a way to set them.
     // See 5.3.9.1 ISO 23009-1:2012 for segment info.
@@ -323,8 +318,6 @@ bool Representation::Init() {
   }
 
   if (media_info_.container_type() == MediaInfo::CONTAINER_UNKNOWN) {
-    // TODO: This might not be the right behavior. Maybe somehow infer from
-    // something else like media file name?
     LOG(ERROR) << "'container_type' in MediaInfo cannot be CONTAINER_UNKNOWN.";
     return false;
   }
@@ -354,10 +347,6 @@ bool Representation::AddNewSegment(uint64 start_time, uint64 duration) {
   return true;
 }
 
-// TODO: We don't need to create a node every single time. Make an internal copy
-// of this element. Then move most of the logic to RepresentationXmlNode so that
-// all the work is done in it so that this class just becomes a thin layer.
-//
 // Uses info in |media_info_| and |content_protection_elements_| to create a
 // "Representation" node.
 // MPD schema has strict ordering. The following must be done in order.
@@ -398,14 +387,12 @@ xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
   if (!representation.AddContentProtectionElementsFromMediaInfo(media_info_))
     return xml::ScopedXmlPtr<xmlNode>::type();
 
-  // TODO: Add TextInfo.
   if (HasVODOnlyFields(media_info_) &&
       !representation.AddVODOnlyInfo(media_info_)) {
     LOG(ERROR) << "Failed to add VOD segment info.";
     return xml::ScopedXmlPtr<xmlNode>::type();
   }
 
-  // TODO: Handle Live case. Handle data in segment_starttime_duration_pairs_.
   return representation.PassScopedPtr();
 }
 

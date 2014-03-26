@@ -51,8 +51,6 @@ TEST_F(StaticMpdBuilderTest, VideoAndAudio) {
   MediaInfo audio_media_info = GetTestMediaInfo(kFileNameAudioMediaInfo1);
 
   // The order matters here to check against expected output.
-  // TODO: Investigate if I can deal with IDs and order elements
-  // deterministically.
   AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet();
   ASSERT_TRUE(video_adaptation_set);
 

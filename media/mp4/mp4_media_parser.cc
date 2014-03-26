@@ -106,8 +106,6 @@ bool MP4MediaParser::ParseBox(bool* err) {
 
     NOTIMPLEMENTED() << " Files with MDAT before MOOV is not supported yet.";
     *err = true;
-    // TODO: Change to return a status so upper level can take appropriate
-    // actions based on the returned status.
     return false;
   }
 
@@ -164,9 +162,6 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
     const SampleDescription& samp_descr =
         track->media.information.sample_table.description;
 
-    // TODO: When codec reconfigurations are supported, detect and send a codec
-    // reconfiguration for fragments using a sample description index different
-    // from the previous one.
     size_t desc_idx = 0;
 
     // Read sample description index from mvex if it exists otherwise read

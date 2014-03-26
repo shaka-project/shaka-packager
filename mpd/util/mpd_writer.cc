@@ -156,8 +156,7 @@ void MpdWriter::AddBaseUrl(const std::string& base_url) {
   base_urls_.push_back(base_url);
 }
 
-// TODO: The only use case we have for this is static profile, i.e.
-// VOD. But we might want to support dynamic profile for live.
+// NOTE: The only use case we have for this is static profile, i.e. VOD.
 bool MpdWriter::WriteMpdToString(std::string* output) {
   CHECK(output);
 
@@ -180,8 +179,6 @@ bool MpdWriter::WriteMpdToString(std::string* output) {
 bool MpdWriter::WriteMpdToFile(const char* file_name) {
   CHECK(file_name);
 
-  // TODO: MpdBuilder doesn't take File pointer yet. Once it does,
-  // skip intermediate ToString().
   std::string mpd;
   if (!WriteMpdToString(&mpd)) {
     LOG(ERROR) << "Failed to write MPD to string.";
@@ -194,8 +191,6 @@ bool MpdWriter::WriteMpdToFile(const char* file_name) {
     return false;
   }
 
-  // TODO: If File::Write() changes to best effort write-all then remove
-  // this loop.
   const char* mpd_char_ptr = mpd.data();
   size_t mpd_bytes_left = mpd.size();
   while (mpd_bytes_left > 0) {

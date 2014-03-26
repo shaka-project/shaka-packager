@@ -131,9 +131,6 @@ bool ESDescriptor::ParseDecoderSpecificInfo(BitReader* reader) {
 }
 
 void ESDescriptor::Write(BufferWriter* writer) const {
-  // TODO: Consider writing Descriptor classes.
-  // ElementaryStreamDescriptor, DecoderConfigDescriptor, SLConfigDescriptor,
-  // DecoderSpecificInfoDescriptor.
   DCHECK(writer);
   CHECK_LT(decoder_specific_info_.size(), kMaxDecoderSpecificInfoSize);
 

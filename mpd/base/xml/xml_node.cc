@@ -340,7 +340,6 @@ bool RepresentationXmlNode::AddAudioInfo(
 
   AddAudioSamplingRateInfo(repeated_audio_info);
 
-  // TODO: Find out where language goes.
   return true;
 }
 

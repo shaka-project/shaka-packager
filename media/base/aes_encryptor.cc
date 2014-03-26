@@ -50,7 +50,6 @@ AesCtrEncryptor::~AesCtrEncryptor() {}
 
 bool AesCtrEncryptor::InitializeWithRandomIv(const std::vector<uint8>& key,
                                              uint8 iv_size) {
-  // TODO: Should we use RAND_bytes provided by openssl instead?
   std::vector<uint8> iv(iv_size, 0);
   base::RandBytes(&iv[0], iv_size);
   return InitializeWithIv(key, iv);

@@ -58,8 +58,6 @@ Status MP4GeneralSegmenter::Initialize(
   return status;
 }
 
-// TODO: Maybe GetInitRange() should return true. Init segment does exist and we
-// know the size and offset.
 bool MP4GeneralSegmenter::GetInitRange(size_t* offset, size_t* size) {
   DLOG(INFO) << "MP4GeneralSegmenter outputs init segment: "
              << options().output_file_name;
@@ -154,7 +152,6 @@ Status MP4GeneralSegmenter::WriteSegment() {
           "Cannot open file for append " + options().output_file_name);
     }
   } else {
-    // TODO: Generate the segment template name.
     file_name = options().segment_template;
     ReplaceSubstringsAfterOffset(
         &file_name, 0, "$Number$", base::UintToString(++num_segments_));
