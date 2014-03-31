@@ -7,6 +7,7 @@
 #include "media/base/media_stream.h"
 
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "media/base/demuxer.h"
 #include "media/base/media_sample.h"
 #include "media/base/muxer.h"
@@ -51,14 +52,14 @@ Status MediaStream::PushSample(const scoped_refptr<MediaSample>& sample) {
 }
 
 void MediaStream::Connect(Muxer* muxer) {
-  DCHECK(muxer != NULL);
-  DCHECK(muxer_ == NULL);
+  DCHECK(muxer);
+  DCHECK(!muxer_);
   state_ = kConnected;
   muxer_ = muxer;
 }
 
 Status MediaStream::Start(MediaStreamOperation operation) {
-  DCHECK(demuxer_ != NULL);
+  DCHECK(demuxer_);
   DCHECK(operation == kPush || operation == kPull);
 
   switch (state_) {
@@ -99,10 +100,8 @@ Status MediaStream::Start(MediaStreamOperation operation) {
 const scoped_refptr<StreamInfo> MediaStream::info() const { return info_; }
 
 std::string MediaStream::ToString() const {
-  std::ostringstream s;
-  s << "state: " << state_ << " samples in the queue: " << samples_.size()
-    << " " << info_->ToString();
-  return s.str();
+  return base::StringPrintf("state: %d\n samples in the queue: %zu\n %s",
+                            state_, samples_.size(), info_->ToString().c_str());
 }
 
 }  // namespace media

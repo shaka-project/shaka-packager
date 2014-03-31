@@ -29,7 +29,7 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   /// @param size indicates sample size in bytes. Must not be negative.
   /// @param is_key_frame indicates whether the sample is a key frame.
   static scoped_refptr<MediaSample> CopyFrom(const uint8* data,
-                                             int size,
+                                             size_t size,
                                              bool is_key_frame);
 
   /// Create a MediaSample object from input.
@@ -43,9 +43,9 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   ///        Must not be negative.
   /// @param is_key_frame indicates whether the sample is a key frame.
   static scoped_refptr<MediaSample> CopyFrom(const uint8* data,
-                                             int size,
+                                             size_t size,
                                              const uint8* side_data,
-                                             int side_data_size,
+                                             size_t side_data_size,
                                              bool is_key_frame);
 
   /// Create a MediaSample indicating we've reached end of stream.
@@ -98,7 +98,7 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
     return &data_[0];
   }
 
-  int data_size() const {
+  size_t data_size() const {
     DCHECK(!end_of_stream());
     return data_.size();
   }
@@ -108,7 +108,7 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
     return &side_data_[0];
   }
 
-  int side_data_size() const {
+  size_t side_data_size() const {
     DCHECK(!end_of_stream());
     return side_data_.size();
   }
@@ -136,9 +136,9 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   /// @param data,side_data can be NULL, which indicates an empty sample.
   /// @param size,side_data_size should not be negative.
   MediaSample(const uint8* data,
-              int size,
+              size_t size,
               const uint8* side_data,
-              int side_data_size,
+              size_t side_data_size,
               bool is_key_frame);
   virtual ~MediaSample();
 
