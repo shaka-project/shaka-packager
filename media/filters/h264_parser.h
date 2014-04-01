@@ -12,14 +12,14 @@
 #include <map>
 
 #include "base/basictypes.h"
-#include "media/base/media_export.h"
 #include "media/filters/h264_bit_reader.h"
 
 namespace media {
+namespace filters {
 
 // For explanations of each struct and its members, see H.264 specification
 // at http://www.itu.int/rec/T-REC-H.264.
-struct MEDIA_EXPORT H264NALU {
+struct H264NALU {
   H264NALU();
 
   enum Type {
@@ -49,7 +49,7 @@ enum {
   kH264ScalingList8x8Length = 64,
 };
 
-struct MEDIA_EXPORT H264SPS {
+struct H264SPS {
   H264SPS();
 
   int profile_idc;
@@ -104,7 +104,7 @@ struct MEDIA_EXPORT H264SPS {
   int chroma_array_type;
 };
 
-struct MEDIA_EXPORT H264PPS {
+struct H264PPS {
   H264PPS();
 
   int pic_parameter_set_id;
@@ -132,7 +132,7 @@ struct MEDIA_EXPORT H264PPS {
   int second_chroma_qp_index_offset;
 };
 
-struct MEDIA_EXPORT H264ModificationOfPicNum {
+struct H264ModificationOfPicNum {
   int modification_of_pic_nums_idc;
   union {
     int abs_diff_pic_num_minus1;
@@ -140,7 +140,7 @@ struct MEDIA_EXPORT H264ModificationOfPicNum {
   };
 };
 
-struct MEDIA_EXPORT H264WeightingFactors {
+struct H264WeightingFactors {
   bool luma_weight_flag;
   bool chroma_weight_flag;
   int luma_weight[32];
@@ -149,7 +149,7 @@ struct MEDIA_EXPORT H264WeightingFactors {
   int chroma_offset[32][2];
 };
 
-struct MEDIA_EXPORT H264DecRefPicMarking {
+struct H264DecRefPicMarking {
   int memory_mgmnt_control_operation;
   int difference_of_pic_nums_minus1;
   int long_term_pic_num;
@@ -157,7 +157,7 @@ struct MEDIA_EXPORT H264DecRefPicMarking {
   int max_long_term_frame_idx_plus1;
 };
 
-struct MEDIA_EXPORT H264SliceHeader {
+struct H264SliceHeader {
   H264SliceHeader();
 
   enum {
@@ -240,7 +240,7 @@ struct H264SEIRecoveryPoint {
   int changing_slice_group_idc;
 };
 
-struct MEDIA_EXPORT H264SEIMessage {
+struct H264SEIMessage {
   H264SEIMessage();
 
   enum Type {
@@ -258,7 +258,7 @@ struct MEDIA_EXPORT H264SEIMessage {
 
 // Class to parse an Annex-B H.264 stream,
 // as specified in chapters 7 and Annex B of the H.264 spec.
-class MEDIA_EXPORT H264Parser {
+class H264Parser {
  public:
   enum Result {
     kOk,
@@ -394,6 +394,7 @@ class MEDIA_EXPORT H264Parser {
   DISALLOW_COPY_AND_ASSIGN(H264Parser);
 };
 
+}  // namespace filters
 }  // namespace media
 
 #endif  // MEDIA_FILTERS_H264_PARSER_H_

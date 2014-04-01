@@ -10,15 +10,15 @@
 #include <sys/types.h>
 
 #include "base/basictypes.h"
-#include "media/base/media_export.h"
 
 namespace media {
+namespace filters {
 
 // A class to provide bit-granularity reading of H.264 streams.
 // This is not a generic bit reader class, as it takes into account
 // H.264 stream-specific constraints, such as skipping emulation-prevention
 // bytes and stop bits. See spec for more details.
-class MEDIA_EXPORT H264BitReader {
+class H264BitReader {
  public:
   H264BitReader();
   ~H264BitReader();
@@ -74,6 +74,7 @@ class MEDIA_EXPORT H264BitReader {
   DISALLOW_COPY_AND_ASSIGN(H264BitReader);
 };
 
+}  // namespace filters
 }  // namespace media
 
 #endif  // MEDIA_FILTERS_H264_BIT_READER_H_

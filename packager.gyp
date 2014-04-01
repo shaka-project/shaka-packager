@@ -75,6 +75,7 @@
         'media/base/media_base.gyp:media_base_unittest',
         'media/event/media_event.gyp:media_event_unittest',
         'media/file/file.gyp:file_unittest',
+        'media/filters/filters.gyp:filters_unittest',
         'media/formats/mp4/mp4.gyp:mp4_unittest',
         'mpd/mpd.gyp:mpd_unittest',
         'packager_test',

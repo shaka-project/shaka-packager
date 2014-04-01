@@ -7,11 +7,12 @@
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
-#include "media/base/test_data_util.h"
+#include "media/test/test_data_util.h"
 #include "media/filters/h264_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
+namespace filters {
 
 TEST(H264ParserTest, StreamFileParsing) {
   base::FilePath file_path = GetTestDataFilePath("test-25fps.h264");
@@ -28,8 +29,8 @@ TEST(H264ParserTest, StreamFileParsing) {
   // Parse until the end of stream/unsupported stream/error in stream is found.
   int num_parsed_nalus = 0;
   while (true) {
-    media::H264SliceHeader shdr;
-    media::H264SEIMessage sei_msg;
+    H264SliceHeader shdr;
+    H264SEIMessage sei_msg;
     H264NALU nalu;
     H264Parser::Result res = parser.AdvanceToNextNALU(&nalu);
     if (res == H264Parser::kEOStream) {
@@ -69,4 +70,5 @@ TEST(H264ParserTest, StreamFileParsing) {
   }
 }
 
+}  // namespace filters
 }  // namespace media

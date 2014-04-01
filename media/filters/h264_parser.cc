@@ -9,6 +9,7 @@
 #include "media/filters/h264_parser.h"
 
 namespace media {
+namespace filters {
 
 bool H264SliceHeader::IsPSlice() const {
   return (slice_type % 5 == kPSlice);
@@ -1261,4 +1262,5 @@ H264Parser::Result H264Parser::ParseSEI(H264SEIMessage* sei_msg) {
   return kOk;
 }
 
+}  // namespace filters
 }  // namespace media
