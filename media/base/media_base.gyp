@@ -86,6 +86,7 @@
         'muxer.h',
         'muxer_options.cc',
         'muxer_options.h',
+        'producer_consumer_queue.h',
         'request_signer.cc',
         'request_signer.h',
         'rsa_key.cc',

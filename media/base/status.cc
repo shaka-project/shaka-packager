@@ -40,6 +40,10 @@ std::string ErrorCodeToString(Code error_code) {
       return "SERVER_ERROR";
     case INTERNAL_ERROR:
       return "INTERNAL_ERROR";
+    case STOPPED:
+      return "STOPPED";
+    case TIME_OUT:
+      return "TIME_OUT";
     default:
       NOTIMPLEMENTED() << "Unknown Status Code: " << error_code;
       return "UNKNOWN_STATUS";

@@ -59,6 +59,12 @@ enum Code {
 
   // Internal errors. Some invariants have been broken.
   INTERNAL_ERROR,
+
+  // The operation was stopped.
+  STOPPED,
+
+  // The operation timed out.
+  TIME_OUT,
 };
 
 }  // namespace error
