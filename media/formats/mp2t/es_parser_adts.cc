@@ -11,9 +11,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/bit_reader.h"
-#include "media/base/buffers.h"
-#include "media/base/channel_layout.h"
-#include "media/base/stream_parser_buffer.h"
+#include "media/base/media_sample.h"
+#include "media/base/timestamp.h"
 #include "media/formats/mp2t/mp2t_common.h"
 #include "media/formats/mpeg/adts_constants.h"
 
@@ -99,26 +98,26 @@ static bool LookForSyncWord(const uint8* raw_es, int raw_es_size,
 namespace mp2t {
 
 EsParserAdts::EsParserAdts(
+    uint32 track_id,
     const NewAudioConfigCB& new_audio_config_cb,
-    const EmitBufferCB& emit_buffer_cb,
+    const EmitSampleCB& emit_sample_cb,
     bool sbr_in_mimetype)
-  : new_audio_config_cb_(new_audio_config_cb),
-    emit_buffer_cb_(emit_buffer_cb),
-    sbr_in_mimetype_(sbr_in_mimetype) {
+    : EsParser(track_id),
+      new_audio_config_cb_(new_audio_config_cb),
+      emit_sample_cb_(emit_sample_cb),
+      sbr_in_mimetype_(sbr_in_mimetype) {
 }
 
 EsParserAdts::~EsParserAdts() {
 }
 
-bool EsParserAdts::Parse(const uint8* buf, int size,
-                         base::TimeDelta pts,
-                         base::TimeDelta dts) {
+bool EsParserAdts::Parse(const uint8* buf, int size, int64 pts, int64 dts) {
   int raw_es_size;
   const uint8* raw_es;
 
   // The incoming PTS applies to the access unit that comes just after
   // the beginning of |buf|.
-  if (pts != kNoTimestamp()) {
+  if (pts != kNoTimestamp) {
     es_byte_queue_.Peek(&raw_es, &raw_es_size);
     pts_list_.push_back(EsPts(raw_es_size, pts));
   }
@@ -156,25 +155,22 @@ bool EsParserAdts::Parse(const uint8* buf, int size,
       pts_list_.pop_front();
     }
 
-    base::TimeDelta current_pts = audio_timestamp_helper_->GetTimestamp();
-    base::TimeDelta frame_duration =
+    int64 current_pts = audio_timestamp_helper_->GetTimestamp();
+    int64 frame_duration =
         audio_timestamp_helper_->GetFrameDuration(kSamplesPerAACFrame);
 
     // Emit an audio frame.
     bool is_key_frame = true;
 
-    // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
-    // type and allow multiple audio tracks. See https://crbug.com/341581.
-    scoped_refptr<StreamParserBuffer> stream_parser_buffer =
-        StreamParserBuffer::CopyFrom(
+    scoped_refptr<MediaSample> sample =
+        MediaSample::CopyFrom(
             &raw_es[es_position],
             frame_size,
-            is_key_frame,
-            DemuxerStream::AUDIO, 0);
-    stream_parser_buffer->SetDecodeTimestamp(current_pts);
-    stream_parser_buffer->set_timestamp(current_pts);
-    stream_parser_buffer->set_duration(frame_duration);
-    emit_buffer_cb_.Run(stream_parser_buffer);
+            is_key_frame);
+    sample->set_pts(current_pts);
+    sample->set_dts(current_pts);
+    sample->set_duration(frame_duration);
+    emit_sample_cb_.Run(sample);
 
     // Update the PTS of the next frame.
     audio_timestamp_helper_->AddFrames(kSamplesPerAACFrame);
@@ -195,10 +191,16 @@ void EsParserAdts::Flush() {
 void EsParserAdts::Reset() {
   es_byte_queue_.Reset();
   pts_list_.clear();
-  last_audio_decoder_config_ = AudioDecoderConfig();
+  last_audio_decoder_config_ = scoped_refptr<AudioStreamInfo>();
 }
 
 bool EsParserAdts::UpdateAudioConfiguration(const uint8* adts_header) {
+  if (last_audio_decoder_config_) {
+    // Varying audio configurations currently not supported. Just assume that
+    // the audio configuration has not changed.
+    return true;
+  }
+
   size_t frequency_index = ExtractAdtsFrequencyIndex(adts_header);
   if (frequency_index >= kADTSFrequencyTableSize) {
     // Frequency index 13 & 14 are reserved
@@ -227,33 +229,38 @@ bool EsParserAdts::UpdateAudioConfiguration(const uint8* adts_header) {
       ? std::min(2 * samples_per_second, 48000)
       : samples_per_second;
 
-  AudioDecoderConfig audio_decoder_config(
-      kCodecAAC,
-      kSampleFormatS16,
-      kADTSChannelLayoutTable[channel_configuration],
-      extended_samples_per_second,
-      NULL, 0,
-      false);
+  last_audio_decoder_config_ = scoped_refptr<AudioStreamInfo>
+      (new AudioStreamInfo(
+          track_id(),
+          kMpeg2Timescale,
+          kInfiniteDuration,
+          kCodecAAC,
+          std::string(),  // TODO(tinskip): calculate codec string.
+          std::string(),
+          16,
+          kADTSChannelLayoutTable[channel_configuration],
+          samples_per_second,
+          NULL,  // TODO(tinskip): calculate AudioSpecificConfig.
+          0,
+          false));
 
-  if (!audio_decoder_config.Matches(last_audio_decoder_config_)) {
-    DVLOG(1) << "Sampling frequency: " << samples_per_second;
-    DVLOG(1) << "Extended sampling frequency: " << extended_samples_per_second;
-    DVLOG(1) << "Channel config: " << channel_configuration;
-    DVLOG(1) << "Adts profile: " << adts_profile;
-    // Reset the timestamp helper to use a new time scale.
-    if (audio_timestamp_helper_) {
-      base::TimeDelta base_timestamp = audio_timestamp_helper_->GetTimestamp();
-      audio_timestamp_helper_.reset(
-        new AudioTimestampHelper(samples_per_second));
-      audio_timestamp_helper_->SetBaseTimestamp(base_timestamp);
-    } else {
-      audio_timestamp_helper_.reset(
-          new AudioTimestampHelper(samples_per_second));
-    }
-    // Audio config notification.
-    last_audio_decoder_config_ = audio_decoder_config;
-    new_audio_config_cb_.Run(audio_decoder_config);
+  DVLOG(1) << "Sampling frequency: " << samples_per_second;
+  DVLOG(1) << "Extended sampling frequency: " << extended_samples_per_second;
+  DVLOG(1) << "Channel config: " << channel_configuration;
+  DVLOG(1) << "Adts profile: " << adts_profile;
+  // Reset the timestamp helper to use a new sampling frequency.
+  if (audio_timestamp_helper_) {
+    int64 base_timestamp = audio_timestamp_helper_->GetTimestamp();
+    audio_timestamp_helper_.reset(
+        new AudioTimestampHelper(kMpeg2Timescale, samples_per_second));
+    audio_timestamp_helper_->SetBaseTimestamp(base_timestamp);
+  } else {
+    audio_timestamp_helper_.reset(
+        new AudioTimestampHelper(kMpeg2Timescale, samples_per_second));
   }
+
+  // Audio config notification.
+  new_audio_config_cb_.Run(last_audio_decoder_config_);
 
   return true;
 }
@@ -273,4 +280,3 @@ void EsParserAdts::DiscardEs(int nbytes) {
 
 }  // namespace mp2t
 }  // namespace media
-

@@ -5,8 +5,7 @@
 #ifndef MEDIA_BASE_AUDIO_TIMESTAMP_HELPER_H_
 #define MEDIA_BASE_AUDIO_TIMESTAMP_HELPER_H_
 
-#include "base/time/time.h"
-#include "media/base/media_export.h"
+#include "base/basictypes.h"
 
 namespace media {
 
@@ -25,41 +24,41 @@ namespace media {
 // values for samples added to the current timestamp. GetFramesToTarget()
 // determines the number of frames that need to be added/removed from the
 // accumulated frames to reach a target timestamp.
-class MEDIA_EXPORT AudioTimestampHelper {
+class AudioTimestampHelper {
  public:
-  explicit AudioTimestampHelper(int samples_per_second);
+  explicit AudioTimestampHelper(uint32 timescale, uint32 samples_per_second);
 
   // Sets the base timestamp to |base_timestamp| and the sets count to 0.
-  void SetBaseTimestamp(base::TimeDelta base_timestamp);
+  void SetBaseTimestamp(int64 base_timestamp);
 
-  base::TimeDelta base_timestamp() const;
+  int64 base_timestamp() const;
   int64 frame_count() const { return frame_count_; }
 
   // Adds |frame_count| to the frame counter.
   // Note: SetBaseTimestamp() must be called with a value other than
   // kNoTimestamp() before this method can be called.
-  void AddFrames(int frame_count);
+  void AddFrames(int64 frame_count);
 
   // Get the current timestamp. This value is computed from the base_timestamp()
   // and the number of sample frames that have been added so far.
-  base::TimeDelta GetTimestamp() const;
+  int64 GetTimestamp() const;
 
   // Gets the duration if |frame_count| frames were added to the current
   // timestamp reported by GetTimestamp(). This method ensures that
   // (GetTimestamp() + GetFrameDuration(n)) will equal the timestamp that
   // GetTimestamp() will return if AddFrames(n) is called.
-  base::TimeDelta GetFrameDuration(int frame_count) const;
+  int64 GetFrameDuration(int64 frame_count) const;
 
   // Returns the number of frames needed to reach the target timestamp.
   // Note: |target| must be >= |base_timestamp_|.
-  int64 GetFramesToTarget(base::TimeDelta target) const;
+  int64 GetFramesToTarget(int64 target) const;
 
  private:
-  base::TimeDelta ComputeTimestamp(int64 frame_count) const;
+  int64 ComputeTimestamp(int64 frame_count) const;
 
-  double microseconds_per_frame_;
+  double ticks_per_frame_;
 
-  base::TimeDelta base_timestamp_;
+  int64 base_timestamp_;
 
   // Number of frames accumulated by AddFrames() calls.
   int64 frame_count_;

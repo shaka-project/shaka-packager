@@ -3,29 +3,29 @@
 // found in the LICENSE file.
 
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/buffers.h"
+#include "media/base/timestamp.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
 
-static const int kDefaultSampleRate = 44100;
+static const uint32 kDefaultSampleRate = 44100;
+static const uint32 kTimescale = 1000000;
 
 class AudioTimestampHelperTest : public ::testing::Test {
  public:
-  AudioTimestampHelperTest() : helper_(kDefaultSampleRate) {
-    helper_.SetBaseTimestamp(base::TimeDelta());
+  AudioTimestampHelperTest() : helper_(kTimescale, kDefaultSampleRate) {
+    helper_.SetBaseTimestamp(0);
   }
 
   // Adds frames to the helper and returns the current timestamp in
   // microseconds.
   int64 AddFrames(int frames) {
     helper_.AddFrames(frames);
-    return helper_.GetTimestamp().InMicroseconds();
+    return helper_.GetTimestamp();
   }
 
   int64 FramesToTarget(int target_in_microseconds) {
-    return helper_.GetFramesToTarget(
-        base::TimeDelta::FromMicroseconds(target_in_microseconds));
+    return helper_.GetFramesToTarget(target_in_microseconds);
   }
 
   void TestGetFramesToTargetRange(int frame_count, int start, int end) {
@@ -42,7 +42,7 @@ class AudioTimestampHelperTest : public ::testing::Test {
 };
 
 TEST_F(AudioTimestampHelperTest, Basic) {
-  EXPECT_EQ(0, helper_.GetTimestamp().InMicroseconds());
+  EXPECT_EQ(0, helper_.GetTimestamp());
 
   // Verify that the output timestamp is always rounded down to the
   // nearest microsecond. 1 frame @ 44100 is ~22.67573 microseconds,
@@ -57,30 +57,30 @@ TEST_F(AudioTimestampHelperTest, Basic) {
 
   // Verify that adding frames one frame at a time matches the timestamp
   // returned if the same number of frames are added all at once.
-  base::TimeDelta timestamp_1  = helper_.GetTimestamp();
-  helper_.SetBaseTimestamp(kNoTimestamp());
-  EXPECT_TRUE(kNoTimestamp() == helper_.base_timestamp());
-  helper_.SetBaseTimestamp(base::TimeDelta());
-  EXPECT_EQ(0, helper_.GetTimestamp().InMicroseconds());
+  int64 timestamp_1  = helper_.GetTimestamp();
+  helper_.SetBaseTimestamp(kNoTimestamp);
+  EXPECT_TRUE(kNoTimestamp == helper_.base_timestamp());
+  helper_.SetBaseTimestamp(0);
+  EXPECT_EQ(0, helper_.GetTimestamp());
 
   helper_.AddFrames(5);
-  EXPECT_EQ(113, helper_.GetTimestamp().InMicroseconds());
+  EXPECT_EQ(113, helper_.GetTimestamp());
   EXPECT_TRUE(timestamp_1 == helper_.GetTimestamp());
 }
 
 
 TEST_F(AudioTimestampHelperTest, GetDuration) {
-  helper_.SetBaseTimestamp(base::TimeDelta::FromMicroseconds(100));
+  helper_.SetBaseTimestamp(100);
 
   int frame_count = 5;
   int64 expected_durations[] = { 113, 113, 114, 113, 113, 114 };
   for (size_t i = 0; i < arraysize(expected_durations); ++i) {
-    base::TimeDelta duration = helper_.GetFrameDuration(frame_count);
-    EXPECT_EQ(expected_durations[i], duration.InMicroseconds());
+    int64 duration = helper_.GetFrameDuration(frame_count);
+    EXPECT_EQ(expected_durations[i], duration);
 
-    base::TimeDelta timestamp_1 = helper_.GetTimestamp() + duration;
+    int64 timestamp_1 = helper_.GetTimestamp() + duration;
     helper_.AddFrames(frame_count);
-    base::TimeDelta timestamp_2 = helper_.GetTimestamp();
+    int64 timestamp_2 = helper_.GetTimestamp();
     EXPECT_TRUE(timestamp_1 == timestamp_2);
   }
 }

@@ -17,11 +17,8 @@ const size_t kADTSFrequencyTableSize = arraysize(kADTSFrequencyTable);
 
 // The following conversion table is extracted from ISO 14496 Part 3 -
 // Table 1.17 - Channel Configuration.
-const media::ChannelLayout kADTSChannelLayoutTable[] = {
-    media::CHANNEL_LAYOUT_NONE,     media::CHANNEL_LAYOUT_MONO,
-    media::CHANNEL_LAYOUT_STEREO,   media::CHANNEL_LAYOUT_SURROUND,
-    media::CHANNEL_LAYOUT_4_0,      media::CHANNEL_LAYOUT_5_0_BACK,
-    media::CHANNEL_LAYOUT_5_1_BACK, media::CHANNEL_LAYOUT_7_1};
+const int kADTSChannelLayoutTable[] = {
+    0, 1, 2, 2, 4, 5, 6, 8 };
 const size_t kADTSChannelLayoutTableSize = arraysize(kADTSChannelLayoutTable);
 
 }  // namespace media

@@ -19,3 +19,8 @@
 
 #endif
 
+namespace media {
+
+const uint32 kMpeg2Timescale = 90000;
+
+}  // namespace media

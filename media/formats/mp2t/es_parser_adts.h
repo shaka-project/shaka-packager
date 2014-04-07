@@ -11,15 +11,13 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_ptr.h"
-#include "base/time/time.h"
-#include "media/base/audio_decoder_config.h"
+#include "media/base/audio_stream_info.h"
 #include "media/base/byte_queue.h"
 #include "media/formats/mp2t/es_parser.h"
 
 namespace media {
 class AudioTimestampHelper;
 class BitReader;
-class StreamParserBuffer;
 }
 
 namespace media {
@@ -27,23 +25,24 @@ namespace mp2t {
 
 class EsParserAdts : public EsParser {
  public:
-  typedef base::Callback<void(const AudioDecoderConfig&)> NewAudioConfigCB;
+  typedef base::Callback<void(scoped_refptr<AudioStreamInfo>&)> NewAudioConfigCB;
 
-  EsParserAdts(const NewAudioConfigCB& new_audio_config_cb,
-               const EmitBufferCB& emit_buffer_cb,
+  EsParserAdts(uint32 track_id,
+               const NewAudioConfigCB& new_audio_config_cb,
+               const EmitSampleCB& emit_sample_cb,
                bool sbr_in_mimetype);
   virtual ~EsParserAdts();
 
   // EsParser implementation.
   virtual bool Parse(const uint8* buf, int size,
-                     base::TimeDelta pts,
-                     base::TimeDelta dts) OVERRIDE;
+                     int64 pts,
+                     int64 dts) OVERRIDE;
   virtual void Flush() OVERRIDE;
   virtual void Reset() OVERRIDE;
 
  private:
   // Used to link a PTS with a byte position in the ES stream.
-  typedef std::pair<int, base::TimeDelta> EsPts;
+  typedef std::pair<int, int64> EsPts;
   typedef std::list<EsPts> EsPtsList;
 
   // Signal any audio configuration change (if any).
@@ -58,7 +57,7 @@ class EsParserAdts : public EsParser {
   // - to signal a new audio configuration,
   // - to send ES buffers.
   NewAudioConfigCB new_audio_config_cb_;
-  EmitBufferCB emit_buffer_cb_;
+  EmitSampleCB emit_sample_cb_;
 
   // True when AAC SBR extension is signalled in the mimetype
   // (mp4a.40.5 in the codecs parameter).
@@ -73,8 +72,7 @@ class EsParserAdts : public EsParser {
   // Interpolated PTS for frames that don't have one.
   scoped_ptr<AudioTimestampHelper> audio_timestamp_helper_;
 
-  // Last audio config.
-  AudioDecoderConfig last_audio_decoder_config_;
+  scoped_refptr<AudioStreamInfo> last_audio_decoder_config_;
 
   DISALLOW_COPY_AND_ASSIGN(EsParserAdts);
 };
@@ -83,4 +81,3 @@ class EsParserAdts : public EsParser {
 }  // namespace media
 
 #endif
-
