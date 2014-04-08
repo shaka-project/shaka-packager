@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/mp4/mp4_fragmenter.h"
+#include "media/mp4/fragmenter.h"
 
 #include "media/base/aes_encryptor.h"
 #include "media/base/buffer_reader.h"
@@ -41,11 +41,11 @@ bool OptimizeSampleEntries(std::vector<T>* entries, T* default_value) {
 namespace media {
 namespace mp4 {
 
-MP4Fragmenter::MP4Fragmenter(TrackFragment* traf,
-                             scoped_ptr<AesCtrEncryptor> encryptor,
-                             int64 clear_time,
-                             uint8 nalu_length_size,
-                             bool normalize_presentation_timestamp)
+Fragmenter::Fragmenter(TrackFragment* traf,
+                       scoped_ptr<AesCtrEncryptor> encryptor,
+                       int64 clear_time,
+                       uint8 nalu_length_size,
+                       bool normalize_presentation_timestamp)
     : encryptor_(encryptor.Pass()),
       nalu_length_size_(nalu_length_size),
       traf_(traf),
@@ -57,9 +57,9 @@ MP4Fragmenter::MP4Fragmenter(TrackFragment* traf,
       first_sap_time_(kInvalidTime),
       clear_time_(clear_time) {}
 
-MP4Fragmenter::~MP4Fragmenter() {}
+Fragmenter::~Fragmenter() {}
 
-Status MP4Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
+Status Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   CHECK_GT(sample->duration(), 0);
 
   if (ShouldEncryptFragment()) {
@@ -112,7 +112,7 @@ Status MP4Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   return Status::OK;
 }
 
-void MP4Fragmenter::InitializeFragment() {
+void Fragmenter::InitializeFragment() {
   fragment_finalized_ = false;
   traf_->decode_time.decode_time += fragment_duration_;
   traf_->auxiliary_size.sample_info_sizes.clear();
@@ -135,7 +135,7 @@ void MP4Fragmenter::InitializeFragment() {
   }
 }
 
-void MP4Fragmenter::FinalizeFragment() {
+void Fragmenter::FinalizeFragment() {
   if (ShouldEncryptFragment()) {
     DCHECK(encryptor_);
 
@@ -188,7 +188,7 @@ void MP4Fragmenter::FinalizeFragment() {
   fragment_finalized_ = true;
 }
 
-void MP4Fragmenter::GenerateSegmentReference(SegmentReference* reference) {
+void Fragmenter::GenerateSegmentReference(SegmentReference* reference) {
   // NOTE: Daisy chain is not supported currently.
   reference->reference_type = false;
   reference->subsegment_duration = fragment_duration_;
@@ -203,12 +203,12 @@ void MP4Fragmenter::GenerateSegmentReference(SegmentReference* reference) {
   reference->earliest_presentation_time = earliest_presentation_time_;
 }
 
-void MP4Fragmenter::EncryptBytes(uint8* data, uint32 size) {
+void Fragmenter::EncryptBytes(uint8* data, uint32 size) {
   DCHECK(encryptor_);
   CHECK(encryptor_->Encrypt(data, size, data));
 }
 
-Status MP4Fragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
+Status Fragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
   DCHECK(encryptor_);
 
   FrameCENCInfo cenc_info(encryptor_->iv());
@@ -244,7 +244,7 @@ Status MP4Fragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
   return Status::OK;
 }
 
-bool MP4Fragmenter::StartsWithSAP() {
+bool Fragmenter::StartsWithSAP() {
   DCHECK(!traf_->runs.empty());
   uint32 start_sample_flag;
   if (traf_->runs[0].flags & TrackFragmentRun::kSampleFlagsPresentMask) {

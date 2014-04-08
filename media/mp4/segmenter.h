@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_MP4_MP4_SEGMENTER_H_
-#define MEDIA_MP4_MP4_SEGMENTER_H_
+#ifndef MEDIA_MP4_SEGMENTER_H_
+#define MEDIA_MP4_SEGMENTER_H_
 
 #include <map>
 #include <vector>
@@ -25,25 +25,25 @@ class MediaStream;
 
 namespace mp4 {
 
-class MP4Fragmenter;
+class Fragmenter;
 
 struct FileType;
 struct Movie;
 struct MovieFragment;
 struct SegmentIndex;
 
-/// This class defines the MP4 Segmenter which is responsible for organizing
-/// MP4 fragments into segments/subsegments and package them into a MP4 file.
-/// Inherited by MP4GeneralSegmenter and MP4VODSegmenter. MP4VODSegmenter
-/// defines the segmenter for DASH Video-On-Demand with a single segment for
-/// each media presentation while MP4GeneralSegmenter handles all other cases
-/// including DASH live profile.
-class MP4Segmenter {
+/// This class defines the Segmenter which is responsible for organizing
+/// fragments into segments/subsegments and package them into a MP4 file.
+/// Inherited by MultiSegmentSegmenter and SingleSegmentSegmenter.
+/// SingleSegmentSegmenter defines the Segmenter for DASH Video-On-Demand with
+/// a single segment for each media presentation while MultiSegmentSegmenter
+/// handles all other cases including DASH live profile.
+class Segmenter {
  public:
-  MP4Segmenter(const MuxerOptions& options,
-               scoped_ptr<FileType> ftyp,
-               scoped_ptr<Movie> moov);
-  virtual ~MP4Segmenter();
+  Segmenter(const MuxerOptions& options,
+            scoped_ptr<FileType> ftyp,
+            scoped_ptr<Movie> moov);
+  virtual ~Segmenter();
 
   /// Initialize the segmenter.
   /// Calling other public methods of this class without this method returning
@@ -86,7 +86,7 @@ class MP4Segmenter {
 
  private:
   void InitializeFragments();
-  Status FinalizeFragment(MP4Fragmenter* fragment);
+  Status FinalizeFragment(Fragmenter* fragment);
 
   const MuxerOptions& options_;
   scoped_ptr<FileType> ftyp_;
@@ -94,16 +94,16 @@ class MP4Segmenter {
   scoped_ptr<MovieFragment> moof_;
   scoped_ptr<BufferWriter> fragment_buffer_;
   scoped_ptr<SegmentIndex> sidx_;
-  std::vector<MP4Fragmenter*> fragmenters_;
+  std::vector<Fragmenter*> fragmenters_;
   std::vector<uint64> segment_durations_;
   std::map<const MediaStream*, uint32> stream_map_;
   bool segment_initialized_;
   bool end_of_segment_;
 
-  DISALLOW_COPY_AND_ASSIGN(MP4Segmenter);
+  DISALLOW_COPY_AND_ASSIGN(Segmenter);
 };
 
 }  // namespace mp4
 }  // namespace media
 
-#endif  // MEDIA_MP4_MP4_SEGMENTER_H_
+#endif  // MEDIA_MP4_SEGMENTER_H_

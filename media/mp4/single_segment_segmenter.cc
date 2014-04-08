@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/mp4/mp4_vod_segmenter.h"
+#include "media/mp4/single_segment_segmenter.h"
 
 #include "media/base/buffer_writer.h"
 #include "media/base/media_stream.h"
@@ -15,17 +15,18 @@
 namespace media {
 namespace mp4 {
 
-MP4VODSegmenter::MP4VODSegmenter(const MuxerOptions& options,
-                                 scoped_ptr<FileType> ftyp,
-                                 scoped_ptr<Movie> moov)
-    : MP4Segmenter(options, ftyp.Pass(), moov.Pass()) {}
-MP4VODSegmenter::~MP4VODSegmenter() {}
+SingleSegmentSegmenter::SingleSegmentSegmenter(const MuxerOptions& options,
+                                               scoped_ptr<FileType> ftyp,
+                                               scoped_ptr<Movie> moov)
+    : Segmenter(options, ftyp.Pass(), moov.Pass()) {}
+SingleSegmentSegmenter::~SingleSegmentSegmenter() {}
 
-Status MP4VODSegmenter::Initialize(EncryptorSource* encryptor_source,
-                                   double clear_lead_in_seconds,
-                                   const std::vector<MediaStream*>& streams) {
-  Status status = MP4Segmenter::Initialize(
-      encryptor_source, clear_lead_in_seconds, streams);
+Status SingleSegmentSegmenter::Initialize(
+    EncryptorSource* encryptor_source,
+    double clear_lead_in_seconds,
+    const std::vector<MediaStream*>& streams) {
+  Status status =
+      Segmenter::Initialize(encryptor_source, clear_lead_in_seconds, streams);
   if (!status.ok())
     return status;
   temp_file_.reset(File::Open(options().temp_file_name.c_str(), "w"));
@@ -36,8 +37,8 @@ Status MP4VODSegmenter::Initialize(EncryptorSource* encryptor_source,
   return Status::OK;
 }
 
-Status MP4VODSegmenter::Finalize() {
-  Status status = MP4Segmenter::Finalize();
+Status SingleSegmentSegmenter::Finalize() {
+  Status status = Segmenter::Finalize();
   if (!status.ok())
     return status;
 
@@ -93,14 +94,14 @@ Status MP4VODSegmenter::Finalize() {
   return Status::OK;
 }
 
-bool MP4VODSegmenter::GetInitRange(size_t* offset, size_t* size) {
+bool SingleSegmentSegmenter::GetInitRange(size_t* offset, size_t* size) {
   // In Finalize, ftyp and moov gets written first so offset must be 0.
   *offset = 0;
   *size = ftyp()->ComputeSize() + moov()->ComputeSize();
   return true;
 }
 
-bool MP4VODSegmenter::GetIndexRange(size_t* offset, size_t* size) {
+bool SingleSegmentSegmenter::GetIndexRange(size_t* offset, size_t* size) {
   // Index range is right after init range so the offset must be the size of
   // ftyp and moov.
   *offset = ftyp()->ComputeSize() + moov()->ComputeSize();
@@ -108,8 +109,8 @@ bool MP4VODSegmenter::GetIndexRange(size_t* offset, size_t* size) {
   return true;
 }
 
-Status MP4VODSegmenter::FinalizeSegment() {
-  Status status = MP4Segmenter::FinalizeSegment();
+Status SingleSegmentSegmenter::FinalizeSegment() {
+  Status status = Segmenter::FinalizeSegment();
   if (!status.ok())
     return status;
 

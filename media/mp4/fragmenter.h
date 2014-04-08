@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_MP4_MP4_FRAGMENTER_H_
-#define MEDIA_MP4_MP4_FRAGMENTER_H_
+#ifndef MEDIA_MP4_FRAGMENTER_H_
+#define MEDIA_MP4_FRAGMENTER_H_
 
 #include <vector>
 
@@ -24,10 +24,10 @@ namespace mp4 {
 struct SegmentReference;
 struct TrackFragment;
 
-/// MP4Fragmenter is responsible for the generation of MP4 fragments, i.e. traf
+/// Fragmenter is responsible for the generation of MP4 fragments, i.e. traf
 /// box and corresponding mdat box. The samples are also encrypted if encryption
 /// is requested.
-class MP4Fragmenter {
+class Fragmenter {
  public:
   /// @param traf points to a TrackFragment box.
   /// @param encryptor handles encryption of the samples. It can be NULL, which
@@ -38,12 +38,12 @@ class MP4Fragmenter {
   ///        encryption.
   /// @param normalize_presentation_timestamp defines whether PTS should be
   ///        normalized to start from zero.
-  MP4Fragmenter(TrackFragment* traf,
-                scoped_ptr<AesCtrEncryptor> encryptor,
-                int64 clear_time,
-                uint8 nalu_length_size,
-                bool normalize_presentation_timestamp);
-  ~MP4Fragmenter();
+  Fragmenter(TrackFragment* traf,
+             scoped_ptr<AesCtrEncryptor> encryptor,
+             int64 clear_time,
+             uint8 nalu_length_size,
+             bool normalize_presentation_timestamp);
+  ~Fragmenter();
 
   /// Add a sample to the fragmenter.
   Status AddSample(scoped_refptr<MediaSample> sample);
@@ -97,10 +97,10 @@ class MP4Fragmenter {
   scoped_ptr<BufferWriter> data_;
   scoped_ptr<BufferWriter> aux_data_;
 
-  DISALLOW_COPY_AND_ASSIGN(MP4Fragmenter);
+  DISALLOW_COPY_AND_ASSIGN(Fragmenter);
 };
 
 }  // namespace mp4
 }  // namespace media
 
-#endif  // MEDIA_MP4_MP4_FRAGMENTER_H_
+#endif  // MEDIA_MP4_FRAGMENTER_H_

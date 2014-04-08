@@ -34,7 +34,7 @@ class LocalFile : public File {
   /// @}
 
  protected:
-  ~LocalFile();
+  virtual ~LocalFile();
 
   virtual bool Open() OVERRIDE;
 

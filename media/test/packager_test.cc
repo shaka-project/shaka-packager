@@ -252,7 +252,7 @@ TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencryptedSeparateAudioVideo) {
   EXPECT_TRUE(ContentsEqual(kOutputAudio, kOutputAudio2));
 }
 
-TEST_P(PackagerTest, MP4MuxerMultipleSegmentsUnencrypted) {
+TEST_P(PackagerTest, MP4MuxerMultiSegmentsUnencrypted) {
   ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
                                 kOutputVideo2,
                                 kOutputNone,

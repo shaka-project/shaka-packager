@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/mp4/mp4_general_segmenter.h"
+#include "media/mp4/multi_segment_segmenter.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -17,25 +17,25 @@
 namespace media {
 namespace mp4 {
 
-MP4GeneralSegmenter::MP4GeneralSegmenter(const MuxerOptions& options,
-                                         scoped_ptr<FileType> ftyp,
-                                         scoped_ptr<Movie> moov)
-    : MP4Segmenter(options, ftyp.Pass(), moov.Pass()),
+MultiSegmentSegmenter::MultiSegmentSegmenter(const MuxerOptions& options,
+                                             scoped_ptr<FileType> ftyp,
+                                             scoped_ptr<Movie> moov)
+    : Segmenter(options, ftyp.Pass(), moov.Pass()),
       styp_(new SegmentType),
       num_segments_(0) {
   // Use the same brands for styp as ftyp.
-  styp_->major_brand = MP4Segmenter::ftyp()->major_brand;
-  styp_->compatible_brands = MP4Segmenter::ftyp()->compatible_brands;
+  styp_->major_brand = Segmenter::ftyp()->major_brand;
+  styp_->compatible_brands = Segmenter::ftyp()->compatible_brands;
 }
 
-MP4GeneralSegmenter::~MP4GeneralSegmenter() {}
+MultiSegmentSegmenter::~MultiSegmentSegmenter() {}
 
-Status MP4GeneralSegmenter::Initialize(
+Status MultiSegmentSegmenter::Initialize(
     EncryptorSource* encryptor_source,
     double clear_lead_in_seconds,
     const std::vector<MediaStream*>& streams) {
-  Status status = MP4Segmenter::Initialize(
-      encryptor_source, clear_lead_in_seconds, streams);
+  Status status =
+      Segmenter::Initialize(encryptor_source, clear_lead_in_seconds, streams);
   if (!status.ok())
     return status;
 
@@ -58,19 +58,19 @@ Status MP4GeneralSegmenter::Initialize(
   return status;
 }
 
-bool MP4GeneralSegmenter::GetInitRange(size_t* offset, size_t* size) {
-  DLOG(INFO) << "MP4GeneralSegmenter outputs init segment: "
+bool MultiSegmentSegmenter::GetInitRange(size_t* offset, size_t* size) {
+  DLOG(INFO) << "MultiSegmentSegmenter outputs init segment: "
              << options().output_file_name;
   return false;
 }
 
-bool MP4GeneralSegmenter::GetIndexRange(size_t* offset, size_t* size) {
-  DLOG(INFO) << "MP4GeneralSegmenter does not have index range.";
+bool MultiSegmentSegmenter::GetIndexRange(size_t* offset, size_t* size) {
+  DLOG(INFO) << "MultiSegmentSegmenter does not have index range.";
   return false;
 }
 
-Status MP4GeneralSegmenter::FinalizeSegment() {
-  Status status = MP4Segmenter::FinalizeSegment();
+Status MultiSegmentSegmenter::FinalizeSegment() {
+  Status status = Segmenter::FinalizeSegment();
   if (!status.ok())
     return status;
 
@@ -134,7 +134,7 @@ Status MP4GeneralSegmenter::FinalizeSegment() {
   return WriteSegment();
 }
 
-Status MP4GeneralSegmenter::WriteSegment() {
+Status MultiSegmentSegmenter::WriteSegment() {
   DCHECK(sidx());
   DCHECK(fragment_buffer());
   DCHECK(styp_);

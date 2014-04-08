@@ -4,10 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_MP4_MP4_GENERAL_SEGMENTER_H_
-#define MEDIA_MP4_MP4_GENERAL_SEGMENTER_H_
+#ifndef MEDIA_MP4_MULTI_SEGMENT_SEGMENTER_H_
+#define MEDIA_MP4_MULTI_SEGMENT_SEGMENTER_H_
 
-#include "media/mp4/mp4_segmenter.h"
+#include "media/mp4/segmenter.h"
 
 namespace media {
 namespace mp4 {
@@ -21,20 +21,20 @@ struct SegmentType;
 /// contain one or many fragments with fragment duration defined by @b
 /// MuxerOptions.fragment_duration. The actual segment or fragment duration
 /// may not match the requested duration exactly, but will be approximated.
-/// That is, the segmenter tries to end segment/fragment at the first sample
+/// That is, the Segmenter tries to end segment/fragment at the first sample
 /// with overall segment/fragment duration not smaller than defined duration
 /// and yet meet SAP requirements. The generated segments are written to files
 /// defined by @b MuxerOptions.segment_template if specified; otherwise,
 /// the segments are appended to the main output file specified by @b
 /// MuxerOptions.output_file_name.
-class MP4GeneralSegmenter : public MP4Segmenter {
+class MultiSegmentSegmenter : public Segmenter {
  public:
-  MP4GeneralSegmenter(const MuxerOptions& options,
-                      scoped_ptr<FileType> ftyp,
-                      scoped_ptr<Movie> moov);
-  virtual ~MP4GeneralSegmenter();
+  MultiSegmentSegmenter(const MuxerOptions& options,
+                        scoped_ptr<FileType> ftyp,
+                        scoped_ptr<Movie> moov);
+  virtual ~MultiSegmentSegmenter();
 
-  /// @name MP4Segmenter implementation overrides.
+  /// @name Segmenter implementation overrides.
   /// @{
   virtual Status Initialize(EncryptorSource* encryptor_source,
                             double clear_lead_in_seconds,
@@ -54,10 +54,10 @@ class MP4GeneralSegmenter : public MP4Segmenter {
   scoped_ptr<SegmentType> styp_;
   uint32 num_segments_;
 
-  DISALLOW_COPY_AND_ASSIGN(MP4GeneralSegmenter);
+  DISALLOW_COPY_AND_ASSIGN(MultiSegmentSegmenter);
 };
 
 }  // namespace mp4
 }  // namespace media
 
-#endif  // MEDIA_MP4_MP4_GENERAL_SEGMENTER_H_
+#endif  // MEDIA_MP4_MULTI_SEGMENT_SEGMENTER_H_

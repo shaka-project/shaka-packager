@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_MP4_MP4_VOD_SEGMENTER_H_
-#define MEDIA_MP4_MP4_VOD_SEGMENTER_H_
+#ifndef MEDIA_MP4_SINGLE_SEGMENT_SEGMENTER_H_
+#define MEDIA_MP4_SINGLE_SEGMENT_SEGMENTER_H_
 
 #include "media/file/file_closer.h"
-#include "media/mp4/mp4_segmenter.h"
+#include "media/mp4/segmenter.h"
 
 namespace media {
 namespace mp4 {
@@ -20,18 +20,18 @@ namespace mp4 {
 /// or many fragments with fragment duration defined by @b
 /// MuxerOptions.fragment_duration. The actual subsegment or fragment duration
 /// may not match the requested duration exactly, but will be approximated. That
-/// is, the segmenter tries to end subsegment/fragment at the first sample with
+/// is, the Segmenter tries to end subsegment/fragment at the first sample with
 /// overall subsegment/fragment duration not smaller than defined duration and
-/// yet meet SAP requirements. VOD segmenter ignores @b
+/// yet meet SAP requirements. SingleSegmentSegmenter ignores @b
 /// MuxerOptions.num_subsegments_per_sidx.
-class MP4VODSegmenter : public MP4Segmenter {
+class SingleSegmentSegmenter : public Segmenter {
  public:
-  MP4VODSegmenter(const MuxerOptions& options,
-                  scoped_ptr<FileType> ftyp,
-                  scoped_ptr<Movie> moov);
-  virtual ~MP4VODSegmenter();
+  SingleSegmentSegmenter(const MuxerOptions& options,
+                         scoped_ptr<FileType> ftyp,
+                         scoped_ptr<Movie> moov);
+  virtual ~SingleSegmentSegmenter();
 
-  /// @name MP4Segmenter implementation overrides.
+  /// @name Segmenter implementation overrides.
   /// @{
   virtual Status Initialize(EncryptorSource* encryptor_source,
                             double clear_lead_in_seconds,
@@ -49,10 +49,10 @@ class MP4VODSegmenter : public MP4Segmenter {
   scoped_ptr<SegmentIndex> vod_sidx_;
   scoped_ptr<File, FileCloser> temp_file_;
 
-  DISALLOW_COPY_AND_ASSIGN(MP4VODSegmenter);
+  DISALLOW_COPY_AND_ASSIGN(SingleSegmentSegmenter);
 };
 
 }  // namespace mp4
 }  // namespace media
 
-#endif  // MEDIA_MP4_MP4_VOD_SEGMENTER_H_
+#endif  // MEDIA_MP4_SINGLE_SEGMENT_SEGMENTER_H_

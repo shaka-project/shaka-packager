@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/mp4/mp4_segmenter.h"
+#include "media/mp4/segmenter.h"
 
 #include <algorithm>
 
@@ -16,7 +16,7 @@
 #include "media/base/muxer_options.h"
 #include "media/base/video_stream_info.h"
 #include "media/mp4/box_definitions.h"
-#include "media/mp4/mp4_fragmenter.h"
+#include "media/mp4/fragmenter.h"
 
 namespace {
 uint64 Rescale(uint64 time_in_old_scale, uint32 old_scale, uint32 new_scale) {
@@ -27,9 +27,9 @@ uint64 Rescale(uint64 time_in_old_scale, uint32 old_scale, uint32 new_scale) {
 namespace media {
 namespace mp4 {
 
-MP4Segmenter::MP4Segmenter(const MuxerOptions& options,
-                           scoped_ptr<FileType> ftyp,
-                           scoped_ptr<Movie> moov)
+Segmenter::Segmenter(const MuxerOptions& options,
+                     scoped_ptr<FileType> ftyp,
+                     scoped_ptr<Movie> moov)
     : options_(options),
       ftyp_(ftyp.Pass()),
       moov_(moov.Pass()),
@@ -39,11 +39,11 @@ MP4Segmenter::MP4Segmenter(const MuxerOptions& options,
       segment_initialized_(false),
       end_of_segment_(false) {}
 
-MP4Segmenter::~MP4Segmenter() { STLDeleteElements(&fragmenters_); }
+Segmenter::~Segmenter() { STLDeleteElements(&fragmenters_); }
 
-Status MP4Segmenter::Initialize(EncryptorSource* encryptor_source,
-                                double clear_lead_in_seconds,
-                                const std::vector<MediaStream*>& streams) {
+Status Segmenter::Initialize(EncryptorSource* encryptor_source,
+                             double clear_lead_in_seconds,
+                             const std::vector<MediaStream*>& streams) {
   DCHECK_LT(0u, streams.size());
   moof_->header.sequence_number = 0;
 
@@ -68,7 +68,7 @@ Status MP4Segmenter::Initialize(EncryptorSource* encryptor_source,
       if (!encryptor)
         return Status(error::MUXER_FAILURE, "Failed to create the encryptor.");
     }
-    fragmenters_[i] = new MP4Fragmenter(
+    fragmenters_[i] = new Fragmenter(
         &moof_->tracks[i],
         encryptor.Pass(),
         clear_lead_in_seconds * streams[i]->info()->time_scale(),
@@ -87,9 +87,9 @@ Status MP4Segmenter::Initialize(EncryptorSource* encryptor_source,
   return Status::OK;
 }
 
-Status MP4Segmenter::Finalize() {
+Status Segmenter::Finalize() {
   end_of_segment_ = true;
-  for (std::vector<MP4Fragmenter*>::iterator it = fragmenters_.begin();
+  for (std::vector<Fragmenter*>::iterator it = fragmenters_.begin();
        it != fragmenters_.end();
        ++it) {
     Status status = FinalizeFragment(*it);
@@ -113,13 +113,13 @@ Status MP4Segmenter::Finalize() {
   return Status::OK;
 }
 
-Status MP4Segmenter::AddSample(const MediaStream* stream,
-                               scoped_refptr<MediaSample> sample) {
+Status Segmenter::AddSample(const MediaStream* stream,
+                            scoped_refptr<MediaSample> sample) {
   // Find the fragmenter for this stream.
   DCHECK(stream);
   DCHECK(stream_map_.find(stream) != stream_map_.end());
   uint32 stream_id = stream_map_[stream];
-  MP4Fragmenter* fragmenter = fragmenters_[stream_id];
+  Fragmenter* fragmenter = fragmenters_[stream_id];
 
   // Set default sample duration if it has not been set yet.
   if (moov_->extends.tracks[stream_id].default_sample_duration == 0) {
@@ -168,11 +168,11 @@ Status MP4Segmenter::AddSample(const MediaStream* stream,
   return Status::OK;
 }
 
-uint32 MP4Segmenter::GetReferenceTimeScale() const {
+uint32 Segmenter::GetReferenceTimeScale() const {
   return moov_->header.timescale;
 }
 
-double MP4Segmenter::GetDuration() const {
+double Segmenter::GetDuration() const {
   if (moov_->header.timescale == 0) {
     // Handling the case where this is not properly initialized.
     return 0.0;
@@ -181,7 +181,7 @@ double MP4Segmenter::GetDuration() const {
   return static_cast<double>(moov_->header.duration) / moov_->header.timescale;
 }
 
-void MP4Segmenter::InitializeSegment() {
+void Segmenter::InitializeSegment() {
   sidx_->references.clear();
   end_of_segment_ = false;
   std::vector<uint64>::iterator it = segment_durations_.begin();
@@ -189,30 +189,30 @@ void MP4Segmenter::InitializeSegment() {
     *it = 0;
 }
 
-Status MP4Segmenter::FinalizeSegment() {
+Status Segmenter::FinalizeSegment() {
   segment_initialized_ = false;
   return Status::OK;
 }
 
-uint32 MP4Segmenter::GetReferenceStreamId() {
+uint32 Segmenter::GetReferenceStreamId() {
   DCHECK(sidx_);
   return sidx_->reference_id - 1;
 }
 
-void MP4Segmenter::InitializeFragments() {
+void Segmenter::InitializeFragments() {
   ++moof_->header.sequence_number;
-  for (std::vector<MP4Fragmenter*>::iterator it = fragmenters_.begin();
+  for (std::vector<Fragmenter*>::iterator it = fragmenters_.begin();
        it != fragmenters_.end();
        ++it) {
     (*it)->InitializeFragment();
   }
 }
 
-Status MP4Segmenter::FinalizeFragment(MP4Fragmenter* fragmenter) {
+Status Segmenter::FinalizeFragment(Fragmenter* fragmenter) {
   fragmenter->FinalizeFragment();
 
   // Check if all tracks are ready for fragmentation.
-  for (std::vector<MP4Fragmenter*>::iterator it = fragmenters_.begin();
+  for (std::vector<Fragmenter*>::iterator it = fragmenters_.begin();
        it != fragmenters_.end();
        ++it) {
     if (!(*it)->fragment_finalized())
@@ -225,7 +225,7 @@ Status MP4Segmenter::FinalizeFragment(MP4Fragmenter* fragmenter) {
   uint64 base = moof_->ComputeSize() + mdat.ComputeSize();
   for (uint i = 0; i < moof_->tracks.size(); ++i) {
     TrackFragment& traf = moof_->tracks[i];
-    MP4Fragmenter* fragmenter = fragmenters_[i];
+    Fragmenter* fragmenter = fragmenters_[i];
     if (fragmenter->aux_data()->Size() > 0) {
       traf.auxiliary_offset.offsets[0] += base;
       base += fragmenter->aux_data()->Size();
@@ -244,7 +244,7 @@ Status MP4Segmenter::FinalizeFragment(MP4Fragmenter* fragmenter) {
   moof_->Write(fragment_buffer_.get());
 
   for (uint i = 0; i < moof_->tracks.size(); ++i) {
-    MP4Fragmenter* fragmenter = fragmenters_[i];
+    Fragmenter* fragmenter = fragmenters_[i];
     mdat.data_size =
         fragmenter->aux_data()->Size() + fragmenter->data()->Size();
     mdat.Write(fragment_buffer_.get());

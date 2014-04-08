@@ -20,7 +20,7 @@ class VideoStreamInfo;
 
 namespace mp4 {
 
-class MP4Segmenter;
+class Segmenter;
 
 struct ProtectionSchemeInfo;
 struct ProtectionSystemSpecificHeader;
@@ -79,7 +79,7 @@ class MP4Muxer : public Muxer {
   // Get time in seconds since midnight, Jan. 1, 1904, in UTC Time.
   uint64 IsoTimeNow();
 
-  scoped_ptr<MP4Segmenter> segmenter_;
+  scoped_ptr<Segmenter> segmenter_;
 
   DISALLOW_COPY_AND_ASSIGN(MP4Muxer);
 };

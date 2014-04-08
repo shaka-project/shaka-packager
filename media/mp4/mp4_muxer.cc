@@ -19,8 +19,8 @@
 #include "media/mp4/box_definitions.h"
 #include "media/mp4/es_descriptor.h"
 #include "media/mp4/fourccs.h"
-#include "media/mp4/mp4_general_segmenter.h"
-#include "media/mp4/mp4_vod_segmenter.h"
+#include "media/mp4/multi_segment_segmenter.h"
+#include "media/mp4/single_segment_segmenter.h"
 
 namespace {
 // The version of cenc implemented here. CENC 4.
@@ -99,10 +99,11 @@ Status MP4Muxer::Initialize() {
   }
 
   if (options().single_segment) {
-    segmenter_.reset(new MP4VODSegmenter(options(), ftyp.Pass(), moov.Pass()));
+    segmenter_.reset(
+        new SingleSegmentSegmenter(options(), ftyp.Pass(), moov.Pass()));
   } else {
     segmenter_.reset(
-        new MP4GeneralSegmenter(options(), ftyp.Pass(), moov.Pass()));
+        new MultiSegmentSegmenter(options(), ftyp.Pass(), moov.Pass()));
   }
 
   Status segmenter_initialized = segmenter_->Initialize(
