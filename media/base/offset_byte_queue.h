@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FORMATS_MP4_OFFSET_BYTE_QUEUE_H_
-#define MEDIA_FORMATS_MP4_OFFSET_BYTE_QUEUE_H_
+#ifndef MEDIA_BASE_OFFSET_BYTE_QUEUE_H_
+#define MEDIA_BASE_OFFSET_BYTE_QUEUE_H_
 
 #include "base/basictypes.h"
 #include "media/base/byte_queue.h"
@@ -66,4 +66,4 @@ class OffsetByteQueue {
 
 }  // namespace media
 
-#endif  // MEDIA_FORMATS_MP4_OFFSET_BYTE_QUEUE_H_
+#endif  // MEDIA_BASE_OFFSET_BYTE_QUEUE_H_

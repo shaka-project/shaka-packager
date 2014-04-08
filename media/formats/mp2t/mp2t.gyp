@@ -22,6 +22,8 @@
         'es_parser.h',
         'es_parser_adts.cc',
         'es_parser_adts.h',
+        'es_parser_h264.cc',
+        'es_parser_h264.h',
       ],
       'dependencies': [
         '../../base/media_base.gyp:base',
@@ -31,10 +33,12 @@
       'target_name': 'mp2t_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
+        'es_parser_h264_unittest.cc',
       ],
       'dependencies': [
         '../../../testing/gtest.gyp:gtest',
         '../../../testing/gmock.gyp:gmock',
+        '../../filters/filters.gyp:filters',
         '../../test/media_test.gyp:media_test_support',
         'mp2t',
       ]

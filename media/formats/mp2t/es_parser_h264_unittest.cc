@@ -10,14 +10,21 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "media/base/stream_parser_buffer.h"
-#include "media/base/test_data_util.h"
+#include "media/base/media_sample.h"
+#include "media/base/timestamp.h"
 #include "media/filters/h264_parser.h"
 #include "media/formats/mp2t/es_parser_h264.h"
+#include "media/test/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using media::filters::H264Parser;
+using media::filters::H264PPS;
+using media::filters::H264SliceHeader;
+using media::filters::H264SPS;
+using media::filters::H264NALU;
+
 namespace media {
-class VideoDecoderConfig;
+class VideoStreamInfo;
 
 namespace mp2t {
 
@@ -116,20 +123,20 @@ void AppendAUD(
 
 class EsParserH264Test : public testing::Test {
  public:
-  EsParserH264Test() : buffer_count_(0) {
+  EsParserH264Test() : sample_count_(0) {
   }
 
   void LoadStream(const char* filename);
   void ProcessPesPackets(const std::vector<Packet>& pes_packets);
 
-  void EmitBuffer(scoped_refptr<StreamParserBuffer> buffer) {
-    buffer_count_++;
+  void EmitSample(scoped_refptr<MediaSample>& sample) {
+    sample_count_++;
   }
 
-  void NewVideoConfig(const VideoDecoderConfig& config) {
+  void NewVideoConfig(scoped_refptr<VideoStreamInfo>& config) {
   }
 
-  size_t buffer_count() const { return buffer_count_; }
+  size_t sample_count() const { return sample_count_; }
 
   // Stream with AUD NALUs.
   std::vector<uint8> stream_;
@@ -138,7 +145,7 @@ class EsParserH264Test : public testing::Test {
   std::vector<Packet> access_units_;
 
  protected:
-  size_t buffer_count_;
+  size_t sample_count_;
 };
 
 void EsParserH264Test::LoadStream(const char* filename) {
@@ -159,9 +166,13 @@ void EsParserH264Test::LoadStream(const char* filename) {
 
 void EsParserH264Test::ProcessPesPackets(
     const std::vector<Packet>& pes_packets) {
+  // Duration of one 25fps video frame in 90KHz clock units.
+  const uint32 kMpegTicksPerFrame = 3600;
+
   EsParserH264 es_parser(
+      0,
       base::Bind(&EsParserH264Test::NewVideoConfig, base::Unretained(this)),
-      base::Bind(&EsParserH264Test::EmitBuffer, base::Unretained(this)));
+      base::Bind(&EsParserH264Test::EmitSample, base::Unretained(this)));
 
   size_t au_idx = 0;
   for (size_t k = 0; k < pes_packets.size(); k++) {
@@ -177,11 +188,11 @@ void EsParserH264Test::ProcessPesPackets(
 
     // Check whether the PES packet includes the start of an access unit.
     // The timings are relevant only in this case.
-    base::TimeDelta pts = kNoTimestamp();
-    base::TimeDelta dts = kNoTimestamp();
+    int64 pts = kNoTimestamp;
+    int64 dts = kNoTimestamp;
     if (cur_pes_offset <= access_units_[au_idx].offset &&
         cur_pes_offset + cur_pes_size > access_units_[au_idx].offset) {
-      pts = base::TimeDelta::FromMilliseconds(au_idx * 40u);
+      pts = au_idx * kMpegTicksPerFrame;
     }
 
     ASSERT_TRUE(
@@ -199,7 +210,7 @@ TEST_F(EsParserH264Test, OneAccessUnitPerPes) {
 
   // Process each PES packet.
   ProcessPesPackets(pes_packets);
-  ASSERT_EQ(buffer_count(), access_units_.size());
+  ASSERT_EQ(sample_count(), access_units_.size());
 }
 
 TEST_F(EsParserH264Test, NonAlignedPesPacket) {
@@ -223,7 +234,7 @@ TEST_F(EsParserH264Test, NonAlignedPesPacket) {
 
   // Process each PES packet.
   ProcessPesPackets(pes_packets);
-  ASSERT_EQ(buffer_count(), access_units_.size());
+  ASSERT_EQ(sample_count(), access_units_.size());
 }
 
 TEST_F(EsParserH264Test, SeveralPesPerAccessUnit) {
@@ -253,9 +264,8 @@ TEST_F(EsParserH264Test, SeveralPesPerAccessUnit) {
 
   // Process each PES packet.
   ProcessPesPackets(pes_packets);
-  ASSERT_EQ(buffer_count(), access_units_.size());
+  ASSERT_EQ(sample_count(), access_units_.size());
 }
 
 }  // namespace mp2t
 }  // namespace media
-

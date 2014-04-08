@@ -6,7 +6,7 @@
 
 #include "base/basictypes.h"
 #include "base/memory/scoped_ptr.h"
-#include "media/formats/mp4/offset_byte_queue.h"
+#include "media/base/offset_byte_queue.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

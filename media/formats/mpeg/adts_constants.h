@@ -10,15 +10,15 @@
 namespace media {
 
 enum {
-  kADTSHeaderMinSize = 7,
+  kAdtsHeaderMinSize = 7,
   kSamplesPerAACFrame = 1024,
 };
 
-extern const int kADTSFrequencyTable[];
-extern const size_t kADTSFrequencyTableSize;
+extern const int kAdtsFrequencyTable[];
+extern const size_t kAdtsFrequencyTableSize;
 
-extern const int kADTSChannelLayoutTable[];
-extern const size_t kADTSChannelLayoutTableSize;
+extern const int kAdtsNumChannelsTable[];
+extern const size_t kAdtsNumChannelsTableSize;
 
 }  // namespace media
 

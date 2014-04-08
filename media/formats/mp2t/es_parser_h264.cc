@@ -7,39 +7,50 @@
 #include "base/basictypes.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "media/base/buffers.h"
-#include "media/base/stream_parser_buffer.h"
-#include "media/base/video_frame.h"
+#include "media/base/media_sample.h"
+#include "media/base/offset_byte_queue.h"
+#include "media/base/timestamp.h"
+#include "media/base/video_stream_info.h"
 #include "media/filters/h264_parser.h"
-#include "media/formats/common/offset_byte_queue.h"
 #include "media/formats/mp2t/mp2t_common.h"
-#include "ui/gfx/rect.h"
-#include "ui/gfx/size.h"
+
+using media::filters::H264Parser;
+using media::filters::H264PPS;
+using media::filters::H264SliceHeader;
+using media::filters::H264SPS;
+using media::filters::H264NALU;
 
 namespace media {
 namespace mp2t {
+
+namespace {
 
 // An AUD NALU is at least 4 bytes:
 // 3 bytes for the start code + 1 byte for the NALU type.
 const int kMinAUDSize = 4;
 
+// Size of H.264 NALU length output by this SDK.
+const uint8 kCommonNaluLengthSize = 4;
+
+}  // anonymous namespace
+
 EsParserH264::EsParserH264(
+    uint32 track_id,
     const NewVideoConfigCB& new_video_config_cb,
-    const EmitBufferCB& emit_buffer_cb)
-  : new_video_config_cb_(new_video_config_cb),
-    emit_buffer_cb_(emit_buffer_cb),
-    es_queue_(new media::OffsetByteQueue()),
-    h264_parser_(new H264Parser()),
-    current_access_unit_pos_(0),
-    next_access_unit_pos_(0) {
+    const EmitSampleCB& emit_sample_cb)
+    : EsParser(track_id),
+      new_video_config_cb_(new_video_config_cb),
+      emit_sample_cb_(emit_sample_cb),
+      es_queue_(new media::OffsetByteQueue()),
+      h264_parser_(new H264Parser()),
+      current_access_unit_pos_(0),
+      next_access_unit_pos_(0) {
 }
 
 EsParserH264::~EsParserH264() {
 }
 
-bool EsParserH264::Parse(const uint8* buf, int size,
-                         base::TimeDelta pts,
-                         base::TimeDelta dts) {
+bool EsParserH264::Parse(const uint8* buf, int size, int64 pts, int64 dts) {
   // Note: Parse is invoked each time a PES packet has been reassembled.
   // Unfortunately, a PES packet does not necessarily map
   // to an h264 access unit, although the HLS recommendation is to use one PES
@@ -49,11 +60,11 @@ bool EsParserH264::Parse(const uint8* buf, int size,
   // HLS recommendation: "In AVC video, you should have both a DTS and a
   // PTS in each PES header".
   // However, some streams do not comply with this recommendation.
-  DVLOG_IF(1, pts == kNoTimestamp()) << "Each video PES should have a PTS";
-  if (pts != kNoTimestamp()) {
+  DVLOG_IF(1, pts == kNoTimestamp) << "Each video PES should have a PTS";
+  if (pts != kNoTimestamp) {
     TimingDesc timing_desc;
     timing_desc.pts = pts;
-    timing_desc.dts = (dts != kNoTimestamp()) ? dts : pts;
+    timing_desc.dts = (dts != kNoTimestamp) ? dts : pts;
 
     // Link the end of the byte queue with the incoming timing descriptor.
     timing_desc_list_.push_back(
@@ -84,7 +95,7 @@ void EsParserH264::Reset() {
   current_access_unit_pos_ = 0;
   next_access_unit_pos_ = 0;
   timing_desc_list_.clear();
-  last_video_decoder_config_ = VideoDecoderConfig();
+  last_video_decoder_config_ = scoped_refptr<VideoStreamInfo>();
 }
 
 bool EsParserH264::FindAUD(int64* stream_pos) {
@@ -203,7 +214,7 @@ bool EsParserH264::ParseInternal() {
           // does not necessarily start with an SPS/PPS/IDR.
           // TODO(damienv): Should be able to differentiate a missing SPS/PPS
           // from a slice header parsing error.
-          if (last_video_decoder_config_.IsValidConfig())
+          if (last_video_decoder_config_)
             return false;
         } else {
           pps_id_for_access_unit = shdr.pic_parameter_set_id;
@@ -228,13 +239,13 @@ bool EsParserH264::ParseInternal() {
 bool EsParserH264::EmitFrame(int64 access_unit_pos, int access_unit_size,
                              bool is_key_frame, int pps_id) {
   // Get the access unit timing info.
-  TimingDesc current_timing_desc = {kNoTimestamp(), kNoTimestamp()};
+  TimingDesc current_timing_desc = {kNoTimestamp, kNoTimestamp};
   while (!timing_desc_list_.empty() &&
          timing_desc_list_.front().first <= access_unit_pos) {
     current_timing_desc = timing_desc_list_.front().second;
     timing_desc_list_.pop_front();
   }
-  if (current_timing_desc.pts == kNoTimestamp())
+  if (current_timing_desc.pts == kNoTimestamp)
     return false;
 
   // Update the video decoder configuration if needed.
@@ -245,7 +256,7 @@ bool EsParserH264::EmitFrame(int64 access_unit_pos, int access_unit_size,
     // In this case, the initial frames are conveyed to the upper layer with
     // an invalid VideoDecoderConfig and it's up to the upper layer
     // to process this kind of frame accordingly.
-    if (last_video_decoder_config_.IsValidConfig())
+    if (last_video_decoder_config_)
       return false;
   } else {
     const H264SPS* sps = h264_parser_->GetSPS(pps->seq_parameter_set_id);
@@ -264,69 +275,58 @@ bool EsParserH264::EmitFrame(int64 access_unit_pos, int access_unit_size,
 
   // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
   // type and allow multiple video tracks. See https://crbug.com/341581.
-  scoped_refptr<StreamParserBuffer> stream_parser_buffer =
-      StreamParserBuffer::CopyFrom(
+  scoped_refptr<MediaSample> media_sample =
+      MediaSample::CopyFrom(
           es,
           access_unit_size,
-          is_key_frame,
-          DemuxerStream::VIDEO,
-          0);
-  stream_parser_buffer->SetDecodeTimestamp(current_timing_desc.dts);
-  stream_parser_buffer->set_timestamp(current_timing_desc.pts);
-  emit_buffer_cb_.Run(stream_parser_buffer);
+          is_key_frame);
+  media_sample->set_dts(current_timing_desc.dts);
+  media_sample->set_pts(current_timing_desc.pts);
+  emit_sample_cb_.Run(media_sample);
   return true;
 }
 
 bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
-  // Set the SAR to 1 when not specified in the H264 stream.
-  int sar_width = (sps->sar_width == 0) ? 1 : sps->sar_width;
-  int sar_height = (sps->sar_height == 0) ? 1 : sps->sar_height;
+  // TODO(tinskip): Generate an error if video configuration change is detected.
+  if (last_video_decoder_config_) {
+    // Varying video configurations currently not supported. Just assume that
+    // the video configuration has not changed.
+    return true;
+  }
 
   // TODO(damienv): a MAP unit can be either 16 or 32 pixels.
   // although it's 16 pixels for progressive non MBAFF frames.
-  gfx::Size coded_size((sps->pic_width_in_mbs_minus1 + 1) * 16,
-                       (sps->pic_height_in_map_units_minus1 + 1) * 16);
-  gfx::Rect visible_rect(
-      sps->frame_crop_left_offset,
-      sps->frame_crop_top_offset,
-      (coded_size.width() - sps->frame_crop_right_offset) -
-      sps->frame_crop_left_offset,
-      (coded_size.height() - sps->frame_crop_bottom_offset) -
-      sps->frame_crop_top_offset);
-  if (visible_rect.width() <= 0 || visible_rect.height() <= 0)
-    return false;
-  gfx::Size natural_size(
-      (visible_rect.width() * sar_width) / sar_height,
-      visible_rect.height());
-  if (natural_size.width() == 0)
-    return false;
+  uint16 width = (sps->pic_width_in_mbs_minus1 + 1) * 16;
+  uint16 height = (sps->pic_height_in_map_units_minus1 + 1) * 16;
 
-  VideoDecoderConfig video_decoder_config(
-      kCodecH264,
-      VIDEO_CODEC_PROFILE_UNKNOWN,
-      VideoFrame::YV12,
-      coded_size,
-      visible_rect,
-      natural_size,
-      NULL, 0,
-      false);
+  last_video_decoder_config_ = scoped_refptr<VideoStreamInfo>(
+      new VideoStreamInfo(
+          track_id(),
+          kMpeg2Timescale,
+          kInfiniteDuration,
+          kCodecH264,
+          std::string(),  // TODO(tinskip): calculate codec string.
+          std::string(),
+          width,
+          height,
+          kCommonNaluLengthSize,
+          NULL,  // TODO(tinskip): calculate AVCDecoderConfigurationRecord.
+          0,
+          false));
+  DVLOG(1) << "Profile IDC: " << sps->profile_idc;
+  DVLOG(1) << "Level IDC: " << sps->level_idc;
+  DVLOG(1) << "Pic width: " << width;
+  DVLOG(1) << "Pic height: " << height;
+  DVLOG(1) << "log2_max_frame_num_minus4: "
+           << sps->log2_max_frame_num_minus4;
+  DVLOG(1) << "SAR: width=" << sps->sar_width
+           << " height=" << sps->sar_height;
 
-  if (!video_decoder_config.Matches(last_video_decoder_config_)) {
-    DVLOG(1) << "Profile IDC: " << sps->profile_idc;
-    DVLOG(1) << "Level IDC: " << sps->level_idc;
-    DVLOG(1) << "Pic width: " << coded_size.width();
-    DVLOG(1) << "Pic height: " << coded_size.height();
-    DVLOG(1) << "log2_max_frame_num_minus4: "
-             << sps->log2_max_frame_num_minus4;
-    DVLOG(1) << "SAR: width=" << sps->sar_width
-             << " height=" << sps->sar_height;
-    last_video_decoder_config_ = video_decoder_config;
-    new_video_config_cb_.Run(video_decoder_config);
-  }
+  // Video config notification.
+  new_video_config_cb_.Run(last_video_decoder_config_);
 
   return true;
 }
 
 }  // namespace mp2t
 }  // namespace media
-

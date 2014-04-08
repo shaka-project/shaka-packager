@@ -14,7 +14,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_ptr.h"
 #include "media/base/media_parser.h"
-#include "media/formats/mp4/offset_byte_queue.h"
+#include "media/base/offset_byte_queue.h"
 
 namespace media {
 

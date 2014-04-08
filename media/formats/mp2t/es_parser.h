@@ -17,7 +17,7 @@ namespace mp2t {
 
 class EsParser {
  public:
-  typedef base::Callback<void(scoped_refptr<MediaSample>)> EmitSampleCB;
+  typedef base::Callback<void(scoped_refptr<MediaSample>&)> EmitSampleCB;
 
   EsParser(uint32 track_id) : track_id_(track_id) {}
   virtual ~EsParser() {}

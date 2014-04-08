@@ -25,7 +25,8 @@ namespace mp2t {
 
 class EsParserAdts : public EsParser {
  public:
-  typedef base::Callback<void(scoped_refptr<AudioStreamInfo>&)> NewAudioConfigCB;
+  typedef base::Callback<void(
+      scoped_refptr<AudioStreamInfo>&)> NewAudioConfigCB;
 
   EsParserAdts(uint32 track_id,
                const NewAudioConfigCB& new_audio_config_cb,

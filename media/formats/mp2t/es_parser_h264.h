@@ -12,16 +12,17 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_ptr.h"
-#include "base/time/time.h"
-#include "media/base/media_export.h"
-#include "media/base/video_decoder_config.h"
 #include "media/formats/mp2t/es_parser.h"
 
 namespace media {
+class OffsetByteQueue;
+class VideoStreamInfo;
+
+namespace filters {
 class H264Parser;
 struct H264SPS;
-class OffsetByteQueue;
-}
+}  // namespace filters
+}  // namespace media
 
 namespace media {
 namespace mp2t {
@@ -31,25 +32,25 @@ namespace mp2t {
 // Mpeg2 TS spec: "2.14 Carriage of Rec. ITU-T H.264 | ISO/IEC 14496-10 video"
 // "Each AVC access unit shall contain an access unit delimiter NAL Unit;"
 //
-class MEDIA_EXPORT EsParserH264 : NON_EXPORTED_BASE(public EsParser) {
+class EsParserH264 : public EsParser {
  public:
-  typedef base::Callback<void(const VideoDecoderConfig&)> NewVideoConfigCB;
+  typedef base::Callback<void(
+      scoped_refptr<VideoStreamInfo>&)> NewVideoConfigCB;
 
-  EsParserH264(const NewVideoConfigCB& new_video_config_cb,
-               const EmitBufferCB& emit_buffer_cb);
+  EsParserH264(uint32 track_id,
+               const NewVideoConfigCB& new_video_config_cb,
+               const EmitSampleCB& emit_sample_cb);
   virtual ~EsParserH264();
 
   // EsParser implementation.
-  virtual bool Parse(const uint8* buf, int size,
-                     base::TimeDelta pts,
-                     base::TimeDelta dts) OVERRIDE;
+  virtual bool Parse(const uint8* buf, int size, int64 pts, int64 dts) OVERRIDE;
   virtual void Flush() OVERRIDE;
   virtual void Reset() OVERRIDE;
 
  private:
   struct TimingDesc {
-    base::TimeDelta dts;
-    base::TimeDelta pts;
+    int64 dts;
+    int64 pts;
   };
 
   // Find the AUD located at or after |*stream_pos|.
@@ -70,11 +71,11 @@ class MEDIA_EXPORT EsParserH264 : NON_EXPORTED_BASE(public EsParser) {
 
   // Update the video decoder config based on an H264 SPS.
   // Return true if successful.
-  bool UpdateVideoDecoderConfig(const H264SPS* sps);
+  bool UpdateVideoDecoderConfig(const filters::H264SPS* sps);
 
   // Callbacks to pass the stream configuration and the frames.
   NewVideoConfigCB new_video_config_cb_;
-  EmitBufferCB emit_buffer_cb_;
+  EmitSampleCB emit_sample_cb_;
 
   // Bytes of the ES stream that have not been emitted yet.
   scoped_ptr<media::OffsetByteQueue> es_queue_;
@@ -83,16 +84,15 @@ class MEDIA_EXPORT EsParserH264 : NON_EXPORTED_BASE(public EsParser) {
   // H264 parser state.
   // - |current_access_unit_pos_| is pointing to an annexB syncword
   // representing the first NALU of an H264 access unit.
-  scoped_ptr<H264Parser> h264_parser_;
+  scoped_ptr<filters::H264Parser> h264_parser_;
   int64 current_access_unit_pos_;
   int64 next_access_unit_pos_;
 
   // Last video decoder config.
-  VideoDecoderConfig last_video_decoder_config_;
+  scoped_refptr<VideoStreamInfo> last_video_decoder_config_;
 };
 
 }  // namespace mp2t
 }  // namespace media
 
 #endif
-

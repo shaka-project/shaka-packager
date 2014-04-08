@@ -63,3 +63,10 @@ test-25fps.h264:
   with:
   ffmpeg -i third_party/WebKit/LayoutTests/media/content/test-25fps.mp4 \
       -vcodec copy -vbsf h264_mp4toannexb -an test-25fps.h264
+
+// VDA test files: bear
+bear.h264:
+  Using ffmpeg version 0.8.6-4:0.8.6-0ubuntu0.12.04.1, generated with
+  bear.mp4 (https://chromiumcodereview.appspot.com/10805089):
+  ffmpeg -i bear.mp4 -vcodec copy -vbsf h264_mp4toannexb \
+      -an bear.h264

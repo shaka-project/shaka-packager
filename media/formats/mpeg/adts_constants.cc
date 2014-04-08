@@ -17,8 +17,8 @@ const size_t kADTSFrequencyTableSize = arraysize(kADTSFrequencyTable);
 
 // The following conversion table is extracted from ISO 14496 Part 3 -
 // Table 1.17 - Channel Configuration.
-const int kADTSChannelLayoutTable[] = {
+const int kADTSNumChannelsTable[] = {
     0, 1, 2, 2, 4, 5, 6, 8 };
-const size_t kADTSChannelLayoutTableSize = arraysize(kADTSChannelLayoutTable);
+const size_t kADTSNumChannelsTableSize = arraysize(kADTSNumChannelsTable);
 
 }  // namespace media
