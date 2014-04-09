@@ -127,8 +127,8 @@ Status MP4Muxer::Finalize() {
   return Status::OK;
 }
 
-Status MP4Muxer::AddSample(const MediaStream* stream,
-                           scoped_refptr<MediaSample> sample) {
+Status MP4Muxer::DoAddSample(const MediaStream* stream,
+                             scoped_refptr<MediaSample> sample) {
   DCHECK(segmenter_);
   return segmenter_->AddSample(stream, sample);
 }

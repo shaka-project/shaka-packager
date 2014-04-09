@@ -15,6 +15,7 @@ namespace media {
 Muxer::Muxer(const MuxerOptions& options)
     : options_(options),
       encryptor_source_(NULL),
+      initialized_(false),
       clear_lead_in_seconds_(0),
       muxer_listener_(NULL),
       clock_(NULL) {}
@@ -27,10 +28,10 @@ void Muxer::SetEncryptorSource(EncryptorSource* encryptor_source,
   clear_lead_in_seconds_ = clear_lead_in_seconds;
 }
 
-Status Muxer::AddStream(MediaStream* stream) {
+void Muxer::AddStream(MediaStream* stream) {
+  DCHECK(stream);
   stream->Connect(this);
   streams_.push_back(stream);
-  return Status::OK;
 }
 
 Status Muxer::Run() {
@@ -55,16 +56,36 @@ Status Muxer::Run() {
     status = AddSample(streams_[current_stream_id], sample);
 
     // Switch to next stream if the current stream is ready for fragmentation.
-    if (status.Matches(Status(error::FRAGMENT_FINALIZED, ""))) {
+    if (status.error_code() == error::FRAGMENT_FINALIZED) {
       current_stream_id = (current_stream_id + 1) % streams_.size();
       status.Clear();
     }
   }
-  return status.Matches(Status(error::END_OF_STREAM, "")) ? Status::OK : status;
+  // Finalize the muxer after reaching end of stream.
+  return status.error_code() == error::END_OF_STREAM ? Finalize() : status;
 }
 
 void Muxer::SetMuxerListener(media::event::MuxerListener* muxer_listener) {
   muxer_listener_ = muxer_listener;
+}
+
+Status Muxer::AddSample(const MediaStream* stream,
+                        scoped_refptr<MediaSample> sample) {
+  DCHECK(std::find(streams_.begin(), streams_.end(), stream) != streams_.end());
+
+  if (!initialized_) {
+    Status status = Initialize();
+    if (!status.ok())
+      return status;
+    initialized_ = true;
+  }
+  if (sample->end_of_stream()) {
+    // EOS sample should be sent only when the sample was pushed from Demuxer
+    // to Muxer. In this case, there should be only one stream in Muxer.
+    DCHECK_EQ(1u, streams_.size());
+    return Finalize();
+  }
+  return DoAddSample(stream, sample);
 }
 
 }  // namespace media

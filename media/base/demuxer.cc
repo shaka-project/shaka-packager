@@ -11,6 +11,7 @@
 #include "base/stl_util.h"
 #include "media/base/container_names.h"
 #include "media/base/decryptor_source.h"
+#include "media/base/media_sample.h"
 #include "media/base/media_stream.h"
 #include "media/base/stream_info.h"
 #include "media/file/file.h"
@@ -37,13 +38,13 @@ Demuxer::~Demuxer() {
 }
 
 Status Demuxer::Initialize() {
-  DCHECK(media_file_ == NULL);
+  DCHECK(!media_file_);
   DCHECK(!init_event_received_);
 
   media_file_ = File::Open(file_name_.c_str(), "r");
-  if (media_file_ == NULL) {
+  if (!media_file_) {
     return Status(error::FILE_FAILURE,
-                  "Cannot open file for read " + file_name_);
+                  "Cannot open file for reading " + file_name_);
   }
 
   // Determine media container.
@@ -119,13 +120,25 @@ Status Demuxer::Run() {
 
   while ((status = Parse()).ok())
     continue;
-  return status.Matches(Status(error::END_OF_STREAM, "")) ? Status::OK : status;
+
+  if (status.error_code() == error::END_OF_STREAM) {
+    // Push EOS sample to muxer to indicate end of stream.
+    const scoped_refptr<MediaSample>& sample = MediaSample::CreateEOSBuffer();
+    for (std::vector<MediaStream*>::iterator it = streams_.begin();
+         it != streams_.end();
+         ++it) {
+      status = (*it)->PushSample(sample);
+      if (!status.ok())
+        return status;
+    }
+  }
+  return status;
 }
 
 Status Demuxer::Parse() {
-  DCHECK(media_file_ != NULL);
-  DCHECK(parser_ != NULL);
-  DCHECK(buffer_ != NULL);
+  DCHECK(media_file_);
+  DCHECK(parser_);
+  DCHECK(buffer_);
 
   int64 bytes_read = media_file_->Read(buffer_.get(), kBufSize);
   if (bytes_read <= 0) {

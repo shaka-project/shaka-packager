@@ -172,11 +172,7 @@ bool AddStreamToMuxer(const std::vector<MediaStream*>& streams, Muxer* muxer) {
     LOG(ERROR) << "No " << FLAGS_stream << " stream found in the input.";
     return false;
   }
-  Status status = muxer->AddStream(stream);
-  if (!status.ok()) {
-    LOG(ERROR) << "Muxer failed to add stream: " << status.ToString();
-    return false;
-  }
+  muxer->AddStream(stream);
   return true;
 }
 
@@ -234,21 +230,10 @@ bool RunPackager(const std::string& input) {
   }
   muxer->SetEncryptorSource(encryptor_source.get(), FLAGS_clear_lead);
 
-  status = muxer->Initialize();
-  if (!status.ok()) {
-    LOG(ERROR) << "Muxer failed to initialize: " << status.ToString();
-    return false;
-  }
-
   // Start remuxing process.
   status = demuxer.Run();
   if (!status.ok()) {
     LOG(ERROR) << "Remuxing failed: " << status.ToString();
-    return false;
-  }
-  status = muxer->Finalize();
-  if (!status.ok()) {
-    LOG(ERROR) << "Muxer failed to finalize: " << status.ToString();
     return false;
   }
 

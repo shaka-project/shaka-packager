@@ -38,26 +38,18 @@ class Muxer {
   explicit Muxer(const MuxerOptions& options);
   virtual ~Muxer();
 
-  /// Set encryptor source. Should be called before calling Initialize().
-  /// @param encryptor_source should not be NULL.
+  /// Set encryptor source.
+  /// @param encryptor_source points to the encryptor source to be injected.
+  ///        Should not be NULL.
+  /// @param clear_lead_in_seconds specifies clear lead duration in seconds.
   void SetEncryptorSource(EncryptorSource* encryptor_source,
                           double clear_lead_in_seconds);
 
-  /// Initialize the muxer. Must be called after connecting all the streams.
-  virtual Status Initialize() = 0;
-
-  /// Final clean up.
-  virtual Status Finalize() = 0;
-
   /// Add video/audio stream.
-  virtual Status AddStream(MediaStream* stream);
-
-  /// Add new media sample.
-  virtual Status AddSample(const MediaStream* stream,
-                           scoped_refptr<MediaSample> sample) = 0;
+  void AddStream(MediaStream* stream);
 
   /// Drive the remuxing from muxer side (pull).
-  virtual Status Run();
+  Status Run();
 
   /// Set a MuxerListener event handler for this object.
   /// @param muxer_listener should not be NULL.
@@ -83,9 +75,26 @@ class Muxer {
   base::Clock* clock() { return clock_; }
 
  private:
+  friend class MediaStream;  // Needed to access AddSample.
+
+  // Add new media sample.
+  Status AddSample(const MediaStream* stream,
+                   scoped_refptr<MediaSample> sample);
+
+  // Initialize the muxer.
+  virtual Status Initialize() = 0;
+
+  // Final clean up.
+  virtual Status Finalize() = 0;
+
+  // AddSample implementation.
+  virtual Status DoAddSample(const MediaStream* stream,
+                             scoped_refptr<MediaSample> sample) = 0;
+
   MuxerOptions options_;
   std::vector<MediaStream*> streams_;
   EncryptorSource* encryptor_source_;
+  bool initialized_;
   double clear_lead_in_seconds_;
 
   event::MuxerListener* muxer_listener_;

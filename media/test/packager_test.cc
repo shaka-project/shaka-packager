@@ -157,12 +157,10 @@ void PackagerTestBasic::Remux(const std::string& input,
         new mp4::MP4Muxer(SetupOptions(video_output, single_segment)));
     muxer_video->set_clock(&fake_clock_);
 
-    ASSERT_OK(muxer_video->AddStream(FindFirstVideoStream(demuxer.streams())));
+    muxer_video->AddStream(FindFirstVideoStream(demuxer.streams()));
 
     if (enable_encryption)
       muxer_video->SetEncryptorSource(&encryptor_source, kClearLeadInSeconds);
-
-    ASSERT_OK(muxer_video->Initialize());
   }
 
   scoped_ptr<Muxer> muxer_audio;
@@ -171,21 +169,14 @@ void PackagerTestBasic::Remux(const std::string& input,
         new mp4::MP4Muxer(SetupOptions(audio_output, single_segment)));
     muxer_audio->set_clock(&fake_clock_);
 
-    ASSERT_OK(muxer_audio->AddStream(FindFirstAudioStream(demuxer.streams())));
+    muxer_audio->AddStream(FindFirstAudioStream(demuxer.streams()));
 
     if (enable_encryption)
       muxer_video->SetEncryptorSource(&encryptor_source, kClearLeadInSeconds);
-
-    ASSERT_OK(muxer_audio->Initialize());
   }
 
   // Start remuxing process.
   ASSERT_OK(demuxer.Run());
-
-  if (muxer_video)
-    ASSERT_OK(muxer_video->Finalize());
-  if (muxer_audio)
-    ASSERT_OK(muxer_audio->Finalize());
 }
 
 TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentUnencrypted) {

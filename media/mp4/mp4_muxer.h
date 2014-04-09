@@ -34,15 +34,13 @@ class MP4Muxer : public Muxer {
   explicit MP4Muxer(const MuxerOptions& options);
   virtual ~MP4Muxer();
 
-  /// @name Muxer implementation overrides.
-  /// @{
+ private:
+  // Muxer implementation overrides.
   virtual Status Initialize() OVERRIDE;
   virtual Status Finalize() OVERRIDE;
-  virtual Status AddSample(const MediaStream* stream,
-                           scoped_refptr<MediaSample> sample) OVERRIDE;
-  /// @}
+  virtual Status DoAddSample(const MediaStream* stream,
+                             scoped_refptr<MediaSample> sample) OVERRIDE;
 
- private:
   // Generate Audio/Video Track atom.
   void InitializeTrak(const StreamInfo* info, Track* trak);
   void GenerateAudioTrak(const AudioStreamInfo* audio_info,
