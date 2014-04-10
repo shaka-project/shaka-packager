@@ -46,7 +46,7 @@ TsSectionPsi::~TsSectionPsi() {
 }
 
 bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
-                             const uint8* buf, int size) {
+                         const uint8* buf, int size) {
   // Ignore partial PSI.
   if (wait_for_pusi_ && !payload_unit_start_indicator)
     return true;
@@ -129,4 +129,3 @@ void TsSectionPsi::ResetPsiState() {
 
 }  // namespace mp2t
 }  // namespace media
-

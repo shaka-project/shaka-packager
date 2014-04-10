@@ -24,7 +24,11 @@ vorbis-packet-1  - timestamp: 0ms, duration: 0ms
 vorbis-packet-2  - timestamp: 0ms, duration: 0ms
 vorbis-packet-3  - timestamp: 2902ms, duration: 0ms
 
-// Encrypted Files
+// Transport streams.
+bear-1280x720.ts - AVC + AAC encode, multiplexed into an MPEG2-TS container.
+bear-1280x720_ptswraparound.ts - Same as bear-1280x720.ts, with a timestamp wrap-around in the middle.
+
+// Encrypted Files.
 bear-1280x720-a_frag-cenc.mp4 - A fragmented MP4 version of the audio track of bear-1280x720.mp4 encrypted (ISO CENC) using key ID [1] and key [2].
 bear-1280x720-a_frag-cenc_clear-all.mp4 - Same as bear-1280x720-a_frag-cenc.mp4 but no fragments are encrypted.
 bear-1280x720-v_frag-cenc.mp4 - A fragmented MP4 version of the video track of bear-1280x720.mp4 encrypted (ISO CENC) using key ID [1] and key [2].

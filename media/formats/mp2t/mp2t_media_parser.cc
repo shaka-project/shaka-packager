@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/mp2t/mp2t_stream_parser.h"
+#include "media/formats/mp2t/mp2t_media_parser.h"
 
 #include "base/bind.h"
 #include "base/memory/scoped_ptr.h"
 #include "base/stl_util.h"
-#include "media/base/audio_decoder_config.h"
-#include "media/base/buffers.h"
-#include "media/base/stream_parser_buffer.h"
-#include "media/base/text_track_config.h"
-#include "media/base/video_decoder_config.h"
+#include "media/base/media_sample.h"
+#include "media/base/stream_info.h"
 #include "media/formats/mp2t/es_parser.h"
 #include "media/formats/mp2t/es_parser_adts.h"
 #include "media/formats/mp2t/es_parser_h264.h"
@@ -41,7 +38,7 @@ class PidState {
     kPidVideoPes,
   };
 
-  PidState(int pid, PidType pid_tyoe,
+  PidState(int pid, PidType pid_type,
            scoped_ptr<TsSection> section_parser);
 
   // Extract the content of the TS packet and parse it.
@@ -61,6 +58,11 @@ class PidState {
 
   PidType pid_type() const { return pid_type_; }
 
+  scoped_refptr<StreamInfo>& config() { return config_; }
+  void set_config(scoped_refptr<StreamInfo>& config) { config_ = config; }
+
+  SampleQueue& sample_queue() { return sample_queue_; }
+
  private:
   void ResetState();
 
@@ -69,17 +71,18 @@ class PidState {
   scoped_ptr<TsSection> section_parser_;
 
   bool enable_;
-
   int continuity_counter_;
+  scoped_refptr<StreamInfo> config_;
+  SampleQueue sample_queue_;
 };
 
 PidState::PidState(int pid, PidType pid_type,
                    scoped_ptr<TsSection> section_parser)
-  : pid_(pid),
-    pid_type_(pid_type),
-    section_parser_(section_parser.Pass()),
-    enable_(false),
-    continuity_counter_(-1) {
+    : pid_(pid),
+      pid_type_(pid_type),
+      section_parser_(section_parser.Pass()),
+      enable_(false),
+      continuity_counter_(-1) {
   DCHECK(section_parser_);
 }
 
@@ -95,6 +98,7 @@ bool PidState::PushTsPacket(const TsPacket& ts_packet) {
   if (continuity_counter_ >= 0 &&
       ts_packet.continuity_counter() != expected_continuity_counter) {
     DVLOG(1) << "TS discontinuity detected for pid: " << pid_;
+    // TODO(tinskip): Handle discontinuity better.
     return false;
   }
 
@@ -104,7 +108,7 @@ bool PidState::PushTsPacket(const TsPacket& ts_packet) {
       ts_packet.payload_size());
 
   // At the minimum, when parsing failed, auto reset the section parser.
-  // Components that use the StreamParser can take further action if needed.
+  // Components that use the MediaParser can take further action if needed.
   if (!status) {
     DVLOG(1) << "Parsing failed for pid = " << pid_;
     ResetState();
@@ -139,59 +143,32 @@ void PidState::ResetState() {
   continuity_counter_ = -1;
 }
 
-Mp2tStreamParser::BufferQueueWithConfig::BufferQueueWithConfig(
-    bool is_cfg_sent,
-    const AudioDecoderConfig& audio_cfg,
-    const VideoDecoderConfig& video_cfg)
-  : is_config_sent(is_cfg_sent),
-    audio_config(audio_cfg),
-    video_config(video_cfg) {
+MediaParser::MediaParser()
+    : sbr_in_mimetype_(false),
+      is_initialized_(false) {
 }
 
-Mp2tStreamParser::BufferQueueWithConfig::~BufferQueueWithConfig() {
-}
-
-Mp2tStreamParser::Mp2tStreamParser(bool sbr_in_mimetype)
-  : sbr_in_mimetype_(sbr_in_mimetype),
-    selected_audio_pid_(-1),
-    selected_video_pid_(-1),
-    is_initialized_(false),
-    segment_started_(false),
-    first_video_frame_in_segment_(true) {
-}
-
-Mp2tStreamParser::~Mp2tStreamParser() {
+MediaParser::~MediaParser() {
   STLDeleteValues(&pids_);
 }
 
-void Mp2tStreamParser::Init(
+void MediaParser::Init(
     const InitCB& init_cb,
-    const NewConfigCB& config_cb,
-    const NewBuffersCB& new_buffers_cb,
-    bool /* ignore_text_tracks */ ,
-    const NeedKeyCB& need_key_cb,
-    const NewMediaSegmentCB& new_segment_cb,
-    const base::Closure& end_of_segment_cb,
-    const LogCB& log_cb) {
+    const NewSampleCB& new_sample_cb,
+    const NeedKeyCB& need_key_cb) {
   DCHECK(!is_initialized_);
   DCHECK(init_cb_.is_null());
   DCHECK(!init_cb.is_null());
-  DCHECK(!config_cb.is_null());
-  DCHECK(!new_buffers_cb.is_null());
+  DCHECK(!new_sample_cb.is_null());
   DCHECK(!need_key_cb.is_null());
-  DCHECK(!end_of_segment_cb.is_null());
 
   init_cb_ = init_cb;
-  config_cb_ = config_cb;
-  new_buffers_cb_ = new_buffers_cb;
+  new_sample_cb_ = new_sample_cb;
   need_key_cb_ = need_key_cb;
-  new_segment_cb_ = new_segment_cb;
-  end_of_segment_cb_ = end_of_segment_cb;
-  log_cb_ = log_cb;
 }
 
-void Mp2tStreamParser::Flush() {
-  DVLOG(1) << "Mp2tStreamParser::Flush";
+void MediaParser::Flush() {
+  DVLOG(1) << "MediaParser::Flush";
 
   // Flush the buffers and reset the pids.
   for (std::map<int, PidState*>::iterator it = pids_.begin();
@@ -199,29 +176,17 @@ void Mp2tStreamParser::Flush() {
     DVLOG(1) << "Flushing PID: " << it->first;
     PidState* pid_state = it->second;
     pid_state->Flush();
-    delete pid_state;
   }
-  pids_.clear();
-  EmitRemainingBuffers();
-  buffer_queue_chain_.clear();
-
-  // End of the segment.
-  // Note: does not need to invoke |end_of_segment_cb_| since flushing the
-  // stream parser already involves the end of the current segment.
-  segment_started_ = false;
-  first_video_frame_in_segment_ = true;
+  EmitRemainingSamples();
+  STLDeleteValues(&pids_);
 
   // Remove any bytes left in the TS buffer.
   // (i.e. any partial TS packet => less than 188 bytes).
   ts_byte_queue_.Reset();
-
-  // Reset the selected PIDs.
-  selected_audio_pid_ = -1;
-  selected_video_pid_ = -1;
 }
 
-bool Mp2tStreamParser::Parse(const uint8* buf, int size) {
-  DVLOG(1) << "Mp2tStreamParser::Parse size=" << size;
+bool MediaParser::Parse(const uint8* buf, int size) {
+  DVLOG(1) << "MediaParser::Parse size=" << size;
 
   // Add the data to the parser state.
   ts_byte_queue_.Push(buf, size);
@@ -260,7 +225,7 @@ bool Mp2tStreamParser::Parse(const uint8* buf, int size) {
       // Create the PAT state here if needed.
       scoped_ptr<TsSection> pat_section_parser(
           new TsSectionPat(
-              base::Bind(&Mp2tStreamParser::RegisterPmt,
+              base::Bind(&MediaParser::RegisterPmt,
                          base::Unretained(this))));
       scoped_ptr<PidState> pat_pid_state(
           new PidState(ts_packet->pid(), PidState::kPidPat,
@@ -282,13 +247,11 @@ bool Mp2tStreamParser::Parse(const uint8* buf, int size) {
     ts_byte_queue_.Pop(TsPacket::kPacketSize);
   }
 
-  RCHECK(FinishInitializationIfNeeded());
-
   // Emit the A/V buffers that kept accumulating during TS parsing.
-  return EmitRemainingBuffers();
+  return EmitRemainingSamples();
 }
 
-void Mp2tStreamParser::RegisterPmt(int program_number, int pmt_pid) {
+void MediaParser::RegisterPmt(int program_number, int pmt_pid) {
   DVLOG(1) << "RegisterPmt:"
            << " program_number=" << program_number
            << " pmt_pid=" << pmt_pid;
@@ -308,7 +271,7 @@ void Mp2tStreamParser::RegisterPmt(int program_number, int pmt_pid) {
   DVLOG(1) << "Create a new PMT parser";
   scoped_ptr<TsSection> pmt_section_parser(
       new TsSectionPmt(
-          base::Bind(&Mp2tStreamParser::RegisterPes,
+          base::Bind(&MediaParser::RegisterPes,
                      base::Unretained(this), pmt_pid)));
   scoped_ptr<PidState> pmt_pid_state(
       new PidState(pmt_pid, PidState::kPidPmt, pmt_section_parser.Pass()));
@@ -316,9 +279,9 @@ void Mp2tStreamParser::RegisterPmt(int program_number, int pmt_pid) {
   pids_.insert(std::pair<int, PidState*>(pmt_pid, pmt_pid_state.release()));
 }
 
-void Mp2tStreamParser::RegisterPes(int pmt_pid,
-                                   int pes_pid,
-                                   int stream_type) {
+void MediaParser::RegisterPes(int pmt_pid,
+                              int pes_pid,
+                              int stream_type) {
   // TODO(damienv): check there is no mismatch if the entry already exists.
   DVLOG(1) << "RegisterPes:"
            << " pes_pid=" << pes_pid
@@ -333,21 +296,19 @@ void Mp2tStreamParser::RegisterPes(int pmt_pid,
   if (stream_type == kStreamTypeAVC) {
     es_parser.reset(
         new EsParserH264(
-            base::Bind(&Mp2tStreamParser::OnVideoConfigChanged,
-                       base::Unretained(this),
-                       pes_pid),
-            base::Bind(&Mp2tStreamParser::OnEmitVideoBuffer,
-                       base::Unretained(this),
-                       pes_pid)));
+            pes_pid,
+            base::Bind(&MediaParser::OnNewStreamInfo,
+                       base::Unretained(this)),
+            base::Bind(&MediaParser::OnEmitSample,
+                       base::Unretained(this))));
   } else if (stream_type == kStreamTypeAAC) {
     es_parser.reset(
         new EsParserAdts(
-            base::Bind(&Mp2tStreamParser::OnAudioConfigChanged,
-                       base::Unretained(this),
-                       pes_pid),
-            base::Bind(&Mp2tStreamParser::OnEmitAudioBuffer,
-                       base::Unretained(this),
-                       pes_pid),
+            pes_pid,
+            base::Bind(&MediaParser::OnNewStreamInfo,
+                       base::Unretained(this)),
+            base::Bind(&MediaParser::OnEmitSample,
+                       base::Unretained(this)),
             sbr_in_mimetype_));
     is_audio = true;
   } else {
@@ -362,261 +323,107 @@ void Mp2tStreamParser::RegisterPes(int pmt_pid,
       is_audio ? PidState::kPidAudioPes : PidState::kPidVideoPes;
   scoped_ptr<PidState> pes_pid_state(
       new PidState(pes_pid, pid_type, pes_section_parser.Pass()));
+  pes_pid_state->Enable();
   pids_.insert(std::pair<int, PidState*>(pes_pid, pes_pid_state.release()));
-
-  // A new PES pid has been added, the PID filter might change.
-  UpdatePidFilter();
 }
 
-void Mp2tStreamParser::UpdatePidFilter() {
-  // Applies the HLS rule to select the default audio/video PIDs:
-  // select the audio/video streams with the lowest PID.
-  // TODO(damienv): this can be changed when the StreamParser interface
-  // supports multiple audio/video streams.
-  PidMap::iterator lowest_audio_pid = pids_.end();
-  PidMap::iterator lowest_video_pid = pids_.end();
-  for (PidMap::iterator it = pids_.begin(); it != pids_.end(); ++it) {
-    int pid = it->first;
-    PidState* pid_state = it->second;
-    if (pid_state->pid_type() == PidState::kPidAudioPes &&
-        (lowest_audio_pid == pids_.end() || pid < lowest_audio_pid->first))
-      lowest_audio_pid = it;
-    if (pid_state->pid_type() == PidState::kPidVideoPes &&
-        (lowest_video_pid == pids_.end() || pid < lowest_video_pid->first))
-      lowest_video_pid = it;
+void MediaParser::OnNewStreamInfo(
+    scoped_refptr<StreamInfo>& new_stream_info) {
+  DCHECK(new_stream_info);
+  DVLOG(1) << "OnVideoConfigChanged for pid=" << new_stream_info->track_id();
+
+  PidMap::iterator pid_state = pids_.find(new_stream_info->track_id());
+  if (pid_state == pids_.end()) {
+    LOG(ERROR) << "PID State for new stream not found (pid = "
+               << new_stream_info->track_id() << ").";
+    return;
   }
 
-  // Enable both the lowest audio and video PIDs.
-  if (lowest_audio_pid != pids_.end()) {
-    DVLOG(1) << "Enable audio pid: " << lowest_audio_pid->first;
-    lowest_audio_pid->second->Enable();
-    selected_audio_pid_ = lowest_audio_pid->first;
-  }
-  if (lowest_video_pid != pids_.end()) {
-    DVLOG(1) << "Enable video pid: " << lowest_video_pid->first;
-    lowest_video_pid->second->Enable();
-    selected_video_pid_ = lowest_video_pid->first;
-  }
+  // Set the stream configuration information for the PID.
+  pid_state->second->set_config(new_stream_info);
 
-  // Disable all the other audio and video PIDs.
-  for (PidMap::iterator it = pids_.begin(); it != pids_.end(); ++it) {
-    PidState* pid_state = it->second;
-    if (it != lowest_audio_pid && it != lowest_video_pid &&
-        (pid_state->pid_type() == PidState::kPidAudioPes ||
-         pid_state->pid_type() == PidState::kPidVideoPes))
-      pid_state->Disable();
-  }
+  // Finish initialization if all streams have configs.
+  FinishInitializationIfNeeded();
 }
 
-void Mp2tStreamParser::OnVideoConfigChanged(
-    int pes_pid,
-    const VideoDecoderConfig& video_decoder_config) {
-  DVLOG(1) << "OnVideoConfigChanged for pid=" << pes_pid;
-  DCHECK_EQ(pes_pid, selected_video_pid_);
-  DCHECK(video_decoder_config.IsValidConfig());
-
-  // Create a new entry in |buffer_queue_chain_| with the updated configs.
-  BufferQueueWithConfig buffer_queue_with_config(
-      false,
-      buffer_queue_chain_.empty()
-      ? AudioDecoderConfig() : buffer_queue_chain_.back().audio_config,
-      video_decoder_config);
-  buffer_queue_chain_.push_back(buffer_queue_with_config);
-
-  // Replace any non valid config with the 1st valid entry.
-  // This might happen if there was no available config before.
-  for (std::list<BufferQueueWithConfig>::iterator it =
-       buffer_queue_chain_.begin(); it != buffer_queue_chain_.end(); ++it) {
-    if (it->video_config.IsValidConfig())
-      break;
-    it->video_config = video_decoder_config;
-  }
-}
-
-void Mp2tStreamParser::OnAudioConfigChanged(
-    int pes_pid,
-    const AudioDecoderConfig& audio_decoder_config) {
-  DVLOG(1) << "OnAudioConfigChanged for pid=" << pes_pid;
-  DCHECK_EQ(pes_pid, selected_audio_pid_);
-  DCHECK(audio_decoder_config.IsValidConfig());
-
-  // Create a new entry in |buffer_queue_chain_| with the updated configs.
-  BufferQueueWithConfig buffer_queue_with_config(
-      false,
-      audio_decoder_config,
-      buffer_queue_chain_.empty()
-      ? VideoDecoderConfig() : buffer_queue_chain_.back().video_config);
-  buffer_queue_chain_.push_back(buffer_queue_with_config);
-
-  // Replace any non valid config with the 1st valid entry.
-  // This might happen if there was no available config before.
-  for (std::list<BufferQueueWithConfig>::iterator it =
-       buffer_queue_chain_.begin(); it != buffer_queue_chain_.end(); ++it) {
-    if (it->audio_config.IsValidConfig())
-      break;
-    it->audio_config = audio_decoder_config;
-  }
-}
-
-bool Mp2tStreamParser::FinishInitializationIfNeeded() {
+bool MediaParser::FinishInitializationIfNeeded() {
   // Nothing to be done if already initialized.
   if (is_initialized_)
     return true;
 
   // Wait for more data to come to finish initialization.
-  if (buffer_queue_chain_.empty())
+  if (pids_.empty())
     return true;
 
-  // Wait for more data to come if one of the config is not available.
-  BufferQueueWithConfig& queue_with_config = buffer_queue_chain_.front();
-  if (selected_audio_pid_ > 0 &&
-      !queue_with_config.audio_config.IsValidConfig())
-    return true;
-  if (selected_video_pid_ > 0 &&
-      !queue_with_config.video_config.IsValidConfig())
-    return true;
-
-  // Pass the config before invoking the initialization callback.
-  RCHECK(config_cb_.Run(queue_with_config.audio_config,
-                        queue_with_config.video_config,
-                        TextTrackConfigMap()));
-  queue_with_config.is_config_sent = true;
-
-  // For Mpeg2 TS, the duration is not known.
-  DVLOG(1) << "Mpeg2TS stream parser initialization done";
-  init_cb_.Run(true, kInfiniteDuration(), false);
-  is_initialized_ = true;
-
+  std::vector<scoped_refptr<StreamInfo> > all_stream_info;
+  uint32 num_es(0);
+  for (PidMap::const_iterator iter = pids_.begin(); iter != pids_.end();
+       ++iter) {
+    if (((iter->second->pid_type() == PidState::kPidAudioPes) ||
+         (iter->second->pid_type() == PidState::kPidVideoPes))) {
+      ++num_es;
+      if (iter->second->config())
+        all_stream_info.push_back(iter->second->config());
+    }
+  }
+  if (num_es && (all_stream_info.size() == num_es)) {
+    // All stream configurations have been received. Initialization can
+    // be completed.
+    init_cb_.Run(all_stream_info);
+    DVLOG(1) << "Mpeg2TS stream parser initialization done";
+    is_initialized_ = true;
+  }
   return true;
 }
 
-void Mp2tStreamParser::OnEmitAudioBuffer(
-    int pes_pid,
-    scoped_refptr<StreamParserBuffer> stream_parser_buffer) {
-  DCHECK_EQ(pes_pid, selected_audio_pid_);
-
+void MediaParser::OnEmitSample(uint32 pes_pid,
+                               scoped_refptr<MediaSample>& new_sample) {
+  DCHECK(new_sample);
   DVLOG(LOG_LEVEL_ES)
-      << "OnEmitAudioBuffer: "
+      << "OnEmitSample: "
+      << " pid="
+      << pes_pid
       << " size="
-      << stream_parser_buffer->data_size()
+      << new_sample->data_size()
       << " dts="
-      << stream_parser_buffer->GetDecodeTimestamp().InMilliseconds()
+      << new_sample->dts()
       << " pts="
-      << stream_parser_buffer->timestamp().InMilliseconds();
-  stream_parser_buffer->set_timestamp(
-      stream_parser_buffer->timestamp() - time_offset_);
-  stream_parser_buffer->SetDecodeTimestamp(
-      stream_parser_buffer->GetDecodeTimestamp() - time_offset_);
+      << new_sample->pts();
 
-  // Ignore the incoming buffer if it is not associated with any config.
-  if (buffer_queue_chain_.empty()) {
-    DVLOG(1) << "Ignoring audio buffer with no corresponding audio config";
+  // Add the sample to the appropriate PID sample queue.
+  PidMap::iterator pid_state = pids_.find(pes_pid);
+  if (pid_state == pids_.end()) {
+    LOG(ERROR) << "PID State for new sample not found (pid = "
+               << pes_pid << ").";
     return;
   }
-
-  buffer_queue_chain_.back().audio_queue.push_back(stream_parser_buffer);
+  pid_state->second->sample_queue().push_back(new_sample);
 }
 
-void Mp2tStreamParser::OnEmitVideoBuffer(
-    int pes_pid,
-    scoped_refptr<StreamParserBuffer> stream_parser_buffer) {
-  DCHECK_EQ(pes_pid, selected_video_pid_);
-
-  DVLOG(LOG_LEVEL_ES)
-      << "OnEmitVideoBuffer"
-      << " size="
-      << stream_parser_buffer->data_size()
-      << " dts="
-      << stream_parser_buffer->GetDecodeTimestamp().InMilliseconds()
-      << " pts="
-      << stream_parser_buffer->timestamp().InMilliseconds()
-      << " IsKeyframe="
-      << stream_parser_buffer->IsKeyframe();
-  stream_parser_buffer->set_timestamp(
-      stream_parser_buffer->timestamp() - time_offset_);
-  stream_parser_buffer->SetDecodeTimestamp(
-      stream_parser_buffer->GetDecodeTimestamp() - time_offset_);
-
-  // Ignore the incoming buffer if it is not associated with any config.
-  if (buffer_queue_chain_.empty()) {
-    DVLOG(1) << "Ignoring video buffer with no corresponding video config:"
-             << " keyframe=" << stream_parser_buffer->IsKeyframe()
-             << " dts="
-             << stream_parser_buffer->GetDecodeTimestamp().InMilliseconds();
-    return;
-  }
-
-  // A segment cannot start with a non key frame.
-  // Ignore the frame if that's the case.
-  if (first_video_frame_in_segment_ && !stream_parser_buffer->IsKeyframe()) {
-    DVLOG(1) << "Ignoring non-key frame:"
-             << " dts="
-             << stream_parser_buffer->GetDecodeTimestamp().InMilliseconds();
-    return;
-  }
-
-  first_video_frame_in_segment_ = false;
-  buffer_queue_chain_.back().video_queue.push_back(stream_parser_buffer);
-}
-
-bool Mp2tStreamParser::EmitRemainingBuffers() {
-  DVLOG(LOG_LEVEL_ES) << "Mp2tStreamParser::EmitRemainingBuffers";
+bool MediaParser::EmitRemainingSamples() {
+  DVLOG(LOG_LEVEL_ES) << "mp2t::MediaParser::EmitRemainingBuffers";
 
   // No buffer should be sent until fully initialized.
   if (!is_initialized_)
     return true;
 
-  if (buffer_queue_chain_.empty())
-    return true;
-
-  // Keep track of the last audio and video config sent.
-  AudioDecoderConfig last_audio_config =
-      buffer_queue_chain_.back().audio_config;
-  VideoDecoderConfig last_video_config =
-      buffer_queue_chain_.back().video_config;
-
   // Buffer emission.
-  while (!buffer_queue_chain_.empty()) {
-    // Start a segment if needed.
-    if (!segment_started_) {
-      DVLOG(1) << "Starting a new segment";
-      segment_started_ = true;
-      new_segment_cb_.Run();
-    }
-
-    // Update the audio and video config if needed.
-    BufferQueueWithConfig& queue_with_config = buffer_queue_chain_.front();
-    if (!queue_with_config.is_config_sent) {
-      if (!config_cb_.Run(queue_with_config.audio_config,
-                          queue_with_config.video_config,
-                          TextTrackConfigMap()))
-        return false;
-      queue_with_config.is_config_sent = true;
-    }
-
-    // Add buffers.
-    TextBufferQueueMap empty_text_map;
-    if (!queue_with_config.audio_queue.empty() ||
-        !queue_with_config.video_queue.empty()) {
-      if (!new_buffers_cb_.Run(queue_with_config.audio_queue,
-                               queue_with_config.video_queue,
-                               empty_text_map)) {
+  for (PidMap::const_iterator pid_iter = pids_.begin(); pid_iter != pids_.end();
+       ++pid_iter) {
+    SampleQueue& sample_queue = pid_iter->second->sample_queue();
+    for (SampleQueue::iterator sample_iter = sample_queue.begin();
+         sample_iter != sample_queue.end();
+         ++sample_iter) {
+      if (!new_sample_cb_.Run(pid_iter->first, *sample_iter)) {
+        // Error processing sample. Propagate error condition.
         return false;
       }
     }
-
-    buffer_queue_chain_.pop_front();
+    sample_queue.clear();
   }
-
-  // Push an empty queue with the last audio/video config
-  // so that buffers with the same config can be added later on.
-  BufferQueueWithConfig queue_with_config(
-      true, last_audio_config, last_video_config);
-  buffer_queue_chain_.push_back(queue_with_config);
 
   return true;
 }
 
 }  // namespace mp2t
 }  // namespace media
-

@@ -25,11 +25,8 @@ namespace mp2t {
 
 class EsParserAdts : public EsParser {
  public:
-  typedef base::Callback<void(
-      scoped_refptr<AudioStreamInfo>&)> NewAudioConfigCB;
-
-  EsParserAdts(uint32 track_id,
-               const NewAudioConfigCB& new_audio_config_cb,
+  EsParserAdts(uint32 pid,
+               const NewStreamInfoCB& new_stream_info_cb,
                const EmitSampleCB& emit_sample_cb,
                bool sbr_in_mimetype);
   virtual ~EsParserAdts();
@@ -57,7 +54,7 @@ class EsParserAdts : public EsParser {
   // Callbacks:
   // - to signal a new audio configuration,
   // - to send ES buffers.
-  NewAudioConfigCB new_audio_config_cb_;
+  NewStreamInfoCB new_stream_info_cb_;
   EmitSampleCB emit_sample_cb_;
 
   // True when AAC SBR extension is signalled in the mimetype
@@ -73,7 +70,7 @@ class EsParserAdts : public EsParser {
   // Interpolated PTS for frames that don't have one.
   scoped_ptr<AudioTimestampHelper> audio_timestamp_helper_;
 
-  scoped_refptr<AudioStreamInfo> last_audio_decoder_config_;
+  scoped_refptr<StreamInfo> last_audio_decoder_config_;
 
   DISALLOW_COPY_AND_ASSIGN(EsParserAdts);
 };

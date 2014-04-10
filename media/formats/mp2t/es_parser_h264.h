@@ -34,11 +34,8 @@ namespace mp2t {
 //
 class EsParserH264 : public EsParser {
  public:
-  typedef base::Callback<void(
-      scoped_refptr<VideoStreamInfo>&)> NewVideoConfigCB;
-
-  EsParserH264(uint32 track_id,
-               const NewVideoConfigCB& new_video_config_cb,
+  EsParserH264(uint32 pid,
+               const NewStreamInfoCB& new_stream_info_cb,
                const EmitSampleCB& emit_sample_cb);
   virtual ~EsParserH264();
 
@@ -74,7 +71,7 @@ class EsParserH264 : public EsParser {
   bool UpdateVideoDecoderConfig(const filters::H264SPS* sps);
 
   // Callbacks to pass the stream configuration and the frames.
-  NewVideoConfigCB new_video_config_cb_;
+  NewStreamInfoCB new_stream_info_cb_;
   EmitSampleCB emit_sample_cb_;
 
   // Bytes of the ES stream that have not been emitted yet.
@@ -89,7 +86,7 @@ class EsParserH264 : public EsParser {
   int64 next_access_unit_pos_;
 
   // Last video decoder config.
-  scoped_refptr<VideoStreamInfo> last_video_decoder_config_;
+  scoped_refptr<StreamInfo> last_video_decoder_config_;
 };
 
 }  // namespace mp2t

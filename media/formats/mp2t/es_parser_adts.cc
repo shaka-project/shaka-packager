@@ -98,12 +98,12 @@ static bool LookForSyncWord(const uint8* raw_es, int raw_es_size,
 namespace mp2t {
 
 EsParserAdts::EsParserAdts(
-    uint32 track_id,
-    const NewAudioConfigCB& new_audio_config_cb,
+    uint32 pid,
+    const NewStreamInfoCB& new_stream_info_cb,
     const EmitSampleCB& emit_sample_cb,
     bool sbr_in_mimetype)
-    : EsParser(track_id),
-      new_audio_config_cb_(new_audio_config_cb),
+    : EsParser(pid),
+      new_stream_info_cb_(new_stream_info_cb),
       emit_sample_cb_(emit_sample_cb),
       sbr_in_mimetype_(sbr_in_mimetype) {
 }
@@ -170,7 +170,7 @@ bool EsParserAdts::Parse(const uint8* buf, int size, int64 pts, int64 dts) {
     sample->set_pts(current_pts);
     sample->set_dts(current_pts);
     sample->set_duration(frame_duration);
-    emit_sample_cb_.Run(sample);
+    emit_sample_cb_.Run(pid(), sample);
 
     // Update the PTS of the next frame.
     audio_timestamp_helper_->AddFrames(kSamplesPerAACFrame);
@@ -229,9 +229,9 @@ bool EsParserAdts::UpdateAudioConfiguration(const uint8* adts_header) {
       ? std::min(2 * samples_per_second, 48000)
       : samples_per_second;
 
-  last_audio_decoder_config_ = scoped_refptr<AudioStreamInfo>(
+  last_audio_decoder_config_ = scoped_refptr<StreamInfo>(
       new AudioStreamInfo(
-          track_id(),
+          pid(),
           kMpeg2Timescale,
           kInfiniteDuration,
           kCodecAAC,
@@ -260,7 +260,7 @@ bool EsParserAdts::UpdateAudioConfiguration(const uint8* adts_header) {
   }
 
   // Audio config notification.
-  new_audio_config_cb_.Run(last_audio_decoder_config_);
+  new_stream_info_cb_.Run(last_audio_decoder_config_);
 
   return true;
 }

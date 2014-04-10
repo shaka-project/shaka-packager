@@ -12,14 +12,17 @@
 namespace media {
 
 class MediaSample;
+class StreamInfo;
 
 namespace mp2t {
 
 class EsParser {
  public:
-  typedef base::Callback<void(scoped_refptr<MediaSample>&)> EmitSampleCB;
+  typedef base::Callback<void(scoped_refptr<StreamInfo>&)> NewStreamInfoCB;
+  typedef base::Callback<void(uint32, scoped_refptr<MediaSample>&)> EmitSampleCB;
 
-  EsParser(uint32 track_id) : track_id_(track_id) {}
+  EsParser(uint32 pid)
+      : pid_(pid) {}
   virtual ~EsParser() {}
 
   // ES parsing.
@@ -32,10 +35,10 @@ class EsParser {
   // Reset the state of the ES parser.
   virtual void Reset() = 0;
 
-  uint32 track_id() { return track_id_; }
+  uint32 pid() { return pid_; }
 
  private:
-  uint32 track_id_;
+  uint32 pid_;
 };
 
 }  // namespace mp2t

@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/bit_reader.h"
-#include "media/base/buffers.h"
+#include "media/base/timestamp.h"
 #include "media/formats/mp2t/es_parser.h"
 #include "media/formats/mp2t/mp2t_common.h"
 
@@ -266,15 +266,15 @@ bool TsSectionPes::ParseInternal(const uint8* raw_pes, int raw_pes_size) {
   }
 
   // Convert and unroll the timestamps.
-  base::TimeDelta media_pts(kNoTimestamp());
-  base::TimeDelta media_dts(kNoTimestamp());
+  int64 media_pts(kNoTimestamp);
+  int64 media_dts(kNoTimestamp);
   if (is_pts_valid) {
     int64 pts = ConvertTimestampSectionToTimestamp(pts_section);
     if (previous_pts_valid_)
       pts = UnrollTimestamp(previous_pts_, pts);
     previous_pts_ = pts;
     previous_pts_valid_ = true;
-    media_pts = base::TimeDelta::FromMicroseconds((1000 * pts) / 90);
+    media_pts = pts;
   }
   if (is_dts_valid) {
     int64 dts = ConvertTimestampSectionToTimestamp(dts_section);
@@ -282,7 +282,7 @@ bool TsSectionPes::ParseInternal(const uint8* raw_pes, int raw_pes_size) {
       dts = UnrollTimestamp(previous_dts_, dts);
     previous_dts_ = dts;
     previous_dts_valid_ = true;
-    media_dts = base::TimeDelta::FromMicroseconds((1000 * dts) / 90);
+    media_dts = dts;
   }
 
   // Discard the rest of the PES packet header.
@@ -296,8 +296,8 @@ bool TsSectionPes::ParseInternal(const uint8* raw_pes, int raw_pes_size) {
   DVLOG(LOG_LEVEL_PES)
       << "Emit a reassembled PES:"
       << " size=" << es_size
-      << " pts=" << media_pts.InMilliseconds()
-      << " dts=" << media_dts.InMilliseconds()
+      << " pts=" << media_pts
+      << " dts=" << media_dts
       << " data_alignment_indicator=" << data_alignment_indicator;
   return es_parser_->Parse(&raw_pes[es_offset], es_size, media_pts, media_dts);
 }
@@ -309,4 +309,3 @@ void TsSectionPes::ResetPesState() {
 
 }  // namespace mp2t
 }  // namespace media
-

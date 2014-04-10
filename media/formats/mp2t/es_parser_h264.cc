@@ -35,11 +35,11 @@ const uint8 kCommonNaluLengthSize = 4;
 }  // anonymous namespace
 
 EsParserH264::EsParserH264(
-    uint32 track_id,
-    const NewVideoConfigCB& new_video_config_cb,
+    uint32 pid,
+    const NewStreamInfoCB& new_stream_info_cb,
     const EmitSampleCB& emit_sample_cb)
-    : EsParser(track_id),
-      new_video_config_cb_(new_video_config_cb),
+    : EsParser(pid),
+      new_stream_info_cb_(new_stream_info_cb),
       emit_sample_cb_(emit_sample_cb),
       es_queue_(new media::OffsetByteQueue()),
       h264_parser_(new H264Parser()),
@@ -95,7 +95,7 @@ void EsParserH264::Reset() {
   current_access_unit_pos_ = 0;
   next_access_unit_pos_ = 0;
   timing_desc_list_.clear();
-  last_video_decoder_config_ = scoped_refptr<VideoStreamInfo>();
+  last_video_decoder_config_ = scoped_refptr<StreamInfo>();
 }
 
 bool EsParserH264::FindAUD(int64* stream_pos) {
@@ -282,7 +282,7 @@ bool EsParserH264::EmitFrame(int64 access_unit_pos, int access_unit_size,
           is_key_frame);
   media_sample->set_dts(current_timing_desc.dts);
   media_sample->set_pts(current_timing_desc.pts);
-  emit_sample_cb_.Run(media_sample);
+  emit_sample_cb_.Run(pid(), media_sample);
   return true;
 }
 
@@ -299,9 +299,9 @@ bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
   uint16 width = (sps->pic_width_in_mbs_minus1 + 1) * 16;
   uint16 height = (sps->pic_height_in_map_units_minus1 + 1) * 16;
 
-  last_video_decoder_config_ = scoped_refptr<VideoStreamInfo>(
+  last_video_decoder_config_ = scoped_refptr<StreamInfo>(
       new VideoStreamInfo(
-          track_id(),
+          pid(),
           kMpeg2Timescale,
           kInfiniteDuration,
           kCodecH264,
@@ -323,7 +323,7 @@ bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
            << " height=" << sps->sar_height;
 
   // Video config notification.
-  new_video_config_cb_.Run(last_video_decoder_config_);
+  new_stream_info_cb_.Run(last_video_decoder_config_);
 
   return true;
 }

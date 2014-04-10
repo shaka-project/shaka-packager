@@ -129,11 +129,11 @@ class EsParserH264Test : public testing::Test {
   void LoadStream(const char* filename);
   void ProcessPesPackets(const std::vector<Packet>& pes_packets);
 
-  void EmitSample(scoped_refptr<MediaSample>& sample) {
+  void EmitSample(uint32 pid, scoped_refptr<MediaSample>& sample) {
     sample_count_++;
   }
 
-  void NewVideoConfig(scoped_refptr<VideoStreamInfo>& config) {
+  void NewVideoConfig(scoped_refptr<StreamInfo>& config) {
   }
 
   size_t sample_count() const { return sample_count_; }
