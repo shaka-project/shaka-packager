@@ -24,7 +24,7 @@
 #include "media/event/vod_media_info_dump_muxer_listener.h"
 #include "media/file/file.h"
 #include "media/file/file_closer.h"
-#include "media/mp4/mp4_muxer.h"
+#include "media/formats/mp4/mp4_muxer.h"
 
 DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
 

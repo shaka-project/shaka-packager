@@ -15,7 +15,7 @@
 #include "media/base/media_stream.h"
 #include "media/base/stream_info.h"
 #include "media/file/file.h"
-#include "media/mp4/mp4_media_parser.h"
+#include "media/formats/mp4/mp4_media_parser.h"
 
 namespace {
 const size_t kBufSize = 0x40000;  // 256KB.

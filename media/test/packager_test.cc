@@ -14,7 +14,7 @@
 #include "media/base/muxer.h"
 #include "media/base/status_test_util.h"
 #include "media/base/stream_info.h"
-#include "media/mp4/mp4_muxer.h"
+#include "media/formats/mp4/mp4_muxer.h"
 #include "media/test/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
