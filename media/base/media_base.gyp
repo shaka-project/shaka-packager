@@ -63,6 +63,8 @@
         'buffer_writer.h',
         'byte_queue.cc',
         'byte_queue.h',
+        'closure_thread.cc',
+        'closure_thread.h',
         'container_names.cc',
         'container_names.h',
         'demuxer.cc',
@@ -110,6 +112,7 @@
         'aes_encryptor_unittest.cc',
         'bit_reader_unittest.cc',
         'buffer_writer_unittest.cc',
+        'closure_thread_unittest.cc',
         'container_names_unittest.cc',
         'fake_prng.cc',  # For rsa_key_unittest
         'fake_prng.h',   # For rsa_key_unittest
