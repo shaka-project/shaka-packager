@@ -117,6 +117,7 @@
         'container_names_unittest.cc',
         'fake_prng.cc',  # For rsa_key_unittest
         'fake_prng.h',   # For rsa_key_unittest
+        'producer_consumer_queue_unittest.cc',
         'rsa_key_unittest.cc',
         'rsa_test_data.cc',  # For rsa_key_unittest
         'rsa_test_data.h',   # For rsa_key_unittest
