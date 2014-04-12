@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "mpd/base/xml/xml_node.h"
+#include "mpd/test/xml_compare.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libxml/src/include/libxml/tree.h"
 
@@ -27,49 +28,109 @@ void AddAttribute(const std::string& name,
   attribute->set_value(value);
 }
 
-std::string GetDocAsFlatString(xmlDocPtr doc) {
-  static const int kFlatFormat = 0;
-  int doc_str_size = 0;
-  xmlChar* doc_str = NULL;
-  xmlDocDumpFormatMemoryEnc(doc, &doc_str, &doc_str_size, "UTF-8", kFlatFormat);
-  DCHECK(doc_str);
-
-  std::string output(doc_str, doc_str + doc_str_size);
-  xmlFree(doc_str);
-  return output;
-}
-
-// Ownership transfers, IOW this function will release the resource for |node|.
-// Returns |node| in string format.
-std::string GetStringFormat(ScopedXmlPtr<xmlNode>::type node) {
+ScopedXmlPtr<xmlDoc>::type MakeDoc(ScopedXmlPtr<xmlNode>::type node) {
   xml::ScopedXmlPtr<xmlDoc>::type doc(xmlNewDoc(BAD_CAST ""));
-
-  // Because you cannot easily get the string format of a xmlNodePtr, it gets
-  // attached to a temporary xml doc.
   xmlDocSetRootElement(doc.get(), node.release());
-  std::string doc_str = GetDocAsFlatString(doc.get());
 
-  // GetDocAsFlatString() adds
-  // <?xml version="" encoding="UTF-8"?>
-  // to the first line. So this removes the first line.
-  const size_t first_newline_char_pos = doc_str.find('\n');
-  DCHECK_NE(first_newline_char_pos, std::string::npos);
-  return doc_str.substr(first_newline_char_pos + 1);
+  return doc.Pass();
 }
-
 }  // namespace
+
+// Make sure XmlEqual() is functioning correctly.
+TEST(MetaTest, XmlEqual) {
+  static const char kXml1[] =
+      "<A>\n"
+      "  <B\n"
+      "    c=\"1\""
+      "    e=\"foobar\""
+      "    somelongnameattribute=\"somevalue\">\n"
+      "      <Bchild childvalue=\"3\"\n"
+      "              f=\"4\"/>\n"
+      "  </B>\n"
+      "  <C />\n"
+      "</A>";
+
+
+  // This is same as kXml1 but the attributes are reordered. Note that the
+  // children are not reordered.
+  static const char kXml1AttributeReorder[] =
+      "<A>\n"
+      "  <B\n"
+      "    c=\"1\""
+      "    somelongnameattribute=\"somevalue\"\n"
+      "    e=\"foobar\">"
+      "      <Bchild childvalue=\"3\"\n"
+      "              f=\"4\"/>\n"
+      "  </B>\n"
+      "  <C />\n"
+      "</A>";
+
+  // <C> is before <B>.
+  static const char kXml1ChildrenReordered[] =
+      "<A>\n"
+      "  <C />\n"
+      "  <B\n"
+      "    d=\"2\""
+      "    c=\"1\""
+      "    somelongnameattribute=\"somevalue\"\n"
+      "    e=\"foobar\">"
+      "      <Bchild childvalue=\"3\"\n"
+      "              f=\"4\"/>\n"
+      "  </B>\n"
+      "</A>";
+
+  // <C> is before <B>.
+  static const char kXml1RemovedAttributes[] =
+      "<A>\n"
+      "  <B\n"
+      "    d=\"2\"\n>"
+      "      <Bchild f=\"4\"/>\n"
+      "  </B>\n"
+      "  <C />\n"
+      "</A>";
+
+  static const char kXml2[] =
+      "<A>\n"
+      "  <C />\n"
+      "</A>";
+
+  // In XML <C />, <C></C>, and <C/> mean the same thing.
+  static const char kXml2DifferentSyntax[] =
+      "<A>\n"
+      "  <C></C>\n"
+      "</A>";
+
+  static const char kXml2MoreDifferentSyntax[] =
+      "<A>\n"
+      "  <C/>\n"
+      "</A>";
+
+  // Identity.
+  ASSERT_TRUE(XmlEqual(kXml1, kXml1));
+
+  // Equivalent.
+  ASSERT_TRUE(XmlEqual(kXml1, kXml1AttributeReorder));
+  ASSERT_TRUE(XmlEqual(kXml2, kXml2DifferentSyntax));
+  ASSERT_TRUE(XmlEqual(kXml2, kXml2MoreDifferentSyntax));
+
+  // Different.
+  ASSERT_FALSE(XmlEqual(kXml1, kXml2));
+  ASSERT_FALSE(XmlEqual(kXml1, kXml1ChildrenReordered));
+  ASSERT_FALSE(XmlEqual(kXml1, kXml1RemovedAttributes));
+  ASSERT_FALSE(XmlEqual(kXml1AttributeReorder, kXml1ChildrenReordered));
+}
 
 TEST(Representation, AddContentProtectionXml) {
   static const char kExpectedRepresentaionString[] =
-      "<Representation>\n\
-        <ContentProtection \
-          a=\"1\" \
-          b=\"2\" \
-          schemeIdUri=\"http://www.foo.com/drm\" \
-          value=\"somevalue\">\n\
-            <TestSubElement c=\"3\" d=\"4\"/>\n\
-        </ContentProtection>\n\
-      </Representation>";
+      "<Representation>\n"
+      " <ContentProtection\n"
+      "   a=\"1\"\n"
+      "   b=\"2\"\n"
+      "   schemeIdUri=\"http://www.foo.com/drm\"\n"
+      "   value=\"somevalue\">\n"
+      "     <TestSubElement c=\"3\" d=\"4\"/>\n"
+      " </ContentProtection>\n"
+      "</Representation>";
 
   MediaInfo media_info;
   MediaInfo::ContentProtectionXml* content_protection_xml =
@@ -89,11 +150,9 @@ TEST(Representation, AddContentProtectionXml) {
   ASSERT_TRUE(
       representation.AddContentProtectionElementsFromMediaInfo(media_info));
 
-  std::string representation_xml_string =
-      GetStringFormat(representation.PassScopedPtr());
-  // Compare with expected output (both flattened).
-  ASSERT_EQ(CollapseWhitespaceASCII(kExpectedRepresentaionString, true),
-            CollapseWhitespaceASCII(representation_xml_string, true));
+  ScopedXmlPtr<xmlDoc>::type doc(MakeDoc(representation.PassScopedPtr()));
+  ASSERT_TRUE(
+      XmlEqual(kExpectedRepresentaionString, doc.get()));
 }
 
 }  // namespace xml

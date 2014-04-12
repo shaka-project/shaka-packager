@@ -71,6 +71,8 @@
         'base/xml/xml_node_unittest.cc',
         'test/mpd_builder_test_helper.cc',
         'test/mpd_builder_test_helper.h',
+        'test/xml_compare.cc',
+        'test/xml_compare.h',
         'util/mpd_writer_unittest.cc',
       ],
       'dependencies': [

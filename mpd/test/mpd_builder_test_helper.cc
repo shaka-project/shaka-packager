@@ -11,6 +11,7 @@
 #include "mpd/base/media_info.pb.h"
 #include "mpd/base/mpd_builder.h"
 #include "mpd/base/xml/scoped_xml_ptr.h"
+#include "mpd/test/xml_compare.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/protobuf/src/google/protobuf/text_format.h"
 
@@ -104,10 +105,9 @@ void ExpectMpdToEqualExpectedOutputFile(
       << "Failed to read: " << expected_output_file;
 
   // Adding extra << here to get a formatted output.
-  ASSERT_EQ(expected_mpd, mpd_string) << "Expected:" << std::endl
-                                      << expected_mpd << std::endl
-                                      << "Actual:" << std::endl
-                                      << mpd_string;
+  ASSERT_TRUE(XmlEqual(expected_mpd, mpd_string))
+      << "Expected:" << std::endl << expected_mpd << std::endl
+      << "Actual:" << std::endl << mpd_string;
 }
 
 }  // namespace dash_packager
