@@ -36,8 +36,8 @@
         'h264_parser_unittest.cc',
       ],
       'dependencies': [
+        '../../media/base/media_base.gyp:base',
         '../../testing/gtest.gyp:gtest',
-        '../../testing/gtest.gyp:gtest_main',
         '../test/media_test.gyp:media_test_support',
         'filters',
       ],
