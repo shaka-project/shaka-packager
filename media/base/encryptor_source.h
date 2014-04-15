@@ -10,56 +10,73 @@
 #include <vector>
 
 #include "base/memory/scoped_ptr.h"
-#include "media/base/aes_encryptor.h"
 #include "media/base/status.h"
 
 namespace media {
 
-class AesCtrEncryptor;
+struct EncryptionKey {
+  EncryptionKey();
+  ~EncryptionKey();
+
+  std::vector<uint8> key_id;
+  std::vector<uint8> key;
+  std::vector<uint8> pssh;
+  std::vector<uint8> iv;
+};
 
 /// EncryptorSource is responsible for encryption key acquisition.
 class EncryptorSource {
  public:
-  EncryptorSource();
+  enum TrackType {
+    TRACK_TYPE_UNKNOWN = 0,
+    TRACK_TYPE_SD = 1,
+    TRACK_TYPE_HD = 2,
+    TRACK_TYPE_AUDIO = 3,
+    NUM_VALID_TRACK_TYPES = 3
+  };
+
   virtual ~EncryptorSource();
 
-  /// Initialize the encryptor source. Calling other public methods of this
-  /// class without this method returning OK results in an undefined behavior.
-  virtual Status Initialize() = 0;
+  /// Get encryption key of the specified track type.
+  /// @return OK on success, an error status otherwise.
+  virtual Status GetKey(TrackType track_type, EncryptionKey* key);
 
-  /// Create an encryptor from this encryptor source. The encryptor will be
-  /// initialized with a random IV of the default size by default. The behavior
-  /// can be adjusted using set_iv_size or set_iv (exclusive).
-  scoped_ptr<AesCtrEncryptor> CreateEncryptor();
+  /// Create EncryptorSource object from hex strings.
+  /// @param key_id_hex is the key id in hex string.
+  /// @param key_hex is the key in hex string.
+  /// @param pssh_data_hex is the pssh_data in hex string.
+  /// @param iv_hex is the IV in hex string. If not specified, a randomly
+  ///        generated IV with the default length will be used.
+  /// Note: GetKey on the created key source will always return the same key
+  ///       for all track types.
+  static scoped_ptr<EncryptorSource> CreateFromHexStrings(
+      const std::string& key_id_hex,
+      const std::string& key_hex,
+      const std::string& pssh_data_hex,
+      const std::string& iv_hex);
 
-  const std::vector<uint8>& key_id() const { return key_id_; }
-  const std::vector<uint8>& key() const { return key_; }
-  const std::vector<uint8>& pssh() const { return pssh_; }
-  const std::vector<uint8>& key_system_id() const { return key_system_id_; }
-  size_t iv_size() const { return iv_.empty() ? iv_size_ : iv_.size(); }
+  /// Convert string representation of track type to enum representation.
+  static TrackType GetTrackTypeFromString(const std::string& track_type_string);
 
-  /// Set IV size. The encryptor will be initialized with a random IV of the
-  /// specified size. Mutually exclusive with set_iv.
-  void set_iv_size(size_t iv_size) { iv_size_ = iv_size; }
-  /// Set IV. The encryptor will be initialized with the specified IV.
-  /// Mutually exclusive with set_iv_size.
-  void set_iv(std::vector<uint8>& iv) { iv_ = iv; }
+  /// Convert TrackType to string.
+  static std::string TrackTypeToString(TrackType track_type);
 
  protected:
-  void set_key_id(const std::vector<uint8>& key_id) { key_id_ = key_id; }
-  void set_key(const std::vector<uint8>& key) { key_ = key; }
-  void set_pssh(const std::vector<uint8>& pssh) { pssh_ = pssh; }
+  EncryptorSource();
+
+  /// @return the raw bytes of the pssh box with system ID and box header
+  ///         included.
+  static std::vector<uint8> PsshBoxFromPsshData(
+      const std::vector<uint8>& pssh_data);
 
  private:
-  std::vector<uint8> key_id_;
-  std::vector<uint8> key_;
-  std::vector<uint8> pssh_;
-  size_t iv_size_;
-  std::vector<uint8> iv_;
-  const std::vector<uint8> key_system_id_;
+  explicit EncryptorSource(scoped_ptr<EncryptionKey> encryption_key);
+
+  scoped_ptr<EncryptionKey> encryption_key_;
 
   DISALLOW_COPY_AND_ASSIGN(EncryptorSource);
 };
-}
+
+}  // namespace media
 
 #endif  // MEDIA_BASE_ENCRYPTOR_SOURCE_H_

@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "base/threading/platform_thread.h"
 #include "base/values.h"
@@ -64,9 +65,9 @@ bool GetKeyAndKeyId(const base::DictionaryValue& track_dict,
   return true;
 }
 
-bool GetPssh(const base::DictionaryValue& track_dict,
-             std::vector<uint8>* pssh) {
-  DCHECK(pssh);
+bool GetPsshData(const base::DictionaryValue& track_dict,
+                 std::vector<uint8>* pssh_data) {
+  DCHECK(pssh_data);
 
   const base::ListValue* pssh_list;
   RCHECK(track_dict.GetList("pssh", &pssh_list));
@@ -82,11 +83,11 @@ bool GetPssh(const base::DictionaryValue& track_dict,
     LOG(ERROR) << "Expecting drm_type 'WIDEVINE', get '" << drm_type << "'.";
     return false;
   }
-  std::string pssh_base64_string;
-  RCHECK(pssh_dict->GetString("data", &pssh_base64_string));
+  std::string pssh_data_base64_string;
+  RCHECK(pssh_dict->GetString("data", &pssh_data_base64_string));
 
-  VLOG(2) << "Pssh:" << pssh_base64_string;
-  RCHECK(Base64StringToBytes(pssh_base64_string, pssh));
+  VLOG(2) << "Pssh Data:" << pssh_data_base64_string;
+  RCHECK(Base64StringToBytes(pssh_data_base64_string, pssh_data));
   return true;
 }
 
@@ -97,18 +98,47 @@ namespace media {
 WidevineEncryptorSource::WidevineEncryptorSource(
     const std::string& server_url,
     const std::string& content_id,
-    TrackType track_type,
     scoped_ptr<RequestSigner> signer)
     : http_fetcher_(new SimpleHttpFetcher()),
       server_url_(server_url),
       content_id_(content_id),
-      track_type_(track_type),
-      signer_(signer.Pass()) {
+      signer_(signer.Pass()),
+      key_fetched_(false) {
   DCHECK(signer_);
 }
-WidevineEncryptorSource::~WidevineEncryptorSource() {}
+WidevineEncryptorSource::~WidevineEncryptorSource() {
+  STLDeleteValues(&encryption_key_map_);
+}
 
-Status WidevineEncryptorSource::Initialize() {
+Status WidevineEncryptorSource::GetKey(TrackType track_type,
+                                       EncryptionKey* key) {
+  DCHECK(track_type == TRACK_TYPE_SD || track_type == TRACK_TYPE_HD ||
+         track_type == TRACK_TYPE_AUDIO);
+  Status status;
+  if (!key_fetched_) {
+    base::AutoLock auto_lock(lock_);
+    if (!key_fetched_) {
+      status = FetchKeys();
+      if (status.ok())
+        key_fetched_ = true;
+    }
+  }
+  if (!status.ok())
+    return status;
+  if (encryption_key_map_.find(track_type) == encryption_key_map_.end()) {
+    return Status(error::INTERNAL_ERROR,
+                  "Cannot find key of type " + TrackTypeToString(track_type));
+  }
+  *key = *encryption_key_map_[track_type];
+  return Status::OK;
+}
+
+void WidevineEncryptorSource::set_http_fetcher(
+    scoped_ptr<HttpFetcher> http_fetcher) {
+  http_fetcher_ = http_fetcher.Pass();
+}
+
+Status WidevineEncryptorSource::FetchKeys() {
   std::string request;
   FillRequest(content_id_, &request);
 
@@ -154,24 +184,6 @@ Status WidevineEncryptorSource::Initialize() {
   }
   return Status(error::SERVER_ERROR,
                 "Failed to recover from server internal error.");
-}
-
-WidevineEncryptorSource::TrackType
-WidevineEncryptorSource::GetTrackTypeFromString(
-    const std::string& track_type_string) {
-  if (track_type_string == "SD")
-    return TRACK_TYPE_SD;
-  if (track_type_string == "HD")
-    return TRACK_TYPE_HD;
-  if (track_type_string == "AUDIO")
-    return TRACK_TYPE_AUDIO;
-  LOG(WARNING) << "Unexpected track type: " << track_type_string;
-  return TRACK_TYPE_UNKNOWN;
-}
-
-void WidevineEncryptorSource::set_http_fetcher(
-    scoped_ptr<HttpFetcher> http_fetcher) {
-  http_fetcher_ = http_fetcher.Pass();
 }
 
 void WidevineEncryptorSource::FillRequest(const std::string& content_id,
@@ -252,11 +264,6 @@ bool WidevineEncryptorSource::DecodeResponse(const std::string& raw_response,
   return true;
 }
 
-bool WidevineEncryptorSource::IsExpectedTrackType(
-    const std::string& track_type_string) {
-  return track_type_ == GetTrackTypeFromString(track_type_string);
-}
-
 bool WidevineEncryptorSource::ExtractEncryptionKey(const std::string& response,
                                                    bool* transient_error) {
   DCHECK(transient_error);
@@ -281,33 +288,28 @@ bool WidevineEncryptorSource::ExtractEncryptionKey(const std::string& response,
 
   const base::ListValue* tracks;
   RCHECK(license_dict->GetList("tracks", &tracks));
+  RCHECK(tracks->GetSize() >= NUM_VALID_TRACK_TYPES);
 
-  for (base::ListValue::const_iterator it = tracks->begin();
-       it != tracks->end();
-       ++it) {
+  for (size_t i = 0; i < tracks->GetSize(); ++i) {
     const base::DictionaryValue* track_dict;
-    RCHECK((*it)->GetAsDictionary(&track_dict));
+    RCHECK(tracks->GetDictionary(i, &track_dict));
 
-    std::string track_type;
-    RCHECK(track_dict->GetString("type", &track_type));
-    if (!IsExpectedTrackType(track_type))
-      continue;
+    std::string track_type_str;
+    RCHECK(track_dict->GetString("type", &track_type_str));
+    TrackType track_type = GetTrackTypeFromString(track_type_str);
+    DCHECK_NE(TRACK_TYPE_UNKNOWN, track_type);
+    RCHECK(encryption_key_map_.find(track_type) == encryption_key_map_.end());
 
-    std::vector<uint8> key_id;
-    std::vector<uint8> key;
-    std::vector<uint8> pssh;
-    if (!GetKeyAndKeyId(*track_dict, &key, &key_id) ||
-        !GetPssh(*track_dict, &pssh))
+    scoped_ptr<EncryptionKey> encryption_key(new EncryptionKey());
+    std::vector<uint8> pssh_data;
+    if (!GetKeyAndKeyId(*track_dict, &encryption_key->key,
+                        &encryption_key->key_id) ||
+        !GetPsshData(*track_dict, &pssh_data))
       return false;
-
-    set_key_id(key_id);
-    set_key(key);
-    set_pssh(pssh);
-    return true;
+    encryption_key->pssh = PsshBoxFromPsshData(pssh_data);
+    encryption_key_map_[track_type] = encryption_key.release();
   }
-  LOG(ERROR) << "Cannot find key of type " << track_type_ << " from '"
-             << response << "'.";
-  return false;
+  return true;
 }
 
 }  // namespace media

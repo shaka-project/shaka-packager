@@ -7,8 +7,11 @@
 #ifndef MEDIA_BASE_WIDEVINE_ENCRYPTOR_SOURCE_H_
 #define MEDIA_BASE_WIDEVINE_ENCRYPTOR_SOURCE_H_
 
+#include <map>
+
 #include "base/basictypes.h"
 #include "base/memory/scoped_ptr.h"
+#include "base/synchronization/lock.h"
 #include "media/base/encryptor_source.h"
 
 namespace media {
@@ -19,34 +22,25 @@ class RequestSigner;
 /// Encryptor source which talks to the Widevine encryption service.
 class WidevineEncryptorSource : public EncryptorSource {
  public:
-  enum TrackType {
-    TRACK_TYPE_UNKNOWN = 0,
-    TRACK_TYPE_SD,
-    TRACK_TYPE_HD,
-    TRACK_TYPE_AUDIO
-  };
-
   /// @param server_url is the Widevine common encryption server url.
   /// @param content_id the unique id identify the content to be encrypted.
-  /// @param track_type is the content type, can be AUDIO, SD or HD.
   /// @param signer must not be NULL.
   WidevineEncryptorSource(const std::string& server_url,
                           const std::string& content_id,
-                          TrackType track_type,
                           scoped_ptr<RequestSigner> signer);
   virtual ~WidevineEncryptorSource();
 
   /// EncryptorSource implementation override.
-  virtual Status Initialize() OVERRIDE;
+  virtual Status GetKey(TrackType track_type, EncryptionKey* key) OVERRIDE;
 
   /// Inject an @b HttpFetcher object, mainly used for testing.
   /// @param http_fetcher points to the @b HttpFetcher object to be injected.
   void set_http_fetcher(scoped_ptr<HttpFetcher> http_fetcher);
 
-  static WidevineEncryptorSource::TrackType GetTrackTypeFromString(
-      const std::string& track_type_string);
-
  private:
+  // Fetch keys from server.
+  Status FetchKeys();
+
   // Fill |request| with necessary fields for Widevine encryption request.
   // |request| should not be NULL.
   void FillRequest(const std::string& content_id, std::string* request);
@@ -56,7 +50,6 @@ class WidevineEncryptorSource : public EncryptorSource {
   // Decode |response| from JSON formatted |raw_response|.
   // |response| should not be NULL.
   bool DecodeResponse(const std::string& raw_response, std::string* response);
-  bool IsExpectedTrackType(const std::string& track_type_string);
   // Extract encryption key from |response|, which is expected to be properly
   // formatted. |transient_error| will be set to true if it fails and the
   // failure is because of a transient error from the server. |transient_error|
@@ -70,8 +63,11 @@ class WidevineEncryptorSource : public EncryptorSource {
   scoped_ptr<HttpFetcher> http_fetcher_;
   std::string server_url_;
   std::string content_id_;
-  TrackType track_type_;
   scoped_ptr<RequestSigner> signer_;
+
+  mutable base::Lock lock_;
+  bool key_fetched_;  // Protected by lock_;
+  std::map<TrackType, EncryptionKey*> encryption_key_map_;
 
   DISALLOW_COPY_AND_ASSIGN(WidevineEncryptorSource);
 };

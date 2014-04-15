@@ -76,8 +76,6 @@
         'decryptor_source.h',
         'encryptor_source.cc',
         'encryptor_source.h',
-        'fixed_encryptor_source.cc',
-        'fixed_encryptor_source.h',
         'limits.h',
         'media_parser.h',
         'media_sample.cc',
