@@ -12,7 +12,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_ptr.h"
-#include "media/base/encryptor_source.h"
+#include "media/base/encryption_key_source.h"
 #include "media/base/status.h"
 
 namespace media {
@@ -20,7 +20,7 @@ namespace media {
 struct MuxerOptions;
 
 class BufferWriter;
-class EncryptorSource;
+class EncryptionKeySource;
 class MediaSample;
 class MediaStream;
 
@@ -49,7 +49,7 @@ class Segmenter {
   /// Initialize the segmenter.
   /// Calling other public methods of this class without this method returning
   /// Status::OK results in an undefined behavior.
-  /// @param encryptor_source points to the key source which contains
+  /// @param encryption_key_source points to the key source which contains
   ///        the encryption keys. It can be NULL to indicate that no encryption
   ///        is required.
   /// @param track_type indicates whether SD key or HD key should be used to
@@ -57,8 +57,8 @@ class Segmenter {
   /// @param clear_time specifies clear lead duration in seconds.
   /// @return OK on success, an error status otherwise.
   Status Initialize(const std::vector<MediaStream*>& streams,
-                    EncryptorSource* encryptor_source,
-                    EncryptorSource::TrackType track_type,
+                    EncryptionKeySource* encryption_key_source,
+                    EncryptionKeySource::TrackType track_type,
                     double clear_lead_in_seconds);
 
   /// Finalize the segmenter.

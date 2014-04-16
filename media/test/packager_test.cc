@@ -9,7 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
 #include "media/base/demuxer.h"
-#include "media/base/encryptor_source.h"
+#include "media/base/encryption_key_source.h"
 #include "media/base/media_stream.h"
 #include "media/base/muxer.h"
 #include "media/base/status_test_util.h"
@@ -148,9 +148,10 @@ void PackagerTestBasic::Remux(const std::string& input,
   Demuxer demuxer(GetFullPath(input), decryptor_source_);
   ASSERT_OK(demuxer.Initialize());
 
-  scoped_ptr<EncryptorSource> encryptor_source(
-      EncryptorSource::CreateFromHexStrings(kKeyIdHex, kKeyHex, kPsshHex, ""));
-  DCHECK(encryptor_source);
+  scoped_ptr<EncryptionKeySource> encryption_key_source(
+      EncryptionKeySource::CreateFromHexStrings(
+          kKeyIdHex, kKeyHex, kPsshHex, ""));
+  DCHECK(encryption_key_source);
 
   scoped_ptr<Muxer> muxer_video;
   if (!video_output.empty()) {
@@ -161,9 +162,9 @@ void PackagerTestBasic::Remux(const std::string& input,
     muxer_video->AddStream(FindFirstVideoStream(demuxer.streams()));
 
     if (enable_encryption) {
-      muxer_video->SetEncryptorSource(encryptor_source.get(),
-                                      EncryptorSource::TRACK_TYPE_SD,
-                                      kClearLeadInSeconds);
+      muxer_video->SetEncryptionKeySource(encryption_key_source.get(),
+                                          EncryptionKeySource::TRACK_TYPE_SD,
+                                          kClearLeadInSeconds);
     }
   }
 
@@ -176,9 +177,9 @@ void PackagerTestBasic::Remux(const std::string& input,
     muxer_audio->AddStream(FindFirstAudioStream(demuxer.streams()));
 
     if (enable_encryption) {
-      muxer_audio->SetEncryptorSource(encryptor_source.get(),
-                                      EncryptorSource::TRACK_TYPE_SD,
-                                      kClearLeadInSeconds);
+      muxer_audio->SetEncryptionKeySource(encryption_key_source.get(),
+                                          EncryptionKeySource::TRACK_TYPE_SD,
+                                          kClearLeadInSeconds);
     }
   }
 

@@ -13,7 +13,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_ptr.h"
-#include "media/base/encryptor_source.h"
+#include "media/base/encryption_key_source.h"
 #include "media/base/muxer_options.h"
 #include "media/base/status.h"
 
@@ -23,7 +23,7 @@ class Clock;
 
 namespace media {
 
-class EncryptorSource;
+class EncryptionKeySource;
 class MediaSample;
 class MediaStream;
 
@@ -32,22 +32,22 @@ class MuxerListener;
 }
 
 /// Muxer is responsible for taking elementary stream samples and producing
-/// media containers. An optional EncryptorSource can be provided to Muxer to
-/// generate encrypted outputs.
+/// media containers. An optional EncryptionKeySource can be provided to Muxer
+/// to generate encrypted outputs.
 class Muxer {
  public:
   explicit Muxer(const MuxerOptions& options);
   virtual ~Muxer();
 
-  /// Set encryptor source.
-  /// @param encryptor_source points to the encryptor source to be injected.
-  ///        Should not be NULL.
+  /// Set encryption key source.
+  /// @param encryption_key_source points to the encryption key source to be
+  ///        injected. Should not be NULL.
   /// @param track_type should be either SD or HD. It affects whether SD key or
   ///        HD key is used to encrypt the video content.
   /// @param clear_lead_in_seconds specifies clear lead duration in seconds.
-  void SetEncryptorSource(EncryptorSource* encryptor_source,
-                          EncryptorSource::TrackType track_type,
-                          double clear_lead_in_seconds);
+  void SetEncryptionKeySource(EncryptionKeySource* encryption_key_source,
+                              EncryptionKeySource::TrackType track_type,
+                              double clear_lead_in_seconds);
 
   /// Add video/audio stream.
   void AddStream(MediaStream* stream);
@@ -73,8 +73,10 @@ class Muxer {
 
  protected:
   const MuxerOptions& options() const { return options_; }
-  EncryptorSource* encryptor_source() { return encryptor_source_; }
-  EncryptorSource::TrackType track_type() const { return track_type_; }
+  EncryptionKeySource* encryption_key_source() {
+    return encryption_key_source_;
+  }
+  EncryptionKeySource::TrackType track_type() const { return track_type_; }
   double clear_lead_in_seconds() const { return clear_lead_in_seconds_; }
   event::MuxerListener* muxer_listener() { return muxer_listener_; }
   base::Clock* clock() { return clock_; }
@@ -98,9 +100,9 @@ class Muxer {
 
   MuxerOptions options_;
   std::vector<MediaStream*> streams_;
-  EncryptorSource* encryptor_source_;
+  EncryptionKeySource* encryption_key_source_;
   bool initialized_;
-  EncryptorSource::TrackType track_type_;
+  EncryptionKeySource::TrackType track_type_;
   double clear_lead_in_seconds_;
 
   event::MuxerListener* muxer_listener_;

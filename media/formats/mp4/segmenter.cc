@@ -11,7 +11,7 @@
 #include "base/stl_util.h"
 #include "media/base/aes_encryptor.h"
 #include "media/base/buffer_writer.h"
-#include "media/base/encryptor_source.h"
+#include "media/base/encryption_key_source.h"
 #include "media/base/media_sample.h"
 #include "media/base/media_stream.h"
 #include "media/base/muxer_options.h"
@@ -108,8 +108,8 @@ Segmenter::Segmenter(const MuxerOptions& options,
 Segmenter::~Segmenter() { STLDeleteElements(&fragmenters_); }
 
 Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
-                             EncryptorSource* encryptor_source,
-                             EncryptorSource::TrackType track_type,
+                             EncryptionKeySource* encryption_key_source,
+                             EncryptionKeySource::TrackType track_type,
                              double clear_lead_in_seconds) {
   DCHECK_LT(0u, streams.size());
   moof_->header.sequence_number = 0;
@@ -130,16 +130,16 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
         sidx_->reference_id = i + 1;
     }
     scoped_ptr<AesCtrEncryptor> encryptor;
-    if (encryptor_source) {
+    if (encryption_key_source) {
       SampleDescription& description =
           moov_->tracks[i].media.information.sample_table.description;
 
-      DCHECK(track_type == EncryptorSource::TRACK_TYPE_SD ||
-             track_type == EncryptorSource::TRACK_TYPE_HD);
+      DCHECK(track_type == EncryptionKeySource::TRACK_TYPE_SD ||
+             track_type == EncryptionKeySource::TRACK_TYPE_HD);
 
       EncryptionKey encryption_key;
-      Status status = encryptor_source->GetKey(
-          description.type == kAudio ? EncryptorSource::TRACK_TYPE_AUDIO
+      Status status = encryption_key_source->GetKey(
+          description.type == kAudio ? EncryptionKeySource::TRACK_TYPE_AUDIO
                                      : track_type,
           &encryption_key);
       if (!status.ok())

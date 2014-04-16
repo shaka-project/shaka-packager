@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "media/base/aes_encryptor.h"
 #include "media/base/audio_stream_info.h"
-#include "media/base/encryptor_source.h"
+#include "media/base/encryption_key_source.h"
 #include "media/base/media_sample.h"
 #include "media/base/media_stream.h"
 #include "media/base/video_stream_info.h"
@@ -98,8 +98,11 @@ Status MP4Muxer::Initialize() {
         new MultiSegmentSegmenter(options(), ftyp.Pass(), moov.Pass()));
   }
 
-  Status segmenter_initialized = segmenter_->Initialize(
-      streams(), encryptor_source(), track_type(), clear_lead_in_seconds());
+  Status segmenter_initialized =
+      segmenter_->Initialize(streams(),
+                             encryption_key_source(),
+                             track_type(),
+                             clear_lead_in_seconds());
 
   if (!segmenter_initialized.ok())
     return segmenter_initialized;
@@ -274,7 +277,7 @@ void MP4Muxer::FireOnMediaEndEvent() {
                                index_range_end,
                                duration_seconds,
                                file_size,
-                               encryptor_source());
+                               encryption_key_source());
 }
 
 uint64 MP4Muxer::IsoTimeNow() {

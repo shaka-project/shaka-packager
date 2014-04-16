@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/widevine_encryptor_source.h"
+#include "media/base/widevine_encryption_key_source.h"
 
 #include "base/base64.h"
 #include "base/strings/stringprintf.h"
@@ -23,9 +23,10 @@ const char kMockSignature[] = "MockSignature";
 
 // The license service may return an error indicating a transient error has
 // just happened in the server, or other types of errors.
-// WidevineEncryptorSource will perform a number of retries on transient errors;
-// WidevineEncryptorSource does not know about other errors and retries are not
-// performed.
+// WidevineEncryptionKeySource will perform a number of retries on transient
+// errors;
+// WidevineEncryptionKeySource does not know about other errors and retries are
+// not performed.
 const char kLicenseStatusTransientError[] = "INTERNAL_ERROR";
 const char kLicenseStatusUnknownError[] = "UNKNOWN_ERROR";
 
@@ -37,8 +38,7 @@ const char kExpectedSignedMessageFormat[] =
 const char kTrackFormat[] =
     "{\"type\":\"%s\",\"key_id\":\"%s\",\"key\":"
     "\"%s\",\"pssh\":[{\"drm_type\":\"WIDEVINE\",\"data\":\"%s\"}]}";
-const char kLicenseResponseFormat[] =
-    "{\"status\":\"%s\",\"tracks\":[%s]}";
+const char kLicenseResponseFormat[] = "{\"status\":\"%s\",\"tracks\":[%s]}";
 const char kHttpResponseFormat[] = "{\"response\":\"%s\"}";
 
 std::string Base64Encode(const std::string& input) {
@@ -122,55 +122,53 @@ class MockHttpFetcher : public HttpFetcher {
   DISALLOW_COPY_AND_ASSIGN(MockHttpFetcher);
 };
 
-class WidevineEncryptorSourceTest : public ::testing::Test {
+class WidevineEncryptionKeySourceTest : public ::testing::Test {
  public:
-  WidevineEncryptorSourceTest()
+  WidevineEncryptionKeySourceTest()
       : mock_request_signer_(new MockRequestSigner(kSignerName)),
         mock_http_fetcher_(new MockHttpFetcher()) {}
 
  protected:
-  void CreateWidevineEncryptorSource() {
-    widevine_encryptor_source_.reset(new WidevineEncryptorSource(
-        kServerUrl,
-        kContentId,
-        mock_request_signer_.PassAs<RequestSigner>()));
-    widevine_encryptor_source_->set_http_fetcher(
+  void CreateWidevineEncryptionKeySource() {
+    widevine_encryption_key_source_.reset(new WidevineEncryptionKeySource(
+        kServerUrl, kContentId, mock_request_signer_.PassAs<RequestSigner>()));
+    widevine_encryption_key_source_->set_http_fetcher(
         mock_http_fetcher_.PassAs<HttpFetcher>());
   }
 
   scoped_ptr<MockRequestSigner> mock_request_signer_;
   scoped_ptr<MockHttpFetcher> mock_http_fetcher_;
-  scoped_ptr<WidevineEncryptorSource> widevine_encryptor_source_;
+  scoped_ptr<WidevineEncryptionKeySource> widevine_encryption_key_source_;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(WidevineEncryptorSourceTest);
+  DISALLOW_COPY_AND_ASSIGN(WidevineEncryptionKeySourceTest);
 };
 
-TEST_F(WidevineEncryptorSourceTest, GetTrackTypeFromString) {
-  EXPECT_EQ(EncryptorSource::TRACK_TYPE_SD,
-            EncryptorSource::GetTrackTypeFromString("SD"));
-  EXPECT_EQ(EncryptorSource::TRACK_TYPE_HD,
-            EncryptorSource::GetTrackTypeFromString("HD"));
-  EXPECT_EQ(EncryptorSource::TRACK_TYPE_AUDIO,
-            EncryptorSource::GetTrackTypeFromString("AUDIO"));
-  EXPECT_EQ(EncryptorSource::TRACK_TYPE_UNKNOWN,
-            EncryptorSource::GetTrackTypeFromString("FOO"));
+TEST_F(WidevineEncryptionKeySourceTest, GetTrackTypeFromString) {
+  EXPECT_EQ(EncryptionKeySource::TRACK_TYPE_SD,
+            EncryptionKeySource::GetTrackTypeFromString("SD"));
+  EXPECT_EQ(EncryptionKeySource::TRACK_TYPE_HD,
+            EncryptionKeySource::GetTrackTypeFromString("HD"));
+  EXPECT_EQ(EncryptionKeySource::TRACK_TYPE_AUDIO,
+            EncryptionKeySource::GetTrackTypeFromString("AUDIO"));
+  EXPECT_EQ(EncryptionKeySource::TRACK_TYPE_UNKNOWN,
+            EncryptionKeySource::GetTrackTypeFromString("FOO"));
 }
 
-TEST_F(WidevineEncryptorSourceTest, GeneratureSignatureFailure) {
+TEST_F(WidevineEncryptionKeySourceTest, GeneratureSignatureFailure) {
   EXPECT_CALL(*mock_request_signer_, GenerateSignature(_, _))
       .WillOnce(Return(false));
 
-  CreateWidevineEncryptorSource();
+  CreateWidevineEncryptionKeySource();
   EncryptionKey encryption_key;
   ASSERT_EQ(Status(error::INTERNAL_ERROR, "Signature generation failed."),
-            widevine_encryptor_source_->GetKey(EncryptorSource::TRACK_TYPE_SD,
-                                               &encryption_key));
+            widevine_encryption_key_source_->GetKey(
+                EncryptionKeySource::TRACK_TYPE_SD, &encryption_key));
 }
 
 // Check whether expected request message and post data was generated and
 // verify the correct behavior on http failure.
-TEST_F(WidevineEncryptorSourceTest, HttpPostFailure) {
+TEST_F(WidevineEncryptionKeySourceTest, HttpPostFailure) {
   std::string expected_message = base::StringPrintf(
       kExpectedRequestMessageFormat, Base64Encode(kContentId).c_str());
   EXPECT_CALL(*mock_request_signer_, GenerateSignature(expected_message, _))
@@ -185,14 +183,14 @@ TEST_F(WidevineEncryptorSourceTest, HttpPostFailure) {
   EXPECT_CALL(*mock_http_fetcher_, Post(kServerUrl, expected_post_data, _))
       .WillOnce(Return(kMockStatus));
 
-  CreateWidevineEncryptorSource();
+  CreateWidevineEncryptionKeySource();
   EncryptionKey encryption_key;
   ASSERT_EQ(kMockStatus,
-            widevine_encryptor_source_->GetKey(EncryptorSource::TRACK_TYPE_SD,
-                                               &encryption_key));
+            widevine_encryption_key_source_->GetKey(
+                EncryptionKeySource::TRACK_TYPE_SD, &encryption_key));
 }
 
-TEST_F(WidevineEncryptorSourceTest, LicenseStatusOK) {
+TEST_F(WidevineEncryptionKeySourceTest, LicenseStatusOK) {
   EXPECT_CALL(*mock_request_signer_, GenerateSignature(_, _))
       .WillOnce(Return(true));
 
@@ -202,13 +200,13 @@ TEST_F(WidevineEncryptorSourceTest, LicenseStatusOK) {
   EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(expected_response), Return(Status::OK)));
 
-  CreateWidevineEncryptorSource();
+  CreateWidevineEncryptionKeySource();
 
   EncryptionKey encryption_key;
   const std::string kTrackTypes[] = {"SD", "HD", "AUDIO"};
   for (size_t i = 0; i < 3; ++i) {
-    ASSERT_OK(widevine_encryptor_source_->GetKey(
-        EncryptorSource::GetTrackTypeFromString(kTrackTypes[i]),
+    ASSERT_OK(widevine_encryption_key_source_->GetKey(
+        EncryptionKeySource::GetTrackTypeFromString(kTrackTypes[i]),
         &encryption_key));
     EXPECT_EQ(GetMockKeyId(kTrackTypes[i]), ToString(encryption_key.key_id));
     EXPECT_EQ(GetMockKey(kTrackTypes[i]), ToString(encryption_key.key));
@@ -217,7 +215,7 @@ TEST_F(WidevineEncryptorSourceTest, LicenseStatusOK) {
   }
 }
 
-TEST_F(WidevineEncryptorSourceTest, RetryOnTransientError) {
+TEST_F(WidevineEncryptionKeySourceTest, RetryOnTransientError) {
   EXPECT_CALL(*mock_request_signer_, GenerateSignature(_, _))
       .WillOnce(Return(true));
 
@@ -235,17 +233,17 @@ TEST_F(WidevineEncryptorSourceTest, RetryOnTransientError) {
       .WillOnce(DoAll(SetArgPointee<2>(expected_retried_response),
                       Return(Status::OK)));
 
-  CreateWidevineEncryptorSource();
+  CreateWidevineEncryptionKeySource();
   EncryptionKey encryption_key;
-  ASSERT_OK(widevine_encryptor_source_->GetKey(EncryptorSource::TRACK_TYPE_SD,
-                                               &encryption_key));
+  ASSERT_OK(widevine_encryption_key_source_->GetKey(
+      EncryptionKeySource::TRACK_TYPE_SD, &encryption_key));
   EXPECT_EQ(GetMockKeyId("SD"), ToString(encryption_key.key_id));
   EXPECT_EQ(GetMockKey("SD"), ToString(encryption_key.key));
   EXPECT_EQ(GetMockPsshData("SD"),
             GetPsshDataFromPsshBox(ToString(encryption_key.pssh)));
 }
 
-TEST_F(WidevineEncryptorSourceTest, NoRetryOnUnknownError) {
+TEST_F(WidevineEncryptionKeySourceTest, NoRetryOnUnknownError) {
   EXPECT_CALL(*mock_request_signer_, GenerateSignature(_, _))
       .WillOnce(Return(true));
 
@@ -257,11 +255,13 @@ TEST_F(WidevineEncryptorSourceTest, NoRetryOnUnknownError) {
   EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
-  CreateWidevineEncryptorSource();
+  CreateWidevineEncryptionKeySource();
   EncryptionKey encryption_key;
-  ASSERT_EQ(error::SERVER_ERROR,
-            widevine_encryptor_source_->GetKey(EncryptorSource::TRACK_TYPE_SD,
-                                               &encryption_key).error_code());
+  ASSERT_EQ(
+      error::SERVER_ERROR,
+      widevine_encryption_key_source_->GetKey(
+                                           EncryptionKeySource::TRACK_TYPE_SD,
+                                           &encryption_key).error_code());
 }
 
 }  // namespace media

@@ -19,7 +19,7 @@
 #include "media/base/muxer_options.h"
 #include "media/base/request_signer.h"
 #include "media/base/stream_info.h"
-#include "media/base/widevine_encryptor_source.h"
+#include "media/base/widevine_encryption_key_source.h"
 #include "media/event/vod_media_info_dump_muxer_listener.h"
 #include "media/file/file.h"
 #include "media/file/file_closer.h"
@@ -41,8 +41,8 @@ void DumpStreamInfo(const std::vector<MediaStream*>& streams) {
 }
 
 // Create and initialize encryptor source.
-scoped_ptr<EncryptorSource> CreateEncryptorSource() {
-  scoped_ptr<EncryptorSource> encryptor_source;
+scoped_ptr<EncryptionKeySource> CreateEncryptionKeySource() {
+  scoped_ptr<EncryptionKeySource> encryption_key_source;
   if (FLAGS_enable_widevine_encryption) {
     scoped_ptr<RequestSigner> signer;
     DCHECK(!FLAGS_aes_signing_key.empty() ||
@@ -55,7 +55,7 @@ scoped_ptr<EncryptorSource> CreateEncryptorSource() {
         LOG(ERROR) << "Cannot create an AES signer object from '"
                    << FLAGS_aes_signing_key << "':'" << FLAGS_aes_signing_iv
                    << "'.";
-        return scoped_ptr<EncryptorSource>();
+        return scoped_ptr<EncryptionKeySource>();
       }
     } else if (!FLAGS_rsa_signing_key_path.empty()) {
       std::string rsa_private_key;
@@ -63,7 +63,7 @@ scoped_ptr<EncryptorSource> CreateEncryptorSource() {
                                   &rsa_private_key)) {
         LOG(ERROR) << "Failed to read from '" << FLAGS_rsa_signing_key_path
                    << "'.";
-        return scoped_ptr<EncryptorSource>();
+        return scoped_ptr<EncryptionKeySource>();
       }
 
       signer.reset(
@@ -71,17 +71,17 @@ scoped_ptr<EncryptorSource> CreateEncryptorSource() {
       if (!signer) {
         LOG(ERROR) << "Cannot create a RSA signer object from '"
                    << FLAGS_rsa_signing_key_path << "'.";
-        return scoped_ptr<EncryptorSource>();
+        return scoped_ptr<EncryptionKeySource>();
       }
     }
 
-    encryptor_source.reset(new WidevineEncryptorSource(
+    encryption_key_source.reset(new WidevineEncryptionKeySource(
         FLAGS_server_url, FLAGS_content_id, signer.Pass()));
   } else if (FLAGS_enable_fixed_key_encryption) {
-    encryptor_source = EncryptorSource::CreateFromHexStrings(
+    encryption_key_source = EncryptionKeySource::CreateFromHexStrings(
         FLAGS_key_id, FLAGS_key, FLAGS_pssh, "");
   }
-  return encryptor_source.Pass();
+  return encryption_key_source.Pass();
 }
 
 bool GetMuxerOptions(MuxerOptions* muxer_options) {
@@ -206,21 +206,21 @@ bool RunPackager(const std::string& input) {
   if (!AddStreamToMuxer(demuxer.streams(), muxer.get()))
     return false;
 
-  scoped_ptr<EncryptorSource> encryptor_source;
+  scoped_ptr<EncryptionKeySource> encryption_key_source;
   if (FLAGS_enable_widevine_encryption || FLAGS_enable_fixed_key_encryption) {
-    encryptor_source = CreateEncryptorSource();
-    if (!encryptor_source)
+    encryption_key_source = CreateEncryptionKeySource();
+    if (!encryption_key_source)
       return false;
   }
-  EncryptorSource::TrackType track_type =
-      EncryptorSource::GetTrackTypeFromString(FLAGS_track_type);
-  if (track_type != EncryptorSource::TRACK_TYPE_SD &&
-      track_type != EncryptorSource::TRACK_TYPE_HD) {
+  EncryptionKeySource::TrackType track_type =
+      EncryptionKeySource::GetTrackTypeFromString(FLAGS_track_type);
+  if (track_type != EncryptionKeySource::TRACK_TYPE_SD &&
+      track_type != EncryptionKeySource::TRACK_TYPE_HD) {
     LOG(ERROR) << "FLAGS_track_type should be either 'SD' or 'HD'";
     return false;
   }
-  muxer->SetEncryptorSource(
-      encryptor_source.get(), track_type, FLAGS_clear_lead);
+  muxer->SetEncryptionKeySource(
+      encryption_key_source.get(), track_type, FLAGS_clear_lead);
 
   // Start remuxing process.
   status = demuxer.Run();

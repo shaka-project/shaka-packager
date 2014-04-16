@@ -6,7 +6,7 @@
 
 #include "media/base/muxer.h"
 
-#include "media/base/encryptor_source.h"
+#include "media/base/encryption_key_source.h"
 #include "media/base/media_sample.h"
 #include "media/base/media_stream.h"
 
@@ -14,19 +14,19 @@ namespace media {
 
 Muxer::Muxer(const MuxerOptions& options)
     : options_(options),
-      encryptor_source_(NULL),
+      encryption_key_source_(NULL),
       initialized_(false),
-      track_type_(EncryptorSource::TRACK_TYPE_SD),
+      track_type_(EncryptionKeySource::TRACK_TYPE_SD),
       clear_lead_in_seconds_(0),
       muxer_listener_(NULL),
       clock_(NULL) {}
 
 Muxer::~Muxer() {}
 
-void Muxer::SetEncryptorSource(EncryptorSource* encryptor_source,
-                               EncryptorSource::TrackType track_type,
-                               double clear_lead_in_seconds) {
-  encryptor_source_ = encryptor_source;
+void Muxer::SetEncryptionKeySource(EncryptionKeySource* encryption_key_source,
+                                   EncryptionKeySource::TrackType track_type,
+                                   double clear_lead_in_seconds) {
+  encryption_key_source_ = encryption_key_source;
   track_type_ = track_type;
   clear_lead_in_seconds_ = clear_lead_in_seconds;
 }

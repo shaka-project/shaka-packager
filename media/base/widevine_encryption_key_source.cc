@@ -4,14 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/widevine_encryptor_source.h"
+#include "media/base/widevine_encryption_key_source.h"
 
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/stl_util.h"
-#include "base/time/time.h"
-#include "base/threading/platform_thread.h"
 #include "base/values.h"
 #include "media/base/http_fetcher.h"
 #include "media/base/request_signer.h"
@@ -95,7 +93,7 @@ bool GetPsshData(const base::DictionaryValue& track_dict,
 
 namespace media {
 
-WidevineEncryptorSource::WidevineEncryptorSource(
+WidevineEncryptionKeySource::WidevineEncryptionKeySource(
     const std::string& server_url,
     const std::string& content_id,
     scoped_ptr<RequestSigner> signer)
@@ -106,12 +104,12 @@ WidevineEncryptorSource::WidevineEncryptorSource(
       key_fetched_(false) {
   DCHECK(signer_);
 }
-WidevineEncryptorSource::~WidevineEncryptorSource() {
+WidevineEncryptionKeySource::~WidevineEncryptionKeySource() {
   STLDeleteValues(&encryption_key_map_);
 }
 
-Status WidevineEncryptorSource::GetKey(TrackType track_type,
-                                       EncryptionKey* key) {
+Status WidevineEncryptionKeySource::GetKey(TrackType track_type,
+                                           EncryptionKey* key) {
   DCHECK(track_type == TRACK_TYPE_SD || track_type == TRACK_TYPE_HD ||
          track_type == TRACK_TYPE_AUDIO);
   Status status;
@@ -133,12 +131,12 @@ Status WidevineEncryptorSource::GetKey(TrackType track_type,
   return Status::OK;
 }
 
-void WidevineEncryptorSource::set_http_fetcher(
+void WidevineEncryptionKeySource::set_http_fetcher(
     scoped_ptr<HttpFetcher> http_fetcher) {
   http_fetcher_ = http_fetcher.Pass();
 }
 
-Status WidevineEncryptorSource::FetchKeys() {
+Status WidevineEncryptionKeySource::FetchKeys() {
   std::string request;
   FillRequest(content_id_, &request);
 
@@ -186,8 +184,8 @@ Status WidevineEncryptorSource::FetchKeys() {
                 "Failed to recover from server internal error.");
 }
 
-void WidevineEncryptorSource::FillRequest(const std::string& content_id,
-                                          std::string* request) {
+void WidevineEncryptionKeySource::FillRequest(const std::string& content_id,
+                                              std::string* request) {
   DCHECK(request);
 
   std::string content_id_base64_string;
@@ -220,8 +218,8 @@ void WidevineEncryptorSource::FillRequest(const std::string& content_id,
   base::JSONWriter::Write(&request_dict, request);
 }
 
-Status WidevineEncryptorSource::SignRequest(const std::string& request,
-                                            std::string* signed_request) {
+Status WidevineEncryptionKeySource::SignRequest(const std::string& request,
+                                                std::string* signed_request) {
   DCHECK(signed_request);
 
   // Sign the request.
@@ -245,8 +243,9 @@ Status WidevineEncryptorSource::SignRequest(const std::string& request,
   return Status::OK;
 }
 
-bool WidevineEncryptorSource::DecodeResponse(const std::string& raw_response,
-                                             std::string* response) {
+bool WidevineEncryptionKeySource::DecodeResponse(
+    const std::string& raw_response,
+    std::string* response) {
   DCHECK(response);
 
   // Extract base64 formatted response from JSON formatted raw response.
@@ -264,8 +263,9 @@ bool WidevineEncryptorSource::DecodeResponse(const std::string& raw_response,
   return true;
 }
 
-bool WidevineEncryptorSource::ExtractEncryptionKey(const std::string& response,
-                                                   bool* transient_error) {
+bool WidevineEncryptionKeySource::ExtractEncryptionKey(
+    const std::string& response,
+    bool* transient_error) {
   DCHECK(transient_error);
   *transient_error = false;
 
@@ -302,8 +302,8 @@ bool WidevineEncryptorSource::ExtractEncryptionKey(const std::string& response,
 
     scoped_ptr<EncryptionKey> encryption_key(new EncryptionKey());
     std::vector<uint8> pssh_data;
-    if (!GetKeyAndKeyId(*track_dict, &encryption_key->key,
-                        &encryption_key->key_id) ||
+    if (!GetKeyAndKeyId(
+            *track_dict, &encryption_key->key, &encryption_key->key_id) ||
         !GetPsshData(*track_dict, &pssh_data))
       return false;
     encryption_key->pssh = PsshBoxFromPsshData(pssh_data);
