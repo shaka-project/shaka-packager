@@ -14,12 +14,6 @@
 #include "media/filters/h264_parser.h"
 #include "media/formats/mp2t/mp2t_common.h"
 
-using media::filters::H264Parser;
-using media::filters::H264PPS;
-using media::filters::H264SliceHeader;
-using media::filters::H264SPS;
-using media::filters::H264NALU;
-
 namespace media {
 namespace mp2t {
 

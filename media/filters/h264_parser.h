@@ -15,7 +15,6 @@
 #include "media/filters/h264_bit_reader.h"
 
 namespace media {
-namespace filters {
 
 // For explanations of each struct and its members, see H.264 specification
 // at http://www.itu.int/rec/T-REC-H.264.
@@ -394,7 +393,6 @@ class H264Parser {
   DISALLOW_COPY_AND_ASSIGN(H264Parser);
 };
 
-}  // namespace filters
 }  // namespace media
 
 #endif  // MEDIA_FILTERS_H264_PARSER_H_

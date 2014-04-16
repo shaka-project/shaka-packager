@@ -60,7 +60,7 @@ Status Demuxer::Initialize() {
       parser_.reset(new mp4::MP4MediaParser());
       break;
     case CONTAINER_MPEG2TS:
-      parser_.reset(new mp2t::MediaParser());
+      parser_.reset(new mp2t::Mp2tMediaParser());
       break;
     default:
       NOTIMPLEMENTED();

@@ -28,13 +28,13 @@ class Mp2tMediaParserTest : public testing::Test {
         video_frame_count_(0),
         video_min_dts_(kNoTimestamp),
         video_max_dts_(kNoTimestamp) {
-    parser_.reset(new MediaParser());
+    parser_.reset(new Mp2tMediaParser());
   }
 
  protected:
   typedef std::map<int, scoped_refptr<StreamInfo> > StreamMap;
 
-  scoped_ptr<MediaParser> parser_;
+  scoped_ptr<Mp2tMediaParser> parser_;
   StreamMap stream_map_;
   int audio_frame_count_;
   int video_frame_count_;

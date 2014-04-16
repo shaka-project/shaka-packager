@@ -17,12 +17,6 @@
 #include "media/test/test_data_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using media::filters::H264Parser;
-using media::filters::H264PPS;
-using media::filters::H264SliceHeader;
-using media::filters::H264SPS;
-using media::filters::H264NALU;
-
 namespace media {
 class VideoStreamInfo;
 

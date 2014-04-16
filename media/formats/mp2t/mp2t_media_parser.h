@@ -26,12 +26,12 @@ class TsSection;
 
 typedef std::deque<scoped_refptr<MediaSample> > SampleQueue;
 
-class MediaParser : public media::MediaParser {
+class Mp2tMediaParser : public MediaParser {
  public:
-  explicit MediaParser();
-  virtual ~MediaParser();
+  explicit Mp2tMediaParser();
+  virtual ~Mp2tMediaParser();
 
-  // media::MediaParser implementation.
+  // MediaParser implementation overrides.
   virtual void Init(const InitCB& init_cb,
                     const NewSampleCB& new_sample_cb,
                     const NeedKeyCB& need_key_cb) OVERRIDE;
@@ -87,7 +87,7 @@ class MediaParser : public media::MediaParser {
   // Whether |init_cb_| has been invoked.
   bool is_initialized_;
 
-  DISALLOW_COPY_AND_ASSIGN(MediaParser);
+  DISALLOW_COPY_AND_ASSIGN(Mp2tMediaParser);
 };
 
 }  // namespace mp2t

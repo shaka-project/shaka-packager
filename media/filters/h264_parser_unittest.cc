@@ -12,7 +12,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
-namespace filters {
 
 TEST(H264ParserTest, StreamFileParsing) {
   base::FilePath file_path = GetTestDataFilePath("test-25fps.h264");
@@ -70,5 +69,4 @@ TEST(H264ParserTest, StreamFileParsing) {
   }
 }
 
-}  // namespace filters
 }  // namespace media

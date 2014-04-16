@@ -15,13 +15,11 @@
 #include "media/formats/mp2t/es_parser.h"
 
 namespace media {
-class OffsetByteQueue;
-class VideoStreamInfo;
 
-namespace filters {
 class H264Parser;
+class OffsetByteQueue;
 struct H264SPS;
-}  // namespace filters
+
 }  // namespace media
 
 namespace media {
@@ -39,7 +37,7 @@ class EsParserH264 : public EsParser {
                const EmitSampleCB& emit_sample_cb);
   virtual ~EsParserH264();
 
-  // EsParser implementation.
+  // EsParser implementation overrides.
   virtual bool Parse(const uint8* buf, int size, int64 pts, int64 dts) OVERRIDE;
   virtual void Flush() OVERRIDE;
   virtual void Reset() OVERRIDE;
@@ -68,7 +66,7 @@ class EsParserH264 : public EsParser {
 
   // Update the video decoder config based on an H264 SPS.
   // Return true if successful.
-  bool UpdateVideoDecoderConfig(const filters::H264SPS* sps);
+  bool UpdateVideoDecoderConfig(const H264SPS* sps);
 
   // Callbacks to pass the stream configuration and the frames.
   NewStreamInfoCB new_stream_info_cb_;
@@ -81,7 +79,7 @@ class EsParserH264 : public EsParser {
   // H264 parser state.
   // - |current_access_unit_pos_| is pointing to an annexB syncword
   // representing the first NALU of an H264 access unit.
-  scoped_ptr<filters::H264Parser> h264_parser_;
+  scoped_ptr<H264Parser> h264_parser_;
   int64 current_access_unit_pos_;
   int64 next_access_unit_pos_;
 

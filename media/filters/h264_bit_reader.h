@@ -12,7 +12,6 @@
 #include "base/basictypes.h"
 
 namespace media {
-namespace filters {
 
 // A class to provide bit-granularity reading of H.264 streams.
 // This is not a generic bit reader class, as it takes into account
@@ -74,7 +73,6 @@ class H264BitReader {
   DISALLOW_COPY_AND_ASSIGN(H264BitReader);
 };
 
-}  // namespace filters
 }  // namespace media
 
 #endif  // MEDIA_FILTERS_H264_BIT_READER_H_

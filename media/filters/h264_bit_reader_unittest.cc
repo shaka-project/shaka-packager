@@ -6,7 +6,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
-namespace filters {
 
 TEST(H264BitReaderTest, ReadStreamWithoutEscapeAndTrailingZeroBytes) {
   H264BitReader reader;
@@ -71,5 +70,4 @@ TEST(H264BitReaderTest, StopBitOccupyFullByte) {
   EXPECT_FALSE(reader.HasMoreRBSPData());
 }
 
-}  // namespace filters
 }  // namespace media

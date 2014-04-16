@@ -6,7 +6,6 @@
 #include "media/filters/h264_bit_reader.h"
 
 namespace media {
-namespace filters {
 
 H264BitReader::H264BitReader()
     : data_(NULL),
@@ -111,5 +110,4 @@ size_t H264BitReader::NumEmulationPreventionBytesRead() {
   return emulation_prevention_bytes_;
 }
 
-}  // namespace filters
 }  // namespace media
