@@ -191,7 +191,8 @@ bool RunPackager(const std::string& input) {
     DumpStreamInfo(demuxer.streams());
 
   if (FLAGS_output.empty()) {
-    LOG(INFO) << "No output specified. Exiting.";
+    if (!FLAGS_dump_stream_info)
+      LOG(WARNING) << "No output specified. Exiting.";
     return true;
   }
 
