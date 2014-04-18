@@ -50,6 +50,8 @@ class BufferWriter {
   void AppendBuffer(const BufferWriter& buffer);
 
   void Swap(BufferWriter* buffer) { buf_.swap(buffer->buf_); }
+  void SwapBuffer(std::vector<uint8>* buffer) { buf_.swap(*buffer); }
+
   void Clear() { buf_.clear(); }
   size_t Size() const { return buf_.size(); }
   /// @return Underlying buffer. Behavior is undefined if the buffer size is 0.

@@ -16,6 +16,7 @@
 
 namespace media {
 
+class H264ByteToUnitStreamConverter;
 class H264Parser;
 class OffsetByteQueue;
 struct H264SPS;
@@ -83,8 +84,16 @@ class EsParserH264 : public EsParser {
   int64 current_access_unit_pos_;
   int64 next_access_unit_pos_;
 
+  // Filter to convert H.264 Annex B byte stream to unit stream.
+  scoped_ptr<H264ByteToUnitStreamConverter> stream_converter_;
+
   // Last video decoder config.
   scoped_refptr<StreamInfo> last_video_decoder_config_;
+  bool decoder_config_check_pending_;
+
+  // Frame for which we do not yet have a duration.
+  scoped_refptr<MediaSample> pending_sample_;
+  uint64 pending_sample_duration_;
 };
 
 }  // namespace mp2t

@@ -126,7 +126,7 @@ class Mp2tMediaParserTest : public testing::Test {
 TEST_F(Mp2tMediaParserTest, UnalignedAppend17) {
   // Test small, non-segment-aligned appends.
   ParseMpeg2TsFile("bear-1280x720.ts", 17);
-  EXPECT_EQ(video_frame_count_, 81);
+  EXPECT_EQ(video_frame_count_, 80);
   parser_->Flush();
   EXPECT_EQ(video_frame_count_, 82);
 }
@@ -134,7 +134,7 @@ TEST_F(Mp2tMediaParserTest, UnalignedAppend17) {
 TEST_F(Mp2tMediaParserTest, UnalignedAppend512) {
   // Test small, non-segment-aligned appends.
   ParseMpeg2TsFile("bear-1280x720.ts", 512);
-  EXPECT_EQ(video_frame_count_, 81);
+  EXPECT_EQ(video_frame_count_, 80);
   parser_->Flush();
   EXPECT_EQ(video_frame_count_, 82);
 }
@@ -145,7 +145,8 @@ TEST_F(Mp2tMediaParserTest, TimestampWrapAround) {
   // (close to 2^33 / 90000) which results in timestamps wrap around
   // in the Mpeg2 TS stream.
   ParseMpeg2TsFile("bear-1280x720_ptswraparound.ts", 512);
-  EXPECT_EQ(video_frame_count_, 81);
+  parser_->Flush();
+  EXPECT_EQ(video_frame_count_, 82);
   EXPECT_GE(video_min_dts_, (95443 - 1) * kMpeg2Timescale);
   EXPECT_LE(video_max_dts_,
             static_cast<int64>((95443 + 4)) * kMpeg2Timescale);

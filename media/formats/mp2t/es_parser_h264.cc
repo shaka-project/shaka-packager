@@ -11,6 +11,7 @@
 #include "media/base/offset_byte_queue.h"
 #include "media/base/timestamp.h"
 #include "media/base/video_stream_info.h"
+#include "media/filters/h264_byte_to_unit_stream_converter.h"
 #include "media/filters/h264_parser.h"
 #include "media/formats/mp2t/mp2t_common.h"
 
@@ -38,7 +39,10 @@ EsParserH264::EsParserH264(
       es_queue_(new media::OffsetByteQueue()),
       h264_parser_(new H264Parser()),
       current_access_unit_pos_(0),
-      next_access_unit_pos_(0) {
+      next_access_unit_pos_(0),
+      stream_converter_(new H264ByteToUnitStreamConverter),
+      decoder_config_check_pending_(false),
+      pending_sample_duration_(0) {
 }
 
 EsParserH264::~EsParserH264() {
@@ -72,14 +76,22 @@ bool EsParserH264::Parse(const uint8* buf, int size, int64 pts, int64 dts) {
 
 void EsParserH264::Flush() {
   DVLOG(1) << "EsParserH264::Flush";
-  if (!FindAUD(&current_access_unit_pos_))
-    return;
 
-  // Simulate an additional AUD to force emitting the last access unit
-  // which is assumed to be complete at this point.
-  uint8 aud[] = { 0x00, 0x00, 0x01, 0x09 };
-  es_queue_->Push(aud, sizeof(aud));
-  ParseInternal();
+  if (FindAUD(&current_access_unit_pos_)) {
+    // Simulate an additional AUD to force emitting the last access unit
+    // which is assumed to be complete at this point.
+    uint8 aud[] = { 0x00, 0x00, 0x01, 0x09 };
+    es_queue_->Push(aud, sizeof(aud));
+    ParseInternal();
+  }
+
+  if (pending_sample_) {
+    // Flush pending sample.
+    DCHECK(pending_sample_duration_);
+    pending_sample_->set_duration(pending_sample_duration_);
+    emit_sample_cb_.Run(pid(), pending_sample_);
+    pending_sample_ = scoped_refptr<MediaSample>();
+  }
 }
 
 void EsParserH264::Reset() {
@@ -90,6 +102,9 @@ void EsParserH264::Reset() {
   next_access_unit_pos_ = 0;
   timing_desc_list_.clear();
   last_video_decoder_config_ = scoped_refptr<StreamInfo>();
+  decoder_config_check_pending_ = false;
+  pending_sample_ = scoped_refptr<MediaSample>();
+  pending_sample_duration_ = 0;
 }
 
 bool EsParserH264::FindAUD(int64* stream_pos) {
@@ -189,6 +204,7 @@ bool EsParserH264::ParseInternal() {
         int sps_id;
         if (h264_parser_->ParseSPS(&sps_id) != H264Parser::kOk)
           return false;
+        decoder_config_check_pending_ = true;
         break;
       }
       case H264NALU::kPPS: {
@@ -196,6 +212,7 @@ bool EsParserH264::ParseInternal() {
         int pps_id;
         if (h264_parser_->ParsePPS(&pps_id) != H264Parser::kOk)
           return false;
+        decoder_config_check_pending_ = true;
         break;
       }
       case H264NALU::kIDRSlice:
@@ -242,23 +259,6 @@ bool EsParserH264::EmitFrame(int64 access_unit_pos, int access_unit_size,
   if (current_timing_desc.pts == kNoTimestamp)
     return false;
 
-  // Update the video decoder configuration if needed.
-  const H264PPS* pps = h264_parser_->GetPPS(pps_id);
-  if (!pps) {
-    // Only accept an invalid PPS at the beginning when the stream
-    // does not necessarily start with an SPS/PPS/IDR.
-    // In this case, the initial frames are conveyed to the upper layer with
-    // an invalid VideoDecoderConfig and it's up to the upper layer
-    // to process this kind of frame accordingly.
-    if (last_video_decoder_config_)
-      return false;
-  } else {
-    const H264SPS* sps = h264_parser_->GetSPS(pps->seq_parameter_set_id);
-    if (!sps)
-      return false;
-    RCHECK(UpdateVideoDecoderConfig(sps));
-  }
-
   // Emit a frame.
   DVLOG(LOG_LEVEL_ES) << "Emit frame: stream_pos=" << current_access_unit_pos_
                       << " size=" << access_unit_size;
@@ -267,25 +267,67 @@ bool EsParserH264::EmitFrame(int64 access_unit_pos, int access_unit_size,
   es_queue_->PeekAt(current_access_unit_pos_, &es, &es_size);
   CHECK_GE(es_size, access_unit_size);
 
-  // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
-  // type and allow multiple video tracks. See https://crbug.com/341581.
-  scoped_refptr<MediaSample> media_sample =
-      MediaSample::CopyFrom(
-          es,
-          access_unit_size,
-          is_key_frame);
+  // Convert frame to unit stream format.
+  std::vector<uint8> converted_frame;
+  if (!stream_converter_->ConvertByteStreamToNalUnitStream(
+          es, access_unit_size, &converted_frame)) {
+    DLOG(ERROR) << "Failure to convert video frame to unit stream format.";
+    return false;
+  }
+
+  if (decoder_config_check_pending_) {
+    // Update the video decoder configuration if needed.
+    const H264PPS* pps = h264_parser_->GetPPS(pps_id);
+    if (!pps) {
+      // Only accept an invalid PPS at the beginning when the stream
+      // does not necessarily start with an SPS/PPS/IDR.
+      // In this case, the initial frames are conveyed to the upper layer with
+      // an invalid VideoDecoderConfig and it's up to the upper layer
+      // to process this kind of frame accordingly.
+      if (last_video_decoder_config_)
+        return false;
+    } else {
+      const H264SPS* sps = h264_parser_->GetSPS(pps->seq_parameter_set_id);
+      if (!sps)
+        return false;
+      RCHECK(UpdateVideoDecoderConfig(sps));
+      decoder_config_check_pending_ = false;
+    }
+  }
+
+  // Create the media sample, emitting always the previous sample after
+  // calculating its duration.
+  scoped_refptr<MediaSample> media_sample = MediaSample::CopyFrom(
+      converted_frame.data(), converted_frame.size(), is_key_frame);
   media_sample->set_dts(current_timing_desc.dts);
   media_sample->set_pts(current_timing_desc.pts);
-  emit_sample_cb_.Run(pid(), media_sample);
+  if (pending_sample_) {
+    DCHECK_GT(media_sample->dts(), pending_sample_->dts());
+    pending_sample_duration_ = media_sample->dts() - pending_sample_->dts();
+    pending_sample_->set_duration(pending_sample_duration_);
+    emit_sample_cb_.Run(pid(), pending_sample_);
+  }
+  pending_sample_ = media_sample;
+
   return true;
 }
 
 bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
-  // TODO(tinskip): Generate an error if video configuration change is detected.
+  std::vector<uint8> decoder_config_record;
+  if (!stream_converter_->GetAVCDecoderConfigurationRecord(
+          &decoder_config_record)) {
+    DLOG(ERROR) << "Failure to construct an AVCDecoderConfigurationRecord";
+    return false;
+  }
+
   if (last_video_decoder_config_) {
-    // Varying video configurations currently not supported. Just assume that
-    // the video configuration has not changed.
-    return true;
+    // Verify that the video decoder config has not changed.
+    if (last_video_decoder_config_->extra_data() == decoder_config_record) {
+      // Video configuration has not changed.
+      return true;
+    }
+    NOTIMPLEMENTED() << "Varying video configurations are not supported.";
+    return false;
   }
 
   // TODO(damienv): a MAP unit can be either 16 or 32 pixels.
@@ -299,13 +341,16 @@ bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
           kMpeg2Timescale,
           kInfiniteDuration,
           kCodecH264,
-          std::string(),  // TODO(tinskip): calculate codec string.
+          VideoStreamInfo::GetCodecString(kCodecH264,
+                                          decoder_config_record[1],
+                                          decoder_config_record[2],
+                                          decoder_config_record[3]),
           std::string(),
           width,
           height,
-          kCommonNaluLengthSize,
-          NULL,  // TODO(tinskip): calculate AVCDecoderConfigurationRecord.
-          0,
+          H264ByteToUnitStreamConverter::kUnitStreamNaluLengthSize,
+          decoder_config_record.data(),
+          decoder_config_record.size(),
           false));
   DVLOG(1) << "Profile IDC: " << sps->profile_idc;
   DVLOG(1) << "Level IDC: " << sps->level_idc;

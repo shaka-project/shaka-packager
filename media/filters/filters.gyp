@@ -21,6 +21,8 @@
       'sources': [
         'h264_bit_reader.cc',
         'h264_bit_reader.h',
+        'h264_byte_to_unit_stream_converter.cc',
+        'h264_byte_to_unit_stream_converter.h',
         'h264_parser.cc',
         'h264_parser.h',
       ],
@@ -33,6 +35,7 @@
       'type': '<(gtest_target_type)',
       'sources': [
         'h264_bit_reader_unittest.cc',
+        'h264_byte_to_unit_stream_converter_unittest.cc',
         'h264_parser_unittest.cc',
       ],
       'dependencies': [
