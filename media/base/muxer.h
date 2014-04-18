@@ -45,9 +45,13 @@ class Muxer {
   /// @param track_type should be either SD or HD. It affects whether SD key or
   ///        HD key is used to encrypt the video content.
   /// @param clear_lead_in_seconds specifies clear lead duration in seconds.
+  /// @param crypto_period_duration_in_seconds specifies crypto period duration
+  ///        in seconds. A positive value means key rotation is enabled, the
+  ///        key source must support key rotation in this case.
   void SetEncryptionKeySource(EncryptionKeySource* encryption_key_source,
                               EncryptionKeySource::TrackType track_type,
-                              double clear_lead_in_seconds);
+                              double clear_lead_in_seconds,
+                              double crypto_period_duration_in_seconds);
 
   /// Add video/audio stream.
   void AddStream(MediaStream* stream);
@@ -78,6 +82,9 @@ class Muxer {
   }
   EncryptionKeySource::TrackType track_type() const { return track_type_; }
   double clear_lead_in_seconds() const { return clear_lead_in_seconds_; }
+  double crypto_period_duration_in_seconds() const {
+    return crypto_period_duration_in_seconds_;
+  }
   event::MuxerListener* muxer_listener() { return muxer_listener_; }
   base::Clock* clock() { return clock_; }
 
@@ -99,11 +106,12 @@ class Muxer {
                              scoped_refptr<MediaSample> sample) = 0;
 
   MuxerOptions options_;
+  bool initialized_;
   std::vector<MediaStream*> streams_;
   EncryptionKeySource* encryption_key_source_;
-  bool initialized_;
   EncryptionKeySource::TrackType track_type_;
   double clear_lead_in_seconds_;
+  double crypto_period_duration_in_seconds_;
 
   event::MuxerListener* muxer_listener_;
   // An external injected clock, can be NULL.

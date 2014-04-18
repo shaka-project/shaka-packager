@@ -19,8 +19,11 @@ class AesCtrEncryptor;
 class BufferWriter;
 class MediaSample;
 
+struct EncryptionKey;
+
 namespace mp4 {
 
+struct MovieFragment;
 struct SegmentReference;
 struct TrackFragment;
 
@@ -30,26 +33,33 @@ struct TrackFragment;
 class Fragmenter {
  public:
   /// @param traf points to a TrackFragment box.
-  /// @param encryptor handles encryption of the samples. It can be NULL, which
-  ///        indicates no encryption is required.
+  /// @param normalize_presentation_timestamp defines whether PTS should be
+  ///        normalized to start from zero.
+  Fragmenter(TrackFragment* traf,
+             bool normalize_presentation_timestamp);
+
+  /// @param traf points to a TrackFragment box.
+  /// @param normalize_presentation_timestamp defines whether PTS should be
+  ///        normalized to start from zero.
+  /// @param encryption_key contains the encryption parameters.
   /// @param clear_time specifies clear lead duration in units of the current
   ///        track's timescale.
   /// @param nalu_length_size NAL unit length size, in bytes, for subsample
   ///        encryption.
-  /// @param normalize_presentation_timestamp defines whether PTS should be
-  ///        normalized to start from zero.
   Fragmenter(TrackFragment* traf,
-             scoped_ptr<AesCtrEncryptor> encryptor,
+             bool normalize_presentation_timestamp,
+             scoped_ptr<EncryptionKey> encryption_key,
              int64 clear_time,
-             uint8 nalu_length_size,
-             bool normalize_presentation_timestamp);
-  ~Fragmenter();
+             uint8 nalu_length_size);
+
+  virtual ~Fragmenter();
 
   /// Add a sample to the fragmenter.
   Status AddSample(scoped_refptr<MediaSample> sample);
 
   /// Initialize the fragment with default data.
-  void InitializeFragment();
+  /// @return OK on success, an error status otherwise.
+  Status InitializeFragment();
 
   /// Finalize and optimize the fragment.
   void FinalizeFragment();
@@ -66,14 +76,29 @@ class Fragmenter {
   BufferWriter* data() { return data_.get(); }
   BufferWriter* aux_data() { return aux_data_.get(); }
 
+ protected:
+  /// Prepare current fragment for encryption.
+  /// @return OK on success, an error status otherwise.
+  virtual Status PrepareFragmentForEncryption();
+  /// Finalize current fragment for encryption.
+  virtual void FinalizeFragmentForEncryption();
+
+  /// Create the encryptor for the internal encryption key. The existing
+  /// encryptor will be reset if it is not NULL.
+  /// @return OK on success, an error status otherwise.
+  Status CreateEncryptor();
+
+  TrackFragment* traf() { return traf_; }
+  EncryptionKey* encryption_key() { return encryption_key_.get(); }
+  AesCtrEncryptor* encryptor() { return encryptor_.get(); }
+
+  void set_encryption_key(scoped_ptr<EncryptionKey> encryption_key) {
+    encryption_key_ = encryption_key.Pass();
+  }
+
  private:
   void EncryptBytes(uint8* data, uint32 size);
   Status EncryptSample(scoped_refptr<MediaSample> sample);
-
-  // Should we enable encrytion for the current fragment?
-  bool ShouldEncryptFragment() {
-    return (encryptor_ != NULL && clear_time_ <= 0);
-  }
 
   // Should we enable subsample encryption?
   bool IsSubsampleEncryptionRequired() { return nalu_length_size_ != 0; }
@@ -81,19 +106,22 @@ class Fragmenter {
   // Check if the current fragment starts with SAP.
   bool StartsWithSAP();
 
+  TrackFragment* traf_;
+
+  scoped_ptr<EncryptionKey> encryption_key_;
   scoped_ptr<AesCtrEncryptor> encryptor_;
   // If this stream contains AVC, subsample encryption specifies that the size
   // and type of NAL units remain unencrypted. This field specifies the size of
   // the size field. Can be 1, 2 or 4 bytes.
-  uint8 nalu_length_size_;
-  TrackFragment* traf_;
+  const uint8 nalu_length_size_;
+  const int64 clear_time_;
+
   bool fragment_finalized_;
   uint64 fragment_duration_;
   bool normalize_presentation_timestamp_;
   int64 presentation_start_time_;
   int64 earliest_presentation_time_;
   int64 first_sap_time_;
-  int64 clear_time_;
   scoped_ptr<BufferWriter> data_;
   scoped_ptr<BufferWriter> aux_data_;
 

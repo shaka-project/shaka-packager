@@ -102,7 +102,8 @@ Status MP4Muxer::Initialize() {
       segmenter_->Initialize(streams(),
                              encryption_key_source(),
                              track_type(),
-                             clear_lead_in_seconds());
+                             clear_lead_in_seconds(),
+                             crypto_period_duration_in_seconds());
 
   if (!segmenter_initialized.ok())
     return segmenter_initialized;

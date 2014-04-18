@@ -14,10 +14,11 @@ namespace media {
 
 Muxer::Muxer(const MuxerOptions& options)
     : options_(options),
-      encryption_key_source_(NULL),
       initialized_(false),
+      encryption_key_source_(NULL),
       track_type_(EncryptionKeySource::TRACK_TYPE_SD),
       clear_lead_in_seconds_(0),
+      crypto_period_duration_in_seconds_(0),
       muxer_listener_(NULL),
       clock_(NULL) {}
 
@@ -25,10 +26,13 @@ Muxer::~Muxer() {}
 
 void Muxer::SetEncryptionKeySource(EncryptionKeySource* encryption_key_source,
                                    EncryptionKeySource::TrackType track_type,
-                                   double clear_lead_in_seconds) {
+                                   double clear_lead_in_seconds,
+                                   double crypto_period_duration_in_seconds) {
+  DCHECK(encryption_key_source);
   encryption_key_source_ = encryption_key_source;
   track_type_ = track_type;
   clear_lead_in_seconds_ = clear_lead_in_seconds;
+  crypto_period_duration_in_seconds_ = crypto_period_duration_in_seconds;
 }
 
 void Muxer::AddStream(MediaStream* stream) {

@@ -41,6 +41,12 @@ class EncryptionKeySource {
   /// @return OK on success, an error status otherwise.
   virtual Status GetKey(TrackType track_type, EncryptionKey* key);
 
+  /// Get encryption key of the specified track type at the specified index.
+  /// @return OK on success, an error status otherwise.
+  virtual Status GetCryptoPeriodKey(size_t crypto_period_index,
+                                    TrackType track_type,
+                                    EncryptionKey* key);
+
   /// Create EncryptionKeySource object from hex strings.
   /// @param key_id_hex is the key id in hex string.
   /// @param key_hex is the key in hex string.

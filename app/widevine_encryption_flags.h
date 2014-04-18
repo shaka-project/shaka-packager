@@ -33,6 +33,10 @@ DEFINE_string(rsa_signing_key_path,
               "",
               "Stores PKCS#1 RSA private key for request signing. Exclusive "
               "with --aes_signing_key.");
+DEFINE_int32(crypto_period_duration,
+             0,
+             "Crypto period duration in seconds. If it is non-zero, key "
+             "rotation is enabled.");
 
 static bool IsNotEmptyWithWidevineEncryption(const char* flag_name,
                                              const std::string& flag_value) {

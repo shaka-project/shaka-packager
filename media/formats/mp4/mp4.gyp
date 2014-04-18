@@ -42,6 +42,8 @@
         'fourccs.h',
         'fragmenter.cc',
         'fragmenter.h',
+        'key_rotation_fragmenter.cc',
+        'key_rotation_fragmenter.h',
         'mp4_media_parser.cc',
         'mp4_media_parser.h',
         'mp4_muxer.cc',

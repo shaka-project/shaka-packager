@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "base/stl_util.h"
-#include "media/base/aes_encryptor.h"
 #include "media/base/buffer_writer.h"
 #include "media/base/encryption_key_source.h"
 #include "media/base/media_sample.h"
@@ -17,7 +16,7 @@
 #include "media/base/muxer_options.h"
 #include "media/base/video_stream_info.h"
 #include "media/formats/mp4/box_definitions.h"
-#include "media/formats/mp4/fragmenter.h"
+#include "media/formats/mp4/key_rotation_fragmenter.h"
 
 namespace media {
 namespace mp4 {
@@ -26,27 +25,13 @@ namespace {
 
 // Generate 64bit IV by default.
 const size_t kDefaultIvSize = 8u;
+const size_t kCencKeyIdSize = 16u;
 
 // The version of cenc implemented here. CENC 4.
 const int kCencSchemeVersion = 0x00010000;
 
 uint64 Rescale(uint64 time_in_old_scale, uint32 old_scale, uint32 new_scale) {
   return static_cast<double>(time_in_old_scale) / old_scale * new_scale;
-}
-
-scoped_ptr<AesCtrEncryptor> CreateEncryptor(
-    const EncryptionKey& encryption_key) {
-  scoped_ptr<AesCtrEncryptor> encryptor(new AesCtrEncryptor());
-  const bool initialized =
-      encryption_key.iv.empty()
-          ? encryptor->InitializeWithRandomIv(encryption_key.key,
-                                              kDefaultIvSize)
-          : encryptor->InitializeWithIv(encryption_key.key, encryption_key.iv);
-  if (!initialized) {
-    LOG(ERROR) << "Failed to the initialize encryptor.";
-    return scoped_ptr<AesCtrEncryptor>();
-  }
-  return encryptor.Pass();
 }
 
 void GenerateSinf(const EncryptionKey& encryption_key,
@@ -91,6 +76,16 @@ void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
   }
 }
 
+void GenerateEncryptedSampleEntryForKeyRotation(
+    double clear_lead_in_seconds,
+    SampleDescription* description) {
+  // Fill encrypted sample entry with default key.
+  EncryptionKey encryption_key;
+  encryption_key.key_id.assign(kCencKeyIdSize, 0);
+  GenerateEncryptedSampleEntry(
+      encryption_key, clear_lead_in_seconds, description);
+}
+
 }  // namespace
 
 Segmenter::Segmenter(const MuxerOptions& options,
@@ -110,7 +105,8 @@ Segmenter::~Segmenter() { STLDeleteElements(&fragmenters_); }
 Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
                              EncryptionKeySource* encryption_key_source,
                              EncryptionKeySource::TrackType track_type,
-                             double clear_lead_in_seconds) {
+                             double clear_lead_in_seconds,
+                             double crypto_period_duration_in_seconds) {
   DCHECK_LT(0u, streams.size());
   moof_->header.sequence_number = 0;
 
@@ -129,41 +125,59 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
       if (sidx_->reference_id == 0)
         sidx_->reference_id = i + 1;
     }
-    scoped_ptr<AesCtrEncryptor> encryptor;
-    if (encryption_key_source) {
-      SampleDescription& description =
-          moov_->tracks[i].media.information.sample_table.description;
 
-      DCHECK(track_type == EncryptionKeySource::TRACK_TYPE_SD ||
-             track_type == EncryptionKeySource::TRACK_TYPE_HD);
-
-      EncryptionKey encryption_key;
-      Status status = encryption_key_source->GetKey(
-          description.type == kAudio ? EncryptionKeySource::TRACK_TYPE_AUDIO
-                                     : track_type,
-          &encryption_key);
-      if (!status.ok())
-        return status;
-
-      GenerateEncryptedSampleEntry(
-          encryption_key, clear_lead_in_seconds, &description);
-
-      // We need one and only one pssh box.
-      if (moov_->pssh.empty()) {
-        moov_->pssh.resize(1);
-        moov_->pssh[0].raw_box = encryption_key.pssh;
-      }
-
-      encryptor = CreateEncryptor(encryption_key);
-      if (!encryptor)
-        return Status(error::MUXER_FAILURE, "Failed to create the encryptor.");
+    if (!encryption_key_source) {
+      fragmenters_[i] = new Fragmenter(
+          &moof_->tracks[i], options_.normalize_presentation_timestamp);
+      continue;
     }
-    fragmenters_[i] = new Fragmenter(
-        &moof_->tracks[i],
-        encryptor.Pass(),
-        clear_lead_in_seconds * streams[i]->info()->time_scale(),
-        nalu_length_size,
-        options_.normalize_presentation_timestamp);
+
+    DCHECK(track_type == EncryptionKeySource::TRACK_TYPE_SD ||
+           track_type == EncryptionKeySource::TRACK_TYPE_HD);
+    SampleDescription& description =
+        moov_->tracks[i].media.information.sample_table.description;
+    EncryptionKeySource::TrackType cur_track_type =
+        description.type == kAudio ? EncryptionKeySource::TRACK_TYPE_AUDIO
+                                   : track_type;
+
+    const bool key_rotation_enabled = crypto_period_duration_in_seconds != 0;
+    if (key_rotation_enabled) {
+      GenerateEncryptedSampleEntryForKeyRotation(clear_lead_in_seconds,
+                                                 &description);
+
+      fragmenters_[i] = new KeyRotationFragmenter(
+          moof_.get(),
+          &moof_->tracks[i],
+          options_.normalize_presentation_timestamp,
+          encryption_key_source,
+          cur_track_type,
+          crypto_period_duration_in_seconds * streams[i]->info()->time_scale(),
+          clear_lead_in_seconds * streams[i]->info()->time_scale(),
+          nalu_length_size);
+      continue;
+    }
+
+    scoped_ptr<EncryptionKey> encryption_key(new EncryptionKey());
+    Status status =
+        encryption_key_source->GetKey(cur_track_type, encryption_key.get());
+    if (!status.ok())
+      return status;
+
+    GenerateEncryptedSampleEntry(
+        *encryption_key, clear_lead_in_seconds, &description);
+
+    // We need one and only one pssh box.
+    if (moov_->pssh.empty()) {
+      moov_->pssh.resize(1);
+      moov_->pssh[0].raw_box = encryption_key->pssh;
+    }
+
+    fragmenters_[i] =
+        new Fragmenter(&moof_->tracks[i],
+                       options_.normalize_presentation_timestamp,
+                       encryption_key.Pass(),
+                       clear_lead_in_seconds * streams[i]->info()->time_scale(),
+                       nalu_length_size);
   }
 
   // Choose the first stream if there is no VIDEO.
@@ -289,13 +303,17 @@ uint32 Segmenter::GetReferenceStreamId() {
   return sidx_->reference_id - 1;
 }
 
-void Segmenter::InitializeFragments() {
+Status Segmenter::InitializeFragments() {
   ++moof_->header.sequence_number;
+  Status status;
   for (std::vector<Fragmenter*>::iterator it = fragmenters_.begin();
        it != fragmenters_.end();
        ++it) {
-    (*it)->InitializeFragment();
+    status = (*it)->InitializeFragment();
+    if (!status.ok())
+      return status;
   }
+  return Status::OK;
 }
 
 Status Segmenter::FinalizeFragment(Fragmenter* fragmenter) {

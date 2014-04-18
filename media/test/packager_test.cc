@@ -54,6 +54,7 @@ const char kPsshHex[] =
     "758382cd1a0d7769646576696e655f746573742211544553545f"
     "434f4e54454e545f49445f312a025344";
 const double kClearLeadInSeconds = 1.5;
+const double kCryptoDurationInSeconds = 0;  // Key rotation is disabled.
 
 MediaStream* FindFirstStreamOfType(const std::vector<MediaStream*>& streams,
                                    StreamType stream_type) {
@@ -164,7 +165,8 @@ void PackagerTestBasic::Remux(const std::string& input,
     if (enable_encryption) {
       muxer_video->SetEncryptionKeySource(encryption_key_source.get(),
                                           EncryptionKeySource::TRACK_TYPE_SD,
-                                          kClearLeadInSeconds);
+                                          kClearLeadInSeconds,
+                                          kCryptoDurationInSeconds);
     }
   }
 
@@ -179,7 +181,8 @@ void PackagerTestBasic::Remux(const std::string& input,
     if (enable_encryption) {
       muxer_audio->SetEncryptionKeySource(encryption_key_source.get(),
                                           EncryptionKeySource::TRACK_TYPE_SD,
-                                          kClearLeadInSeconds);
+                                          kClearLeadInSeconds,
+                                          kCryptoDurationInSeconds);
     }
   }
 

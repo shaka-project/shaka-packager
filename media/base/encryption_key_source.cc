@@ -30,6 +30,13 @@ Status EncryptionKeySource::GetKey(TrackType track_type, EncryptionKey* key) {
   return Status::OK;
 }
 
+Status EncryptionKeySource::GetCryptoPeriodKey(size_t crypto_period_index,
+                                               TrackType track_type,
+                                               EncryptionKey* key) {
+  NOTIMPLEMENTED();
+  return Status(error::UNIMPLEMENTED, "");
+}
+
 scoped_ptr<EncryptionKeySource> EncryptionKeySource::CreateFromHexStrings(
     const std::string& key_id_hex,
     const std::string& key_hex,

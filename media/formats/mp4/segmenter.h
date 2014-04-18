@@ -49,17 +49,20 @@ class Segmenter {
   /// Initialize the segmenter.
   /// Calling other public methods of this class without this method returning
   /// Status::OK results in an undefined behavior.
+  /// @param streams contains the vector of MediaStreams to be segmented.
   /// @param encryption_key_source points to the key source which contains
   ///        the encryption keys. It can be NULL to indicate that no encryption
   ///        is required.
   /// @param track_type indicates whether SD key or HD key should be used to
   ///        encrypt the video content.
   /// @param clear_time specifies clear lead duration in seconds.
+  /// @param crypto_period_duration specifies crypto period duration in seconds.
   /// @return OK on success, an error status otherwise.
   Status Initialize(const std::vector<MediaStream*>& streams,
                     EncryptionKeySource* encryption_key_source,
                     EncryptionKeySource::TrackType track_type,
-                    double clear_lead_in_seconds);
+                    double clear_lead_in_seconds,
+                    double crypto_period_duration_in_seconds);
 
   /// Finalize the segmenter.
   /// @return OK on success, an error status otherwise.
@@ -102,7 +105,7 @@ class Segmenter {
   Status FinalizeSegment();
   uint32 GetReferenceStreamId();
 
-  void InitializeFragments();
+  Status InitializeFragments();
   Status FinalizeFragment(Fragmenter* fragment);
 
   const MuxerOptions& options_;
