@@ -23,9 +23,6 @@
 #include "media/formats/mp4/single_segment_segmenter.h"
 
 namespace {
-// The version of cenc implemented here. CENC 4.
-const int kCencSchemeVersion = 0x00010000;
-
 // Sets the range start and end value from offset and size.
 // |start| and |end| are for byte-range-spec specified in RFC2616.
 void SetStartAndEndFromOffsetAndSize(size_t offset,
@@ -93,11 +90,6 @@ Status MP4Muxer::Initialize() {
     }
   }
 
-  if (IsEncryptionRequired()) {
-    moov->pssh.resize(1);
-    GeneratePssh(&moov->pssh[0]);
-  }
-
   if (options().single_segment) {
     segmenter_.reset(
         new SingleSegmentSegmenter(options(), ftyp.Pass(), moov.Pass()));
@@ -107,7 +99,7 @@ Status MP4Muxer::Initialize() {
   }
 
   Status segmenter_initialized = segmenter_->Initialize(
-      encryptor_source(), clear_lead_in_seconds(), streams());
+      streams(), encryptor_source(), track_type(), clear_lead_in_seconds());
 
   if (!segmenter_initialized.ok())
     return segmenter_initialized;
@@ -169,17 +161,6 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
       trak->media.information.sample_table.description;
   sample_description.type = kVideo;
   sample_description.video_entries.push_back(video);
-
-  if (IsEncryptionRequired()) {
-    DCHECK(encryptor_source());
-    // Add a second entry for clear content if needed.
-    if (clear_lead_in_seconds() > 0)
-      sample_description.video_entries.push_back(video);
-
-    VideoSampleEntry& encrypted_video = sample_description.video_entries[0];
-    GenerateSinf(&encrypted_video.sinf, encrypted_video.format);
-    encrypted_video.format = FOURCC_ENCV;
-  }
 }
 
 void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
@@ -209,33 +190,6 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       trak->media.information.sample_table.description;
   sample_description.type = kAudio;
   sample_description.audio_entries.push_back(audio);
-
-  if (IsEncryptionRequired()) {
-    DCHECK(encryptor_source());
-    // Add a second entry for clear content if needed.
-    if (clear_lead_in_seconds() > 0)
-      sample_description.audio_entries.push_back(audio);
-
-    AudioSampleEntry& encrypted_audio = sample_description.audio_entries[0];
-    GenerateSinf(&encrypted_audio.sinf, encrypted_audio.format);
-    encrypted_audio.format = FOURCC_ENCA;
-  }
-}
-
-void MP4Muxer::GeneratePssh(ProtectionSystemSpecificHeader* pssh) {
-  DCHECK(encryptor_source());
-  pssh->system_id = encryptor_source()->key_system_id();
-  pssh->data = encryptor_source()->pssh();
-}
-
-void MP4Muxer::GenerateSinf(ProtectionSchemeInfo* sinf, FourCC old_type) {
-  DCHECK(encryptor_source());
-  sinf->format.format = old_type;
-  sinf->type.type = FOURCC_CENC;
-  sinf->type.version = kCencSchemeVersion;
-  sinf->info.track_encryption.is_encrypted = true;
-  sinf->info.track_encryption.default_iv_size = encryptor_source()->iv_size();
-  sinf->info.track_encryption.default_kid = encryptor_source()->key_id();
 }
 
 void MP4Muxer::GetStreamInfo(std::vector<StreamInfo*>* stream_infos) {
@@ -320,7 +274,7 @@ void MP4Muxer::FireOnMediaEndEvent() {
                                index_range_end,
                                duration_seconds,
                                file_size,
-                               IsEncryptionRequired());
+                               encryptor_source());
 }
 
 uint64 MP4Muxer::IsoTimeNow() {

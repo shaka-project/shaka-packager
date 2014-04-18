@@ -30,34 +30,6 @@ MultiSegmentSegmenter::MultiSegmentSegmenter(const MuxerOptions& options,
 
 MultiSegmentSegmenter::~MultiSegmentSegmenter() {}
 
-Status MultiSegmentSegmenter::Initialize(
-    EncryptorSource* encryptor_source,
-    double clear_lead_in_seconds,
-    const std::vector<MediaStream*>& streams) {
-  Status status =
-      Segmenter::Initialize(encryptor_source, clear_lead_in_seconds, streams);
-  if (!status.ok())
-    return status;
-
-  DCHECK(ftyp());
-  DCHECK(moov());
-  // Generate the output file with init segment.
-  File* file = File::Open(options().output_file_name.c_str(), "w");
-  if (file == NULL) {
-    return Status(error::FILE_FAILURE,
-                  "Cannot open file for write " + options().output_file_name);
-  }
-  scoped_ptr<BufferWriter> buffer(new BufferWriter);
-  ftyp()->Write(buffer.get());
-  moov()->Write(buffer.get());
-  status = buffer->WriteToFile(file);
-  if (!file->Close()) {
-    LOG(WARNING) << "Failed to close the file properly: "
-                 << options().output_file_name;
-  }
-  return status;
-}
-
 bool MultiSegmentSegmenter::GetInitRange(size_t* offset, size_t* size) {
   DLOG(INFO) << "MultiSegmentSegmenter outputs init segment: "
              << options().output_file_name;
@@ -69,11 +41,31 @@ bool MultiSegmentSegmenter::GetIndexRange(size_t* offset, size_t* size) {
   return false;
 }
 
-Status MultiSegmentSegmenter::FinalizeSegment() {
-  Status status = Segmenter::FinalizeSegment();
-  if (!status.ok())
-    return status;
+Status MultiSegmentSegmenter::DoInitialize() {
+  DCHECK(ftyp());
+  DCHECK(moov());
+  // Generate the output file with init segment.
+  File* file = File::Open(options().output_file_name.c_str(), "w");
+  if (file == NULL) {
+    return Status(error::FILE_FAILURE,
+                  "Cannot open file for write " + options().output_file_name);
+  }
+  scoped_ptr<BufferWriter> buffer(new BufferWriter);
+  ftyp()->Write(buffer.get());
+  moov()->Write(buffer.get());
+  Status status = buffer->WriteToFile(file);
+  if (!file->Close()) {
+    LOG(WARNING) << "Failed to close the file properly: "
+                 << options().output_file_name;
+  }
+  return status;
+}
 
+Status MultiSegmentSegmenter::DoFinalize() {
+  return Status::OK;
+}
+
+Status MultiSegmentSegmenter::DoFinalizeSegment() {
   DCHECK(sidx());
   // earliest_presentation_time is the earliest presentation time of any
   // access unit in the reference stream in the first subsegment.

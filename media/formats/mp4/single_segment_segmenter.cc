@@ -21,27 +21,30 @@ SingleSegmentSegmenter::SingleSegmentSegmenter(const MuxerOptions& options,
     : Segmenter(options, ftyp.Pass(), moov.Pass()) {}
 SingleSegmentSegmenter::~SingleSegmentSegmenter() {}
 
-Status SingleSegmentSegmenter::Initialize(
-    EncryptorSource* encryptor_source,
-    double clear_lead_in_seconds,
-    const std::vector<MediaStream*>& streams) {
-  Status status =
-      Segmenter::Initialize(encryptor_source, clear_lead_in_seconds, streams);
-  if (!status.ok())
-    return status;
-  temp_file_.reset(File::Open(options().temp_file_name.c_str(), "w"));
-  if (temp_file_ == NULL) {
-    return Status(error::FILE_FAILURE,
-                  "Cannot open file to write " + options().temp_file_name);
-  }
-  return Status::OK;
+bool SingleSegmentSegmenter::GetInitRange(size_t* offset, size_t* size) {
+  // In Finalize, ftyp and moov gets written first so offset must be 0.
+  *offset = 0;
+  *size = ftyp()->ComputeSize() + moov()->ComputeSize();
+  return true;
 }
 
-Status SingleSegmentSegmenter::Finalize() {
-  Status status = Segmenter::Finalize();
-  if (!status.ok())
-    return status;
+bool SingleSegmentSegmenter::GetIndexRange(size_t* offset, size_t* size) {
+  // Index range is right after init range so the offset must be the size of
+  // ftyp and moov.
+  *offset = ftyp()->ComputeSize() + moov()->ComputeSize();
+  *size = vod_sidx_->ComputeSize();
+  return true;
+}
 
+Status SingleSegmentSegmenter::DoInitialize() {
+  temp_file_.reset(File::Open(options().temp_file_name.c_str(), "w"));
+  return temp_file_
+             ? Status::OK
+             : Status(error::FILE_FAILURE,
+                      "Cannot open file to write " + options().temp_file_name);
+}
+
+Status SingleSegmentSegmenter::DoFinalize() {
   DCHECK(temp_file_);
   DCHECK(ftyp());
   DCHECK(moov());
@@ -65,7 +68,7 @@ Status SingleSegmentSegmenter::Finalize() {
   ftyp()->Write(buffer.get());
   moov()->Write(buffer.get());
   vod_sidx_->Write(buffer.get());
-  status = buffer->WriteToFile(file.get());
+  Status status = buffer->WriteToFile(file.get());
   if (!status.ok())
     return status;
 
@@ -94,26 +97,7 @@ Status SingleSegmentSegmenter::Finalize() {
   return Status::OK;
 }
 
-bool SingleSegmentSegmenter::GetInitRange(size_t* offset, size_t* size) {
-  // In Finalize, ftyp and moov gets written first so offset must be 0.
-  *offset = 0;
-  *size = ftyp()->ComputeSize() + moov()->ComputeSize();
-  return true;
-}
-
-bool SingleSegmentSegmenter::GetIndexRange(size_t* offset, size_t* size) {
-  // Index range is right after init range so the offset must be the size of
-  // ftyp and moov.
-  *offset = ftyp()->ComputeSize() + moov()->ComputeSize();
-  *size = vod_sidx_->ComputeSize();
-  return true;
-}
-
-Status SingleSegmentSegmenter::FinalizeSegment() {
-  Status status = Segmenter::FinalizeSegment();
-  if (!status.ok())
-    return status;
-
+Status SingleSegmentSegmenter::DoFinalizeSegment() {
   DCHECK(sidx());
   DCHECK(fragment_buffer());
   // sidx() contains pre-generated segment references with one reference per

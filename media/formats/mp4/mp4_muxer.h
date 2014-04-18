@@ -50,15 +50,6 @@ class MP4Muxer : public Muxer {
                          Track* trak,
                          uint32 track_id);
 
-  // Generate Pssh atom.
-  void GeneratePssh(ProtectionSystemSpecificHeader* pssh);
-
-  // Generates a sinf atom with CENC encryption parameters.
-  void GenerateSinf(ProtectionSchemeInfo* sinf, FourCC old_type);
-
-  // Should we enable encrytion?
-  bool IsEncryptionRequired() { return (encryptor_source() != NULL); }
-
   // Helper functions for events.
   void GetStreamInfo(std::vector<StreamInfo*>* stream_infos);
 

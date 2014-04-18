@@ -12,6 +12,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_ptr.h"
+#include "media/base/encryptor_source.h"
 #include "media/base/status.h"
 
 namespace media {
@@ -47,17 +48,30 @@ class Segmenter {
 
   /// Initialize the segmenter.
   /// Calling other public methods of this class without this method returning
-  /// Status::OK, results in an undefined behavior.
-  /// @param encryptor_source can be NULL.
-  /// @return Status::OK on success.
-  virtual Status Initialize(EncryptorSource* encryptor_source,
-                            double clear_lead_in_seconds,
-                            const std::vector<MediaStream*>& streams);
+  /// Status::OK results in an undefined behavior.
+  /// @param encryptor_source points to the key source which contains
+  ///        the encryption keys. It can be NULL to indicate that no encryption
+  ///        is required.
+  /// @param track_type indicates whether SD key or HD key should be used to
+  ///        encrypt the video content.
+  /// @param clear_time specifies clear lead duration in seconds.
+  /// @return OK on success, an error status otherwise.
+  Status Initialize(const std::vector<MediaStream*>& streams,
+                    EncryptorSource* encryptor_source,
+                    EncryptorSource::TrackType track_type,
+                    double clear_lead_in_seconds);
 
-  virtual Status Finalize();
+  /// Finalize the segmenter.
+  /// @return OK on success, an error status otherwise.
+  Status Finalize();
 
-  virtual Status AddSample(const MediaStream* stream,
-                           scoped_refptr<MediaSample> sample);
+  /// Add sample to the indicated stream.
+  /// @param stream points to the stream to which the sample belongs. It cannot
+  ///        be NULL.
+  /// @param sample points to the sample to be added.
+  /// @return OK on success, an error status otherwise.
+  Status AddSample(const MediaStream* stream,
+                   scoped_refptr<MediaSample> sample);
 
   /// @return true if there is an initialization range, while setting @a offset
   ///         and @a size; or false if initialization range does not apply.
@@ -73,11 +87,6 @@ class Segmenter {
   double GetDuration() const;
 
  protected:
-  void InitializeSegment();
-  virtual Status FinalizeSegment();
-
-  uint32 GetReferenceStreamId();
-
   const MuxerOptions& options() const { return options_; }
   FileType* ftyp() { return ftyp_.get(); }
   Movie* moov() { return moov_.get(); }
@@ -85,6 +94,14 @@ class Segmenter {
   SegmentIndex* sidx() { return sidx_.get(); }
 
  private:
+  virtual Status DoInitialize() = 0;
+  virtual Status DoFinalize() = 0;
+  virtual Status DoFinalizeSegment() = 0;
+
+  void InitializeSegment();
+  Status FinalizeSegment();
+  uint32 GetReferenceStreamId();
+
   void InitializeFragments();
   Status FinalizeFragment(Fragmenter* fragment);
 

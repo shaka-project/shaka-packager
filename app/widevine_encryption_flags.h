@@ -20,7 +20,7 @@ DEFINE_bool(enable_widevine_encryption,
             "--aes_signing_iv) or RSA signing key (--rsa_signing_key_path).");
 DEFINE_string(server_url, "", "License server url.");
 DEFINE_string(content_id, "", "Content Id.");
-DEFINE_string(track_type, "SD", "Track type: HD, SD or AUDIO.");
+DEFINE_string(track_type, "SD", "Track type: SD or HD.");
 DEFINE_string(signer, "", "The name of the signer.");
 DEFINE_string(aes_signing_key,
               "",

@@ -733,7 +733,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 typedef testing::Types<
     FileType,
     SegmentType,
-    // ProtectionSystemSpecificHeader,  // Not fully parsed.
+    ProtectionSystemSpecificHeader,
     SampleAuxiliaryInformationOffset,
     SampleAuxiliaryInformationSize,
     OriginalFormat,
@@ -854,8 +854,17 @@ TEST_F(BoxDefinitionsTest, ProtectionSystemSpecificHeader) {
 
   ProtectionSystemSpecificHeader pssh_readback;
   ASSERT_TRUE(ReadBack(&pssh_readback));
-  // PSSH does not parse data.
-  ASSERT_EQ(pssh.system_id, pssh_readback.system_id);
+  ASSERT_EQ(pssh, pssh_readback);
+
+  pssh_readback.raw_box[15] += 1;
+  pssh_readback.Write(this->buffer_.get());
+
+  ProtectionSystemSpecificHeader pssh_readback2;
+  ASSERT_TRUE(ReadBack(&pssh_readback2));
+
+  // If raw_box is set, raw_box will be written instead.
+  ASSERT_FALSE(pssh_readback == pssh_readback2);
+  ASSERT_EQ(pssh_readback.raw_box, pssh_readback2.raw_box);
 }
 
 TEST_F(BoxDefinitionsTest, CompactSampleSize_FieldSize16) {

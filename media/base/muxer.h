@@ -13,6 +13,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_ptr.h"
+#include "media/base/encryptor_source.h"
 #include "media/base/muxer_options.h"
 #include "media/base/status.h"
 
@@ -41,8 +42,11 @@ class Muxer {
   /// Set encryptor source.
   /// @param encryptor_source points to the encryptor source to be injected.
   ///        Should not be NULL.
+  /// @param track_type should be either SD or HD. It affects whether SD key or
+  ///        HD key is used to encrypt the video content.
   /// @param clear_lead_in_seconds specifies clear lead duration in seconds.
   void SetEncryptorSource(EncryptorSource* encryptor_source,
+                          EncryptorSource::TrackType track_type,
                           double clear_lead_in_seconds);
 
   /// Add video/audio stream.
@@ -70,6 +74,7 @@ class Muxer {
  protected:
   const MuxerOptions& options() const { return options_; }
   EncryptorSource* encryptor_source() { return encryptor_source_; }
+  EncryptorSource::TrackType track_type() const { return track_type_; }
   double clear_lead_in_seconds() const { return clear_lead_in_seconds_; }
   event::MuxerListener* muxer_listener() { return muxer_listener_; }
   base::Clock* clock() { return clock_; }
@@ -95,6 +100,7 @@ class Muxer {
   std::vector<MediaStream*> streams_;
   EncryptorSource* encryptor_source_;
   bool initialized_;
+  EncryptorSource::TrackType track_type_;
   double clear_lead_in_seconds_;
 
   event::MuxerListener* muxer_listener_;

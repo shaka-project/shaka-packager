@@ -90,6 +90,12 @@ ProtectionSystemSpecificHeader::~ProtectionSystemSpecificHeader() {}
 FourCC ProtectionSystemSpecificHeader::BoxType() const { return FOURCC_PSSH; }
 
 bool ProtectionSystemSpecificHeader::ReadWrite(BoxBuffer* buffer) {
+  if (!buffer->Reading() && !raw_box.empty()) {
+    // Write the raw box directly.
+    buffer->writer()->AppendVector(raw_box);
+    return true;
+  }
+
   uint32 size = data.size();
   RCHECK(FullBox::ReadWrite(buffer) &&
          buffer->ReadWriteVector(&system_id, 16) &&
@@ -108,7 +114,10 @@ bool ProtectionSystemSpecificHeader::ReadWrite(BoxBuffer* buffer) {
 }
 
 uint32 ProtectionSystemSpecificHeader::ComputeSize() {
-  atom_size = kFullBoxSize + system_id.size() + sizeof(uint32) + data.size();
+  if (!raw_box.empty())
+    atom_size = raw_box.size();
+  else
+    atom_size = kFullBoxSize + system_id.size() + sizeof(uint32) + data.size();
   return atom_size;
 }
 

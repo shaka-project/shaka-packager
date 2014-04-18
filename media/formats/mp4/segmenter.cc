@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/stl_util.h"
+#include "media/base/aes_encryptor.h"
 #include "media/base/buffer_writer.h"
 #include "media/base/encryptor_source.h"
 #include "media/base/media_sample.h"
@@ -18,14 +19,79 @@
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/fragmenter.h"
 
+namespace media {
+namespace mp4 {
+
 namespace {
+
+// Generate 64bit IV by default.
+const size_t kDefaultIvSize = 8u;
+
+// The version of cenc implemented here. CENC 4.
+const int kCencSchemeVersion = 0x00010000;
+
 uint64 Rescale(uint64 time_in_old_scale, uint32 old_scale, uint32 new_scale) {
   return static_cast<double>(time_in_old_scale) / old_scale * new_scale;
 }
-}  // namespace
 
-namespace media {
-namespace mp4 {
+scoped_ptr<AesCtrEncryptor> CreateEncryptor(
+    const EncryptionKey& encryption_key) {
+  scoped_ptr<AesCtrEncryptor> encryptor(new AesCtrEncryptor());
+  const bool initialized =
+      encryption_key.iv.empty()
+          ? encryptor->InitializeWithRandomIv(encryption_key.key,
+                                              kDefaultIvSize)
+          : encryptor->InitializeWithIv(encryption_key.key, encryption_key.iv);
+  if (!initialized) {
+    LOG(ERROR) << "Failed to the initialize encryptor.";
+    return scoped_ptr<AesCtrEncryptor>();
+  }
+  return encryptor.Pass();
+}
+
+void GenerateSinf(const EncryptionKey& encryption_key,
+                  FourCC old_type,
+                  ProtectionSchemeInfo* sinf) {
+  sinf->format.format = old_type;
+  sinf->type.type = FOURCC_CENC;
+  sinf->type.version = kCencSchemeVersion;
+  sinf->info.track_encryption.is_encrypted = true;
+  sinf->info.track_encryption.default_iv_size =
+      encryption_key.iv.empty() ? kDefaultIvSize : encryption_key.iv.size();
+  sinf->info.track_encryption.default_kid = encryption_key.key_id;
+}
+
+void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
+                                  double clear_lead_in_seconds,
+                                  SampleDescription* description) {
+  DCHECK(description);
+  if (description->type == kVideo) {
+    DCHECK_EQ(1u, description->video_entries.size());
+
+    // Add a second entry for clear content if needed.
+    if (clear_lead_in_seconds > 0)
+      description->video_entries.push_back(description->video_entries[0]);
+
+    // Convert the first entry to an encrypted entry.
+    VideoSampleEntry& entry = description->video_entries[0];
+    GenerateSinf(encryption_key, entry.format, &entry.sinf);
+    entry.format = FOURCC_ENCV;
+  } else {
+    DCHECK_EQ(kAudio, description->type);
+    DCHECK_EQ(1u, description->audio_entries.size());
+
+    // Add a second entry for clear content if needed.
+    if (clear_lead_in_seconds > 0)
+      description->audio_entries.push_back(description->audio_entries[0]);
+
+    // Convert the first entry to an encrypted entry.
+    AudioSampleEntry& entry = description->audio_entries[0];
+    GenerateSinf(encryption_key, entry.format, &entry.sinf);
+    entry.format = FOURCC_ENCA;
+  }
+}
+
+}  // namespace
 
 Segmenter::Segmenter(const MuxerOptions& options,
                      scoped_ptr<FileType> ftyp,
@@ -41,9 +107,10 @@ Segmenter::Segmenter(const MuxerOptions& options,
 
 Segmenter::~Segmenter() { STLDeleteElements(&fragmenters_); }
 
-Status Segmenter::Initialize(EncryptorSource* encryptor_source,
-                             double clear_lead_in_seconds,
-                             const std::vector<MediaStream*>& streams) {
+Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
+                             EncryptorSource* encryptor_source,
+                             EncryptorSource::TrackType track_type,
+                             double clear_lead_in_seconds) {
   DCHECK_LT(0u, streams.size());
   moof_->header.sequence_number = 0;
 
@@ -64,7 +131,30 @@ Status Segmenter::Initialize(EncryptorSource* encryptor_source,
     }
     scoped_ptr<AesCtrEncryptor> encryptor;
     if (encryptor_source) {
-      encryptor = encryptor_source->CreateEncryptor();
+      SampleDescription& description =
+          moov_->tracks[i].media.information.sample_table.description;
+
+      DCHECK(track_type == EncryptorSource::TRACK_TYPE_SD ||
+             track_type == EncryptorSource::TRACK_TYPE_HD);
+
+      EncryptionKey encryption_key;
+      Status status = encryptor_source->GetKey(
+          description.type == kAudio ? EncryptorSource::TRACK_TYPE_AUDIO
+                                     : track_type,
+          &encryption_key);
+      if (!status.ok())
+        return status;
+
+      GenerateEncryptedSampleEntry(
+          encryption_key, clear_lead_in_seconds, &description);
+
+      // We need one and only one pssh box.
+      if (moov_->pssh.empty()) {
+        moov_->pssh.resize(1);
+        moov_->pssh[0].raw_box = encryption_key.pssh;
+      }
+
+      encryptor = CreateEncryptor(encryption_key);
       if (!encryptor)
         return Status(error::MUXER_FAILURE, "Failed to create the encryptor.");
     }
@@ -84,7 +174,7 @@ Status Segmenter::Initialize(EncryptorSource* encryptor_source,
   // Use the reference stream's time scale as movie time scale.
   moov_->header.timescale = sidx_->timescale;
   InitializeFragments();
-  return Status::OK;
+  return DoInitialize();
 }
 
 Status Segmenter::Finalize() {
@@ -110,7 +200,7 @@ Status Segmenter::Finalize() {
       moov_->header.duration = track->header.duration;
   }
 
-  return Status::OK;
+  return DoFinalize();
 }
 
 Status Segmenter::AddSample(const MediaStream* stream,
@@ -191,7 +281,7 @@ void Segmenter::InitializeSegment() {
 
 Status Segmenter::FinalizeSegment() {
   segment_initialized_ = false;
-  return Status::OK;
+  return DoFinalizeSegment();
 }
 
 uint32 Segmenter::GetReferenceStreamId() {

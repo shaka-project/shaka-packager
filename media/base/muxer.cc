@@ -16,6 +16,7 @@ Muxer::Muxer(const MuxerOptions& options)
     : options_(options),
       encryptor_source_(NULL),
       initialized_(false),
+      track_type_(EncryptorSource::TRACK_TYPE_SD),
       clear_lead_in_seconds_(0),
       muxer_listener_(NULL),
       clock_(NULL) {}
@@ -23,8 +24,10 @@ Muxer::Muxer(const MuxerOptions& options)
 Muxer::~Muxer() {}
 
 void Muxer::SetEncryptorSource(EncryptorSource* encryptor_source,
+                               EncryptorSource::TrackType track_type,
                                double clear_lead_in_seconds) {
   encryptor_source_ = encryptor_source;
+  track_type_ = track_type;
   clear_lead_in_seconds_ = clear_lead_in_seconds;
 }
 

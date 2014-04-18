@@ -33,19 +33,16 @@ class SingleSegmentSegmenter : public Segmenter {
 
   /// @name Segmenter implementation overrides.
   /// @{
-  virtual Status Initialize(EncryptorSource* encryptor_source,
-                            double clear_lead_in_seconds,
-                            const std::vector<MediaStream*>& streams) OVERRIDE;
-  virtual Status Finalize() OVERRIDE;
-
   virtual bool GetInitRange(size_t* offset, size_t* size) OVERRIDE;
   virtual bool GetIndexRange(size_t* offset, size_t* size) OVERRIDE;
   /// @}
 
- protected:
-  virtual Status FinalizeSegment() OVERRIDE;
-
  private:
+  // Segmenter implementation overrides.
+  virtual Status DoInitialize() OVERRIDE;
+  virtual Status DoFinalize() OVERRIDE;
+  virtual Status DoFinalizeSegment() OVERRIDE;
+
   scoped_ptr<SegmentIndex> vod_sidx_;
   scoped_ptr<File, FileCloser> temp_file_;
 

@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/demuxer.h"
-#include "media/base/fixed_encryptor_source.h"
 #include "media/base/media_stream.h"
 #include "media/base/muxer_options.h"
 #include "media/base/request_signer.h"
@@ -76,27 +75,11 @@ scoped_ptr<EncryptorSource> CreateEncryptorSource() {
       }
     }
 
-    WidevineEncryptorSource::TrackType track_type =
-        WidevineEncryptorSource::GetTrackTypeFromString(FLAGS_track_type);
-    if (track_type == WidevineEncryptorSource::TRACK_TYPE_UNKNOWN) {
-      LOG(ERROR) << "Unknown track_type specified.";
-      return scoped_ptr<EncryptorSource>();
-    }
-
     encryptor_source.reset(new WidevineEncryptorSource(
-        FLAGS_server_url, FLAGS_content_id, track_type, signer.Pass()));
+        FLAGS_server_url, FLAGS_content_id, signer.Pass()));
   } else if (FLAGS_enable_fixed_key_encryption) {
-    encryptor_source.reset(
-        new FixedEncryptorSource(FLAGS_key_id, FLAGS_key, FLAGS_pssh));
-  }
-
-  if (encryptor_source) {
-    Status status = encryptor_source->Initialize();
-    if (!status.ok()) {
-      LOG(ERROR) << "Encryptor source failed to initialize: "
-                 << status.ToString();
-      return scoped_ptr<EncryptorSource>();
-    }
+    encryptor_source = EncryptorSource::CreateFromHexStrings(
+        FLAGS_key_id, FLAGS_key, FLAGS_pssh, "");
   }
   return encryptor_source.Pass();
 }
@@ -229,7 +212,15 @@ bool RunPackager(const std::string& input) {
     if (!encryptor_source)
       return false;
   }
-  muxer->SetEncryptorSource(encryptor_source.get(), FLAGS_clear_lead);
+  EncryptorSource::TrackType track_type =
+      EncryptorSource::GetTrackTypeFromString(FLAGS_track_type);
+  if (track_type != EncryptorSource::TRACK_TYPE_SD &&
+      track_type != EncryptorSource::TRACK_TYPE_HD) {
+    LOG(ERROR) << "FLAGS_track_type should be either 'SD' or 'HD'";
+    return false;
+  }
+  muxer->SetEncryptorSource(
+      encryptor_source.get(), track_type, FLAGS_clear_lead);
 
   // Start remuxing process.
   status = demuxer.Run();
