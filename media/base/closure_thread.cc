@@ -14,7 +14,7 @@ ClosureThread::ClosureThread(
     : base::SimpleThread(name_prefix), task_(task) {}
 
 ClosureThread::~ClosureThread() {
-  if (!HasBeenJoined())
+  if (HasBeenStarted() && !HasBeenJoined())
     Join();
 }
 
