@@ -311,8 +311,12 @@ class MultiThreadProducerConsumerQueueStopTest
     int val = 0;
     switch (op) {
       case kPush:
-        CHECK_OK(queue_.Push(0, kInfiniteTimeout));
+        // The queue was setup with size 1. The first push will return STOPPED
+        // if Stop() has been called; otherwise it should return OK and the
+        // second push will block until Stop() being called.
         status_ = queue_.Push(0, kInfiniteTimeout);
+        if (status_.ok())
+          status_ = queue_.Push(0, kInfiniteTimeout);
         break;
       case kPop:
         status_ = queue_.Pop(&val, kInfiniteTimeout);
