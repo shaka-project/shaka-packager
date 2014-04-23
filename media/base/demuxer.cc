@@ -15,6 +15,7 @@
 #include "media/base/media_stream.h"
 #include "media/base/stream_info.h"
 #include "media/file/file.h"
+#include "media/formats/mp2t/mp2t_media_parser.h"
 #include "media/formats/mp4/mp4_media_parser.h"
 
 namespace {
@@ -57,6 +58,9 @@ Status Demuxer::Initialize() {
   switch (container) {
     case CONTAINER_MOV:
       parser_.reset(new mp4::MP4MediaParser());
+      break;
+    case CONTAINER_MPEG2TS:
+      parser_.reset(new mp2t::MediaParser());
       break;
     default:
       NOTIMPLEMENTED();

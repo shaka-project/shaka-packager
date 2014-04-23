@@ -19,6 +19,8 @@
       'target_name': 'mp2t',
       'type': '<(component)',
       'sources': [
+        'adts_header.cc',
+        'adts_header.h',
         'es_parser.h',
         'es_parser_adts.cc',
         'es_parser_adts.h',
@@ -45,6 +47,7 @@
       'target_name': 'mp2t_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
+        'adts_header_unittest.cc',
         'es_parser_h264_unittest.cc',
         'mp2t_media_parser_unittest.cc',
       ],

@@ -46,7 +46,7 @@ class EsParserAdts : public EsParser {
   // Signal any audio configuration change (if any).
   // Return false if the current audio config is not
   // a supported ADTS audio config.
-  bool UpdateAudioConfiguration(const uint8* adts_header);
+  bool UpdateAudioConfiguration(const uint8* adts_frame, size_t frame_size);
 
   // Discard some bytes from the ES stream.
   void DiscardEs(int nbytes);

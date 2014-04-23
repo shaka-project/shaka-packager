@@ -13,25 +13,11 @@
 #include "media/base/bit_reader.h"
 #include "media/base/media_sample.h"
 #include "media/base/timestamp.h"
+#include "media/formats/mp2t/adts_header.h"
 #include "media/formats/mp2t/mp2t_common.h"
 #include "media/formats/mpeg/adts_constants.h"
 
 namespace media {
-
-static int ExtractAdtsFrameSize(const uint8* adts_header) {
-  return ((static_cast<int>(adts_header[5]) >> 5) |
-          (static_cast<int>(adts_header[4]) << 3) |
-          ((static_cast<int>(adts_header[3]) & 0x3) << 11));
-}
-
-static size_t ExtractAdtsFrequencyIndex(const uint8* adts_header) {
-  return ((adts_header[2] >> 2) & 0xf);
-}
-
-static size_t ExtractAdtsChannelConfig(const uint8* adts_header) {
-  return (((adts_header[3] >> 6) & 0x3) |
-          ((adts_header[2] & 0x1) << 2));
-}
 
 // Return true if buf corresponds to an ADTS syncword.
 // |buf| size must be at least 2.
@@ -72,7 +58,8 @@ static bool LookForSyncWord(const uint8* raw_es, int raw_es_size,
       // The layer field (2 bits) must be set to 0.
       continue;
 
-    int frame_size = ExtractAdtsFrameSize(cur_buf);
+    int frame_size =
+        mp2t::AdtsHeader::GetAdtsFrameSize(cur_buf, kAdtsHeaderMinSize);
     if (frame_size < kAdtsHeaderMinSize) {
       // Too short to be an ADTS frame.
       continue;
@@ -131,21 +118,24 @@ bool EsParserAdts::Parse(const uint8* buf, int size, int64 pts, int64 dts) {
   int frame_size;
   while (LookForSyncWord(raw_es, raw_es_size, es_position,
                          &es_position, &frame_size)) {
+    const uint8* frame_ptr = raw_es + es_position;
     DVLOG(LOG_LEVEL_ES)
         << "ADTS syncword @ pos=" << es_position
         << " frame_size=" << frame_size;
     DVLOG(LOG_LEVEL_ES)
         << "ADTS header: "
-        << base::HexEncode(&raw_es[es_position], kAdtsHeaderMinSize);
+        << base::HexEncode(frame_ptr, kAdtsHeaderMinSize);
 
     // Do not process the frame if this one is a partial frame.
     int remaining_size = raw_es_size - es_position;
     if (frame_size > remaining_size)
       break;
 
+    size_t header_size = AdtsHeader::GetAdtsHeaderSize(frame_ptr, frame_size);
+
     // Update the audio configuration if needed.
     DCHECK_GE(frame_size, kAdtsHeaderMinSize);
-    if (!UpdateAudioConfiguration(&raw_es[es_position]))
+    if (!UpdateAudioConfiguration(frame_ptr, frame_size))
       return false;
 
     // Get the PTS & the duration of this access unit.
@@ -164,8 +154,8 @@ bool EsParserAdts::Parse(const uint8* buf, int size, int64 pts, int64 dts) {
 
     scoped_refptr<MediaSample> sample =
         MediaSample::CopyFrom(
-            &raw_es[es_position],
-            frame_size,
+            frame_ptr + header_size,
+            frame_size - header_size,
             is_key_frame);
     sample->set_pts(current_pts);
     sample->set_dts(current_pts);
@@ -194,37 +184,34 @@ void EsParserAdts::Reset() {
   last_audio_decoder_config_ = scoped_refptr<AudioStreamInfo>();
 }
 
-bool EsParserAdts::UpdateAudioConfiguration(const uint8* adts_header) {
+bool EsParserAdts::UpdateAudioConfiguration(const uint8* adts_frame,
+                                            size_t adts_frame_size) {
+
+  const uint8 kAacSampleSizeBits(16);
+
+  AdtsHeader adts_header;
+  if (!adts_header.Parse(adts_frame, adts_frame_size)) {
+    LOG(ERROR) << "Error parsing ADTS frame header.";
+    return false;
+  }
+  std::vector<uint8> audio_specific_config;
+  if (!adts_header.GetAudioSpecificConfig(&audio_specific_config))
+    return false;
+
   if (last_audio_decoder_config_) {
-    // Varying audio configurations currently not supported. Just assume that
-    // the audio configuration has not changed.
-    return true;
-  }
-
-  size_t frequency_index = ExtractAdtsFrequencyIndex(adts_header);
-  if (frequency_index >= kAdtsFrequencyTableSize) {
-    // Frequency index 13 & 14 are reserved
-    // while 15 means that the frequency is explicitly written
-    // (not supported).
+    // Verify that the audio decoder config has not changed.
+    if (last_audio_decoder_config_->extra_data() == audio_specific_config) {
+      // Audio configuration has not changed.
+      return true;
+    }
+    NOTIMPLEMENTED() << "Varying audio configurations are not supported.";
     return false;
   }
-
-  size_t channel_configuration = ExtractAdtsChannelConfig(adts_header);
-  if (channel_configuration == 0 ||
-      channel_configuration >= kAdtsNumChannelsTableSize) {
-    // TODO(damienv): Add support for inband channel configuration.
-    return false;
-  }
-
-  // TODO(damienv): support HE-AAC frequency doubling (SBR)
-  // based on the incoming ADTS profile.
-  int samples_per_second = kAdtsFrequencyTable[frequency_index];
-  int adts_profile = (adts_header[2] >> 6) & 0x3;
 
   // The following code is written according to ISO 14496 Part 3 Table 1.11 and
   // Table 1.22. (Table 1.11 refers to the capping to 48000, Table 1.22 refers
   // to SBR doubling the AAC sample rate.)
-  // TODO(damienv) : Extend sample rate cap to 96kHz for Level 5 content.
+  int samples_per_second = adts_header.GetSamplingFrequency();
   int extended_samples_per_second = sbr_in_mimetype_
       ? std::min(2 * samples_per_second, 48000)
       : samples_per_second;
@@ -235,19 +222,20 @@ bool EsParserAdts::UpdateAudioConfiguration(const uint8* adts_header) {
           kMpeg2Timescale,
           kInfiniteDuration,
           kCodecAAC,
-          std::string(),  // TODO(tinskip): calculate codec string.
+          AudioStreamInfo::GetCodecString(kCodecAAC,
+                                          adts_header.GetObjectType()),
           std::string(),
-          16,
-          kAdtsNumChannelsTable[channel_configuration],
-          samples_per_second,
-          NULL,  // TODO(tinskip): calculate AudioSpecificConfig.
-          0,
+          kAacSampleSizeBits,
+          adts_header.GetNumChannels(),
+          extended_samples_per_second,
+          audio_specific_config.data(),
+          audio_specific_config.size(),
           false));
 
   DVLOG(1) << "Sampling frequency: " << samples_per_second;
   DVLOG(1) << "Extended sampling frequency: " << extended_samples_per_second;
-  DVLOG(1) << "Channel config: " << channel_configuration;
-  DVLOG(1) << "Adts profile: " << adts_profile;
+  DVLOG(1) << "Channel config: " << adts_header.GetNumChannels();
+  DVLOG(1) << "Object type: " << adts_header.GetObjectType();
   // Reset the timestamp helper to use a new sampling frequency.
   if (audio_timestamp_helper_) {
     int64 base_timestamp = audio_timestamp_helper_->GetTimestamp();
@@ -256,7 +244,7 @@ bool EsParserAdts::UpdateAudioConfiguration(const uint8* adts_header) {
     audio_timestamp_helper_->SetBaseTimestamp(base_timestamp);
   } else {
     audio_timestamp_helper_.reset(
-        new AudioTimestampHelper(kMpeg2Timescale, samples_per_second));
+        new AudioTimestampHelper(kMpeg2Timescale, extended_samples_per_second));
   }
 
   // Audio config notification.
