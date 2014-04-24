@@ -23,7 +23,8 @@ using ::testing::ValuesIn;
 namespace media {
 namespace {
 
-const char* kMediaFiles[] = {"bear-1280x720.mp4", "bear-1280x720-av_frag.mp4"};
+const char* kMediaFiles[] = {"bear-1280x720.mp4", "bear-1280x720-av_frag.mp4",
+                             "bear-1280x720.ts"};
 
 // Muxer options.
 const double kSegmentDurationInSeconds = 1.0;
@@ -131,6 +132,10 @@ MuxerOptions PackagerTestBasic::SetupOptions(const std::string& output,
   options.fragment_duration = kFragmentDurationInSecodns;
   options.segment_sap_aligned = kSegmentSapAligned;
   options.fragment_sap_aligned = kFragmentSapAligned;
+  // The mp4 muxer does not generate EditList, so the starting timestamp in the
+  // source is not carried over. Normalize the PTS so a second parse of the
+  // muxed output generates the same output.
+  options.normalize_presentation_timestamp = true;
   options.num_subsegments_per_sidx = kNumSubsegmentsPerSidx;
 
   options.output_file_name = GetFullPath(output);
@@ -190,7 +195,7 @@ void PackagerTestBasic::Remux(const std::string& input,
   ASSERT_OK(demuxer.Run());
 }
 
-TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentUnencrypted) {
+TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentUnencryptedVideo) {
   ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
                                 kOutputVideo,
                                 kOutputNone,
@@ -198,7 +203,15 @@ TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentUnencrypted) {
                                 kDisableEncryption));
 }
 
-TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentEncrypted) {
+TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentUnencryptedAudio) {
+  ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
+                                kOutputNone,
+                                kOutputAudio,
+                                kSingleSegment,
+                                kDisableEncryption));
+}
+
+TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentEncryptedVideo) {
   ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
                                 kOutputVideo,
                                 kOutputNone,
@@ -207,6 +220,20 @@ TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentEncrypted) {
 
   // Expect the output to be encrypted.
   Demuxer demuxer(GetFullPath(kOutputVideo), decryptor_source_);
+  ASSERT_OK(demuxer.Initialize());
+  ASSERT_EQ(1u, demuxer.streams().size());
+  EXPECT_TRUE(demuxer.streams()[0]->info()->is_encrypted());
+}
+
+TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentEncryptedAudio) {
+  ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
+                                kOutputNone,
+                                kOutputAudio,
+                                kSingleSegment,
+                                kEnableEncryption));
+
+  // Expect the output to be encrypted.
+  Demuxer demuxer(GetFullPath(kOutputAudio), decryptor_source_);
   ASSERT_OK(demuxer.Initialize());
   ASSERT_EQ(1u, demuxer.streams().size());
   EXPECT_TRUE(demuxer.streams()[0]->info()->is_encrypted());
@@ -231,7 +258,7 @@ class PackagerTest : public PackagerTestBasic {
   }
 };
 
-TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencryptedAgain) {
+TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencryptedVideoAgain) {
   // Take the muxer output and feed into muxer again. The new muxer output
   // should contain the same contents as the previous muxer output.
   ASSERT_NO_FATAL_FAILURE(Remux(kOutputVideo,
@@ -240,6 +267,17 @@ TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencryptedAgain) {
                                 kSingleSegment,
                                 kDisableEncryption));
   EXPECT_TRUE(ContentsEqual(kOutputVideo, kOutputVideo2));
+}
+
+TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencryptedAudioAgain) {
+  // Take the muxer output and feed into muxer again. The new muxer output
+  // should contain the same contents as the previous muxer output.
+  ASSERT_NO_FATAL_FAILURE(Remux(kOutputAudio,
+                                kOutputNone,
+                                kOutputAudio2,
+                                kSingleSegment,
+                                kDisableEncryption));
+  EXPECT_TRUE(ContentsEqual(kOutputAudio, kOutputAudio2));
 }
 
 TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencryptedSeparateAudioVideo) {
@@ -254,7 +292,7 @@ TEST_P(PackagerTest, MP4MuxerSingleSegmentUnencryptedSeparateAudioVideo) {
   EXPECT_TRUE(ContentsEqual(kOutputAudio, kOutputAudio2));
 }
 
-TEST_P(PackagerTest, MP4MuxerMultiSegmentsUnencrypted) {
+TEST_P(PackagerTest, MP4MuxerMultiSegmentsUnencryptedVideo) {
   ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
                                 kOutputVideo2,
                                 kOutputNone,

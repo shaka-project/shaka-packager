@@ -116,7 +116,7 @@ Status Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
     } else {
       // Can we safely assume the first sample in the media has the earliest
       // presentation timestamp?
-      DCHECK_GT(pts, presentation_start_time_);
+      DCHECK_GE(pts, presentation_start_time_);
       pts -= presentation_start_time_;
     }
   }
