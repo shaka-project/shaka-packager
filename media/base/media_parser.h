@@ -55,6 +55,10 @@ class MediaParser {
                     const NewSampleCB& new_sample_cb,
                     const NeedKeyCB& need_key_cb) = 0;
 
+  /// Flush data currently in the parser and put the parser in a state where it
+  /// can receive data for a new seek point.
+  virtual void Flush() = 0;
+
   /// Should be called when there is new data to parse.
   /// @return true if successful.
   virtual bool Parse(const uint8* buf, int size) = 0;

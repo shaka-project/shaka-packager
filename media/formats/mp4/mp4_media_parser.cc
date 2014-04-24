@@ -55,6 +55,12 @@ void MP4MediaParser::Reset() {
   mdat_tail_ = 0;
 }
 
+void MP4MediaParser::Flush() {
+  DCHECK_NE(state_, kWaitingForInit);
+  Reset();
+  ChangeState(kParsingBoxes);
+}
+
 bool MP4MediaParser::Parse(const uint8* buf, int size) {
   DCHECK_NE(state_, kWaitingForInit);
 
@@ -295,9 +301,11 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
 
 bool MP4MediaParser::ParseMoof(BoxReader* reader) {
   // Must already have initialization segment.
-  RCHECK(moov_.get() && runs_.get());
+  RCHECK(moov_.get());
   MovieFragment moof;
   RCHECK(moof.Parse(reader));
+  if (!runs_)
+    runs_.reset(new TrackRunIterator(moov_.get()));
   RCHECK(runs_->Init(moof));
   EmitNeedKeyIfNecessary(moof.pssh);
   ChangeState(kEmittingSamples);

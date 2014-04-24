@@ -96,21 +96,39 @@ TEST_F(MP4MediaParserTest, MultiFragmentAppend) {
   ParseMP4File("bear-1280x720-av_frag.mp4", 768432);
 }
 
+TEST_F(MP4MediaParserTest, Flush) {
+  // Flush while reading sample data, then start a new stream.
+  InitializeParser();
+
+  std::vector<uint8> buffer = ReadTestDataFile("bear-1280x720-av_frag.mp4");
+  EXPECT_TRUE(AppendDataInPieces(buffer.data(), 65536, 512));
+  parser_->Flush();
+  EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
+}
+
 TEST_F(MP4MediaParserTest, Reinitialization) {
   InitializeParser();
 
-  std::vector<uint8> buffer =
-      ReadTestDataFile("bear-1280x720-av_frag.mp4");
-  EXPECT_TRUE(AppendDataInPieces(buffer.data(),
-                                 buffer.size(),
-                                 512));
-  EXPECT_TRUE(AppendDataInPieces(buffer.data(),
-                                 buffer.size(),
-                                 512));
+  std::vector<uint8> buffer = ReadTestDataFile("bear-1280x720-av_frag.mp4");
+  EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
+  EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
 }
 
 TEST_F(MP4MediaParserTest, MPEG2_AAC_LC) {
   ParseMP4File("bear-mpeg2-aac-only_frag.mp4", 512);
+}
+
+// Test that a moov box is not always required after Flush() is called.
+TEST_F(MP4MediaParserTest, NoMoovAfterFlush) {
+  InitializeParser();
+
+  std::vector<uint8> buffer = ReadTestDataFile("bear-1280x720-av_frag.mp4");
+  EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
+  parser_->Flush();
+
+  const int kFirstMoofOffset = 1307;
+  EXPECT_TRUE(AppendDataInPieces(
+      buffer.data() + kFirstMoofOffset, buffer.size() - kFirstMoofOffset, 512));
 }
 
 TEST_F(MP4MediaParserTest, NON_FRAGMENTED_MP4) {

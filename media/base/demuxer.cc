@@ -146,9 +146,11 @@ Status Demuxer::Parse() {
 
   int64 bytes_read = media_file_->Read(buffer_.get(), kBufSize);
   if (bytes_read <= 0) {
-    return media_file_->Eof()
-               ? Status(error::END_OF_STREAM, "End of stream.")
-               : Status(error::FILE_FAILURE, "Cannot read file " + file_name_);
+    if (media_file_->Eof()) {
+      parser_->Flush();
+      return Status(error::END_OF_STREAM, "");
+    }
+    return Status(error::FILE_FAILURE, "Cannot read file " + file_name_);
   }
 
   return parser_->Parse(buffer_.get(), bytes_read)

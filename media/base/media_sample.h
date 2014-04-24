@@ -129,12 +129,12 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   /// @return a human-readable string describing |*this|.
   std::string ToString() const;
 
- protected:
+ private:
   friend class base::RefCountedThreadSafe<MediaSample>;
 
-  /// Create a MediaSample. Buffer will be padded and aligned as necessary.
-  /// @param data,side_data can be NULL, which indicates an empty sample.
-  /// @param size,side_data_size should not be negative.
+  // Create a MediaSample. Buffer will be padded and aligned as necessary.
+  // |data|,|side_data| can be NULL, which indicates an empty sample.
+  // |size|,|side_data_size| should not be negative.
   MediaSample(const uint8* data,
               size_t size,
               const uint8* side_data,
@@ -142,7 +142,6 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
               bool is_key_frame);
   virtual ~MediaSample();
 
- private:
   // Decoding time stamp.
   int64 dts_;
   // Presentation time stamp.

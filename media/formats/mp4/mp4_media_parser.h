@@ -35,6 +35,7 @@ class MP4MediaParser : public MediaParser {
   virtual void Init(const InitCB& init_cb,
                     const NewSampleCB& new_sample_cb,
                     const NeedKeyCB& need_key_cb) OVERRIDE;
+  virtual void Flush() OVERRIDE;
   virtual bool Parse(const uint8* buf, int size) OVERRIDE;
   /// @}
 

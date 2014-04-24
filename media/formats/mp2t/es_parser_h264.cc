@@ -24,9 +24,6 @@ namespace {
 // 3 bytes for the start code + 1 byte for the NALU type.
 const int kMinAUDSize = 4;
 
-// Size of H.264 NALU length output by this SDK.
-const uint8 kCommonNaluLengthSize = 4;
-
 }  // anonymous namespace
 
 EsParserH264::EsParserH264(
