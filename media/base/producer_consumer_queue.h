@@ -17,16 +17,26 @@
 
 namespace media {
 
+static const size_t kUnlimitedCapacity = 0u;
+static const int64 kInfiniteTimeout = -1;
+
 /// A thread safe producer consumer queue implementation. It allows the standard
 /// push and pop operations. It also maintains a monotonically-increasing
 /// element position and allows peeking at the element at certain position.
 template <class T>
 class ProducerConsumerQueue {
  public:
-  /// Create a ProducerConsumerQueue.
+  /// Create a ProducerConsumerQueue starting from position 0.
   /// @param capacity is the maximum number of elements that the queue can hold
   ///        at once. A value of zero means unlimited capacity.
   explicit ProducerConsumerQueue(size_t capacity);
+
+  /// Create a ProducerConsumerQueue starting from indicated position.
+  /// @param capacity is the maximum number of elements that the queue can hold
+  ///        at once. A value of zero means unlimited capacity.
+  /// @param starting_pos is the starting head position.
+  ProducerConsumerQueue(size_t capacity, size_t starting_pos);
+
   ~ProducerConsumerQueue();
 
   /// Push an element to the back of the queue. If the queue has reached its
@@ -89,14 +99,14 @@ class ProducerConsumerQueue {
   ///         returned value may be meaningless if the queue is empty.
   size_t HeadPos() const {
     base::AutoLock l(lock_);
-    return head_;
+    return head_pos_;
   }
 
   /// @return The position of the tail element in the queue. Note that the
   ///         returned value may be meaningless if the queue is empty.
   size_t TailPos() const {
     base::AutoLock l(lock_);
-    return head_ + q_.size() - 1;
+    return head_pos_ + q_.size() - 1;
   }
 
   /// @return true if the queue has been stopped using Stop(). This allows
@@ -107,12 +117,12 @@ class ProducerConsumerQueue {
   }
 
  private:
-  // Move head_ to center on pos.
+  // Move head_pos_ to center on pos.
   void SlideHeadOnCenter(size_t pos);
 
   const size_t capacity_;  // Maximum number of elements; zero means unlimited.
   mutable base::Lock lock_;  // Lock protecting all other variables below.
-  size_t head_;              // Head position.
+  size_t head_pos_;          // Head position.
   std::deque<T> q_;          // Internal queue holding the elements.
   base::ConditionVariable not_empty_cv_;
   base::ConditionVariable not_full_cv_;
@@ -126,11 +136,22 @@ class ProducerConsumerQueue {
 template <class T>
 ProducerConsumerQueue<T>::ProducerConsumerQueue(size_t capacity)
     : capacity_(capacity),
-      head_(0),
+      head_pos_(0),
       not_empty_cv_(&lock_),
       not_full_cv_(&lock_),
       new_element_cv_(&lock_),
       stop_requested_(false) {}
+
+template <class T>
+ProducerConsumerQueue<T>::ProducerConsumerQueue(size_t capacity,
+                                                size_t starting_pos)
+    : capacity_(capacity),
+      head_pos_(starting_pos),
+      not_empty_cv_(&lock_),
+      not_full_cv_(&lock_),
+      new_element_cv_(&lock_),
+      stop_requested_(false) {
+}
 
 template <class T>
 ProducerConsumerQueue<T>::~ProducerConsumerQueue() {}
@@ -218,7 +239,7 @@ Status ProducerConsumerQueue<T>::Pop(T* element, int64 timeout_ms) {
 
   *element = q_.front();
   q_.pop_front();
-  ++head_;
+  ++head_pos_;
 
   // Signal other consumers if we have more elements.
   if (woken && !q_.empty())
@@ -231,10 +252,11 @@ Status ProducerConsumerQueue<T>::Peek(size_t pos,
                                       T* element,
                                       int64 timeout_ms) {
   base::AutoLock l(lock_);
-  if (pos < head_) {
+  if (pos < head_pos_) {
     return Status(
         error::INVALID_ARGUMENT,
-        base::StringPrintf("pos (%zu) is too small; head is %zu.", pos, head_));
+        base::StringPrintf(
+            "pos (%zu) is too small; head is at %zu.", pos, head_pos_));
   }
 
   bool woken = false;
@@ -242,10 +264,10 @@ Status ProducerConsumerQueue<T>::Peek(size_t pos,
   base::ElapsedTimer timer;
   base::TimeDelta timeout_delta = base::TimeDelta::FromMilliseconds(timeout_ms);
 
-  // Move head_ to create some space (move the sliding window centered @ pos).
+  // Move head to create some space (move the sliding window centered @ pos).
   SlideHeadOnCenter(pos);
 
-  while (pos >= head_ + q_.size()) {
+  while (pos >= head_pos_ + q_.size()) {
     if (stop_requested_)
       return Status(error::STOPPED, "");
 
@@ -262,12 +284,12 @@ Status ProducerConsumerQueue<T>::Peek(size_t pos,
         return Status(error::TIME_OUT, "Time out on peeking.");
       }
     }
-    // Move head_ to create some space (move the sliding window centered @ pos).
+    // Move head to create some space (move the sliding window centered @ pos).
     SlideHeadOnCenter(pos);
     woken = true;
   }
 
-  *element = q_[pos - head_];
+  *element = q_[pos - head_pos_];
 
   // Signal other consumers if we have more elements.
   if (woken && !q_.empty())
@@ -281,11 +303,11 @@ void ProducerConsumerQueue<T>::SlideHeadOnCenter(size_t pos) {
 
   if (capacity_) {
     // Signal producer to proceed if we are going to create some capacity.
-    if (q_.size() == capacity_ && pos > head_ + capacity_ / 2)
+    if (q_.size() == capacity_ && pos > head_pos_ + capacity_ / 2)
       not_full_cv_.Signal();
 
-    while (!q_.empty() && pos > head_ + capacity_ / 2) {
-      ++head_;
+    while (!q_.empty() && pos > head_pos_ + capacity_ / 2) {
+      ++head_pos_;
       q_.pop_front();
     }
   }

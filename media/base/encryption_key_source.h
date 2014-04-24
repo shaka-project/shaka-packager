@@ -43,7 +43,7 @@ class EncryptionKeySource {
 
   /// Get encryption key of the specified track type at the specified index.
   /// @return OK on success, an error status otherwise.
-  virtual Status GetCryptoPeriodKey(size_t crypto_period_index,
+  virtual Status GetCryptoPeriodKey(uint32 crypto_period_index,
                                     TrackType track_type,
                                     EncryptionKey* key);
 

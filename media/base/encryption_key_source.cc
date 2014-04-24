@@ -30,7 +30,7 @@ Status EncryptionKeySource::GetKey(TrackType track_type, EncryptionKey* key) {
   return Status::OK;
 }
 
-Status EncryptionKeySource::GetCryptoPeriodKey(size_t crypto_period_index,
+Status EncryptionKeySource::GetCryptoPeriodKey(uint32 crypto_period_index,
                                                TrackType track_type,
                                                EncryptionKey* key) {
   NOTIMPLEMENTED();

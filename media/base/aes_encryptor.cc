@@ -169,11 +169,12 @@ void AesCbcEncryptor::Encrypt(const std::string& plaintext,
   padded_text.append(num_padding_bytes, static_cast<char>(num_padding_bytes));
 
   ciphertext->resize(padded_text.size());
+  std::vector<uint8> iv(iv_);
   AES_cbc_encrypt(reinterpret_cast<const uint8*>(padded_text.data()),
                   reinterpret_cast<uint8*>(string_as_array(ciphertext)),
                   padded_text.size(),
                   encrypt_key_.get(),
-                  &iv_[0],
+                  &iv[0],
                   AES_ENCRYPT);
 }
 

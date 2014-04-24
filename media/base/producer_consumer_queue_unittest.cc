@@ -13,10 +13,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-const size_t kUnlimitedCapacity = 0u;
 const size_t kCapacity = 10u;
 const int64 kTimeout = 100;  // 0.1s.
-const int64 kInfiniteTimeout = -1;
 
 // Check that the |delta| is approximately |time_in_milliseconds|.
 bool CheckTimeApproxEqual(int64 time_in_milliseconds,

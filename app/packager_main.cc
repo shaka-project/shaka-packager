@@ -76,7 +76,10 @@ scoped_ptr<EncryptionKeySource> CreateEncryptionKeySource() {
     }
 
     encryption_key_source.reset(new WidevineEncryptionKeySource(
-        FLAGS_server_url, FLAGS_content_id, signer.Pass()));
+        FLAGS_server_url,
+        FLAGS_content_id,
+        signer.Pass(),
+        FLAGS_crypto_period_duration == 0 ? kDisableKeyRotation : 0));
   } else if (FLAGS_enable_fixed_key_encryption) {
     encryption_key_source = EncryptionKeySource::CreateFromHexStrings(
         FLAGS_key_id, FLAGS_key, FLAGS_pssh, "");
