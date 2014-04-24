@@ -13,7 +13,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_ptr.h"
-#include "media/base/encryption_key_source.h"
 #include "media/base/muxer_options.h"
 #include "media/base/status.h"
 
@@ -42,14 +41,15 @@ class Muxer {
   /// Set encryption key source.
   /// @param encryption_key_source points to the encryption key source to be
   ///        injected. Should not be NULL.
-  /// @param track_type should be either SD or HD. It affects whether SD key or
-  ///        HD key is used to encrypt the video content.
+  /// @param max_sd_pixels specifies the threshold to determine whether a video
+  ///        track should be considered as SD or HD. If the track has more
+  ///        pixels per frame than max_sd_pixels, it is HD, SD otherwise.
   /// @param clear_lead_in_seconds specifies clear lead duration in seconds.
   /// @param crypto_period_duration_in_seconds specifies crypto period duration
   ///        in seconds. A positive value means key rotation is enabled, the
   ///        key source must support key rotation in this case.
   void SetEncryptionKeySource(EncryptionKeySource* encryption_key_source,
-                              EncryptionKeySource::TrackType track_type,
+                              uint32 max_sd_pixels,
                               double clear_lead_in_seconds,
                               double crypto_period_duration_in_seconds);
 
@@ -80,7 +80,7 @@ class Muxer {
   EncryptionKeySource* encryption_key_source() {
     return encryption_key_source_;
   }
-  EncryptionKeySource::TrackType track_type() const { return track_type_; }
+  uint32 max_sd_pixels() const { return max_sd_pixels_; }
   double clear_lead_in_seconds() const { return clear_lead_in_seconds_; }
   double crypto_period_duration_in_seconds() const {
     return crypto_period_duration_in_seconds_;
@@ -109,7 +109,7 @@ class Muxer {
   bool initialized_;
   std::vector<MediaStream*> streams_;
   EncryptionKeySource* encryption_key_source_;
-  EncryptionKeySource::TrackType track_type_;
+  uint32 max_sd_pixels_;
   double clear_lead_in_seconds_;
   double crypto_period_duration_in_seconds_;
 

@@ -12,7 +12,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_ptr.h"
-#include "media/base/encryption_key_source.h"
 #include "media/base/status.h"
 
 namespace media {
@@ -53,14 +52,15 @@ class Segmenter {
   /// @param encryption_key_source points to the key source which contains
   ///        the encryption keys. It can be NULL to indicate that no encryption
   ///        is required.
-  /// @param track_type indicates whether SD key or HD key should be used to
-  ///        encrypt the video content.
+  /// @param max_sd_pixels specifies the threshold to determine whether a video
+  ///        track should be considered as SD or HD. If the track has more
+  ///        pixels per frame than max_sd_pixels, it is HD, SD otherwise.
   /// @param clear_time specifies clear lead duration in seconds.
   /// @param crypto_period_duration specifies crypto period duration in seconds.
   /// @return OK on success, an error status otherwise.
   Status Initialize(const std::vector<MediaStream*>& streams,
                     EncryptionKeySource* encryption_key_source,
-                    EncryptionKeySource::TrackType track_type,
+                    uint32 max_sd_pixels,
                     double clear_lead_in_seconds,
                     double crypto_period_duration_in_seconds);
 

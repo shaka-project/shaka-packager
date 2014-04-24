@@ -86,6 +86,27 @@ void GenerateEncryptedSampleEntryForKeyRotation(
       encryption_key, clear_lead_in_seconds, description);
 }
 
+uint8 GetNaluLengthSize(const StreamInfo& stream_info) {
+  if (stream_info.stream_type() != kStreamVideo)
+    return 0;
+  const VideoStreamInfo& video_stream_info =
+      static_cast<const VideoStreamInfo&>(stream_info);
+  return video_stream_info.nalu_length_size();
+}
+
+EncryptionKeySource::TrackType GetTrackTypeForEncryption(
+    const StreamInfo& stream_info, uint32 max_sd_pixels) {
+  if (stream_info.stream_type() == kStreamAudio)
+    return EncryptionKeySource::TRACK_TYPE_AUDIO;
+
+  DCHECK_EQ(kStreamVideo, stream_info.stream_type());
+  const VideoStreamInfo& video_stream_info =
+      static_cast<const VideoStreamInfo&>(stream_info);
+  uint32 pixels = video_stream_info.width() * video_stream_info.height();
+  return (pixels > max_sd_pixels) ? EncryptionKeySource::TRACK_TYPE_HD
+                                  : EncryptionKeySource::TRACK_TYPE_SD;
+}
+
 }  // namespace
 
 Segmenter::Segmenter(const MuxerOptions& options,
@@ -104,7 +125,7 @@ Segmenter::~Segmenter() { STLDeleteElements(&fragmenters_); }
 
 Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
                              EncryptionKeySource* encryption_key_source,
-                             EncryptionKeySource::TrackType track_type,
+                             uint32 max_sd_pixels,
                              double clear_lead_in_seconds,
                              double crypto_period_duration_in_seconds) {
   DCHECK_LT(0u, streams.size());
@@ -116,29 +137,22 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
   for (uint32 i = 0; i < streams.size(); ++i) {
     stream_map_[streams[i]] = i;
     moof_->tracks[i].header.track_id = i + 1;
-    uint8 nalu_length_size = 0;
     if (streams[i]->info()->stream_type() == kStreamVideo) {
-      VideoStreamInfo* video =
-          static_cast<VideoStreamInfo*>(streams[i]->info().get());
-      nalu_length_size = video->nalu_length_size();
-      // We use the first video stream as the reference stream.
+      // Use the first video stream as the reference stream (which is 1-based).
       if (sidx_->reference_id == 0)
         sidx_->reference_id = i + 1;
     }
-
     if (!encryption_key_source) {
       fragmenters_[i] = new Fragmenter(
           &moof_->tracks[i], options_.normalize_presentation_timestamp);
       continue;
     }
 
-    DCHECK(track_type == EncryptionKeySource::TRACK_TYPE_SD ||
-           track_type == EncryptionKeySource::TRACK_TYPE_HD);
+    uint8 nalu_length_size = GetNaluLengthSize(*streams[i]->info());
+    EncryptionKeySource::TrackType track_type =
+        GetTrackTypeForEncryption(*streams[i]->info(), max_sd_pixels);
     SampleDescription& description =
         moov_->tracks[i].media.information.sample_table.description;
-    EncryptionKeySource::TrackType cur_track_type =
-        description.type == kAudio ? EncryptionKeySource::TRACK_TYPE_AUDIO
-                                   : track_type;
 
     const bool key_rotation_enabled = crypto_period_duration_in_seconds != 0;
     if (key_rotation_enabled) {
@@ -150,7 +164,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
           &moof_->tracks[i],
           options_.normalize_presentation_timestamp,
           encryption_key_source,
-          cur_track_type,
+          track_type,
           crypto_period_duration_in_seconds * streams[i]->info()->time_scale(),
           clear_lead_in_seconds * streams[i]->info()->time_scale(),
           nalu_length_size);
@@ -159,7 +173,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
 
     scoped_ptr<EncryptionKey> encryption_key(new EncryptionKey());
     Status status =
-        encryption_key_source->GetKey(cur_track_type, encryption_key.get());
+        encryption_key_source->GetKey(track_type, encryption_key.get());
     if (!status.ok())
       return status;
 

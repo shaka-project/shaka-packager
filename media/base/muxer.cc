@@ -6,7 +6,6 @@
 
 #include "media/base/muxer.h"
 
-#include "media/base/encryption_key_source.h"
 #include "media/base/media_sample.h"
 #include "media/base/media_stream.h"
 
@@ -16,7 +15,7 @@ Muxer::Muxer(const MuxerOptions& options)
     : options_(options),
       initialized_(false),
       encryption_key_source_(NULL),
-      track_type_(EncryptionKeySource::TRACK_TYPE_SD),
+      max_sd_pixels_(0),
       clear_lead_in_seconds_(0),
       crypto_period_duration_in_seconds_(0),
       muxer_listener_(NULL),
@@ -25,12 +24,12 @@ Muxer::Muxer(const MuxerOptions& options)
 Muxer::~Muxer() {}
 
 void Muxer::SetEncryptionKeySource(EncryptionKeySource* encryption_key_source,
-                                   EncryptionKeySource::TrackType track_type,
+                                   uint32 max_sd_pixels,
                                    double clear_lead_in_seconds,
                                    double crypto_period_duration_in_seconds) {
   DCHECK(encryption_key_source);
   encryption_key_source_ = encryption_key_source;
-  track_type_ = track_type;
+  max_sd_pixels_ = max_sd_pixels;
   clear_lead_in_seconds_ = clear_lead_in_seconds;
   crypto_period_duration_in_seconds_ = crypto_period_duration_in_seconds;
 }

@@ -20,7 +20,10 @@ DEFINE_bool(enable_widevine_encryption,
             "--aes_signing_iv) or RSA signing key (--rsa_signing_key_path).");
 DEFINE_string(server_url, "", "License server url.");
 DEFINE_string(content_id, "", "Content Id.");
-DEFINE_string(track_type, "SD", "Track type: SD or HD.");
+DEFINE_int32(max_sd_pixels,
+             768 * 576,
+             "If the video track has more pixels per frame than max_sd_pixels, "
+             "it is considered as HD, SD otherwise. Default: 768 * 576.");
 DEFINE_string(signer, "", "The name of the signer.");
 DEFINE_string(aes_signing_key,
               "",
@@ -41,6 +44,10 @@ DEFINE_int32(crypto_period_duration,
 static bool IsNotEmptyWithWidevineEncryption(const char* flag_name,
                                              const std::string& flag_value) {
   return FLAGS_enable_widevine_encryption ? !flag_value.empty() : true;
+}
+
+static bool IsPositive(const char* flag_name, int flag_value) {
+  return flag_value > 0;
 }
 
 static bool VerifyAesRsaKey(const char* flag_name,
@@ -78,8 +85,7 @@ static bool dummy_content_id_validator =
     google::RegisterFlagValidator(&FLAGS_content_id,
                                   &IsNotEmptyWithWidevineEncryption);
 static bool dummy_track_type_validator =
-    google::RegisterFlagValidator(&FLAGS_track_type,
-                                  &IsNotEmptyWithWidevineEncryption);
+    google::RegisterFlagValidator(&FLAGS_max_sd_pixels, &IsPositive);
 static bool dummy_signer_validator =
     google::RegisterFlagValidator(&FLAGS_signer,
                                   &IsNotEmptyWithWidevineEncryption);
