@@ -18,7 +18,7 @@ vars = {
   "webrtc_rev": "5718",  # For gflags.
 
   "happyhttp_url": "https://github.com/Zintinio/HappyHTTP.git",
-  "happyhttp_rev": "6b11b3b02cb3c8b649de9fffe8e08ae68c42bfd0",
+  "happyhttp_rev": "eb65abe57567d7eb34c9eca0626aa9af92ce21fc",
 }
 
 deps = {
