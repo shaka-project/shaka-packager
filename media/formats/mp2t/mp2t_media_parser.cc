@@ -280,9 +280,8 @@ void Mp2tMediaParser::RegisterPmt(int program_number, int pmt_pid) {
 }
 
 void Mp2tMediaParser::RegisterPes(int pmt_pid,
-                              int pes_pid,
-                              int stream_type) {
-  // TODO(damienv): check there is no mismatch if the entry already exists.
+                                  int pes_pid,
+                                  int stream_type) {
   DVLOG(1) << "RegisterPes:"
            << " pes_pid=" << pes_pid
            << " stream_type=" << std::hex << stream_type << std::dec;

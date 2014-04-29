@@ -19,8 +19,6 @@ int TsPacket::Sync(const uint8* buf, int size) {
   for (; k < size; k++) {
     // Verify that we have 4 syncwords in a row when possible,
     // this should improve synchronization robustness.
-    // TODO(damienv): Consider the case where there is garbage
-    // between TS packets.
     bool is_header = true;
     for (int i = 0; i < 4; i++) {
       int idx = k + i * kPacketSize;
@@ -212,4 +210,3 @@ bool TsPacket::ParseAdaptationField(BitReader* bit_reader,
 
 }  // namespace mp2t
 }  // namespace media
-

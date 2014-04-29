@@ -17,7 +17,6 @@ class TsSectionPmt : public TsSectionPsi {
   // RegisterPesCb::Run(int pes_pid, int stream_type);
   // Stream type is defined in
   // "Table 2-34 – Stream type assignments" in H.222
-  // TODO(damienv): add the program number.
   typedef base::Callback<void(int, int)> RegisterPesCb;
 
   explicit TsSectionPmt(const RegisterPesCb& register_pes_cb);

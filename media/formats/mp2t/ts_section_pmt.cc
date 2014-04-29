@@ -57,10 +57,6 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   RCHECK(section_number == 0);
   RCHECK(last_section_number == 0);
 
-  // TODO(damienv):
-  // Verify that there is no mismatch between the program number
-  // and the program number that was provided in a PAT for the current PMT.
-
   // Read the end of the fixed length section.
   int pcr_pid;
   int program_info_length;
@@ -71,7 +67,6 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
   RCHECK(program_info_length < 1024);
 
   // Read the program info descriptor.
-  // TODO(damienv): check wether any of the descriptors could be useful.
   // Defined in section 2.6 of ISO-13818.
   RCHECK(bit_reader->SkipBits(8 * program_info_length));
 
@@ -97,7 +92,6 @@ bool TsSectionPmt::ParsePsiSection(BitReader* bit_reader) {
     pid_map.insert(std::pair<int, int>(pid_es, stream_type));
 
     // Read the ES info descriptors.
-    // TODO(damienv): check wether any of the descriptors could be useful.
     // Defined in section 2.6 of ISO-13818.
     RCHECK(bit_reader->SkipBits(8 * es_info_length));
   }
@@ -119,4 +113,3 @@ void TsSectionPmt::ResetPsiSection() {
 
 }  // namespace mp2t
 }  // namespace media
-

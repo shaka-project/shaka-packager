@@ -25,8 +25,6 @@ class H264BitReader {
   // Initialize the reader to start reading at |data|, |size| being size
   // of |data| in bytes.
   // Return false on insufficient size of stream..
-  // TODO(posciak,fischman): consider replacing Initialize() with
-  // heap-allocating and creating bit readers on demand instead.
   bool Initialize(const uint8* data, off_t size);
 
   // Read |num_bits| next bits from stream and return in |*out|, first bit

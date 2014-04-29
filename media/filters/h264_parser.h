@@ -111,7 +111,6 @@ struct H264PPS {
   bool entropy_coding_mode_flag;
   bool bottom_field_pic_order_in_frame_present_flag;
   int num_slice_groups_minus1;
-  // TODO(posciak): Slice groups not implemented, could be added at some point.
   int num_ref_idx_l0_default_active_minus1;
   int num_ref_idx_l1_default_active_minus1;
   bool weighted_pred_flag;
@@ -187,7 +186,7 @@ struct H264SliceHeader {
   int first_mb_in_slice;
   int slice_type;
   int pic_parameter_set_id;
-  int colour_plane_id;  // TODO(posciak): use this!  http://crbug.com/139878
+  int colour_plane_id;
   int frame_num;
   bool field_pic_flag;
   bool bottom_field_flag;
@@ -307,7 +306,6 @@ class H264Parser {
   // of the parsed structure in |*pps_id|/|*sps_id|.
   // To get a pointer to a given SPS/PPS structure, use GetSPS()/GetPPS(),
   // passing the returned |*sps_id|/|*pps_id| as parameter.
-  // TODO(posciak,fischman): consider replacing returning Result from Parse*()
   // methods with a scoped_ptr and adding an AtEOS() function to check for EOS
   // if Parse*() return NULL.
   Result ParseSPS(int* sps_id);

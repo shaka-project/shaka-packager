@@ -223,8 +223,6 @@ bool EsParserH264::ParseInternal() {
         if (h264_parser_->ParseSliceHeader(nalu, &shdr) != H264Parser::kOk) {
           // Only accept an invalid SPS/PPS at the beginning when the stream
           // does not necessarily start with an SPS/PPS/IDR.
-          // TODO(damienv): Should be able to differentiate a missing SPS/PPS
-          // from a slice header parsing error.
           if (last_video_decoder_config_)
             return false;
         } else {
@@ -330,7 +328,7 @@ bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
     return false;
   }
 
-  // TODO(damienv): a MAP unit can be either 16 or 32 pixels.
+  // TODO: a MAP unit can be either 16 or 32 pixels.
   // although it's 16 pixels for progressive non MBAFF frames.
   uint16 width = (sps->pic_width_in_mbs_minus1 + 1) * 16;
   uint16 height = (sps->pic_height_in_map_units_minus1 + 1) * 16;

@@ -286,7 +286,6 @@ bool TsSectionPes::ParseInternal(const uint8* raw_pes, int raw_pes_size) {
   }
 
   // Discard the rest of the PES packet header.
-  // TODO(damienv): check if some info of the PES packet header are useful.
   DCHECK_EQ(bit_reader.bits_available() % 8, 0);
   int pes_header_remaining_size = pes_header_data_length -
       (pes_header_start_size - bit_reader.bits_available() / 8);
