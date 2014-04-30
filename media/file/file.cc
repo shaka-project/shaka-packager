@@ -9,10 +9,13 @@
 #include "base/logging.h"
 #include "base/memory/scoped_ptr.h"
 #include "media/file/local_file.h"
+#include "media/file/udp_file.h"
+#include "base/strings/string_util.h"
 
 namespace media {
 
 const char* kLocalFilePrefix = "file://";
+const char* kUdpFilePrefix = "udp://";
 
 typedef File* (*FileFactoryFunction)(const char* file_name, const char* mode);
 
@@ -26,8 +29,17 @@ static File* CreateLocalFile(const char* file_name, const char* mode) {
   return new LocalFile(file_name, mode);
 }
 
+static File* CreateUdpFile(const char* file_name, const char* mode) {
+  if (base::strcasecmp(mode, "r")) {
+    NOTIMPLEMENTED() << "UdpFile only supports read (receive) mode.";
+    return NULL;
+  }
+  return new UdpFile(file_name);
+}
+
 static const SupportedTypeInfo kSupportedTypeInfo[] = {
     { kLocalFilePrefix, strlen(kLocalFilePrefix), &CreateLocalFile },
+    { kUdpFilePrefix, strlen(kUdpFilePrefix), &CreateUdpFile },
 };
 
 File* File::Create(const char* file_name, const char* mode) {
