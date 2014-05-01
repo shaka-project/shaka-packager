@@ -211,18 +211,18 @@ bool RunPackager(const std::string& input) {
     encryption_key_source = CreateEncryptionKeySource();
     if (!encryption_key_source)
       return false;
+    EncryptionKeySource::TrackType track_type =
+        EncryptionKeySource::GetTrackTypeFromString(FLAGS_track_type);
+    if (track_type != EncryptionKeySource::TRACK_TYPE_SD &&
+        track_type != EncryptionKeySource::TRACK_TYPE_HD) {
+      LOG(ERROR) << "FLAGS_track_type should be either 'SD' or 'HD'";
+      return false;
+    }
+    muxer->SetEncryptionKeySource(encryption_key_source.get(),
+                                  track_type,
+                                  FLAGS_clear_lead,
+                                  FLAGS_crypto_period_duration);
   }
-  EncryptionKeySource::TrackType track_type =
-      EncryptionKeySource::GetTrackTypeFromString(FLAGS_track_type);
-  if (track_type != EncryptionKeySource::TRACK_TYPE_SD &&
-      track_type != EncryptionKeySource::TRACK_TYPE_HD) {
-    LOG(ERROR) << "FLAGS_track_type should be either 'SD' or 'HD'";
-    return false;
-  }
-  muxer->SetEncryptionKeySource(encryption_key_source.get(),
-                                track_type,
-                                FLAGS_clear_lead,
-                                FLAGS_crypto_period_duration);
 
   // Start remuxing process.
   status = demuxer.Run();
