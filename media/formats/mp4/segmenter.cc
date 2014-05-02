@@ -204,8 +204,8 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
 
   // Use the reference stream's time scale as movie time scale.
   moov_->header.timescale = sidx_->timescale;
-  InitializeFragments();
-  return DoInitialize();
+  Status status = InitializeFragments();
+  return status.ok() ? DoInitialize() : status;
 }
 
 Status Segmenter::Finalize() {
@@ -379,7 +379,9 @@ Status Segmenter::FinalizeFragment(Fragmenter* fragmenter) {
     fragment_buffer_->AppendBuffer(*fragmenter->data());
   }
 
-  InitializeFragments();
+  Status status = InitializeFragments();
+  if (!status.ok())
+    return status;
 
   if (end_of_segment_)
     return FinalizeSegment();
