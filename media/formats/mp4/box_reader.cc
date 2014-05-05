@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/scoped_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "media/formats/mp4/box.h"
 
 namespace media {
@@ -54,7 +55,7 @@ BoxReader* BoxReader::ReadTopLevelBox(const uint8* buf,
 bool BoxReader::StartTopLevelBox(const uint8* buf,
                                  const size_t buf_size,
                                  FourCC* type,
-                                 int* box_size,
+                                 uint64* box_size,
                                  bool* err) {
   BoxReader reader(buf, buf_size);
   if (!reader.ReadHeader(err))
@@ -145,7 +146,9 @@ bool BoxReader::ReadHeader(bool* err) {
     return false;
 
   if (size == 0) {
-    // Media Source specific: we do not support boxes that run to EOS.
+    // Boxes that run to EOS are not supported.
+    NOTIMPLEMENTED() << base::StringPrintf("Box '%s' run to EOS.",
+                                           FourCCToString(type_).c_str());
     *err = true;
     return false;
   } else if (size == 1) {
@@ -153,10 +156,20 @@ bool BoxReader::ReadHeader(bool* err) {
       return false;
   }
 
-  // Implementation-specific: support for boxes larger than 2^31 has been
-  // removed.
-  if (size < static_cast<uint64>(pos()) ||
-      size > static_cast<uint64>(kint32max)) {
+  // The box should have at least the size of what have been parsed.
+  if (size < pos()) {
+    LOG(ERROR) << base::StringPrintf("Box '%s' with size (%lu) is invalid.",
+                                     FourCCToString(type_).c_str(),
+                                     size);
+    *err = true;
+    return false;
+  }
+
+  // 'mdat' box could have a 64-bit size; other boxes should be very small.
+  if (size > static_cast<uint64>(kint32max) && type_ != FOURCC_MDAT) {
+    LOG(ERROR) << base::StringPrintf("Box '%s' size (%lu) is too large.",
+                                     FourCCToString(type_).c_str(),
+                                     size);
     *err = true;
     return false;
   }

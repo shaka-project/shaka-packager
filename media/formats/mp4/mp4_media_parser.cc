@@ -433,7 +433,7 @@ bool MP4MediaParser::ReadAndDiscardMDATsUntil(const int64 offset) {
     queue_.PeekAt(mdat_tail_, &buf, &size);
 
     FourCC type;
-    int box_sz;
+    uint64 box_sz;
     if (!BoxReader::StartTopLevelBox(buf, size, &type, &box_sz, &err))
       break;
 

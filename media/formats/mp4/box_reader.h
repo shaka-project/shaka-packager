@@ -50,7 +50,7 @@ class BoxReader : public BufferReader {
   static bool StartTopLevelBox(const uint8* buf,
                                const size_t buf_size,
                                FourCC* type,
-                               int* box_size,
+                               uint64* box_size,
                                bool* err) WARN_UNUSED_RESULT;
 
   /// @return true if @a type is recognized to be the fourcc of a top-level box,
