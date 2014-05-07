@@ -1666,7 +1666,7 @@ bool SampleGroupDescription::ReadWrite(BoxBuffer* buffer) {
   if (version == 1) {
     if (buffer->Reading()) {
       RCHECK(buffer->ReadWriteUInt32(&default_length));
-      RCHECK(default_length == 0 || default_length == kEntrySize);
+      RCHECK(default_length == 0 || default_length >= kEntrySize);
     } else {
       default_length = kEntrySize;
       RCHECK(buffer->ReadWriteUInt32(&default_length));
@@ -1681,7 +1681,7 @@ bool SampleGroupDescription::ReadWrite(BoxBuffer* buffer) {
       if (buffer->Reading() && default_length == 0) {
         uint32 description_length = 0;
         RCHECK(buffer->ReadWriteUInt32(&description_length));
-        RCHECK(description_length == kEntrySize);
+        RCHECK(description_length >= kEntrySize);
       }
     }
 
@@ -1707,6 +1707,8 @@ bool SampleGroupDescription::ReadWrite(BoxBuffer* buffer) {
 }
 
 uint32 SampleGroupDescription::ComputeSize() {
+  // Version 0 is obsoleted, so always generate version 1 box.
+  version = 1;
   // This box is optional. Skip it if it is not used.
   atom_size = 0;
   if (!entries.empty()) {
@@ -1733,6 +1735,10 @@ bool TrackFragment::ReadWrite(BoxBuffer* buffer) {
     DCHECK(buffer->reader());
     RCHECK(buffer->reader()->TryReadChildren(&runs));
 
+    // There could be multiple SampleGroupDescription and SampleToGroup boxes
+    // with different grouping types. For common encryption, the relevant
+    // grouping type is 'seig'. Continue reading until 'seig' is found, or
+    // until running out of child boxes.
     while (sample_to_group.grouping_type != FOURCC_SEIG &&
            buffer->reader()->ChildExist(&sample_to_group)) {
       RCHECK(buffer->reader()->ReadChild(&sample_to_group));
@@ -1740,32 +1746,6 @@ bool TrackFragment::ReadWrite(BoxBuffer* buffer) {
     while (sample_group_description.grouping_type != FOURCC_SEIG &&
            buffer->reader()->ChildExist(&sample_group_description)) {
       RCHECK(buffer->reader()->ReadChild(&sample_group_description));
-    }
-    if (sample_to_group.grouping_type == FOURCC_SEIG) {
-      // SampleGroupDescription box can appear in either 'moov...stbl' or
-      // 'moov.traf'. The first case is not supported for now, so we require
-      // a companion SampleGroupDescription box to coexist with the
-      // SampleToGroup box.
-      if (sample_group_description.grouping_type != FOURCC_SEIG) {
-        NOTIMPLEMENTED()
-            << "SampleGroupDescription box in 'moov' is not supported.";
-        return false;
-      }
-      for (std::vector<SampleToGroupEntry>::iterator it =
-               sample_to_group.entries.begin();
-           it != sample_to_group.entries.end();
-           ++it) {
-        if ((it->group_description_index & 0x10000) == 0) {
-          NOTIMPLEMENTED()
-              << "SampleGroupDescription box in 'moov' is not supported.";
-          return false;
-        }
-        it->group_description_index &= 0x0FFFF;
-        RCHECK(it->group_description_index <=
-               sample_group_description.entries.size());
-      }
-    } else {
-      RCHECK(sample_group_description.grouping_type != FOURCC_SEIG);
     }
   } else {
     for (uint32 i = 0; i < runs.size(); ++i)

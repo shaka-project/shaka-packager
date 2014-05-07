@@ -630,12 +630,13 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     sbgp->entries.resize(2);
     sbgp->entries[0].sample_count = 3;
     sbgp->entries[0].group_description_index = 0x10002;
-    sbgp->entries[0].sample_count = 1212;
-    sbgp->entries[0].group_description_index = 0x10001;
+    sbgp->entries[1].sample_count = 1212;
+    sbgp->entries[1].group_description_index = 0x10001;
   }
 
   void Modify(SampleToGroup* sbgp) {
     sbgp->entries.resize(1);
+    sbgp->entries[0].sample_count = 5;
     sbgp->entries[0].group_description_index = 0x10001;
   }
 
@@ -649,11 +650,13 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     sgpd->entries[1].is_encrypted = false;
     sgpd->entries[1].iv_size = 0;
     sgpd->entries[1].key_id.resize(16);
+    sgpd->version = 1;
   }
 
-  void Modify(SampleGroupDescription* sbgp) {
-    sbgp->entries.resize(1);
-    sbgp->entries[0].key_id[4] = 88;
+  void Modify(SampleGroupDescription* sgpd) {
+    sgpd->entries.resize(1);
+    sgpd->entries[0].key_id[4] = 88;
+    sgpd->version = 1;
   }
 
   void Fill(TrackFragment* traf) {
@@ -668,6 +671,8 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   void Modify(TrackFragment* traf) {
     Modify(&traf->header);
     Modify(&traf->decode_time);
+    Fill(&traf->sample_to_group);
+    Fill(&traf->sample_group_description);
   }
 
   void Fill(MovieFragment* moof) {
