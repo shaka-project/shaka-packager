@@ -117,7 +117,7 @@ void SetDefaultMuxerOptionsValues(MuxerOptions* muxer_options) {
   muxer_options->num_subsegments_per_sidx = 0;
   muxer_options->output_file_name = "test_output_file_name.mp4";
   muxer_options->segment_template.clear();
-  muxer_options->temp_file_name.clear();
+  muxer_options->temp_dir.clear();
 }
 
 void ExpectMediaInfoEqual(const MediaInfo& expect, const MediaInfo& actual) {

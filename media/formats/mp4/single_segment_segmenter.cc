@@ -6,6 +6,7 @@
 
 #include "media/formats/mp4/single_segment_segmenter.h"
 
+#include "base/file_util.h"
 #include "media/base/buffer_writer.h"
 #include "media/base/media_stream.h"
 #include "media/base/muxer_options.h"
@@ -37,11 +38,20 @@ bool SingleSegmentSegmenter::GetIndexRange(size_t* offset, size_t* size) {
 }
 
 Status SingleSegmentSegmenter::DoInitialize() {
-  temp_file_.reset(File::Open(options().temp_file_name.c_str(), "w"));
+  base::FilePath temp_file_path;
+  if (options().temp_dir.empty() ?
+      !base::CreateTemporaryFile(&temp_file_path) :
+      !base::CreateTemporaryFileInDir(base::FilePath(options().temp_dir),
+                                      &temp_file_path)) {
+    return Status(error::FILE_FAILURE, "Unable to create temporary file.");
+  }
+  temp_file_name_ = temp_file_path.value();
+
+  temp_file_.reset(File::Open(temp_file_name_.c_str(), "w"));
   return temp_file_
              ? Status::OK
              : Status(error::FILE_FAILURE,
-                      "Cannot open file to write " + options().temp_file_name);
+                      "Cannot open file to write " + temp_file_name_);
 }
 
 Status SingleSegmentSegmenter::DoFinalize() {
@@ -53,7 +63,7 @@ Status SingleSegmentSegmenter::DoFinalize() {
   // Close the temp file to prepare for reading later.
   if (!temp_file_.release()->Close()) {
     return Status(error::FILE_FAILURE,
-                  "Cannot close the temp file " + options().temp_file_name);
+                  "Cannot close the temp file " + temp_file_name_);
   }
 
   scoped_ptr<File, FileCloser> file(
@@ -74,10 +84,10 @@ Status SingleSegmentSegmenter::DoFinalize() {
 
   // Load the temp file and write to output file.
   scoped_ptr<File, FileCloser> temp_file(
-      File::Open(options().temp_file_name.c_str(), "r"));
+      File::Open(temp_file_name_.c_str(), "r"));
   if (temp_file == NULL) {
     return Status(error::FILE_FAILURE,
-                  "Cannot open file to read " + options().temp_file_name);
+                  "Cannot open file to read " + temp_file_name_);
   }
 
   const int kBufSize = 0x40000;  // 256KB.
@@ -86,7 +96,7 @@ Status SingleSegmentSegmenter::DoFinalize() {
     int64 size = temp_file->Read(buf.get(), kBufSize);
     if (size <= 0) {
       return Status(error::FILE_FAILURE,
-                    "Failed to read file " + options().temp_file_name);
+                    "Failed to read file " + temp_file_name_);
     }
     int64 size_written = file->Write(buf.get(), size);
     if (size_written != size) {

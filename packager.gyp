@@ -16,12 +16,19 @@
   },
   'targets': [
     {
-      'target_name': 'packager_main',
+      'target_name': 'single_packager',
       'type': 'executable',
       'sources': [
+        'app/fixed_key_encryption_flags.cc',
         'app/fixed_key_encryption_flags.h',
+        'app/packager_common.cc',
+        'app/packager_common.h',
+        'app/muxer_flags.cc',
         'app/muxer_flags.h',
-        'app/packager_main.cc',
+        'app/single_muxer_flags.cc',
+        'app/single_muxer_flags.h',
+        'app/single_packager_main.cc',
+        'app/widevine_encryption_flags.cc',
         'app/widevine_encryption_flags.h',
       ],
       'dependencies': [

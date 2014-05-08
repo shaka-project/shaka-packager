@@ -140,7 +140,7 @@ MuxerOptions PackagerTestBasic::SetupOptions(const std::string& output,
 
   options.output_file_name = GetFullPath(output);
   options.segment_template = GetFullPath(kSegmentTemplate);
-  options.temp_file_name = GetFullPath(output + ".temp");
+  options.temp_dir = test_directory_.value();
   return options;
 }
 

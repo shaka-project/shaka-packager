@@ -44,6 +44,7 @@ class SingleSegmentSegmenter : public Segmenter {
   virtual Status DoFinalizeSegment() OVERRIDE;
 
   scoped_ptr<SegmentIndex> vod_sidx_;
+  std::string temp_file_name_;
   scoped_ptr<File, FileCloser> temp_file_;
 
   DISALLOW_COPY_AND_ASSIGN(SingleSegmentSegmenter);

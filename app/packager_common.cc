@@ -10,27 +10,18 @@
 #include "app/fixed_key_encryption_flags.h"
 #include "app/muxer_flags.h"
 #include "app/widevine_encryption_flags.h"
-#include "base/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "media/base/demuxer.h"
 #include "media/base/media_stream.h"
+#include "media/base/muxer.h"
 #include "media/base/muxer_options.h"
 #include "media/base/request_signer.h"
 #include "media/base/stream_info.h"
 #include "media/base/widevine_encryption_key_source.h"
-#include "media/event/vod_media_info_dump_muxer_listener.h"
 #include "media/file/file.h"
-#include "media/file/file_closer.h"
-#include "media/formats/mp4/mp4_muxer.h"
 
 DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
 
-namespace {
-const char kUsage[] =
-    "Packager driver program. Sample Usage:\n%s <input> [flags]";
-}  // namespace
 
 namespace media {
 
@@ -76,7 +67,7 @@ scoped_ptr<EncryptionKeySource> CreateEncryptionKeySource() {
     }
 
     encryption_key_source.reset(new WidevineEncryptionKeySource(
-        FLAGS_server_url,
+        FLAGS_key_server_url,
         FLAGS_content_id,
         signer.Pass(),
         FLAGS_crypto_period_duration == 0 ? kDisableKeyRotation : 0));
@@ -98,19 +89,7 @@ bool GetMuxerOptions(MuxerOptions* muxer_options) {
   muxer_options->normalize_presentation_timestamp =
       FLAGS_normalize_presentation_timestamp;
   muxer_options->num_subsegments_per_sidx = FLAGS_num_subsegments_per_sidx;
-  muxer_options->output_file_name = FLAGS_output;
-  muxer_options->segment_template = FLAGS_segment_template;
-  muxer_options->temp_file_name = FLAGS_temp_file;
-
-  // Create a temp file if needed.
-  if (muxer_options->single_segment && muxer_options->temp_file_name.empty()) {
-    base::FilePath path;
-    if (!base::CreateTemporaryFile(&path)) {
-      LOG(ERROR) << "Failed to create a temporary file.";
-      return false;
-    }
-    muxer_options->temp_file_name = path.value();
-  }
+  muxer_options->temp_dir = FLAGS_temp_dir;
   return true;
 }
 
@@ -130,20 +109,22 @@ MediaStream* FindFirstAudioStream(const std::vector<MediaStream*>& streams) {
   return FindFirstStreamOfType(streams, kStreamAudio);
 }
 
-bool AddStreamToMuxer(const std::vector<MediaStream*>& streams, Muxer* muxer) {
+bool AddStreamToMuxer(const std::vector<MediaStream*>& streams,
+                      const std::string& stream_selector,
+                      Muxer* muxer) {
   DCHECK(muxer);
 
   MediaStream* stream = NULL;
-  if (FLAGS_stream == "video") {
+  if (stream_selector == "video") {
     stream = FindFirstVideoStream(streams);
-  } else if (FLAGS_stream == "audio") {
+  } else if (stream_selector == "audio") {
     stream = FindFirstAudioStream(streams);
   } else {
-    // Expect FLAGS_stream to be a zero based stream id.
+    // Expect stream_selector to be a zero based stream id.
     size_t stream_id;
-    if (!base::StringToSizeT(FLAGS_stream, &stream_id) ||
+    if (!base::StringToSizeT(stream_selector, &stream_id) ||
         stream_id >= streams.size()) {
-      LOG(ERROR) << "Invalid argument --stream=" << FLAGS_stream << "; "
+      LOG(ERROR) << "Invalid argument --stream=" << stream_selector << "; "
                  << "should be 'audio', 'video', or a number within [0, "
                  << streams.size() - 1 << "].";
       return false;
@@ -152,93 +133,14 @@ bool AddStreamToMuxer(const std::vector<MediaStream*>& streams, Muxer* muxer) {
     DCHECK(stream);
   }
 
-  // This could occur only if FLAGS_stream=audio|video and the corresponding
+  // This could occur only if stream_selector=audio|video and the corresponding
   // stream does not exist in the input.
   if (!stream) {
-    LOG(ERROR) << "No " << FLAGS_stream << " stream found in the input.";
+    LOG(ERROR) << "No " << stream_selector << " stream found in the input.";
     return false;
   }
   muxer->AddStream(stream);
   return true;
 }
 
-bool RunPackager(const std::string& input) {
-  Status status;
-
-  // Setup and initialize Demuxer.
-  Demuxer demuxer(input, NULL);
-  status = demuxer.Initialize();
-  if (!status.ok()) {
-    LOG(ERROR) << "Demuxer failed to initialize: " << status.ToString();
-    return false;
-  }
-
-  if (FLAGS_dump_stream_info)
-    DumpStreamInfo(demuxer.streams());
-
-  if (FLAGS_output.empty()) {
-    if (!FLAGS_dump_stream_info)
-      LOG(WARNING) << "No output specified. Exiting.";
-    return true;
-  }
-
-  // Setup muxer.
-  MuxerOptions muxer_options;
-  if (!GetMuxerOptions(&muxer_options))
-    return false;
-
-  scoped_ptr<Muxer> muxer(new mp4::MP4Muxer(muxer_options));
-  scoped_ptr<event::MuxerListener> muxer_listener;
-  scoped_ptr<File, FileCloser> mpd_file;
-  if (FLAGS_output_media_info) {
-    std::string output_mpd_file_name = FLAGS_output + ".media_info";
-    mpd_file.reset(File::Open(output_mpd_file_name.c_str(), "w"));
-    if (!mpd_file) {
-      LOG(ERROR) << "Failed to open " << output_mpd_file_name;
-      return false;
-    }
-
-    scoped_ptr<event::VodMediaInfoDumpMuxerListener> media_info_muxer_listener(
-        new event::VodMediaInfoDumpMuxerListener(mpd_file.get()));
-    media_info_muxer_listener->SetContentProtectionSchemeIdUri(
-        FLAGS_scheme_id_uri);
-    muxer_listener = media_info_muxer_listener.Pass();
-    muxer->SetMuxerListener(muxer_listener.get());
-  }
-
-  if (!AddStreamToMuxer(demuxer.streams(), muxer.get()))
-    return false;
-
-  scoped_ptr<EncryptionKeySource> encryption_key_source;
-  if (FLAGS_enable_widevine_encryption || FLAGS_enable_fixed_key_encryption) {
-    encryption_key_source = CreateEncryptionKeySource();
-    if (!encryption_key_source)
-      return false;
-    muxer->SetEncryptionKeySource(encryption_key_source.get(),
-                                  FLAGS_max_sd_pixels,
-                                  FLAGS_clear_lead,
-                                  FLAGS_crypto_period_duration);
-  }
-
-  // Start remuxing process.
-  status = demuxer.Run();
-  if (!status.ok()) {
-    LOG(ERROR) << "Remuxing failed: " << status.ToString();
-    return false;
-  }
-
-  printf("Packaging completed successfully.\n");
-  return true;
-}
-
 }  // namespace media
-
-int main(int argc, char** argv) {
-  google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
-  google::ParseCommandLineFlags(&argc, &argv, true);
-  if (argc < 2) {
-    google::ShowUsageWithFlags(argv[0]);
-    return 1;
-  }
-  return media::RunPackager(argv[1]) ? 0 : 1;
-}

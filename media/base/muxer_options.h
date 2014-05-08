@@ -60,8 +60,8 @@ struct MuxerOptions {
   /// Optional.
   std::string segment_template;
 
-  /// Specify the temporary file for on demand media file creation.
-  std::string temp_file_name;
+  /// Specify temporary directory for intermediate files.
+  std::string temp_dir;
 };
 
 }  // namespace media
