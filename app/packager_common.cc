@@ -66,12 +66,20 @@ scoped_ptr<EncryptionKeySource> CreateEncryptionKeySource() {
       }
     }
 
-    encryption_key_source.reset(new WidevineEncryptionKeySource(
-        FLAGS_key_server_url,
-        FLAGS_content_id,
-        FLAGS_policy,
-        signer.Pass(),
-        FLAGS_crypto_period_duration == 0 ? kDisableKeyRotation : 0));
+    scoped_ptr<WidevineEncryptionKeySource> widevine_encryption_key_source(
+        new WidevineEncryptionKeySource(
+            FLAGS_key_server_url,
+            FLAGS_content_id,
+            FLAGS_policy,
+            signer.Pass(),
+            FLAGS_crypto_period_duration == 0 ? kDisableKeyRotation : 0));
+    Status status = widevine_encryption_key_source->Initialize();
+    if (!status.ok()) {
+      LOG(ERROR) << "Widevine encryption key source failed to initialize: "
+                 << status.ToString();
+      return scoped_ptr<EncryptionKeySource>();
+    }
+    encryption_key_source = widevine_encryption_key_source.Pass();
   } else if (FLAGS_enable_fixed_key_encryption) {
     encryption_key_source = EncryptionKeySource::CreateFromHexStrings(
         FLAGS_key_id, FLAGS_key, FLAGS_pssh, "");

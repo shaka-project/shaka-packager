@@ -167,6 +167,10 @@ TEST_F(WidevineEncryptionKeySourceTest, GenerateSignatureFailure) {
       .WillOnce(Return(false));
 
   CreateWidevineEncryptionKeySource(kDisableKeyRotation);
+  ASSERT_EQ(Status(error::INTERNAL_ERROR, "Signature generation failed."),
+            widevine_encryption_key_source_->Initialize());
+
+  // GetKey should return the same failure.
   EncryptionKey encryption_key;
   ASSERT_EQ(Status(error::INTERNAL_ERROR, "Signature generation failed."),
             widevine_encryption_key_source_->GetKey(
@@ -191,6 +195,10 @@ TEST_F(WidevineEncryptionKeySourceTest, HttpPostFailure) {
       .WillOnce(Return(kMockStatus));
 
   CreateWidevineEncryptionKeySource(kDisableKeyRotation);
+  ASSERT_EQ(kMockStatus,
+            widevine_encryption_key_source_->Initialize());
+
+  // GetKey should return the same failure.
   EncryptionKey encryption_key;
   ASSERT_EQ(kMockStatus,
             widevine_encryption_key_source_->GetKey(
@@ -208,6 +216,7 @@ TEST_F(WidevineEncryptionKeySourceTest, LicenseStatusOK) {
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
   CreateWidevineEncryptionKeySource(kDisableKeyRotation);
+  ASSERT_OK(widevine_encryption_key_source_->Initialize());
 
   EncryptionKey encryption_key;
   const std::string kTrackTypes[] = {"SD", "HD", "AUDIO"};
@@ -241,6 +250,8 @@ TEST_F(WidevineEncryptionKeySourceTest, RetryOnTransientError) {
                       Return(Status::OK)));
 
   CreateWidevineEncryptionKeySource(kDisableKeyRotation);
+  ASSERT_OK(widevine_encryption_key_source_->Initialize());
+
   EncryptionKey encryption_key;
   ASSERT_OK(widevine_encryption_key_source_->GetKey(
       EncryptionKeySource::TRACK_TYPE_SD, &encryption_key));
@@ -263,10 +274,8 @@ TEST_F(WidevineEncryptionKeySourceTest, NoRetryOnUnknownError) {
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
   CreateWidevineEncryptionKeySource(kDisableKeyRotation);
-  EncryptionKey encryption_key;
-  Status status = widevine_encryption_key_source_->GetKey(
-      EncryptionKeySource::TRACK_TYPE_SD, &encryption_key);
-  ASSERT_EQ(error::SERVER_ERROR, status.error_code());
+  ASSERT_EQ(error::SERVER_ERROR,
+            widevine_encryption_key_source_->Initialize().error_code());
 }
 
 namespace {
@@ -339,6 +348,7 @@ TEST_F(WidevineEncryptionKeySourceTest, KeyRotationTest) {
   }
 
   CreateWidevineEncryptionKeySource(kFirstCryptoPeriodIndex);
+  ASSERT_OK(widevine_encryption_key_source_->Initialize());
 
   EncryptionKey encryption_key;
 
@@ -375,6 +385,8 @@ class WidevineEncryptionKeySourceDeathTest
 TEST_F(WidevineEncryptionKeySourceDeathTest,
        GetCryptoPeriodKeyOnNonKeyRotationSource) {
   CreateWidevineEncryptionKeySource(kDisableKeyRotation);
+  widevine_encryption_key_source_->Initialize();
+
   EncryptionKey encryption_key;
   EXPECT_DEBUG_DEATH(
       widevine_encryption_key_source_->GetCryptoPeriodKey(
@@ -384,6 +396,8 @@ TEST_F(WidevineEncryptionKeySourceDeathTest,
 
 TEST_F(WidevineEncryptionKeySourceDeathTest, GetKeyOnKeyRotationSource) {
   CreateWidevineEncryptionKeySource(0);
+  widevine_encryption_key_source_->Initialize();
+
   EncryptionKey encryption_key;
   EXPECT_DEBUG_DEATH(widevine_encryption_key_source_->GetKey(
                          EncryptionKeySource::TRACK_TYPE_SD, &encryption_key),

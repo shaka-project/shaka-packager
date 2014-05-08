@@ -144,16 +144,28 @@ WidevineEncryptionKeySource::WidevineEncryptionKeySource(
       key_pool_(kDefaultCryptoPeriodCount,
                 key_rotation_enabled_ ? first_crypto_period_index : 0) {
   DCHECK(signer_);
-  key_production_thread_.Start();
 }
 
 WidevineEncryptionKeySource::~WidevineEncryptionKeySource() {
   key_pool_.Stop();
-  key_production_thread_.Join();
+  if (key_production_thread_.HasBeenStarted())
+    key_production_thread_.Join();
+}
+
+Status WidevineEncryptionKeySource::Initialize() {
+  DCHECK(!key_production_thread_.HasBeenStarted());
+  key_production_thread_.Start();
+
+  // Perform a GetKey request to find out common encryption request status.
+  // It also primes the key_pool if successful.
+  return key_rotation_enabled_ ? GetCryptoPeriodKey(first_crypto_period_index_,
+                                                    TRACK_TYPE_SD, NULL)
+                               : GetKey(TRACK_TYPE_SD, NULL);
 }
 
 Status WidevineEncryptionKeySource::GetKey(TrackType track_type,
                                            EncryptionKey* key) {
+  DCHECK(key_production_thread_.HasBeenStarted());
   DCHECK(!key_rotation_enabled_);
   return GetKeyInternal(0u, track_type, key);
 }
@@ -162,6 +174,7 @@ Status WidevineEncryptionKeySource::GetCryptoPeriodKey(
     uint32 crypto_period_index,
     TrackType track_type,
     EncryptionKey* key) {
+  DCHECK(key_production_thread_.HasBeenStarted());
   DCHECK(key_rotation_enabled_);
   return GetKeyInternal(crypto_period_index, track_type, key);
 }
@@ -195,7 +208,8 @@ Status WidevineEncryptionKeySource::GetKeyInternal(
     return Status(error::INTERNAL_ERROR,
                   "Cannot find key of type " + TrackTypeToString(track_type));
   }
-  *key = *encryption_key_map[track_type];
+  if (key)
+    *key = *encryption_key_map[track_type];
   return Status::OK;
 }
 

@@ -39,6 +39,11 @@ class WidevineEncryptionKeySource : public EncryptionKeySource {
                               int first_crypto_period_index);
   virtual ~WidevineEncryptionKeySource();
 
+  /// Initialize the key source. Must be called before calling GetKey or
+  /// GetCryptoPeriodKey.
+  /// @return OK on success, an error status otherwise.
+  Status Initialize();
+
   /// @name EncryptionKeySource implementation overrides.
   /// @{
   virtual Status GetKey(TrackType track_type, EncryptionKey* key) OVERRIDE;
