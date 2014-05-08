@@ -28,11 +28,13 @@ class WidevineEncryptionKeySource : public EncryptionKeySource {
  public:
   /// @param server_url is the Widevine common encryption server url.
   /// @param content_id the unique id identify the content to be encrypted.
+  /// @param policy specifies the DRM content rights.
   /// @param signer signs the request message. It should not be NULL.
   /// @param first_crypto_period_index indicates the starting crypto period
   ///        index. Set it to kDisableKeyRotation to disable key rotation.
   WidevineEncryptionKeySource(const std::string& server_url,
                               const std::string& content_id,
+                              const std::string& policy,
                               scoped_ptr<RequestSigner> signer,
                               int first_crypto_period_index);
   virtual ~WidevineEncryptionKeySource();
@@ -89,6 +91,7 @@ class WidevineEncryptionKeySource : public EncryptionKeySource {
   scoped_ptr<HttpFetcher> http_fetcher_;
   std::string server_url_;
   std::string content_id_;
+  std::string policy_;
   scoped_ptr<RequestSigner> signer_;
 
   const bool key_rotation_enabled_;

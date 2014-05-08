@@ -126,11 +126,13 @@ class WidevineEncryptionKeySource::RefCountedEncryptionKeyMap
 WidevineEncryptionKeySource::WidevineEncryptionKeySource(
     const std::string& server_url,
     const std::string& content_id,
+    const std::string& policy,
     scoped_ptr<RequestSigner> signer,
     int first_crypto_period_index)
     : http_fetcher_(new SimpleHttpFetcher()),
       server_url_(server_url),
       content_id_(content_id),
+      policy_(policy),
       signer_(signer.Pass()),
       key_rotation_enabled_(first_crypto_period_index >= 0),
       crypto_period_count_(kDefaultCryptoPeriodCount),
@@ -268,7 +270,7 @@ void WidevineEncryptionKeySource::FillRequest(const std::string& content_id,
 
   base::DictionaryValue request_dict;
   request_dict.SetString("content_id", content_id_base64_string);
-  request_dict.SetString("policy", "");
+  request_dict.SetString("policy", policy_);
 
   // Build tracks.
   base::ListValue* tracks = new base::ListValue();

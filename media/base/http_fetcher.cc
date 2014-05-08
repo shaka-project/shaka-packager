@@ -180,7 +180,8 @@ Status SimpleHttpFetcher::FetchInternal(const std::string& method,
   }
 
   if (status_code != kHttpOK) {
-    std::string error_message = "HTTP returns status " + base::IntToString(status_code);
+    std::string error_message =
+        "HTTP returns status " + base::IntToString(status_code);
     LOG(ERROR) << error_message;
     return Status(error::HTTP_FAILURE, error_message);
   }

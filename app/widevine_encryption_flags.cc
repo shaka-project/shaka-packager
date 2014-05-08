@@ -17,6 +17,10 @@ DEFINE_bool(enable_widevine_encryption,
             "--aes_signing_iv) or RSA signing key (--rsa_signing_key_path).");
 DEFINE_string(key_server_url, "", "Key server url.");
 DEFINE_string(content_id, "", "Content Id.");
+DEFINE_string(policy,
+              "",
+              "The name of a stored policy, which specifies DRM content "
+              "rights.");
 DEFINE_int32(max_sd_pixels,
              768 * 576,
              "If the video track has more pixels per frame than max_sd_pixels, "

@@ -14,6 +14,7 @@
 DECLARE_bool(enable_widevine_encryption);
 DECLARE_string(key_server_url);
 DECLARE_string(content_id);
+DECLARE_string(policy);
 DECLARE_int32(max_sd_pixels);
 DECLARE_string(signer);
 DECLARE_string(aes_signing_key);

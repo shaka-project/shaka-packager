@@ -18,6 +18,7 @@
 namespace {
 const char kServerUrl[] = "http://www.foo.com/getcontentkey";
 const char kContentId[] = "ContentFoo";
+const char kPolicy[] = "PolicyFoo";
 const char kSignerName[] = "SignerFoo";
 
 const char kMockSignature[] = "MockSignature";
@@ -32,7 +33,7 @@ const char kLicenseStatusTransientError[] = "INTERNAL_ERROR";
 const char kLicenseStatusUnknownError[] = "UNKNOWN_ERROR";
 
 const char kExpectedRequestMessageFormat[] =
-    "{\"content_id\":\"%s\",\"drm_types\":[\"WIDEVINE\"],\"policy\":\"\","
+    "{\"content_id\":\"%s\",\"drm_types\":[\"WIDEVINE\"],\"policy\":\"%s\","
     "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"AUDIO\"}]}";
 const char kExpectedSignedMessageFormat[] =
     "{\"request\":\"%s\",\"signature\":\"%s\",\"signer\":\"%s\"}";
@@ -135,6 +136,7 @@ class WidevineEncryptionKeySourceTest : public ::testing::Test {
     widevine_encryption_key_source_.reset(new WidevineEncryptionKeySource(
         kServerUrl,
         kContentId,
+        kPolicy,
         mock_request_signer_.PassAs<RequestSigner>(),
         first_crypto_period_index));
     widevine_encryption_key_source_->set_http_fetcher(
@@ -175,7 +177,7 @@ TEST_F(WidevineEncryptionKeySourceTest, GenerateSignatureFailure) {
 // verify the correct behavior on http failure.
 TEST_F(WidevineEncryptionKeySourceTest, HttpPostFailure) {
   std::string expected_message = base::StringPrintf(
-      kExpectedRequestMessageFormat, Base64Encode(kContentId).c_str());
+      kExpectedRequestMessageFormat, Base64Encode(kContentId).c_str(), kPolicy);
   EXPECT_CALL(*mock_request_signer_, GenerateSignature(expected_message, _))
       .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
 
@@ -271,7 +273,7 @@ namespace {
 
 const char kCryptoPeriodRequestMessageFormat[] =
     "{\"content_id\":\"%s\",\"crypto_period_count\":%u,\"drm_types\":["
-    "\"WIDEVINE\"],\"first_crypto_period_index\":%u,\"policy\":\"\","
+    "\"WIDEVINE\"],\"first_crypto_period_index\":%u,\"policy\":\"%s\","
     "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"AUDIO\"}]}";
 
 const char kCryptoPeriodTrackFormat[] =
@@ -323,7 +325,8 @@ TEST_F(WidevineEncryptionKeySourceTest, KeyRotationTest) {
         base::StringPrintf(kCryptoPeriodRequestMessageFormat,
                            Base64Encode(kContentId).c_str(),
                            kCryptoPeriodCount,
-                           first_crypto_period_index);
+                           first_crypto_period_index,
+                           kPolicy);
     EXPECT_CALL(*mock_request_signer_, GenerateSignature(expected_message, _))
         .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
 

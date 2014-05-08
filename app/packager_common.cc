@@ -69,6 +69,7 @@ scoped_ptr<EncryptionKeySource> CreateEncryptionKeySource() {
     encryption_key_source.reset(new WidevineEncryptionKeySource(
         FLAGS_key_server_url,
         FLAGS_content_id,
+        FLAGS_policy,
         signer.Pass(),
         FLAGS_crypto_period_duration == 0 ? kDisableKeyRotation : 0));
   } else if (FLAGS_enable_fixed_key_encryption) {
