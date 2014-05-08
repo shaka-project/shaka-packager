@@ -7,6 +7,8 @@
 #include "media/base/aes_encryptor.h"
 
 #include <openssl/aes.h>
+#include <openssl/err.h>
+#include <openssl/rand.h>
 
 #include "base/logging.h"
 #include "base/rand_util.h"
@@ -51,7 +53,11 @@ AesCtrEncryptor::~AesCtrEncryptor() {}
 bool AesCtrEncryptor::InitializeWithRandomIv(const std::vector<uint8>& key,
                                              uint8 iv_size) {
   std::vector<uint8> iv(iv_size, 0);
-  base::RandBytes(&iv[0], iv_size);
+  if (RAND_bytes(&iv[0], iv_size) != 1) {
+    LOG(ERROR) << "RAND_bytes failed with error: "
+               << ERR_error_string(ERR_get_error(), NULL);
+    return false;
+  }
   return InitializeWithIv(key, iv);
 }
 
