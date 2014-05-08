@@ -8,12 +8,16 @@
 #define MEDIA_FORMATS_MP4_KEY_ROTATION_FRAGMENTER_H_
 
 #include "media/base/encryption_key_source.h"
-#include "media/formats/mp4/fragmenter.h"
+#include "media/formats/mp4/encrypting_fragmenter.h"
 
 namespace media {
 namespace mp4 {
 
-class KeyRotationFragmenter : public Fragmenter {
+struct MovieFragment;
+
+/// KeyRotationFragmenter generates MP4 fragments with sample encrypted by
+/// rotation keys.
+class KeyRotationFragmenter : public EncryptingFragmenter {
  public:
   /// @param moof points to a MovieFragment box.
   /// @param traf points to a TrackFragment box.

@@ -180,18 +180,18 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
     GenerateEncryptedSampleEntry(
         *encryption_key, clear_lead_in_seconds, &description);
 
-    // We need one and only one pssh box.
+    // One and only one pssh box is needed.
     if (moov_->pssh.empty()) {
       moov_->pssh.resize(1);
       moov_->pssh[0].raw_box = encryption_key->pssh;
     }
 
-    fragmenters_[i] =
-        new Fragmenter(&moof_->tracks[i],
-                       options_.normalize_presentation_timestamp,
-                       encryption_key.Pass(),
-                       clear_lead_in_seconds * streams[i]->info()->time_scale(),
-                       nalu_length_size);
+    fragmenters_[i] = new EncryptingFragmenter(
+        &moof_->tracks[i],
+        options_.normalize_presentation_timestamp,
+        encryption_key.Pass(),
+        clear_lead_in_seconds * streams[i]->info()->time_scale(),
+        nalu_length_size);
   }
 
   // Choose the first stream if there is no VIDEO.

@@ -21,11 +21,11 @@ KeyRotationFragmenter::KeyRotationFragmenter(
     int64 crypto_period_duration,
     int64 clear_time,
     uint8 nalu_length_size)
-    : Fragmenter(traf,
-                 normalize_presentation_timestamp,
-                 scoped_ptr<EncryptionKey>(new EncryptionKey()),
-                 clear_time,
-                 nalu_length_size),
+    : EncryptingFragmenter(traf,
+                           normalize_presentation_timestamp,
+                           scoped_ptr<EncryptionKey>(new EncryptionKey()),
+                           clear_time,
+                           nalu_length_size),
       moof_(moof),
       encryption_key_source_(encryption_key_source),
       track_type_(track_type),
@@ -57,29 +57,29 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption() {
     prev_crypto_period_index_ = current_crypto_period_index;
   }
 
-  EncryptionKey* encryption_key = Fragmenter::encryption_key();
+  EncryptionKey* encryption_key = EncryptingFragmenter::encryption_key();
   DCHECK(encryption_key);
-  AesCtrEncryptor* encryptor = Fragmenter::encryptor();
+  AesCtrEncryptor* encryptor = EncryptingFragmenter::encryptor();
   DCHECK(encryptor);
 
-  // We support key rotation in fragment boundary only, i.e. there is at most
-  // one key for a single fragment. So we should have only one entry in
-  // Sample Group Description box and one entry in Sample to Group box.
-  // Fill in Sample Group Description box information.
+  // Key rotation happens in fragment boundary only in this implementation,
+  // i.e. there is at most one key for the fragment. So there should be only
+  // one entry in SampleGroupDescription box and one entry in SampleToGroup box.
+  // Fill in SampleGroupDescription box information.
   traf()->sample_group_description.grouping_type = FOURCC_SEIG;
   traf()->sample_group_description.entries.resize(1);
   traf()->sample_group_description.entries[0].is_encrypted = true;
   traf()->sample_group_description.entries[0].iv_size = encryptor->iv().size();
   traf()->sample_group_description.entries[0].key_id = encryption_key->key_id;
 
-  // Fill in Sample to Group box information.
+  // Fill in SampleToGroup box information.
   traf()->sample_to_group.grouping_type = FOURCC_SEIG;
   traf()->sample_to_group.entries.resize(1);
   // sample_count is adjusted in |FinalizeFragment| later.
   traf()->sample_to_group.entries[0].group_description_index =
       SampleToGroupEntry::kTrackFragmentGroupDescriptionIndexBase + 1;
 
-  // We need one and only one pssh box.
+  // One and only one 'pssh' box is needed.
   if (moof_->pssh.empty())
     moof_->pssh.resize(1);
   moof_->pssh[0].raw_box = encryption_key->pssh;
@@ -88,7 +88,7 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption() {
 }
 
 void KeyRotationFragmenter::FinalizeFragmentForEncryption() {
-  Fragmenter::FinalizeFragmentForEncryption();
+  EncryptingFragmenter::FinalizeFragmentForEncryption();
   DCHECK_EQ(1u, traf()->sample_to_group.entries.size());
   traf()->sample_to_group.entries[0].sample_count =
       traf()->auxiliary_size.sample_count;
@@ -96,5 +96,3 @@ void KeyRotationFragmenter::FinalizeFragmentForEncryption() {
 
 }  // namespace media
 }  // namespace mp4
-
-

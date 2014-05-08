@@ -37,6 +37,8 @@
         'composition_offset_iterator.h',
         'decoding_time_iterator.cc',
         'decoding_time_iterator.h',
+        'encrypting_fragmenter.cc',
+        'encrypting_fragmenter.h',
         'es_descriptor.cc',
         'es_descriptor.h',
         'fourccs.h',

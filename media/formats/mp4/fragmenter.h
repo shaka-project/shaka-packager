@@ -15,54 +15,36 @@
 
 namespace media {
 
-class AesCtrEncryptor;
 class BufferWriter;
 class MediaSample;
 
-struct EncryptionKey;
-
 namespace mp4 {
 
-struct MovieFragment;
 struct SegmentReference;
 struct TrackFragment;
 
-/// Fragmenter is responsible for the generation of MP4 fragments, i.e. traf
-/// box and corresponding mdat box. The samples are also encrypted if encryption
-/// is requested.
+/// Fragmenter is responsible for the generation of MP4 fragments, i.e. 'traf'
+/// box and corresponding 'mdat' box.
 class Fragmenter {
  public:
   /// @param traf points to a TrackFragment box.
   /// @param normalize_presentation_timestamp defines whether PTS should be
   ///        normalized to start from zero.
-  Fragmenter(TrackFragment* traf,
-             bool normalize_presentation_timestamp);
-
-  /// @param traf points to a TrackFragment box.
-  /// @param normalize_presentation_timestamp defines whether PTS should be
-  ///        normalized to start from zero.
-  /// @param encryption_key contains the encryption parameters.
-  /// @param clear_time specifies clear lead duration in units of the current
-  ///        track's timescale.
-  /// @param nalu_length_size NAL unit length size, in bytes, for subsample
-  ///        encryption.
-  Fragmenter(TrackFragment* traf,
-             bool normalize_presentation_timestamp,
-             scoped_ptr<EncryptionKey> encryption_key,
-             int64 clear_time,
-             uint8 nalu_length_size);
+  Fragmenter(TrackFragment* traf, bool normalize_presentation_timestamp);
 
   virtual ~Fragmenter();
 
   /// Add a sample to the fragmenter.
-  Status AddSample(scoped_refptr<MediaSample> sample);
+  /// @param sample points to the sample to be added.
+  /// @return OK on success, an error status otherwise.
+  virtual Status AddSample(scoped_refptr<MediaSample> sample);
 
   /// Initialize the fragment with default data.
   /// @return OK on success, an error status otherwise.
-  Status InitializeFragment();
+  virtual Status InitializeFragment();
 
   /// Finalize and optimize the fragment.
-  void FinalizeFragment();
+  virtual void FinalizeFragment();
 
   /// Fill @a reference with current fragment information.
   void GenerateSegmentReference(SegmentReference* reference);
@@ -77,45 +59,19 @@ class Fragmenter {
   BufferWriter* aux_data() { return aux_data_.get(); }
 
  protected:
-  /// Prepare current fragment for encryption.
-  /// @return OK on success, an error status otherwise.
-  virtual Status PrepareFragmentForEncryption();
-  /// Finalize current fragment for encryption.
-  virtual void FinalizeFragmentForEncryption();
-
-  /// Create the encryptor for the internal encryption key. The existing
-  /// encryptor will be reset if it is not NULL.
-  /// @return OK on success, an error status otherwise.
-  Status CreateEncryptor();
-
   TrackFragment* traf() { return traf_; }
-  EncryptionKey* encryption_key() { return encryption_key_.get(); }
-  AesCtrEncryptor* encryptor() { return encryptor_.get(); }
 
-  void set_encryption_key(scoped_ptr<EncryptionKey> encryption_key) {
-    encryption_key_ = encryption_key.Pass();
-  }
+  /// Optimize sample entries table. If all values in @a entries are identical,
+  /// then @a entries is cleared and the value is assigned to @a default_value;
+  /// otherwise it is a NOP. Return true if the table is optimized.
+  template <typename T>
+  bool OptimizeSampleEntries(std::vector<T>* entries, T* default_value);
 
  private:
-  void EncryptBytes(uint8* data, uint32 size);
-  Status EncryptSample(scoped_refptr<MediaSample> sample);
-
-  // Should we enable subsample encryption?
-  bool IsSubsampleEncryptionRequired() { return nalu_length_size_ != 0; }
-
   // Check if the current fragment starts with SAP.
   bool StartsWithSAP();
 
   TrackFragment* traf_;
-
-  scoped_ptr<EncryptionKey> encryption_key_;
-  scoped_ptr<AesCtrEncryptor> encryptor_;
-  // If this stream contains AVC, subsample encryption specifies that the size
-  // and type of NAL units remain unencrypted. This field specifies the size of
-  // the size field. Can be 1, 2 or 4 bytes.
-  const uint8 nalu_length_size_;
-  const int64 clear_time_;
-
   bool fragment_finalized_;
   uint64 fragment_duration_;
   bool normalize_presentation_timestamp_;
@@ -127,6 +83,25 @@ class Fragmenter {
 
   DISALLOW_COPY_AND_ASSIGN(Fragmenter);
 };
+
+template <typename T>
+bool Fragmenter::OptimizeSampleEntries(std::vector<T>* entries,
+                                       T* default_value) {
+  DCHECK(entries);
+  DCHECK(default_value);
+  DCHECK(!entries->empty());
+
+  typename std::vector<T>::const_iterator it = entries->begin();
+  T value = *it;
+  for (; it < entries->end(); ++it)
+    if (value != *it)
+      return false;
+
+  // Clear |entries| if it contains only one value.
+  entries->clear();
+  *default_value = value;
+  return true;
+}
 
 }  // namespace mp4
 }  // namespace media
