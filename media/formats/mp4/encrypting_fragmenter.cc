@@ -51,20 +51,21 @@ Status EncryptingFragmenter::InitializeFragment() {
   if (!status.ok())
     return status;
 
-  // Enable encryption for this fragment if |clear_time_| becomes non-positive.
-  if (clear_time_ <= 0)
-    return PrepareFragmentForEncryption();
+  traf()->auxiliary_size.sample_info_sizes.clear();
+  traf()->auxiliary_offset.offsets.clear();
 
-  // Otherwise, this fragment should be in clear text.
-  // At most two sample description entries, an encrypted entry and a clear
-  // entry, are generated. The 1-based clear entry index is always 2.
-  const uint32 kClearSampleDescriptionIndex = 2;
+  const bool enable_encryption = clear_time_ <= 0;
+  if (!enable_encryption) {
+    // This fragment should be in clear text.
+    // At most two sample description entries, an encrypted entry and a clear
+    // entry, are generated. The 1-based clear entry index is always 2.
+    const uint32 kClearSampleDescriptionIndex = 2;
 
-  traf()->header.flags |=
-      TrackFragmentHeader::kSampleDescriptionIndexPresentMask;
-  traf()->header.sample_description_index = kClearSampleDescriptionIndex;
-
-  return Status::OK;
+    traf()->header.flags |=
+        TrackFragmentHeader::kSampleDescriptionIndexPresentMask;
+    traf()->header.sample_description_index = kClearSampleDescriptionIndex;
+  }
+  return PrepareFragmentForEncryption(enable_encryption);
 }
 
 void EncryptingFragmenter::FinalizeFragment() {
@@ -78,10 +79,9 @@ void EncryptingFragmenter::FinalizeFragment() {
   Fragmenter::FinalizeFragment();
 }
 
-Status EncryptingFragmenter::PrepareFragmentForEncryption() {
-  traf()->auxiliary_size.sample_info_sizes.clear();
-  traf()->auxiliary_offset.offsets.clear();
-  return encryptor_ ? Status::OK : CreateEncryptor();
+Status EncryptingFragmenter::PrepareFragmentForEncryption(
+    bool enable_encryption) {
+  return (!enable_encryption || encryptor_) ? Status::OK : CreateEncryptor();
 }
 
 void EncryptingFragmenter::FinalizeFragmentForEncryption() {

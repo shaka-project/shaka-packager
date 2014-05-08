@@ -45,7 +45,7 @@ class EncryptingFragmenter : public Fragmenter {
  protected:
   /// Prepare current fragment for encryption.
   /// @return OK on success, an error status otherwise.
-  virtual Status PrepareFragmentForEncryption();
+  virtual Status PrepareFragmentForEncryption(bool enable_encryption);
   /// Finalize current fragment for encryption.
   virtual void FinalizeFragmentForEncryption();
 

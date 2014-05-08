@@ -37,9 +37,9 @@ KeyRotationFragmenter::KeyRotationFragmenter(
 
 KeyRotationFragmenter::~KeyRotationFragmenter() {}
 
-Status KeyRotationFragmenter::PrepareFragmentForEncryption() {
-  traf()->auxiliary_size.sample_info_sizes.clear();
-  traf()->auxiliary_offset.offsets.clear();
+Status KeyRotationFragmenter::PrepareFragmentForEncryption(
+    bool enable_encryption) {
+  bool need_to_refresh_encryptor = !encryptor();
 
   size_t current_crypto_period_index =
       traf()->decode_time.decode_time / crypto_period_duration_;
@@ -50,17 +50,34 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption() {
     if (!status.ok())
       return status;
     set_encryption_key(encryption_key.Pass());
-
-    status = CreateEncryptor();
-    if (!status.ok())
-      return status;
     prev_crypto_period_index_ = current_crypto_period_index;
+    need_to_refresh_encryptor = true;
   }
 
-  EncryptionKey* encryption_key = EncryptingFragmenter::encryption_key();
-  DCHECK(encryption_key);
-  AesCtrEncryptor* encryptor = EncryptingFragmenter::encryptor();
-  DCHECK(encryptor);
+  // One and only one 'pssh' box is needed.
+  if (moof_->pssh.empty())
+    moof_->pssh.resize(1);
+  DCHECK(encryption_key());
+  moof_->pssh[0].raw_box = encryption_key()->pssh;
+
+  // Skip the following steps if the current fragment is not going to be
+  // encrypted. 'pssh' box needs to be included in the fragment, which is
+  // performed above, regardless of whether the fragment is encrypted. This is
+  // necessary for two reasons: 1) Requesting keys before reaching encrypted
+  // content avoids playback delay due to license requests; 2) In Chrome, CDM
+  // must be initialized before starting the playback and CDM can only be
+  // initialized with a valid 'pssh'.
+  if (!enable_encryption) {
+    DCHECK(!encryptor());
+    return Status::OK;
+  }
+
+  if (need_to_refresh_encryptor) {
+    Status status = CreateEncryptor();
+    if (!status.ok())
+      return status;
+  }
+  DCHECK(encryptor());
 
   // Key rotation happens in fragment boundary only in this implementation,
   // i.e. there is at most one key for the fragment. So there should be only
@@ -69,8 +86,9 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption() {
   traf()->sample_group_description.grouping_type = FOURCC_SEIG;
   traf()->sample_group_description.entries.resize(1);
   traf()->sample_group_description.entries[0].is_encrypted = true;
-  traf()->sample_group_description.entries[0].iv_size = encryptor->iv().size();
-  traf()->sample_group_description.entries[0].key_id = encryption_key->key_id;
+  traf()->sample_group_description.entries[0].iv_size =
+      encryptor()->iv().size();
+  traf()->sample_group_description.entries[0].key_id = encryption_key()->key_id;
 
   // Fill in SampleToGroup box information.
   traf()->sample_to_group.grouping_type = FOURCC_SEIG;
@@ -78,11 +96,6 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption() {
   // sample_count is adjusted in |FinalizeFragment| later.
   traf()->sample_to_group.entries[0].group_description_index =
       SampleToGroupEntry::kTrackFragmentGroupDescriptionIndexBase + 1;
-
-  // One and only one 'pssh' box is needed.
-  if (moof_->pssh.empty())
-    moof_->pssh.resize(1);
-  moof_->pssh[0].raw_box = encryption_key->pssh;
 
   return Status::OK;
 }

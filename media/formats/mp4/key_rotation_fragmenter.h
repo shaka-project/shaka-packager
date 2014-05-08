@@ -46,7 +46,7 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
  protected:
   /// @name Fragmenter implementation overrides.
   /// @{
-  virtual Status PrepareFragmentForEncryption() OVERRIDE;
+  virtual Status PrepareFragmentForEncryption(bool enable_encryption) OVERRIDE;
   virtual void FinalizeFragmentForEncryption() OVERRIDE;
   /// @}
 
