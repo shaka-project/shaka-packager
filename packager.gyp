@@ -16,15 +16,48 @@
   },
   'targets': [
     {
+      'target_name': 'packager',
+      'type': 'executable',
+      'sources': [
+        'app/fixed_key_encryption_flags.cc',
+        'app/fixed_key_encryption_flags.h',
+        'app/libcrypto_threading.cc',
+        'app/libcrypto_threading.h',
+        'app/muxer_flags.cc',
+        'app/muxer_flags.h',
+        'app/packager_common.cc',
+        'app/packager_common.h',
+        'app/packager_main.cc',
+        'app/widevine_encryption_flags.cc',
+        'app/widevine_encryption_flags.h',
+      ],
+      'dependencies': [
+        'media/event/media_event.gyp:media_event',
+        'media/file/file.gyp:file',
+        'media/filters/filters.gyp:filters',
+        'media/formats/mp2t/mp2t.gyp:mp2t',
+        'media/formats/mp4/mp4.gyp:mp4',
+        'media/formats/mpeg/mpeg.gyp:mpeg',
+        'third_party/gflags/gflags.gyp:gflags',
+      ],
+      'conditions': [
+        [ 'os_posix == 1', {
+          'sources': [
+            'app/libcrypto_threading_posix.cc',
+          ]
+        }],
+      ],
+    },
+    {
       'target_name': 'single_packager',
       'type': 'executable',
       'sources': [
         'app/fixed_key_encryption_flags.cc',
         'app/fixed_key_encryption_flags.h',
-        'app/packager_common.cc',
-        'app/packager_common.h',
         'app/muxer_flags.cc',
         'app/muxer_flags.h',
+        'app/packager_common.cc',
+        'app/packager_common.h',
         'app/single_muxer_flags.cc',
         'app/single_muxer_flags.h',
         'app/single_packager_main.cc',

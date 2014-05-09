@@ -24,7 +24,7 @@
 
 namespace {
 const char kUsage[] =
-    "Packager driver program. Sample Usage:\n%s <input> [flags]";
+    "Single-stream packager driver program. Sample Usage:\n%s <input> [flags]";
 }  // namespace
 
 namespace media {
@@ -115,7 +115,7 @@ bool RunPackager(const std::string& input) {
 int main(int argc, char** argv) {
   google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
   google::ParseCommandLineFlags(&argc, &argv, true);
-  if (argc < 2) {
+  if (argc != 2) {
     google::ShowUsageWithFlags(argv[0]);
     return 1;
   }

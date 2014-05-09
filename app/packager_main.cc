@@ -1,0 +1,226 @@
+// Copyright 2014 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+
+#include <iostream>
+
+#include "app/fixed_key_encryption_flags.h"
+#include "app/libcrypto_threading.h"
+#include "app/muxer_flags.h"
+#include "app/packager_common.h"
+#include "app/single_muxer_flags.h"
+#include "app/widevine_encryption_flags.h"
+#include "base/logging.h"
+#include "base/stl_util.h"
+#include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
+#include "base/threading/simple_thread.h"
+#include "media/base/demuxer.h"
+#include "media/base/encryption_key_source.h"
+#include "media/base/muxer_options.h"
+#include "media/formats/mp4/mp4_muxer.h"
+
+namespace {
+const char kUsage[] =
+    "Packager driver program. Sample Usage:\n"
+    "%s [flags] <stream_descriptor> ...\n"
+    "stream_descriptor may be repeated and consists of a tuplet as follows:\n"
+    "<input_file>#<stream_selector>,<output_file>[,<segment_template>]\n"
+    "  - input_file is a file path or network stream URL.\n"
+    "  - stream_selector is one of 'audio', 'video', or stream number.\n"
+    "  - output_file is the output file (single file) or initialization file"
+    " path (multiple file)."
+    "  - segment_template is an optional value which specifies the naming"
+    " pattern for the segment files, and that the stream should be split into"
+    " multiple files. Its presence should be consistent across streams.\n";
+
+typedef std::vector<std::string> StringVector;
+
+}  // namespace
+
+namespace media {
+
+// Demux, Mux(es) and worker thread used to remux a source file/stream.
+class RemuxJob : public base::SimpleThread {
+ public:
+  RemuxJob(scoped_ptr<Demuxer> demuxer)
+      : SimpleThread("RemuxJob"),
+        demuxer_(demuxer.Pass()) {}
+
+  virtual ~RemuxJob() {
+    STLDeleteElements(&muxers_);
+  }
+
+  void AddMuxer(scoped_ptr<Muxer> mux) {
+    muxers_.push_back(mux.release());
+  }
+
+  Demuxer* demuxer() { return demuxer_.get(); }
+  Status status() { return status_; }
+
+ private:
+  virtual void Run() OVERRIDE {
+    DCHECK(demuxer_);
+    status_ = demuxer_->Run();
+  }
+
+  scoped_ptr<Demuxer> demuxer_;
+  std::vector<Muxer*> muxers_;
+  Status status_;
+
+  DISALLOW_COPY_AND_ASSIGN(RemuxJob);
+};
+
+bool CreateRemuxJobs(const StringVector& stream_descriptors,
+                     const MuxerOptions& muxer_options,
+                     EncryptionKeySource* key_source,
+                     std::vector<RemuxJob*>* remux_jobs) {
+  DCHECK(remux_jobs);
+
+  // Sort the stream descriptors so that we can group muxers by demux.
+  StringVector sorted_descriptors(stream_descriptors);
+  std::sort(sorted_descriptors.begin(), sorted_descriptors.end());
+
+  std::string previous_file_path;
+  for (StringVector::const_iterator stream_iter = sorted_descriptors.begin();
+       stream_iter != sorted_descriptors.end();
+       ++stream_iter) {
+    // Process stream descriptor.
+    StringVector descriptor;
+    base::SplitString(*stream_iter, ',', &descriptor);
+    if ((descriptor.size() < 2) || (descriptor.size() > 3)) {
+      LOG(ERROR)
+          << "Malformed stream descriptor (invalid number of components).";
+      return false;
+    }
+    size_t hash_pos = descriptor[0].find('#');
+    if (hash_pos == std::string::npos) {
+      LOG(ERROR)
+          << "Malformed stream descriptor (stream selector unspecified).";
+      return false;
+    }
+    MuxerOptions stream_muxer_options(muxer_options);
+    std::string file_path(descriptor[0].substr(0, hash_pos));
+    std::string stream_selector(descriptor[0].substr(hash_pos + 1));
+    stream_muxer_options.output_file_name = descriptor[1];
+    if (descriptor.size() == 3)
+      stream_muxer_options.segment_template = descriptor[2];
+
+    if (file_path != previous_file_path) {
+      // New remux job needed. Create demux and job thread.
+      scoped_ptr<Demuxer> demux(new Demuxer(file_path, NULL));
+      Status status = demux->Initialize();
+      if (!status.ok()) {
+        LOG(ERROR) << "Demuxer failed to initialize: " << status.ToString();
+        return false;
+      }
+      if (FLAGS_dump_stream_info) {
+        printf("\nFile \"%s\":\n", file_path.c_str());
+        DumpStreamInfo(demux->streams());
+      }
+      remux_jobs->push_back(new RemuxJob(demux.Pass()));
+      previous_file_path = file_path;
+    }
+    DCHECK(!remux_jobs->empty());
+
+    scoped_ptr<Muxer> muxer(new mp4::MP4Muxer(stream_muxer_options));
+    if (key_source) {
+      muxer->SetEncryptionKeySource(key_source,
+                                    FLAGS_max_sd_pixels,
+                                    FLAGS_clear_lead,
+                                    FLAGS_crypto_period_duration);
+    }
+
+    if (!AddStreamToMuxer(remux_jobs->back()->demuxer()->streams(),
+                          stream_selector,
+                          muxer.get()))
+      return false;
+    remux_jobs->back()->AddMuxer(muxer.Pass());
+  }
+
+  return true;
+}
+
+Status RunRemuxJobs(const std::vector<RemuxJob*>& remux_jobs) {
+  // Start the job threads.
+  for (std::vector<RemuxJob*>::const_iterator job_iter = remux_jobs.begin();
+       job_iter != remux_jobs.end();
+       ++job_iter) {
+    (*job_iter)->Start();
+  }
+
+  // Wait for all jobs to complete or an error occurs.
+  Status status;
+  bool all_joined;
+  do {
+    all_joined = true;
+    for (std::vector<RemuxJob*>::const_iterator job_iter = remux_jobs.begin();
+         job_iter != remux_jobs.end();
+         ++job_iter) {
+      if ((*job_iter)->HasBeenJoined()) {
+        status = (*job_iter)->status();
+        if (!status.ok())
+          break;
+      } else {
+        all_joined = false;
+        (*job_iter)->Join();
+      }
+    }
+  } while (!all_joined && status.ok());
+
+  return status;
+}
+
+bool RunPackager(const StringVector& stream_descriptors) {
+  // Get basic muxer options.
+  MuxerOptions muxer_options;
+  if (!GetMuxerOptions(&muxer_options))
+    return false;
+
+  // Create encryption key source if needed.
+  scoped_ptr<EncryptionKeySource> encryption_key_source;
+  if (FLAGS_enable_widevine_encryption || FLAGS_enable_fixed_key_encryption) {
+    encryption_key_source = CreateEncryptionKeySource();
+    if (!encryption_key_source)
+      return false;
+  }
+
+  std::vector<RemuxJob*> remux_jobs;
+  STLElementDeleter<std::vector<RemuxJob*> > scoped_jobs_deleter(&remux_jobs);
+  if (!CreateRemuxJobs(stream_descriptors,
+                       muxer_options,
+                       encryption_key_source.get(),
+                       &remux_jobs))
+    return false;
+
+  Status status = RunRemuxJobs(remux_jobs);
+  if (!status.ok()) {
+    LOG(ERROR) << "Packaging Error: " << status.ToString();
+    return false;
+  }
+
+  printf("Packaging completed successfully.\n");
+  return true;
+}
+
+}  // namespace media
+
+int main(int argc, char** argv) {
+  google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
+  google::ParseCommandLineFlags(&argc, &argv, true);
+  if (argc < 2) {
+    google::ShowUsageWithFlags(argv[0]);
+    return 1;
+  }
+  media::LibcryptoThreading libcrypto_threading;
+  if (!libcrypto_threading.Initialize()) {
+    LOG(ERROR) << "Could not initialize libcrypto threading.";
+    return 1;
+  }
+  StringVector stream_descriptors;
+  for (int i = 1; i < argc; ++i)
+    stream_descriptors.push_back(argv[i]);
+  return media::RunPackager(stream_descriptors) ? 0 : 1;
+}

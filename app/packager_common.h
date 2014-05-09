@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 //
-// Functionality common to single and multiple file packager.
+// Functionality common to single and multiple stream packager.
 
 #ifndef APP_PACKAGER_COMMON_H_
 #define APP_PACKAGER_COMMON_H_
