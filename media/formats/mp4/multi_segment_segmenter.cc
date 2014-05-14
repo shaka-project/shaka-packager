@@ -11,6 +11,7 @@
 #include "media/base/buffer_writer.h"
 #include "media/base/media_stream.h"
 #include "media/base/muxer_options.h"
+#include "media/base/muxer_util.h"
 #include "media/event/muxer_listener.h"
 #include "media/file/file.h"
 #include "media/formats/mp4/box_definitions.h"
@@ -145,10 +146,10 @@ Status MultiSegmentSegmenter::WriteSegment() {
           "Cannot open file for append " + options().output_file_name);
     }
   } else {
-    file_name = options().segment_template;
-    ReplaceSubstringsAfterOffset(
-        &file_name, 0, "$Number$", base::UintToString(++num_segments_));
-    file = File::Open(file_name.c_str(), "w");
+    file = File::Open(GetSegmentName(options().segment_template,
+                                     sidx()->earliest_presentation_time,
+                                     num_segments_++).c_str(),
+                      "w");
     if (file == NULL) {
       return Status(error::FILE_FAILURE,
                     "Cannot open file for write " + file_name);

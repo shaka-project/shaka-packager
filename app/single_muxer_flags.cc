@@ -21,7 +21,5 @@ DEFINE_string(output,
               "initialization segment name.");
 DEFINE_string(segment_template,
               "",
-              "Output segment name pattern for generated segments. It "
-              "can furthermore be configured using a subset of "
-              "SegmentTemplate identifiers: $Number$, $Bandwidth$ and "
-              "$Time$.");
+              "Segment template pattern for generated segments. It should "
+              "comply with ISO/IEC 23009-1:2012 5.3.9.4.4.");

@@ -9,7 +9,7 @@
 #include "app/muxer_flags.h"
 
 DEFINE_double(clear_lead,
-              10.0,
+              10.0f,
               "Clear lead in seconds if encryption is enabled.");
 
 DEFINE_bool(single_segment,
@@ -26,7 +26,7 @@ DEFINE_bool(segment_sap_aligned,
             true,
             "Force segments to begin with stream access points.");
 DEFINE_double(fragment_duration,
-              2.0f,
+              10.0f,
               "Fragment duration in seconds. Should not be larger than "
               "the segment duration. Actual fragment durations may not be "
               "exactly as requested.");

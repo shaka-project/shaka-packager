@@ -17,6 +17,7 @@
 #include "media/base/demuxer.h"
 #include "media/base/encryption_key_source.h"
 #include "media/base/muxer_options.h"
+#include "media/base/muxer_util.h"
 #include "media/event/vod_media_info_dump_muxer_listener.h"
 #include "media/file/file.h"
 #include "media/file/file_closer.h"
@@ -37,12 +38,23 @@ bool GetSingleMuxerOptions(MuxerOptions* muxer_options) {
 
   muxer_options->output_file_name = FLAGS_output;
   muxer_options->segment_template = FLAGS_segment_template;
+  if (!muxer_options->segment_template.empty() &&
+      !ValidateSegmentTemplate(muxer_options->segment_template)) {
+    LOG(ERROR) << "ERROR: segment template with '"
+               << muxer_options->segment_template << "' is invalid.";
+    return false;
+  }
 
   return true;
 }
 
 bool RunPackager(const std::string& input) {
   Status status;
+
+  // Get muxer options from commandline flags.
+  MuxerOptions muxer_options;
+  if (!GetSingleMuxerOptions(&muxer_options))
+    return false;
 
   // Setup and initialize Demuxer.
   Demuxer demuxer(input, NULL);
@@ -62,10 +74,6 @@ bool RunPackager(const std::string& input) {
   }
 
   // Setup muxer.
-  MuxerOptions muxer_options;
-  if (!GetSingleMuxerOptions(&muxer_options))
-    return false;
-
   scoped_ptr<Muxer> muxer(new mp4::MP4Muxer(muxer_options));
   scoped_ptr<event::MuxerListener> muxer_listener;
   scoped_ptr<File, FileCloser> mpd_file;

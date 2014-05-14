@@ -86,6 +86,8 @@
         'muxer.h',
         'muxer_options.cc',
         'muxer_options.h',
+        'muxer_util.cc',
+        'muxer_util.h',
         'offset_byte_queue.cc',
         'offset_byte_queue.h',
         'producer_consumer_queue.h',
@@ -121,6 +123,7 @@
         'container_names_unittest.cc',
         'fake_prng.cc',  # For rsa_key_unittest
         'fake_prng.h',   # For rsa_key_unittest
+        'muxer_util_unittest.cc',
         'offset_byte_queue_unittest.cc',
         'producer_consumer_queue_unittest.cc',
         'rsa_key_unittest.cc',

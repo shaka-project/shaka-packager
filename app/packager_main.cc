@@ -20,6 +20,7 @@
 #include "media/base/demuxer.h"
 #include "media/base/encryption_key_source.h"
 #include "media/base/muxer_options.h"
+#include "media/base/muxer_util.h"
 #include "media/formats/mp4/mp4_muxer.h"
 
 namespace {
@@ -105,8 +106,14 @@ bool CreateRemuxJobs(const StringVector& stream_descriptors,
     std::string file_path(descriptor[0].substr(0, hash_pos));
     std::string stream_selector(descriptor[0].substr(hash_pos + 1));
     stream_muxer_options.output_file_name = descriptor[1];
-    if (descriptor.size() == 3)
+    if (descriptor.size() == 3) {
       stream_muxer_options.segment_template = descriptor[2];
+      if (!ValidateSegmentTemplate(stream_muxer_options.segment_template)) {
+        LOG(ERROR) << "ERROR: segment template with '"
+                   << stream_muxer_options.segment_template << "' is invalid.";
+        return false;
+      }
+    }
 
     if (file_path != previous_file_path) {
       // New remux job needed. Create demux and job thread.
