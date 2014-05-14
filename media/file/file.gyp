@@ -24,9 +24,12 @@
         'file_closer.h',
         'local_file.cc',
         'local_file.h',
+        'udp_file.cc',
+        'udp_file.h',
       ],
       'dependencies': [
         '../../base/base.gyp:base',
+        '../../third_party/gflags/gflags.gyp:gflags',
       ],
     },
     {
