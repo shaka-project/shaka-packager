@@ -19,13 +19,13 @@
       'target_name': 'media_event',
       'type': '<(component)',
       'sources': [
+        'mpd_notify_muxer_listener.cc',
+        'mpd_notify_muxer_listener.h',
         'muxer_listener.h',
+        'muxer_listener_internal.cc',
+        'muxer_listener_internal.h',
         'vod_media_info_dump_muxer_listener.cc',
         'vod_media_info_dump_muxer_listener.h',
-        'vod_mpd_notify_muxer_listener.cc',
-        'vod_mpd_notify_muxer_listener.h',
-        'vod_muxer_listener_internal.cc',
-        'vod_muxer_listener_internal.h',
       ],
       'dependencies': [
         '../../mpd/mpd.gyp:media_info_proto',

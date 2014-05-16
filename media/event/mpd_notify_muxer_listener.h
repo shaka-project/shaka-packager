@@ -6,8 +6,8 @@
 //
 // Implementation of MuxerListener that deals with MpdNotifier.
 
-#ifndef MEDIA_EVENT_VOD_MPD_NOTIFY_MUXER_LISTENER_H_
-#define MEDIA_EVENT_VOD_MPD_NOTIFY_MUXER_LISTENER_H_
+#ifndef MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_
+#define MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_
 
 #include <vector>
 
@@ -22,12 +22,12 @@ class MpdNotifier;
 namespace media {
 namespace event {
 
-class VodMpdNotifyMuxerListener : public MuxerListener {
+class MpdNotifyMuxerListener : public MuxerListener {
  public:
   // |mpd_notifier| must be initialized, i.e mpd_notifier->Init() must be
   // called.
-  VodMpdNotifyMuxerListener(dash_packager::MpdNotifier* mpd_notifier);
-  virtual ~VodMpdNotifyMuxerListener();
+  MpdNotifyMuxerListener(dash_packager::MpdNotifier* mpd_notifier);
+  virtual ~MpdNotifyMuxerListener();
 
   // MuxerListener implementation.
   virtual void OnMediaStart(const MuxerOptions& muxer_options,
@@ -56,10 +56,10 @@ class VodMpdNotifyMuxerListener : public MuxerListener {
   uint32 reference_time_scale_;
   ContainerType container_type_;
 
-  DISALLOW_COPY_AND_ASSIGN(VodMpdNotifyMuxerListener);
+  DISALLOW_COPY_AND_ASSIGN(MpdNotifyMuxerListener);
 };
 
 }  // namespace event
 }  // namespace media
 
-#endif  // MEDIA_EVENT_VOD_MPD_NOTIFY_MUXER_LISTENER_H_
+#endif  // MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_

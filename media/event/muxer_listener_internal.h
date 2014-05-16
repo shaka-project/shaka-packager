@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_EVENT_VOD_MUXER_LISTENER_INTERNAL_H_
-#define MEDIA_EVENT_VOD_MUXER_LISTENER_INTERNAL_H_
+#ifndef MEDIA_EVENT_MUXER_LISTENER_INTERNAL_H_
+#define MEDIA_EVENT_MUXER_LISTENER_INTERNAL_H_
 
 #include <vector>
 
@@ -43,4 +43,4 @@ bool GenerateMediaInfo(const MuxerOptions& muxer_options,
 }  // namespace internal
 }  // namespace event
 }  // namespace media
-#endif  // MEDIA_EVENT_VOD_MUXER_LISTENER_INTERNAL_H_
+#endif  // MEDIA_EVENT_MUXER_LISTENER_INTERNAL_H_

@@ -4,21 +4,21 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/event/vod_mpd_notify_muxer_listener.h"
+#include "media/event/mpd_notify_muxer_listener.h"
 
 #include <cmath>
 
 #include "base/logging.h"
 #include "media/base/audio_stream_info.h"
 #include "media/base/video_stream_info.h"
-#include "media/event/vod_muxer_listener_internal.h"
+#include "media/event/muxer_listener_internal.h"
 #include "mpd/base/media_info.pb.h"
 #include "mpd/base/mpd_notifier.h"
 
 namespace media {
 namespace event {
 
-VodMpdNotifyMuxerListener::VodMpdNotifyMuxerListener(
+MpdNotifyMuxerListener::MpdNotifyMuxerListener(
     dash_packager::MpdNotifier* mpd_notifier)
     : mpd_notifier_(mpd_notifier),
       reference_time_scale_(0),
@@ -26,9 +26,9 @@ VodMpdNotifyMuxerListener::VodMpdNotifyMuxerListener(
   DCHECK(mpd_notifier);
 }
 
-VodMpdNotifyMuxerListener::~VodMpdNotifyMuxerListener() {}
+MpdNotifyMuxerListener::~MpdNotifyMuxerListener() {}
 
-void VodMpdNotifyMuxerListener::OnMediaStart(
+void MpdNotifyMuxerListener::OnMediaStart(
     const MuxerOptions& muxer_options,
     const std::vector<StreamInfo*>& stream_infos,
     uint32 time_scale,
@@ -38,7 +38,7 @@ void VodMpdNotifyMuxerListener::OnMediaStart(
   container_type_ = container_type;
 }
 
-void VodMpdNotifyMuxerListener::OnMediaEnd(
+void MpdNotifyMuxerListener::OnMediaEnd(
     const std::vector<StreamInfo*>& stream_infos,
     bool has_init_range,
     uint64 init_range_start,
@@ -71,9 +71,9 @@ void VodMpdNotifyMuxerListener::OnMediaEnd(
   mpd_notifier_->NotifyNewContainer(media_info, &id);
 }
 
-void VodMpdNotifyMuxerListener::OnNewSegment(uint64 start_time,
-                                             uint64 duration,
-                                             uint64 segment_file_size) {}
+void MpdNotifyMuxerListener::OnNewSegment(uint64 start_time,
+                                          uint64 duration,
+                                          uint64 segment_file_size) {}
 
 }  // namespace event
 }  // namespace media
