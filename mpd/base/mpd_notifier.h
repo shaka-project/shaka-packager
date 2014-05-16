@@ -17,11 +17,17 @@ namespace dash_packager {
 class MediaInfo;
 struct ContentProtectionElement;
 
+enum DashProfile {
+  kUnknownProfile,
+  kOnDemandProfile,
+  kLiveProfile,
+};
+
 /// Interface for publish/subscribe publisher class which notifies MpdBuilder
 /// of media-related events.
 class MpdNotifier {
  public:
-  MpdNotifier() {};
+  MpdNotifier(DashProfile dash_profile) : dash_profile_(dash_profile) {};
   virtual ~MpdNotifier() {};
 
   /// Initializes the notifier. For example, if this notifier uses a network for
@@ -62,6 +68,14 @@ class MpdNotifier {
   virtual bool AddContentProtectionElement(
       uint32 container_id,
       const ContentProtectionElement& content_protection_element) = 0;
+
+  /// @return The dash profile for this object.
+  DashProfile dash_profile() const { return dash_profile_; }
+
+ private:
+  const DashProfile dash_profile_;
+
+  DISALLOW_COPY_AND_ASSIGN(MpdNotifier);
 };
 
 }  // namespace dash_packager

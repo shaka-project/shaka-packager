@@ -12,10 +12,12 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/scoped_ptr.h"
 #include "media/base/muxer_options.h"
 #include "media/event/muxer_listener.h"
 
 namespace dash_packager {
+class MediaInfo;
 class MpdNotifier;
 }  // namespace dash_packager
 
@@ -24,37 +26,42 @@ namespace event {
 
 class MpdNotifyMuxerListener : public MuxerListener {
  public:
-  // |mpd_notifier| must be initialized, i.e mpd_notifier->Init() must be
-  // called.
+  /// @param mpd_notifier must be initialized, i.e mpd_notifier->Init() must be
+  ///        called.
   MpdNotifyMuxerListener(dash_packager::MpdNotifier* mpd_notifier);
   virtual ~MpdNotifyMuxerListener();
 
-  // MuxerListener implementation.
+  /// If the stream is encrypted use this as 'schemeIdUri' attribute for
+  /// ContentProtection element.
+  void SetContentProtectionSchemeIdUri(const std::string& scheme_id_uri);
+
+  /// @name MuxerListener implementation overrides.
+  /// @{
   virtual void OnMediaStart(const MuxerOptions& muxer_options,
                             const std::vector<StreamInfo*>& stream_infos,
                             uint32 time_scale,
-                            ContainerType container_type) OVERRIDE;
+                            ContainerType container_type,
+                            bool is_encrypted) OVERRIDE;
 
-  virtual void OnMediaEnd(const std::vector<StreamInfo*>& stream_infos,
-                          bool has_init_range,
+  virtual void OnMediaEnd(bool has_init_range,
                           uint64 init_range_start,
                           uint64 init_range_end,
                           bool has_index_range,
                           uint64 index_range_start,
                           uint64 index_range_end,
                           float duration_seconds,
-                          uint64 file_size,
-                          bool is_encrypted) OVERRIDE;
+                          uint64 file_size) OVERRIDE;
 
   virtual void OnNewSegment(uint64 start_time,
                             uint64 duration,
                             uint64 segment_file_size) OVERRIDE;
+  /// @}
 
  private:
   dash_packager::MpdNotifier* const mpd_notifier_;
-  MuxerOptions muxer_options_;
-  uint32 reference_time_scale_;
-  ContainerType container_type_;
+  uint32 notification_id_;
+  scoped_ptr<dash_packager::MediaInfo> media_info_;
+  std::string scheme_id_uri_;
 
   DISALLOW_COPY_AND_ASSIGN(MpdNotifyMuxerListener);
 };

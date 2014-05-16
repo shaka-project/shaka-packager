@@ -19,54 +19,8 @@ namespace event {
 
 using dash_packager::MediaInfo;
 
-namespace {
-
-const char kEncryptedMp4Uri[] = "urn:mpeg:dash:mp4protection:2011";
-const char kEncryptedMp4Value[] = "cenc";
-
-// |user_scheme_id_uri| is the user specified schemeIdUri for ContentProtection.
-// This adds a default ContentProtection element if the container is MP4.
-// Returns true if a ContentProtectionXml is added to |media_info|, otherwise
-// false.
-bool AddContentProtectionElements(MuxerListener::ContainerType container_type,
-                                  const std::string& user_scheme_id_uri,
-                                  MediaInfo* media_info) {
-  DCHECK(media_info);
-
-  // DASH MPD spec specifies a default ContentProtection element for ISO BMFF
-  // (MP4) files.
-  const bool is_mp4_container = container_type == MuxerListener::kContainerMp4;
-  if (is_mp4_container) {
-    MediaInfo::ContentProtectionXml* mp4_protection =
-        media_info->add_content_protections();
-    mp4_protection->set_scheme_id_uri(kEncryptedMp4Uri);
-    mp4_protection->set_value(kEncryptedMp4Value);
-  }
-
-  if (!user_scheme_id_uri.empty()) {
-    MediaInfo::ContentProtectionXml* content_protection =
-        media_info->add_content_protections();
-    content_protection->set_scheme_id_uri(user_scheme_id_uri);
-  } else if (is_mp4_container) {
-    LOG(WARNING) << "schemeIdUri is not specified. Added default "
-                    "ContentProtection only.";
-  }
-
-  if (media_info->content_protections_size() == 0) {
-    LOG(ERROR) << "The stream is encrypted but no schemeIdUri specified for "
-                  "ContentProtection.";
-    return false;
-  }
-
-  return true;
-}
-
-}  // namespace
-
 VodMediaInfoDumpMuxerListener::VodMediaInfoDumpMuxerListener(File* output_file)
-    : file_(output_file),
-      reference_time_scale_(0),
-      container_type_(kContainerUnknown) {}
+    : file_(output_file) {}
 
 VodMediaInfoDumpMuxerListener::~VodMediaInfoDumpMuxerListener() {}
 
@@ -79,27 +33,38 @@ void VodMediaInfoDumpMuxerListener::OnMediaStart(
     const MuxerOptions& muxer_options,
     const std::vector<StreamInfo*>& stream_infos,
     uint32 time_scale,
-    ContainerType container_type) {
-  muxer_options_ = muxer_options;
-  reference_time_scale_ = time_scale;
-  container_type_ = container_type;
+    ContainerType container_type,
+    bool is_encrypted) {
+  DCHECK(muxer_options.single_segment);
+  media_info_.reset(new MediaInfo());
+  if (!internal::GenerateMediaInfo(muxer_options,
+                                   stream_infos,
+                                   time_scale,
+                                   container_type,
+                                   media_info_.get())) {
+    LOG(ERROR) << "Failed to generate MediaInfo from input.";
+    return;
+  }
+
+  if (is_encrypted) {
+    if (!internal::AddContentProtectionElements(
+            container_type, scheme_id_uri_, media_info_.get())) {
+      LOG(ERROR) << "Failed to add content protection elements.";
+      return;
+    }
+  }
 }
 
-void VodMediaInfoDumpMuxerListener::OnMediaEnd(
-    const std::vector<StreamInfo*>& stream_infos,
-    bool has_init_range,
-    uint64 init_range_start,
-    uint64 init_range_end,
-    bool has_index_range,
-    uint64 index_range_start,
-    uint64 index_range_end,
-    float duration_seconds,
-    uint64 file_size,
-    bool is_encrypted) {
-  MediaInfo media_info;
-  if (!internal::GenerateMediaInfo(muxer_options_,
-                                   stream_infos,
-                                   has_init_range,
+void VodMediaInfoDumpMuxerListener::OnMediaEnd(bool has_init_range,
+                                               uint64 init_range_start,
+                                               uint64 init_range_end,
+                                               bool has_index_range,
+                                               uint64 index_range_start,
+                                               uint64 index_range_end,
+                                               float duration_seconds,
+                                               uint64 file_size) {
+  DCHECK(media_info_);
+  if (!internal::SetVodInformation(has_init_range,
                                    init_range_start,
                                    init_range_end,
                                    has_index_range,
@@ -107,22 +72,11 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(
                                    index_range_end,
                                    duration_seconds,
                                    file_size,
-                                   reference_time_scale_,
-                                   container_type_,
-                                   &media_info)) {
-    LOG(ERROR) << "Failed to generate MediaInfo from input.";
+                                   media_info_.get())) {
+    LOG(ERROR) << "Failed to generate VOD information from input.";
     return;
   }
-
-  if (is_encrypted) {
-    if (!AddContentProtectionElements(
-            container_type_, scheme_id_uri_, &media_info)) {
-      LOG(ERROR) << "Failed to add content protection elements.";
-      return;
-    }
-  }
-
-  SerializeMediaInfoToFile(media_info);
+  SerializeMediaInfoToFile();
 }
 
 void VodMediaInfoDumpMuxerListener::OnNewSegment(uint64 start_time,
@@ -131,10 +85,9 @@ void VodMediaInfoDumpMuxerListener::OnNewSegment(uint64 start_time,
   NOTIMPLEMENTED();
 }
 
-void VodMediaInfoDumpMuxerListener::SerializeMediaInfoToFile(
-    const MediaInfo& media_info) {
+void VodMediaInfoDumpMuxerListener::SerializeMediaInfoToFile() {
   std::string output_string;
-  if (!google::protobuf::TextFormat::PrintToString(media_info,
+  if (!google::protobuf::TextFormat::PrintToString(*media_info_,
                                                    &output_string)) {
     LOG(ERROR) << "Failed to serialize MediaInfo to string.";
     return;

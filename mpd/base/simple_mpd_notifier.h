@@ -25,7 +25,8 @@ class Representation;
 /// generates an Mpd file.
 class SimpleMpdNotifier : public MpdNotifier {
  public:
-  SimpleMpdNotifier(const std::vector<std::string>& base_urls,
+  SimpleMpdNotifier(DashProfile dash_profile,
+                    const std::vector<std::string>& base_urls,
                     const std::string& output_path);
   virtual ~SimpleMpdNotifier();
 
@@ -52,7 +53,6 @@ class SimpleMpdNotifier : public MpdNotifier {
   ContentType GetContentType(const MediaInfo& media_info);
   bool WriteMpdToFile();
 
-  std::vector<std::string> base_urls_;
   std::string output_path_;
 
   scoped_ptr<MpdBuilder> mpd_builder_;

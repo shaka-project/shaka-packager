@@ -241,15 +241,13 @@ void MP4Muxer::FireOnMediaStartEvent() {
   muxer_listener()->OnMediaStart(options(),
                                  stream_info_vec,
                                  timescale,
-                                 event::MuxerListener::kContainerMp4);
+                                 event::MuxerListener::kContainerMp4,
+                                 encryption_key_source());
 }
 
 void MP4Muxer::FireOnMediaEndEvent() {
   if (!muxer_listener())
     return;
-
-  std::vector<StreamInfo*> stream_info_vec;
-  GetStreamInfo(&stream_info_vec);
 
   uint32 init_range_start = 0;
   uint32 init_range_end = 0;
@@ -269,16 +267,14 @@ void MP4Muxer::FireOnMediaEndEvent() {
     return;
   }
 
-  muxer_listener()->OnMediaEnd(stream_info_vec,
-                               has_init_range,
+  muxer_listener()->OnMediaEnd(has_init_range,
                                init_range_start,
                                init_range_end,
                                has_index_range,
                                index_range_start,
                                index_range_end,
                                duration_seconds,
-                               file_size,
-                               encryption_key_source());
+                               file_size);
 }
 
 uint64 MP4Muxer::IsoTimeNow() {

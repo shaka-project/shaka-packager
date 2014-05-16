@@ -19,6 +19,10 @@
 
 using dash_packager::MediaInfo;
 
+namespace {
+const bool kEnableEncryption = true;
+}  // namespace
+
 namespace media {
 namespace event {
 
@@ -47,7 +51,6 @@ struct OnMediaEndParameters {
   uint64 index_range_end;
   float duration_seconds;
   uint64 file_size;
-  bool is_encrypted;
 };
 
 scoped_refptr<StreamInfo> CreateVideoStreamInfo(
@@ -109,7 +112,7 @@ OnMediaEndParameters GetDefaultOnMediaEndParams() {
 }
 
 void SetDefaultMuxerOptionsValues(MuxerOptions* muxer_options) {
-  muxer_options->single_segment = false;
+  muxer_options->single_segment = true;
   muxer_options->segment_duration = 10.0;
   muxer_options->fragment_duration = 10.0;
   muxer_options->segment_sap_aligned = true;
@@ -149,7 +152,7 @@ void ExpectTextFormatMediaInfoEqual(const std::string& expect,
 
 class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
  public:
-  VodMediaInfoDumpMuxerListenerTest() {}
+  VodMediaInfoDumpMuxerListenerTest() : temp_file_(NULL) {}
   virtual ~VodMediaInfoDumpMuxerListenerTest() {}
 
   virtual void SetUp() OVERRIDE {
@@ -165,30 +168,29 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
     base::DeleteFile(temp_file_path_, false);
   }
 
-  void FireOnMediaStartWithDefaultValues(
-      const std::vector<StreamInfo*> stream_infos) {
+  void FireOnMediaStartWithDefaultMuxerOptions(
+      const std::vector<StreamInfo*> stream_infos,
+      bool enable_encryption) {
     MuxerOptions muxer_options;
     SetDefaultMuxerOptionsValues(&muxer_options);
     const uint32 kReferenceTimeScale = 1000;
     listener_->OnMediaStart(muxer_options,
                             stream_infos,
                             kReferenceTimeScale,
-                            MuxerListener::kContainerMp4);
+                            MuxerListener::kContainerMp4,
+                            enable_encryption);
   }
 
-  void FireOnMediaEndWithParams(const std::vector<StreamInfo*> stream_infos,
-                                const OnMediaEndParameters& params) {
+  void FireOnMediaEndWithParams(const OnMediaEndParameters& params) {
     // On success, this writes the result to |temp_file_|.
-    listener_->OnMediaEnd(stream_infos,
-                          params.has_init_range,
+    listener_->OnMediaEnd(params.has_init_range,
                           params.init_range_start,
                           params.init_range_end,
                           params.has_index_range,
                           params.index_range_start,
                           params.index_range_end,
                           params.duration_seconds,
-                          params.file_size,
-                          params.is_encrypted);
+                          params.file_size);
   }
 
   void ExpectTempFileToEqual(const std::string& expected_protobuf) {
@@ -216,10 +218,9 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal) {
   std::vector<StreamInfo*> stream_infos;
   stream_infos.push_back(stream_info.get());
 
-  FireOnMediaStartWithDefaultValues(stream_infos);
+  FireOnMediaStartWithDefaultMuxerOptions(stream_infos, !kEnableEncryption);
   OnMediaEndParameters media_end_param = GetDefaultOnMediaEndParams();
-  media_end_param.is_encrypted = false;
-  FireOnMediaEndWithParams(stream_infos, media_end_param);
+  FireOnMediaEndWithParams(media_end_param);
   ASSERT_TRUE(temp_file_->Close());
 
   const char kExpectedProtobufOutput[] =
@@ -253,11 +254,10 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
   std::vector<StreamInfo*> stream_infos;
   stream_infos.push_back(stream_info.get());
 
-  FireOnMediaStartWithDefaultValues(stream_infos);
+  FireOnMediaStartWithDefaultMuxerOptions(stream_infos, kEnableEncryption);
 
   OnMediaEndParameters media_end_param = GetDefaultOnMediaEndParams();
-  media_end_param.is_encrypted = true;
-  FireOnMediaEndWithParams(stream_infos, media_end_param);
+  FireOnMediaEndWithParams(media_end_param);
   ASSERT_TRUE(temp_file_->Close());
 
   const char kExpectedProtobufOutput[] =

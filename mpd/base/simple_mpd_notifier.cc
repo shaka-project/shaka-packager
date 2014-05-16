@@ -25,9 +25,17 @@ bool AtLeastOneTrue(bool b1, bool b2, bool b3) {
 
 namespace dash_packager {
 
-SimpleMpdNotifier::SimpleMpdNotifier(const std::vector<std::string>& base_urls,
+SimpleMpdNotifier::SimpleMpdNotifier(DashProfile dash_profile,
+                                     const std::vector<std::string>& base_urls,
                                      const std::string& output_path)
-    : base_urls_(base_urls), output_path_(output_path) {
+    : MpdNotifier(dash_profile),
+      output_path_(output_path),
+      mpd_builder_(new MpdBuilder(dash_profile == kLiveProfile
+                                      ? MpdBuilder::kDynamic
+                                      : MpdBuilder::kStatic)) {
+  DCHECK(dash_profile == kLiveProfile || dash_profile == kOnDemandProfile);
+  for (size_t i = 0; i < base_urls.size(); ++i)
+    mpd_builder_->AddBaseUrl(base_urls[i]);
 }
 
 SimpleMpdNotifier::~SimpleMpdNotifier() {
@@ -45,35 +53,9 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   if (content_type == kUnknown)
     return false;
 
-  // Determine whether the media_info is for VOD or live.
-  bool has_vod_only_fields = HasVODOnlyFields(media_info);
-  bool has_live_only_fields = HasLiveOnlyFields(media_info);
-  if (has_vod_only_fields && has_live_only_fields) {
-    LOG(ERROR) << "MediaInfo with both VOD fields and Live fields is invalid.";
-    return false;
-  }
-  if (!has_vod_only_fields && !has_live_only_fields) {
-    LOG(ERROR) << "MediaInfo should contain either VOD fields or Live fields.";
-    return false;
-  }
-  MpdBuilder::MpdType mpd_type =
-      has_vod_only_fields ? MpdBuilder::kStatic : MpdBuilder::kDynamic;
-
   base::AutoLock auto_lock(lock_);
   // TODO(kqyang): Consider adding a new method MpdBuilder::AddRepresentation.
   // Most of the codes here can be moved inside.
-  if (!mpd_builder_) {
-    mpd_builder_.reset(new MpdBuilder(mpd_type));
-    for (size_t i = 0; i < base_urls_.size(); ++i)
-      mpd_builder_->AddBaseUrl(base_urls_[i]);
-  } else {
-    if (mpd_builder_->type() != mpd_type) {
-      LOG(ERROR) << "Expecting MediaInfo with '"
-                 << (has_vod_only_fields ? "Live" : "VOD") << "' fields.";
-      return false;
-    }
-  }
-
   AdaptationSet** adaptation_set = &adaptation_set_map_[content_type];
   if (*adaptation_set == NULL)
     *adaptation_set = mpd_builder_->AddAdaptationSet();
@@ -86,7 +68,7 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
 
   *container_id = representation->id();
 
-  if (has_vod_only_fields)
+  if (mpd_builder_->type() == MpdBuilder::kStatic)
     return WriteMpdToFile();
 
   DCHECK(!ContainsKey(representation_map_, representation->id()));

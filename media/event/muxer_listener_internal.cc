@@ -81,23 +81,6 @@ void SetMediaInfoContainerType(MuxerListener::ContainerType container_type,
   }
 }
 
-void SetMediaInfoCommonInfo(float duration_seconds,
-                            uint64 file_size,
-                            uint32 reference_time_scale,
-                            MuxerListener::ContainerType container_type,
-                            MediaInfo* media_info) {
-  DCHECK(media_info);
-  DCHECK_GT(file_size, 0u);
-  DCHECK_GT(duration_seconds, 0.0f);
-
-  media_info->set_media_duration_seconds(duration_seconds);
-  media_info->set_bandwidth(
-      EstimateRequiredBandwidth(file_size, duration_seconds));
-
-  media_info->set_reference_time_scale(reference_time_scale);
-  SetMediaInfoContainerType(container_type, media_info);
-}
-
 void AddVideoInfo(const VideoStreamInfo* video_stream_info,
                   MediaInfo* media_info) {
   DCHECK(video_stream_info);
@@ -160,14 +143,32 @@ void SetMediaInfoStreamInfo(const std::vector<StreamInfo*>& stream_infos,
 void SetMediaInfoMuxerOptions(const MuxerOptions& muxer_options,
                               MediaInfo* media_info) {
   DCHECK(media_info);
-  media_info->set_media_file_name(muxer_options.output_file_name);
+  if (muxer_options.single_segment) {
+    media_info->set_media_file_name(muxer_options.output_file_name);
+    DCHECK(muxer_options.segment_template.empty());
+  } else {
+    media_info->set_init_segment_name(muxer_options.output_file_name);
+    media_info->set_segment_template(muxer_options.segment_template);
+  }
 }
 
 }  // namespace
 
 bool GenerateMediaInfo(const MuxerOptions& muxer_options,
                        const std::vector<StreamInfo*>& stream_infos,
-                       bool has_init_range,
+                       uint32 reference_time_scale,
+                       MuxerListener::ContainerType container_type,
+                       MediaInfo* media_info) {
+  DCHECK(media_info);
+
+  SetMediaInfoMuxerOptions(muxer_options, media_info);
+  SetMediaInfoStreamInfo(stream_infos, media_info);
+  media_info->set_reference_time_scale(reference_time_scale);
+  SetMediaInfoContainerType(container_type, media_info);
+  return true;
+}
+
+bool SetVodInformation(bool has_init_range,
                        uint64 init_range_start,
                        uint64 init_range_end,
                        bool has_index_range,
@@ -175,8 +176,6 @@ bool GenerateMediaInfo(const MuxerOptions& muxer_options,
                        uint64 index_range_end,
                        float duration_seconds,
                        uint64 file_size,
-                       uint32 reference_time_scale,
-                       MuxerListener::ContainerType container_type,
                        MediaInfo* media_info) {
   DCHECK(media_info);
   if (file_size == 0) {
@@ -187,10 +186,9 @@ bool GenerateMediaInfo(const MuxerOptions& muxer_options,
   if (duration_seconds <= 0.0f) {
     // Non positive second media must be invalid media.
     LOG(ERROR) << "Duration is not positive: " << duration_seconds;
-    return false;;
+    return false;
   }
 
-  SetMediaInfoMuxerOptions(muxer_options, media_info);
   SetMediaInfoRanges(has_init_range,
                      init_range_start,
                      init_range_end,
@@ -198,14 +196,48 @@ bool GenerateMediaInfo(const MuxerOptions& muxer_options,
                      index_range_start,
                      index_range_end,
                      media_info);
-  SetMediaInfoCommonInfo(duration_seconds,
-                         file_size,
-                         reference_time_scale,
-                         container_type,
-                         media_info);
-  SetMediaInfoStreamInfo(stream_infos, media_info);
+
+  media_info->set_media_duration_seconds(duration_seconds);
+  media_info->set_bandwidth(
+      EstimateRequiredBandwidth(file_size, duration_seconds));
   return true;
-};
+}
+
+bool AddContentProtectionElements(MuxerListener::ContainerType container_type,
+                                  const std::string& user_scheme_id_uri,
+                                  MediaInfo* media_info) {
+  DCHECK(media_info);
+
+  const char kEncryptedMp4Uri[] = "urn:mpeg:dash:mp4protection:2011";
+  const char kEncryptedMp4Value[] = "cenc";
+
+  // DASH MPD spec specifies a default ContentProtection element for ISO BMFF
+  // (MP4) files.
+  const bool is_mp4_container = container_type == MuxerListener::kContainerMp4;
+  if (is_mp4_container) {
+    MediaInfo::ContentProtectionXml* mp4_protection =
+        media_info->add_content_protections();
+    mp4_protection->set_scheme_id_uri(kEncryptedMp4Uri);
+    mp4_protection->set_value(kEncryptedMp4Value);
+  }
+
+  if (!user_scheme_id_uri.empty()) {
+    MediaInfo::ContentProtectionXml* content_protection =
+        media_info->add_content_protections();
+    content_protection->set_scheme_id_uri(user_scheme_id_uri);
+  } else if (is_mp4_container) {
+    LOG(WARNING) << "schemeIdUri is not specified. Added default "
+                    "ContentProtection only.";
+  }
+
+  if (media_info->content_protections_size() == 0) {
+    LOG(ERROR) << "The stream is encrypted but no schemeIdUri specified for "
+                  "ContentProtection.";
+    return false;
+  }
+
+  return true;
+}
 
 }  // namespace internal
 }  // namespace event

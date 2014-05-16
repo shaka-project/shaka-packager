@@ -39,7 +39,8 @@ class MuxerListener {
   virtual void OnMediaStart(const MuxerOptions& muxer_options,
                             const std::vector<StreamInfo*>& stream_infos,
                             uint32 time_scale,
-                            ContainerType container_type) = 0;
+                            ContainerType container_type,
+                            bool is_encrypted) = 0;
 
   // Called when all files are written out and the muxer object does not output
   // any more files.
@@ -51,16 +52,14 @@ class MuxerListener {
   // Both ranges are inclusive.
   // Media length of |duration_seconds|.
   // |file_size| of the media in bytes.
-  virtual void OnMediaEnd(const std::vector<StreamInfo*>& stream_infos,
-                          bool has_init_range,
+  virtual void OnMediaEnd(bool has_init_range,
                           uint64 init_range_start,
                           uint64 init_range_end,
                           bool has_index_range,
                           uint64 index_range_start,
                           uint64 index_range_end,
                           float duration_seconds,
-                          uint64 file_size,
-                          bool is_encrypted) = 0;
+                          uint64 file_size) = 0;
 
   // Called when a segment has been muxed and the file has been written.
   // Note: For video on demand (VOD), this would be for subsegments.
