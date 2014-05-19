@@ -11,12 +11,11 @@
 #define MPD_BASE_MPD_NOTIFIER_H_
 
 #include "base/basictypes.h"
-#include "mpd/base/media_info.pb.h"
 
 namespace dash_packager {
 
-class ContentProtectionElement;
 class MediaInfo;
+struct ContentProtectionElement;
 
 /// Interface for publish/subscribe publisher class which notifies MpdBuilder
 /// of media-related events.

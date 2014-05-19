@@ -60,6 +60,9 @@ class MpdBuilder {
   /// @return true on success, false otherwise.
   bool ToString(std::string* output);
 
+  /// @return The mpd type.
+  MpdType type() { return type_; }
+
  private:
   bool ToStringImpl(std::string* output);
 
