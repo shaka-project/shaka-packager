@@ -119,16 +119,19 @@ Segmenter::Segmenter(const MuxerOptions& options,
       fragment_buffer_(new BufferWriter()),
       sidx_(new SegmentIndex()),
       segment_initialized_(false),
-      end_of_segment_(false) {}
+      end_of_segment_(false),
+      muxer_listener_(NULL) {}
 
 Segmenter::~Segmenter() { STLDeleteElements(&fragmenters_); }
 
 Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
+                             event::MuxerListener* muxer_listener,
                              EncryptionKeySource* encryption_key_source,
                              uint32 max_sd_pixels,
                              double clear_lead_in_seconds,
                              double crypto_period_duration_in_seconds) {
   DCHECK_LT(0u, streams.size());
+  muxer_listener_ = muxer_listener;
   moof_->header.sequence_number = 0;
 
   moof_->tracks.resize(streams.size());

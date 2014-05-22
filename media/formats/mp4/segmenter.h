@@ -23,6 +23,10 @@ class EncryptionKeySource;
 class MediaSample;
 class MediaStream;
 
+namespace event {
+class MuxerListener;
+}  // namespace event
+
 namespace mp4 {
 
 class Fragmenter;
@@ -59,6 +63,7 @@ class Segmenter {
   /// @param crypto_period_duration specifies crypto period duration in seconds.
   /// @return OK on success, an error status otherwise.
   Status Initialize(const std::vector<MediaStream*>& streams,
+                    event::MuxerListener* muxer_listener,
                     EncryptionKeySource* encryption_key_source,
                     uint32 max_sd_pixels,
                     double clear_lead_in_seconds,
@@ -95,6 +100,7 @@ class Segmenter {
   Movie* moov() { return moov_.get(); }
   BufferWriter* fragment_buffer() { return fragment_buffer_.get(); }
   SegmentIndex* sidx() { return sidx_.get(); }
+  event::MuxerListener* muxer_listener() { return muxer_listener_; }
 
  private:
   virtual Status DoInitialize() = 0;
@@ -119,6 +125,7 @@ class Segmenter {
   std::map<const MediaStream*, uint32> stream_map_;
   bool segment_initialized_;
   bool end_of_segment_;
+  event::MuxerListener* muxer_listener_;
 
   DISALLOW_COPY_AND_ASSIGN(Segmenter);
 };

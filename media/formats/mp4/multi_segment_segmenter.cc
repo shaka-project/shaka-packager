@@ -11,6 +11,7 @@
 #include "media/base/buffer_writer.h"
 #include "media/base/media_stream.h"
 #include "media/base/muxer_options.h"
+#include "media/event/muxer_listener.h"
 #include "media/file/file.h"
 #include "media/formats/mp4/box_definitions.h"
 
@@ -159,12 +160,26 @@ Status MultiSegmentSegmenter::WriteSegment() {
   if (options().num_subsegments_per_sidx >= 0)
     sidx()->Write(buffer.get());
 
+  const size_t segment_size = buffer->Size() + fragment_buffer()->Size();
+  DCHECK_NE(segment_size, 0u);
+
   Status status = buffer->WriteToFile(file);
   if (status.ok())
     status = fragment_buffer()->WriteToFile(file);
 
   if (!file->Close())
     LOG(WARNING) << "Failed to close the file properly: " << file_name;
+
+  if (status.ok() && muxer_listener()) {
+    uint64 segment_duration = 0;
+    // ISO/IEC 23009-1:2012: the value shall be identical to sum of the the
+    // values of all Subsegment_duration fields in the first ‘sidx’ box.
+    for (size_t i = 0; i < sidx()->references.size(); ++i)
+      segment_duration += sidx()->references[i].subsegment_duration;
+    muxer_listener()->OnNewSegment(
+        sidx()->earliest_presentation_time, segment_duration, segment_size);
+  }
+
   return status;
 }
 
