@@ -22,8 +22,4 @@ DECLARE_bool(normalize_presentation_timestamp);
 DECLARE_int32(num_subsegments_per_sidx);
 DECLARE_string(temp_dir);
 
-// Flags for MuxerListener.
-DECLARE_bool(output_media_info);
-DECLARE_string(scheme_id_uri);
-
 #endif  // APP_MUXER_FLAGS_H_

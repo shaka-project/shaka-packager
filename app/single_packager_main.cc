@@ -8,20 +8,25 @@
 
 #include "app/fixed_key_encryption_flags.h"
 #include "app/packager_common.h"
+#include "app/mpd_flags.h"
 #include "app/muxer_flags.h"
 #include "app/single_muxer_flags.h"
 #include "app/widevine_encryption_flags.h"
 #include "base/file_util.h"
 #include "base/logging.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/demuxer.h"
 #include "media/base/encryption_key_source.h"
 #include "media/base/muxer_options.h"
 #include "media/base/muxer_util.h"
+#include "media/event/mpd_notify_muxer_listener.h"
 #include "media/event/vod_media_info_dump_muxer_listener.h"
 #include "media/file/file.h"
 #include "media/file/file_closer.h"
 #include "media/formats/mp4/mp4_muxer.h"
+#include "mpd/base/mpd_builder.h"
+#include "mpd/base/simple_mpd_notifier.h"
 
 namespace {
 const char kUsage[] =
@@ -50,6 +55,25 @@ bool GetSingleMuxerOptions(MuxerOptions* muxer_options) {
 
 bool RunPackager(const std::string& input) {
   Status status;
+
+  if (FLAGS_output_media_info && !FLAGS_mpd_output.empty()) {
+    NOTIMPLEMENTED() << "ERROR: --output_media_info and --mpd_output cannot be "
+                        "enabled together.";
+    return false;
+  }
+
+  if (!FLAGS_single_segment) {
+    if (FLAGS_output_media_info) {
+      LOG(ERROR) << "ERROR: --output_media_info can be enabled only if "
+                    "--single_segment is true.";
+      return false;
+    }
+    if (!FLAGS_mpd_output.empty() && FLAGS_segment_template.empty()) {
+      LOG(ERROR) << "ERROR: --segment_template is required for live mpd "
+                    "profile generation.";
+      return false;
+    }
+  }
 
   // Get muxer options from commandline flags.
   MuxerOptions muxer_options;
@@ -90,6 +114,29 @@ bool RunPackager(const std::string& input) {
     media_info_muxer_listener->SetContentProtectionSchemeIdUri(
         FLAGS_scheme_id_uri);
     muxer_listener = media_info_muxer_listener.Pass();
+    muxer->SetMuxerListener(muxer_listener.get());
+  }
+
+  scoped_ptr<dash_packager::MpdNotifier> mpd_notifier;
+  if (!FLAGS_mpd_output.empty()) {
+    dash_packager::DashProfile profile = FLAGS_single_segment
+                                             ? dash_packager::kOnDemandProfile
+                                             : dash_packager::kLiveProfile;
+    std::vector<std::string> base_urls;
+    base::SplitString(FLAGS_base_urls, ',', &base_urls);
+    // TODO(rkuroiwa,kqyang): Get mpd options from command line.
+    mpd_notifier.reset(new dash_packager::SimpleMpdNotifier(
+        profile, dash_packager::MpdOptions(), base_urls, FLAGS_mpd_output));
+    if (!mpd_notifier->Init()) {
+      LOG(ERROR) << "MpdNotifier failed to initialize.";
+      return false;
+    }
+
+    scoped_ptr<event::MpdNotifyMuxerListener> mpd_notify_muxer_listener(
+        new event::MpdNotifyMuxerListener(mpd_notifier.get()));
+    mpd_notify_muxer_listener->SetContentProtectionSchemeIdUri(
+        FLAGS_scheme_id_uri);
+    muxer_listener = mpd_notify_muxer_listener.Pass();
     muxer->SetMuxerListener(muxer_listener.get());
   }
 

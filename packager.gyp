@@ -23,6 +23,8 @@
         'app/fixed_key_encryption_flags.h',
         'app/libcrypto_threading.cc',
         'app/libcrypto_threading.h',
+        'app/mpd_flags.cc',
+        'app/mpd_flags.h',
         'app/muxer_flags.cc',
         'app/muxer_flags.h',
         'app/packager_common.cc',
@@ -38,6 +40,7 @@
         'media/formats/mp2t/mp2t.gyp:mp2t',
         'media/formats/mp4/mp4.gyp:mp4',
         'media/formats/mpeg/mpeg.gyp:mpeg',
+        'mpd/mpd.gyp:mpd_builder',
         'third_party/gflags/gflags.gyp:gflags',
       ],
       'conditions': [
@@ -54,6 +57,8 @@
       'sources': [
         'app/fixed_key_encryption_flags.cc',
         'app/fixed_key_encryption_flags.h',
+        'app/mpd_flags.cc',
+        'app/mpd_flags.h',
         'app/muxer_flags.cc',
         'app/muxer_flags.h',
         'app/packager_common.cc',
@@ -71,6 +76,7 @@
         'media/formats/mp2t/mp2t.gyp:mp2t',
         'media/formats/mp4/mp4.gyp:mp4',
         'media/formats/mpeg/mpeg.gyp:mpeg',
+        'mpd/mpd.gyp:mpd_builder',
         'third_party/gflags/gflags.gyp:gflags',
       ],
     },

@@ -8,9 +8,9 @@
 
 #include "app/fixed_key_encryption_flags.h"
 #include "app/libcrypto_threading.h"
-#include "app/muxer_flags.h"
 #include "app/packager_common.h"
-#include "app/single_muxer_flags.h"
+#include "app/mpd_flags.h"
+#include "app/muxer_flags.h"
 #include "app/widevine_encryption_flags.h"
 #include "base/logging.h"
 #include "base/stl_util.h"
@@ -21,7 +21,10 @@
 #include "media/base/encryption_key_source.h"
 #include "media/base/muxer_options.h"
 #include "media/base/muxer_util.h"
+#include "media/event/mpd_notify_muxer_listener.h"
 #include "media/formats/mp4/mp4_muxer.h"
+#include "mpd/base/mpd_builder.h"
+#include "mpd/base/simple_mpd_notifier.h"
 
 namespace {
 const char kUsage[] =
@@ -42,6 +45,15 @@ typedef std::vector<std::string> StringVector;
 }  // namespace
 
 namespace media {
+
+using dash_packager::DashProfile;
+using dash_packager::kOnDemandProfile;
+using dash_packager::kLiveProfile;
+using dash_packager::MpdNotifier;
+using dash_packager::MpdOptions;
+using dash_packager::SimpleMpdNotifier;
+using event::MpdNotifyMuxerListener;
+using event::MuxerListener;
 
 // Demux, Mux(es) and worker thread used to remux a source file/stream.
 class RemuxJob : public base::SimpleThread {
@@ -77,7 +89,10 @@ class RemuxJob : public base::SimpleThread {
 bool CreateRemuxJobs(const StringVector& stream_descriptors,
                      const MuxerOptions& muxer_options,
                      EncryptionKeySource* key_source,
+                     MpdNotifier* mpd_notifier,
+                     std::vector<MuxerListener*>* muxer_listeners,
                      std::vector<RemuxJob*>* remux_jobs) {
+  DCHECK(muxer_listeners);
   DCHECK(remux_jobs);
 
   // Sort the stream descriptors so that we can group muxers by demux.
@@ -140,6 +155,15 @@ bool CreateRemuxJobs(const StringVector& stream_descriptors,
                                     FLAGS_crypto_period_duration);
     }
 
+    if (mpd_notifier) {
+      scoped_ptr<MpdNotifyMuxerListener> mpd_notify_muxer_listener(
+          new MpdNotifyMuxerListener(mpd_notifier));
+      mpd_notify_muxer_listener->SetContentProtectionSchemeIdUri(
+          FLAGS_scheme_id_uri);
+      muxer_listeners->push_back(mpd_notify_muxer_listener.release());
+      muxer->SetMuxerListener(muxer_listeners->back());
+    }
+
     if (!AddStreamToMuxer(remux_jobs->back()->demuxer()->streams(),
                           stream_selector,
                           muxer.get()))
@@ -181,6 +205,11 @@ Status RunRemuxJobs(const std::vector<RemuxJob*>& remux_jobs) {
 }
 
 bool RunPackager(const StringVector& stream_descriptors) {
+  if (FLAGS_output_media_info) {
+    NOTIMPLEMENTED() << "ERROR: --output_media_info is not supported yet.";
+    return false;
+  }
+
   // Get basic muxer options.
   MuxerOptions muxer_options;
   if (!GetMuxerOptions(&muxer_options))
@@ -194,13 +223,35 @@ bool RunPackager(const StringVector& stream_descriptors) {
       return false;
   }
 
+  scoped_ptr<MpdNotifier> mpd_notifier;
+  if (!FLAGS_mpd_output.empty()) {
+    DashProfile profile =
+        FLAGS_single_segment ? kOnDemandProfile : kLiveProfile;
+    std::vector<std::string> base_urls;
+    base::SplitString(FLAGS_base_urls, ',', &base_urls);
+    // TODO(rkuroiwa,kqyang): Get mpd options from command line.
+    mpd_notifier.reset(new SimpleMpdNotifier(profile, MpdOptions(), base_urls,
+                                             FLAGS_mpd_output));
+    if (!mpd_notifier->Init()) {
+      LOG(ERROR) << "MpdNotifier failed to initialize.";
+      return false;
+    }
+  }
+
+  // TODO(kqyang): Should Muxer::SetMuxerListener take owership of the
+  // muxer_listeners object? Then we can get rid of |muxer_listeners|.
+  std::vector<MuxerListener*> muxer_listeners;
+  STLElementDeleter<std::vector<MuxerListener*> > deleter(&muxer_listeners);
   std::vector<RemuxJob*> remux_jobs;
   STLElementDeleter<std::vector<RemuxJob*> > scoped_jobs_deleter(&remux_jobs);
   if (!CreateRemuxJobs(stream_descriptors,
                        muxer_options,
                        encryption_key_source.get(),
-                       &remux_jobs))
+                       mpd_notifier.get(),
+                       &muxer_listeners,
+                       &remux_jobs)) {
     return false;
+  }
 
   Status status = RunRemuxJobs(remux_jobs);
   if (!status.ok()) {
