@@ -11,6 +11,8 @@
 #include "base/logging.h"
 #include "base/memory/scoped_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/time/time.h"
 #include "mpd/base/content_protection_element.h"
 #include "mpd/base/mpd_utils.h"
 #include "mpd/base/xml/xml_node.h"
@@ -82,10 +84,47 @@ xmlNodePtr FindPeriodNode(XmlNode* xml_node) {
   return NULL;
 }
 
+bool Positive(double d) {
+  return d > 0.0;
+}
+
+// Return current time in XML DateTime format.
+std::string XmlDateTimeNow() {
+  base::Time now = base::Time::Now();
+  base::Time::Exploded now_exploded;
+  now.UTCExplode(&now_exploded);
+
+  return base::StringPrintf("%4d-%02d-%02dT%02d:%02d:%02d",
+                            now_exploded.year,
+                            now_exploded.month,
+                            now_exploded.day_of_month,
+                            now_exploded.hour,
+                            now_exploded.minute,
+                            now_exploded.second);
+}
+
+void SetIfPositive(const char* attr_name, double value, XmlNode* mpd) {
+  if (Positive(value)) {
+    mpd->SetStringAttribute(attr_name, SecondsToXmlDuration(value));
+  }
+}
+
 }  // namespace
 
-MpdBuilder::MpdBuilder(MpdType type)
+MpdOptions::MpdOptions()
+    : minimum_update_period(),
+      min_buffer_time(),
+      time_shift_buffer_depth(),
+      suggested_presentation_delay(),
+      max_segment_duration(),
+      max_subsegment_duration(),
+      number_of_blocks_for_bandwidth_estimation() {}
+
+MpdOptions::~MpdOptions() {}
+
+MpdBuilder::MpdBuilder(MpdType type, const MpdOptions& mpd_options)
     : type_(type),
+      options_(mpd_options),
       adaptation_sets_deleter_(&adaptation_sets_) {}
 
 MpdBuilder::~MpdBuilder() {}
@@ -140,8 +179,7 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
   XmlNode mpd("MPD");
   AddMpdNameSpaceInfo(&mpd);
 
-  const float kMinBufferTime = 2.0f;
-  mpd.SetStringAttribute("minBufferTime", SecondsToXmlDuration(kMinBufferTime));
+  SetMpdOptionsValues(&mpd);
 
   // Iterate thru AdaptationSets and add them to one big Period element.
   XmlNode period("Period");
@@ -163,6 +201,11 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
       return NULL;
   }
 
+  if (type_ == kDynamic) {
+    // This is the only Period and it is a regular period.
+    period.SetStringAttribute("start", "PT0S");
+  }
+
   if (!mpd.AddChild(period.PassScopedPtr()))
     return NULL;
 
@@ -171,7 +214,7 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
       AddStaticMpdInfo(&mpd);
       break;
     case kDynamic:
-      NOTIMPLEMENTED() << "MPD for live is not implemented.";
+      AddDynamicMpdInfo(&mpd);
       break;
     default:
       NOTREACHED() << "Unknown MPD type: " << type_;
@@ -195,6 +238,17 @@ void MpdBuilder::AddStaticMpdInfo(XmlNode* mpd_node) {
   mpd_node->SetStringAttribute(
       "mediaPresentationDuration",
       SecondsToXmlDuration(GetStaticMpdDuration(mpd_node)));
+}
+
+void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
+  DCHECK(mpd_node);
+  DCHECK_EQ(MpdBuilder::kDynamic, type_);
+
+  static const char kDynamicMpdType[] = "dynamic";
+  static const char kDynamicMpdProfile[] =
+      "urn:mpeg:dash:profile:isoff-live:2011";
+  mpd_node->SetStringAttribute("type", kDynamicMpdType);
+  mpd_node->SetStringAttribute("profiles", kDynamicMpdProfile);
 }
 
 float MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
@@ -227,6 +281,62 @@ float MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
   }
 
   return max_duration;
+}
+
+void MpdBuilder::SetMpdOptionsValues(XmlNode* mpd) {
+  if (type_ == kStatic) {
+    if (!options_.availability_start_time.empty()) {
+      mpd->SetStringAttribute("availabilityStartTime",
+                              options_.availability_start_time);
+    }
+    LOG_IF(WARNING, Positive(options_.minimum_update_period))
+        << "minimumUpdatePeriod should not be present in 'static' profile. "
+           "Ignoring.";
+    LOG_IF(WARNING, Positive(options_.time_shift_buffer_depth))
+        << "timeShiftBufferDepth will not be used for 'static' profile. "
+           "Ignoring.";
+    LOG_IF(WARNING, Positive(options_.suggested_presentation_delay))
+        << "suggestedPresentationDelay will not be used for 'static' profile. "
+           "Ignoring.";
+  } else if (type_ == kDynamic) {
+    // 'availabilityStartTime' is required for dynamic profile, so use current
+    // time if not specified.
+    const std::string avail_start = !options_.availability_start_time.empty()
+                                        ? options_.availability_start_time
+                                        : XmlDateTimeNow();
+    mpd->SetStringAttribute("availabilityStartTime", avail_start);
+
+    if (Positive(options_.minimum_update_period)) {
+      mpd->SetStringAttribute(
+          "minimumUpdatePeriod",
+          SecondsToXmlDuration(options_.minimum_update_period));
+    } else {
+      // TODO(rkuroiwa): Set minimumUpdatePeriod to some default value.
+      LOG(WARNING) << "The profile is dynamic but no minimumUpdatePeriod "
+                      "specified. Setting minimumUpdatePeriod to 0.";
+    }
+
+    SetIfPositive(
+        "timeShiftBufferDepth", options_.time_shift_buffer_depth, mpd);
+    SetIfPositive("suggestedPresentationDelay",
+                  options_.suggested_presentation_delay,
+                  mpd);
+  }
+
+  const double kDefaultMinBufferTime = 2.0;
+  const double min_buffer_time = Positive(options_.min_buffer_time)
+                                     ? options_.min_buffer_time
+                                     : kDefaultMinBufferTime;
+  mpd->SetStringAttribute("minBufferTime",
+                          SecondsToXmlDuration(min_buffer_time));
+
+  if (!options_.availability_end_time.empty()) {
+    mpd->SetStringAttribute("availabilityEndTime",
+                            options_.availability_end_time);
+  }
+
+  SetIfPositive("maxSegmentDuration", options_.max_segment_duration, mpd);
+  SetIfPositive("maxSubsegmentDuration", options_.max_subsegment_duration, mpd);
 }
 
 AdaptationSet::AdaptationSet(uint32 adaptation_set_id,
@@ -283,14 +393,13 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
 }
 
 Representation::Representation(const MediaInfo& media_info, uint32 id)
-    : media_info_(media_info), id_(id) {}
+    : media_info_(media_info),
+      id_(id),
+      bandwidth_estimator_(BandwidthEstimator::kUseAllBlocks) {}
 
 Representation::~Representation() {}
 
 bool Representation::Init() {
-  if (!HasRequiredMediaInfoFields())
-    return false;
-
   codecs_ = GetCodecs(media_info_);
   if (codecs_.empty()) {
     LOG(ERROR) << "Missing codec info in MediaInfo.";
@@ -331,11 +440,24 @@ void Representation::AddContentProtectionElement(
   RemoveDuplicateAttributes(&content_protection_elements_.back());
 }
 
-bool Representation::AddNewSegment(uint64 start_time, uint64 duration) {
+void Representation::AddNewSegment(uint64 start_time,
+                                   uint64 duration,
+                                   uint64 size) {
+  if (start_time == 0 && duration == 0) {
+    LOG(WARNING) << "Got segment with start_time and duration == 0. Ignoring.";
+    return;
+  }
+
   base::AutoLock scoped_lock(lock_);
-  segment_starttime_duration_pairs_.push_back(
-      std::pair<uint64, uint64>(start_time, duration));
-  return true;
+  if (IsContiguous(start_time, duration, size)) {
+    ++segment_infos_.back().repeat;
+  } else {
+    SegmentInfo s = {start_time, duration, /* Not repeat. */ 0};
+    segment_infos_.push_back(s);
+  }
+
+  bandwidth_estimator_.AddBlock(
+      size, static_cast<double>(duration) / media_info_.reference_time_scale());
 }
 
 // Uses info in |media_info_| and |content_protection_elements_| to create a
@@ -346,13 +468,22 @@ bool Representation::AddNewSegment(uint64 start_time, uint64 duration) {
 // AddVODOnlyInfo() (Adds segment info).
 xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
   base::AutoLock scoped_lock(lock_);
+
+  if (!HasRequiredMediaInfoFields()) {
+    LOG(ERROR) << "MediaInfo missing required fields.";
+    return xml::ScopedXmlPtr<xmlNode>::type();
+  }
+
+  const uint64 bandwidth = media_info_.has_bandwidth()
+                               ? media_info_.bandwidth()
+                               : bandwidth_estimator_.Estimate();
+
   DCHECK(!(HasVODOnlyFields(media_info_) && HasLiveOnlyFields(media_info_)));
-  DCHECK(media_info_.has_bandwidth());
 
   RepresentationXmlNode representation;
   // Mandatory fields for Representation.
   representation.SetId(id_);
-  representation.SetIntegerAttribute("bandwidth", media_info_.bandwidth());
+  representation.SetIntegerAttribute("bandwidth", bandwidth);
   representation.SetStringAttribute("codecs", codecs_);
   representation.SetStringAttribute("mimeType", mime_type_);
 
@@ -384,6 +515,14 @@ xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
     return xml::ScopedXmlPtr<xmlNode>::type();
   }
 
+  if (HasLiveOnlyFields(media_info_) &&
+      !representation.AddLiveOnlyInfo(media_info_, segment_infos_)) {
+    LOG(ERROR) << "Failed to add Live info.";
+    return xml::ScopedXmlPtr<xmlNode>::type();
+  }
+  // TODO(rkuroiwa): It is likely that all representations have the exact same
+  // SegmentTemplate. Optimize and propagate the tag up to AdaptationSet level.
+
   return representation.PassScopedPtr();
 }
 
@@ -393,17 +532,71 @@ bool Representation::HasRequiredMediaInfoFields() {
     return false;
   }
 
-  if (!media_info_.has_bandwidth()) {
-    LOG(ERROR) << "MediaInfo missing required field: bandwidth.";
-    return false;
-  }
-
   if (!media_info_.has_container_type()) {
     LOG(ERROR) << "MediaInfo missing required field: container_type.";
     return false;
   }
 
+  if (HasVODOnlyFields(media_info_) && !media_info_.has_bandwidth()) {
+    LOG(ERROR) << "Missing 'bandwidth' field. MediaInfo requires bandwidth for "
+                  "static profile for generating a valid MPD.";
+    return false;
+  }
+
+  VLOG_IF(3, HasLiveOnlyFields(media_info_) && !media_info_.has_bandwidth())
+      << "MediaInfo missing field 'bandwidth'. Using estimated from "
+         "segment size.";
+
   return true;
+}
+
+// In Debug builds, some of the irregular cases crash. It is probably a
+// programming error but in production, it might not be best to stop the
+// pipeline, especially for live.
+bool Representation::IsContiguous(uint64 start_time,
+                                  uint64 duration,
+                                  uint64 size) const {
+  if (segment_infos_.empty() || segment_infos_.back().duration != duration)
+    return false;
+
+  // Contiguous segment.
+  const SegmentInfo& previous = segment_infos_.back();
+  const uint64 previous_segment_end_time =
+      previous.start_time +
+      previous.duration * (previous.repeat + 1);
+  if (previous_segment_end_time == start_time)
+    return true;
+
+  // A gap since previous.
+  if (previous_segment_end_time < start_time)
+    return false;
+
+  // No out of order segments.
+  const uint64 previous_segment_start_time =
+      previous.start_time +
+      previous.duration * previous.repeat;
+  if (previous_segment_start_time >= start_time) {
+    LOG(ERROR) << "Segments should not be out of order segment. Adding segment "
+                  "with start_time == " << start_time
+               << " but the previous segment starts at " << previous.start_time
+               << ".";
+    DCHECK(false);
+    return false;
+  }
+
+  // No overlapping segments.
+  const uint64 kRoundingErrorGrace = 5;
+  if (start_time < previous_segment_end_time - kRoundingErrorGrace) {
+    LOG(WARNING)
+        << "Segments shold not be overlapping. The new segment starts at "
+        << start_time << " but the previous segment ends at "
+        << previous_segment_end_time << ".";
+    DCHECK(false);
+    return false;
+  }
+
+  // Within rounding error grace but technically not contiguous interms of MPD.
+  return false;
 }
 
 std::string Representation::GetVideoMimeType() const {

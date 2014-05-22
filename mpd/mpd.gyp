@@ -40,6 +40,8 @@
       'target_name': 'mpd_builder',
       'type': 'static_library',
       'sources': [
+        'base/bandwidth_estimator.cc',
+        'base/bandwidth_estimator.h',
         'base/content_protection_element.cc',
         'base/content_protection_element.h',
         'base/mpd_builder.cc',
@@ -67,6 +69,7 @@
       'target_name': 'mpd_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
+        'base/bandwidth_estimator_test.cc',
         'base/mpd_builder_unittest.cc',
         'base/xml/xml_node_unittest.cc',
         'test/mpd_builder_test_helper.cc',

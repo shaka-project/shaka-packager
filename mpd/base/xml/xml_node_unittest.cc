@@ -3,9 +3,11 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
+#include <list>
 
 #include "base/logging.h"
 #include "base/strings/string_util.h"
+#include "mpd/base/mpd_builder.h"
 #include "mpd/base/xml/xml_node.h"
 #include "mpd/test/xml_compare.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,16 +30,59 @@ void AddAttribute(const std::string& name,
   attribute->set_value(value);
 }
 
+std::string GetDocAsFlatString(xmlDocPtr doc) {
+  static const int kFlatFormat = 0;
+  int doc_str_size = 0;
+  xmlChar* doc_str = NULL;
+  xmlDocDumpFormatMemoryEnc(doc, &doc_str, &doc_str_size, "UTF-8", kFlatFormat);
+  DCHECK(doc_str);
+
+  std::string output(doc_str, doc_str + doc_str_size);
+  xmlFree(doc_str);
+  return output;
+}
+
 ScopedXmlPtr<xmlDoc>::type MakeDoc(ScopedXmlPtr<xmlNode>::type node) {
   xml::ScopedXmlPtr<xmlDoc>::type doc(xmlNewDoc(BAD_CAST ""));
   xmlDocSetRootElement(doc.get(), node.release());
-
   return doc.Pass();
 }
+
 }  // namespace
 
+class RepresentationTest : public ::testing::Test {
+ public:
+  RepresentationTest() {}
+  virtual ~RepresentationTest() {}
+
+  // Ownership transfers, IOW this function will release the resource for
+  // |node|. Returns |node| in string format.
+  // You should not call this function multiple times.
+  std::string GetStringFormat() {
+    xml::ScopedXmlPtr<xmlDoc>::type doc(xmlNewDoc(BAD_CAST ""));
+
+    // Because you cannot easily get the string format of a xmlNodePtr, it gets
+    // attached to a temporary xml doc.
+    xmlDocSetRootElement(doc.get(), representation_.Release());
+    std::string doc_str = GetDocAsFlatString(doc.get());
+
+    // GetDocAsFlatString() adds
+    // <?xml version="" encoding="UTF-8"?>
+    // to the first line. So this removes the first line.
+    const size_t first_newline_char_pos = doc_str.find('\n');
+    DCHECK_NE(first_newline_char_pos, std::string::npos);
+    return doc_str.substr(first_newline_char_pos + 1);
+  }
+
+ protected:
+  RepresentationXmlNode representation_;
+  std::list<SegmentInfo> segment_infos_;
+};
+
 // Make sure XmlEqual() is functioning correctly.
-TEST(MetaTest, XmlEqual) {
+// TODO(rkuroiwa): Move this to a separate file. This requires it to be TEST_F
+// due to gtest /test
+TEST_F(RepresentationTest, MetaTest_XmlEqual) {
   static const char kXml1[] =
       "<A>\n"
       "  <B\n"
@@ -120,7 +165,7 @@ TEST(MetaTest, XmlEqual) {
   ASSERT_FALSE(XmlEqual(kXml1AttributeReorder, kXml1ChildrenReordered));
 }
 
-TEST(Representation, AddContentProtectionXml) {
+TEST_F(RepresentationTest, AddContentProtectionXml) {
   static const char kExpectedRepresentaionString[] =
       "<Representation>\n"
       " <ContentProtection\n"
@@ -146,13 +191,29 @@ TEST(Representation, AddContentProtectionXml) {
   AddAttribute("c", "3", subelement);
   AddAttribute("d", "4", subelement);
 
-  RepresentationXmlNode representation;
   ASSERT_TRUE(
-      representation.AddContentProtectionElementsFromMediaInfo(media_info));
-
-  ScopedXmlPtr<xmlDoc>::type doc(MakeDoc(representation.PassScopedPtr()));
+      representation_.AddContentProtectionElementsFromMediaInfo(media_info));
+  ScopedXmlPtr<xmlDoc>::type doc(MakeDoc(representation_.PassScopedPtr()));
   ASSERT_TRUE(
       XmlEqual(kExpectedRepresentaionString, doc.get()));
+}
+
+// Some template names cannot be used for init segment name.
+TEST_F(RepresentationTest, InvalidLiveInitSegmentName) {
+  MediaInfo media_info;
+
+  // $NUMBER$ cannot be used for segment name.
+  media_info.set_init_segment_name("$Number$.mp4");
+
+  ASSERT_FALSE(representation_.AddLiveOnlyInfo(media_info, segment_infos_));
+
+  // $TIME$ as well.
+  media_info.set_init_segment_name("$Time$.mp4");
+  ASSERT_FALSE(representation_.AddLiveOnlyInfo(media_info, segment_infos_));
+
+  // This should be valid.
+  media_info.set_init_segment_name("some_non_template_name.mp4");
+  ASSERT_TRUE(representation_.AddLiveOnlyInfo(media_info, segment_infos_));
 }
 
 }  // namespace xml

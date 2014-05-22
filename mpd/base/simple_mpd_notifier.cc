@@ -22,7 +22,8 @@ SimpleMpdNotifier::SimpleMpdNotifier(DashProfile dash_profile,
       output_path_(output_path),
       mpd_builder_(new MpdBuilder(dash_profile == kLiveProfile
                                       ? MpdBuilder::kDynamic
-                                      : MpdBuilder::kStatic)) {
+                                      : MpdBuilder::kStatic,
+                                  MpdOptions())) {
   DCHECK(dash_profile == kLiveProfile || dash_profile == kOnDemandProfile);
   for (size_t i = 0; i < base_urls.size(); ++i)
     mpd_builder_->AddBaseUrl(base_urls[i]);
@@ -76,8 +77,8 @@ bool SimpleMpdNotifier::NotifyNewSegment(uint32 container_id,
     LOG(ERROR) << "Unexpected container_id: " << container_id;
     return false;
   }
-  if (!it->second->AddNewSegment(start_time, duration))
-    return false;
+  // TODO(kqyang): AddNewSegment() requires size for the third argument.
+  // !it->second->AddNewSegment(start_time, duration);
   return WriteMpdToFile();
 }
 

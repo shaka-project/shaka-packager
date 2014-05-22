@@ -9,14 +9,18 @@
 #include <set>
 
 #include "base/logging.h"
+#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "mpd/base/media_info.pb.h"
+#include "mpd/base/segment_info.h"
 
 using dash_packager::xml::XmlNode;
 
 using dash_packager::MediaInfo;
 typedef MediaInfo::ContentProtectionXml ContentProtectionXml;
 typedef ContentProtectionXml::AttributeNameValuePair AttributeNameValuePair;
+
+namespace dash_packager {
 
 namespace {
 
@@ -151,9 +155,25 @@ bool TranslateToContentProtectionXmlNode(
   return true;
 }
 
+bool PopulateSegmentTimeline(const std::list<SegmentInfo>& segment_infos,
+                             XmlNode* segment_timeline) {
+  for (std::list<SegmentInfo>::const_iterator it = segment_infos.begin();
+       it != segment_infos.end();
+       ++it) {
+    XmlNode* s_element = new XmlNode("S");
+    s_element->SetIntegerAttribute("t", it->start_time);
+    s_element->SetIntegerAttribute("d", it->duration);
+    if (it->repeat > 0)
+      s_element->SetIntegerAttribute("r", it->repeat);
+
+    CHECK(segment_timeline->AddChild(s_element->PassScopedPtr()));
+  }
+
+  return true;
+}
+
 }  // namespace
 
-namespace dash_packager {
 namespace xml {
 
 XmlNode::XmlNode(const char* name) : node_(xmlNewNode(NULL, BAD_CAST name)) {
@@ -179,13 +199,13 @@ void XmlNode::SetStringAttribute(const char* attribute_name,
                                  const std::string& attribute) {
   DCHECK(node_);
   DCHECK(attribute_name);
-  xmlNewProp(node_.get(), BAD_CAST attribute_name, BAD_CAST attribute.c_str());
+  xmlSetProp(node_.get(), BAD_CAST attribute_name, BAD_CAST attribute.c_str());
 }
 
 void XmlNode::SetIntegerAttribute(const char* attribute_name, uint64 number) {
   DCHECK(node_);
   DCHECK(attribute_name);
-  xmlNewProp(node_.get(),
+  xmlSetProp(node_.get(),
              BAD_CAST attribute_name,
              BAD_CAST (base::Uint64ToString(number).c_str()));
 }
@@ -194,7 +214,7 @@ void XmlNode::SetFloatingPointAttribute(const char* attribute_name,
                                         double number) {
   DCHECK(node_);
   DCHECK(attribute_name);
-  xmlNewProp(node_.get(),
+  xmlSetProp(node_.get(),
              BAD_CAST attribute_name,
              BAD_CAST (base::DoubleToString(number).c_str()));
 }
@@ -388,6 +408,43 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
   }
 
   return true;
+}
+
+bool RepresentationXmlNode::AddLiveOnlyInfo(
+    const MediaInfo& media_info,
+    const std::list<SegmentInfo>& segment_infos) {
+  XmlNode segment_template("SegmentTemplate");
+  if (media_info.has_reference_time_scale()) {
+    segment_template.SetIntegerAttribute("timescale",
+                                         media_info.reference_time_scale());
+  }
+
+  if (media_info.has_init_segment_name()) {
+    // The spec does not allow '$Number$' and '$Time$' in initialization
+    // attribute.
+    // TODO(rkuroiwa, kqyang): Swap this check out with a better check. These
+    // templates allow formatting as well.
+    const std::string& init_segment_name = media_info.init_segment_name();
+    if (init_segment_name.find("$Number$") != std::string::npos ||
+        init_segment_name.find("$Time$") != std::string::npos) {
+      LOG(ERROR) << "$Number$ and $Time$ cannot be used for "
+                    "SegmentTemplate@initialization";
+      return false;
+    }
+
+    segment_template.SetStringAttribute("initialization",
+                                        media_info.init_segment_name());
+  }
+
+  if (media_info.has_segment_template())
+    segment_template.SetStringAttribute("media", media_info.segment_template());
+
+  // TODO(rkuroiwa): Find out when a live MPD doesn't require SegmentTimeline.
+  XmlNode segment_timeline("SegmentTimeline");
+
+  return PopulateSegmentTimeline(segment_infos, &segment_timeline) &&
+         segment_template.AddChild(segment_timeline.PassScopedPtr()) &&
+         AddChild(segment_template.PassScopedPtr());
 }
 
 // Find all the unique number-of-channels in |repeated_audio_info|, and make

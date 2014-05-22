@@ -19,6 +19,9 @@
 #include "third_party/libxml/src/include/libxml/tree.h"
 
 namespace dash_packager {
+
+struct SegmentInfo;
+
 namespace xml {
 
 /// These classes are wrapper classes for XML elements for generating MPD.
@@ -148,6 +151,9 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
   /// @param media_info is a MediaInfo with VOD information.
   /// @return true on success, false otherwise.
   bool AddVODOnlyInfo(const MediaInfo& media_info);
+
+  bool AddLiveOnlyInfo(const MediaInfo& media_info,
+                       const std::list<SegmentInfo>& segment_infos);
 
  private:
   // Add AudioChannelConfiguration elements. This will add multiple

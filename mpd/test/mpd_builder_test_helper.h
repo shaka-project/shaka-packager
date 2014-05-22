@@ -39,6 +39,8 @@ const char kFileNameExpectedMpdOutputAudio1AndVideo1[] =
 const char kFileNameExpectedMpdOutputEncryptedAudio[] =
     "encrypted_audio_media_info_expected_output.txt";
 
+const char kFileNameExpectedMpdOutputDynamicNormal[] = "dynamic_normal_mpd.txt";
+
 // Returns the path to test data with |file_name|. Use constants above to get
 // path to the test files.
 base::FilePath GetTestDataFilePath(const std::string& file_name);

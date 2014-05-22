@@ -12,12 +12,13 @@
 #include <string>
 
 #include "base/basictypes.h"
-#include "mpd/base/media_info.pb.h"
 #include "third_party/libxml/src/include/libxml/tree.h"
 
 namespace dash_packager {
 
+class MediaInfo;
 struct ContentProtectionElement;
+struct SegmentInfo;
 
 bool HasVODOnlyFields(const MediaInfo& media_info);
 
@@ -33,7 +34,7 @@ void RemoveDuplicateAttributes(
 // comma.
 std::string GetCodecs(const MediaInfo& media_info);
 
-std::string SecondsToXmlDuration(float seconds);
+std::string SecondsToXmlDuration(double seconds);
 
 // Tries to get "duration" attribute from |node|. On success |duration| is set.
 bool GetDurationAttribute(xmlNodePtr node, float* duration);

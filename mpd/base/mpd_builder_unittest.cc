@@ -7,8 +7,11 @@
 #include "base/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "mpd/base/mpd_builder.h"
+#include "mpd/base/mpd_utils.h"
 #include "mpd/test/mpd_builder_test_helper.h"
+#include "mpd/test/xml_compare.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libxml/src/include/libxml/xmlstring.h"
 
@@ -42,27 +45,11 @@ void CheckIdEqual(uint32 expected_id, T* node) {
 }
 }  // namespace
 
-TEST(AdaptationSetTest, CheckId) {
-  base::AtomicSequenceNumber sequence_counter;
-  const uint32 kAdaptationSetId = 42;
-
-  AdaptationSet adaptation_set(kAdaptationSetId, &sequence_counter);
-  ASSERT_NO_FATAL_FAILURE(CheckIdEqual(kAdaptationSetId, &adaptation_set));
-}
-
-TEST(RepresentationTest, CheckId) {
-  const MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
-  const uint32 kRepresentationId = 1;
-
-  Representation representation(video_media_info, kRepresentationId);
-  EXPECT_TRUE(representation.Init());
-  ASSERT_NO_FATAL_FAILURE(CheckIdEqual(kRepresentationId, &representation));
-}
-
-class StaticMpdBuilderTest : public ::testing::Test {
+template <MpdBuilder::MpdType type>
+class MpdBuilderTest: public ::testing::Test {
  public:
-  StaticMpdBuilderTest() : mpd_(MpdBuilder::kStatic) {}
-  virtual ~StaticMpdBuilderTest() {}
+  MpdBuilderTest() : mpd_(type, MpdOptions()), representation_() {}
+  virtual ~MpdBuilderTest() {}
 
   void CheckMpd(const std::string& expected_output_file) {
     std::string mpd_doc;
@@ -74,25 +61,169 @@ class StaticMpdBuilderTest : public ::testing::Test {
   }
 
  protected:
+  void AddRepresentation(const MediaInfo& media_info) {
+    AdaptationSet* adaptation_set = mpd_.AddAdaptationSet();
+    ASSERT_TRUE(adaptation_set);
+
+    Representation* representation =
+        adaptation_set->AddRepresentation(media_info);
+    ASSERT_TRUE(representation);
+
+    representation_ = representation;
+  }
+
   MpdBuilder mpd_;
 
+  // We usually need only one representation.
+  Representation* representation_;  // Owned by |mpd_|.
+
  private:
-  DISALLOW_COPY_AND_ASSIGN(StaticMpdBuilderTest);
+  DISALLOW_COPY_AND_ASSIGN(MpdBuilderTest);
 };
 
+class StaticMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kStatic> {};
+
+class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
+ public:
+  virtual ~DynamicMpdBuilderTest() {}
+
+  // Anchors availabilityStartTime so that the test result doesn't depend on the
+  // current time.
+  virtual void SetUp() {
+    mpd_.options_.availability_start_time = "2011-12-25T12:30:00";
+  }
+
+  std::string GetDefaultMediaInfo() {
+    const char kMediaInfo[] =
+        "video_info {\n"
+        "  codec: \"avc1.010101\"\n"
+        "  width: 720\n"
+        "  height: 480\n"
+        "  time_scale: 10\n"
+        "}\n"
+        "reference_time_scale: %lu\n"
+        "container_type: 1\n"
+        "init_segment_name: \"init.mp4\"\n"
+        "segment_template: \"$Time$.mp4\"\n";
+
+    return base::StringPrintf(kMediaInfo, DefaultTimeScale());
+  }
+
+  uint64 DefaultTimeScale() const { return 1000; };
+};
+
+class SegmentTemplateTest : public DynamicMpdBuilderTest {
+ public:
+  SegmentTemplateTest()
+      : bandwidth_estimator_(BandwidthEstimator::kUseAllBlocks) {}
+  virtual ~SegmentTemplateTest() {}
+
+  virtual void SetUp() {
+    DynamicMpdBuilderTest::SetUp();
+    ASSERT_NO_FATAL_FAILURE(AddRepresentationWithDefaultMediaInfo());
+  }
+
+  void AddSegments(uint64 start_time,
+                   uint64 duration,
+                   uint64 size,
+                   uint64 repeat) {
+    DCHECK(representation_);
+    const char kSElementTemplate[] = "<S t=\"%lu\" d=\"%lu\" r=\"%lu\"/>\n";
+    const char kSElementTemplateWithoutR[] = "<S t=\"%lu\" d=\"%lu\"/>\n";
+
+    segment_infos_for_expected_out_.push_back({start_time, duration, repeat});
+    if (repeat == 0) {
+      expected_s_elements_ +=
+          base::StringPrintf(kSElementTemplateWithoutR, start_time, duration);
+    } else {
+      expected_s_elements_ +=
+          base::StringPrintf(kSElementTemplate, start_time, duration, repeat);
+    }
+
+    for (uint64 i = 0; i < repeat + 1; ++i) {
+      representation_->AddNewSegment(start_time, duration, size);
+      start_time += duration;
+      bandwidth_estimator_.AddBlock(
+          size, static_cast<double>(duration) / DefaultTimeScale());
+    }
+  }
+
+ protected:
+  void AddRepresentationWithDefaultMediaInfo() {
+    ASSERT_NO_FATAL_FAILURE(
+        AddRepresentation(ConvertToMediaInfo(GetDefaultMediaInfo())));
+  }
+
+  std::string TemplateOutputInsertSElementsAndBandwidth(
+      const std::string& s_elements_string, uint64 bandwidth) {
+    const char kOutputTemplate[] =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\" "
+        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+        "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
+        "xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\" "
+        "availabilityStartTime=\"2011-12-25T12:30:00\" minBufferTime=\"PT2S\" "
+        "type=\"dynamic\" profiles=\"urn:mpeg:dash:profile:isoff-live:2011\">\n"
+        "  <Period start=\"PT0S\">\n"
+        "    <AdaptationSet id=\"0\">\n"
+        "      <Representation id=\"0\" bandwidth=\"%lu\" "
+        "codecs=\"avc1.010101\" mimeType=\"video/mp4\" width=\"720\" "
+        "height=\"480\">\n"
+        "        <SegmentTemplate timescale=\"1000\" "
+        "initialization=\"init.mp4\" media=\"$Time$.mp4\">\n"
+        "          <SegmentTimeline>\n%s"
+        "          </SegmentTimeline>\n"
+        "        </SegmentTemplate>\n"
+        "      </Representation>\n"
+        "    </AdaptationSet>\n"
+        "  </Period>\n"
+        "</MPD>\n";
+
+    return base::StringPrintf(
+        kOutputTemplate, bandwidth, s_elements_string.data());
+  }
+
+  void CheckMpdAgainstExpectedResult() {
+    std::string mpd_doc;
+    ASSERT_TRUE(mpd_.ToString(&mpd_doc));
+    ASSERT_TRUE(ValidateMpdSchema(mpd_doc));
+    const std::string& expected_output =
+        TemplateOutputInsertSElementsAndBandwidth(
+            expected_s_elements_, bandwidth_estimator_.Estimate());
+    ASSERT_TRUE(XmlEqual(expected_output, mpd_doc));
+  }
+
+ private:
+  std::list<SegmentInfo> segment_infos_for_expected_out_;
+  std::string expected_s_elements_;
+  BandwidthEstimator bandwidth_estimator_;
+};
+
+TEST_F(StaticMpdBuilderTest, CheckAdaptationSetId) {
+  base::AtomicSequenceNumber sequence_counter;
+  const uint32 kAdaptationSetId = 42;
+
+  AdaptationSet adaptation_set(kAdaptationSetId, &sequence_counter);
+  ASSERT_NO_FATAL_FAILURE(CheckIdEqual(kAdaptationSetId, &adaptation_set));
+}
+
+TEST_F(StaticMpdBuilderTest, CheckRepresentationId) {
+  const MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
+  const uint32 kRepresentationId = 1;
+
+  Representation representation(video_media_info, kRepresentationId);
+  EXPECT_TRUE(representation.Init());
+  ASSERT_NO_FATAL_FAILURE(CheckIdEqual(kRepresentationId, &representation));
+}
+
+// Add one video check the output.
 TEST_F(StaticMpdBuilderTest, Video) {
   MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
-
-  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet();
-  ASSERT_TRUE(video_adaptation_set);
-
-  Representation* video_representation =
-      video_adaptation_set->AddRepresentation(video_media_info);
-  ASSERT_TRUE(video_representation);
-
+  ASSERT_NO_FATAL_FAILURE(AddRepresentation(video_media_info));
   EXPECT_NO_FATAL_FAILURE(CheckMpd(kFileNameExpectedMpdOutputVideo1));
 }
 
+// Add both video and audio and check the output.
 TEST_F(StaticMpdBuilderTest, VideoAndAudio) {
   MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
   MediaInfo audio_media_info = GetTestMediaInfo(kFileNameAudioMediaInfo1);
@@ -129,6 +260,164 @@ TEST_F(StaticMpdBuilderTest, AudioChannelConfigurationWithContentProtection) {
   ASSERT_TRUE(audio_representation);
 
   EXPECT_NO_FATAL_FAILURE(CheckMpd(kFileNameExpectedMpdOutputEncryptedAudio));
+}
+
+// Static profile requires bandwidth to be set because it has no other way to
+// get the bandwidth for the Representation.
+TEST_F(StaticMpdBuilderTest, MediaInfoMissingBandwidth) {
+  MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
+  video_media_info.clear_bandwidth();
+  AddRepresentation(video_media_info);
+
+  std::string mpd_doc;
+  ASSERT_FALSE(mpd_.ToString(&mpd_doc));
+}
+
+// Check whether the attributes are set correctly for dynamic <MPD> element.
+TEST_F(DynamicMpdBuilderTest, CheckMpdAttributes) {
+  static const char kExpectedOutput[] =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\" "
+      "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+      "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
+      "xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 "
+      "DASH-MPD.xsd\" availabilityStartTime=\"2011-12-25T12:30:00\" "
+      "minBufferTime=\"PT2S\" type=\"dynamic\" "
+      "profiles=\"urn:mpeg:dash:profile:isoff-live:2011\">\n"
+      "  <Period start=\"PT0S\"/>\n"
+      "</MPD>\n";
+
+  std::string mpd_doc;
+  ASSERT_TRUE(mpd_.ToString(&mpd_doc));
+  ASSERT_EQ(kExpectedOutput, mpd_doc);
+}
+
+// Estimate the bandwidth given the info from AddNewSegment().
+TEST_F(SegmentTemplateTest, OneSegmentNormal) {
+  const uint64 kStartTime = 0;
+  const uint64 kDuration = 10;
+  const uint64 kSize = 128;
+  AddSegments(kStartTime, kDuration, kSize, 0);
+
+  // TODO(rkuroiwa): Clean up the test/data directory. It's a mess.
+  EXPECT_NO_FATAL_FAILURE(CheckMpd(kFileNameExpectedMpdOutputDynamicNormal));
+}
+
+TEST_F(SegmentTemplateTest, NormalRepeatedSegmentDuration) {
+  const uint64 kSize = 256;
+  uint64 start_time = 0;
+  uint64 duration = 40000;
+  uint64 repeat = 2;
+  AddSegments(start_time, duration, kSize, repeat);
+
+  start_time += duration * (repeat + 1);
+  duration = 54321;
+  repeat = 0;
+  AddSegments(start_time, duration, kSize, repeat);
+
+  start_time += duration * (repeat + 1);
+  duration = 12345;
+  repeat = 0;
+  AddSegments(start_time, duration, kSize, repeat);
+
+  ASSERT_NO_FATAL_FAILURE(CheckMpdAgainstExpectedResult());
+}
+
+TEST_F(SegmentTemplateTest, RepeatedSegmentsFromNonZeroStartTime) {
+  const uint64 kSize = 100000;
+  uint64 start_time = 0;
+  uint64 duration = 100000;
+  uint64 repeat = 2;
+  AddSegments(start_time, duration, kSize, repeat);
+
+  start_time += duration * (repeat + 1);
+  duration = 20000;
+  repeat = 3;
+  AddSegments(start_time, duration, kSize, repeat);
+
+  start_time += duration * (repeat + 1);
+  duration = 32123;
+  repeat = 3;
+  AddSegments(start_time, duration, kSize, repeat);
+
+  ASSERT_NO_FATAL_FAILURE(CheckMpdAgainstExpectedResult());
+}
+
+// Segments not starting from 0.
+// Start time is 10. Make sure r gets set correctly.
+TEST_F(SegmentTemplateTest, NonZeroStartTime) {
+  const uint64 kStartTime = 10;
+  const uint64 kDuration = 22000;
+  const uint64 kSize = 123456;
+  const uint64 kRepeat = 1;
+  AddSegments(kStartTime, kDuration, kSize, kRepeat);
+
+  ASSERT_NO_FATAL_FAILURE(CheckMpdAgainstExpectedResult());
+}
+
+// There is a gap in the segments, but still valid.
+TEST_F(SegmentTemplateTest, NonContiguousLiveInfo) {
+  const uint64 kStartTime = 10;
+  const uint64 kDuration = 22000;
+  const uint64 kSize = 123456;
+  const uint64 kRepeat = 0;
+  AddSegments(kStartTime, kDuration, kSize, kRepeat);
+
+  const uint64 kStartTimeOffset = 100;
+  AddSegments(kDuration + kStartTimeOffset, kDuration, kSize, kRepeat);
+
+  ASSERT_NO_FATAL_FAILURE(CheckMpdAgainstExpectedResult());
+}
+
+// Add segments out of order. Segments that start before the previous segment
+// cannot be added.
+TEST_F(SegmentTemplateTest, OutOfOrder) {
+  const uint64 kEarlierStartTime = 0;
+  const uint64 kLaterStartTime = 1000;
+  const uint64 kDuration = 1000;
+  const uint64 kSize = 123456;
+  const uint64 kRepeat = 0;
+
+  AddSegments(kLaterStartTime, kDuration, kSize, kRepeat);
+  EXPECT_DEBUG_DEATH(AddSegments(kEarlierStartTime, kDuration, kSize, kRepeat),
+                     "");
+
+  ASSERT_NO_FATAL_FAILURE(CheckMpdAgainstExpectedResult());
+}
+
+// No segments should be overlapping.
+TEST_F(SegmentTemplateTest, OverlappingSegments) {
+  const uint64 kEarlierStartTime = 0;
+  const uint64 kDuration = 1000;
+  const uint64 kSize = 123456;
+  const uint64 kRepeat = 0;
+
+  const uint64 kOverlappingSegmentStartTime = kDuration / 2;
+  CHECK_GT(kDuration, kOverlappingSegmentStartTime);
+
+  AddSegments(kEarlierStartTime, kDuration, kSize, kRepeat);
+  EXPECT_DEBUG_DEATH(
+      AddSegments(kOverlappingSegmentStartTime, kDuration, kSize, kRepeat), "");
+
+  ASSERT_NO_FATAL_FAILURE(CheckMpdAgainstExpectedResult());
+}
+
+// Some segments can be overlapped due to rounding errors. As long as it falls
+// in the range of rounding error defined inside MpdBuilder, the segment gets
+// accepted.
+TEST_F(SegmentTemplateTest, OverlappingSegmentsWithinErrorRange) {
+  const uint64 kEarlierStartTime = 0;
+  const uint64 kDuration = 1000;
+  const uint64 kSize = 123456;
+  const uint64 kRepeat = 0;
+
+  const uint64 kOverlappingSegmentStartTime = kDuration - 1;
+  CHECK_GT(kDuration, kOverlappingSegmentStartTime);
+
+  AddSegments(kEarlierStartTime, kDuration, kSize, kRepeat);
+  AddSegments(kOverlappingSegmentStartTime, kDuration, kSize, kRepeat);
+
+  ASSERT_NO_FATAL_FAILURE(CheckMpdAgainstExpectedResult());
 }
 
 }  // namespace dash_packager

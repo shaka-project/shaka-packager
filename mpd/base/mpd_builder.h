@@ -18,8 +18,10 @@
 #include "base/stl_util.h"
 #include "base/synchronization/lock.h"
 #include "mpd/base/content_protection_element.h"
+#include "mpd/base/bandwidth_estimator.h"
 #include "mpd/base/media_info.pb.h"
 #include "mpd/base/mpd_utils.h"
+#include "mpd/base/segment_info.h"
 #include "mpd/base/xml/scoped_xml_ptr.h"
 
 namespace dash_packager {
@@ -30,8 +32,27 @@ class Representation;
 namespace xml {
 
 class XmlNode;
+class RepresentationXmlNode;
 
 }  // namespace xml
+
+struct MpdOptions {
+  MpdOptions();
+  ~MpdOptions();
+
+  std::string availability_start_time;
+  std::string availability_end_time;
+  double minimum_update_period;
+  double min_buffer_time;
+  double time_shift_buffer_depth;
+  double suggested_presentation_delay;
+  double max_segment_duration;
+  double max_subsegment_duration;
+
+  /// Value passed to BandwidthEstimator's contructor. See BandwidthEstimator
+  /// for more.
+  int number_of_blocks_for_bandwidth_estimation;
+};
 
 /// This class generates DASH MPDs (Media Presentation Descriptions).
 class MpdBuilder {
@@ -44,7 +65,7 @@ class MpdBuilder {
   /// Constructs MpdBuilder.
   /// @param type indicates whether the MPD should be for VOD or live content
   ///        (kStatic for VOD profile, or kDynamic for live profile).
-  explicit MpdBuilder(MpdType type);
+  MpdBuilder(MpdType type, const MpdOptions& mpd_options);
   ~MpdBuilder();
 
   /// Add <BaseURL> entry to the MPD.
@@ -64,6 +85,10 @@ class MpdBuilder {
   MpdType type() { return type_; }
 
  private:
+  // DynamicMpdBuilderTest uses SetMpdOptionsValues to set availabilityStartTime
+  // so that the test doesn't need to depend on current time.
+  friend class DynamicMpdBuilderTest;
+
   bool ToStringImpl(std::string* output);
 
   // Returns the document pointer to the MPD. This must be freed by the caller
@@ -74,9 +99,19 @@ class MpdBuilder {
   // Adds 'static' MPD attributes and elements to |mpd_node|. This assumes that
   // the first child element is a Period element.
   void AddStaticMpdInfo(xml::XmlNode* mpd_node);
+
+  // Same as AddStaticMpdInfo() but for 'dynamic' MPDs.
+  void AddDynamicMpdInfo(xml::XmlNode* mpd_node);
+
   float GetStaticMpdDuration(xml::XmlNode* mpd_node);
 
+  // Use |options_| to set attributes for MPD. Only values that are set will be
+  // used, i.e. if a string field is not empty and numeric field is not 0.
+  // Required fields will be set with some reasonable values.
+  void SetMpdOptionsValues(xml::XmlNode* mpd_node);
+
   MpdType type_;
+  MpdOptions options_;
   std::list<AdaptationSet*> adaptation_sets_;
   ::STLElementDeleter<std::list<AdaptationSet*> > adaptation_sets_deleter_;
 
@@ -143,7 +178,12 @@ class AdaptationSet {
 /// well as optional ContentProtection elements for that stream.
 class Representation {
  public:
+  // TODO(rkuroiwa): Get the value from MpdOptions for constructing
+  // BandwidthEstimator.
   /// @param media_info is a MediaInfo containing information on the media.
+  ///        @a media_info.bandwidth is required for 'static' profile. If @a
+  ///        media_info.bandwidth is not present in 'dynamic' profile, this
+  ///        tries to estimate it using the info passed to AddNewSegment().
   /// @param representation_id is the numeric ID for the <Representation>.
   Representation(const MediaInfo& media_info, uint32 representation_id);
   ~Representation();
@@ -165,8 +205,8 @@ class Representation {
   ///        stream's time scale.
   /// @param duration is the duration of the segment, in units of the stream's
   ///        time scale.
-  /// @return true on success, false otherwise.
-  bool AddNewSegment(uint64 start_time, uint64 duration);
+  /// @param size of the segment in bytes.
+  void AddNewSegment(uint64 start_time, uint64 duration, uint64 size);
 
   /// @return Copy of <Representation>.
   xml::ScopedXmlPtr<xmlNode>::type GetXml();
@@ -177,9 +217,15 @@ class Representation {
   }
 
  private:
+  bool AddLiveInfo(xml::RepresentationXmlNode* representation);
+
   // Returns true if |media_info_| has required fields to generate a valid
   // Representation. Otherwise returns false.
   bool HasRequiredMediaInfoFields();
+
+  // Return false if the segment should be considered a new segment. True if the
+  // segment is contiguous.
+  bool IsContiguous(uint64 start_time, uint64 duration, uint64 size) const;
 
   // Note: Because 'mimeType' is a required field for a valid MPD, these return
   // strings.
@@ -188,13 +234,14 @@ class Representation {
 
   MediaInfo media_info_;
   std::list<ContentProtectionElement> content_protection_elements_;
-  std::list<std::pair<uint64, uint64> > segment_starttime_duration_pairs_;
+  std::list<SegmentInfo> segment_infos_;
 
   base::Lock lock_;
 
   const uint32 id_;
   std::string mime_type_;
   std::string codecs_;
+  BandwidthEstimator bandwidth_estimator_;
 
   DISALLOW_COPY_AND_ASSIGN(Representation);
 };

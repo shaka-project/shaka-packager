@@ -152,7 +152,7 @@ void MpdWriter::AddBaseUrl(const std::string& base_url) {
 bool MpdWriter::WriteMpdToString(std::string* output) {
   CHECK(output);
 
-  MpdBuilder mpd_builder(MpdBuilder::kStatic);
+  MpdBuilder mpd_builder(MpdBuilder::kStatic, MpdOptions());
   for (std::list<std::string>::const_iterator it = base_urls_.begin();
        it != base_urls_.end();
        ++it) {
