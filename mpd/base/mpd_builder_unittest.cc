@@ -7,6 +7,7 @@
 #include "base/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "mpd/base/mpd_builder.h"
 #include "mpd/base/mpd_utils.h"
@@ -18,6 +19,10 @@
 namespace dash_packager {
 
 namespace {
+const char kSElementTemplate[] = "<S t=\"%lu\" d=\"%lu\" r=\"%lu\"/>\n";
+const char kSElementTemplateWithoutR[] = "<S t=\"%lu\" d=\"%lu\"/>\n";
+const int kDefaultStartNumber = 1;
+
 // Get 'id' attribute from |node|, convert it to std::string and convert it to a
 // number.
 void ExpectXmlElementIdEqual(xmlNodePtr node, uint32 id) {
@@ -90,8 +95,10 @@ class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
   // Anchors availabilityStartTime so that the test result doesn't depend on the
   // current time.
   virtual void SetUp() {
-    mpd_.options_.availability_start_time = "2011-12-25T12:30:00";
+    mpd_.mpd_options_.availability_start_time = "2011-12-25T12:30:00";
   }
+
+  MpdOptions* mutable_mpd_options() { return &mpd_.mpd_options_; }
 
   std::string GetDefaultMediaInfo() {
     const char kMediaInfo[] =
@@ -109,7 +116,8 @@ class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
     return base::StringPrintf(kMediaInfo, DefaultTimeScale());
   }
 
-  uint64 DefaultTimeScale() const { return 1000; };
+  // TODO(rkuroiwa): Make this a global constant in anonymous namespace.
+  uint64 DefaultTimeScale() const {  return 1000; };
 };
 
 class SegmentTemplateTest : public DynamicMpdBuilderTest {
@@ -128,8 +136,6 @@ class SegmentTemplateTest : public DynamicMpdBuilderTest {
                    uint64 size,
                    uint64 repeat) {
     DCHECK(representation_);
-    const char kSElementTemplate[] = "<S t=\"%lu\" d=\"%lu\" r=\"%lu\"/>\n";
-    const char kSElementTemplateWithoutR[] = "<S t=\"%lu\" d=\"%lu\"/>\n";
 
     SegmentInfo s = {start_time, duration, repeat};
     segment_infos_for_expected_out_.push_back(s);
@@ -155,8 +161,8 @@ class SegmentTemplateTest : public DynamicMpdBuilderTest {
         AddRepresentation(ConvertToMediaInfo(GetDefaultMediaInfo())));
   }
 
-  std::string TemplateOutputInsertSElementsAndBandwidth(
-      const std::string& s_elements_string, uint64 bandwidth) {
+  std::string TemplateOutputInsertValues(const std::string& s_elements_string,
+                                         uint64 bandwidth) {
     const char kOutputTemplate[] =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\" "
@@ -180,8 +186,9 @@ class SegmentTemplateTest : public DynamicMpdBuilderTest {
         "  </Period>\n"
         "</MPD>\n";
 
-    return base::StringPrintf(
-        kOutputTemplate, bandwidth, s_elements_string.data());
+    return base::StringPrintf(kOutputTemplate,
+                              bandwidth,
+                              s_elements_string.c_str());
   }
 
   void CheckMpdAgainstExpectedResult() {
@@ -189,22 +196,98 @@ class SegmentTemplateTest : public DynamicMpdBuilderTest {
     ASSERT_TRUE(mpd_.ToString(&mpd_doc));
     ASSERT_TRUE(ValidateMpdSchema(mpd_doc));
     const std::string& expected_output =
-        TemplateOutputInsertSElementsAndBandwidth(
-            expected_s_elements_, bandwidth_estimator_.Estimate());
-    ASSERT_TRUE(XmlEqual(expected_output, mpd_doc));
+        TemplateOutputInsertValues(expected_s_elements_,
+                                   bandwidth_estimator_.Estimate());
+    ASSERT_TRUE(XmlEqual(expected_output, mpd_doc))
+        << "Expected " << expected_output << std::endl << "Actual: " << mpd_doc;
   }
 
- private:
   std::list<SegmentInfo> segment_infos_for_expected_out_;
   std::string expected_s_elements_;
   BandwidthEstimator bandwidth_estimator_;
+};
+
+class TimeShiftBufferDepthTest : public SegmentTemplateTest {
+ public:
+  TimeShiftBufferDepthTest() {}
+  virtual ~TimeShiftBufferDepthTest() {}
+
+  // This function is tricky. It does not call SegmentTemplateTest::Setup() so
+  // that it does not automatically add a representation, that has $Time$
+  // template.
+  virtual void SetUp() {
+    DynamicMpdBuilderTest::SetUp();
+
+    // The only diff with current GetDefaultMediaInfo() is that this uses
+    // $Number$ for segment template.
+    const char kMediaInfo[] =
+        "video_info {\n"
+        "  codec: \"avc1.010101\"\n"
+        "  width: 720\n"
+        "  height: 480\n"
+        "  time_scale: 10\n"
+        "}\n"
+        "reference_time_scale: %lu\n"
+        "container_type: 1\n"
+        "init_segment_name: \"init.mp4\"\n"
+        "segment_template: \"$Number$.mp4\"\n";
+
+    const std::string& number_template_media_info =
+        base::StringPrintf(kMediaInfo, DefaultTimeScale());
+    ASSERT_NO_FATAL_FAILURE(
+        AddRepresentation(ConvertToMediaInfo(number_template_media_info)));
+  }
+
+  void CheckTimeShiftBufferDepthResult(const std::string& expected_s_element,
+                                       int expected_time_shift_buffer_depth,
+                                       int expected_start_number) {
+    const char kOutputTemplate[] =
+        "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+        "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\" "
+        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+        "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
+        "xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\" "
+        "availabilityStartTime=\"2011-12-25T12:30:00\" minBufferTime=\"PT2S\" "
+        "type=\"dynamic\" profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
+        "timeShiftBufferDepth=\"PT%dS\">\n"
+        "  <Period start=\"PT0S\">\n"
+        "    <AdaptationSet id=\"0\">\n"
+        "      <Representation id=\"0\" bandwidth=\"%lu\" "
+        "codecs=\"avc1.010101\" mimeType=\"video/mp4\" width=\"720\" "
+        "height=\"480\">\n"
+        "        <SegmentTemplate timescale=\"1000\" "
+        "initialization=\"init.mp4\" media=\"$Number$.mp4\" "
+        "startNumber=\"%d\">\n"
+        "          <SegmentTimeline>\n"
+        "              %s\n"
+        "          </SegmentTimeline>\n"
+        "        </SegmentTemplate>\n"
+        "      </Representation>\n"
+        "    </AdaptationSet>\n"
+        "  </Period>\n"
+        "</MPD>\n";
+
+    std::string expected_out =
+        base::StringPrintf(kOutputTemplate,
+                           expected_time_shift_buffer_depth,
+                           bandwidth_estimator_.Estimate(),
+                           expected_start_number,
+                           expected_s_element.c_str());
+
+    std::string mpd_doc;
+    ASSERT_TRUE(mpd_.ToString(&mpd_doc));
+    ASSERT_TRUE(ValidateMpdSchema(mpd_doc));
+    ASSERT_TRUE(XmlEqual(expected_out, mpd_doc))
+        << "Expected " << expected_out << std::endl << "Actual: " << mpd_doc;
+  }
 };
 
 TEST_F(StaticMpdBuilderTest, CheckAdaptationSetId) {
   base::AtomicSequenceNumber sequence_counter;
   const uint32 kAdaptationSetId = 42;
 
-  AdaptationSet adaptation_set(kAdaptationSetId, &sequence_counter);
+  AdaptationSet adaptation_set(
+      kAdaptationSetId, MpdOptions(), &sequence_counter);
   ASSERT_NO_FATAL_FAILURE(CheckIdEqual(kAdaptationSetId, &adaptation_set));
 }
 
@@ -212,7 +295,8 @@ TEST_F(StaticMpdBuilderTest, CheckRepresentationId) {
   const MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
   const uint32 kRepresentationId = 1;
 
-  Representation representation(video_media_info, kRepresentationId);
+  Representation representation(
+      video_media_info, MpdOptions(), kRepresentationId);
   EXPECT_TRUE(representation.Init());
   ASSERT_NO_FATAL_FAILURE(CheckIdEqual(kRepresentationId, &representation));
 }
@@ -419,6 +503,288 @@ TEST_F(SegmentTemplateTest, OverlappingSegmentsWithinErrorRange) {
   AddSegments(kOverlappingSegmentStartTime, kDuration, kSize, kRepeat);
 
   ASSERT_NO_FATAL_FAILURE(CheckMpdAgainstExpectedResult());
+}
+
+// All segments have the same duration and size.
+TEST_F(TimeShiftBufferDepthTest, Normal) {
+  const int kTimeShiftBufferDepth = 10;  // 10 sec.
+  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+
+  const uint64 kInitialStartTime = 0;
+  // Trick to make every segment 1 second long.
+  const uint64 kDuration = DefaultTimeScale();
+  const uint64 kSize = 10000;
+  const uint64 kRepeat = 1234;
+  const uint64 kLength = kRepeat;
+
+  CHECK_EQ(kDuration / DefaultTimeScale() * kRepeat, kLength);
+
+  AddSegments(kInitialStartTime, kDuration, kSize, kRepeat);
+
+  // There should only be the last 11 segments because timeshift is 10 sec and
+  // each segment is 1 sec and the latest segments start time is "current
+  // time" i.e., the latest segment does not count as part of timeshift buffer
+  // depth.
+  // Also note that S@r + 1 is the actual number of segments.
+  const int kExpectedRepeatsLeft = kTimeShiftBufferDepth;
+  const std::string expected_s_element =
+      base::StringPrintf(kSElementTemplate,
+                         kDuration * (kRepeat - kExpectedRepeatsLeft),
+                         kDuration,
+                         static_cast<uint64>(kExpectedRepeatsLeft));
+
+  const int kExpectedStartNumber = kRepeat - kExpectedRepeatsLeft + 1;
+  ASSERT_NO_FATAL_FAILURE(CheckTimeShiftBufferDepthResult(
+      expected_s_element, kTimeShiftBufferDepth, kExpectedStartNumber));
+}
+
+// TimeShiftBufferDepth is shorter than a segment. This should not discard the
+// segment that can play TimeShiftBufferDepth.
+// For example if TimeShiftBufferDepth = 1 min. and a 10 min segment was just
+// added. Before that 9 min segment was added. The 9 min segment should not be
+// removed from the MPD.
+TEST_F(TimeShiftBufferDepthTest, TimeShiftBufferDepthShorterThanSegmentLength) {
+  const int kTimeShiftBufferDepth = 10;  // 10 sec.
+  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+
+  const uint64 kInitialStartTime = 0;
+  // Each duration is a second longer than timeShiftBufferDepth.
+  const uint64 kDuration = DefaultTimeScale() * (kTimeShiftBufferDepth + 1);
+  const uint64 kSize = 10000;
+  const uint64 kRepeat = 1;
+
+  AddSegments(kInitialStartTime, kDuration, kSize, kRepeat);
+
+  // The two segments should be both present.
+  const std::string expected_s_element = base::StringPrintf(
+      kSElementTemplate, kInitialStartTime, kDuration, kRepeat);
+
+  ASSERT_NO_FATAL_FAILURE(CheckTimeShiftBufferDepthResult(
+      expected_s_element, kTimeShiftBufferDepth, kDefaultStartNumber));
+}
+
+// More generic version the normal test.
+TEST_F(TimeShiftBufferDepthTest, Generic) {
+  const int kTimeShiftBufferDepth = 30;
+  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+
+  const uint64 kInitialStartTime = 123;
+  const uint64 kDuration = DefaultTimeScale();
+  const uint64 kSize = 10000;
+  const uint64 kRepeat = 1000;
+
+  AddSegments(kInitialStartTime, kDuration, kSize, kRepeat);
+  const uint64 first_s_element_end_time =
+      kInitialStartTime + kDuration * (kRepeat + 1);
+
+  // Now add 2 kTimeShiftBufferDepth long segments.
+  const int kNumMoreSegments = 2;
+  const int kMoreSegmentsRepeat = kNumMoreSegments - 1;
+  const uint64 kTimeShiftBufferDepthDuration =
+      DefaultTimeScale() * kTimeShiftBufferDepth;
+  AddSegments(first_s_element_end_time,
+              kTimeShiftBufferDepthDuration,
+              kSize,
+              kMoreSegmentsRepeat);
+
+  // Expect only the latest S element with 2 segments.
+  const std::string expected_s_element =
+      base::StringPrintf(kSElementTemplate,
+                         first_s_element_end_time,
+                         kTimeShiftBufferDepthDuration,
+                         static_cast<uint64>(kMoreSegmentsRepeat));
+
+  const int kExpectedRemovedSegments = kRepeat + 1;
+  ASSERT_NO_FATAL_FAILURE(CheckTimeShiftBufferDepthResult(
+      expected_s_element,
+      kTimeShiftBufferDepth,
+      kDefaultStartNumber + kExpectedRemovedSegments));
+}
+
+// More than 1 S element in the result.
+// Adds 100 one-second segments. Then add 21 two-second segments.
+// This should have all of the two-second segments and 60 one-second
+// segments. Note that it expects 60 segments from the first S element because
+// the most recent segment added does not count
+TEST_F(TimeShiftBufferDepthTest, MoreThanOneS) {
+  const int kTimeShiftBufferDepth = 100;
+  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+
+  const uint64 kInitialStartTime = 0;
+  const uint64 kSize = 20000;
+
+  const uint64 kOneSecondDuration = DefaultTimeScale();
+  const uint64 kOneSecondSegmentRepeat = 99;
+  AddSegments(
+      kInitialStartTime, kOneSecondDuration, kSize, kOneSecondSegmentRepeat);
+  const uint64 first_s_element_end_time =
+      kInitialStartTime + kOneSecondDuration * (kOneSecondSegmentRepeat + 1);
+
+  const uint64 kTwoSecondDuration = 2 * DefaultTimeScale();
+  const uint64 kTwoSecondSegmentRepeat = 20;
+  AddSegments(first_s_element_end_time,
+              kTwoSecondDuration,
+              kSize,
+              kTwoSecondSegmentRepeat);
+
+  const uint64 kExpectedRemovedSegments =
+      (kOneSecondSegmentRepeat + 1 + kTwoSecondSegmentRepeat * 2) -
+      kTimeShiftBufferDepth;
+
+  std::string expected_s_element =
+      base::StringPrintf(kSElementTemplate,
+                         kOneSecondDuration * kExpectedRemovedSegments,
+                         kOneSecondDuration,
+                         kOneSecondSegmentRepeat - kExpectedRemovedSegments);
+  expected_s_element += base::StringPrintf(kSElementTemplate,
+                                           first_s_element_end_time,
+                                           kTwoSecondDuration,
+                                           kTwoSecondSegmentRepeat);
+
+  ASSERT_NO_FATAL_FAILURE(CheckTimeShiftBufferDepthResult(
+      expected_s_element,
+      kTimeShiftBufferDepth,
+      kDefaultStartNumber + kExpectedRemovedSegments));
+}
+
+
+// Edge case where the last segment in S element should still be in the MPD.
+// Example:
+// Assuming timescale = 1 so that duration of 1 means 1 second.
+// TimeShiftBufferDepth is 9 sec and we currently have
+// <S t=0 d=1.5 r=1 />
+// <S t=3 d=2 r=3 />
+// and we add another contiguous 2 second segment.
+// Then the first S element's last segment should still be in the MPD.
+TEST_F(TimeShiftBufferDepthTest, UseLastSegmentInS) {
+  const int kTimeShiftBufferDepth = 9;
+  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+
+  const uint64 kInitialStartTime = 1;
+  const uint64 kDuration1 =
+      static_cast<uint64>(DefaultTimeScale() * 1.5);
+  const uint64 kSize = 20000;
+  const uint64 kRepeat1 = 1;
+
+  AddSegments(kInitialStartTime, kDuration1, kSize, kRepeat1);
+
+  const uint64 first_s_element_end_time =
+      kInitialStartTime + kDuration1 * (kRepeat1 + 1);
+
+  const uint64 kTwoSecondDuration = 2 * DefaultTimeScale();
+  const uint64 kTwoSecondSegmentRepeat = 4;
+
+  AddSegments(first_s_element_end_time,
+              kTwoSecondDuration,
+              kSize,
+              kTwoSecondSegmentRepeat);
+
+  std::string expected_s_element = base::StringPrintf(
+      kSElementTemplateWithoutR,
+      kInitialStartTime + kDuration1,  // Expect one segment removed.
+      kDuration1);
+
+  expected_s_element += base::StringPrintf(kSElementTemplate,
+                                           first_s_element_end_time,
+                                           kTwoSecondDuration,
+                                           kTwoSecondSegmentRepeat);
+  ASSERT_NO_FATAL_FAILURE(CheckTimeShiftBufferDepthResult(
+      expected_s_element, kTimeShiftBufferDepth, 2));
+}
+
+// Gap between S elements but both should be included.
+TEST_F(TimeShiftBufferDepthTest, NormalGap) {
+  const int kTimeShiftBufferDepth = 10;
+  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+
+  const uint64 kInitialStartTime = 0;
+  const uint64 kDuration = DefaultTimeScale();
+  const uint64 kSize = 20000;
+  const uint64 kRepeat = 6;
+  // CHECK here so that the when next S element is added with 1 segment, this S
+  // element doesn't go away.
+  CHECK_LT(kRepeat - 1u, static_cast<uint64>(kTimeShiftBufferDepth));
+  CHECK_EQ(kDuration, DefaultTimeScale());
+
+  AddSegments(kInitialStartTime, kDuration, kSize, kRepeat);
+
+  const uint64 first_s_element_end_time =
+      kInitialStartTime + kDuration * (kRepeat + 1);
+
+  const uint64 gap_s_element_start_time = first_s_element_end_time + 1;
+  AddSegments(gap_s_element_start_time, kDuration, kSize, /* no repeat */ 0);
+
+  std::string expected_s_element = base::StringPrintf(
+      kSElementTemplate, kInitialStartTime, kDuration, kRepeat);
+  expected_s_element += base::StringPrintf(
+      kSElementTemplateWithoutR, gap_s_element_start_time, kDuration);
+
+  ASSERT_NO_FATAL_FAILURE(CheckTimeShiftBufferDepthResult(
+      expected_s_element, kTimeShiftBufferDepth, kDefaultStartNumber));
+}
+
+// Case where there is a huge gap so the first S element is removed.
+TEST_F(TimeShiftBufferDepthTest, HugeGap) {
+  const int kTimeShiftBufferDepth = 10;
+  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+
+  const uint64 kInitialStartTime = 0;
+  const uint64 kDuration = DefaultTimeScale();
+  const uint64 kSize = 20000;
+  const uint64 kRepeat = 6;
+  AddSegments(kInitialStartTime, kDuration, kSize, kRepeat);
+
+  const uint64 first_s_element_end_time =
+      kInitialStartTime + kDuration * (kRepeat + 1);
+
+  // Big enough gap so first S element should not be there.
+  const uint64 gap_s_element_start_time =
+      first_s_element_end_time +
+      (kTimeShiftBufferDepth + 1) * DefaultTimeScale();
+  const uint64 kSecondSElementRepeat = 9;
+  COMPILE_ASSERT(
+      kSecondSElementRepeat < static_cast<uint64>(kTimeShiftBufferDepth),
+      second_s_element_repeat_must_be_less_than_time_shift_buffer_depth);
+  AddSegments(gap_s_element_start_time, kDuration, kSize, kSecondSElementRepeat);
+
+  std::string expected_s_element = base::StringPrintf(kSElementTemplate,
+                                                      gap_s_element_start_time,
+                                                      kDuration,
+                                                      kSecondSElementRepeat);
+  const int kExpectedRemovedSegments = kRepeat + 1;
+  ASSERT_NO_FATAL_FAILURE(CheckTimeShiftBufferDepthResult(
+      expected_s_element,
+      kTimeShiftBufferDepth,
+      kDefaultStartNumber + kExpectedRemovedSegments));
+}
+
+// Check if startNumber is working correctly.
+TEST_F(TimeShiftBufferDepthTest, ManySegments) {
+  const int kTimeShiftBufferDepth = 1;
+  mutable_mpd_options()->time_shift_buffer_depth = kTimeShiftBufferDepth;
+
+  const uint64 kInitialStartTime = 0;
+  const uint64 kDuration = DefaultTimeScale();
+  const uint64 kSize = 20000;
+  const uint64 kRepeat = 10000;
+  const uint64 kTotalNumSegments = kRepeat + 1;
+  AddSegments(kInitialStartTime, kDuration, kSize, kRepeat);
+
+  const int kExpectedSegmentsLeft = kTimeShiftBufferDepth + 1;
+  const int kExpectedSegmentsRepeat = kExpectedSegmentsLeft - 1;
+  const int kExpectedRemovedSegments =
+      kTotalNumSegments - kExpectedSegmentsLeft;
+
+  std::string expected_s_element =
+      base::StringPrintf(kSElementTemplate,
+                         kExpectedRemovedSegments * kDuration,
+                         kDuration,
+                         static_cast<uint64>(kExpectedSegmentsRepeat));
+
+  ASSERT_NO_FATAL_FAILURE(CheckTimeShiftBufferDepthResult(
+      expected_s_element,
+      kTimeShiftBufferDepth,
+      kDefaultStartNumber + kExpectedRemovedSegments));
 }
 
 }  // namespace dash_packager

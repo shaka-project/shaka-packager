@@ -6,6 +6,7 @@
 
 #include "mpd/base/mpd_builder.h"
 
+#include <list>
 #include <string>
 
 #include "base/logging.h"
@@ -109,6 +110,50 @@ void SetIfPositive(const char* attr_name, double value, XmlNode* mpd) {
   }
 }
 
+uint32 GetTimeScale(const MediaInfo& media_info) {
+  if (media_info.has_reference_time_scale()) {
+    return media_info.reference_time_scale();
+  }
+
+  if (media_info.video_info_size() > 0) {
+    return media_info.video_info(0).time_scale();
+  }
+
+  if (media_info.audio_info_size() > 0) {
+    return media_info.audio_info(0).time_scale();
+  }
+
+  LOG(WARNING) << "No timescale specified, using 1 as timescale.";
+  return 1;
+}
+
+uint64 LastSegmentStartTime(const SegmentInfo& segment_info) {
+  return segment_info.start_time + segment_info.duration * segment_info.repeat;
+}
+
+// This is equal to |segment_info| end time
+uint64 LastSegmentEndTime(const SegmentInfo& segment_info) {
+  return segment_info.start_time +
+         segment_info.duration * (segment_info.repeat + 1);
+}
+
+uint64 LatestSegmentStartTime(const std::list<SegmentInfo>& segments) {
+  DCHECK(!segments.empty());
+  const SegmentInfo& latest_segment = segments.back();
+  return LastSegmentStartTime(latest_segment);
+}
+
+// Given |timeshift_limit|, finds out the number of segments that are no longer
+// valid and should be removed from |segment_info|.
+int SearchTimedOutRepeatIndex(uint64 timeshift_limit,
+                              const SegmentInfo& segment_info) {
+  DCHECK_LE(timeshift_limit, LastSegmentEndTime(segment_info));
+  if (timeshift_limit < segment_info.start_time)
+    return 0;
+
+  return (timeshift_limit - segment_info.start_time) / segment_info.duration;
+}
+
 }  // namespace
 
 MpdOptions::MpdOptions()
@@ -124,7 +169,7 @@ MpdOptions::~MpdOptions() {}
 
 MpdBuilder::MpdBuilder(MpdType type, const MpdOptions& mpd_options)
     : type_(type),
-      options_(mpd_options),
+      mpd_options_(mpd_options),
       adaptation_sets_deleter_(&adaptation_sets_) {}
 
 MpdBuilder::~MpdBuilder() {}
@@ -137,7 +182,7 @@ void MpdBuilder::AddBaseUrl(const std::string& base_url) {
 AdaptationSet* MpdBuilder::AddAdaptationSet() {
   base::AutoLock scoped_lock(lock_);
   scoped_ptr<AdaptationSet> adaptation_set(new AdaptationSet(
-      adaptation_set_counter_.GetNext(), &representation_counter_));
+      adaptation_set_counter_.GetNext(), mpd_options_, &representation_counter_));
 
   DCHECK(adaptation_set);
   adaptation_sets_.push_back(adaptation_set.get());
@@ -285,31 +330,32 @@ float MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
 
 void MpdBuilder::SetMpdOptionsValues(XmlNode* mpd) {
   if (type_ == kStatic) {
-    if (!options_.availability_start_time.empty()) {
+    if (!mpd_options_.availability_start_time.empty()) {
       mpd->SetStringAttribute("availabilityStartTime",
-                              options_.availability_start_time);
+                              mpd_options_.availability_start_time);
     }
-    LOG_IF(WARNING, Positive(options_.minimum_update_period))
+    LOG_IF(WARNING, Positive(mpd_options_.minimum_update_period))
         << "minimumUpdatePeriod should not be present in 'static' profile. "
            "Ignoring.";
-    LOG_IF(WARNING, Positive(options_.time_shift_buffer_depth))
+    LOG_IF(WARNING, Positive(mpd_options_.time_shift_buffer_depth))
         << "timeShiftBufferDepth will not be used for 'static' profile. "
            "Ignoring.";
-    LOG_IF(WARNING, Positive(options_.suggested_presentation_delay))
+    LOG_IF(WARNING, Positive(mpd_options_.suggested_presentation_delay))
         << "suggestedPresentationDelay will not be used for 'static' profile. "
            "Ignoring.";
   } else if (type_ == kDynamic) {
     // 'availabilityStartTime' is required for dynamic profile, so use current
     // time if not specified.
-    const std::string avail_start = !options_.availability_start_time.empty()
-                                        ? options_.availability_start_time
-                                        : XmlDateTimeNow();
+    const std::string avail_start =
+        !mpd_options_.availability_start_time.empty()
+            ? mpd_options_.availability_start_time
+            : XmlDateTimeNow();
     mpd->SetStringAttribute("availabilityStartTime", avail_start);
 
-    if (Positive(options_.minimum_update_period)) {
+    if (Positive(mpd_options_.minimum_update_period)) {
       mpd->SetStringAttribute(
           "minimumUpdatePeriod",
-          SecondsToXmlDuration(options_.minimum_update_period));
+          SecondsToXmlDuration(mpd_options_.minimum_update_period));
     } else {
       // TODO(rkuroiwa): Set minimumUpdatePeriod to some default value.
       LOG(WARNING) << "The profile is dynamic but no minimumUpdatePeriod "
@@ -317,33 +363,36 @@ void MpdBuilder::SetMpdOptionsValues(XmlNode* mpd) {
     }
 
     SetIfPositive(
-        "timeShiftBufferDepth", options_.time_shift_buffer_depth, mpd);
+        "timeShiftBufferDepth", mpd_options_.time_shift_buffer_depth, mpd);
     SetIfPositive("suggestedPresentationDelay",
-                  options_.suggested_presentation_delay,
+                  mpd_options_.suggested_presentation_delay,
                   mpd);
   }
 
   const double kDefaultMinBufferTime = 2.0;
-  const double min_buffer_time = Positive(options_.min_buffer_time)
-                                     ? options_.min_buffer_time
+  const double min_buffer_time = Positive(mpd_options_.min_buffer_time)
+                                     ? mpd_options_.min_buffer_time
                                      : kDefaultMinBufferTime;
   mpd->SetStringAttribute("minBufferTime",
                           SecondsToXmlDuration(min_buffer_time));
 
-  if (!options_.availability_end_time.empty()) {
+  if (!mpd_options_.availability_end_time.empty()) {
     mpd->SetStringAttribute("availabilityEndTime",
-                            options_.availability_end_time);
+                            mpd_options_.availability_end_time);
   }
 
-  SetIfPositive("maxSegmentDuration", options_.max_segment_duration, mpd);
-  SetIfPositive("maxSubsegmentDuration", options_.max_subsegment_duration, mpd);
+  SetIfPositive("maxSegmentDuration", mpd_options_.max_segment_duration, mpd);
+  SetIfPositive(
+      "maxSubsegmentDuration", mpd_options_.max_subsegment_duration, mpd);
 }
 
 AdaptationSet::AdaptationSet(uint32 adaptation_set_id,
+                             const MpdOptions& mpd_options,
                              base::AtomicSequenceNumber* counter)
     : representations_deleter_(&representations_),
       representation_counter_(counter),
-      id_(adaptation_set_id) {
+      id_(adaptation_set_id),
+      mpd_options_(mpd_options) {
   DCHECK(counter);
 }
 
@@ -351,8 +400,8 @@ AdaptationSet::~AdaptationSet() {}
 
 Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
   base::AutoLock scoped_lock(lock_);
-  scoped_ptr<Representation> representation(
-      new Representation(media_info, representation_counter_->GetNext()));
+  scoped_ptr<Representation> representation(new Representation(
+      media_info, mpd_options_, representation_counter_->GetNext()));
 
   if (!representation->Init())
     return NULL;
@@ -392,10 +441,14 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
   return adaptation_set.PassScopedPtr();
 }
 
-Representation::Representation(const MediaInfo& media_info, uint32 id)
+Representation::Representation(const MediaInfo& media_info,
+                               const MpdOptions& mpd_options,
+                               uint32 id)
     : media_info_(media_info),
       id_(id),
-      bandwidth_estimator_(BandwidthEstimator::kUseAllBlocks) {}
+      bandwidth_estimator_(BandwidthEstimator::kUseAllBlocks),
+      mpd_options_(mpd_options),
+      start_number_(1) {}
 
 Representation::~Representation() {}
 
@@ -458,6 +511,9 @@ void Representation::AddNewSegment(uint64 start_time,
 
   bandwidth_estimator_.AddBlock(
       size, static_cast<double>(duration) / media_info_.reference_time_scale());
+
+  SlideWindow();
+  DCHECK_GE(segment_infos_.size(), 1u);
 }
 
 // Uses info in |media_info_| and |content_protection_elements_| to create a
@@ -516,7 +572,8 @@ xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
   }
 
   if (HasLiveOnlyFields(media_info_) &&
-      !representation.AddLiveOnlyInfo(media_info_, segment_infos_)) {
+      !representation.AddLiveOnlyInfo(
+          media_info_, segment_infos_, start_number_)) {
     LOG(ERROR) << "Failed to add Live info.";
     return xml::ScopedXmlPtr<xmlNode>::type();
   }
@@ -597,6 +654,57 @@ bool Representation::IsContiguous(uint64 start_time,
 
   // Within rounding error grace but technically not contiguous interms of MPD.
   return false;
+}
+
+void Representation::SlideWindow() {
+  DCHECK(!segment_infos_.empty());
+  if (mpd_options_.time_shift_buffer_depth <= 0.0)
+    return;
+
+  const uint32 time_scale = GetTimeScale(media_info_);
+  DCHECK_GT(time_scale, 0u);
+
+  uint64 time_shift_buffer_depth =
+      static_cast<uint64>(mpd_options_.time_shift_buffer_depth * time_scale);
+
+  // The start time of the latest segment is considered the current_play_time,
+  // and this should guarantee that the latest segment will stay in the list.
+  const uint64 current_play_time = LatestSegmentStartTime(segment_infos_);
+  if (current_play_time <= time_shift_buffer_depth)
+    return;
+
+  const uint64 timeshift_limit = current_play_time - time_shift_buffer_depth;
+
+  // First remove all the SegmentInfos that are completely out of range, by
+  // looking at the very last segment's end time.
+  std::list<SegmentInfo>::iterator first = segment_infos_.begin();
+  std::list<SegmentInfo>::iterator last = first;
+  size_t num_segments_removed = 0;
+  for (; last != segment_infos_.end(); ++last) {
+    const uint64 last_segment_end_time = LastSegmentEndTime(*last);
+    if (timeshift_limit < last_segment_end_time)
+      break;
+    num_segments_removed += last->repeat + 1;
+  }
+  segment_infos_.erase(first, last);
+  start_number_ += num_segments_removed;
+
+  // Now some segment in the first SegmentInfo should be left in the list.
+  SegmentInfo* first_segment_info = &segment_infos_.front();
+  DCHECK_LE(timeshift_limit, LastSegmentEndTime(*first_segment_info));
+
+  // Identify which segments should still be in the SegmentInfo.
+  const int repeat_index =
+      SearchTimedOutRepeatIndex(timeshift_limit, *first_segment_info);
+  CHECK_GE(repeat_index, 0);
+  if (repeat_index == 0)
+    return;
+
+  first_segment_info->start_time = first_segment_info->start_time +
+                                   first_segment_info->duration * repeat_index;
+
+  first_segment_info->repeat = first_segment_info->repeat - repeat_index;
+  start_number_ += repeat_index;
 }
 
 std::string Representation::GetVideoMimeType() const {

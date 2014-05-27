@@ -152,8 +152,11 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
   /// @return true on success, false otherwise.
   bool AddVODOnlyInfo(const MediaInfo& media_info);
 
+  /// @param segment_infos is a set of SegmentInfos. This method assumes that
+  ///        SegmentInfos are sorted by its start time.
   bool AddLiveOnlyInfo(const MediaInfo& media_info,
-                       const std::list<SegmentInfo>& segment_infos);
+                       const std::list<SegmentInfo>& segment_infos,
+                       uint32 start_number);
 
  private:
   // Add AudioChannelConfiguration elements. This will add multiple

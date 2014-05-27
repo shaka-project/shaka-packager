@@ -201,19 +201,22 @@ TEST_F(RepresentationTest, AddContentProtectionXml) {
 // Some template names cannot be used for init segment name.
 TEST_F(RepresentationTest, InvalidLiveInitSegmentName) {
   MediaInfo media_info;
+  const uint32 kDefaultStartNumber = 1;
 
-  // $NUMBER$ cannot be used for segment name.
+  // $Number$ cannot be used for segment name.
   media_info.set_init_segment_name("$Number$.mp4");
+  ASSERT_FALSE(representation_.AddLiveOnlyInfo(
+      media_info, segment_infos_, kDefaultStartNumber));
 
-  ASSERT_FALSE(representation_.AddLiveOnlyInfo(media_info, segment_infos_));
-
-  // $TIME$ as well.
+  // $Time$ as well.
   media_info.set_init_segment_name("$Time$.mp4");
-  ASSERT_FALSE(representation_.AddLiveOnlyInfo(media_info, segment_infos_));
+  ASSERT_FALSE(representation_.AddLiveOnlyInfo(
+      media_info, segment_infos_, kDefaultStartNumber));
 
   // This should be valid.
   media_info.set_init_segment_name("some_non_template_name.mp4");
-  ASSERT_TRUE(representation_.AddLiveOnlyInfo(media_info, segment_infos_));
+  ASSERT_TRUE(representation_.AddLiveOnlyInfo(
+      media_info, segment_infos_, kDefaultStartNumber));
 }
 
 }  // namespace xml

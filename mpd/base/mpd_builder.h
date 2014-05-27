@@ -15,10 +15,11 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/basictypes.h"
+#include "base/gtest_prod_util.h"
 #include "base/stl_util.h"
 #include "base/synchronization/lock.h"
-#include "mpd/base/content_protection_element.h"
 #include "mpd/base/bandwidth_estimator.h"
+#include "mpd/base/content_protection_element.h"
 #include "mpd/base/media_info.pb.h"
 #include "mpd/base/mpd_utils.h"
 #include "mpd/base/segment_info.h"
@@ -105,13 +106,13 @@ class MpdBuilder {
 
   float GetStaticMpdDuration(xml::XmlNode* mpd_node);
 
-  // Use |options_| to set attributes for MPD. Only values that are set will be
+  // Use |mpd_options_| to set attributes for MPD. Only values that are set will be
   // used, i.e. if a string field is not empty and numeric field is not 0.
   // Required fields will be set with some reasonable values.
   void SetMpdOptionsValues(xml::XmlNode* mpd_node);
 
   MpdType type_;
-  MpdOptions options_;
+  MpdOptions mpd_options_;
   std::list<AdaptationSet*> adaptation_sets_;
   ::STLElementDeleter<std::list<AdaptationSet*> > adaptation_sets_deleter_;
 
@@ -128,11 +129,6 @@ class MpdBuilder {
 /// <ContentProtection> elements to the AdaptationSet element.
 class AdaptationSet {
  public:
-  /// @param adaptation_set_id is an ID number for this AdaptationSet.
-  /// @param representation_counter is a Counter for assigning ID numbers to
-  ///                               Representation. It can not be NULL.
-  AdaptationSet(uint32 adaptation_set_id,
-                base::AtomicSequenceNumber* representation_counter);
   ~AdaptationSet();
 
   /// Create a Representation instance using @a media_info.
@@ -161,6 +157,16 @@ class AdaptationSet {
   }
 
  private:
+  friend class MpdBuilder;
+  FRIEND_TEST_ALL_PREFIXES(StaticMpdBuilderTest, CheckAdaptationSetId);
+
+  /// @param adaptation_set_id is an ID number for this AdaptationSet.
+  /// @param representation_counter is a Counter for assigning ID numbers to
+  ///        Representation. It can not be NULL.
+  AdaptationSet(uint32 adaptation_set_id,
+                const MpdOptions& mpd_options_,
+                base::AtomicSequenceNumber* representation_counter);
+
   std::list<ContentProtectionElement> content_protection_elements_;
   std::list<Representation*> representations_;
   ::STLElementDeleter<std::list<Representation*> > representations_deleter_;
@@ -170,6 +176,7 @@ class AdaptationSet {
   base::AtomicSequenceNumber* const representation_counter_;
 
   const uint32 id_;
+  const MpdOptions& mpd_options_;
 
   DISALLOW_COPY_AND_ASSIGN(AdaptationSet);
 };
@@ -178,14 +185,6 @@ class AdaptationSet {
 /// well as optional ContentProtection elements for that stream.
 class Representation {
  public:
-  // TODO(rkuroiwa): Get the value from MpdOptions for constructing
-  // BandwidthEstimator.
-  /// @param media_info is a MediaInfo containing information on the media.
-  ///        @a media_info.bandwidth is required for 'static' profile. If @a
-  ///        media_info.bandwidth is not present in 'dynamic' profile, this
-  ///        tries to estimate it using the info passed to AddNewSegment().
-  /// @param representation_id is the numeric ID for the <Representation>.
-  Representation(const MediaInfo& media_info, uint32 representation_id);
   ~Representation();
 
   /// Tries to initialize the instance. If this does not succeed, the instance
@@ -217,6 +216,18 @@ class Representation {
   }
 
  private:
+  friend class AdaptationSet;
+  FRIEND_TEST_ALL_PREFIXES(StaticMpdBuilderTest, CheckRepresentationId);
+
+  /// @param media_info is a MediaInfo containing information on the media.
+  ///        @a media_info.bandwidth is required for 'static' profile. If @a
+  ///        media_info.bandwidth is not present in 'dynamic' profile, this
+  ///        tries to estimate it using the info passed to AddNewSegment().
+  /// @param representation_id is the numeric ID for the <Representation>.
+  Representation(const MediaInfo& media_info,
+                 const MpdOptions& mpd_options,
+                 uint32 representation_id);
+
   bool AddLiveInfo(xml::RepresentationXmlNode* representation);
 
   // Returns true if |media_info_| has required fields to generate a valid
@@ -226,6 +237,11 @@ class Representation {
   // Return false if the segment should be considered a new segment. True if the
   // segment is contiguous.
   bool IsContiguous(uint64 start_time, uint64 duration, uint64 size) const;
+
+  // Remove elements from |segment_infos_| if
+  // mpd_options_.time_shift_buffer_depth is specified. Increments
+  // |start_number_| by the number of segments removed.
+  void SlideWindow();
 
   // Note: Because 'mimeType' is a required field for a valid MPD, these return
   // strings.
@@ -242,6 +258,11 @@ class Representation {
   std::string mime_type_;
   std::string codecs_;
   BandwidthEstimator bandwidth_estimator_;
+  const MpdOptions& mpd_options_;;
+
+  // startNumber attribute for SegmentTemplate.
+  // Starts from 1.
+  uint32 start_number_;
 
   DISALLOW_COPY_AND_ASSIGN(Representation);
 };

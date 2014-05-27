@@ -412,7 +412,8 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
 
 bool RepresentationXmlNode::AddLiveOnlyInfo(
     const MediaInfo& media_info,
-    const std::list<SegmentInfo>& segment_infos) {
+    const std::list<SegmentInfo>& segment_infos,
+    uint32 start_number) {
   XmlNode segment_template("SegmentTemplate");
   if (media_info.has_reference_time_scale()) {
     segment_template.SetIntegerAttribute("timescale",
@@ -431,13 +432,20 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
                     "SegmentTemplate@initialization";
       return false;
     }
-
     segment_template.SetStringAttribute("initialization",
                                         media_info.init_segment_name());
   }
 
-  if (media_info.has_segment_template())
+  if (media_info.has_segment_template()) {
     segment_template.SetStringAttribute("media", media_info.segment_template());
+
+    // TODO(rkuroiwa): Need a better check. $$Number is legitimate but not a
+    // template.
+    if (media_info.segment_template().find("$Number") != std::string::npos) {
+      DCHECK_GE(start_number, 1u);
+      segment_template.SetIntegerAttribute("startNumber", start_number);
+    }
+  }
 
   // TODO(rkuroiwa): Find out when a live MPD doesn't require SegmentTimeline.
   XmlNode segment_timeline("SegmentTimeline");
