@@ -23,7 +23,7 @@ class EncryptionKeySource;
 class MediaInfo;
 class MediaStream;
 class Muxer;
-class MuxerOptions;
+struct MuxerOptions;
 
 /// Print all the stream info for the provided strings to standard output.
 void DumpStreamInfo(const std::vector<MediaStream*>& streams);
