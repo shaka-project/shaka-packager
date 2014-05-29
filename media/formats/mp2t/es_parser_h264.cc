@@ -316,13 +316,16 @@ bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
   }
 
   if (last_video_decoder_config_) {
-    // Verify that the video decoder config has not changed.
-    if (last_video_decoder_config_->extra_data() == decoder_config_record) {
-      // Video configuration has not changed.
-      return true;
+    if (last_video_decoder_config_->extra_data() != decoder_config_record) {
+      // Video configuration has changed. Issue warning.
+      // TODO(tinskip): Check the nature of the configuration change. Only
+      // minor configuration changes (such as frame ordering) can be handled
+      // gracefully by decoders without notification. Major changes (such as
+      // video resolution changes) should be treated as errors.
+      LOG(WARNING) << "H.264 decoder configuration has changed.";
+      last_video_decoder_config_->set_extra_data(decoder_config_record);
     }
-    NOTIMPLEMENTED() << "Varying video configurations are not supported.";
-    return false;
+    return true;
   }
 
   // TODO: a MAP unit can be either 16 or 32 pixels.

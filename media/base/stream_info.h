@@ -52,6 +52,8 @@ class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
 
   void set_duration(int duration) { duration_ = duration; }
 
+  void set_extra_data(const std::vector<uint8>& data) { extra_data_ = data; }
+
  protected:
   friend class base::RefCountedThreadSafe<StreamInfo>;
   virtual ~StreamInfo();
