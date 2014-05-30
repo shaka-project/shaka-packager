@@ -21,11 +21,14 @@ class AdaptationSet;
 class MpdBuilder;
 class Representation;
 
+struct MpdOptions;
+
 /// A simple MpdNotifier implementation which receives muxer listener event and
 /// generates an Mpd file.
 class SimpleMpdNotifier : public MpdNotifier {
  public:
   SimpleMpdNotifier(DashProfile dash_profile,
+                    const MpdOptions& mpd_options,
                     const std::vector<std::string>& base_urls,
                     const std::string& output_path);
   virtual ~SimpleMpdNotifier();
@@ -37,7 +40,8 @@ class SimpleMpdNotifier : public MpdNotifier {
                                   uint32* id) OVERRIDE;
   virtual bool NotifyNewSegment(uint32 id,
                                 uint64 start_time,
-                                uint64 duration) OVERRIDE;
+                                uint64 duration,
+                                uint64 size) OVERRIDE;
   virtual bool AddContentProtectionElement(
       uint32 id,
       const ContentProtectionElement& content_protection_element) OVERRIDE;

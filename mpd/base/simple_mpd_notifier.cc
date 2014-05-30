@@ -16,6 +16,7 @@ using media::File;
 namespace dash_packager {
 
 SimpleMpdNotifier::SimpleMpdNotifier(DashProfile dash_profile,
+                                     const MpdOptions& mpd_options,
                                      const std::vector<std::string>& base_urls,
                                      const std::string& output_path)
     : MpdNotifier(dash_profile),
@@ -23,7 +24,7 @@ SimpleMpdNotifier::SimpleMpdNotifier(DashProfile dash_profile,
       mpd_builder_(new MpdBuilder(dash_profile == kLiveProfile
                                       ? MpdBuilder::kDynamic
                                       : MpdBuilder::kStatic,
-                                  MpdOptions())) {
+                                  mpd_options)) {
   DCHECK(dash_profile == kLiveProfile || dash_profile == kOnDemandProfile);
   for (size_t i = 0; i < base_urls.size(); ++i)
     mpd_builder_->AddBaseUrl(base_urls[i]);
@@ -69,7 +70,8 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
 
 bool SimpleMpdNotifier::NotifyNewSegment(uint32 container_id,
                                          uint64 start_time,
-                                         uint64 duration) {
+                                         uint64 duration,
+                                         uint64 size) {
   base::AutoLock auto_lock(lock_);
 
   RepresentationMap::iterator it = representation_map_.find(container_id);
@@ -77,8 +79,7 @@ bool SimpleMpdNotifier::NotifyNewSegment(uint32 container_id,
     LOG(ERROR) << "Unexpected container_id: " << container_id;
     return false;
   }
-  // TODO(kqyang): AddNewSegment() requires size for the third argument.
-  // !it->second->AddNewSegment(start_time, duration);
+  it->second->AddNewSegment(start_time, duration, size);
   return WriteMpdToFile();
 }
 

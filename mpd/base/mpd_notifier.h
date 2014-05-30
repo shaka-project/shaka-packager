@@ -53,11 +53,13 @@ class MpdNotifier {
   /// @param start_time is the start time of the new segment, in units of the
   ///        stream's time scale.
   /// @param duration is the duration of the new segment, in units of the
-  ///        stream's time scale..
+  ///        stream's time scale.
+  /// @param size is the new segment size in bytes.
   /// @return true on success, false otherwise.
   virtual bool NotifyNewSegment(uint32 container_id,
                                 uint64 start_time,
-                                uint64 duration) = 0;
+                                uint64 duration,
+                                uint64 size) = 0;
 
   /// Adds content protection information to the MPD.
   /// @param container_id is the nummeric container ID obtained from calling

@@ -104,7 +104,8 @@ void MpdNotifyMuxerListener::OnNewSegment(uint64 start_time,
   if (mpd_notifier_->dash_profile() != dash_packager::kLiveProfile)
     return;
   // TODO(kqyang): Check return result.
-  mpd_notifier_->NotifyNewSegment(notification_id_, start_time, duration);
+  mpd_notifier_->NotifyNewSegment(
+      notification_id_, start_time, duration, segment_file_size);
 }
 
 }  // namespace event
