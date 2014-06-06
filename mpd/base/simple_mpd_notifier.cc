@@ -13,16 +13,6 @@
 
 using media::File;
 
-namespace {
-bool MoreThanOneTrue(bool b1, bool b2, bool b3) {
-  return (b1 && b2) || (b2 && b3) || (b3 && b1);
-}
-
-bool AtLeastOneTrue(bool b1, bool b2, bool b3) {
-  return (b1 || b2 || b3);
-}
-}  // namespace
-
 namespace dash_packager {
 
 SimpleMpdNotifier::SimpleMpdNotifier(DashProfile dash_profile,

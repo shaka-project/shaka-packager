@@ -107,4 +107,14 @@ bool GetDurationAttribute(xmlNodePtr node, float* duration) {
   return true;
 }
 
+bool MoreThanOneTrue(bool b1, bool b2, bool b3) {
+  return (b1 && b2) || (b2 && b3) || (b3 && b1);
+}
+
+bool AtLeastOneTrue(bool b1, bool b2, bool b3) { return b1 || b2 || b3; }
+
+bool OnlyOneTrue(bool b1, bool b2, bool b3) {
+    return !MoreThanOneTrue(b1, b2, b3) && AtLeastOneTrue(b1, b2, b3);
+}
+
 }  // namespace dash_packager

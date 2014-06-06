@@ -28,14 +28,6 @@ bool HasText(const MediaInfo& media_info) {
   return media_info.text_info().size() > 0;
 }
 
-bool MoreThanOneTrue(bool b1, bool b2, bool b3) {
-  return (b1 && b2) || (b2 && b3) || (b3 && b1);
-}
-
-bool OnlyOneTrue(bool b1, bool b2, bool b3) {
-  return !MoreThanOneTrue(b1, b2, b3) && (b1 || b2 || b3);
-}
-
 // On entry set |has_video|, |has_audio|, and |has_text| to false.
 // On success, return true and set appropriate |has_*| variables. Otherwise
 // return false.
@@ -66,7 +58,7 @@ bool HasVideoAudioText(const std::list<MediaInfo>& media_infos,
       return false;
     }
 
-    if (!OnlyOneTrue(
+    if (!AtLeastOneTrue(
             media_info_has_video, media_info_has_audio, media_info_has_text)) {
       LOG(ERROR) << "MpdWriter requires that MediaInfo contain one "
                     "audio, video, or text stream.";

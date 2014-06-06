@@ -38,6 +38,10 @@ std::string SecondsToXmlDuration(float seconds);
 // Tries to get "duration" attribute from |node|. On success |duration| is set.
 bool GetDurationAttribute(xmlNodePtr node, float* duration);
 
+bool MoreThanOneTrue(bool b1, bool b2, bool b3);
+bool AtLeastOneTrue(bool b1, bool b2, bool b3);
+bool OnlyOneTrue(bool b1, bool b2, bool b3);
+
 }  // namespace dash_packager
 
 #endif  // MPD_BASE_MPD_UTILS_H_
