@@ -7,6 +7,7 @@
 #include "mpd/base/bandwidth_estimator.h"
 
 #include <cmath>
+#include <cstdlib>
 
 #include "base/logging.h"
 

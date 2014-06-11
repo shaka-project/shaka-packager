@@ -131,7 +131,8 @@ class SegmentTemplateTest : public DynamicMpdBuilderTest {
     const char kSElementTemplate[] = "<S t=\"%lu\" d=\"%lu\" r=\"%lu\"/>\n";
     const char kSElementTemplateWithoutR[] = "<S t=\"%lu\" d=\"%lu\"/>\n";
 
-    segment_infos_for_expected_out_.push_back({start_time, duration, repeat});
+    SegmentInfo s = {start_time, duration, repeat};
+    segment_infos_for_expected_out_.push_back(s);
     if (repeat == 0) {
       expected_s_elements_ +=
           base::StringPrintf(kSElementTemplateWithoutR, start_time, duration);
