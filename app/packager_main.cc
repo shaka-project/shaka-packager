@@ -8,9 +8,9 @@
 
 #include "app/fixed_key_encryption_flags.h"
 #include "app/libcrypto_threading.h"
-#include "app/packager_common.h"
 #include "app/mpd_flags.h"
 #include "app/muxer_flags.h"
+#include "app/packager_util.h"
 #include "app/widevine_encryption_flags.h"
 #include "base/logging.h"
 #include "base/stl_util.h"

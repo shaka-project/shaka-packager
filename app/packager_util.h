@@ -4,10 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 //
-// Functionality common to single and multiple stream packager.
+// Packager utility functions.
 
-#ifndef APP_PACKAGER_COMMON_H_
-#define APP_PACKAGER_COMMON_H_
+#ifndef APP_PACKAGER_UTIL_H_
+#define APP_PACKAGER_UTIL_H_
 
 #include <gflags/gflags.h>
 #include <string>
@@ -49,4 +49,4 @@ bool AddStreamToMuxer(const std::vector<MediaStream*>& streams,
 
 }  // namespace media
 
-#endif  // APP_PACKAGER_COMMON_H_
+#endif  // APP_PACKAGER_UTIL_H_

@@ -22,7 +22,6 @@
 
 DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
 
-
 namespace media {
 
 void DumpStreamInfo(const std::vector<MediaStream*>& streams) {
