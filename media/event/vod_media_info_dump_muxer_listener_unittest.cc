@@ -152,16 +152,14 @@ void ExpectTextFormatMediaInfoEqual(const std::string& expect,
 
 class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
  public:
-  VodMediaInfoDumpMuxerListenerTest() : temp_file_(NULL) {}
+  VodMediaInfoDumpMuxerListenerTest() {}
   virtual ~VodMediaInfoDumpMuxerListenerTest() {}
 
   virtual void SetUp() OVERRIDE {
     ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
     DLOG(INFO) << "Created temp file: " << temp_file_path_.value();
 
-    temp_file_ = File::Open(temp_file_path_.value().c_str(), "w");
-    ASSERT_TRUE(temp_file_);
-    listener_.reset(new VodMediaInfoDumpMuxerListener(temp_file_));
+    listener_.reset(new VodMediaInfoDumpMuxerListener(temp_file_path_.value()));
   }
 
   virtual void TearDown() OVERRIDE {
@@ -182,7 +180,7 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
   }
 
   void FireOnMediaEndWithParams(const OnMediaEndParameters& params) {
-    // On success, this writes the result to |temp_file_|.
+    // On success, this writes the result to |temp_file_path_|.
     listener_->OnMediaEnd(params.has_init_range,
                           params.init_range_start,
                           params.init_range_end,
@@ -204,7 +202,6 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
   }
 
  protected:
-  File* temp_file_;
   base::FilePath temp_file_path_;
   scoped_ptr<VodMediaInfoDumpMuxerListener> listener_;
 
@@ -221,7 +218,6 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal) {
   FireOnMediaStartWithDefaultMuxerOptions(stream_infos, !kEnableEncryption);
   OnMediaEndParameters media_end_param = GetDefaultOnMediaEndParams();
   FireOnMediaEndWithParams(media_end_param);
-  ASSERT_TRUE(temp_file_->Close());
 
   const char kExpectedProtobufOutput[] =
       "bandwidth: 7620\n"
@@ -258,7 +254,6 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
 
   OnMediaEndParameters media_end_param = GetDefaultOnMediaEndParams();
   FireOnMediaEndWithParams(media_end_param);
-  ASSERT_TRUE(temp_file_->Close());
 
   const char kExpectedProtobufOutput[] =
       "bandwidth: 7620\n"

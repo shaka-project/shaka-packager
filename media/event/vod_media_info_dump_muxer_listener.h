@@ -24,24 +24,19 @@ class MediaInfo;
 }  // namespace dash_packager
 
 namespace media {
-
-class File;
-
 namespace event {
 
 class VodMediaInfoDumpMuxerListener : public MuxerListener {
  public:
-  // This object does not own |output_file|. The file has to be open and be
-  // ready for Write(). This will Flush() the file on write but it does not
-  // Close() the file.
-  VodMediaInfoDumpMuxerListener(File* output_file);
+  VodMediaInfoDumpMuxerListener(const std::string& output_file_name);
   virtual ~VodMediaInfoDumpMuxerListener();
 
-  // If the stream is encrypted use this as 'schemeIdUri' attribute for
-  // ContentProtection element.
+  /// If the stream is encrypted use this as 'schemeIdUri' attribute for
+  /// ContentProtection element.
   void SetContentProtectionSchemeIdUri(const std::string& scheme_id_uri);
 
-  // MuxerListener implementation.
+  /// @name MuxerListener implementation overrides.
+  /// @{
   virtual void OnMediaStart(const MuxerOptions& muxer_options,
                             const std::vector<StreamInfo*>& stream_infos,
                             uint32 time_scale,
@@ -60,11 +55,13 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
   virtual void OnNewSegment(uint64 start_time,
                             uint64 duration,
                             uint64 segment_file_size) OVERRIDE;
- private:
-  // Write |media_info_| to |file_|.
-  void SerializeMediaInfoToFile();
+  /// @}
 
-  File* file_;
+ private:
+  // Write |media_info_| to |output_file_name_|.
+  bool SerializeMediaInfoToFile();
+
+  std::string output_file_name_;
   std::string scheme_id_uri_;
   scoped_ptr<dash_packager::MediaInfo> media_info_;
 

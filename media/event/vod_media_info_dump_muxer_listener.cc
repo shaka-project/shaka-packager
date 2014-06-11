@@ -19,8 +19,9 @@ namespace event {
 
 using dash_packager::MediaInfo;
 
-VodMediaInfoDumpMuxerListener::VodMediaInfoDumpMuxerListener(File* output_file)
-    : file_(output_file) {}
+VodMediaInfoDumpMuxerListener::VodMediaInfoDumpMuxerListener(
+    const std::string& output_file_name)
+    : output_file_name_(output_file_name) {}
 
 VodMediaInfoDumpMuxerListener::~VodMediaInfoDumpMuxerListener() {}
 
@@ -85,20 +86,29 @@ void VodMediaInfoDumpMuxerListener::OnNewSegment(uint64 start_time,
   NOTIMPLEMENTED();
 }
 
-void VodMediaInfoDumpMuxerListener::SerializeMediaInfoToFile() {
+bool VodMediaInfoDumpMuxerListener::SerializeMediaInfoToFile() {
   std::string output_string;
   if (!google::protobuf::TextFormat::PrintToString(*media_info_,
                                                    &output_string)) {
     LOG(ERROR) << "Failed to serialize MediaInfo to string.";
-    return;
+    return false;
   }
 
-  if (file_->Write(output_string.data(), output_string.size()) <= 0) {
+  media::File* file = File::Open(output_file_name_.c_str(), "w");
+  if (!file) {
+    LOG(ERROR) << "Failed to open " << output_file_name_;
+    return false;
+  }
+  if (file->Write(output_string.data(), output_string.size()) <= 0) {
     LOG(ERROR) << "Failed to write MediaInfo to file.";
-    return;
+    file->Close();
+    return false;
   }
-
-  file_->Flush();
+  if (!file->Close()) {
+    LOG(ERROR) << "Failed to close " << output_file_name_;
+    return false;
+  }
+  return true;
 }
 
 }  // namespace event

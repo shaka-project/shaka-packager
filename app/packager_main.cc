@@ -22,6 +22,7 @@
 #include "media/base/muxer_options.h"
 #include "media/base/muxer_util.h"
 #include "media/event/mpd_notify_muxer_listener.h"
+#include "media/event/vod_media_info_dump_muxer_listener.h"
 #include "media/formats/mp4/mp4_muxer.h"
 #include "mpd/base/mpd_builder.h"
 #include "mpd/base/simple_mpd_notifier.h"
@@ -54,6 +55,7 @@ using dash_packager::MpdOptions;
 using dash_packager::SimpleMpdNotifier;
 using event::MpdNotifyMuxerListener;
 using event::MuxerListener;
+using event::VodMediaInfoDumpMuxerListener;
 
 // Demux, Mux(es) and worker thread used to remux a source file/stream.
 class RemuxJob : public base::SimpleThread {
@@ -155,12 +157,28 @@ bool CreateRemuxJobs(const StringVector& stream_descriptors,
                                     FLAGS_crypto_period_duration);
     }
 
+    scoped_ptr<MuxerListener> muxer_listener;
+    DCHECK(!(FLAGS_output_media_info && mpd_notifier));
+    if (FLAGS_output_media_info) {
+      const std::string output_mpd_file_name =
+          stream_muxer_options.output_file_name + ".media_info";
+      scoped_ptr<VodMediaInfoDumpMuxerListener>
+          vod_media_info_dump_muxer_listener(
+              new VodMediaInfoDumpMuxerListener(output_mpd_file_name));
+      vod_media_info_dump_muxer_listener->SetContentProtectionSchemeIdUri(
+          FLAGS_scheme_id_uri);
+      muxer_listener = vod_media_info_dump_muxer_listener.Pass();
+    }
     if (mpd_notifier) {
       scoped_ptr<MpdNotifyMuxerListener> mpd_notify_muxer_listener(
           new MpdNotifyMuxerListener(mpd_notifier));
       mpd_notify_muxer_listener->SetContentProtectionSchemeIdUri(
           FLAGS_scheme_id_uri);
-      muxer_listeners->push_back(mpd_notify_muxer_listener.release());
+      muxer_listener = mpd_notify_muxer_listener.Pass();
+    }
+
+    if (muxer_listener) {
+      muxer_listeners->push_back(muxer_listener.release());
       muxer->SetMuxerListener(muxer_listeners->back());
     }
 
@@ -205,13 +223,20 @@ Status RunRemuxJobs(const std::vector<RemuxJob*>& remux_jobs) {
 }
 
 bool RunPackager(const StringVector& stream_descriptors) {
-  if (FLAGS_output_media_info) {
-    NOTIMPLEMENTED() << "ERROR: --output_media_info is not supported yet.";
-    return false;
-  }
-
   if (!AssignFlagsFromProfile())
     return false;
+
+  if (FLAGS_output_media_info && !FLAGS_mpd_output.empty()) {
+    NOTIMPLEMENTED() << "ERROR: --output_media_info and --mpd_output do not "
+                        "work together.";
+    return false;
+  }
+  if (FLAGS_output_media_info && !FLAGS_single_segment) {
+    // TODO(rkuroiwa, kqyang): Support partial media info dump for live.
+    NOTIMPLEMENTED() << "ERROR: --output_media_info is only supported if "
+                        "--single_segment is true.";
+    return false;
+  }
 
   // Get basic muxer options.
   MuxerOptions muxer_options;

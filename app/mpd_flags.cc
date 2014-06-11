@@ -8,12 +8,15 @@
 
 #include "app/mpd_flags.h"
 
+// TODO(rkuroiwa, kqyang): Remove the 'Exclusive' statements once
+// --output_media_info can work together with --mpd_output.
 DEFINE_bool(output_media_info,
             false,
             "Create a human readable format of MediaInfo. The output file name "
             "will be the name specified by output flag, suffixed with "
-            "'.media_info'.");
-DEFINE_string(mpd_output, "", "MPD output file name.");
+            "'.media_info'. Exclusive with --mpd_output.");
+DEFINE_string(mpd_output, "",
+              "MPD output file name. Exclusive with --output_media_info.");
 DEFINE_string(scheme_id_uri,
               "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed",
               "This flag only applies if output_media_info is true. This value "
