@@ -17,6 +17,9 @@ vars = {
   "gyp_rev": "1876",
   "webrtc_rev": "5718",  # For gflags.
 
+  "curl_url": "https://github.com/bagder/curl.git",
+  "curl_rev": "curl-7_37_0",
+
   "happyhttp_url": "https://github.com/Zintinio/HappyHTTP.git",
   "happyhttp_rev": "6b11b3b02cb3c8b649de9fffe8e08ae68c42bfd0",
 }
@@ -52,6 +55,9 @@ deps = {
 
   "src/testing/gtest":
     (Var("googlecode_url") % "googletest") + "/trunk@" + Var("gtest_rev"),
+
+  "src/third_party/curl/source":
+    Var("curl_url") + "@" + Var("curl_rev"),
 
   "src/third_party/gflags":
     (Var("googlecode_url") % "webrtc")+ "/trunk/third_party/gflags@" + Var("webrtc_rev"),
