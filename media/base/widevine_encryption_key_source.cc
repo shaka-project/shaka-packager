@@ -40,6 +40,7 @@ const int kFirstRetryDelayMilliseconds = 1000;
 // key rotation enabled request.
 const int kDefaultCryptoPeriodCount = 10;
 const int kGetKeyTimeoutInSeconds = 5 * 60;  // 5 minutes.
+const int kHttpTimeoutInSeconds = 60;  // 1 minute.
 
 bool Base64StringToBytes(const std::string& base64_string,
                          std::vector<uint8>* bytes) {
@@ -129,7 +130,7 @@ WidevineEncryptionKeySource::WidevineEncryptionKeySource(
     const std::string& policy,
     scoped_ptr<RequestSigner> signer,
     int first_crypto_period_index)
-    : http_fetcher_(new SimpleHttpFetcher()),
+    : http_fetcher_(new SimpleHttpFetcher(kHttpTimeoutInSeconds)),
       server_url_(server_url),
       content_id_(content_id),
       policy_(policy),
@@ -243,24 +244,26 @@ Status WidevineEncryptionKeySource::FetchKeys(
   // server limitation.
   for (int i = 0; i < kNumTransientErrorRetries; ++i) {
     status = http_fetcher_->Post(server_url_, message, &raw_response);
-    if (!status.ok())
+    if (status.ok()) {
+      VLOG(1) << "Retry [" << i << "] Response:" << raw_response;
+
+      std::string response;
+      if (!DecodeResponse(raw_response, &response)) {
+        return Status(error::SERVER_ERROR,
+                      "Failed to decode response '" + raw_response + "'.");
+      }
+
+      bool transient_error = false;
+      if (ExtractEncryptionKey(response, &transient_error))
+        return Status::OK;
+
+      if (!transient_error) {
+        return Status(
+            error::SERVER_ERROR,
+            "Failed to extract encryption key from '" + response + "'.");
+      }
+    } else if (status.error_code() != error::TIME_OUT) {
       return status;
-    VLOG(1) << "Retry [" << i << "] Response:" << raw_response;
-
-    std::string response;
-    if (!DecodeResponse(raw_response, &response)) {
-      return Status(error::SERVER_ERROR,
-                    "Failed to decode response '" + raw_response + "'.");
-    }
-
-    bool transient_error = false;
-    if (ExtractEncryptionKey(response, &transient_error))
-      return Status::OK;
-
-    if (!transient_error) {
-      return Status(
-          error::SERVER_ERROR,
-          "Failed to extract encryption key from '" + response + "'.");
     }
 
     // Exponential backoff.

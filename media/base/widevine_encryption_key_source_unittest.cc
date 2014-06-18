@@ -143,6 +143,20 @@ class WidevineEncryptionKeySourceTest : public ::testing::Test {
         mock_http_fetcher_.PassAs<HttpFetcher>());
   }
 
+  void VerifyKeys() {
+    EncryptionKey encryption_key;
+    const std::string kTrackTypes[] = {"SD", "HD", "AUDIO"};
+    for (size_t i = 0; i < arraysize(kTrackTypes); ++i) {
+      ASSERT_OK(widevine_encryption_key_source_->GetKey(
+          EncryptionKeySource::GetTrackTypeFromString(kTrackTypes[i]),
+          &encryption_key));
+      EXPECT_EQ(GetMockKeyId(kTrackTypes[i]), ToString(encryption_key.key_id));
+      EXPECT_EQ(GetMockKey(kTrackTypes[i]), ToString(encryption_key.key));
+      EXPECT_EQ(GetMockPsshData(kTrackTypes[i]),
+                GetPsshDataFromPsshBox(ToString(encryption_key.pssh)));
+    }
+  }
+
   scoped_ptr<MockRequestSigner> mock_request_signer_;
   scoped_ptr<MockHttpFetcher> mock_http_fetcher_;
   scoped_ptr<WidevineEncryptionKeySource> widevine_encryption_key_source_;
@@ -217,18 +231,24 @@ TEST_F(WidevineEncryptionKeySourceTest, LicenseStatusOK) {
 
   CreateWidevineEncryptionKeySource(kDisableKeyRotation);
   ASSERT_OK(widevine_encryption_key_source_->Initialize());
+  VerifyKeys();
+}
 
-  EncryptionKey encryption_key;
-  const std::string kTrackTypes[] = {"SD", "HD", "AUDIO"};
-  for (size_t i = 0; i < 3; ++i) {
-    ASSERT_OK(widevine_encryption_key_source_->GetKey(
-        EncryptionKeySource::GetTrackTypeFromString(kTrackTypes[i]),
-        &encryption_key));
-    EXPECT_EQ(GetMockKeyId(kTrackTypes[i]), ToString(encryption_key.key_id));
-    EXPECT_EQ(GetMockKey(kTrackTypes[i]), ToString(encryption_key.key));
-    EXPECT_EQ(GetMockPsshData(kTrackTypes[i]),
-              GetPsshDataFromPsshBox(ToString(encryption_key.pssh)));
-  }
+TEST_F(WidevineEncryptionKeySourceTest, RetryOnHttpTimeout) {
+  EXPECT_CALL(*mock_request_signer_, GenerateSignature(_, _))
+      .WillOnce(Return(true));
+
+  std::string mock_response = base::StringPrintf(
+      kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
+
+  // Retry is expected on HTTP timeout.
+  EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
+      .WillOnce(Return(Status(error::TIME_OUT, "")))
+      .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
+
+  CreateWidevineEncryptionKeySource(kDisableKeyRotation);
+  ASSERT_OK(widevine_encryption_key_source_->Initialize());
+  VerifyKeys();
 }
 
 TEST_F(WidevineEncryptionKeySourceTest, RetryOnTransientError) {
@@ -251,14 +271,7 @@ TEST_F(WidevineEncryptionKeySourceTest, RetryOnTransientError) {
 
   CreateWidevineEncryptionKeySource(kDisableKeyRotation);
   ASSERT_OK(widevine_encryption_key_source_->Initialize());
-
-  EncryptionKey encryption_key;
-  ASSERT_OK(widevine_encryption_key_source_->GetKey(
-      EncryptionKeySource::TRACK_TYPE_SD, &encryption_key));
-  EXPECT_EQ(GetMockKeyId("SD"), ToString(encryption_key.key_id));
-  EXPECT_EQ(GetMockKey("SD"), ToString(encryption_key.key));
-  EXPECT_EQ(GetMockPsshData("SD"),
-            GetPsshDataFromPsshBox(ToString(encryption_key.pssh)));
+  VerifyKeys();
 }
 
 TEST_F(WidevineEncryptionKeySourceTest, NoRetryOnUnknownError) {
