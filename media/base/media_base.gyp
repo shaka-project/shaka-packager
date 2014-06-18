@@ -16,38 +16,6 @@
   },
   'targets': [
     {
-      'target_name': 'status',
-      'type': '<(component)',
-      'sources': [
-        'status.cc',
-        'status.h',
-      ],
-      'dependencies': [
-        '../../base/base.gyp:base',
-      ],
-    },
-    {
-      'target_name': 'http_fetcher',
-      'type': '<(component)',
-      'sources': [
-        'http_fetcher.cc',
-        'http_fetcher.h',
-      ],
-      'cflags!': [ '-fno-exceptions' ],
-      'cflags_cc!': [ '-fno-exceptions' ],
-      'conditions': [
-        ['OS=="mac"', {
-          'xcode_settings': {
-            'GCC_ENABLE_CPP_EXCEPTIONS': 'YES'
-          }
-        }]
-      ],
-      'dependencies': [
-        '../../third_party/happyhttp/happyhttp.gyp:happyhttp_lib',
-        'status',
-      ],
-    },
-    {
       'target_name': 'base',
       'type': '<(component)',
       'sources': [
@@ -76,6 +44,8 @@
         'decryptor_source.h',
         'encryption_key_source.cc',
         'encryption_key_source.h',
+        'http_fetcher.cc',
+        'http_fetcher.h',
         'limits.h',
         'media_parser.h',
         'media_sample.cc',
@@ -95,6 +65,8 @@
         'request_signer.h',
         'rsa_key.cc',
         'rsa_key.h',
+        'status.cc',
+        'status.h',
         'stream_info.cc',
         'stream_info.h',
         'text_track.h',
@@ -106,9 +78,8 @@
       ],
       'dependencies': [
         '../../base/base.gyp:base',
+        '../../third_party/curl/curl.gyp:libcurl',
         '../../third_party/openssl/openssl.gyp:openssl',
-        'http_fetcher',
-        'status',
       ],
     },
     {
@@ -123,6 +94,7 @@
         'container_names_unittest.cc',
         'fake_prng.cc',  # For rsa_key_unittest
         'fake_prng.h',   # For rsa_key_unittest
+        'http_fetcher_unittest.cc',
         'muxer_util_unittest.cc',
         'offset_byte_queue_unittest.cc',
         'producer_consumer_queue_unittest.cc',

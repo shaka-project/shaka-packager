@@ -6,97 +6,35 @@
 
 #include "media/base/http_fetcher.h"
 
-#ifdef WIN32
-#include <winsock2.h>
-#endif  // WIN32
-
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "third_party/happyhttp/src/happyhttp.h"
+#include <curl/curl.h>
+#include "base/strings/stringprintf.h"
 
 namespace {
+const char kUserAgentString[] = "edash-packager-http_fetcher/1.0";
 
-struct HttpResult {
-  int status_code;
-  std::string status_message;
-  std::string response;
+// Scoped CURL implementation which cleans up itself when goes out of scope.
+class ScopedCurl {
+ public:
+  ScopedCurl() { ptr_ = curl_easy_init(); }
+  ~ScopedCurl() {
+    if (ptr_)
+      curl_easy_cleanup(ptr_);
+  }
+
+  CURL* get() { return ptr_; }
+
+ private:
+  CURL* ptr_;
+  DISALLOW_COPY_AND_ASSIGN(ScopedCurl);
 };
 
-bool ExtractUrlParams(const std::string& url, std::string* host,
-                      std::string* path, int* port) {
-  DCHECK(host && path && port);
-
-  static const char kHttp[] = "http://";
-  // arraysize counts the last null character, which needs to be removed.
-  const char kHttpSize = arraysize(kHttp) - 1;
-  static const char kHttps[] = "https://";
-  const char kHttpsSize = arraysize(kHttps) - 1;
-  size_t host_start_pos;
-  if (StartsWithASCII(url, kHttp, false)) {
-    host_start_pos = kHttpSize;
-  } else if (StartsWithASCII(url, kHttps, false)) {
-    host_start_pos = kHttpsSize;
-    NOTIMPLEMENTED() << "Secure HTTP is not implemented yet.";
-    return false;
-  } else {
-    host_start_pos = 0;
-  }
-
-  const size_t npos = std::string::npos;
-  const size_t port_start_pos = url.find(':', host_start_pos);
-  const size_t path_start_pos = url.find('/', host_start_pos);
-
-  size_t host_size;
-  if (port_start_pos == npos) {
-    const int kStandardHttpPort = 80;
-    *port = kStandardHttpPort;
-
-    host_size = path_start_pos == npos ? npos : path_start_pos - host_start_pos;
-  } else {
-    if (port_start_pos >= path_start_pos)
-      return false;
-    const size_t port_size =
-        path_start_pos == npos ? npos : path_start_pos - port_start_pos - 1;
-    if (!base::StringToInt(url.substr(port_start_pos + 1, port_size), port))
-      return false;
-
-    host_size = port_start_pos - host_start_pos;
-  }
-
-  *host = url.substr(host_start_pos, host_size);
-  *path = path_start_pos == npos ? "/" : url.substr(path_start_pos);
-  return true;
+size_t AppendToString(char* ptr, size_t size, size_t nmemb, std::string* response) {
+  DCHECK(ptr);
+  DCHECK(response);
+  const size_t total_size = size * nmemb;
+  response->append(ptr, total_size);
+  return total_size;
 }
-
-// happyhttp event callbacks.
-void OnBegin(const happyhttp::Response* response, void* userdata) {
-  DCHECK(response && userdata);
-  DLOG(INFO) << "BEGIN (" << response->getstatus() << ", "
-             << response->getreason() << ").";
-
-  HttpResult* result = static_cast<HttpResult*>(userdata);
-  result->status_code = response->getstatus();
-  result->status_message = response->getreason();
-  result->response.clear();
-}
-
-void OnData(const happyhttp::Response* response,
-            void* userdata,
-            const unsigned char* data,
-            int num_bytes) {
-  DCHECK(response && userdata && data);
-  HttpResult* result = static_cast<HttpResult*>(userdata);
-  result->response.append(reinterpret_cast<const char*>(data), num_bytes);
-}
-
-void OnComplete(const happyhttp::Response* response, void* userdata) {
-  DCHECK(response && userdata);
-  HttpResult* result = static_cast<HttpResult*>(userdata);
-  DLOG(INFO) << "COMPLETE (" << result->response.size() << " bytes).";
-}
-
-const int kHttpOK = 200;
-
 }  // namespace
 
 namespace media {
@@ -104,86 +42,69 @@ namespace media {
 HttpFetcher::HttpFetcher() {}
 HttpFetcher::~HttpFetcher() {}
 
-SimpleHttpFetcher::SimpleHttpFetcher() {
-#ifdef WIN32
-  WSAData wsa_data;
-  int code = WSAStartup(MAKEWORD(1, 1), &wsa_data);
-  wsa_startup_succeeded_ = (code == 0);
-  if (!wsa_startup_succeeded_)
-    LOG(ERROR) << "WSAStartup failed with code " << code;
-#endif  // WIN32
+SimpleHttpFetcher::SimpleHttpFetcher() : timeout_in_seconds_(0) {
+  curl_global_init(CURL_GLOBAL_DEFAULT);
+}
+
+SimpleHttpFetcher::SimpleHttpFetcher(uint32 timeout_in_seconds)
+    : timeout_in_seconds_(timeout_in_seconds) {
+  curl_global_init(CURL_GLOBAL_DEFAULT);
 }
 
 SimpleHttpFetcher::~SimpleHttpFetcher() {
-#ifdef WIN32
-  if (wsa_startup_succeeded_)
-    WSACleanup();
-#endif  // WIN32
+  curl_global_cleanup();
 }
 
 Status SimpleHttpFetcher::Get(const std::string& path, std::string* response) {
-  return FetchInternal("GET", path, "", response);
+  return FetchInternal(GET, path, "", response);
 }
 
 Status SimpleHttpFetcher::Post(const std::string& path,
                                const std::string& data,
                                std::string* response) {
-  return FetchInternal("POST", path, data, response);
+  return FetchInternal(POST, path, data, response);
 }
 
-Status SimpleHttpFetcher::FetchInternal(const std::string& method,
-                                        const std::string& url,
+Status SimpleHttpFetcher::FetchInternal(HttpMethod method,
+                                        const std::string& path,
                                         const std::string& data,
                                         std::string* response) {
-  DCHECK(response);
+  DCHECK(method == GET || method == POST);
 
-  int status_code = 0;
+  ScopedCurl scoped_curl;
+  CURL* curl = scoped_curl.get();
+  if (!curl) {
+    LOG(ERROR) << "curl_easy_init() failed.";
+    return Status(error::HTTP_FAILURE, "curl_easy_init() failed.");
+  }
+  response->clear();
 
-  std::string host;
-  std::string path;
-  int port = 0;
-  if (!ExtractUrlParams(url, &host, &path, &port)) {
-    std::string error_message = "Cannot extract url parameters from " + url;
-    LOG(ERROR) << error_message;
-    return Status(error::INVALID_ARGUMENT, error_message);
+  curl_easy_setopt(curl, CURLOPT_URL, path.c_str());
+  curl_easy_setopt(curl, CURLOPT_USERAGENT, kUserAgentString);
+  curl_easy_setopt(curl, CURLOPT_TIMEOUT, timeout_in_seconds_);
+  curl_easy_setopt(curl, CURLOPT_FAILONERROR, 1L);
+  curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, AppendToString);
+  curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
+  if (method == POST) {
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data.size());
   }
 
-  try {
-    HttpResult result;
-    happyhttp::Connection connection(host.data(), port);
-    connection.setcallbacks(OnBegin, OnData, OnComplete, &result);
+  CURLcode res = curl_easy_perform(curl);
+  if (res != CURLE_OK) {
+    std::string error_message = base::StringPrintf(
+        "curl_easy_perform() failed: %s.", curl_easy_strerror(res));
+    if (res == CURLE_HTTP_RETURNED_ERROR) {
+      long response_code = 0;
+      curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &response_code);
+      error_message += base::StringPrintf(" Response code: %ld.", response_code);
+    }
 
-    VLOG(1) << "Send " << method << " request to " << url << ": " << data;
-
-    static const char* kHeaders[] = {
-        "Connection",   "close",
-        "Content-type", "application/x-www-form-urlencoded",
-        "Accept", "text/plain",
-        0};
-    connection.request(
-        method.data(), path.data(), kHeaders,
-        data.empty() ? NULL : reinterpret_cast<const uint8*>(data.data()),
-        data.size());
-
-    while (connection.outstanding())
-      connection.pump();
-
-    status_code = result.status_code;
-    *response = result.response;
-
-    VLOG(1) << "Response: " << result.response;
-  } catch (happyhttp::Wobbly& exception) {
-    std::string error_message =
-        std::string("HTTP fetcher failed: ") + exception.what();
     LOG(ERROR) << error_message;
-    return Status(error::HTTP_FAILURE, error_message);
-  }
-
-  if (status_code != kHttpOK) {
-    std::string error_message =
-        "HTTP returns status " + base::IntToString(status_code);
-    LOG(ERROR) << error_message;
-    return Status(error::HTTP_FAILURE, error_message);
+    return Status(
+        res == CURLE_OPERATION_TIMEDOUT ? error::TIME_OUT : error::HTTP_FAILURE,
+        error_message);
   }
   return Status::OK;
 }

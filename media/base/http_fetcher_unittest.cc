@@ -12,8 +12,6 @@
 #include "media/base/status_test_util.h"
 
 namespace {
-const int kHttpNotFound = 404;
-
 const char kTestUrl[] = "http://packager-test.appspot.com/http_test";
 const char kTestUrlWithPort[] = "http://packager-test.appspot.com:80/http_test";
 const char kExpectedGetResponse[] =
@@ -23,6 +21,7 @@ const char kPostData[] = "foo=62&type=mp4";
 const char kExpectedPostResponse[] =
     "<html><head><title>http_test</title></head><body><pre>"
     "Arguments([foo]=>62[type]=>mp4)</pre></body></html>";
+const char kDelayTwoSecs[] = "delay=2";  // This causes host to delay 2 seconds.
 }  // namespace
 
 namespace media {
@@ -46,26 +45,43 @@ static void CheckHttpPost(const std::string& url, const std::string& data,
 }
 
 
-TEST(HttpFetcherTest, HttpGet) {
+TEST(DISABLED_HttpFetcherTest, HttpGet) {
   CheckHttpGet(kTestUrl, kExpectedGetResponse);
 }
 
-TEST(HttpFetcherTest, HttpPost) {
+TEST(DISABLED_HttpFetcherTest, HttpPost) {
   CheckHttpPost(kTestUrl, kPostData, kExpectedPostResponse);
 }
 
-TEST(HttpFetcherTest, InvalidUrl) {
+TEST(DISABLED_HttpFetcherTest, InvalidUrl) {
+  const char kHttpNotFound[] = "404";
+
   SimpleHttpFetcher fetcher;
   std::string response;
   const std::string invalid_url(kTestUrl, sizeof(kTestUrl) - 2);
   Status status = fetcher.Get(invalid_url, &response);
   EXPECT_EQ(error::HTTP_FAILURE, status.error_code());
-  EXPECT_TRUE(
-      EndsWith(status.error_message(), base::IntToString(kHttpNotFound), true));
+  EXPECT_NE(std::string::npos, status.error_message().find(kHttpNotFound));
 }
 
-TEST(HttpFetcherTest, UrlWithPort) {
+TEST(DISABLED_HttpFetcherTest, UrlWithPort) {
   CheckHttpGet(kTestUrlWithPort, kExpectedGetResponse);
+}
+
+TEST(DISABLED_HttpFetcherTest, SmallTimeout) {
+  const uint32 kTimeoutInSeconds = 1;
+  SimpleHttpFetcher fetcher(kTimeoutInSeconds);
+  std::string response;
+  Status status = fetcher.Post(kTestUrl, kDelayTwoSecs, &response);
+  EXPECT_EQ(error::TIME_OUT, status.error_code());
+}
+
+TEST(DISABLED_HttpFetcherTest, BigTimeout) {
+  const uint32 kTimeoutInSeconds = 5;
+  SimpleHttpFetcher fetcher(kTimeoutInSeconds);
+  std::string response;
+  Status status = fetcher.Post(kTestUrl, kDelayTwoSecs, &response);
+  EXPECT_OK(status);
 }
 
 }  // namespace media

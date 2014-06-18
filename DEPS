@@ -19,9 +19,6 @@ vars = {
 
   "curl_url": "https://github.com/bagder/curl.git",
   "curl_rev": "curl-7_37_0",
-
-  "happyhttp_url": "https://github.com/Zintinio/HappyHTTP.git",
-  "happyhttp_rev": "6b11b3b02cb3c8b649de9fffe8e08ae68c42bfd0",
 }
 
 deps = {
@@ -64,9 +61,6 @@ deps = {
 
   "src/third_party/gflags/src":
     (Var("googlecode_url") % "gflags") + "/trunk/src@" + Var("gflags_rev"),
-
-  "src/third_party/happyhttp/src":
-    Var("happyhttp_url") + "@" + Var("happyhttp_rev"),
 
   # Required by libxml.
   "src/third_party/icu":
