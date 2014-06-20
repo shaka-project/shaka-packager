@@ -6,6 +6,8 @@
 
 #include "media/base/media_sample.h"
 
+#include <inttypes.h>
+
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/decrypt_config.h"
@@ -62,10 +64,16 @@ std::string MediaSample::ToString() const {
   if (end_of_stream())
     return "End of stream sample\n";
   return base::StringPrintf(
-      "dts: %ld\n pts: %ld\n duration: %ld\n is_key_frame: %s\n size: %zu\n "
-      "side_data_size: %zu\n is_encrypted: %s\n",
-      dts_, pts_, duration_, is_key_frame_ ? "true" : "false", data_.size(),
-      side_data_.size(), decrypt_config_ ? "true" : "false");
+      "dts: %" PRId64 "\n pts: %" PRId64 "\n duration: %" PRId64 "\n "
+      "is_key_frame: %s\n size: %zu\n side_data_size: %zu\n "
+      "is_encrypted: %s\n",
+      dts_,
+      pts_,
+      duration_,
+      is_key_frame_ ? "true" : "false",
+      data_.size(),
+      side_data_.size(),
+      decrypt_config_ ? "true" : "false");
 }
 
 }  // namespace media

@@ -6,6 +6,8 @@
 
 #include "media/base/muxer_util.h"
 
+#include <inttypes.h>
+
 #include <string>
 #include <vector>
 
@@ -126,11 +128,11 @@ std::string GetSegmentName(const std::string& segment_template,
     if (format_pos != std::string::npos) {
       format_tag = splits[i].substr(format_pos);
       DCHECK(ValidateFormatTag(format_tag));
-      // Replace %d formatting with %lu formatting to correctly format uint64.
-      format_tag = format_tag.substr(0, format_tag.size() - 1) + "lu";
+      // Replace %d formatting to correctly format uint64.
+      format_tag = format_tag.substr(0, format_tag.size() - 1) + PRIu64;
     } else {
       // Default format tag "%01d", modified to format uint64 correctly.
-      format_tag = "%01lu";
+      format_tag = "%01" PRIu64;
     }
 
     if (identifier == "Number") {

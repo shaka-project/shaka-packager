@@ -6,6 +6,8 @@
 
 #include "media/base/stream_info.h"
 
+#include <inttypes.h>
+
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 
@@ -36,7 +38,7 @@ StreamInfo::~StreamInfo() {}
 
 std::string StreamInfo::ToString() const {
   return base::StringPrintf(
-      "type: %s\n codec_string: %s\n time_scale: %d\n duration: %lu "
+      "type: %s\n codec_string: %s\n time_scale: %d\n duration: %" PRIu64 " "
       "(%.1f seconds)\n language: %s\n is_encrypted: %s\n",
       (stream_type_ == kStreamAudio ? "Audio" : "Video"),
       codec_string_.c_str(),

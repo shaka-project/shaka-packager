@@ -42,6 +42,7 @@
         'media/formats/mpeg/mpeg.gyp:mpeg',
         'mpd/mpd.gyp:mpd_builder',
         'third_party/gflags/gflags.gyp:gflags',
+        'third_party/openssl/openssl.gyp:openssl',
       ],
       'conditions': [
         [ 'os_posix == 1', {

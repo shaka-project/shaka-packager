@@ -4,6 +4,8 @@
 
 #include "media/formats/mp4/box_reader.h"
 
+#include <inttypes.h>
+
 #include "base/logging.h"
 #include "base/memory/scoped_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -158,7 +160,8 @@ bool BoxReader::ReadHeader(bool* err) {
 
   // The box should have at least the size of what have been parsed.
   if (size < pos()) {
-    LOG(ERROR) << base::StringPrintf("Box '%s' with size (%lu) is invalid.",
+    LOG(ERROR) << base::StringPrintf("Box '%s' with size (%" PRIu64
+                                     ") is invalid.",
                                      FourCCToString(type_).c_str(),
                                      size);
     *err = true;
@@ -167,7 +170,8 @@ bool BoxReader::ReadHeader(bool* err) {
 
   // 'mdat' box could have a 64-bit size; other boxes should be very small.
   if (size > static_cast<uint64>(kint32max) && type_ != FOURCC_MDAT) {
-    LOG(ERROR) << base::StringPrintf("Box '%s' size (%lu) is too large.",
+    LOG(ERROR) << base::StringPrintf("Box '%s' size (%" PRIu64
+                                     ") is too large.",
                                      FourCCToString(type_).c_str(),
                                      size);
     *err = true;

@@ -4,6 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <inttypes.h>
+
 #include "base/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,8 +21,10 @@
 namespace dash_packager {
 
 namespace {
-const char kSElementTemplate[] = "<S t=\"%lu\" d=\"%lu\" r=\"%lu\"/>\n";
-const char kSElementTemplateWithoutR[] = "<S t=\"%lu\" d=\"%lu\"/>\n";
+const char kSElementTemplate[] =
+    "<S t=\"%" PRIu64 "\" d=\"%" PRIu64 "\" r=\"%" PRIu64 "\"/>\n";
+const char kSElementTemplateWithoutR[] =
+    "<S t=\"%" PRIu64 "\" d=\"%" PRIu64 "\"/>\n";
 const int kDefaultStartNumber = 1;
 
 // Get 'id' attribute from |node|, convert it to std::string and convert it to a
@@ -108,7 +112,7 @@ class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
         "  height: 480\n"
         "  time_scale: 10\n"
         "}\n"
-        "reference_time_scale: %lu\n"
+        "reference_time_scale: %u\n"
         "container_type: 1\n"
         "init_segment_name: \"init.mp4\"\n"
         "segment_template: \"$Time$.mp4\"\n";
@@ -117,7 +121,7 @@ class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
   }
 
   // TODO(rkuroiwa): Make this a global constant in anonymous namespace.
-  uint64 DefaultTimeScale() const {  return 1000; };
+  uint32 DefaultTimeScale() const {  return 1000; };
 };
 
 class SegmentTemplateTest : public DynamicMpdBuilderTest {
@@ -173,7 +177,7 @@ class SegmentTemplateTest : public DynamicMpdBuilderTest {
         "type=\"dynamic\" profiles=\"urn:mpeg:dash:profile:isoff-live:2011\">\n"
         "  <Period start=\"PT0S\">\n"
         "    <AdaptationSet id=\"0\">\n"
-        "      <Representation id=\"0\" bandwidth=\"%lu\" "
+        "      <Representation id=\"0\" bandwidth=\"%" PRIu64 "\" "
         "codecs=\"avc1.010101\" mimeType=\"video/mp4\" width=\"720\" "
         "height=\"480\">\n"
         "        <SegmentTemplate timescale=\"1000\" "
@@ -227,7 +231,7 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
         "  height: 480\n"
         "  time_scale: 10\n"
         "}\n"
-        "reference_time_scale: %lu\n"
+        "reference_time_scale: %u\n"
         "container_type: 1\n"
         "init_segment_name: \"init.mp4\"\n"
         "segment_template: \"$Number$.mp4\"\n";
@@ -252,7 +256,7 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
         "timeShiftBufferDepth=\"PT%dS\">\n"
         "  <Period start=\"PT0S\">\n"
         "    <AdaptationSet id=\"0\">\n"
-        "      <Representation id=\"0\" bandwidth=\"%lu\" "
+        "      <Representation id=\"0\" bandwidth=\"%" PRIu64 "\" "
         "codecs=\"avc1.010101\" mimeType=\"video/mp4\" width=\"720\" "
         "height=\"480\">\n"
         "        <SegmentTemplate timescale=\"1000\" "
