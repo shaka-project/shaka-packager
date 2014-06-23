@@ -154,12 +154,15 @@ WidevineEncryptionKeySource::~WidevineEncryptionKeySource() {
 }
 
 Status WidevineEncryptionKeySource::Initialize() {
+  // |first_crypto_period_index| might be updated after starting production.
+  // Make a local copy for prime later.
+  const uint32 first_crypto_period_index = first_crypto_period_index_;
   DCHECK(!key_production_thread_.HasBeenStarted());
   key_production_thread_.Start();
 
   // Perform a GetKey request to find out common encryption request status.
   // It also primes the key_pool if successful.
-  return key_rotation_enabled_ ? GetCryptoPeriodKey(first_crypto_period_index_,
+  return key_rotation_enabled_ ? GetCryptoPeriodKey(first_crypto_period_index,
                                                     TRACK_TYPE_SD, NULL)
                                : GetKey(TRACK_TYPE_SD, NULL);
 }
