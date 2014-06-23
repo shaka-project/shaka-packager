@@ -64,7 +64,7 @@ if __name__ == '__main__':
                  else "")
   for key in _DEFAULT_DEFINES:
     if key not in gyp_defines:
-      gyp_defines += " {}={}".format(key, _DEFAULT_DEFINES[key])
+      gyp_defines += " {0}={1}".format(key, _DEFAULT_DEFINES[key])
   os.environ['GYP_DEFINES'] = gyp_defines.strip()
 
   # There shouldn't be a circular dependency relationship between .gyp files,
