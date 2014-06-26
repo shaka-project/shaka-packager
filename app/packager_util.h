@@ -33,6 +33,9 @@ void DumpStreamInfo(const std::vector<MediaStream*>& streams);
 ///         encryption is not required.
 scoped_ptr<EncryptionKeySource> CreateEncryptionKeySource();
 
+/// Set flags according to profile.
+bool AssignFlagsFromProfile();
+
 /// Fill MuxerOptions members using provided command line options.
 bool GetMuxerOptions(MuxerOptions* muxer_options);
 

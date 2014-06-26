@@ -86,6 +86,35 @@ scoped_ptr<EncryptionKeySource> CreateEncryptionKeySource() {
   return encryption_key_source.Pass();
 }
 
+bool AssignFlagsFromProfile() {
+  bool single_segment = FLAGS_single_segment;
+  bool normalize_pts = FLAGS_normalize_presentation_timestamp;
+  if (FLAGS_profile == "on-demand") {
+    single_segment = true;
+    normalize_pts = true;
+  } else if (FLAGS_profile == "live") {
+    single_segment = false;
+    normalize_pts = false;
+  } else if (FLAGS_profile != "") {
+    fprintf(stderr, "ERROR: --profile '%s' is not supported.\n",
+            FLAGS_profile.c_str());
+    return false;
+  }
+
+  if (FLAGS_single_segment != single_segment) {
+    FLAGS_single_segment = single_segment;
+    fprintf(stdout, "Profile %s: set --single_segment to %s.\n",
+            FLAGS_profile.c_str(), single_segment ? "true" : "false");
+  }
+  if (FLAGS_normalize_presentation_timestamp != normalize_pts) {
+    FLAGS_normalize_presentation_timestamp = normalize_pts;
+    fprintf(stdout,
+            "Profile %s: set --normalize_presentation_timestamp to %s.\n",
+            FLAGS_profile.c_str(), normalize_pts ? "true" : "false");
+  }
+  return true;
+}
+
 bool GetMuxerOptions(MuxerOptions* muxer_options) {
   DCHECK(muxer_options);
 

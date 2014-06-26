@@ -210,6 +210,9 @@ bool RunPackager(const StringVector& stream_descriptors) {
     return false;
   }
 
+  if (!AssignFlagsFromProfile())
+    return false;
+
   // Get basic muxer options.
   MuxerOptions muxer_options;
   if (!GetMuxerOptions(&muxer_options))
