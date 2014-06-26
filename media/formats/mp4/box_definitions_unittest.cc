@@ -18,7 +18,7 @@ const uint8 kData4[] = {1, 5, 4, 3, 15};
 const uint8 kData8[] = {1, 8, 42, 98, 156};
 const uint16 kData16[] = {1, 15, 45, 768, 60000};
 const uint32 kData32[] = {1, 24, 99, 1234, 9000000};
-const uint64 kData64[] = {1, 9000000, 12345678901234, 56780909090900};
+const uint64 kData64[] = {1, 9000000, 12345678901234ULL, 56780909090900ULL};
 const media::mp4::TrackType kSampleDescriptionTrackType = media::mp4::kVideo;
 
 // 4-byte FourCC + 4-bytes size.
@@ -209,7 +209,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Modify(MovieHeader* mvhd) {
-    mvhd->duration = 234141324123;
+    mvhd->duration = 234141324123ULL;
     mvhd->next_track_id = 3;
     mvhd->version = 1;
   }
@@ -228,7 +228,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Modify(TrackHeader* tkhd) {
-    tkhd->modification_time = 345388873443;
+    tkhd->modification_time = 345388873443ULL;
     tkhd->volume = 0x0100;
     tkhd->width = 0;
     tkhd->height = 0;
@@ -251,7 +251,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   void Modify(EditList* elst) {
     elst->edits.resize(1);
     elst->edits[0].segment_duration = 0;
-    elst->edits[0].media_time = 20364563456;
+    elst->edits[0].media_time = 20364563456LL;
     elst->version = 1;
   }
 
@@ -529,7 +529,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   void Modify(Track* trak) { Modify(&trak->media); }
 
   void Fill(MovieExtendsHeader* mehd) {
-    mehd->fragment_duration = 23489038090;
+    mehd->fragment_duration = 23489038090ULL;
     mehd->version = 1;
   }
 
@@ -572,7 +572,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   void Modify(Movie* moov) { moov->tracks.resize(1); }
 
   void Fill(TrackFragmentDecodeTime* tfdt) {
-    tfdt->decode_time = 234029673820;
+    tfdt->decode_time = 234029673820ULL;
     tfdt->version = 1;
   }
 
@@ -709,7 +709,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Modify(SegmentIndex* sidx) {
-    sidx->earliest_presentation_time = 2348677865434;
+    sidx->earliest_presentation_time = 2348677865434ULL;
     sidx->references.resize(3);
     sidx->references[2] = sidx->references[1];
     sidx->references[2].subsegment_duration = 87662;

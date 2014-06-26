@@ -27,8 +27,8 @@ const uint16 kuint16 = 1000;
 const int16 kint16 = -1000;
 const uint32 kuint32 = 1000000;
 const int32 kint32 = -1000000;
-const uint64 kuint64 = 10000000000;
-const int64 kint64 = -10000000000;
+const uint64 kuint64 = 10000000000ULL;
+const int64 kint64 = -10000000000LL;
 const uint8 kuint8Array[] = {10, 1, 100, 5, 3, 60};
 }  // namespace
 

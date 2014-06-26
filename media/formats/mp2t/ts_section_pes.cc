@@ -70,7 +70,7 @@ static bool IsTimestampSectionValid(int64 timestamp_section) {
   // Verify that all the marker bits are set to one.
   return ((timestamp_section & 0x1) != 0) &&
          ((timestamp_section & 0x10000) != 0) &&
-         ((timestamp_section & 0x100000000) != 0);
+         ((timestamp_section & 0x100000000LL) != 0);
 }
 
 static int64 ConvertTimestampSectionToTimestamp(int64 timestamp_section) {

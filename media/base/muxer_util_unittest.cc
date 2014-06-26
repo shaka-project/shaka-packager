@@ -94,7 +94,7 @@ TEST(MuxerUtilTest, GetSegmentNameWithIndexZero) {
 }
 
 TEST(MuxerUtilTest, GetSegmentNameLargeTime) {
-  const uint64 kSegmentStartTime = 1601599839840;
+  const uint64 kSegmentStartTime = 1601599839840ULL;
   const uint32 kSegmentIndex = 8888888;
 
   EXPECT_EQ("1601599839840",
