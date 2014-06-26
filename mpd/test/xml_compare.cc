@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <map>
 #include <string>
+#include <utility>
 
 #include "base/logging.h"
 #include "mpd/base/xml/scoped_xml_ptr.h"
@@ -20,6 +21,8 @@ xml::ScopedXmlPtr<xmlDoc>::type GetDocFromString(const std::string& xml_str) {
 
 // Make a map from attributes of the node.
 std::map<std::string, std::string> GetMapOfAttributes(xmlNodePtr node) {
+  DVLOG(2) << "Getting attributes for node "
+           << reinterpret_cast<const char*>(node->name);
   std::map<std::string, std::string> attribute_map;
   for (xmlAttr* attribute = node->properties;
        attribute && attribute->name && attribute->children;
@@ -29,18 +32,33 @@ std::map<std::string, std::string> GetMapOfAttributes(xmlNodePtr node) {
         xmlNodeListGetString(node->doc, attribute->children, 1));
 
     attribute_map[name] = reinterpret_cast<const char*>(value.get());
-    DLOG(INFO) << "In node " << reinterpret_cast<const char*>(node->name)
-               << " found attribute " << name << " with value "
-               << reinterpret_cast<const char*>(value.get());
+    DVLOG(3) << "In node " << reinterpret_cast<const char*>(node->name)
+             << " found attribute " << name << " with value "
+             << reinterpret_cast<const char*>(value.get());
   }
 
   return attribute_map;
 }
 
+bool MapCompareFunc(std::pair<std::string, std::string> a,
+                    std::pair<std::string, std::string> b) {
+  if (a.first != b.first) {
+    DLOG(INFO) << "Attribute mismatch " << a.first << " and " << b.first;
+    return false;
+  }
+
+  if (a.second != b.second) {
+    DLOG(INFO) << "Value mismatch for " << a.first << std::endl << "Values are "
+               << a.second << " and " << b.second;
+    return false;
+  }
+  return true;
+}
+
 bool MapsEqual(const std::map<std::string, std::string>& map1,
                const std::map<std::string, std::string>& map2) {
   return map1.size() == map2.size() &&
-         std::equal(map1.begin(), map1.end(), map2.begin());
+         std::equal(map1.begin(), map1.end(), map2.begin(), MapCompareFunc);
 }
 
 // Return true if the nodes have the same attributes.
@@ -50,8 +68,8 @@ bool CompareAttributes(xmlNodePtr node1, xmlNodePtr node2) {
 
 // Return true if the name of the nodes match.
 bool CompareNames(xmlNodePtr node1, xmlNodePtr node2) {
-  DLOG(INFO) << "Comparing " << reinterpret_cast<const char*>(node1->name)
-             << " and " << reinterpret_cast<const char*>(node2->name);
+  DVLOG(2) << "Comparing " << reinterpret_cast<const char*>(node1->name)
+           << " and " << reinterpret_cast<const char*>(node2->name);
   return xmlStrcmp(node1->name, node2->name) == 0;
 }
 
