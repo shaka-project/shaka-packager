@@ -6,6 +6,7 @@
 
 #include "mpd/base/mpd_builder.h"
 
+#include <cmath>
 #include <list>
 #include <string>
 
@@ -90,18 +91,19 @@ bool Positive(double d) {
 }
 
 // Return current time in XML DateTime format.
-std::string XmlDateTimeNow() {
-  base::Time now = base::Time::Now();
-  base::Time::Exploded now_exploded;
-  now.UTCExplode(&now_exploded);
+std::string XmlDateTimeNowWithOffset(int32 offset_seconds) {
+  base::Time time = base::Time::Now();
+  time += base::TimeDelta::FromSeconds(offset_seconds);
+  base::Time::Exploded time_exploded;
+  time.UTCExplode(&time_exploded);
 
   return base::StringPrintf("%4d-%02d-%02dT%02d:%02d:%02d",
-                            now_exploded.year,
-                            now_exploded.month,
-                            now_exploded.day_of_month,
-                            now_exploded.hour,
-                            now_exploded.minute,
-                            now_exploded.second);
+                            time_exploded.year,
+                            time_exploded.month,
+                            time_exploded.day_of_month,
+                            time_exploded.hour,
+                            time_exploded.minute,
+                            time_exploded.second);
 }
 
 void SetIfPositive(const char* attr_name, double value, XmlNode* mpd) {
@@ -157,13 +159,12 @@ int SearchTimedOutRepeatIndex(uint64 timeshift_limit,
 }  // namespace
 
 MpdOptions::MpdOptions()
-    : minimum_update_period(),
-      min_buffer_time(),
-      time_shift_buffer_depth(),
-      suggested_presentation_delay(),
-      max_segment_duration(),
-      max_subsegment_duration(),
-      number_of_blocks_for_bandwidth_estimation() {}
+    : availability_time_offset(0),
+      minimum_update_period(0),
+      // TODO(tinskip): Set min_buffer_time in unit tests rather than here.
+      min_buffer_time(2.0),
+      time_shift_buffer_depth(0),
+      suggested_presentation_delay(0) {}
 
 MpdOptions::~MpdOptions() {}
 
@@ -222,9 +223,6 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
   static const char kXmlVersion[] = "1.0";
   xml::ScopedXmlPtr<xmlDoc>::type doc(xmlNewDoc(BAD_CAST kXmlVersion));
   XmlNode mpd("MPD");
-  AddMpdNameSpaceInfo(&mpd);
-
-  SetMpdOptionsValues(&mpd);
 
   // Iterate thru AdaptationSets and add them to one big Period element.
   XmlNode period("Period");
@@ -254,6 +252,8 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
   if (!mpd.AddChild(period.PassScopedPtr()))
     return NULL;
 
+  AddMpdNameSpaceInfo(&mpd);
+  AddCommonMpdInfo(&mpd);
   switch (type_) {
     case kStatic:
       AddStaticMpdInfo(&mpd);
@@ -269,6 +269,17 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
   DCHECK(doc);
   xmlDocSetRootElement(doc.get(), mpd.Release());
   return doc.release();
+}
+
+void MpdBuilder::AddCommonMpdInfo(XmlNode* mpd_node) {
+  if (Positive(mpd_options_.min_buffer_time)) {
+    mpd_node->SetStringAttribute(
+        "minBufferTime",
+        SecondsToXmlDuration(mpd_options_.min_buffer_time));
+  } else {
+    LOG(ERROR) << "minBufferTime value not specified.";
+    // TODO(tinskip): Propagate error.
+  }
 }
 
 void MpdBuilder::AddStaticMpdInfo(XmlNode* mpd_node) {
@@ -294,6 +305,38 @@ void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
       "urn:mpeg:dash:profile:isoff-live:2011";
   mpd_node->SetStringAttribute("type", kDynamicMpdType);
   mpd_node->SetStringAttribute("profiles", kDynamicMpdProfile);
+
+  // 'availabilityStartTime' is required for dynamic profile. Calculate if
+  // not already calculated.
+  if (availability_start_time_.empty()) {
+    double earliest_presentation_time;
+    if (GetEarliestTimestamp(&earliest_presentation_time)) {
+      availability_start_time_ =
+          XmlDateTimeNowWithOffset(mpd_options_.availability_time_offset
+                                   - std::ceil(earliest_presentation_time));
+    } else {
+      LOG(ERROR) << "Could not determine the earliest segment presentation "
+                    "time for availabilityStartTime calculation.";
+      // TODO(tinskip). Propagate an error.
+    }
+  }
+  if (!availability_start_time_.empty())
+    mpd_node->SetStringAttribute("availabilityStartTime", availability_start_time_);
+
+  if (Positive(mpd_options_.minimum_update_period)) {
+    mpd_node->SetStringAttribute(
+        "minimumUpdatePeriod",
+        SecondsToXmlDuration(mpd_options_.minimum_update_period));
+  } else {
+    LOG(WARNING) << "The profile is dynamic but no minimumUpdatePeriod "
+                  "specified.";
+  }
+
+  SetIfPositive(
+      "timeShiftBufferDepth", mpd_options_.time_shift_buffer_depth, mpd_node);
+  SetIfPositive("suggestedPresentationDelay",
+                mpd_options_.suggested_presentation_delay,
+                mpd_node);
 }
 
 float MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
@@ -328,62 +371,25 @@ float MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
   return max_duration;
 }
 
-void MpdBuilder::SetMpdOptionsValues(XmlNode* mpd) {
-  if (type_ == kStatic) {
-    if (!mpd_options_.availability_start_time.empty()) {
-      mpd->SetStringAttribute("availabilityStartTime",
-                              mpd_options_.availability_start_time);
+bool MpdBuilder::GetEarliestTimestamp(double* timestamp_seconds) {
+  DCHECK(timestamp_seconds);
+
+  double earliest_timestamp(-1);
+  for (std::list<AdaptationSet*>::const_iterator iter =
+           adaptation_sets_.begin();
+       iter != adaptation_sets_.end();
+       ++iter) {
+    double timestamp;
+    if ((*iter)->GetEarliestTimestamp(&timestamp) &&
+        ((earliest_timestamp < 0) || (timestamp < earliest_timestamp))) {
+      earliest_timestamp = timestamp;
     }
-    LOG_IF(WARNING, Positive(mpd_options_.minimum_update_period))
-        << "minimumUpdatePeriod should not be present in 'static' profile. "
-           "Ignoring.";
-    LOG_IF(WARNING, Positive(mpd_options_.time_shift_buffer_depth))
-        << "timeShiftBufferDepth will not be used for 'static' profile. "
-           "Ignoring.";
-    LOG_IF(WARNING, Positive(mpd_options_.suggested_presentation_delay))
-        << "suggestedPresentationDelay will not be used for 'static' profile. "
-           "Ignoring.";
-  } else if (type_ == kDynamic) {
-    // 'availabilityStartTime' is required for dynamic profile, so use current
-    // time if not specified.
-    const std::string avail_start =
-        !mpd_options_.availability_start_time.empty()
-            ? mpd_options_.availability_start_time
-            : XmlDateTimeNow();
-    mpd->SetStringAttribute("availabilityStartTime", avail_start);
-
-    if (Positive(mpd_options_.minimum_update_period)) {
-      mpd->SetStringAttribute(
-          "minimumUpdatePeriod",
-          SecondsToXmlDuration(mpd_options_.minimum_update_period));
-    } else {
-      // TODO(rkuroiwa): Set minimumUpdatePeriod to some default value.
-      LOG(WARNING) << "The profile is dynamic but no minimumUpdatePeriod "
-                      "specified. Setting minimumUpdatePeriod to 0.";
-    }
-
-    SetIfPositive(
-        "timeShiftBufferDepth", mpd_options_.time_shift_buffer_depth, mpd);
-    SetIfPositive("suggestedPresentationDelay",
-                  mpd_options_.suggested_presentation_delay,
-                  mpd);
   }
+  if (earliest_timestamp < 0)
+    return false;
 
-  const double kDefaultMinBufferTime = 2.0;
-  const double min_buffer_time = Positive(mpd_options_.min_buffer_time)
-                                     ? mpd_options_.min_buffer_time
-                                     : kDefaultMinBufferTime;
-  mpd->SetStringAttribute("minBufferTime",
-                          SecondsToXmlDuration(min_buffer_time));
-
-  if (!mpd_options_.availability_end_time.empty()) {
-    mpd->SetStringAttribute("availabilityEndTime",
-                            mpd_options_.availability_end_time);
-  }
-
-  SetIfPositive("maxSegmentDuration", mpd_options_.max_segment_duration, mpd);
-  SetIfPositive(
-      "maxSubsegmentDuration", mpd_options_.max_subsegment_duration, mpd);
+  *timestamp_seconds = earliest_timestamp;
+  return true;
 }
 
 AdaptationSet::AdaptationSet(uint32 adaptation_set_id,
@@ -440,6 +446,29 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
   adaptation_set.SetId(id_);
   return adaptation_set.PassScopedPtr();
 }
+
+bool AdaptationSet::GetEarliestTimestamp(double* timestamp_seconds) {
+  DCHECK(timestamp_seconds);
+
+  base::AutoLock scoped_lock(lock_);
+  double earliest_timestamp(-1);
+  for (std::list<Representation*>::const_iterator iter =
+           representations_.begin();
+       iter != representations_.end();
+       ++iter) {
+    double timestamp;
+    if ((*iter)->GetEarliestTimestamp(&timestamp) &&
+        ((earliest_timestamp < 0) || (timestamp < earliest_timestamp))) {
+      earliest_timestamp = timestamp;
+    }
+  }
+  if (earliest_timestamp < 0)
+    return false;
+
+  *timestamp_seconds = earliest_timestamp;
+  return true;
+}
+
 
 Representation::Representation(const MediaInfo& media_info,
                                const MpdOptions& mpd_options,
@@ -713,6 +742,19 @@ std::string Representation::GetVideoMimeType() const {
 
 std::string Representation::GetAudioMimeType() const {
   return GetMimeType("audio", media_info_.container_type());
+}
+
+bool Representation::GetEarliestTimestamp(double* timestamp_seconds) {
+  DCHECK(timestamp_seconds);
+
+  base::AutoLock scoped_lock(lock_);
+  if (segment_infos_.empty())
+    return false;
+
+  *timestamp_seconds =
+      static_cast<double>(segment_infos_.begin()->start_time) /
+      GetTimeScale(media_info_);
+  return true;
 }
 
 }  // namespace dash_packager

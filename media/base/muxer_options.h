@@ -7,6 +7,8 @@
 #ifndef MEDIA_BASE_MUXER_OPTIONS_H_
 #define MEDIA_BASE_MUXER_OPTIONS_H_
 
+#include "base/basictypes.h"
+
 #include <string>
 
 #include "base/basictypes.h"
@@ -65,7 +67,8 @@ struct MuxerOptions {
   /// Specify temporary directory for intermediate files.
   std::string temp_dir;
 
-  /// User-specified bandwidth for the stream. zero means "unspecified".
+  /// User-specified bit rate for the media stream. If zero, the muxer will
+  /// attempt to estimate.
   uint32 bandwidth;
 };
 

@@ -29,3 +29,25 @@ DEFINE_string(base_urls,
               "",
               "Comma separated BaseURLs for the MPD. The values will be added "
               "as <BaseURL> element(s) immediately under the <MPD> element.");
+DEFINE_double(min_buffer_time,
+              2.0,
+              "Specifies, in seconds, a common duration used in the definition "
+              "of the MPD Representation data rate.");
+DEFINE_double(availability_time_offset,
+              10.0,
+              "Offset with respect to the wall clock time for MPD "
+              "availabilityStartTime and availabilityEndTime values, in "
+              " seconds. This value is used for live profile only.");
+DEFINE_double(minimum_update_period,
+              5.0,
+              "Indicates to the player how often to refresh the media "
+              "presentation description in seconds. This value is used for "
+              "live profile only.");
+DEFINE_double(time_shift_buffer_depth,
+              1800.0,
+              "Guaranteed duration of the time shifting buffer for dynamic "
+              "media presentations, in seconds.");
+DEFINE_double(suggested_presentation_delay,
+              0.0,
+              "Specifies a delay, in seconds, to be added to the media "
+              "presentation time. This value is used for live profile only.");

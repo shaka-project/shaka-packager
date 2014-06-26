@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "app/fixed_key_encryption_flags.h"
+#include "app/mpd_flags.h"
 #include "app/muxer_flags.h"
 #include "app/widevine_encryption_flags.h"
 #include "base/logging.h"
@@ -19,8 +20,11 @@
 #include "media/base/stream_info.h"
 #include "media/base/widevine_encryption_key_source.h"
 #include "media/file/file.h"
+#include "mpd/base/mpd_builder.h"
 
 DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
+
+using dash_packager::MpdOptions;
 
 namespace media {
 
@@ -125,6 +129,18 @@ bool GetMuxerOptions(MuxerOptions* muxer_options) {
       FLAGS_normalize_presentation_timestamp;
   muxer_options->num_subsegments_per_sidx = FLAGS_num_subsegments_per_sidx;
   muxer_options->temp_dir = FLAGS_temp_dir;
+  return true;
+}
+
+bool GetMpdOptions(MpdOptions* mpd_options) {
+  DCHECK(mpd_options);
+
+  mpd_options->availability_time_offset = FLAGS_availability_time_offset;
+  mpd_options->minimum_update_period = FLAGS_minimum_update_period;
+  mpd_options->min_buffer_time = FLAGS_min_buffer_time;
+  mpd_options->time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
+  mpd_options->suggested_presentation_delay =
+      FLAGS_suggested_presentation_delay;
   return true;
 }
 

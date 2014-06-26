@@ -41,18 +41,11 @@ struct MpdOptions {
   MpdOptions();
   ~MpdOptions();
 
-  std::string availability_start_time;
-  std::string availability_end_time;
+  double availability_time_offset;
   double minimum_update_period;
   double min_buffer_time;
   double time_shift_buffer_depth;
   double suggested_presentation_delay;
-  double max_segment_duration;
-  double max_subsegment_duration;
-
-  /// Value passed to BandwidthEstimator's contructor. See BandwidthEstimator
-  /// for more.
-  int number_of_blocks_for_bandwidth_estimation;
 };
 
 /// This class generates DASH MPDs (Media Presentation Descriptions).
@@ -86,8 +79,8 @@ class MpdBuilder {
   MpdType type() { return type_; }
 
  private:
-  // DynamicMpdBuilderTest uses SetMpdOptionsValues to set availabilityStartTime
-  // so that the test doesn't need to depend on current time.
+  // DynamicMpdBuilderTest needs to set availabilityStartTime so that the test
+  // doesn't need to depend on current time.
   friend class DynamicMpdBuilderTest;
 
   bool ToStringImpl(std::string* output);
@@ -96,6 +89,10 @@ class MpdBuilder {
   // using appropriate xmlDocPtr freeing function.
   // On failure, this returns NULL.
   xmlDocPtr GenerateMpd();
+
+  // Set MPD attributes common to all profiles. Uses non-zero |mpd_options_| to
+  // set attributes for the MPD.
+  void AddCommonMpdInfo(xml::XmlNode* mpd_node);
 
   // Adds 'static' MPD attributes and elements to |mpd_node|. This assumes that
   // the first child element is a Period element.
@@ -106,10 +103,13 @@ class MpdBuilder {
 
   float GetStaticMpdDuration(xml::XmlNode* mpd_node);
 
-  // Use |mpd_options_| to set attributes for MPD. Only values that are set will be
-  // used, i.e. if a string field is not empty and numeric field is not 0.
-  // Required fields will be set with some reasonable values.
-  void SetMpdOptionsValues(xml::XmlNode* mpd_node);
+  // Set MPD attributes for dynamic profile MPD. Uses non-zero |mpd_options_| as
+  // well as various calculations to set attributes for the MPD.
+  void SetDynamicMpdAttributes(xml::XmlNode* mpd_node);
+
+  // Gets the earliest, normalized segment timestamp. Returns true if
+  // successful, false otherwise.
+  bool GetEarliestTimestamp(double* timestamp_seconds);
 
   MpdType type_;
   MpdOptions mpd_options_;
@@ -117,6 +117,7 @@ class MpdBuilder {
   ::STLElementDeleter<std::list<AdaptationSet*> > adaptation_sets_deleter_;
 
   std::list<std::string> base_urls_;
+  std::string availability_start_time_;
 
   base::Lock lock_;
   base::AtomicSequenceNumber adaptation_set_counter_;
@@ -166,6 +167,10 @@ class AdaptationSet {
   AdaptationSet(uint32 adaptation_set_id,
                 const MpdOptions& mpd_options_,
                 base::AtomicSequenceNumber* representation_counter);
+
+  // Gets the earliest, normalized segment timestamp. Returns true if
+  // successful, false otherwise.
+  bool GetEarliestTimestamp(double* timestamp_seconds);
 
   std::list<ContentProtectionElement> content_protection_elements_;
   std::list<Representation*> representations_;
@@ -248,6 +253,10 @@ class Representation {
   std::string GetVideoMimeType() const;
   std::string GetAudioMimeType() const;
 
+  // Gets the earliest, normalized segment timestamp. Returns true if
+  // successful, false otherwise.
+  bool GetEarliestTimestamp(double* timestamp_seconds);
+
   MediaInfo media_info_;
   std::list<ContentProtectionElement> content_protection_elements_;
   std::list<SegmentInfo> segment_infos_;
@@ -258,7 +267,7 @@ class Representation {
   std::string mime_type_;
   std::string codecs_;
   BandwidthEstimator bandwidth_estimator_;
-  const MpdOptions& mpd_options_;;
+  const MpdOptions& mpd_options_;
 
   // startNumber attribute for SegmentTemplate.
   // Starts from 1.

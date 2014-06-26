@@ -99,7 +99,7 @@ class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
   // Anchors availabilityStartTime so that the test result doesn't depend on the
   // current time.
   virtual void SetUp() {
-    mpd_.mpd_options_.availability_start_time = "2011-12-25T12:30:00";
+    mpd_.availability_start_time_ = "2011-12-25T12:30:00";
   }
 
   MpdOptions* mutable_mpd_options() { return &mpd_.mpd_options_; }
@@ -370,9 +370,9 @@ TEST_F(DynamicMpdBuilderTest, CheckMpdAttributes) {
       "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
       "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
       "xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 "
-      "DASH-MPD.xsd\" availabilityStartTime=\"2011-12-25T12:30:00\" "
-      "minBufferTime=\"PT2S\" type=\"dynamic\" "
-      "profiles=\"urn:mpeg:dash:profile:isoff-live:2011\">\n"
+      "DASH-MPD.xsd\" minBufferTime=\"PT2S\" type=\"dynamic\" "
+      "profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
+      "availabilityStartTime=\"2011-12-25T12:30:00\">\n"
       "  <Period start=\"PT0S\"/>\n"
       "</MPD>\n";
 

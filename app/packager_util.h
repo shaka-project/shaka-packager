@@ -17,6 +17,10 @@
 
 DECLARE_bool(dump_stream_info);
 
+namespace dash_packager {
+struct MpdOptions;
+}
+
 namespace media {
 
 class EncryptionKeySource;
@@ -38,6 +42,9 @@ bool AssignFlagsFromProfile();
 
 /// Fill MuxerOptions members using provided command line options.
 bool GetMuxerOptions(MuxerOptions* muxer_options);
+
+/// Fill MpdOptions members using provided command line options.
+bool GetMpdOptions(dash_packager::MpdOptions* mpd_options);
 
 /// Select and add a stream from a provided set to a muxer.
 /// @param streams contains the set of MediaStreams from which to select.

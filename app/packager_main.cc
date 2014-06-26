@@ -234,6 +234,10 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
   if (!GetMuxerOptions(&muxer_options))
     return false;
 
+  MpdOptions mpd_options;
+  if (!GetMpdOptions(&mpd_options))
+    return false;
+
   // Create encryption key source if needed.
   scoped_ptr<EncryptionKeySource> encryption_key_source;
   if (FLAGS_enable_widevine_encryption || FLAGS_enable_fixed_key_encryption) {
@@ -248,8 +252,7 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
         FLAGS_single_segment ? kOnDemandProfile : kLiveProfile;
     std::vector<std::string> base_urls;
     base::SplitString(FLAGS_base_urls, ',', &base_urls);
-    // TODO(rkuroiwa,kqyang): Get mpd options from command line.
-    mpd_notifier.reset(new SimpleMpdNotifier(profile, MpdOptions(), base_urls,
+    mpd_notifier.reset(new SimpleMpdNotifier(profile, mpd_options, base_urls,
                                              FLAGS_mpd_output));
     if (!mpd_notifier->Init()) {
       LOG(ERROR) << "MpdNotifier failed to initialize.";
