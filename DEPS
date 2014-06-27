@@ -109,6 +109,14 @@ deps_os = {
 
 hooks = [
   {
+    # This snippet is from chromium src/DEPS. Run gclient with
+    # GYP_DEFINES="clang=1" to automatically pull in clang at sync.
+    # Pull clang if on Mac or clang is requested via GYP_DEFINES.
+    "name": "clang",
+    "pattern": ".",
+    "action": ["python", "src/tools/clang/scripts/update.py", "--mac-only"],
+  },
+  {
     # A change to a .gyp, .gypi, or to GYP itself should run the generator.
     "pattern": ".",
     "action": ["python", "src/gyp_packager.py"],
