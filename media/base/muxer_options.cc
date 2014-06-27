@@ -15,7 +15,8 @@ MuxerOptions::MuxerOptions()
       segment_sap_aligned(false),
       fragment_sap_aligned(false),
       normalize_presentation_timestamp(false),
-      num_subsegments_per_sidx(0) {}
+      num_subsegments_per_sidx(0),
+      bandwidth(0) {}
 MuxerOptions::~MuxerOptions() {}
 
 }  // namespace media

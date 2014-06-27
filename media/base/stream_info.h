@@ -15,6 +15,7 @@
 namespace media {
 
 enum StreamType {
+  kStreamUnknown = 0,
   kStreamAudio,
   kStreamVideo,
 };

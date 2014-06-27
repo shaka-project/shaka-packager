@@ -148,7 +148,8 @@ Status MultiSegmentSegmenter::WriteSegment() {
   } else {
     file = File::Open(GetSegmentName(options().segment_template,
                                      sidx()->earliest_presentation_time,
-                                     num_segments_++).c_str(),
+                                     num_segments_++,
+                                     options().bandwidth).c_str(),
                       "w");
     if (file == NULL) {
       return Status(error::FILE_FAILURE,

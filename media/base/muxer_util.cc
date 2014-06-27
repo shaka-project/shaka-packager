@@ -63,10 +63,10 @@ bool ValidateSegmentTemplate(const std::string& segment_template) {
         return false;
     }
 
-    // TODO(kqyang): Support "RepresentationID" and "Bandwidth".
-    if (identifier == "RepresentationID" || identifier == "Bandwidth") {
-      NOTIMPLEMENTED() << "SegmentTemplate: $RepresentationID$ and $Bandwidth$ "
-                          "are not supported yet.";
+    // TODO(kqyang): Support "RepresentationID".
+    if (identifier == "RepresentationID") {
+      NOTIMPLEMENTED() << "SegmentTemplate: $RepresentationID$ is not supported "
+                          "yet.";
       return false;
     } else if (identifier == "Number") {
       has_number = true;
@@ -77,7 +77,7 @@ bool ValidateSegmentTemplate(const std::string& segment_template) {
         LOG(ERROR) << "SegmentTemplate: $$ should not have any format tags.";
         return false;
       }
-    } else {
+    } else if (identifier != "Bandwidth") {
       LOG(ERROR) << "SegmentTemplate: '$" << splits[i]
                  << "$' is not a valid identifier.";
       return false;
@@ -99,7 +99,8 @@ bool ValidateSegmentTemplate(const std::string& segment_template) {
 
 std::string GetSegmentName(const std::string& segment_template,
                            uint64 segment_start_time,
-                           uint32 segment_index) {
+                           uint32 segment_index,
+                           uint32 bandwidth) {
   DCHECK(ValidateSegmentTemplate(segment_template));
 
   std::vector<std::string> splits;
@@ -122,7 +123,8 @@ std::string GetSegmentName(const std::string& segment_template,
     }
     size_t format_pos = splits[i].find('%');
     std::string identifier = splits[i].substr(0, format_pos);
-    DCHECK(identifier == "Number" || identifier == "Time");
+    DCHECK(identifier == "Number" || identifier == "Time" ||
+           identifier == "Bandwidth");
 
     std::string format_tag;
     if (format_pos != std::string::npos) {
@@ -142,6 +144,9 @@ std::string GetSegmentName(const std::string& segment_template,
     } else if (identifier == "Time") {
       segment_name +=
           base::StringPrintf(format_tag.c_str(), segment_start_time);
+    } else if (identifier == "Bandwidth") {
+      segment_name +=
+          base::StringPrintf(format_tag.c_str(), bandwidth);
     }
   }
   return segment_name;

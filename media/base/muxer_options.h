@@ -9,6 +9,8 @@
 
 #include <string>
 
+#include "base/basictypes.h"
+
 namespace media {
 
 /// This structure contains the list of configuration options for Muxer.
@@ -62,6 +64,9 @@ struct MuxerOptions {
 
   /// Specify temporary directory for intermediate files.
   std::string temp_dir;
+
+  /// User-specified bandwidth for the stream. zero means "unspecified".
+  uint32 bandwidth;
 };
 
 }  // namespace media

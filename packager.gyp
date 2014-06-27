@@ -30,6 +30,8 @@
         'app/packager_main.cc',
         'app/packager_util.cc',
         'app/packager_util.h',
+        'app/stream_descriptor.cc',
+        'app/stream_descriptor.h',
         'app/widevine_encryption_flags.cc',
         'app/widevine_encryption_flags.h',
       ],
