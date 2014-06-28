@@ -165,6 +165,9 @@ bool GenerateMediaInfo(const MuxerOptions& muxer_options,
   SetMediaInfoStreamInfo(stream_infos, media_info);
   media_info->set_reference_time_scale(reference_time_scale);
   SetMediaInfoContainerType(container_type, media_info);
+  if (muxer_options.bandwidth > 0)
+    media_info->set_bandwidth(muxer_options.bandwidth);
+
   return true;
 }
 
@@ -198,8 +201,11 @@ bool SetVodInformation(bool has_init_range,
                      media_info);
 
   media_info->set_media_duration_seconds(duration_seconds);
-  media_info->set_bandwidth(
-      EstimateRequiredBandwidth(file_size, duration_seconds));
+
+  if (!media_info->has_bandwidth()) {
+    media_info->set_bandwidth(
+        EstimateRequiredBandwidth(file_size, duration_seconds));
+  }
   return true;
 }
 
