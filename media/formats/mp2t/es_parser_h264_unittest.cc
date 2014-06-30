@@ -117,20 +117,24 @@ void AppendAUD(
 
 class EsParserH264Test : public testing::Test {
  public:
-  EsParserH264Test() : sample_count_(0) {
-  }
+  EsParserH264Test()
+      : sample_count_(0),
+        first_frame_is_key_frame_(false) {}
 
   void LoadStream(const char* filename);
   void ProcessPesPackets(const std::vector<Packet>& pes_packets);
 
   void EmitSample(uint32 pid, scoped_refptr<MediaSample>& sample) {
     sample_count_++;
+    if (sample_count_ == 1)
+      first_frame_is_key_frame_ = sample->is_key_frame();
   }
 
   void NewVideoConfig(scoped_refptr<StreamInfo>& config) {
   }
 
   size_t sample_count() const { return sample_count_; }
+  bool first_frame_is_key_frame() { return first_frame_is_key_frame_; }
 
   // Stream with AUD NALUs.
   std::vector<uint8> stream_;
@@ -140,6 +144,7 @@ class EsParserH264Test : public testing::Test {
 
  protected:
   size_t sample_count_;
+  bool first_frame_is_key_frame_;
 };
 
 void EsParserH264Test::LoadStream(const char* filename) {
@@ -204,7 +209,8 @@ TEST_F(EsParserH264Test, OneAccessUnitPerPes) {
 
   // Process each PES packet.
   ProcessPesPackets(pes_packets);
-  ASSERT_EQ(sample_count(), access_units_.size());
+  EXPECT_EQ(sample_count(), access_units_.size());
+  EXPECT_TRUE(first_frame_is_key_frame());
 }
 
 TEST_F(EsParserH264Test, NonAlignedPesPacket) {
@@ -228,7 +234,8 @@ TEST_F(EsParserH264Test, NonAlignedPesPacket) {
 
   // Process each PES packet.
   ProcessPesPackets(pes_packets);
-  ASSERT_EQ(sample_count(), access_units_.size());
+  EXPECT_EQ(sample_count(), access_units_.size());
+  EXPECT_TRUE(first_frame_is_key_frame());
 }
 
 TEST_F(EsParserH264Test, SeveralPesPerAccessUnit) {
@@ -258,7 +265,21 @@ TEST_F(EsParserH264Test, SeveralPesPerAccessUnit) {
 
   // Process each PES packet.
   ProcessPesPackets(pes_packets);
-  ASSERT_EQ(sample_count(), access_units_.size());
+  EXPECT_EQ(sample_count(), access_units_.size());
+  EXPECT_TRUE(first_frame_is_key_frame());
+}
+
+TEST_F(EsParserH264Test, NonIFrameStart) {
+  LoadStream("bear_no_iframe_start.h264");
+
+  // One to one equivalence between PES packets and access units.
+  std::vector<Packet> pes_packets(access_units_);
+
+  // Process each PES packet.
+  ProcessPesPackets(pes_packets);
+  // Ensure samples were emitted, but fewer than number of AUDs.
+  EXPECT_LT(sample_count(), access_units_.size());
+  EXPECT_TRUE(first_frame_is_key_frame());
 }
 
 }  // namespace mp2t

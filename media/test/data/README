@@ -75,5 +75,8 @@ bear.h264:
   ffmpeg -i bear.mp4 -vcodec copy -vbsf h264_mp4toannexb \
       -an bear.h264
 
+bear_no_i_frame_start.h264
+   Derived from bear.h264. Consists of 29-non-I-frames, followed by a single I-frame, and 29 non-I-frames.
+
 avc-byte-stream-frame.h264 - Single IDR frame extracted from test-25fps.h264 in Annex B byte stream format.
 avc-unit-stream-frame.h264 - Single IDR frame from avc-byte-stream-frame.h264 converted to unit stream format.

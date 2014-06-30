@@ -39,7 +39,8 @@ EsParserH264::EsParserH264(
       next_access_unit_pos_(0),
       stream_converter_(new H264ByteToUnitStreamConverter),
       decoder_config_check_pending_(false),
-      pending_sample_duration_(0) {
+      pending_sample_duration_(0),
+      waiting_for_key_frame_(true) {
 }
 
 EsParserH264::~EsParserH264() {
@@ -102,6 +103,7 @@ void EsParserH264::Reset() {
   decoder_config_check_pending_ = false;
   pending_sample_ = scoped_refptr<MediaSample>();
   pending_sample_duration_ = 0;
+  waiting_for_key_frame_ = true;
 }
 
 bool EsParserH264::FindAUD(int64* stream_pos) {
@@ -233,9 +235,14 @@ bool EsParserH264::ParseInternal() {
     }
   }
 
-  // Emit a frame and move the stream to the next AUD position.
-  RCHECK(EmitFrame(current_access_unit_pos_, access_unit_size,
-                   is_key_frame, pps_id_for_access_unit));
+  if (waiting_for_key_frame_) {
+    waiting_for_key_frame_ = !is_key_frame;
+  }
+  if (!waiting_for_key_frame_) {
+    // Emit a frame and move the stream to the next AUD position.
+    RCHECK(EmitFrame(current_access_unit_pos_, access_unit_size,
+                     is_key_frame, pps_id_for_access_unit));
+  }
   current_access_unit_pos_ = next_access_unit_pos_;
   es_queue_->Trim(current_access_unit_pos_);
 

@@ -94,6 +94,9 @@ class EsParserH264 : public EsParser {
   // Frame for which we do not yet have a duration.
   scoped_refptr<MediaSample> pending_sample_;
   uint64 pending_sample_duration_;
+
+  // Indicates whether waiting for first key frame.
+  bool waiting_for_key_frame_;
 };
 
 }  // namespace mp2t
