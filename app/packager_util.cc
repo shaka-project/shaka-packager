@@ -70,8 +70,7 @@ scoped_ptr<EncryptionKeySource> CreateEncryptionKeySource() {
             FLAGS_key_server_url,
             FLAGS_content_id,
             FLAGS_policy,
-            signer.Pass(),
-            FLAGS_crypto_period_duration == 0 ? kDisableKeyRotation : 0));
+            signer.Pass()));
     Status status = widevine_encryption_key_source->Initialize();
     if (!status.ok()) {
       LOG(ERROR) << "Widevine encryption key source failed to initialize: "

@@ -11,16 +11,14 @@
 
 #include "base/basictypes.h"
 #include "base/memory/scoped_ptr.h"
+#include "base/synchronization/waitable_event.h"
 #include "media/base/closure_thread.h"
 #include "media/base/encryption_key_source.h"
-#include "media/base/producer_consumer_queue.h"
 
 namespace media {
-/// A negative crypto period index disables key rotation.
-static const int kDisableKeyRotation = -1;
-
 class HttpFetcher;
 class RequestSigner;
+template <class T> class ProducerConsumerQueue;
 
 /// WidevineEncryptionKeySource talks to the Widevine encryption service to
 /// acquire the encryption keys.
@@ -30,13 +28,10 @@ class WidevineEncryptionKeySource : public EncryptionKeySource {
   /// @param content_id the unique id identify the content to be encrypted.
   /// @param policy specifies the DRM content rights.
   /// @param signer signs the request message. It should not be NULL.
-  /// @param first_crypto_period_index indicates the starting crypto period
-  ///        index. Set it to kDisableKeyRotation to disable key rotation.
   WidevineEncryptionKeySource(const std::string& server_url,
                               const std::string& content_id,
                               const std::string& policy,
-                              scoped_ptr<RequestSigner> signer,
-                              int first_crypto_period_index);
+                              scoped_ptr<RequestSigner> signer);
   virtual ~WidevineEncryptionKeySource();
 
   /// Initialize the key source. Must be called before calling GetKey or
@@ -59,6 +54,8 @@ class WidevineEncryptionKeySource : public EncryptionKeySource {
  private:
   typedef std::map<TrackType, EncryptionKey*> EncryptionKeyMap;
   class RefCountedEncryptionKeyMap;
+  typedef ProducerConsumerQueue<scoped_refptr<RefCountedEncryptionKeyMap> >
+      EncryptionKeyQueue;
 
   // Internal routine for getting keys.
   Status GetKeyInternal(uint32 crypto_period_index,
@@ -69,11 +66,12 @@ class WidevineEncryptionKeySource : public EncryptionKeySource {
   void FetchKeysTask();
 
   // Fetch keys from server.
-  Status FetchKeys(uint32 first_crypto_period_index);
+  Status FetchKeys(bool enable_key_rotation, uint32 first_crypto_period_index);
 
   // Fill |request| with necessary fields for Widevine encryption request.
   // |request| should not be NULL.
   void FillRequest(const std::string& content_id,
+                   bool enable_key_rotation,
                    uint32 first_crypto_period_index,
                    std::string* request);
   // Sign and properly format |request|.
@@ -86,7 +84,8 @@ class WidevineEncryptionKeySource : public EncryptionKeySource {
   // formatted. |transient_error| will be set to true if it fails and the
   // failure is because of a transient error from the server. |transient_error|
   // should not be NULL.
-  bool ExtractEncryptionKey(const std::string& response, bool* transient_error);
+  bool ExtractEncryptionKey(bool enable_key_rotation,
+                            const std::string& response, bool* transient_error);
   // Push the keys to the key pool.
   bool PushToKeyPool(EncryptionKeyMap* encryption_key_map);
 
@@ -99,11 +98,14 @@ class WidevineEncryptionKeySource : public EncryptionKeySource {
   std::string policy_;
   scoped_ptr<RequestSigner> signer_;
 
-  const bool key_rotation_enabled_;
   const uint32 crypto_period_count_;
+  base::Lock lock_;
+  bool key_production_started_;
+  base::WaitableEvent start_key_production_;
   uint32 first_crypto_period_index_;
   ClosureThread key_production_thread_;
-  ProducerConsumerQueue<scoped_refptr<RefCountedEncryptionKeyMap> > key_pool_;
+  scoped_ptr<EncryptionKeyQueue> key_pool_;
+  EncryptionKeyMap encryption_key_map_;  // For non key rotation request.
   Status common_encryption_request_status_;
 
   DISALLOW_COPY_AND_ASSIGN(WidevineEncryptionKeySource);

@@ -14,6 +14,7 @@
 #include "base/stl_util.h"
 #include "base/values.h"
 #include "media/base/http_fetcher.h"
+#include "media/base/producer_consumer_queue.h"
 #include "media/base/request_signer.h"
 
 #define RCHECK(x)                                       \
@@ -25,6 +26,8 @@
   } while (0)
 
 namespace {
+
+const bool kEnableKeyRotation = true;
 
 const char kLicenseStatusOK[] = "OK";
 // Server may return INTERNAL_ERROR intermittently, which is a transient error
@@ -128,50 +131,52 @@ WidevineEncryptionKeySource::WidevineEncryptionKeySource(
     const std::string& server_url,
     const std::string& content_id,
     const std::string& policy,
-    scoped_ptr<RequestSigner> signer,
-    int first_crypto_period_index)
+    scoped_ptr<RequestSigner> signer)
     : http_fetcher_(new SimpleHttpFetcher(kHttpTimeoutInSeconds)),
       server_url_(server_url),
       content_id_(content_id),
       policy_(policy),
       signer_(signer.Pass()),
-      key_rotation_enabled_(first_crypto_period_index >= 0),
       crypto_period_count_(kDefaultCryptoPeriodCount),
-      first_crypto_period_index_(first_crypto_period_index),
+      key_production_started_(false),
+      start_key_production_(false, false),
+      first_crypto_period_index_(0),
       key_production_thread_(
           "KeyProductionThread",
           base::Bind(&WidevineEncryptionKeySource::FetchKeysTask,
-                     base::Unretained(this))),
-      key_pool_(kDefaultCryptoPeriodCount,
-                key_rotation_enabled_ ? first_crypto_period_index : 0) {
+                     base::Unretained(this))) {
   DCHECK(signer_);
 }
 
 WidevineEncryptionKeySource::~WidevineEncryptionKeySource() {
-  key_pool_.Stop();
-  if (key_production_thread_.HasBeenStarted())
+  if (key_pool_)
+    key_pool_->Stop();
+  if (key_production_thread_.HasBeenStarted()) {
+    // Signal the production thread to start key production if it is not
+    // signaled yet so the thread can be joined.
+    start_key_production_.Signal();
     key_production_thread_.Join();
+  }
 }
 
 Status WidevineEncryptionKeySource::Initialize() {
-  // |first_crypto_period_index| might be updated after starting production.
-  // Make a local copy for prime later.
-  const uint32 first_crypto_period_index = first_crypto_period_index_;
   DCHECK(!key_production_thread_.HasBeenStarted());
   key_production_thread_.Start();
 
-  // Perform a GetKey request to find out common encryption request status.
-  // It also primes the key_pool if successful.
-  return key_rotation_enabled_ ? GetCryptoPeriodKey(first_crypto_period_index,
-                                                    TRACK_TYPE_SD, NULL)
-                               : GetKey(TRACK_TYPE_SD, NULL);
+  // Perform a fetch request to find out if the key source is healthy.
+  // It also stores the keys fetched for consumption later.
+  return FetchKeys(!kEnableKeyRotation, 0);
 }
 
 Status WidevineEncryptionKeySource::GetKey(TrackType track_type,
                                            EncryptionKey* key) {
-  DCHECK(key_production_thread_.HasBeenStarted());
-  DCHECK(!key_rotation_enabled_);
-  return GetKeyInternal(0u, track_type, key);
+  DCHECK(key);
+  if (encryption_key_map_.find(track_type) == encryption_key_map_.end()) {
+    return Status(error::INTERNAL_ERROR,
+                  "Cannot find key of type " + TrackTypeToString(track_type));
+  }
+  *key = *encryption_key_map_[track_type];
+  return Status::OK;
 }
 
 Status WidevineEncryptionKeySource::GetCryptoPeriodKey(
@@ -179,7 +184,20 @@ Status WidevineEncryptionKeySource::GetCryptoPeriodKey(
     TrackType track_type,
     EncryptionKey* key) {
   DCHECK(key_production_thread_.HasBeenStarted());
-  DCHECK(key_rotation_enabled_);
+  // TODO(kqyang): This is not elegant. Consider refactoring later.
+  {
+    base::AutoLock scoped_lock(lock_);
+    if (!key_production_started_) {
+      // Another client may have a slightly smaller starting crypto period
+      // index. Set the initial value to account for that.
+      first_crypto_period_index_ = crypto_period_index ? crypto_period_index - 1 : 0;
+      DCHECK(!key_pool_);
+      key_pool_.reset(new EncryptionKeyQueue(crypto_period_count_,
+                                             first_crypto_period_index_));
+      start_key_production_.Signal();
+      key_production_started_ = true;
+    }
+  }
   return GetKeyInternal(crypto_period_index, track_type, key);
 }
 
@@ -192,13 +210,15 @@ Status WidevineEncryptionKeySource::GetKeyInternal(
     uint32 crypto_period_index,
     TrackType track_type,
     EncryptionKey* key) {
+  DCHECK(key_pool_);
+  DCHECK(key);
   DCHECK_LE(track_type, NUM_VALID_TRACK_TYPES);
   DCHECK_NE(track_type, TRACK_TYPE_UNKNOWN);
 
   scoped_refptr<RefCountedEncryptionKeyMap> ref_counted_encryption_key_map;
-  Status status = key_pool_.Peek(crypto_period_index,
-                                 &ref_counted_encryption_key_map,
-                                 kGetKeyTimeoutInSeconds * 1000);
+  Status status =
+      key_pool_->Peek(crypto_period_index, &ref_counted_encryption_key_map,
+                      kGetKeyTimeoutInSeconds * 1000);
   if (!status.ok()) {
     if (status.error_code() == error::STOPPED) {
       CHECK(!common_encryption_request_status_.ok());
@@ -212,27 +232,30 @@ Status WidevineEncryptionKeySource::GetKeyInternal(
     return Status(error::INTERNAL_ERROR,
                   "Cannot find key of type " + TrackTypeToString(track_type));
   }
-  if (key)
-    *key = *encryption_key_map[track_type];
+  *key = *encryption_key_map[track_type];
   return Status::OK;
 }
 
 void WidevineEncryptionKeySource::FetchKeysTask() {
-  Status status = FetchKeys(first_crypto_period_index_);
-  if (key_rotation_enabled_) {
-    while (status.ok()) {
-      first_crypto_period_index_ += crypto_period_count_;
-      status = FetchKeys(first_crypto_period_index_);
-    }
+  // Wait until key production is signaled.
+  start_key_production_.Wait();
+  if (!key_pool_ || key_pool_->Stopped())
+    return;
+
+  Status status = FetchKeys(kEnableKeyRotation, first_crypto_period_index_);
+  while (status.ok()) {
+    first_crypto_period_index_ += crypto_period_count_;
+    status = FetchKeys(kEnableKeyRotation, first_crypto_period_index_);
   }
   common_encryption_request_status_ = status;
-  key_pool_.Stop();
+  key_pool_->Stop();
 }
 
 Status WidevineEncryptionKeySource::FetchKeys(
-    uint32 first_crypto_period_index) {
+    bool enable_key_rotation, uint32 first_crypto_period_index) {
   std::string request;
-  FillRequest(content_id_, first_crypto_period_index, &request);
+  FillRequest(content_id_, enable_key_rotation, first_crypto_period_index,
+              &request);
 
   std::string message;
   Status status = SignRequest(request, &message);
@@ -257,7 +280,7 @@ Status WidevineEncryptionKeySource::FetchKeys(
       }
 
       bool transient_error = false;
-      if (ExtractEncryptionKey(response, &transient_error))
+      if (ExtractEncryptionKey(enable_key_rotation, response, &transient_error))
         return Status::OK;
 
       if (!transient_error) {
@@ -281,6 +304,7 @@ Status WidevineEncryptionKeySource::FetchKeys(
 }
 
 void WidevineEncryptionKeySource::FillRequest(const std::string& content_id,
+                                              bool enable_key_rotation,
                                               uint32 first_crypto_period_index,
                                               std::string* request) {
   DCHECK(request);
@@ -313,7 +337,7 @@ void WidevineEncryptionKeySource::FillRequest(const std::string& content_id,
   request_dict.Set("drm_types", drm_types);
 
   // Build key rotation fields.
-  if (key_rotation_enabled_) {
+  if (enable_key_rotation) {
     request_dict.SetInteger("first_crypto_period_index",
                             first_crypto_period_index);
     request_dict.SetInteger("crypto_period_count", crypto_period_count_);
@@ -368,6 +392,7 @@ bool WidevineEncryptionKeySource::DecodeResponse(
 }
 
 bool WidevineEncryptionKeySource::ExtractEncryptionKey(
+    bool enable_key_rotation,
     const std::string& response,
     bool* transient_error) {
   DCHECK(transient_error);
@@ -392,7 +417,7 @@ bool WidevineEncryptionKeySource::ExtractEncryptionKey(
 
   const base::ListValue* tracks;
   RCHECK(license_dict->GetList("tracks", &tracks));
-  RCHECK(key_rotation_enabled_
+  RCHECK(enable_key_rotation
              ? tracks->GetSize() >= NUM_VALID_TRACK_TYPES * crypto_period_count_
              : tracks->GetSize() >= NUM_VALID_TRACK_TYPES);
 
@@ -403,7 +428,7 @@ bool WidevineEncryptionKeySource::ExtractEncryptionKey(
     const base::DictionaryValue* track_dict;
     RCHECK(tracks->GetDictionary(i, &track_dict));
 
-    if (key_rotation_enabled_) {
+    if (enable_key_rotation) {
       int crypto_period_index;
       RCHECK(
           track_dict->GetInteger("crypto_period_index", &crypto_period_index));
@@ -438,16 +463,21 @@ bool WidevineEncryptionKeySource::ExtractEncryptionKey(
   }
 
   DCHECK(!encryption_key_map.empty());
+  if (!enable_key_rotation) {
+    encryption_key_map_ = encryption_key_map;
+    return true;
+  }
   return PushToKeyPool(&encryption_key_map);
 }
 
 bool WidevineEncryptionKeySource::PushToKeyPool(
     EncryptionKeyMap* encryption_key_map) {
+  DCHECK(key_pool_);
   DCHECK(encryption_key_map);
   Status status =
-      key_pool_.Push(scoped_refptr<RefCountedEncryptionKeyMap>(
-                         new RefCountedEncryptionKeyMap(encryption_key_map)),
-                     kInfiniteTimeout);
+      key_pool_->Push(scoped_refptr<RefCountedEncryptionKeyMap>(
+                          new RefCountedEncryptionKeyMap(encryption_key_map)),
+                      kInfiniteTimeout);
   encryption_key_map->clear();
   if (!status.ok()) {
     DCHECK_EQ(error::STOPPED, status.error_code());

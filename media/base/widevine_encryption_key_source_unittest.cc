@@ -132,13 +132,12 @@ class WidevineEncryptionKeySourceTest : public ::testing::Test {
         mock_http_fetcher_(new MockHttpFetcher()) {}
 
  protected:
-  void CreateWidevineEncryptionKeySource(int first_crypto_period_index) {
+  void CreateWidevineEncryptionKeySource() {
     widevine_encryption_key_source_.reset(new WidevineEncryptionKeySource(
         kServerUrl,
         kContentId,
         kPolicy,
-        mock_request_signer_.PassAs<RequestSigner>(),
-        first_crypto_period_index));
+        mock_request_signer_.PassAs<RequestSigner>()));
     widevine_encryption_key_source_->set_http_fetcher(
         mock_http_fetcher_.PassAs<HttpFetcher>());
   }
@@ -180,15 +179,9 @@ TEST_F(WidevineEncryptionKeySourceTest, GenerateSignatureFailure) {
   EXPECT_CALL(*mock_request_signer_, GenerateSignature(_, _))
       .WillOnce(Return(false));
 
-  CreateWidevineEncryptionKeySource(kDisableKeyRotation);
+  CreateWidevineEncryptionKeySource();
   ASSERT_EQ(Status(error::INTERNAL_ERROR, "Signature generation failed."),
             widevine_encryption_key_source_->Initialize());
-
-  // GetKey should return the same failure.
-  EncryptionKey encryption_key;
-  ASSERT_EQ(Status(error::INTERNAL_ERROR, "Signature generation failed."),
-            widevine_encryption_key_source_->GetKey(
-                EncryptionKeySource::TRACK_TYPE_SD, &encryption_key));
 }
 
 // Check whether expected request message and post data was generated and
@@ -208,15 +201,9 @@ TEST_F(WidevineEncryptionKeySourceTest, HttpPostFailure) {
   EXPECT_CALL(*mock_http_fetcher_, Post(kServerUrl, expected_post_data, _))
       .WillOnce(Return(kMockStatus));
 
-  CreateWidevineEncryptionKeySource(kDisableKeyRotation);
+  CreateWidevineEncryptionKeySource();
   ASSERT_EQ(kMockStatus,
             widevine_encryption_key_source_->Initialize());
-
-  // GetKey should return the same failure.
-  EncryptionKey encryption_key;
-  ASSERT_EQ(kMockStatus,
-            widevine_encryption_key_source_->GetKey(
-                EncryptionKeySource::TRACK_TYPE_SD, &encryption_key));
 }
 
 TEST_F(WidevineEncryptionKeySourceTest, LicenseStatusOK) {
@@ -229,7 +216,7 @@ TEST_F(WidevineEncryptionKeySourceTest, LicenseStatusOK) {
   EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
-  CreateWidevineEncryptionKeySource(kDisableKeyRotation);
+  CreateWidevineEncryptionKeySource();
   ASSERT_OK(widevine_encryption_key_source_->Initialize());
   VerifyKeys();
 }
@@ -246,7 +233,7 @@ TEST_F(WidevineEncryptionKeySourceTest, RetryOnHttpTimeout) {
       .WillOnce(Return(Status(error::TIME_OUT, "")))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
-  CreateWidevineEncryptionKeySource(kDisableKeyRotation);
+  CreateWidevineEncryptionKeySource();
   ASSERT_OK(widevine_encryption_key_source_->Initialize());
   VerifyKeys();
 }
@@ -269,7 +256,7 @@ TEST_F(WidevineEncryptionKeySourceTest, RetryOnTransientError) {
       .WillOnce(DoAll(SetArgPointee<2>(expected_retried_response),
                       Return(Status::OK)));
 
-  CreateWidevineEncryptionKeySource(kDisableKeyRotation);
+  CreateWidevineEncryptionKeySource();
   ASSERT_OK(widevine_encryption_key_source_->Initialize());
   VerifyKeys();
 }
@@ -286,7 +273,7 @@ TEST_F(WidevineEncryptionKeySourceTest, NoRetryOnUnknownError) {
   EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
-  CreateWidevineEncryptionKeySource(kDisableKeyRotation);
+  CreateWidevineEncryptionKeySource();
   ASSERT_EQ(error::SERVER_ERROR,
             widevine_encryption_key_source_->Initialize().error_code());
 }
@@ -307,8 +294,8 @@ std::string GetMockKey(const std::string& track_type, uint32 index) {
   return "MockKey" + track_type + "@" + base::UintToString(index);
 }
 
-std::string GenerateMockLicenseResponse(uint32 initial_crypto_period_index,
-                                        uint32 crypto_period_count) {
+std::string GenerateMockKeyRotationLicenseResponse(
+    uint32 initial_crypto_period_index, uint32 crypto_period_count) {
   const std::string kTrackTypes[] = {"SD", "HD", "AUDIO"};
   std::string tracks;
   for (uint32 index = initial_crypto_period_index;
@@ -340,9 +327,18 @@ TEST_F(WidevineEncryptionKeySourceTest, KeyRotationTest) {
 
   // Generate expectations in sequence.
   InSequence dummy;
+
+  // Expecting a non-key rotation enabled request on Initialize().
+  EXPECT_CALL(*mock_request_signer_, GenerateSignature(_, _))
+      .WillOnce(Return(true));
+  std::string mock_response = base::StringPrintf(
+      kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
+  EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
+      .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
+
   for (uint32 i = 0; i < kCryptoIterations; ++i) {
     uint32 first_crypto_period_index =
-        kFirstCryptoPeriodIndex + i * kCryptoPeriodCount;
+        kFirstCryptoPeriodIndex - 1 + i * kCryptoPeriodCount;
     std::string expected_message =
         base::StringPrintf(kCryptoPeriodRequestMessageFormat,
                            Base64Encode(kContentId).c_str(),
@@ -354,24 +350,17 @@ TEST_F(WidevineEncryptionKeySourceTest, KeyRotationTest) {
 
     std::string mock_response = base::StringPrintf(
         kHttpResponseFormat,
-        Base64Encode(GenerateMockLicenseResponse(first_crypto_period_index,
-                                                 kCryptoPeriodCount)).c_str());
+        Base64Encode(GenerateMockKeyRotationLicenseResponse(
+                         first_crypto_period_index, kCryptoPeriodCount))
+            .c_str());
     EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
         .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
   }
 
-  CreateWidevineEncryptionKeySource(kFirstCryptoPeriodIndex);
+  CreateWidevineEncryptionKeySource();
   ASSERT_OK(widevine_encryption_key_source_->Initialize());
 
   EncryptionKey encryption_key;
-
-  // Index before kFirstCryptoPeriodIndex is invalid.
-  Status status = widevine_encryption_key_source_->GetCryptoPeriodKey(
-      kFirstCryptoPeriodIndex - 1,
-      EncryptionKeySource::TRACK_TYPE_SD,
-      &encryption_key);
-  EXPECT_EQ(error::INVALID_ARGUMENT, status.error_code());
-
   for (size_t i = 0; i < arraysize(kCryptoPeriodIndexes); ++i) {
     const std::string kTrackTypes[] = {"SD", "HD", "AUDIO"};
     for (size_t j = 0; j < 3; ++j) {
@@ -385,36 +374,11 @@ TEST_F(WidevineEncryptionKeySourceTest, KeyRotationTest) {
   }
 
   // The old crypto period indexes should have been garbage collected.
-  status = widevine_encryption_key_source_->GetCryptoPeriodKey(
+  Status status = widevine_encryption_key_source_->GetCryptoPeriodKey(
       kFirstCryptoPeriodIndex,
       EncryptionKeySource::TRACK_TYPE_SD,
       &encryption_key);
   EXPECT_EQ(error::INVALID_ARGUMENT, status.error_code());
-}
-
-class WidevineEncryptionKeySourceDeathTest
-    : public WidevineEncryptionKeySourceTest {};
-
-TEST_F(WidevineEncryptionKeySourceDeathTest,
-       GetCryptoPeriodKeyOnNonKeyRotationSource) {
-  CreateWidevineEncryptionKeySource(kDisableKeyRotation);
-  widevine_encryption_key_source_->Initialize();
-
-  EncryptionKey encryption_key;
-  EXPECT_DEBUG_DEATH(
-      widevine_encryption_key_source_->GetCryptoPeriodKey(
-          0, EncryptionKeySource::TRACK_TYPE_SD, &encryption_key),
-      "");
-}
-
-TEST_F(WidevineEncryptionKeySourceDeathTest, GetKeyOnKeyRotationSource) {
-  CreateWidevineEncryptionKeySource(0);
-  widevine_encryption_key_source_->Initialize();
-
-  EncryptionKey encryption_key;
-  EXPECT_DEBUG_DEATH(widevine_encryption_key_source_->GetKey(
-                         EncryptionKeySource::TRACK_TYPE_SD, &encryption_key),
-                     "");
 }
 
 }  // namespace media
