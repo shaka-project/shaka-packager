@@ -38,7 +38,7 @@ class EncryptingFragmenter : public Fragmenter {
   /// @name Fragmenter implementation overrides.
   /// @{
   virtual Status AddSample(scoped_refptr<MediaSample> sample) OVERRIDE;
-  virtual Status InitializeFragment() OVERRIDE;
+  virtual Status InitializeFragment(int64 first_sample_dts) OVERRIDE;
   virtual void FinalizeFragment() OVERRIDE;
   /// @}
 

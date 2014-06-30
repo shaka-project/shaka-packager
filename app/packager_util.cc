@@ -90,7 +90,6 @@ bool AssignFlagsFromProfile() {
   bool normalize_pts = FLAGS_normalize_presentation_timestamp;
   if (FLAGS_profile == "on-demand") {
     single_segment = true;
-    normalize_pts = true;
   } else if (FLAGS_profile == "live") {
     single_segment = false;
     normalize_pts = false;

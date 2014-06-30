@@ -20,6 +20,7 @@ const int64 kInvalidTime = kint64max;
 Fragmenter::Fragmenter(TrackFragment* traf,
                        bool normalize_presentation_timestamp)
     : traf_(traf),
+      fragment_initialized_(false),
       fragment_finalized_(false),
       fragment_duration_(0),
       normalize_presentation_timestamp_(normalize_presentation_timestamp),
@@ -35,15 +36,17 @@ Status Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   DCHECK(sample);
   CHECK_GT(sample->duration(), 0);
 
+  if (!fragment_initialized_) {
+    Status status = InitializeFragment(sample->dts());
+    if (!status.ok())
+      return status;
+  }
+
   // Fill in sample parameters. It will be optimized later.
   traf_->runs[0].sample_sizes.push_back(sample->data_size());
   traf_->runs[0].sample_durations.push_back(sample->duration());
   traf_->runs[0].sample_flags.push_back(
       sample->is_key_frame() ? 0 : TrackFragmentHeader::kNonKeySampleMask);
-  traf_->runs[0].sample_composition_time_offsets.push_back(sample->pts() -
-                                                           sample->dts());
-  if (sample->pts() != sample->dts())
-    traf_->runs[0].flags |= TrackFragmentRun::kSampleCompTimeOffsetsPresentMask;
 
   data_->AppendArray(sample->data(), sample->data_size());
   fragment_duration_ += sample->duration();
@@ -70,6 +73,10 @@ Status Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   if (earliest_presentation_time_ > pts)
     earliest_presentation_time_ = pts;
 
+  traf_->runs[0].sample_composition_time_offsets.push_back(pts - sample->dts());
+  if (pts != sample->dts())
+    traf_->runs[0].flags |= TrackFragmentRun::kSampleCompTimeOffsetsPresentMask;
+
   if (sample->is_key_frame()) {
     if (first_sap_time_ == kInvalidTime)
       first_sap_time_ = pts;
@@ -77,9 +84,10 @@ Status Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   return Status::OK;
 }
 
-Status Fragmenter::InitializeFragment() {
+Status Fragmenter::InitializeFragment(int64 first_sample_dts) {
+  fragment_initialized_ = true;
   fragment_finalized_ = false;
-  traf_->decode_time.decode_time += fragment_duration_;
+  traf_->decode_time.decode_time = first_sample_dts;
   traf_->runs.clear();
   traf_->runs.resize(1);
   traf_->runs[0].flags = TrackFragmentRun::kDataOffsetPresentMask;
@@ -116,6 +124,7 @@ void Fragmenter::FinalizeFragment() {
   }
 
   fragment_finalized_ = true;
+  fragment_initialized_ = false;
 }
 
 void Fragmenter::GenerateSegmentReference(SegmentReference* reference) {

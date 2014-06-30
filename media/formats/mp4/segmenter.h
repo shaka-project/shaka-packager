@@ -111,7 +111,6 @@ class Segmenter {
   Status FinalizeSegment();
   uint32 GetReferenceStreamId();
 
-  Status InitializeFragments();
   Status FinalizeFragment(Fragmenter* fragment);
 
   const MuxerOptions& options_;

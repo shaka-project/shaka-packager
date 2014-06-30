@@ -38,6 +38,11 @@ EncryptingFragmenter::~EncryptingFragmenter() {}
 
 Status EncryptingFragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   DCHECK(sample);
+  if (!fragment_initialized()) {
+    Status status = InitializeFragment(sample->dts());
+    if (!status.ok())
+      return status;
+  }
   if (encryptor_) {
     Status status = EncryptSample(sample);
     if (!status.ok())
@@ -46,8 +51,8 @@ Status EncryptingFragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   return Fragmenter::AddSample(sample);
 }
 
-Status EncryptingFragmenter::InitializeFragment() {
-  Status status = Fragmenter::InitializeFragment();
+Status EncryptingFragmenter::InitializeFragment(int64 first_sample_dts) {
+  Status status = Fragmenter::InitializeFragment(first_sample_dts);
   if (!status.ok())
     return status;
 

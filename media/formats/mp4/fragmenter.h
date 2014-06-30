@@ -40,8 +40,10 @@ class Fragmenter {
   virtual Status AddSample(scoped_refptr<MediaSample> sample);
 
   /// Initialize the fragment with default data.
+  /// @param first_sample_dts specifies the decoding timestamp for the first
+  ///        sample for this fragment.
   /// @return OK on success, an error status otherwise.
-  virtual Status InitializeFragment();
+  virtual Status InitializeFragment(int64 first_sample_dts);
 
   /// Finalize and optimize the fragment.
   virtual void FinalizeFragment();
@@ -54,6 +56,7 @@ class Fragmenter {
   uint64 earliest_presentation_time() const {
     return earliest_presentation_time_;
   }
+  bool fragment_initialized() const { return fragment_initialized_; }
   bool fragment_finalized() const { return fragment_finalized_; }
   BufferWriter* data() { return data_.get(); }
   BufferWriter* aux_data() { return aux_data_.get(); }
@@ -72,6 +75,7 @@ class Fragmenter {
   bool StartsWithSAP();
 
   TrackFragment* traf_;
+  bool fragment_initialized_;
   bool fragment_finalized_;
   uint64 fragment_duration_;
   bool normalize_presentation_timestamp_;
