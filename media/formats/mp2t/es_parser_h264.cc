@@ -209,9 +209,13 @@ bool EsParserH264::ParseInternal() {
       case H264NALU::kPPS: {
         DVLOG(LOG_LEVEL_ES) << "NALU: PPS";
         int pps_id;
-        if (h264_parser_->ParsePPS(&pps_id) != H264Parser::kOk)
-          return false;
-        decoder_config_check_pending_ = true;
+        if (h264_parser_->ParsePPS(&pps_id) != H264Parser::kOk) {
+          // Allow PPS parsing to fail if waiting for SPS.
+          if (last_video_decoder_config_)
+            return false;
+        } else {
+          decoder_config_check_pending_ = true;
+        }
         break;
       }
       case H264NALU::kIDRSlice:
