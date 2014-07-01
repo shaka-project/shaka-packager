@@ -145,8 +145,8 @@ std::string GetSegmentName(const std::string& segment_template,
       segment_name +=
           base::StringPrintf(format_tag.c_str(), segment_start_time);
     } else if (identifier == "Bandwidth") {
-      segment_name +=
-          base::StringPrintf(format_tag.c_str(), bandwidth);
+      segment_name += base::StringPrintf(
+          format_tag.c_str(), static_cast<uint64>(bandwidth));
     }
   }
   return segment_name;
