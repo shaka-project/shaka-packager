@@ -21,7 +21,7 @@ typedef File* (*FileFactoryFunction)(const char* file_name, const char* mode);
 
 struct SupportedTypeInfo {
   const char* type;
-  int type_length;
+  size_t type_length;
   const FileFactoryFunction factory_function;
 };
 
