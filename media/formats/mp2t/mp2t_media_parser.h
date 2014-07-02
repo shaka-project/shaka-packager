@@ -28,7 +28,7 @@ typedef std::deque<scoped_refptr<MediaSample> > SampleQueue;
 
 class Mp2tMediaParser : public MediaParser {
  public:
-  explicit Mp2tMediaParser();
+  Mp2tMediaParser();
   virtual ~Mp2tMediaParser();
 
   // MediaParser implementation overrides.
