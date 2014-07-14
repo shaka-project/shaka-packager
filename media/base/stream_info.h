@@ -55,6 +55,10 @@ class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
 
   void set_extra_data(const std::vector<uint8>& data) { extra_data_ = data; }
 
+  void set_codec_string(const std::string& codec_string) {
+    codec_string_ = codec_string;
+  }
+
  protected:
   friend class base::RefCountedThreadSafe<StreamInfo>;
   virtual ~StreamInfo();

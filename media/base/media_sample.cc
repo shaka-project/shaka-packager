@@ -55,6 +55,12 @@ scoped_refptr<MediaSample> MediaSample::CopyFrom(const uint8* data,
 }
 
 // static
+scoped_refptr<MediaSample> MediaSample::CreateEmptyMediaSample() {
+  MediaSample* media_sample = new MediaSample();
+  return make_scoped_refptr(media_sample);
+}
+
+// static
 scoped_refptr<MediaSample> MediaSample::CreateEOSBuffer() {
   return make_scoped_refptr(new MediaSample(NULL, 0, NULL, 0, false));
 }

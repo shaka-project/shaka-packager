@@ -52,6 +52,8 @@
         'muxer_options.h',
         'muxer_util.cc',
         'muxer_util.h',
+        'network_util.cc',
+        'network_util.h',
         'offset_byte_queue.cc',
         'offset_byte_queue.h',
         'producer_consumer_queue.h',

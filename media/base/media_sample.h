@@ -45,6 +45,9 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
                                              size_t side_data_size,
                                              bool is_key_frame);
 
+  /// Create a MediaSample object with default members.
+  static scoped_refptr<MediaSample> CreateEmptyMediaSample();
+
   /// Create a MediaSample indicating we've reached end of stream.
   /// Calling any method other than end_of_stream() on the resulting buffer
   /// is disallowed.
@@ -56,7 +59,6 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   }
 
   void set_dts(int64 dts) {
-    DCHECK(!end_of_stream());
     dts_ = dts;
   }
 
@@ -66,7 +68,6 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   }
 
   void set_pts(int64 pts) {
-    DCHECK(!end_of_stream());
     pts_ = pts;
   }
 
@@ -110,6 +111,15 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
     return side_data_.size();
   }
 
+  void set_data(const uint8* data, const size_t data_size) {
+    data_size_ = data_size;
+    data_.assign(data, data + data_size_);
+  }
+
+  void set_is_key_frame(bool value) {
+    is_key_frame_ = value;
+  }
+
   // If there's no data in this buffer, it represents end of stream.
   bool end_of_stream() const { return data_.size() == 0; }
 
@@ -127,6 +137,10 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
               const uint8* side_data,
               size_t side_data_size,
               bool is_key_frame);
+  MediaSample() : dts_(0), pts_(0),
+                  duration_(0),
+                  is_key_frame_(false),
+                  data_size_(0) {}
   virtual ~MediaSample();
 
   // Decoding time stamp.
@@ -142,6 +156,7 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   // http://www.matroska.org/technical/specs/index.html BlockAdditional[A5].
   // Not used by mp4 and other containers.
   std::vector<uint8> side_data_;
+  size_t data_size_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSample);
 };

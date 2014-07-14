@@ -30,8 +30,9 @@ StreamInfo::StreamInfo(StreamType stream_type,
       language_(language),
       is_encrypted_(is_encrypted) {
 
-  CHECK((extra_data_size != 0) == (extra_data != NULL));
-  extra_data_.assign(extra_data, extra_data + extra_data_size);
+  if (extra_data_size > 0) {
+    extra_data_.assign(extra_data, extra_data + extra_data_size);
+  }
 }
 
 StreamInfo::~StreamInfo() {}

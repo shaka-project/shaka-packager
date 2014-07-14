@@ -64,6 +64,11 @@ class AudioStreamInfo : public StreamInfo {
     return static_cast<uint32>(num_channels_) * sample_bits_ / 8;
   }
 
+  void set_sampling_frequency(const uint32 sampling_frequency) {
+    sampling_frequency_ = sampling_frequency;
+  }
+
+
   /// @param audio_object_type is only used by AAC Codec, ignored otherwise.
   /// @return The codec string.
   static std::string GetCodecString(AudioCodec codec, uint8 audio_object_type);

@@ -1573,6 +1573,8 @@ static MediaContainerName LookupContainerByFirst4(const uint8* buffer,
         return CONTAINER_WTV;
       }
       break;
+    case 0x000001ba:
+      return CONTAINER_MPEG2PS;
   }
 
   // Now try a few different ones that look at something other

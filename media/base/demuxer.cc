@@ -18,6 +18,7 @@
 #include "media/file/file.h"
 #include "media/formats/mp2t/mp2t_media_parser.h"
 #include "media/formats/mp4/mp4_media_parser.h"
+#include "media/formats/wvm/wvm_media_parser.h"
 
 namespace {
 const size_t kBufSize = 0x40000;  // 256KB.
@@ -64,6 +65,9 @@ Status Demuxer::Initialize() {
       break;
     case CONTAINER_MPEG2TS:
       parser_.reset(new mp2t::Mp2tMediaParser());
+      break;
+    case CONTAINER_MPEG2PS:
+      parser_.reset(new wvm::WvmMediaParser());
       break;
     default:
       NOTIMPLEMENTED();
