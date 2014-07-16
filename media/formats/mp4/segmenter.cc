@@ -146,8 +146,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
         sidx_->reference_id = i + 1;
     }
     if (!encryption_key_source) {
-      fragmenters_[i] = new Fragmenter(
-          &moof_->tracks[i], options_.normalize_presentation_timestamp);
+      fragmenters_[i] = new Fragmenter(&moof_->tracks[i]);
       continue;
     }
 
@@ -165,7 +164,6 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
       fragmenters_[i] = new KeyRotationFragmenter(
           moof_.get(),
           &moof_->tracks[i],
-          options_.normalize_presentation_timestamp,
           encryption_key_source,
           track_type,
           crypto_period_duration_in_seconds * streams[i]->info()->time_scale(),
@@ -191,7 +189,6 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
 
     fragmenters_[i] = new EncryptingFragmenter(
         &moof_->tracks[i],
-        options_.normalize_presentation_timestamp,
         encryption_key.Pass(),
         clear_lead_in_seconds * streams[i]->info()->time_scale(),
         nalu_length_size);

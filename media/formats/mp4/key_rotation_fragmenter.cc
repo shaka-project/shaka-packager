@@ -15,14 +15,12 @@ namespace mp4 {
 KeyRotationFragmenter::KeyRotationFragmenter(
     MovieFragment* moof,
     TrackFragment* traf,
-    bool normalize_presentation_timestamp,
     EncryptionKeySource* encryption_key_source,
     EncryptionKeySource::TrackType track_type,
     int64 crypto_period_duration,
     int64 clear_time,
     uint8 nalu_length_size)
     : EncryptingFragmenter(traf,
-                           normalize_presentation_timestamp,
                            scoped_ptr<EncryptionKey>(new EncryptionKey()),
                            clear_time,
                            nalu_length_size),

@@ -17,13 +17,11 @@ namespace {
 const int64 kInvalidTime = kint64max;
 }  // namespace
 
-Fragmenter::Fragmenter(TrackFragment* traf,
-                       bool normalize_presentation_timestamp)
+Fragmenter::Fragmenter(TrackFragment* traf)
     : traf_(traf),
       fragment_initialized_(false),
       fragment_finalized_(false),
       fragment_duration_(0),
-      normalize_presentation_timestamp_(normalize_presentation_timestamp),
       presentation_start_time_(kInvalidTime),
       earliest_presentation_time_(kInvalidTime),
       first_sap_time_(kInvalidTime) {
@@ -52,21 +50,6 @@ Status Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   fragment_duration_ += sample->duration();
 
   int64 pts = sample->pts();
-  if (normalize_presentation_timestamp_) {
-    // Normalize PTS to start from 0. Some players do not like non-zero
-    // presentation starting time.
-    // NOTE: The timeline of the remuxed video may not be exactly the same as
-    // the original video. An EditList box may be useful to solve this.
-    if (presentation_start_time_ == kInvalidTime) {
-      presentation_start_time_ = pts;
-      pts = 0;
-    } else {
-      // Is it safe to assume the first sample in the media has the earliest
-      // presentation timestamp?
-      DCHECK_GE(pts, presentation_start_time_);
-      pts -= presentation_start_time_;
-    }
-  }
 
   // Set |earliest_presentation_time_| to |pts| if |pts| is smaller or if it is
   // not yet initialized (kInvalidTime > pts is always true).

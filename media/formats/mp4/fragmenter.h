@@ -28,9 +28,7 @@ struct TrackFragment;
 class Fragmenter {
  public:
   /// @param traf points to a TrackFragment box.
-  /// @param normalize_presentation_timestamp defines whether PTS should be
-  ///        normalized to start from zero.
-  Fragmenter(TrackFragment* traf, bool normalize_presentation_timestamp);
+  Fragmenter(TrackFragment* traf);
 
   virtual ~Fragmenter();
 
@@ -78,7 +76,6 @@ class Fragmenter {
   bool fragment_initialized_;
   bool fragment_finalized_;
   uint64 fragment_duration_;
-  bool normalize_presentation_timestamp_;
   int64 presentation_start_time_;
   int64 earliest_presentation_time_;
   int64 first_sap_time_;

@@ -20,15 +20,12 @@ namespace mp4 {
 class EncryptingFragmenter : public Fragmenter {
  public:
   /// @param traf points to a TrackFragment box.
-  /// @param normalize_presentation_timestamp defines whether PTS should be
-  ///        normalized to start from zero.
   /// @param encryption_key contains the encryption parameters.
   /// @param clear_time specifies clear lead duration in units of the current
   ///        track's timescale.
   /// @param nalu_length_size specifies the size of NAL unit length, in bytes,
   ///        for subsample encryption.
   EncryptingFragmenter(TrackFragment* traf,
-                       bool normalize_presentation_timestamp,
                        scoped_ptr<EncryptionKey> encryption_key,
                        int64 clear_time,
                        uint8 nalu_length_size);

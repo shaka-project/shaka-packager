@@ -38,10 +38,6 @@ DEFINE_bool(fragment_sap_aligned,
             true,
             "Force fragments to begin with stream access points. This flag "
             "implies segment_sap_aligned.");
-DEFINE_bool(normalize_presentation_timestamp,
-            true,
-            "Set to true to normalize the presentation timestamps to start"
-            "from zero.");
 DEFINE_int32(num_subsegments_per_sidx,
              1,
              "For ISO BMFF only. Set the number of subsegments in each "

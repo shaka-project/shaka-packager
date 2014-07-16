@@ -30,7 +30,7 @@ This document provides the information needed to create a DASH packager that is 
   ```Shell
   ninja -C out/Debug                     # build all modules in Debug mode
   ninja -C out/Release                   # build all modules in Release mode
-  ninja -C out/Release mp4               # build mp4 module in Debug mode
+  ninja -C out/Release mp4               # build mp4 module in Release mode
   ```
   Refer to ninja manual for details.
 
@@ -176,9 +176,6 @@ muxer_options.segment_sap_aligned = true;
 // may not be exactly what asked by segment_duration. Imply
 // segment_sap_aligned.
 muxer_options.fragment_sap_aligned = true;
-
-// Set to true to normalize the presentation timestamps to start from zero.
-muxer_options.normalize_presentation_timestamp = true;
 
 // For ISO BMFF only.
 // Set the number of subsegments in each SIDX box. If 0, a single SIDX box

@@ -21,8 +21,6 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
  public:
   /// @param moof points to a MovieFragment box.
   /// @param traf points to a TrackFragment box.
-  /// @param normalize_presentation_timestamp defines whether PTS should be
-  ///        normalized to start from zero.
   /// @param encryption_key_source points to the source which generates
   ///        encryption keys.
   /// @param track_type indicates whether SD key or HD key should be used to
@@ -35,7 +33,6 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
   ///        encryption.
   KeyRotationFragmenter(MovieFragment* moof,
                         TrackFragment* traf,
-                        bool normalize_presentation_timestamp,
                         EncryptionKeySource* encryption_key_source,
                         EncryptionKeySource::TrackType track_type,
                         int64 crypto_period_duration,

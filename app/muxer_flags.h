@@ -18,7 +18,6 @@ DECLARE_double(segment_duration);
 DECLARE_bool(segment_sap_aligned);
 DECLARE_double(fragment_duration);
 DECLARE_bool(fragment_sap_aligned);
-DECLARE_bool(normalize_presentation_timestamp);
 DECLARE_int32(num_subsegments_per_sidx);
 DECLARE_string(temp_dir);
 

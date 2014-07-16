@@ -91,12 +91,10 @@ scoped_ptr<EncryptionKeySource> CreateEncryptionKeySource() {
 
 bool AssignFlagsFromProfile() {
   bool single_segment = FLAGS_single_segment;
-  bool normalize_pts = FLAGS_normalize_presentation_timestamp;
   if (FLAGS_profile == "on-demand") {
     single_segment = true;
   } else if (FLAGS_profile == "live") {
     single_segment = false;
-    normalize_pts = false;
   } else if (FLAGS_profile != "") {
     fprintf(stderr, "ERROR: --profile '%s' is not supported.\n",
             FLAGS_profile.c_str());
@@ -107,12 +105,6 @@ bool AssignFlagsFromProfile() {
     FLAGS_single_segment = single_segment;
     fprintf(stdout, "Profile %s: set --single_segment to %s.\n",
             FLAGS_profile.c_str(), single_segment ? "true" : "false");
-  }
-  if (FLAGS_normalize_presentation_timestamp != normalize_pts) {
-    FLAGS_normalize_presentation_timestamp = normalize_pts;
-    fprintf(stdout,
-            "Profile %s: set --normalize_presentation_timestamp to %s.\n",
-            FLAGS_profile.c_str(), normalize_pts ? "true" : "false");
   }
   return true;
 }
@@ -125,8 +117,6 @@ bool GetMuxerOptions(MuxerOptions* muxer_options) {
   muxer_options->fragment_duration = FLAGS_fragment_duration;
   muxer_options->segment_sap_aligned = FLAGS_segment_sap_aligned;
   muxer_options->fragment_sap_aligned = FLAGS_fragment_sap_aligned;
-  muxer_options->normalize_presentation_timestamp =
-      FLAGS_normalize_presentation_timestamp;
   muxer_options->num_subsegments_per_sidx = FLAGS_num_subsegments_per_sidx;
   muxer_options->temp_dir = FLAGS_temp_dir;
   return true;

@@ -132,10 +132,6 @@ MuxerOptions PackagerTestBasic::SetupOptions(const std::string& output,
   options.fragment_duration = kFragmentDurationInSecodns;
   options.segment_sap_aligned = kSegmentSapAligned;
   options.fragment_sap_aligned = kFragmentSapAligned;
-  // The mp4 muxer does not generate EditList, so the starting timestamp in the
-  // source is not carried over. Normalize the PTS so a second parse of the
-  // muxed output generates the same output.
-  options.normalize_presentation_timestamp = true;
   options.num_subsegments_per_sidx = kNumSubsegmentsPerSidx;
 
   options.output_file_name = GetFullPath(output);

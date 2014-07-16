@@ -23,11 +23,10 @@ namespace mp4 {
 
 EncryptingFragmenter::EncryptingFragmenter(
     TrackFragment* traf,
-    bool normalize_presentation_timestamp,
     scoped_ptr<EncryptionKey> encryption_key,
     int64 clear_time,
     uint8 nalu_length_size)
-    : Fragmenter(traf, normalize_presentation_timestamp),
+    : Fragmenter(traf),
       encryption_key_(encryption_key.Pass()),
       nalu_length_size_(nalu_length_size),
       clear_time_(clear_time) {
