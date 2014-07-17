@@ -446,7 +446,7 @@ int64 TrackRunIterator::GetMaxClearOffset() {
     }
   }
   if (offset == kint64max)
-    return 0;
+    return runs_.empty() ? 0 : runs_[0].sample_start_offset;
   return offset;
 }
 
