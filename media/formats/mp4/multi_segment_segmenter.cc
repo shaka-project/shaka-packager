@@ -158,8 +158,9 @@ Status MultiSegmentSegmenter::WriteSegment() {
     styp_->Write(buffer.get());
   }
 
-  // If num_subsegments_per_sidx is negative, no SIDX box is generated.
-  if (options().num_subsegments_per_sidx >= 0)
+  // Generate sidx box only if |num_subsegments_per_sidx| is non-negative and
+  // the box contains multiple entries.
+  if (options().num_subsegments_per_sidx >= 0 && sidx()->references.size() > 1)
     sidx()->Write(buffer.get());
 
   const size_t segment_size = buffer->Size() + fragment_buffer()->Size();
