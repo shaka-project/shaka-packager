@@ -4,44 +4,43 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_BASE_WIDEVINE_ENCRYPTION_KEY_SOURCE_H_
-#define MEDIA_BASE_WIDEVINE_ENCRYPTION_KEY_SOURCE_H_
+#ifndef MEDIA_BASE_WIDEVINE_KEY_SOURCE_H_
+#define MEDIA_BASE_WIDEVINE_KEY_SOURCE_H_
 
 #include <map>
 
-#include "base/basictypes.h"
 #include "base/memory/scoped_ptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/values.h"
 #include "media/base/closure_thread.h"
-#include "media/base/encryption_key_source.h"
+#include "media/base/key_source.h"
 
 namespace media {
 class HttpFetcher;
 class RequestSigner;
 template <class T> class ProducerConsumerQueue;
 
-/// WidevineEncryptionKeySource talks to the Widevine encryption service to
+/// WidevineKeySource talks to the Widevine encryption service to
 /// acquire the encryption keys.
-class WidevineEncryptionKeySource : public EncryptionKeySource {
+class WidevineKeySource : public KeySource {
  public:
   /// @param server_url is the Widevine common encryption server url.
-  /// @param content_id the unique id identify the content to be encrypted.
-  /// @param policy specifies the DRM content rights.
   /// @param signer signs the request message. It should not be NULL.
-  WidevineEncryptionKeySource(const std::string& server_url,
-                              const std::string& content_id,
-                              const std::string& policy,
-                              scoped_ptr<RequestSigner> signer);
-  virtual ~WidevineEncryptionKeySource();
+  WidevineKeySource(const std::string& server_url,
+                    scoped_ptr<RequestSigner> signer);
 
-  /// Initialize the key source. Must be called before calling GetKey or
-  /// GetCryptoPeriodKey.
-  /// @return OK on success, an error status otherwise.
-  Status Initialize();
+  virtual ~WidevineKeySource();
 
-  /// @name EncryptionKeySource implementation overrides.
+  /// @name KeySource implementation overrides.
   /// @{
+  virtual Status FetchKeys(const std::vector<uint8>& content_id,
+                           const std::string& policy) OVERRIDE;
+  virtual Status FetchKeys(const std::vector<uint8>& pssh_data) OVERRIDE;
+  Status FetchKeys(uint32 asset_id);
+
   virtual Status GetKey(TrackType track_type, EncryptionKey* key) OVERRIDE;
+  virtual Status GetKey(const std::vector<uint8>& key_id,
+                        EncryptionKey* key) OVERRIDE;
   virtual Status GetCryptoPeriodKey(uint32 crypto_period_index,
                                     TrackType track_type,
                                     EncryptionKey* key) OVERRIDE;
@@ -62,16 +61,20 @@ class WidevineEncryptionKeySource : public EncryptionKeySource {
                         TrackType track_type,
                         EncryptionKey* key);
 
+  // Common implementation of FetchKeys methods above.
+  Status FetchKeysCommon(bool widevine_classic);
+
   // The closure task to fetch keys repeatedly.
   void FetchKeysTask();
 
   // Fetch keys from server.
-  Status FetchKeys(bool enable_key_rotation, uint32 first_crypto_period_index);
+  Status FetchKeysInternal(bool enable_key_rotation,
+                           uint32 first_crypto_period_index,
+                           bool widevine_classic);
 
   // Fill |request| with necessary fields for Widevine encryption request.
   // |request| should not be NULL.
-  void FillRequest(const std::string& content_id,
-                   bool enable_key_rotation,
+  void FillRequest(bool enable_key_rotation,
                    uint32 first_crypto_period_index,
                    std::string* request);
   // Sign and properly format |request|.
@@ -85,7 +88,9 @@ class WidevineEncryptionKeySource : public EncryptionKeySource {
   // failure is because of a transient error from the server. |transient_error|
   // should not be NULL.
   bool ExtractEncryptionKey(bool enable_key_rotation,
-                            const std::string& response, bool* transient_error);
+                            bool widevine_classic,
+                            const std::string& response,
+                            bool* transient_error);
   // Push the keys to the key pool.
   bool PushToKeyPool(EncryptionKeyMap* encryption_key_map);
 
@@ -94,9 +99,8 @@ class WidevineEncryptionKeySource : public EncryptionKeySource {
   // Can be overridden using set_http_fetcher for testing or other purposes.
   scoped_ptr<HttpFetcher> http_fetcher_;
   std::string server_url_;
-  std::string content_id_;
-  std::string policy_;
   scoped_ptr<RequestSigner> signer_;
+  base::DictionaryValue request_dict_;
 
   const uint32 crypto_period_count_;
   base::Lock lock_;
@@ -108,9 +112,9 @@ class WidevineEncryptionKeySource : public EncryptionKeySource {
   EncryptionKeyMap encryption_key_map_;  // For non key rotation request.
   Status common_encryption_request_status_;
 
-  DISALLOW_COPY_AND_ASSIGN(WidevineEncryptionKeySource);
+  DISALLOW_COPY_AND_ASSIGN(WidevineKeySource);
 };
 
 }  // namespace media
 
-#endif  // MEDIA_BASE_WIDEVINE_ENCRYPTION_KEY_SOURCE_H_
+#endif  // MEDIA_BASE_WIDEVINE_KEY_SOURCE_H_

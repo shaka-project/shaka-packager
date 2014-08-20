@@ -8,6 +8,7 @@
 
 #include "app/widevine_encryption_flags.h"
 
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 
 DEFINE_bool(enable_widevine_encryption,
@@ -15,8 +16,14 @@ DEFINE_bool(enable_widevine_encryption,
             "Enable encryption with Widevine license server/proxy. User should "
             "provide either AES signing key (--aes_signing_key, "
             "--aes_signing_iv) or RSA signing key (--rsa_signing_key_path).");
-DEFINE_string(key_server_url, "", "Key server url.");
-DEFINE_string(content_id, "", "Content Id.");
+DEFINE_bool(enable_widevine_decryption,
+            false,
+            "Enable decryption with Widevine license server/proxy. User should "
+            "provide either AES signing key (--aes_signing_key, "
+            "--aes_signing_iv) or RSA signing key (--rsa_signing_key_path).");
+DEFINE_string(key_server_url, "", "Key server url. Required for encryption and "
+              "decryption");
+DEFINE_string(content_id, "", "Content Id (hex).");
 DEFINE_string(policy,
               "",
               "The name of a stored policy, which specifies DRM content "
@@ -44,9 +51,44 @@ DEFINE_int32(crypto_period_duration,
 
 namespace {
 
-static bool IsNotEmptyWithWidevineEncryption(const char* flag_name,
-                                             const std::string& flag_value) {
-  return FLAGS_enable_widevine_encryption ? !flag_value.empty() : true;
+static bool VerifyEncryptionAndDecryptionParams(const char* flag_name,
+                                                const std::string& flag_value) {
+  DCHECK(flag_name);
+
+  if (FLAGS_enable_widevine_encryption) {
+    if (flag_value.empty()) {
+      fprintf(stderr,
+              "ERROR: %s required if enable_widevine_encryption is true\n",
+             flag_name);
+      return false;
+    }
+  } else if (FLAGS_enable_widevine_decryption) {
+    const std::string flag_name_str = flag_name;
+    if (flag_name_str == "key_server_url") {
+      if (flag_value.empty()) {
+        fprintf(stderr,
+                "ERROR: %s required if --enable_widevine_decryption is true\n",
+               flag_name);
+        return false;
+      }
+    } else {
+      if (!flag_value.empty()) {
+        fprintf(stderr, "ERROR: %s should only be specified if "
+               "--enable_widevine_decryption is true\n", flag_name);
+        return false;
+      }
+    }
+  } else {
+    if (!flag_value.empty()) {
+      const std::string flag_name_str = flag_name;
+      fprintf(stderr, "ERROR: %s should only be specified if %s"
+             " is true\n", flag_name, flag_name_str == "key_server_url" ?
+             "--enable_widevine_encryption or --enable_widevine_decryption" :
+             "--enable_widevine_encryption");
+      return false;
+    }
+  }
+  return true;
 }
 
 static bool IsPositive(const char* flag_name, int flag_value) {
@@ -61,20 +103,20 @@ static bool VerifyAesRsaKey(const char* flag_name,
   if (flag_name_str == "aes_signing_iv") {
     if (!FLAGS_aes_signing_key.empty() && flag_value.empty()) {
       fprintf(stderr,
-              "ERROR: --aes_signing_iv is required for --aes_signing_key.\n");
+             "ERROR: --aes_signing_iv is required for --aes_signing_key.\n");
       return false;
     }
   } else if (flag_name_str == "rsa_signing_key_path") {
     if (FLAGS_aes_signing_key.empty() && flag_value.empty()) {
       fprintf(stderr,
-              "ERROR: --aes_signing_key or --rsa_signing_key_path is "
-              "required.\n");
+             "ERROR: --aes_signing_key or --rsa_signing_key_path is "
+             "required.\n");
       return false;
     }
     if (!FLAGS_aes_signing_key.empty() && !flag_value.empty()) {
       fprintf(stderr,
-              "ERROR: --aes_signing_key and --rsa_signing_key_path are "
-              "exclusive.\n");
+             "ERROR: --aes_signing_key and --rsa_signing_key_path are "
+             "exclusive.\n");
       return false;
     }
   }
@@ -83,15 +125,15 @@ static bool VerifyAesRsaKey(const char* flag_name,
 
 bool dummy_key_server_url_validator =
     google::RegisterFlagValidator(&FLAGS_key_server_url,
-                                  &IsNotEmptyWithWidevineEncryption);
+                                  &VerifyEncryptionAndDecryptionParams);
 bool dummy_content_id_validator =
     google::RegisterFlagValidator(&FLAGS_content_id,
-                                  &IsNotEmptyWithWidevineEncryption);
+                                  &VerifyEncryptionAndDecryptionParams);
 bool dummy_track_type_validator =
     google::RegisterFlagValidator(&FLAGS_max_sd_pixels, &IsPositive);
 bool dummy_signer_validator =
     google::RegisterFlagValidator(&FLAGS_signer,
-                                  &IsNotEmptyWithWidevineEncryption);
+                                  &VerifyEncryptionAndDecryptionParams);
 bool dummy_aes_iv_validator =
     google::RegisterFlagValidator(&FLAGS_aes_signing_iv,
                                   &VerifyAesRsaKey);

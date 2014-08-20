@@ -19,7 +19,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/simple_thread.h"
 #include "media/base/demuxer.h"
-#include "media/base/encryption_key_source.h"
+#include "media/base/key_source.h"
 #include "media/base/muxer_options.h"
 #include "media/base/muxer_util.h"
 #include "media/event/mpd_notify_muxer_listener.h"
@@ -96,7 +96,7 @@ class RemuxJob : public base::SimpleThread {
 
 bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                      const MuxerOptions& muxer_options,
-                     EncryptionKeySource* key_source,
+                     KeySource* key_source,
                      MpdNotifier* mpd_notifier,
                      std::vector<MuxerListener*>* muxer_listeners,
                      std::vector<RemuxJob*>* remux_jobs) {
@@ -142,10 +142,10 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
 
     scoped_ptr<Muxer> muxer(new mp4::MP4Muxer(stream_muxer_options));
     if (key_source) {
-      muxer->SetEncryptionKeySource(key_source,
-                                    FLAGS_max_sd_pixels,
-                                    FLAGS_clear_lead,
-                                    FLAGS_crypto_period_duration);
+      muxer->SetKeySource(key_source,
+                          FLAGS_max_sd_pixels,
+                          FLAGS_clear_lead,
+                          FLAGS_crypto_period_duration);
     }
 
     scoped_ptr<MuxerListener> muxer_listener;
@@ -239,7 +239,7 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
     return false;
 
   // Create encryption key source if needed.
-  scoped_ptr<EncryptionKeySource> encryption_key_source;
+  scoped_ptr<KeySource> encryption_key_source;
   if (FLAGS_enable_widevine_encryption || FLAGS_enable_fixed_key_encryption) {
     encryption_key_source = CreateEncryptionKeySource();
     if (!encryption_key_source)

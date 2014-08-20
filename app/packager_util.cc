@@ -18,7 +18,7 @@
 #include "media/base/muxer_options.h"
 #include "media/base/request_signer.h"
 #include "media/base/stream_info.h"
-#include "media/base/widevine_encryption_key_source.h"
+#include "media/base/widevine_key_source.h"
 #include "media/file/file.h"
 #include "mpd/base/mpd_builder.h"
 
@@ -34,13 +34,9 @@ void DumpStreamInfo(const std::vector<MediaStream*>& streams) {
     printf("Stream [%zu] %s\n", i, streams[i]->info()->ToString().c_str());
 }
 
-// Create and initialize encryptor source.
-scoped_ptr<EncryptionKeySource> CreateEncryptionKeySource() {
-  scoped_ptr<EncryptionKeySource> encryption_key_source;
-  if (FLAGS_enable_widevine_encryption) {
-    scoped_ptr<RequestSigner> signer;
-    DCHECK(!FLAGS_aes_signing_key.empty() ||
-           !FLAGS_rsa_signing_key_path.empty());
+scoped_ptr<RequestSigner> CreateSigner() {
+  scoped_ptr<RequestSigner> signer;
+  if (FLAGS_enable_widevine_encryption || FLAGS_enable_widevine_decryption) {
     if (!FLAGS_aes_signing_key.empty()) {
       signer.reset(
           AesRequestSigner::CreateSigner(FLAGS_signer, FLAGS_aes_signing_key,
@@ -49,7 +45,7 @@ scoped_ptr<EncryptionKeySource> CreateEncryptionKeySource() {
         LOG(ERROR) << "Cannot create an AES signer object from '"
                    << FLAGS_aes_signing_key << "':'" << FLAGS_aes_signing_iv
                    << "'.";
-        return scoped_ptr<EncryptionKeySource>();
+        return scoped_ptr<RequestSigner>();
       }
     } else if (!FLAGS_rsa_signing_key_path.empty()) {
       std::string rsa_private_key;
@@ -57,36 +53,55 @@ scoped_ptr<EncryptionKeySource> CreateEncryptionKeySource() {
                                   &rsa_private_key)) {
         LOG(ERROR) << "Failed to read from '" << FLAGS_rsa_signing_key_path
                    << "'.";
-        return scoped_ptr<EncryptionKeySource>();
+        return scoped_ptr<RequestSigner>();
       }
-
       signer.reset(
           RsaRequestSigner::CreateSigner(FLAGS_signer, rsa_private_key));
       if (!signer) {
         LOG(ERROR) << "Cannot create a RSA signer object from '"
                    << FLAGS_rsa_signing_key_path << "'.";
-        return scoped_ptr<EncryptionKeySource>();
+        return scoped_ptr<RequestSigner>();
       }
     }
+  }
+  return signer.Pass();
+}
 
-    scoped_ptr<WidevineEncryptionKeySource> widevine_encryption_key_source(
-        new WidevineEncryptionKeySource(
-            FLAGS_key_server_url,
-            FLAGS_content_id,
-            FLAGS_policy,
-            signer.Pass()));
-    Status status = widevine_encryption_key_source->Initialize();
+scoped_ptr<KeySource> CreateEncryptionKeySource() {
+  scoped_ptr<KeySource> encryption_key_source;
+  if (FLAGS_enable_widevine_encryption) {
+    scoped_ptr<RequestSigner> signer(CreateSigner());
+    std::vector<uint8> content_id;
+    if (!base::HexStringToBytes(FLAGS_content_id, &content_id)) {
+      LOG(ERROR) << "Invalid content_id hex string specified.";
+      return scoped_ptr<KeySource>();
+    }
+    scoped_ptr<WidevineKeySource> widevine_encryption_key_source(
+        new WidevineKeySource(FLAGS_key_server_url,
+                              signer.Pass()));
+    Status status = widevine_encryption_key_source->FetchKeys(content_id,
+                                                              FLAGS_policy);
     if (!status.ok()) {
-      LOG(ERROR) << "Widevine encryption key source failed to initialize: "
+      LOG(ERROR) << "Widevine encryption key source failed to fetch keys: "
                  << status.ToString();
-      return scoped_ptr<EncryptionKeySource>();
+      return scoped_ptr<KeySource>();
     }
     encryption_key_source = widevine_encryption_key_source.Pass();
   } else if (FLAGS_enable_fixed_key_encryption) {
-    encryption_key_source = EncryptionKeySource::CreateFromHexStrings(
+    encryption_key_source = KeySource::CreateFromHexStrings(
         FLAGS_key_id, FLAGS_key, FLAGS_pssh, "");
   }
   return encryption_key_source.Pass();
+}
+
+scoped_ptr<KeySource> CreateDecryptionKeySource() {
+  scoped_ptr<KeySource> decryption_key_source;
+  if (FLAGS_enable_widevine_decryption) {
+    scoped_ptr<RequestSigner> signer(CreateSigner());
+    decryption_key_source.reset(new WidevineKeySource(FLAGS_key_server_url,
+                                                      signer.Pass()));
+  }
+  return decryption_key_source.Pass();
 }
 
 bool AssignFlagsFromProfile() {

@@ -11,7 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/clock.h"
 #include "media/base/demuxer.h"
-#include "media/base/encryption_key_source.h"
+#include "media/base/key_source.h"
 #include "media/base/media_stream.h"
 #include "media/base/muxer.h"
 #include "media/base/status_test_util.h"
@@ -151,8 +151,8 @@ void PackagerTestBasic::Remux(const std::string& input,
   Demuxer demuxer(GetFullPath(input), decryptor_source_);
   ASSERT_OK(demuxer.Initialize());
 
-  scoped_ptr<EncryptionKeySource> encryption_key_source(
-      EncryptionKeySource::CreateFromHexStrings(
+  scoped_ptr<KeySource> encryption_key_source(
+      KeySource::CreateFromHexStrings(
           kKeyIdHex, kKeyHex, kPsshHex, ""));
   DCHECK(encryption_key_source);
 
@@ -165,10 +165,10 @@ void PackagerTestBasic::Remux(const std::string& input,
     muxer_video->AddStream(FindFirstVideoStream(demuxer.streams()));
 
     if (enable_encryption) {
-      muxer_video->SetEncryptionKeySource(encryption_key_source.get(),
-                                          EncryptionKeySource::TRACK_TYPE_SD,
-                                          kClearLeadInSeconds,
-                                          kCryptoDurationInSeconds);
+      muxer_video->SetKeySource(encryption_key_source.get(),
+                                KeySource::TRACK_TYPE_SD,
+                                kClearLeadInSeconds,
+                                kCryptoDurationInSeconds);
     }
   }
 
@@ -181,8 +181,8 @@ void PackagerTestBasic::Remux(const std::string& input,
     muxer_audio->AddStream(FindFirstAudioStream(demuxer.streams()));
 
     if (enable_encryption) {
-      muxer_audio->SetEncryptionKeySource(encryption_key_source.get(),
-                                          EncryptionKeySource::TRACK_TYPE_SD,
+      muxer_audio->SetKeySource(encryption_key_source.get(),
+                                          KeySource::TRACK_TYPE_SD,
                                           kClearLeadInSeconds,
                                           kCryptoDurationInSeconds);
     }

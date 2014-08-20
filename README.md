@@ -64,7 +64,7 @@ Demuxer is responsible for extracting elementary stream samples from a multimedi
 
 Demuxer reads from source through the File interface. A concrete LocalFile class is already implemented. The users may also implement their own File class if they want to read/write using a different kinds of protocol, e.g. network storage, http etc.
 
-Muxer is responsible for taking elementary stream samples and producing media segments. An optional EncryptionKeySource can be provided to Muxer to generate encrypted outputs. Muxer writes to output using the same File interface as Demuxer.
+Muxer is responsible for taking elementary stream samples and producing media segments. An optional KeySource can be provided to Muxer to generate encrypted outputs. Muxer writes to output using the same File interface as Demuxer.
 
 Demuxer and Muxer are connected using MediaStream. MediaStream wraps the elementary streams and is responsible for the interaction between Demuxer and Muxer. A demuxer can transmits multiple MediaStreams; similarly, A muxer is able to accept and mux multiple MediaStreams, not necessarily from the same Demuxer.
 
@@ -203,17 +203,17 @@ muxer_options.temp_dir = …;
 muxer_options.bandwidth = 0;
 ```
 
-##Creating EncryptionKeySource##
+##Creating KeySource##
 
 ```C++
-// An EncryptionKeySource is optional. The stream won’t be encrypted if an
-// EncryptionKeySource is not provided.
+// A KeySource is optional. The stream won’t be encrypted if an
+// KeySource is not provided.
 ```
 
-###WidevineEncryptionKeySource###
+###WidevineKeySource###
 
 ```C++
-// Users may use WidevineEncryptionKeySource to fetch keys from Widevine
+// Users may use WidevineKeySource to fetch keys from Widevine
 // common encryption server.
 
 // A request signer is required to sign the common encryption request.
@@ -221,12 +221,11 @@ scoped_ptr<RequestSigner> signer(
     RsaRequestSigner::CreateSigner(signer, pkcs1_rsa_private_key));
 if (!signer) { … }
 
-scoped_ptr<WidevineEncryptionKeySource> widevine_encryption_key_source(
-    new WidevineEncryptionKeySource(
-        key_server_url, content_id, track_type, policy, signer.Pass()));
+scoped_ptr<WidevineKeySource> widevine_encryption_key_source(
+    new WidevineKeySource(key_server_url, signer.Pass()));
 
-// Intialize widevine encryption key source.
-status = widevine_encryption_key_source->Initialize();
+// Grab keys for the content.
+status = widevine_encryption_key_source->FetchKeys(content_id, policy));
 if (!status.ok()) { … }
 
 // Set encryption key source to muxer.
@@ -236,7 +235,7 @@ if (!status.ok()) { … }
 // |clear_lead| specifies clear lead duration in seconds.
 // |crypto_period_duration| if not zero, enable key rotation with specified
 // crypto period.
-muxer->SetEncryptionKeySource(
+muxer->SetKeySource(
     widevine_encryption_key_source.get(), max_sd_pixels,
     clear_lead, crypto_period_duration);
 ```

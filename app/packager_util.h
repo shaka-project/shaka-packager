@@ -23,7 +23,7 @@ struct MpdOptions;
 
 namespace media {
 
-class EncryptionKeySource;
+class KeySource;
 class MediaInfo;
 class MediaStream;
 class Muxer;
@@ -32,10 +32,17 @@ struct MuxerOptions;
 /// Print all the stream info for the provided strings to standard output.
 void DumpStreamInfo(const std::vector<MediaStream*>& streams);
 
-/// Create EncryptionKeySource based on provided command line options.
-/// @return A scoped_ptr containig a new EncryptionKeySource, or NULL if
+/// Create KeySource based on provided command line options for content
+/// encryption. Also fetches keys.
+/// @return A scoped_ptr containing a new KeySource, or NULL if
 ///         encryption is not required.
-scoped_ptr<EncryptionKeySource> CreateEncryptionKeySource();
+scoped_ptr<KeySource> CreateEncryptionKeySource();
+
+/// Create KeySource based on provided command line options for content
+/// decryption. Does not fetch keys.
+/// @return A scoped_ptr containing a new KeySource, or NULL if decryption
+///         is not required.
+scoped_ptr<KeySource> CreateDecryptionKeySource();
 
 /// Set flags according to profile.
 bool AssignFlagsFromProfile();

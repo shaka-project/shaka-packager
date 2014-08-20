@@ -7,7 +7,7 @@
 #ifndef MEDIA_FORMATS_MP4_KEY_ROTATION_FRAGMENTER_H_
 #define MEDIA_FORMATS_MP4_KEY_ROTATION_FRAGMENTER_H_
 
-#include "media/base/encryption_key_source.h"
+#include "media/base/key_source.h"
 #include "media/formats/mp4/encrypting_fragmenter.h"
 
 namespace media {
@@ -33,8 +33,8 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
   ///        encryption.
   KeyRotationFragmenter(MovieFragment* moof,
                         TrackFragment* traf,
-                        EncryptionKeySource* encryption_key_source,
-                        EncryptionKeySource::TrackType track_type,
+                        KeySource* encryption_key_source,
+                        KeySource::TrackType track_type,
                         int64 crypto_period_duration,
                         int64 clear_time,
                         uint8 nalu_length_size);
@@ -50,8 +50,8 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
  private:
   MovieFragment* moof_;
 
-  EncryptionKeySource* encryption_key_source_;
-  EncryptionKeySource::TrackType track_type_;
+  KeySource* encryption_key_source_;
+  KeySource::TrackType track_type_;
   const int64 crypto_period_duration_;
   size_t prev_crypto_period_index_;
 

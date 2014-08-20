@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "media/base/aes_encryptor.h"
 #include "media/base/audio_stream_info.h"
-#include "media/base/encryption_key_source.h"
+#include "media/base/key_source.h"
 #include "media/base/media_sample.h"
 #include "media/base/media_stream.h"
 #include "media/base/video_stream_info.h"

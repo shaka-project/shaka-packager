@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/encryption_key_source.h"
+#include "media/base/key_source.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "media/base/aes_encryptor.h"
@@ -21,23 +21,42 @@ namespace media {
 EncryptionKey::EncryptionKey() {}
 EncryptionKey::~EncryptionKey() {}
 
-EncryptionKeySource::~EncryptionKeySource() {}
+KeySource::~KeySource() {}
 
-Status EncryptionKeySource::GetKey(TrackType track_type, EncryptionKey* key) {
+Status KeySource::FetchKeys(const std::vector<uint8>& content_id,
+                            const std::string& policy) {
+  NOTREACHED();
+  return Status::OK;
+}
+
+Status KeySource::FetchKeys(const std::vector<uint8>& pssh_data) {
+  NOTREACHED();
+  return Status::OK;
+}
+
+Status KeySource::GetKey(TrackType track_type, EncryptionKey* key) {
   DCHECK(key);
   DCHECK(encryption_key_);
   *key = *encryption_key_;
   return Status::OK;
 }
 
-Status EncryptionKeySource::GetCryptoPeriodKey(uint32 crypto_period_index,
-                                               TrackType track_type,
-                                               EncryptionKey* key) {
+Status KeySource::GetKey(const std::vector<uint8>& key_id,
+                         EncryptionKey* key) {
+  DCHECK(key);
+  DCHECK(encryption_key_);
+  *key = *encryption_key_;
+  return Status::OK;
+}
+
+Status KeySource::GetCryptoPeriodKey(uint32 crypto_period_index,
+                                     TrackType track_type,
+                                     EncryptionKey* key) {
   NOTIMPLEMENTED();
   return Status(error::UNIMPLEMENTED, "");
 }
 
-scoped_ptr<EncryptionKeySource> EncryptionKeySource::CreateFromHexStrings(
+scoped_ptr<KeySource> KeySource::CreateFromHexStrings(
     const std::string& key_id_hex,
     const std::string& key_hex,
     const std::string& pssh_data_hex,
@@ -46,33 +65,33 @@ scoped_ptr<EncryptionKeySource> EncryptionKeySource::CreateFromHexStrings(
 
   if (!base::HexStringToBytes(key_id_hex, &encryption_key->key_id)) {
     LOG(ERROR) << "Cannot parse key_id_hex " << key_id_hex;
-    return scoped_ptr<EncryptionKeySource>();
+    return scoped_ptr<KeySource>();
   }
 
   if (!base::HexStringToBytes(key_hex, &encryption_key->key)) {
     LOG(ERROR) << "Cannot parse key_hex " << key_hex;
-    return scoped_ptr<EncryptionKeySource>();
+    return scoped_ptr<KeySource>();
   }
 
   std::vector<uint8> pssh_data;
   if (!base::HexStringToBytes(pssh_data_hex, &pssh_data)) {
     LOG(ERROR) << "Cannot parse pssh_hex " << pssh_data_hex;
-    return scoped_ptr<EncryptionKeySource>();
+    return scoped_ptr<KeySource>();
   }
 
   if (!iv_hex.empty()) {
     if (!base::HexStringToBytes(iv_hex, &encryption_key->iv)) {
       LOG(ERROR) << "Cannot parse iv_hex " << iv_hex;
-      return scoped_ptr<EncryptionKeySource>();
+      return scoped_ptr<KeySource>();
     }
   }
 
   encryption_key->pssh = PsshBoxFromPsshData(pssh_data);
-  return scoped_ptr<EncryptionKeySource>(
-      new EncryptionKeySource(encryption_key.Pass()));
+  return scoped_ptr<KeySource>(
+      new KeySource(encryption_key.Pass()));
 }
 
-EncryptionKeySource::TrackType EncryptionKeySource::GetTrackTypeFromString(
+KeySource::TrackType KeySource::GetTrackTypeFromString(
     const std::string& track_type_string) {
   if (track_type_string == "SD")
     return TRACK_TYPE_SD;
@@ -84,7 +103,7 @@ EncryptionKeySource::TrackType EncryptionKeySource::GetTrackTypeFromString(
   return TRACK_TYPE_UNKNOWN;
 }
 
-std::string EncryptionKeySource::TrackTypeToString(TrackType track_type) {
+std::string KeySource::TrackTypeToString(TrackType track_type) {
   switch (track_type) {
     case TRACK_TYPE_SD:
       return "SD";
@@ -98,7 +117,7 @@ std::string EncryptionKeySource::TrackTypeToString(TrackType track_type) {
   }
 }
 
-std::vector<uint8> EncryptionKeySource::PsshBoxFromPsshData(
+std::vector<uint8> KeySource::PsshBoxFromPsshData(
     const std::vector<uint8>& pssh_data) {
   const uint8 kPsshFourCC[] = {'p', 's', 's', 'h'};
   const uint32 kVersionAndFlags = 0;
@@ -118,9 +137,8 @@ std::vector<uint8> EncryptionKeySource::PsshBoxFromPsshData(
   return std::vector<uint8>(writer.Buffer(), writer.Buffer() + writer.Size());
 }
 
-EncryptionKeySource::EncryptionKeySource() {}
-EncryptionKeySource::EncryptionKeySource(
-    scoped_ptr<EncryptionKey> encryption_key)
+KeySource::KeySource() {}
+KeySource::KeySource(scoped_ptr<EncryptionKey> encryption_key)
     : encryption_key_(encryption_key.Pass()) {
   DCHECK(encryption_key_);
 }

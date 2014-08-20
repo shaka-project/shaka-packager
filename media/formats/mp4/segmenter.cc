@@ -10,7 +10,7 @@
 
 #include "base/stl_util.h"
 #include "media/base/buffer_writer.h"
-#include "media/base/encryption_key_source.h"
+#include "media/base/key_source.h"
 #include "media/base/media_sample.h"
 #include "media/base/media_stream.h"
 #include "media/base/muxer_options.h"
@@ -94,17 +94,17 @@ uint8 GetNaluLengthSize(const StreamInfo& stream_info) {
   return video_stream_info.nalu_length_size();
 }
 
-EncryptionKeySource::TrackType GetTrackTypeForEncryption(
+KeySource::TrackType GetTrackTypeForEncryption(
     const StreamInfo& stream_info, uint32 max_sd_pixels) {
   if (stream_info.stream_type() == kStreamAudio)
-    return EncryptionKeySource::TRACK_TYPE_AUDIO;
+    return KeySource::TRACK_TYPE_AUDIO;
 
   DCHECK_EQ(kStreamVideo, stream_info.stream_type());
   const VideoStreamInfo& video_stream_info =
       static_cast<const VideoStreamInfo&>(stream_info);
   uint32 pixels = video_stream_info.width() * video_stream_info.height();
-  return (pixels > max_sd_pixels) ? EncryptionKeySource::TRACK_TYPE_HD
-                                  : EncryptionKeySource::TRACK_TYPE_SD;
+  return (pixels > max_sd_pixels) ? KeySource::TRACK_TYPE_HD
+                                  : KeySource::TRACK_TYPE_SD;
 }
 
 }  // namespace
@@ -126,7 +126,7 @@ Segmenter::~Segmenter() { STLDeleteElements(&fragmenters_); }
 
 Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
                              event::MuxerListener* muxer_listener,
-                             EncryptionKeySource* encryption_key_source,
+                             KeySource* encryption_key_source,
                              uint32 max_sd_pixels,
                              double clear_lead_in_seconds,
                              double crypto_period_duration_in_seconds) {
@@ -151,7 +151,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
     }
 
     uint8 nalu_length_size = GetNaluLengthSize(*streams[i]->info());
-    EncryptionKeySource::TrackType track_type =
+    KeySource::TrackType track_type =
         GetTrackTypeForEncryption(*streams[i]->info(), max_sd_pixels);
     SampleDescription& description =
         moov_->tracks[i].media.information.sample_table.description;

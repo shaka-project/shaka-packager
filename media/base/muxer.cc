@@ -23,10 +23,10 @@ Muxer::Muxer(const MuxerOptions& options)
 
 Muxer::~Muxer() {}
 
-void Muxer::SetEncryptionKeySource(EncryptionKeySource* encryption_key_source,
-                                   uint32 max_sd_pixels,
-                                   double clear_lead_in_seconds,
-                                   double crypto_period_duration_in_seconds) {
+void Muxer::SetKeySource(KeySource* encryption_key_source,
+                         uint32 max_sd_pixels,
+                         double clear_lead_in_seconds,
+                         double crypto_period_duration_in_seconds) {
   DCHECK(encryption_key_source);
   encryption_key_source_ = encryption_key_source;
   max_sd_pixels_ = max_sd_pixels;

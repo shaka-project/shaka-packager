@@ -19,7 +19,7 @@ namespace media {
 struct MuxerOptions;
 
 class BufferWriter;
-class EncryptionKeySource;
+class KeySource;
 class MediaSample;
 class MediaStream;
 
@@ -64,7 +64,7 @@ class Segmenter {
   /// @return OK on success, an error status otherwise.
   Status Initialize(const std::vector<MediaStream*>& streams,
                     event::MuxerListener* muxer_listener,
-                    EncryptionKeySource* encryption_key_source,
+                    KeySource* encryption_key_source,
                     uint32 max_sd_pixels,
                     double clear_lead_in_seconds,
                     double crypto_period_duration_in_seconds);

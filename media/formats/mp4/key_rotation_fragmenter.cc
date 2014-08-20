@@ -15,8 +15,8 @@ namespace mp4 {
 KeyRotationFragmenter::KeyRotationFragmenter(
     MovieFragment* moof,
     TrackFragment* traf,
-    EncryptionKeySource* encryption_key_source,
-    EncryptionKeySource::TrackType track_type,
+    KeySource* encryption_key_source,
+    KeySource::TrackType track_type,
     int64 crypto_period_duration,
     int64 clear_time,
     uint8 nalu_length_size)

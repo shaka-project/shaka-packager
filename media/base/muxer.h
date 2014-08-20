@@ -22,7 +22,7 @@ class Clock;
 
 namespace media {
 
-class EncryptionKeySource;
+class KeySource;
 class MediaSample;
 class MediaStream;
 
@@ -31,7 +31,7 @@ class MuxerListener;
 }
 
 /// Muxer is responsible for taking elementary stream samples and producing
-/// media containers. An optional EncryptionKeySource can be provided to Muxer
+/// media containers. An optional KeySource can be provided to Muxer
 /// to generate encrypted outputs.
 class Muxer {
  public:
@@ -39,8 +39,8 @@ class Muxer {
   virtual ~Muxer();
 
   /// Set encryption key source.
-  /// @param encryption_key_source points to the encryption key source to be
-  ///        injected. Should not be NULL.
+  /// @param encryption_key_source points to the encryption key source. The
+  ///        caller retains ownership, and should not be NULL.
   /// @param max_sd_pixels specifies the threshold to determine whether a video
   ///        track should be considered as SD or HD. If the track has more
   ///        pixels per frame than max_sd_pixels, it is HD, SD otherwise.
@@ -48,10 +48,10 @@ class Muxer {
   /// @param crypto_period_duration_in_seconds specifies crypto period duration
   ///        in seconds. A positive value means key rotation is enabled, the
   ///        key source must support key rotation in this case.
-  void SetEncryptionKeySource(EncryptionKeySource* encryption_key_source,
-                              uint32 max_sd_pixels,
-                              double clear_lead_in_seconds,
-                              double crypto_period_duration_in_seconds);
+  void SetKeySource(KeySource* encryption_key_source,
+                    uint32 max_sd_pixels,
+                    double clear_lead_in_seconds,
+                    double crypto_period_duration_in_seconds);
 
   /// Add video/audio stream.
   void AddStream(MediaStream* stream);
@@ -77,7 +77,7 @@ class Muxer {
 
  protected:
   const MuxerOptions& options() const { return options_; }
-  EncryptionKeySource* encryption_key_source() {
+  KeySource* encryption_key_source() {
     return encryption_key_source_;
   }
   uint32 max_sd_pixels() const { return max_sd_pixels_; }
@@ -108,7 +108,7 @@ class Muxer {
   MuxerOptions options_;
   bool initialized_;
   std::vector<MediaStream*> streams_;
-  EncryptionKeySource* encryption_key_source_;
+  KeySource* encryption_key_source_;
   uint32 max_sd_pixels_;
   double clear_lead_in_seconds_;
   double crypto_period_duration_in_seconds_;
