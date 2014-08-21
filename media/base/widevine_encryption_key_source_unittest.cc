@@ -4,7 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/widevine_encryption_key_source.h"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include "base/base64.h"
 #include "base/strings/string_number_conversions.h"
@@ -12,8 +13,7 @@
 #include "media/base/http_fetcher.h"
 #include "media/base/request_signer.h"
 #include "media/base/status_test_util.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "media/base/widevine_encryption_key_source.h"
 
 namespace {
 const char kServerUrl[] = "http://www.foo.com/getcontentkey";

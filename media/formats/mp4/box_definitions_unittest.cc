@@ -4,13 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/formats/mp4/box_definitions.h"
+#include <gtest/gtest.h>
 
 #include "base/memory/scoped_ptr.h"
 #include "media/base/buffer_writer.h"
+#include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/box_definitions_comparison.h"
 #include "media/formats/mp4/box_reader.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 const uint8 kData16Bytes[] = {8, 7, 6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6, 7, 8};

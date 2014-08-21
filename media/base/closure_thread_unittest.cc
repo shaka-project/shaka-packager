@@ -4,13 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/closure_thread.h"
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include "base/bind.h"
 #include "base/memory/scoped_ptr.h"
 #include "base/synchronization/waitable_event.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "media/base/closure_thread.h"
 
 using ::testing::DoAll;
 using ::testing::Invoke;

@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <gtest/gtest.h>
 #include <string.h>
 
 #include "base/basictypes.h"
 #include "base/memory/scoped_ptr.h"
 #include "media/base/offset_byte_queue.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
 

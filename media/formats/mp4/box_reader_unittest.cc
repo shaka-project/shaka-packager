@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <gtest/gtest.h>
 #include <string.h>
 
 #include "base/basictypes.h"
@@ -9,7 +10,6 @@
 #include "base/memory/scoped_ptr.h"
 #include "media/formats/mp4/box_buffer.h"
 #include "media/formats/mp4/rcheck.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
 namespace mp4 {

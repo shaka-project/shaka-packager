@@ -7,8 +7,9 @@
 #ifndef MEDIA_BASE_STATUS_TEST_UTIL_H_
 #define MEDIA_BASE_STATUS_TEST_UTIL_H_
 
+#include <gtest/gtest.h>
+
 #include "media/base/status.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 #define EXPECT_OK(val) EXPECT_EQ(media::Status::OK, (val))
 #define ASSERT_OK(val) ASSERT_EQ(media::Status::OK, (val))

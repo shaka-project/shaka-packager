@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <gtest/gtest.h>
+
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/timestamp.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
 

@@ -4,12 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <gtest/gtest.h>
+#include <stdio.h>
+
 #include "base/strings/string_number_conversions.h"
 #include "media/filters/h264_byte_to_unit_stream_converter.h"
 #include "media/test/test_data_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
-
-#include <stdio.h>
 
 namespace {
 const char kExpectedConfigRecord[] =

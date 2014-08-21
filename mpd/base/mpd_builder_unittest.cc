@@ -4,6 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <gtest/gtest.h>
 #include <inttypes.h>
 
 #include "base/file_util.h"
@@ -16,7 +17,6 @@
 #include "mpd/base/mpd_utils.h"
 #include "mpd/test/mpd_builder_test_helper.h"
 #include "mpd/test/xml_compare.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libxml/src/include/libxml/xmlstring.h"
 
 namespace dash_packager {

@@ -4,6 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <gtest/gtest.h>
+
 #include "base/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -16,7 +18,6 @@
 #include "media/base/stream_info.h"
 #include "media/formats/mp4/mp4_muxer.h"
 #include "media/test/test_data_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::ValuesIn;
 

@@ -4,9 +4,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/muxer_util.h"
+#include <gtest/gtest.h>
 
-#include "testing/gtest/include/gtest/gtest.h"
+#include "media/base/muxer_util.h"
 
 namespace media {
 

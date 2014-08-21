@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <gtest/gtest.h>
+
 #include "base/command_line.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
@@ -9,7 +11,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "media/test/test_data_util.h"
 #include "media/filters/h264_parser.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
 

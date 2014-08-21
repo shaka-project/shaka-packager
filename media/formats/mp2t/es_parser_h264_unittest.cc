@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <gtest/gtest.h>
+
 #include <algorithm>
 #include <vector>
 
@@ -15,7 +17,6 @@
 #include "media/filters/h264_parser.h"
 #include "media/formats/mp2t/es_parser_h264.h"
 #include "media/test/test_data_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
 class VideoStreamInfo;

@@ -4,10 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <gtest/gtest.h>
+
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

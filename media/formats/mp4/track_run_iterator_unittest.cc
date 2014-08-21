@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <gtest/gtest.h>
+
 #include "base/basictypes.h"
 #include "base/logging.h"
 #include "base/memory/scoped_ptr.h"
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/rcheck.h"
 #include "media/formats/mp4/track_run_iterator.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 // The sum of the elements in a vector initialized with SumAscending,
 // less the value of the last element.

@@ -4,6 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <gtest/gtest.h>
+
 #include <vector>
 
 #include "base/file_util.h"
@@ -14,7 +16,6 @@
 #include "media/base/muxer_options.h"
 #include "media/base/video_stream_info.h"
 #include "mpd/base/media_info.pb.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/protobuf/src/google/protobuf/text_format.h"
 
 using dash_packager::MediaInfo;

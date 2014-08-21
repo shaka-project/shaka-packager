@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <gtest/gtest.h>
+
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/formats/mp2t/adts_header.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 

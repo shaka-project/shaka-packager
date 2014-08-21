@@ -3,6 +3,9 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
+
+#include <gtest/gtest.h>
+
 #include <list>
 
 #include "base/logging.h"
@@ -10,7 +13,6 @@
 #include "mpd/base/mpd_builder.h"
 #include "mpd/base/xml/xml_node.h"
 #include "mpd/test/xml_compare.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libxml/src/include/libxml/tree.h"
 
 namespace dash_packager {

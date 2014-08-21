@@ -6,12 +6,12 @@
 //
 // Unit test for rsa_key RSA encryption and signing.
 
-#include "media/base/rsa_key.h"
+#include <gtest/gtest.h>
 
 #include "base/memory/scoped_ptr.h"
 #include "media/base/fake_prng.h"
+#include "media/base/rsa_key.h"
 #include "media/base/rsa_test_data.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
 

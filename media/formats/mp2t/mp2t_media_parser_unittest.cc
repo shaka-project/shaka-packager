@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <gtest/gtest.h>
+
 #include <algorithm>
 #include <string>
 
@@ -16,7 +18,6 @@
 #include "media/formats/mp2t/mp2t_common.h"
 #include "media/formats/mp2t/mp2t_media_parser.h"
 #include "media/test/test_data_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
 namespace mp2t {

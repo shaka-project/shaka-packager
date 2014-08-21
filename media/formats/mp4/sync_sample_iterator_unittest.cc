@@ -4,9 +4,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/formats/mp4/sync_sample_iterator.h"
+#include <gtest/gtest.h>
 
-#include "testing/gtest/include/gtest/gtest.h"
+#include "media/formats/mp4/sync_sample_iterator.h"
 
 namespace {
 const uint32 kNumSamples = 100;

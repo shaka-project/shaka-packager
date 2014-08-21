@@ -4,13 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/producer_consumer_queue.h"
+#include <gtest/gtest.h>
 
 #include "base/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/base/closure_thread.h"
+#include "media/base/producer_consumer_queue.h"
 #include "media/base/status_test_util.h"
-#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 const size_t kCapacity = 10u;
