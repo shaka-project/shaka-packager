@@ -100,6 +100,9 @@ scoped_ptr<KeySource> CreateDecryptionKeySource() {
     scoped_ptr<RequestSigner> signer(CreateSigner());
     decryption_key_source.reset(new WidevineKeySource(FLAGS_key_server_url,
                                                       signer.Pass()));
+  } else if (FLAGS_enable_fixed_key_decryption) {
+    decryption_key_source = KeySource::CreateFromHexStrings(
+        FLAGS_key_id, FLAGS_key, "", "");
   }
   return decryption_key_source.Pass();
 }

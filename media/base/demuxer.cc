@@ -11,6 +11,7 @@
 #include "base/stl_util.h"
 #include "media/base/container_names.h"
 #include "media/base/decryptor_source.h"
+#include "media/base/key_source.h"
 #include "media/base/media_sample.h"
 #include "media/base/media_stream.h"
 #include "media/base/stream_info.h"
@@ -24,10 +25,8 @@ const size_t kBufSize = 0x40000;  // 256KB.
 
 namespace media {
 
-Demuxer::Demuxer(const std::string& file_name,
-                 DecryptorSource* decryptor_source)
-    : decryptor_source_(decryptor_source),
-      file_name_(file_name),
+Demuxer::Demuxer(const std::string& file_name)
+    : file_name_(file_name),
       media_file_(NULL),
       init_event_received_(false),
       buffer_(new uint8[kBufSize]) {}
@@ -36,6 +35,10 @@ Demuxer::~Demuxer() {
   if (media_file_)
     media_file_->Close();
   STLDeleteElements(&streams_);
+}
+
+void Demuxer::SetKeySource(scoped_ptr<KeySource> key_source) {
+  key_source_ = key_source.Pass();
 }
 
 Status Demuxer::Initialize() {
@@ -69,7 +72,7 @@ Status Demuxer::Initialize() {
 
   parser_->Init(base::Bind(&Demuxer::ParserInitEvent, base::Unretained(this)),
                 base::Bind(&Demuxer::NewSampleEvent, base::Unretained(this)),
-                base::Bind(&Demuxer::KeyNeededEvent, base::Unretained(this)));
+                key_source_.get());
 
   if (!parser_->Parse(buffer_.get(), bytes_read))
     return Status(error::PARSER_FAILURE,
@@ -102,12 +105,6 @@ bool Demuxer::NewSampleEvent(uint32 track_id,
     }
   }
   return false;
-}
-
-void Demuxer::KeyNeededEvent(MediaContainerName container,
-                             scoped_ptr<uint8[]> init_data,
-                             int init_data_size) {
-  NOTIMPLEMENTED();
 }
 
 Status Demuxer::Run() {

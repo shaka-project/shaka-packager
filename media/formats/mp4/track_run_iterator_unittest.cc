@@ -336,7 +336,7 @@ TEST_F(TrackRunIteratorTest, DecryptConfigTest) {
   config = iter_->GetDecryptConfig();
   EXPECT_EQ(config->subsamples().size(), 2u);
   EXPECT_EQ(config->subsamples()[0].clear_bytes, 1u);
-  EXPECT_EQ(config->subsamples()[1].cypher_bytes, 4u);
+  EXPECT_EQ(config->subsamples()[1].cipher_bytes, 4u);
 }
 
 // It is legal for aux info blocks to be shared among multiple formats.

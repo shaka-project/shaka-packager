@@ -541,10 +541,9 @@ scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
     return scoped_ptr<DecryptConfig>();
   }
 
-  const std::vector<uint8>& kid = track_encryption().default_kid;
   return scoped_ptr<DecryptConfig>(new DecryptConfig(
-      std::string(reinterpret_cast<const char*>(&kid[0]), kid.size()),
-      std::string(cenc_info.iv().begin(), cenc_info.iv().end()),
+      track_encryption().default_kid,
+      cenc_info.iv(),
       0,  // No offset to start of media data in MP4 using CENC.
       cenc_info.subsamples()));
 }

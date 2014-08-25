@@ -15,7 +15,7 @@ namespace {
 // 64-bit (8-byte) or 128-bit (16-byte).
 bool IsIvSizeValid(size_t iv_size) { return iv_size == 8 || iv_size == 16; }
 
-// 16-bit |clear_bytes| and 32-bit |cypher_bytes|.
+// 16-bit |clear_bytes| and 32-bit |cipher_bytes|.
 const size_t kSubsampleEntrySize = sizeof(uint16) + sizeof(uint32);
 }  // namespace
 
@@ -44,11 +44,11 @@ bool FrameCENCInfo::Parse(uint8 iv_size, BufferReader* reader) {
   subsamples_.resize(subsample_count);
   for (uint16 i = 0; i < subsample_count; ++i) {
     uint16 clear_bytes;
-    uint32 cypher_bytes;
+    uint32 cipher_bytes;
     RCHECK(reader->Read2(&clear_bytes) &&
-           reader->Read4(&cypher_bytes));
+           reader->Read4(&cipher_bytes));
     subsamples_[i].clear_bytes = clear_bytes;
-    subsamples_[i].cypher_bytes = cypher_bytes;
+    subsamples_[i].cipher_bytes = cipher_bytes;
   }
   return true;
 }
@@ -65,7 +65,7 @@ void FrameCENCInfo::Write(BufferWriter* writer) const {
 
   for (uint16 i = 0; i < subsample_count; ++i) {
     writer->AppendInt(subsamples_[i].clear_bytes);
-    writer->AppendInt(subsamples_[i].cypher_bytes);
+    writer->AppendInt(subsamples_[i].cipher_bytes);
   }
 }
 
@@ -81,7 +81,7 @@ size_t FrameCENCInfo::ComputeSize() const {
 size_t FrameCENCInfo::GetTotalSizeOfSubsamples() const {
   size_t size = 0;
   for (size_t i = 0; i < subsamples_.size(); ++i) {
-    size += subsamples_[i].clear_bytes + subsamples_[i].cypher_bytes;
+    size += subsamples_[i].clear_bytes + subsamples_[i].cipher_bytes;
   }
   return size;
 }

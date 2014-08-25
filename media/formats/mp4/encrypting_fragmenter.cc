@@ -144,13 +144,13 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
 
       SubsampleEntry subsample;
       subsample.clear_bytes = nalu_length_size_ + 1;
-      subsample.cypher_bytes = nalu_length - 1;
+      subsample.cipher_bytes = nalu_length - 1;
       if (!reader.SkipBytes(nalu_length)) {
         return Status(error::MUXER_FAILURE,
                       "Sample size does not match nalu_length.");
       }
 
-      EncryptBytes(data + subsample.clear_bytes, subsample.cypher_bytes);
+      EncryptBytes(data + subsample.clear_bytes, subsample.cipher_bytes);
       cenc_info.AddSubsample(subsample);
       data += nalu_length_size_ + nalu_length;
     }

@@ -17,6 +17,7 @@
 
 namespace media {
 
+class KeySource;
 class MediaSample;
 class StreamInfo;
 
@@ -40,20 +41,16 @@ class MediaParser {
       bool(uint32 track_id, const scoped_refptr<MediaSample>& media_sample)>
       NewSampleCB;
 
-  /// Called when a new potentially encrypted stream has been parsed.
-  /// @param init_data is the initialization data associated with the stream.
-  /// @param init_data_size is the number of bytes of the initialization data.
-  typedef base::Callback<void(MediaContainerName container_name,
-                              scoped_ptr<uint8[]> init_data,
-                              int init_data_size)> NeedKeyCB;
-
   /// Initialize the parser with necessary callbacks. Must be called before any
   /// data is passed to Parse().
   /// @param init_cb will be called once enough data has been parsed to
   ///        determine the initial stream configurations.
+  /// @param new_sample_cb will be called each time a new media sample is
+  ///        available from the parser. May be NULL, and caller retains
+  ///        ownership.
   virtual void Init(const InitCB& init_cb,
                     const NewSampleCB& new_sample_cb,
-                    const NeedKeyCB& need_key_cb) = 0;
+                    KeySource* decryption_key_source) = 0;
 
   /// Flush data currently in the parser and put the parser in a state where it
   /// can receive data for a new seek point.

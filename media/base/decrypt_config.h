@@ -19,12 +19,12 @@ namespace media {
 /// encrypted bytes in a sample should be considered a single logical stream,
 /// regardless of how they are divided into subsamples, and the clear bytes
 /// should not be considered as part of decryption. This is logically equivalent
-/// to concatenating all @a cypher_bytes portions of subsamples, decrypting that
+/// to concatenating all @a cipher_bytes portions of subsamples, decrypting that
 /// result, and then copying each byte from the decrypted block over the
 /// corresponding encrypted byte.
 struct SubsampleEntry {
   uint16 clear_bytes;
-  uint32 cypher_bytes;
+  uint32 cipher_bytes;
 };
 
 /// Contains all the information that a decryptor needs to decrypt a media
@@ -43,22 +43,22 @@ class DecryptConfig {
   /// @param subsamples defines the clear and encrypted portions of the sample
   ///        as described in SubsampleEntry. A decrypted buffer will be equal
   ///        in size to the sum of the subsample sizes.
-  DecryptConfig(const std::string& key_id,
-                const std::string& iv,
+  DecryptConfig(const std::vector<uint8>& key_id,
+                const std::vector<uint8>& iv,
                 const int data_offset,
                 const std::vector<SubsampleEntry>& subsamples);
   ~DecryptConfig();
 
-  const std::string& key_id() const { return key_id_; }
-  const std::string& iv() const { return iv_; }
+  const std::vector<uint8>& key_id() const { return key_id_; }
+  const std::vector<uint8>& iv() const { return iv_; }
   int data_offset() const { return data_offset_; }
   const std::vector<SubsampleEntry>& subsamples() const { return subsamples_; }
 
  private:
-  const std::string key_id_;
+  const std::vector<uint8> key_id_;
 
   // Initialization vector.
-  const std::string iv_;
+  const std::vector<uint8> iv_;
 
   // Amount of data to be discarded before applying subsample information.
   const int data_offset_;

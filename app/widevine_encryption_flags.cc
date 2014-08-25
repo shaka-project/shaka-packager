@@ -55,6 +55,9 @@ static bool VerifyEncryptionAndDecryptionParams(const char* flag_name,
                                                 const std::string& flag_value) {
   DCHECK(flag_name);
 
+  const std::string flag_name_str = flag_name;
+  bool is_common_param = (flag_name_str == "key_server_url") ||
+                         (flag_name_str == "signer");
   if (FLAGS_enable_widevine_encryption) {
     if (flag_value.empty()) {
       fprintf(stderr,
@@ -63,12 +66,12 @@ static bool VerifyEncryptionAndDecryptionParams(const char* flag_name,
       return false;
     }
   } else if (FLAGS_enable_widevine_decryption) {
-    const std::string flag_name_str = flag_name;
-    if (flag_name_str == "key_server_url") {
+    if (is_common_param) {
       if (flag_value.empty()) {
         fprintf(stderr,
-                "ERROR: %s required if --enable_widevine_decryption is true\n",
-               flag_name);
+                "ERROR: %s required if --enable_widevine_encryption or "
+                "--enable_widevine_decryption is true\n",
+                flag_name);
         return false;
       }
     } else {
@@ -80,9 +83,8 @@ static bool VerifyEncryptionAndDecryptionParams(const char* flag_name,
     }
   } else {
     if (!flag_value.empty()) {
-      const std::string flag_name_str = flag_name;
       fprintf(stderr, "ERROR: %s should only be specified if %s"
-             " is true\n", flag_name, flag_name_str == "key_server_url" ?
+              " is true\n", flag_name, is_common_param ?
              "--enable_widevine_encryption or --enable_widevine_decryption" :
              "--enable_widevine_encryption");
       return false;

@@ -17,8 +17,8 @@
 namespace media {
 
 class Decryptor;
-class DecryptorSource;
 class File;
+class KeySource;
 class MediaParser;
 class MediaSample;
 class MediaStream;
@@ -31,10 +31,14 @@ class Demuxer {
   /// @param file_name specifies the input source. It uses prefix matching to
   ///        create a proper File object. The user can extend File to support
   ///        a custom File object with its own prefix.
-  /// @param decryptor_source generates decryptor(s) from decryption
-  ///        initialization data. It can be NULL if the media is not encrypted.
-  Demuxer(const std::string& file_name, DecryptorSource* decryptor_source);
+  explicit Demuxer(const std::string& file_name);
   ~Demuxer();
+
+  /// Set the KeySource for media decryption.
+  /// @param key_source points to the source of decryption keys. The key
+  ///        source must support fetching of keys for the type of media being
+  ///        demuxed.
+  void SetKeySource(scoped_ptr<KeySource> key_source);
 
   /// Initialize the Demuxer. Calling other public methods of this class
   /// without this method returning OK, results in an undefined behavior.
@@ -61,17 +65,14 @@ class Demuxer {
   void ParserInitEvent(const std::vector<scoped_refptr<StreamInfo> >& streams);
   bool NewSampleEvent(uint32 track_id,
                       const scoped_refptr<MediaSample>& sample);
-  void KeyNeededEvent(MediaContainerName container,
-                      scoped_ptr<uint8[]> init_data,
-                      int init_data_size);
 
-  DecryptorSource* decryptor_source_;
   std::string file_name_;
   File* media_file_;
   bool init_event_received_;
   scoped_ptr<MediaParser> parser_;
   std::vector<MediaStream*> streams_;
   scoped_ptr<uint8[]> buffer_;
+  scoped_ptr<KeySource> key_source_;
 
   DISALLOW_COPY_AND_ASSIGN(Demuxer);
 };

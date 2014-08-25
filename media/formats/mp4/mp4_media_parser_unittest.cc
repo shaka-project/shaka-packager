@@ -53,19 +53,11 @@ class MP4MediaParserTest : public testing::Test {
     return true;
   }
 
-  void KeyNeededF(MediaContainerName container,
-                  scoped_ptr<uint8[]> init_data,
-                  int init_data_size) {
-    DVLOG(1) << "KeyNeededF: " << init_data_size;
-    EXPECT_TRUE(init_data.get());
-    EXPECT_GT(init_data_size, 0);
-  }
-
   void InitializeParser() {
     parser_->Init(
         base::Bind(&MP4MediaParserTest::InitF, base::Unretained(this)),
         base::Bind(&MP4MediaParserTest::NewSampleF, base::Unretained(this)),
-        base::Bind(&MP4MediaParserTest::KeyNeededF, base::Unretained(this)));
+        NULL);
   }
 
   bool ParseMP4File(const std::string& filename, int append_bytes) {

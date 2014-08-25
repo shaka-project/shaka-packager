@@ -65,6 +65,9 @@ enum Code {
 
   // The operation timed out.
   TIME_OUT,
+
+  // Value was not found.
+  NOT_FOUND,
 };
 
 }  // namespace error

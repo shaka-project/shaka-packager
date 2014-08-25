@@ -34,7 +34,7 @@ class Mp2tMediaParser : public MediaParser {
   // MediaParser implementation overrides.
   virtual void Init(const InitCB& init_cb,
                     const NewSampleCB& new_sample_cb,
-                    const NeedKeyCB& need_key_cb) OVERRIDE;
+                    KeySource* decryption_key_source) OVERRIDE;
 
   virtual void Flush() OVERRIDE;
 
@@ -74,7 +74,6 @@ class Mp2tMediaParser : public MediaParser {
   // List of callbacks.
   InitCB init_cb_;
   NewSampleCB new_sample_cb_;
-  NeedKeyCB need_key_cb_;
 
   bool sbr_in_mimetype_;
 

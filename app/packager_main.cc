@@ -123,19 +123,20 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
 
     if (stream_iter->input != previous_input) {
       // New remux job needed. Create demux and job thread.
-      scoped_ptr<Demuxer> demux(new Demuxer(stream_iter->input, NULL));
-      Status status = demux->Initialize();
+      scoped_ptr<Demuxer> demuxer(new Demuxer(stream_iter->input));
+      demuxer->SetKeySource(CreateDecryptionKeySource());
+      Status status = demuxer->Initialize();
       if (!status.ok()) {
         LOG(ERROR) << "Demuxer failed to initialize: " << status.ToString();
         return false;
       }
       if (FLAGS_dump_stream_info) {
         printf("\nFile \"%s\":\n", stream_iter->input.c_str());
-        DumpStreamInfo(demux->streams());
+        DumpStreamInfo(demuxer->streams());
         if (stream_iter->output.empty())
           continue;  // just need stream info.
       }
-      remux_jobs->push_back(new RemuxJob(demux.Pass()));
+      remux_jobs->push_back(new RemuxJob(demuxer.Pass()));
       previous_input = stream_iter->input;
     }
     DCHECK(!remux_jobs->empty());

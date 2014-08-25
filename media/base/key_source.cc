@@ -25,12 +25,12 @@ KeySource::~KeySource() {}
 
 Status KeySource::FetchKeys(const std::vector<uint8>& content_id,
                             const std::string& policy) {
-  NOTREACHED();
+  // Do nothing for fixed key decryption.
   return Status::OK;
 }
 
 Status KeySource::FetchKeys(const std::vector<uint8>& pssh_data) {
-  NOTREACHED();
+  // Do nothing for fixed key decryption.
   return Status::OK;
 }
 
@@ -45,6 +45,11 @@ Status KeySource::GetKey(const std::vector<uint8>& key_id,
                          EncryptionKey* key) {
   DCHECK(key);
   DCHECK(encryption_key_);
+  if (key_id != encryption_key_->key_id) {
+    return Status(error::NOT_FOUND, std::string("Key for key ID ") +
+                  base::HexEncode(&key_id[0], key_id.size()) +
+                  " was not found.");
+  }
   *key = *encryption_key_;
   return Status::OK;
 }

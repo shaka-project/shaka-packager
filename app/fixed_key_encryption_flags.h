@@ -12,6 +12,7 @@
 #include <gflags/gflags.h>
 
 DECLARE_bool(enable_fixed_key_encryption);
+DECLARE_bool(enable_fixed_key_decryption);
 DECLARE_string(key_id);
 DECLARE_string(key);
 DECLARE_string(pssh);

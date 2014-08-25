@@ -84,7 +84,7 @@ class FakeClock : public base::Clock {
 
 class PackagerTestBasic : public ::testing::TestWithParam<const char*> {
  public:
-  PackagerTestBasic() : decryptor_source_(NULL) {}
+  PackagerTestBasic() {}
 
   virtual void SetUp() OVERRIDE {
     // Create a test directory for testing, will be deleted after test.
@@ -108,9 +108,12 @@ class PackagerTestBasic : public ::testing::TestWithParam<const char*> {
              bool single_segment,
              bool enable_encryption);
 
+  void Decrypt(const std::string& input,
+               const std::string& video_output,
+               const std::string& audio_output);
+
  protected:
   base::FilePath test_directory_;
-  DecryptorSource* decryptor_source_;
   FakeClock fake_clock_;
 };
 
@@ -148,7 +151,7 @@ void PackagerTestBasic::Remux(const std::string& input,
                               bool enable_encryption) {
   CHECK(!video_output.empty() || !audio_output.empty());
 
-  Demuxer demuxer(GetFullPath(input), decryptor_source_);
+  Demuxer demuxer(GetFullPath(input));
   ASSERT_OK(demuxer.Initialize());
 
   scoped_ptr<KeySource> encryption_key_source(
@@ -182,13 +185,46 @@ void PackagerTestBasic::Remux(const std::string& input,
 
     if (enable_encryption) {
       muxer_audio->SetKeySource(encryption_key_source.get(),
-                                          KeySource::TRACK_TYPE_SD,
-                                          kClearLeadInSeconds,
-                                          kCryptoDurationInSeconds);
+                                KeySource::TRACK_TYPE_SD,
+                                kClearLeadInSeconds,
+                                kCryptoDurationInSeconds);
     }
   }
 
   // Start remuxing process.
+  ASSERT_OK(demuxer.Run());
+}
+
+void PackagerTestBasic::Decrypt(const std::string& input,
+                                const std::string& video_output,
+                                const std::string& audio_output) {
+  CHECK(!video_output.empty() || !audio_output.empty());
+
+  Demuxer demuxer(GetFullPath(input));
+  scoped_ptr<KeySource> decryption_key_source(
+      KeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex, "", ""));
+  DCHECK(decryption_key_source);
+  demuxer.SetKeySource(decryption_key_source.Pass());
+  ASSERT_OK(demuxer.Initialize());
+
+  scoped_ptr<Muxer> muxer;
+  MediaStream* stream(NULL);
+  if (!video_output.empty()) {
+    muxer.reset(
+        new mp4::MP4Muxer(SetupOptions(video_output, true)));
+    stream = FindFirstVideoStream(demuxer.streams());
+  }
+  if (!audio_output.empty()) {
+    muxer.reset(
+        new mp4::MP4Muxer(SetupOptions(audio_output, true)));
+    stream = FindFirstAudioStream(demuxer.streams());
+  }
+  ASSERT_TRUE(muxer);
+  ASSERT_TRUE(stream != NULL);
+  ASSERT_TRUE(stream->info()->is_encrypted());
+  muxer->set_clock(&fake_clock_);
+  muxer->AddStream(stream);
+
   ASSERT_OK(demuxer.Run());
 }
 
@@ -215,11 +251,9 @@ TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentEncryptedVideo) {
                                 kSingleSegment,
                                 kEnableEncryption));
 
-  // Expect the output to be encrypted.
-  Demuxer demuxer(GetFullPath(kOutputVideo), decryptor_source_);
-  ASSERT_OK(demuxer.Initialize());
-  ASSERT_EQ(1u, demuxer.streams().size());
-  EXPECT_TRUE(demuxer.streams()[0]->info()->is_encrypted());
+  ASSERT_NO_FATAL_FAILURE(Decrypt(kOutputVideo,
+                                  kOutputVideo2,
+                                  kOutputNone));
 }
 
 TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentEncryptedAudio) {
@@ -229,11 +263,9 @@ TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentEncryptedAudio) {
                                 kSingleSegment,
                                 kEnableEncryption));
 
-  // Expect the output to be encrypted.
-  Demuxer demuxer(GetFullPath(kOutputAudio), decryptor_source_);
-  ASSERT_OK(demuxer.Initialize());
-  ASSERT_EQ(1u, demuxer.streams().size());
-  EXPECT_TRUE(demuxer.streams()[0]->info()->is_encrypted());
+  ASSERT_NO_FATAL_FAILURE(Decrypt(kOutputAudio,
+                                  kOutputNone,
+                                  kOutputAudio2));
 }
 
 class PackagerTest : public PackagerTestBasic {

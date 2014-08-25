@@ -11,13 +11,22 @@
 DEFINE_bool(enable_fixed_key_encryption,
             false,
             "Enable encryption with fixed key.");
+DEFINE_bool(enable_fixed_key_decryption,
+            false,
+            "Enable decryption with fixed key.");
 DEFINE_string(key_id, "", "Key id in hex string format.");
 DEFINE_string(key, "", "Key in hex string format.");
 DEFINE_string(pssh, "", "PSSH in hex string format.");
 
 static bool IsNotEmptyWithFixedKeyEncryption(const char* flag_name,
                                              const std::string& flag_value) {
-  return FLAGS_enable_fixed_key_encryption ? !flag_value.empty() : true;
+  if (FLAGS_enable_fixed_key_encryption && flag_value.empty())
+    return false;
+  std::string flag_name_str(flag_name);
+  if (FLAGS_enable_fixed_key_decryption && (flag_name_str != "pssh") &&
+      flag_value.empty())
+    return false;
+  return true;
 }
 
 static bool dummy_key_id_validator =

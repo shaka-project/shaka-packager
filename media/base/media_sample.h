@@ -14,11 +14,8 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_ptr.h"
-#include "media/base/decrypt_config.h"
 
 namespace media {
-
-class DecryptConfig;
 
 /// Class to hold a media sample.
 class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
@@ -113,16 +110,6 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
     return side_data_.size();
   }
 
-  const DecryptConfig* decrypt_config() const {
-    DCHECK(!end_of_stream());
-    return decrypt_config_.get();
-  }
-
-  void set_decrypt_config(scoped_ptr<DecryptConfig> decrypt_config) {
-    DCHECK(!end_of_stream());
-    decrypt_config_ = decrypt_config.Pass();
-  }
-
   // If there's no data in this buffer, it represents end of stream.
   bool end_of_stream() const { return data_.size() == 0; }
 
@@ -155,7 +142,6 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   // http://www.matroska.org/technical/specs/index.html BlockAdditional[A5].
   // Not used by mp4 and other containers.
   std::vector<uint8> side_data_;
-  scoped_ptr<DecryptConfig> decrypt_config_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSample);
 };

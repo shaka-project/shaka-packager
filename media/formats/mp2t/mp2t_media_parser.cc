@@ -155,16 +155,14 @@ Mp2tMediaParser::~Mp2tMediaParser() {
 void Mp2tMediaParser::Init(
     const InitCB& init_cb,
     const NewSampleCB& new_sample_cb,
-    const NeedKeyCB& need_key_cb) {
+    KeySource* decryption_key_source) {
   DCHECK(!is_initialized_);
   DCHECK(init_cb_.is_null());
   DCHECK(!init_cb.is_null());
   DCHECK(!new_sample_cb.is_null());
-  DCHECK(!need_key_cb.is_null());
 
   init_cb_ = init_cb;
   new_sample_cb_ = new_sample_cb;
-  need_key_cb_ = need_key_cb;
 }
 
 void Mp2tMediaParser::Flush() {

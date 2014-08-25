@@ -97,20 +97,13 @@ class Mp2tMediaParserTest : public testing::Test {
     return true;
   }
 
-  void OnKeyNeeded(MediaContainerName container_name,
-                   scoped_ptr<uint8[]> init_data,
-                   int init_data_size) {
-    DVLOG(1) << "OnKeyNeeded: " << init_data_size;
-  }
-
   void InitializeParser() {
     parser_->Init(
         base::Bind(&Mp2tMediaParserTest::OnInit,
                    base::Unretained(this)),
         base::Bind(&Mp2tMediaParserTest::OnNewSample,
                    base::Unretained(this)),
-        base::Bind(&Mp2tMediaParserTest::OnKeyNeeded,
-                   base::Unretained(this)));
+        NULL);
   }
 
   bool ParseMpeg2TsFile(const std::string& filename, int append_bytes) {

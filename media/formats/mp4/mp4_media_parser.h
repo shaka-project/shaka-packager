@@ -7,16 +7,22 @@
 #ifndef MEDIA_FORMATS_MP4_MP4_MEDIA_PARSER_H_
 #define MEDIA_FORMATS_MP4_MP4_MEDIA_PARSER_H_
 
+#include <map>
 #include <vector>
 
 #include "base/basictypes.h"
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_ptr.h"
 #include "media/base/media_parser.h"
 #include "media/base/offset_byte_queue.h"
 
 namespace media {
+
+class AesCtrEncryptor;
+class DecryptConfig;
 
 namespace mp4 {
 
@@ -34,7 +40,7 @@ class MP4MediaParser : public MediaParser {
   /// @{
   virtual void Init(const InitCB& init_cb,
                     const NewSampleCB& new_sample_cb,
-                    const NeedKeyCB& need_key_cb) OVERRIDE;
+                    KeySource* decryption_key_source) OVERRIDE;
   virtual void Flush() OVERRIDE;
   virtual bool Parse(const uint8* buf, int size) OVERRIDE;
   /// @}
@@ -51,8 +57,12 @@ class MP4MediaParser : public MediaParser {
   bool ParseMoov(mp4::BoxReader* reader);
   bool ParseMoof(mp4::BoxReader* reader);
 
-  void EmitNeedKeyIfNecessary(
+  bool FetchKeysIfNecessary(
       const std::vector<ProtectionSystemSpecificHeader>& headers);
+
+  bool DecryptSampleBuffer(const DecryptConfig* decrypt_config,
+                           uint8* buffer,
+                           size_t buffer_size);
 
   // To retain proper framing, each 'mdat' atom must be read; to limit memory
   // usage, the atom's data needs to be discarded incrementally as frames are
@@ -73,7 +83,7 @@ class MP4MediaParser : public MediaParser {
   State state_;
   InitCB init_cb_;
   NewSampleCB new_sample_cb_;
-  NeedKeyCB need_key_cb_;
+  KeySource* decryption_key_source_;
 
   OffsetByteQueue queue_;
 
@@ -89,6 +99,9 @@ class MP4MediaParser : public MediaParser {
 
   scoped_ptr<Movie> moov_;
   scoped_ptr<TrackRunIterator> runs_;
+
+  typedef std::map<std::vector<uint8>, AesCtrEncryptor*> DecryptorMap;
+  DecryptorMap decryptor_map_;
 
   DISALLOW_COPY_AND_ASSIGN(MP4MediaParser);
 };
