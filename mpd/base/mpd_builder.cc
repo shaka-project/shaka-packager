@@ -6,6 +6,9 @@
 
 #include "mpd/base/mpd_builder.h"
 
+#include <libxml/tree.h>
+#include <libxml/xmlstring.h>
+
 #include <cmath>
 #include <list>
 #include <string>
@@ -19,8 +22,6 @@
 #include "mpd/base/content_protection_element.h"
 #include "mpd/base/mpd_utils.h"
 #include "mpd/base/xml/xml_node.h"
-#include "third_party/libxml/src/include/libxml/tree.h"
-#include "third_party/libxml/src/include/libxml/xmlstring.h"
 
 namespace dash_packager {
 

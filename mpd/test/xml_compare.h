@@ -1,9 +1,9 @@
 #ifndef MPD_TEST_XML_COMPARE_H_
 #define MPD_TEST_XML_COMPARE_H_
 
-#include <string>
+#include <libxml/tree.h>
 
-#include "third_party/libxml/src/include/libxml/tree.h"
+#include <string>
 
 namespace dash_packager {
 

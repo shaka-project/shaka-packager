@@ -10,9 +10,10 @@
 #ifndef MPD_BASE_XML_SCOPED_XML_PTR_H_
 #define MPD_BASE_XML_SCOPED_XML_PTR_H_
 
+#include <libxml/tree.h>
+#include <libxml/xmlschemas.h>
+
 #include "base/memory/scoped_ptr.h"
-#include "third_party/libxml/src/include/libxml/tree.h"
-#include "third_party/libxml/src/include/libxml/xmlschemas.h"
 
 namespace dash_packager {
 namespace xml {

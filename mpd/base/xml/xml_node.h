@@ -10,13 +10,14 @@
 #ifndef MPD_BASE_XML_XML_NODE_H_
 #define MPD_BASE_XML_XML_NODE_H_
 
+#include <libxml/tree.h>
+
 #include <list>
 
 #include "base/basictypes.h"
 #include "mpd/base/content_protection_element.h"
 #include "mpd/base/media_info.pb.h"
 #include "mpd/base/xml/scoped_xml_ptr.h"
-#include "third_party/libxml/src/include/libxml/tree.h"
 
 namespace dash_packager {
 

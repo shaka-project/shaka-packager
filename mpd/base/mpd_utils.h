@@ -9,10 +9,11 @@
 #ifndef MPD_BASE_MPD_UTILS_H_
 #define MPD_BASE_MPD_UTILS_H_
 
+#include <libxml/tree.h>
+
 #include <string>
 
 #include "base/basictypes.h"
-#include "third_party/libxml/src/include/libxml/tree.h"
 
 namespace dash_packager {
 

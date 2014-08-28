@@ -5,6 +5,7 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include <gtest/gtest.h>
+#include <libxml/tree.h>
 
 #include <list>
 
@@ -13,7 +14,6 @@
 #include "mpd/base/mpd_builder.h"
 #include "mpd/base/xml/xml_node.h"
 #include "mpd/test/xml_compare.h"
-#include "third_party/libxml/src/include/libxml/tree.h"
 
 namespace dash_packager {
 namespace xml {

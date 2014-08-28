@@ -6,6 +6,7 @@
 
 #include <gtest/gtest.h>
 #include <inttypes.h>
+#include <libxml/xmlstring.h>
 
 #include "base/file_util.h"
 #include "base/logging.h"
@@ -17,7 +18,6 @@
 #include "mpd/base/mpd_utils.h"
 #include "mpd/test/mpd_builder_test_helper.h"
 #include "mpd/test/xml_compare.h"
-#include "third_party/libxml/src/include/libxml/xmlstring.h"
 
 namespace dash_packager {
 

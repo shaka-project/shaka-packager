@@ -6,13 +6,14 @@
 
 #include "media/event/vod_media_info_dump_muxer_listener.h"
 
+#include <google/protobuf/text_format.h>
+
 #include "base/logging.h"
 #include "media/base/muxer_options.h"
 #include "media/base/stream_info.h"
 #include "media/event/muxer_listener_internal.h"
 #include "media/file/file.h"
 #include "mpd/base/media_info.pb.h"
-#include "third_party/protobuf/src/google/protobuf/text_format.h"
 
 namespace media {
 namespace event {

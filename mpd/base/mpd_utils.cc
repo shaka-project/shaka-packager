@@ -6,12 +6,13 @@
 
 #include "mpd/base/mpd_utils.h"
 
+#include <libxml/tree.h>
+
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "mpd/base/content_protection_element.h"
 #include "mpd/base/media_info.pb.h"
 #include "mpd/base/xml/scoped_xml_ptr.h"
-#include "third_party/libxml/src/include/libxml/tree.h"
 
 namespace {
 

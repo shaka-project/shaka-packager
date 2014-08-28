@@ -1,5 +1,7 @@
 #include "mpd/test/xml_compare.h"
 
+#include <libxml/tree.h>
+
 #include <algorithm>
 #include <map>
 #include <string>
@@ -7,7 +9,6 @@
 
 #include "base/logging.h"
 #include "mpd/base/xml/scoped_xml_ptr.h"
-#include "third_party/libxml/src/include/libxml/tree.h"
 
 namespace dash_packager {
 
