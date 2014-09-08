@@ -148,7 +148,7 @@ class WidevineKeySourceTest : public ::testing::Test {
       : mock_request_signer_(new MockRequestSigner(kSignerName)),
         mock_http_fetcher_(new MockHttpFetcher()) {}
 
-  void SetUp() OVERRIDE {
+  virtual void SetUp() OVERRIDE {
     content_id_.assign(reinterpret_cast<const uint8*>(kContentId),
                        reinterpret_cast<const uint8*>(kContentId) +
                        strlen(kContentId));
