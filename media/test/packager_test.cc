@@ -203,7 +203,7 @@ void PackagerTestBasic::Decrypt(const std::string& input,
   Demuxer demuxer(GetFullPath(input));
   scoped_ptr<KeySource> decryption_key_source(
       KeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex, "", ""));
-  DCHECK(decryption_key_source);
+  ASSERT_TRUE(decryption_key_source);
   demuxer.SetKeySource(decryption_key_source.Pass());
   ASSERT_OK(demuxer.Initialize());
 

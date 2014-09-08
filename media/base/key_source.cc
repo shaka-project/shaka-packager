@@ -79,7 +79,8 @@ scoped_ptr<KeySource> KeySource::CreateFromHexStrings(
   }
 
   std::vector<uint8> pssh_data;
-  if (!base::HexStringToBytes(pssh_data_hex, &pssh_data)) {
+  if (!pssh_data_hex.empty() &&
+      !base::HexStringToBytes(pssh_data_hex, &pssh_data)) {
     LOG(ERROR) << "Cannot parse pssh_hex " << pssh_data_hex;
     return scoped_ptr<KeySource>();
   }
