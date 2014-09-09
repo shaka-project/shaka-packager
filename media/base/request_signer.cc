@@ -19,7 +19,7 @@ RequestSigner::RequestSigner(const std::string& signer_name)
 RequestSigner::~RequestSigner() {}
 
 AesRequestSigner::AesRequestSigner(const std::string& signer_name,
-                                   scoped_ptr<AesCbcEncryptor> encryptor)
+                                   scoped_ptr<AesCbcPkcs5Encryptor> encryptor)
     : RequestSigner(signer_name), aes_cbc_encryptor_(encryptor.Pass()) {
   DCHECK(aes_cbc_encryptor_);
 }
@@ -39,7 +39,7 @@ AesRequestSigner* AesRequestSigner::CreateSigner(const std::string& signer_name,
     return NULL;
   }
 
-  scoped_ptr<AesCbcEncryptor> encryptor(new AesCbcEncryptor());
+  scoped_ptr<AesCbcPkcs5Encryptor> encryptor(new AesCbcPkcs5Encryptor());
   if (!encryptor->InitializeWithIv(aes_key, iv))
     return NULL;
   return new AesRequestSigner(signer_name, encryptor.Pass());

@@ -15,7 +15,7 @@
 namespace edash_packager {
 namespace media {
 
-class AesCbcEncryptor;
+class AesCbcPkcs5Encryptor;
 class RsaPrivateKey;
 
 /// Abstract class used for signature generation.
@@ -57,9 +57,9 @@ class AesRequestSigner : public RequestSigner {
 
  private:
   AesRequestSigner(const std::string& signer_name,
-                   scoped_ptr<AesCbcEncryptor> encryptor);
+                   scoped_ptr<AesCbcPkcs5Encryptor> encryptor);
 
-  scoped_ptr<AesCbcEncryptor> aes_cbc_encryptor_;
+  scoped_ptr<AesCbcPkcs5Encryptor> aes_cbc_encryptor_;
 
   DISALLOW_COPY_AND_ASSIGN(AesRequestSigner);
 };

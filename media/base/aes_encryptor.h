@@ -21,6 +21,7 @@ typedef struct aes_key_st AES_KEY;
 namespace edash_packager {
 namespace media {
 
+// Class which implements AES-CTR counter-mode encryption/decryption.
 class AesCtrEncryptor {
  public:
   AesCtrEncryptor();
@@ -109,10 +110,12 @@ class AesCtrEncryptor {
   DISALLOW_COPY_AND_ASSIGN(AesCtrEncryptor);
 };
 
-class AesCbcEncryptor {
+// Class which implements AES-CBC (Cipher block chaining) encryption with
+// PKCS#5 padding.
+class AesCbcPkcs5Encryptor {
  public:
-  AesCbcEncryptor();
-  ~AesCbcEncryptor();
+  AesCbcPkcs5Encryptor();
+  ~AesCbcPkcs5Encryptor();
 
   /// Initialize the encryptor with specified key and IV.
   /// @param key should be 128 bits or 192 bits or 256 bits in size as defined
@@ -135,13 +138,15 @@ class AesCbcEncryptor {
   std::vector<uint8> iv_;
   scoped_ptr<AES_KEY> encrypt_key_;
 
-  DISALLOW_COPY_AND_ASSIGN(AesCbcEncryptor);
+  DISALLOW_COPY_AND_ASSIGN(AesCbcPkcs5Encryptor);
 };
 
-class AesCbcDecryptor {
+// Class which implements AES-CBC (Cipher block chaining) decryption with
+// PKCS#5 padding.
+class AesCbcPkcs5Decryptor {
  public:
-  AesCbcDecryptor();
-  ~AesCbcDecryptor();
+  AesCbcPkcs5Decryptor();
+  ~AesCbcPkcs5Decryptor();
 
   /// Initialize the decryptor with specified key and IV.
   /// @param key should be 128 bits or 192 bits or 256 bits in size as defined
@@ -165,7 +170,92 @@ class AesCbcDecryptor {
   std::vector<uint8> iv_;
   scoped_ptr<AES_KEY> decrypt_key_;
 
-  DISALLOW_COPY_AND_ASSIGN(AesCbcDecryptor);
+  DISALLOW_COPY_AND_ASSIGN(AesCbcPkcs5Decryptor);
+};
+
+// Class which implements AES-CBC (Cipher block chaining) encryption with
+// Ciphertext stealing.
+class AesCbcCtsEncryptor {
+ public:
+  AesCbcCtsEncryptor();
+  ~AesCbcCtsEncryptor();
+
+  /// Initialize the encryptor with specified key and IV.
+  /// @param key should be 128 bits or 192 bits or 256 bits in size as defined
+  ///        in AES spec.
+  /// @param iv should be 16 bytes in size.
+  /// @return true on successful initialization, false otherwise.
+  bool InitializeWithIv(const std::vector<uint8>& key,
+                        const std::vector<uint8>& iv);
+
+  /// @param plaintext points to the data to be encrypted.
+  /// @param size is the number of bytes to be encrypted. If less than 16
+  ///        bytes, it will be copied in the clear.
+  /// @param ciphertext should not be NULL. The buffer should be at least
+  ///        @a size bytes in length.
+  void Encrypt(const uint8* plaintext,
+               size_t size,
+               uint8* ciphertext);
+
+  /// @param plaintext contains the data to be encrypted. If less than 16
+  ///        bytes in size, it will be copied in the clear.
+  /// @param ciphertext should not be NULL. Caller retains ownership.
+  void Encrypt(const std::vector<uint8>& plaintext,
+               std::vector<uint8>* ciphertext);
+
+  /// @param iv is the initialization vector. Should be 16 bytes in size.
+  /// @return true if successful, false if the input is invalid.
+  bool SetIv(const std::vector<uint8>& iv);
+
+  const std::vector<uint8>& iv() const { return iv_; }
+
+ private:
+  std::vector<uint8> iv_;
+  scoped_ptr<AES_KEY> encrypt_key_;
+
+  DISALLOW_COPY_AND_ASSIGN(AesCbcCtsEncryptor);
+};
+
+// Class which implements AES-CBC (Cipher block chaining) decryption with
+// Ciphertext stealing.
+class AesCbcCtsDecryptor {
+ public:
+  AesCbcCtsDecryptor();
+  ~AesCbcCtsDecryptor();
+
+  /// Initialize the decryptor with specified key and IV.
+  /// @param key should be 128 bits or 192 bits or 256 bits in size as defined
+  ///        in AES spec.
+  /// @param iv should be 16 bytes in size.
+  /// @return true on successful initialization, false otherwise.
+  bool InitializeWithIv(const std::vector<uint8>& key,
+                        const std::vector<uint8>& iv);
+
+  /// @param ciphertext points to the data to be decrypted.
+  /// @param size is the number of bytes to be decrypted. If less than 16
+  ///        bytes, it will be copied in the clear.
+  /// @param plaintext should not be NULL. The buffer should be at least
+  ///        @a size bytes in length.
+  void Decrypt(const uint8* ciphertext,
+               size_t size,
+               uint8* plaintext);
+
+  /// @param ciphertext contains the data to be decrypted. If less than 16
+  ///        bytes in size, it will be copied in the clear.
+  /// @param plaintext should not be NULL. Caller retains ownership.
+  void Decrypt(const std::vector<uint8>& ciphertext,
+               std::vector<uint8>* plaintext);
+
+  /// @return true if successful, false if the input is invalid.
+  bool SetIv(const std::vector<uint8>& iv);
+
+  const std::vector<uint8>& iv() const { return iv_; }
+
+ private:
+  std::vector<uint8> iv_;
+  scoped_ptr<AES_KEY> decrypt_key_;
+
+  DISALLOW_COPY_AND_ASSIGN(AesCbcCtsDecryptor);
 };
 
 }  // namespace media
