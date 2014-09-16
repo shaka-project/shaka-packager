@@ -112,8 +112,7 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   }
 
   void set_data(const uint8* data, const size_t data_size) {
-    data_size_ = data_size;
-    data_.assign(data, data + data_size_);
+    data_.assign(data, data + data_size);
   }
 
   void set_is_key_frame(bool value) {
@@ -137,10 +136,7 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
               const uint8* side_data,
               size_t side_data_size,
               bool is_key_frame);
-  MediaSample() : dts_(0), pts_(0),
-                  duration_(0),
-                  is_key_frame_(false),
-                  data_size_(0) {}
+  MediaSample();
   virtual ~MediaSample();
 
   // Decoding time stamp.
@@ -156,7 +152,6 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   // http://www.matroska.org/technical/specs/index.html BlockAdditional[A5].
   // Not used by mp4 and other containers.
   std::vector<uint8> side_data_;
-  size_t data_size_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSample);
 };

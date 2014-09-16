@@ -23,6 +23,9 @@ namespace media {
 namespace wvm {
 
 struct DemuxStreamIdMediaSample {
+ public:
+  DemuxStreamIdMediaSample();
+  ~DemuxStreamIdMediaSample();
   uint32 demux_stream_id;
   uint32 parsed_audio_or_video_stream_id;
   scoped_refptr<MediaSample> media_sample;
@@ -30,12 +33,9 @@ struct DemuxStreamIdMediaSample {
 
 struct PrevSampleData {
  public:
-  PrevSampleData() { Reset(); }
-  void Reset() {
-    audio_sample = video_sample = NULL;
-    audio_stream_id = video_stream_id = 0;
-    audio_sample_duration = video_sample_duration = 0;
-  }
+  PrevSampleData();
+  ~PrevSampleData();
+  void Reset();
   scoped_refptr<MediaSample> audio_sample;
   scoped_refptr<MediaSample> video_sample;
   uint32 audio_stream_id;
@@ -47,7 +47,7 @@ struct PrevSampleData {
 class WvmMediaParser : public MediaParser {
  public:
   WvmMediaParser();
-  virtual ~WvmMediaParser() {}
+  virtual ~WvmMediaParser();
 
   // MediaParser implementation overrides.
   virtual void Init(const InitCB& init_cb,

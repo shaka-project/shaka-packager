@@ -30,6 +30,10 @@ MediaSample::MediaSample(const uint8* data,
     side_data_.assign(side_data, side_data + side_data_size);
 }
 
+MediaSample::MediaSample() : dts_(0), pts_(0),
+                             duration_(0),
+                             is_key_frame_(false) {}
+
 MediaSample::~MediaSample() {}
 
 // static

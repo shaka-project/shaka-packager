@@ -30,7 +30,6 @@ namespace {
   const uint32 kEcmStreamId = 0xF0;
   const uint32 kV2MetadataStreamId = 0xF1;  // EMM_stream
   const uint32 kScramblingBitsMask = 0x30;
-  const uint32 kEncryptedOddKey  = 0x30;
   const uint32 kStartCode1 = 0x00;
   const uint32 kStartCode2 = 0x00;
   const uint32 kStartCode3 = 0x01;
@@ -91,6 +90,8 @@ WvmMediaParser::WvmMediaParser() : is_initialized_(false),
                                    stream_id_count_(0) {
   SHA256_Init(sha_context_);
 }
+
+WvmMediaParser::~WvmMediaParser() {}
 
 void WvmMediaParser::Init(const InitCB& init_cb,
                           const NewSampleCB& new_sample_cb,
@@ -889,6 +890,24 @@ void WvmMediaParser::EmitSample(
     prev_media_sample_data_.audio_sample = new_sample;
     prev_media_sample_data_.audio_stream_id = stream_id;
   }
+}
+
+DemuxStreamIdMediaSample::DemuxStreamIdMediaSample() :
+    demux_stream_id(0),
+    parsed_audio_or_video_stream_id(0) {}
+
+DemuxStreamIdMediaSample::~DemuxStreamIdMediaSample() {}
+
+PrevSampleData::PrevSampleData() {
+  Reset();
+}
+
+PrevSampleData::~PrevSampleData() {}
+
+void PrevSampleData::Reset() {
+  audio_sample = video_sample = NULL;
+  audio_stream_id = video_stream_id = 0;
+  audio_sample_duration = video_sample_duration = 0;
 }
 
 }  // namespace wvm
