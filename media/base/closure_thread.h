@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/threading/simple_thread.h"
 
+namespace edash_packager {
 namespace media {
 
 /// Class for creating a thread which invokes a closure.
@@ -43,5 +44,6 @@ class ClosureThread : public base::SimpleThread {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_CLOSURE_THREAD_H_

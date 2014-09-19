@@ -10,6 +10,7 @@
 #include "media/base/buffer_writer.h"
 #include "media/filters/h264_parser.h"
 
+namespace edash_packager {
 namespace media {
 
 namespace {
@@ -129,3 +130,4 @@ bool H264ByteToUnitStreamConverter::GetAVCDecoderConfigurationRecord(
 }
 
 }  // namespace media
+}  // namespace edash_packager

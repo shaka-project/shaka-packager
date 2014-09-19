@@ -38,6 +38,7 @@ const uint32 kCencKeySize = 16;
 
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 
 AesCtrEncryptor::AesCtrEncryptor()
@@ -256,3 +257,4 @@ bool AesCbcDecryptor::SetIv(const std::vector<uint8>& iv) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

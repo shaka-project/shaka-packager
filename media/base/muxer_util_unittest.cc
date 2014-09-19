@@ -8,6 +8,7 @@
 
 #include "media/base/muxer_util.h"
 
+namespace edash_packager {
 namespace media {
 
 TEST(MuxerUtilTest, ValidateSegmentTemplate) {
@@ -153,3 +154,4 @@ TEST(MuxerUtilTest, GetSegmentNameLargeTime) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

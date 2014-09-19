@@ -17,6 +17,7 @@ const char kExpectedConfigRecord[] =
     "28de0988";
 }
 
+namespace edash_packager {
 namespace media {
 
 TEST(H264ByteToUnitStreamConverter, ConversionSuccess) {
@@ -59,3 +60,4 @@ TEST(H264ByteToUnitStreamConverter, ConversionFailure) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

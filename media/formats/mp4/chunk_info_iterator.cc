@@ -11,6 +11,7 @@
 
 #include "base/logging.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -71,3 +72,4 @@ uint32 ChunkInfoIterator::NumSamples(uint32 start_chunk,
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

@@ -10,6 +10,7 @@
 #include "base/basictypes.h"
 #include "base/logging.h"
 
+namespace edash_packager {
 namespace media {
 
 /// A class to read bit streams.
@@ -76,5 +77,6 @@ class BitReader {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_BIT_READER_H_

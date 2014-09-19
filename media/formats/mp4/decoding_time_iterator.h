@@ -11,6 +11,7 @@
 
 #include "media/formats/mp4/box_definitions.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -51,5 +52,6 @@ class DecodingTimeIterator {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_DECODING_TIME_ITERATOR_H_

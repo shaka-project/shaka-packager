@@ -20,6 +20,7 @@ namespace base {
 class Clock;
 }
 
+namespace edash_packager {
 namespace media {
 
 class KeySource;
@@ -121,5 +122,6 @@ class Muxer {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_MUXER_H_

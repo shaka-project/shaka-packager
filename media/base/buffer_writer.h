@@ -12,6 +12,7 @@
 #include "base/stl_util.h"
 #include "media/base/status.h"
 
+namespace edash_packager {
 namespace media {
 
 class File;
@@ -74,5 +75,6 @@ class BufferWriter {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_BUFFER_WRITER_H_

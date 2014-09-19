@@ -9,6 +9,7 @@
 #include "base/memory/scoped_ptr.h"
 #include "media/formats/mp4/composition_offset_iterator.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -76,3 +77,4 @@ TEST_F(CompositionOffsetIteratorTest, SampleOffset) {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

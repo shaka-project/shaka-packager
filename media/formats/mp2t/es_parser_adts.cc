@@ -17,6 +17,7 @@
 #include "media/formats/mp2t/mp2t_common.h"
 #include "media/formats/mpeg/adts_constants.h"
 
+namespace edash_packager {
 namespace media {
 
 // Return true if buf corresponds to an ADTS syncword.
@@ -268,3 +269,4 @@ void EsParserAdts::DiscardEs(int nbytes) {
 
 }  // namespace mp2t
 }  // namespace media
+}  // namespace edash_packager

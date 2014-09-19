@@ -13,6 +13,7 @@
 #include "base/memory/scoped_ptr.h"
 #include "media/base/status.h"
 
+namespace edash_packager {
 namespace media {
 
 class Demuxer;
@@ -74,5 +75,6 @@ class MediaStream {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_MEDIA_STREAM_H_

@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "media/base/limits.h"
 
+namespace edash_packager {
 namespace media {
 
 namespace {
@@ -103,3 +104,4 @@ std::string VideoStreamInfo::GetCodecString(VideoCodec codec,
 }
 
 }  // namespace media
+}  // namespace edash_packager

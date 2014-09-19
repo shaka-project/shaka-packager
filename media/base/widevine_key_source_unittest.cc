@@ -112,6 +112,7 @@ using ::testing::InSequence;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 
+namespace edash_packager {
 namespace media {
 
 class MockRequestSigner : public RequestSigner {
@@ -457,3 +458,4 @@ TEST_F(WidevineKeySourceTest, KeyRotationTest) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

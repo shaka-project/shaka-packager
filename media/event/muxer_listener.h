@@ -13,6 +13,7 @@
 
 #include "base/basictypes.h"
 
+namespace edash_packager {
 namespace media {
 
 class StreamInfo;
@@ -75,5 +76,6 @@ class MuxerListener {
 
 }  // namespace event
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_EVENT_MUXER_LISTENER_H_

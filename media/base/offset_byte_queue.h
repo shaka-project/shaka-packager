@@ -8,6 +8,7 @@
 #include "base/basictypes.h"
 #include "media/base/byte_queue.h"
 
+namespace edash_packager {
 namespace media {
 
 /// Wrapper around ByteQueue, which encapsulates the notion of a
@@ -65,5 +66,6 @@ class OffsetByteQueue {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_OFFSET_BYTE_QUEUE_H_

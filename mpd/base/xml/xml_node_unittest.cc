@@ -15,7 +15,7 @@
 #include "mpd/base/xml/xml_node.h"
 #include "mpd/test/xml_compare.h"
 
-namespace dash_packager {
+namespace edash_packager {
 namespace xml {
 
 namespace {
@@ -222,4 +222,4 @@ TEST_F(RepresentationTest, InvalidLiveInitSegmentName) {
 }
 
 }  // namespace xml
-}  // namespace dash_packager
+}  // namespace edash_packager

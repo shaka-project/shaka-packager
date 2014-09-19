@@ -7,6 +7,7 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/timestamp.h"
 
+namespace edash_packager {
 namespace media {
 
 static const uint32 kDefaultSampleRate = 44100;
@@ -121,3 +122,4 @@ TEST_F(AudioTimestampHelperTest, GetFramesToTarget) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

@@ -8,6 +8,7 @@
 #include "media/base/container_names.h"
 #include "media/test/test_data_util.h"
 
+namespace edash_packager {
 namespace media {
 
 // Using a macros to simplify tests. Since EXPECT_EQ outputs the second argument
@@ -215,3 +216,4 @@ TEST(ContainerNamesTest, FileCheckUNKNOWN) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

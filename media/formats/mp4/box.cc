@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "media/formats/mp4/box_buffer.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -63,3 +64,4 @@ bool FullBox::ReadWrite(BoxBuffer* buffer) {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

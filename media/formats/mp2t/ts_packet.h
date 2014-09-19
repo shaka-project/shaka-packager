@@ -7,6 +7,7 @@
 
 #include "base/basictypes.h"
 
+namespace edash_packager {
 namespace media {
 
 class BitReader;
@@ -68,6 +69,7 @@ class TsPacket {
 
 }  // namespace mp2t
 }  // namespace media
+}  // namespace edash_packager
 
 #endif
 

@@ -13,6 +13,7 @@
 
 #include "base/basictypes.h"
 
+namespace edash_packager {
 namespace media {
 
 /// Self generated test vector to verify algorithm stability.
@@ -44,5 +45,6 @@ class RsaTestData {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_RSA_TEST_DATA_H_

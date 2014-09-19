@@ -8,21 +8,26 @@
 
 #include "media/base/status_test_util.h"
 
+namespace edash_packager {
+namespace media {
+
 TEST(StatusTestUtil, ExpectOkSuccess) {
-  EXPECT_OK(media::Status::OK);
+  EXPECT_OK(Status::OK);
 }
 
 TEST(StatusTestUtil, AssertOkSuccess) {
-  ASSERT_OK(media::Status::OK);
+  ASSERT_OK(Status::OK);
 }
 
 TEST(StatusTestUtil, ExpectOkFailure) {
-  media::Status status(media::error::UNKNOWN, "Status Unknown");
+  Status status(error::UNKNOWN, "Status Unknown");
   EXPECT_NONFATAL_FAILURE(EXPECT_OK(status), "Status Unknown");
 }
 
 TEST(StatusTestUtil, AssertOkFailure) {
-  EXPECT_FATAL_FAILURE(
-      ASSERT_OK(media::Status(media::error::UNKNOWN, "Status Unknown")),
-      "Status Unknown");
+  EXPECT_FATAL_FAILURE(ASSERT_OK(Status(error::UNKNOWN, "Status Unknown")),
+                       "Status Unknown");
 }
+
+}  // namespace media
+}  // namespace edash_packager

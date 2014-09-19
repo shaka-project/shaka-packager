@@ -15,7 +15,7 @@
 
 #include "base/basictypes.h"
 
-namespace dash_packager {
+namespace edash_packager {
 
 class MediaInfo;
 struct ContentProtectionElement;
@@ -44,6 +44,6 @@ bool MoreThanOneTrue(bool b1, bool b2, bool b3);
 bool AtLeastOneTrue(bool b1, bool b2, bool b3);
 bool OnlyOneTrue(bool b1, bool b2, bool b3);
 
-}  // namespace dash_packager
+}  // namespace edash_packager
 
 #endif  // MPD_BASE_MPD_UTILS_H_

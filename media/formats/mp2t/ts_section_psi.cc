@@ -34,6 +34,7 @@ static bool IsCrcValid(const uint8* buf, int size) {
   return (crc == 0);
 }
 
+namespace edash_packager {
 namespace media {
 namespace mp2t {
 
@@ -129,3 +130,4 @@ void TsSectionPsi::ResetPsiState() {
 
 }  // namespace mp2t
 }  // namespace media
+}  // namespace edash_packager

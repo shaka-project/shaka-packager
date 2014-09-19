@@ -11,6 +11,7 @@
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/cenc.h"
 
+namespace edash_packager {
 namespace media {
 
 class DecryptConfig;
@@ -120,5 +121,6 @@ class TrackRunIterator {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_TRACK_RUN_ITERATOR_H_

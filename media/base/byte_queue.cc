@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 
+namespace edash_packager {
 namespace media {
 
 // Default starting size for the queue.
@@ -82,3 +83,4 @@ void ByteQueue::Pop(int count) {
 uint8* ByteQueue::front() const { return buffer_.get() + offset_; }
 
 }  // namespace media
+}  // namespace edash_packager

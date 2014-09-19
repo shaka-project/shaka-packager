@@ -19,6 +19,7 @@
 #include "media/formats/mp2t/ts_section_pes.h"
 #include "media/formats/mp2t/ts_section_pmt.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp2t {
 
@@ -424,3 +425,4 @@ bool Mp2tMediaParser::EmitRemainingSamples() {
 
 }  // namespace mp2t
 }  // namespace media
+}  // namespace edash_packager

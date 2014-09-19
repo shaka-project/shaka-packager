@@ -36,6 +36,7 @@ void SetStartAndEndFromOffsetAndSize(size_t offset,
 }
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -287,3 +288,4 @@ uint64 MP4Muxer::IsoTimeNow() {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

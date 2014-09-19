@@ -14,6 +14,7 @@
 #include "media/formats/mp4/fourccs.h"
 #include "media/formats/mp4/rcheck.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -180,5 +181,6 @@ bool BoxReader::ReadAllChildren(std::vector<T>* children) {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_BOX_READER_H_

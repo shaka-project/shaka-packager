@@ -19,9 +19,9 @@
 #include "media/base/muxer_options.h"
 #include "media/event/muxer_listener.h"
 
-namespace dash_packager {
+namespace edash_packager {
+
 class MediaInfo;
-}  // namespace dash_packager
 
 namespace media {
 namespace event {
@@ -63,12 +63,13 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
 
   std::string output_file_name_;
   std::string scheme_id_uri_;
-  scoped_ptr<dash_packager::MediaInfo> media_info_;
+  scoped_ptr<MediaInfo> media_info_;
 
   DISALLOW_COPY_AND_ASSIGN(VodMediaInfoDumpMuxerListener);
 };
 
 }  // namespace event
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_

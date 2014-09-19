@@ -8,6 +8,7 @@
 #include "base/basictypes.h"
 #include "base/memory/scoped_ptr.h"
 
+namespace edash_packager {
 namespace media {
 
 /// Represents a queue of bytes.
@@ -53,5 +54,6 @@ class ByteQueue {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_BYTE_QUEUE_H_

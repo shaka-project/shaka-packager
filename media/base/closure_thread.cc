@@ -6,6 +6,7 @@
 
 #include "media/base/closure_thread.h"
 
+namespace edash_packager {
 namespace media {
 
 ClosureThread::ClosureThread(
@@ -21,3 +22,4 @@ ClosureThread::~ClosureThread() {
 void ClosureThread::Run() { task_.Run(); }
 
 }  // namespace media
+}  // namespace edash_packager

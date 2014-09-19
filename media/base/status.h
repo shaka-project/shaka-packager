@@ -11,6 +11,7 @@
 
 #include "base/logging.h"
 
+namespace edash_packager {
 namespace media {
 
 namespace error {
@@ -166,5 +167,6 @@ extern std::ostream& operator<<(std::ostream& os, const Status& x);
 #define DCHECK_OK(val) DCHECK_EQ(Status::OK, (val))
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_STATUS_H_

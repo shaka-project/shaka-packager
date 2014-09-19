@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 
+namespace edash_packager {
 namespace media {
 
 MediaSample::MediaSample(const uint8* data,
@@ -84,3 +85,4 @@ std::string MediaSample::ToString() const {
 }
 
 }  // namespace media
+}  // namespace edash_packager

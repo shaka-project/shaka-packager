@@ -4,6 +4,7 @@
 
 #include "media/base/network_util.h"
 
+namespace edash_packager {
 namespace media {
 
 uint32
@@ -27,4 +28,5 @@ ntohllFromBuffer( const unsigned char * buf ) {
 }
 
 }  // namespace media
+}  // namespace edash_packager
 

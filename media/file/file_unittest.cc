@@ -14,6 +14,7 @@ const int kDataSize = 1024;
 const char* kTestLocalFileName = "/tmp/local_file_test";
 }
 
+namespace edash_packager {
 namespace media {
 
 class LocalFileTest : public testing::Test {
@@ -118,3 +119,4 @@ TEST_F(LocalFileTest, WriteRead) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

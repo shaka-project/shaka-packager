@@ -25,14 +25,14 @@
 #include "mpd/base/segment_info.h"
 #include "mpd/base/xml/scoped_xml_ptr.h"
 
-namespace media {
-class File;
-}
-
 // TODO(rkuroiwa): For classes with |id_|, consider removing the field and let
 // the MPD (XML) generation functions take care of assigning an ID to each
 // element.
-namespace dash_packager {
+namespace edash_packager {
+
+namespace media {
+class File;
+}  // namespace media
 
 class AdaptationSet;
 class Representation;
@@ -294,6 +294,6 @@ class Representation {
   DISALLOW_COPY_AND_ASSIGN(Representation);
 };
 
-}  // namespace dash_packager
+}  // namespace edash_packager
 
 #endif  // MPD_BASE_MPD_BUILDER_H_

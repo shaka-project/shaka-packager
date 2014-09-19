@@ -11,6 +11,7 @@
 
 #include "media/base/stream_info.h"
 
+namespace edash_packager {
 namespace media {
 
 enum AudioCodec {
@@ -87,5 +88,6 @@ class AudioStreamInfo : public StreamInfo {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_AUDIO_STREAM_INFO_H_

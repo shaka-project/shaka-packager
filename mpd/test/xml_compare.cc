@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "mpd/base/xml/scoped_xml_ptr.h"
 
-namespace dash_packager {
+namespace edash_packager {
 
 namespace {
 xml::ScopedXmlPtr<xmlDoc>::type GetDocFromString(const std::string& xml_str) {
@@ -138,4 +138,4 @@ bool XmlEqual(xmlDocPtr xml1, xmlDocPtr xml2) {
   return CompareNodes(xml1_root_element, xml2_root_element);
 }
 
-}  // namespace dash_packager
+}  // namespace edash_packager

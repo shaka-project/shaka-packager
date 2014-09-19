@@ -6,6 +6,7 @@
 
 #include "media/formats/mp4/es_descriptor.h"
 
+namespace edash_packager {
 namespace media {
 
 namespace mp4 {
@@ -90,3 +91,4 @@ TEST(ESDescriptorTest, FiveByteLengthTest) {
 }  // namespace mp4
 
 }  // namespace media
+}  // namespace edash_packager

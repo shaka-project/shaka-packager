@@ -10,11 +10,13 @@
 
 #include "base/basictypes.h"
 
+namespace edash_packager {
 namespace media {
 
 const int64 kNoTimestamp = kint64min;
 const int64 kInfiniteDuration = kint64max;
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_TIMESTAMP_H_

@@ -32,6 +32,7 @@ const char kWidevineKeySystemId[] = "edef8ba979d64acea3c827dcd51d21ed";
 
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -533,3 +534,4 @@ void MP4MediaParser::ChangeState(State new_state) {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

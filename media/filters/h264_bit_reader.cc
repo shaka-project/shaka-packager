@@ -5,6 +5,7 @@
 #include "base/logging.h"
 #include "media/filters/h264_bit_reader.h"
 
+namespace edash_packager {
 namespace media {
 
 H264BitReader::H264BitReader()
@@ -111,3 +112,4 @@ size_t H264BitReader::NumEmulationPreventionBytesRead() {
 }
 
 }  // namespace media
+}  // namespace edash_packager

@@ -26,6 +26,7 @@ const int kExpectedVideoFrameCount = 6665;
 const int kExpectedAudioFrameCount = 11964;
 }
 
+namespace edash_packager {
 namespace media {
 namespace wvm {
 
@@ -131,3 +132,4 @@ TEST_F(WvmMediaParserTest, AudioFrameCount) {
 
 }  // namespace wvm
 }  // namespace media
+}  // namespace edash_packager

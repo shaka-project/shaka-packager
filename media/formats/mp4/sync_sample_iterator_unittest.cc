@@ -22,6 +22,7 @@ bool InSyncSamples(uint32 sample) {
 }
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -56,3 +57,4 @@ TEST(SyncSampleIteratorTest, SyncSample) {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

@@ -11,6 +11,7 @@
 
 #include "media/formats/mp4/box_definitions.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -361,5 +362,6 @@ inline bool operator==(const SegmentIndex& lhs, const SegmentIndex& rhs) {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_

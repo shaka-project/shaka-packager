@@ -16,6 +16,7 @@ const uint8 kWidevineSystemId[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,
                                    0xd5, 0x1d, 0x21, 0xed};
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 
 EncryptionKey::EncryptionKey() {}
@@ -150,3 +151,4 @@ KeySource::KeySource(scoped_ptr<EncryptionKey> encryption_key)
 }
 
 }  // namespace media
+}  // namespace edash_packager

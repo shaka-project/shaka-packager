@@ -9,6 +9,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 
+namespace edash_packager {
 namespace media {
 
 class MediaSample;
@@ -43,5 +44,6 @@ class EsParser {
 
 }  // namespace mp2t
 }  // namespace media
+}  // namespace edash_packager
 
 #endif

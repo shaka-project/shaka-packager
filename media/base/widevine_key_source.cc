@@ -110,6 +110,7 @@ bool GetPsshDataFromTrack(const base::DictionaryValue& track_dict,
 
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 
 // A ref counted wrapper for EncryptionKeyMap.
@@ -548,3 +549,4 @@ bool WidevineKeySource::PushToKeyPool(
 }
 
 }  // namespace media
+}  // namespace edash_packager

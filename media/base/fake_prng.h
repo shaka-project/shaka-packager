@@ -9,6 +9,7 @@
 #ifndef MEDIA_BASE_FAKE_PRNG_H
 #define MEDIA_BASE_FAKE_PRNG_H
 
+namespace edash_packager {
 namespace media {
 namespace fake_prng {
 
@@ -21,5 +22,6 @@ void StopFakePrng();
 
 }  // namespace fake_prng
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_FAKE_PRNG_H

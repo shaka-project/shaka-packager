@@ -11,6 +11,7 @@
 #include "base/memory/scoped_ptr.h"
 #include "base/time/time.h"
 
+namespace edash_packager {
 namespace media {
 
 /// Specifies the varieties of text tracks.
@@ -38,5 +39,6 @@ typedef base::Callback<scoped_ptr<TextTrack>
      const std::string& language)> AddTextTrackCB;
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_TEXT_TRACK_H_

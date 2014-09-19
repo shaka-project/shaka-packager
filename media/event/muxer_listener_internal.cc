@@ -14,14 +14,10 @@
 #include "media/base/video_stream_info.h"
 #include "mpd/base/media_info.pb.h"
 
+namespace edash_packager {
 namespace media {
 namespace event {
 namespace internal {
-
-using dash_packager::MediaInfo;
-using dash_packager::MediaInfo_AudioInfo;
-using dash_packager::MediaInfo_VideoInfo;
-using dash_packager::Range;
 
 namespace {
 
@@ -248,3 +244,4 @@ bool AddContentProtectionElements(MuxerListener::ContainerType container_type,
 }  // namespace internal
 }  // namespace event
 }  // namespace media
+}  // namespace edash_packager

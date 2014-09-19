@@ -26,6 +26,7 @@ bool CheckTimeApproxEqual(int64 time_in_milliseconds,
 
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 
 TEST(ProducerConsumerQueueTest, CheckEmpty) {
@@ -364,3 +365,4 @@ INSTANTIATE_TEST_CASE_P(Operations,
                         ::testing::Values(kPush, kPop, kPeek));
 
 }  // namespace media
+}  // namespace edash_packager

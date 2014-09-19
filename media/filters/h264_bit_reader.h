@@ -11,6 +11,7 @@
 
 #include "base/basictypes.h"
 
+namespace edash_packager {
 namespace media {
 
 // A class to provide bit-granularity reading of H.264 streams.
@@ -72,5 +73,6 @@ class H264BitReader {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FILTERS_H264_BIT_READER_H_

@@ -35,7 +35,7 @@ std::string CodecsString(const RepeatedStreamInfoType& repeated_stream_info) {
 
 }  // namespace
 
-namespace dash_packager {
+namespace edash_packager {
 
 bool HasVODOnlyFields(const MediaInfo& media_info) {
   return media_info.has_init_range() || media_info.has_index_range() ||
@@ -116,4 +116,4 @@ bool OnlyOneTrue(bool b1, bool b2, bool b3) {
     return !MoreThanOneTrue(b1, b2, b3) && AtLeastOneTrue(b1, b2, b3);
 }
 
-}  // namespace dash_packager
+}  // namespace edash_packager

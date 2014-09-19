@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "media/formats/mp4/fourccs.h"
 
+namespace edash_packager {
 namespace media {
 
 class BufferWriter;
@@ -67,5 +68,6 @@ struct FullBox : Box {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_BOX_H_

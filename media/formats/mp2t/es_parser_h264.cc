@@ -15,6 +15,7 @@
 #include "media/filters/h264_parser.h"
 #include "media/formats/mp2t/mp2t_common.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp2t {
 
@@ -378,3 +379,4 @@ bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
 
 }  // namespace mp2t
 }  // namespace media
+}  // namespace edash_packager

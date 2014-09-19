@@ -12,6 +12,7 @@
 #include "media/test/test_data_util.h"
 #include "media/filters/h264_parser.h"
 
+namespace edash_packager {
 namespace media {
 
 TEST(H264ParserTest, StreamFileParsing) {
@@ -71,3 +72,4 @@ TEST(H264ParserTest, StreamFileParsing) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

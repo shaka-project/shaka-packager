@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "media/base/timestamp.h"
 
+namespace edash_packager {
 namespace media {
 
 AudioTimestampHelper::AudioTimestampHelper(uint32 timescale,
@@ -74,3 +75,4 @@ int64 AudioTimestampHelper::ComputeTimestamp(
 }
 
 }  // namespace media
+}  // namespace edash_packager

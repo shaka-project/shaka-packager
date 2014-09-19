@@ -9,6 +9,7 @@
 #include "base/sys_byteorder.h"
 #include "media/file/file.h"
 
+namespace edash_packager {
 namespace media {
 
 BufferWriter::BufferWriter() {
@@ -71,3 +72,4 @@ void BufferWriter::AppendInternal(T v) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

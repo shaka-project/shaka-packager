@@ -15,6 +15,7 @@
 #include "media/base/closure_thread.h"
 #include "media/base/key_source.h"
 
+namespace edash_packager {
 namespace media {
 class HttpFetcher;
 class RequestSigner;
@@ -116,5 +117,6 @@ class WidevineKeySource : public KeySource {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_WIDEVINE_KEY_SOURCE_H_

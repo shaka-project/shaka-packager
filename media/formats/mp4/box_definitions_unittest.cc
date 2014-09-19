@@ -12,6 +12,9 @@
 #include "media/formats/mp4/box_definitions_comparison.h"
 #include "media/formats/mp4/box_reader.h"
 
+namespace edash_packager {
+namespace media {
+namespace mp4 {
 namespace {
 const uint8 kData16Bytes[] = {8, 7, 6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6, 7, 8};
 const uint8 kData4[] = {1, 5, 4, 3, 15};
@@ -19,14 +22,11 @@ const uint8 kData8[] = {1, 8, 42, 98, 156};
 const uint16 kData16[] = {1, 15, 45, 768, 60000};
 const uint32 kData32[] = {1, 24, 99, 1234, 9000000};
 const uint64 kData64[] = {1, 9000000, 12345678901234ULL, 56780909090900ULL};
-const media::mp4::TrackType kSampleDescriptionTrackType = media::mp4::kVideo;
+const TrackType kSampleDescriptionTrackType = kVideo;
 
 // 4-byte FourCC + 4-bytes size.
 const uint32 kBoxSize = 8;
 }  // namespace
-
-namespace media {
-namespace mp4 {
 
 template <typename T>
 class BoxDefinitionsTestGeneral : public testing::Test {
@@ -922,3 +922,4 @@ TEST_F(BoxDefinitionsTest, TrackFragmentRun_NoSampleSize) {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

@@ -14,6 +14,7 @@
 #include "base/memory/scoped_ptr.h"
 #include "media/formats/mp2t/es_parser.h"
 
+namespace edash_packager {
 namespace media {
 
 class H264ByteToUnitStreamConverter;
@@ -21,9 +22,6 @@ class H264Parser;
 class OffsetByteQueue;
 struct H264SPS;
 
-}  // namespace media
-
-namespace media {
 namespace mp2t {
 
 // Remark:
@@ -101,5 +99,6 @@ class EsParserH264 : public EsParser {
 
 }  // namespace mp2t
 }  // namespace media
+}  // namespace edash_packager
 
 #endif

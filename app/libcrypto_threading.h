@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 
+namespace edash_packager {
 namespace media {
 
 /// Enable thread safety for OpenSSL libcrypto.
@@ -34,5 +35,6 @@ class LibcryptoThreading {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // APP_LIBCRYPTO_THREADING_H_

@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 
+namespace edash_packager {
 namespace media {
 
 DecryptConfig::DecryptConfig(const std::vector<uint8>& key_id,
@@ -23,3 +24,4 @@ DecryptConfig::DecryptConfig(const std::vector<uint8>& key_id,
 DecryptConfig::~DecryptConfig() {}
 
 }  // namespace media
+}  // namespace edash_packager

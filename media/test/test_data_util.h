@@ -10,6 +10,7 @@
 #include "base/basictypes.h"
 #include "base/files/file_path.h"
 
+namespace edash_packager {
 namespace media {
 
 // Returns a file path for a file in the media/test/data directory.
@@ -19,5 +20,6 @@ base::FilePath GetTestDataFilePath(const std::string& name);
 std::vector<uint8> ReadTestDataFile(const std::string& name);
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_TEST_TEST_DATA_UTIL_H_

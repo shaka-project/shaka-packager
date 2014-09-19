@@ -7,6 +7,7 @@
 
 #include "base/basictypes.h"
 
+namespace edash_packager {
 namespace media {
 
 // Generates timestamps for a sequence of audio sample frames. This class should
@@ -67,5 +68,6 @@ class AudioTimestampHelper {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif

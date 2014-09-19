@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -59,3 +60,4 @@ uint32 CompositionOffsetIterator::NumSamples() const {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

@@ -10,7 +10,7 @@
 #include "mpd/base/content_protection_element.h"
 #include "mpd/base/media_info.pb.h"
 
-namespace dash_packager {
+namespace edash_packager {
 
 SimpleVodMpdNotifier::SimpleVodMpdNotifier(MpdBuilder* mpd_builder)
     : mpd_builder_(mpd_builder),
@@ -103,4 +103,4 @@ bool SimpleVodMpdNotifier::AddNewRepresentation(ContainerType type,
   return true;
 }
 
-}  // namespace dash_packager
+}  // namespace edash_packager

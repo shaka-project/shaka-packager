@@ -15,7 +15,7 @@
 
 #include "base/memory/scoped_ptr.h"
 
-namespace dash_packager {
+namespace edash_packager {
 namespace xml {
 
 /// Deleter functor for deleting libxml2 pointers. This is used with
@@ -43,5 +43,5 @@ struct ScopedXmlPtr {
 };
 
 }  // namespace xml
-}  // namespace dash_packager
+}  // namespace edash_packager
 #endif  // MPD_BASE_XML_SCOPED_XML_PTR_H_

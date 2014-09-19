@@ -17,9 +17,9 @@
 
 DECLARE_bool(dump_stream_info);
 
-namespace dash_packager {
+namespace edash_packager {
+
 struct MpdOptions;
-}
 
 namespace media {
 
@@ -51,7 +51,7 @@ bool AssignFlagsFromProfile();
 bool GetMuxerOptions(MuxerOptions* muxer_options);
 
 /// Fill MpdOptions members using provided command line options.
-bool GetMpdOptions(dash_packager::MpdOptions* mpd_options);
+bool GetMpdOptions(edash_packager::MpdOptions* mpd_options);
 
 /// Select and add a stream from a provided set to a muxer.
 /// @param streams contains the set of MediaStreams from which to select.
@@ -65,5 +65,6 @@ bool AddStreamToMuxer(const std::vector<MediaStream*>& streams,
                       Muxer* muxer);
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // APP_PACKAGER_UTIL_H_

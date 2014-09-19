@@ -11,6 +11,7 @@
 #include "media/formats/mp4/box_buffer.h"
 #include "media/formats/mp4/rcheck.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -208,3 +209,4 @@ TEST_F(BoxReaderTest, SkippingBloc) {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "media/file/file.h"
 
+namespace edash_packager {
 namespace media {
 
 /// Implements UdpFile, which receives UDP unicast and multicast streams.
@@ -44,5 +45,6 @@ class UdpFile : public File {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FILE_UDP_FILE_H_

@@ -44,6 +44,7 @@ bool IsFitIn32Bits(uint64 a, uint64 b, uint64 c) {
 
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -1870,3 +1871,4 @@ uint32 MediaData::ComputeSize() {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

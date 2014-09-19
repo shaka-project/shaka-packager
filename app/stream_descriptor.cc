@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 
+namespace edash_packager {
 namespace media {
 
 namespace {
@@ -120,3 +121,4 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
 }
 
 }  // namespace media
+}  // namespace edash_packager

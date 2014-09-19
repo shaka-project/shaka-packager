@@ -37,6 +37,7 @@ size_t AppendToString(char* ptr, size_t size, size_t nmemb, std::string* respons
 }
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 
 HttpFetcher::HttpFetcher() {}
@@ -110,3 +111,4 @@ Status SimpleHttpFetcher::FetchInternal(HttpMethod method,
 }
 
 }  // namespace media
+}  // namespace edash_packager

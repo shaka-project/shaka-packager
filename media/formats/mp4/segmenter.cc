@@ -18,6 +18,7 @@
 #include "media/formats/mp4/box_definitions.h"
 #include "media/formats/mp4/key_rotation_fragmenter.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -374,3 +375,4 @@ Status Segmenter::FinalizeFragment(Fragmenter* fragmenter) {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

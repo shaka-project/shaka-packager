@@ -19,6 +19,7 @@
 #include "media/filters/h264_byte_to_unit_stream_converter.h"
 #include "openssl/sha.h"
 
+namespace edash_packager {
 namespace media {
 namespace wvm {
 
@@ -256,5 +257,6 @@ class WvmMediaParser : public MediaParser {
 
 }  // namespace wvm
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_

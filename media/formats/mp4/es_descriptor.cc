@@ -8,6 +8,8 @@
 #include "media/base/buffer_writer.h"
 #include "media/formats/mp4/rcheck.h"
 
+namespace edash_packager {
+namespace media {
 namespace {
 
 // ISO/IEC 14496-1:2004 Section 7.2.6.6 Table 6: StreamType values.
@@ -34,7 +36,7 @@ enum SLPredefinedTags {
 
 // The elementary stream size is specific by up to 4 bytes.
 // The MSB of a byte indicates if there are more bytes for the size.
-bool ReadESSize(media::BitReader* reader, uint32* size) {
+bool ReadESSize(BitReader* reader, uint32* size) {
   uint8 msb;
   uint8 byte;
 
@@ -58,8 +60,6 @@ const size_t kHeaderSize = 2;
 const size_t kMaxDecoderSpecificInfoSize = 64;
 
 }  // namespace
-
-namespace media {
 
 namespace mp4 {
 
@@ -189,3 +189,4 @@ size_t ESDescriptor::ComputeSize() const {
 }  // namespace mp4
 
 }  // namespace media
+}  // namespace edash_packager

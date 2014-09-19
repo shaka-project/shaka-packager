@@ -12,9 +12,9 @@
 #include "media/file/file.h"
 #include "mpd/base/mpd_builder.h"
 
-using media::File;
+using edash_packager::media::File;
 
-namespace dash_packager {
+namespace edash_packager {
 
 namespace {
 bool HasVideo(const MediaInfo& media_info) {
@@ -211,4 +211,4 @@ bool MpdWriter::WriteMpdToFile(const char* file_name) {
   return file->Close();
 }
 
-}  // namespace dash_packager
+}  // namespace edash_packager

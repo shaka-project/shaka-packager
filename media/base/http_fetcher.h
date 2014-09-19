@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "media/base/status.h"
 
+namespace edash_packager {
 namespace media {
 
 /// Defines a generic http fetcher interface.
@@ -77,6 +78,7 @@ class SimpleHttpFetcher : public HttpFetcher {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_HTTP_FETCHER_H_
 

@@ -15,18 +15,15 @@
 #include "mpd/base/media_info.pb.h"
 #include "mpd/base/mpd_notifier.h"
 
-using dash_packager::MediaInfo;
-
+namespace edash_packager {
 namespace media {
 namespace event {
 
-MpdNotifyMuxerListener::MpdNotifyMuxerListener(
-    dash_packager::MpdNotifier* mpd_notifier)
-    : mpd_notifier_(mpd_notifier),
-      notification_id_(0) {
+MpdNotifyMuxerListener::MpdNotifyMuxerListener(MpdNotifier* mpd_notifier)
+    : mpd_notifier_(mpd_notifier), notification_id_(0) {
   DCHECK(mpd_notifier);
-  DCHECK(mpd_notifier->dash_profile() == dash_packager::kOnDemandProfile ||
-         mpd_notifier->dash_profile() == dash_packager::kLiveProfile);
+  DCHECK(mpd_notifier->dash_profile() == kOnDemandProfile ||
+         mpd_notifier->dash_profile() == kLiveProfile);
 }
 
 MpdNotifyMuxerListener::~MpdNotifyMuxerListener() {}
@@ -60,7 +57,7 @@ void MpdNotifyMuxerListener::OnMediaStart(
     }
   }
 
-  if (mpd_notifier_->dash_profile() == dash_packager::kLiveProfile) {
+  if (mpd_notifier_->dash_profile() == kLiveProfile) {
     // TODO(kqyang): Check return result.
     mpd_notifier_->NotifyNewContainer(*media_info, &notification_id_);
   } else {
@@ -76,8 +73,7 @@ void MpdNotifyMuxerListener::OnMediaEnd(bool has_init_range,
                                         uint64 index_range_end,
                                         float duration_seconds,
                                         uint64 file_size) {
-  if (mpd_notifier_->dash_profile() == dash_packager::kLiveProfile)
-    return;
+  if (mpd_notifier_->dash_profile() == kLiveProfile) return;
 
   DCHECK(media_info_);
   if (!internal::SetVodInformation(has_init_range,
@@ -101,8 +97,7 @@ void MpdNotifyMuxerListener::OnMediaEnd(bool has_init_range,
 void MpdNotifyMuxerListener::OnNewSegment(uint64 start_time,
                                           uint64 duration,
                                           uint64 segment_file_size) {
-  if (mpd_notifier_->dash_profile() != dash_packager::kLiveProfile)
-    return;
+  if (mpd_notifier_->dash_profile() != kLiveProfile) return;
   // TODO(kqyang): Check return result.
   mpd_notifier_->NotifyNewSegment(
       notification_id_, start_time, duration, segment_file_size);
@@ -110,3 +105,4 @@ void MpdNotifyMuxerListener::OnNewSegment(uint64 start_time,
 
 }  // namespace event
 }  // namespace media
+}  // namespace edash_packager

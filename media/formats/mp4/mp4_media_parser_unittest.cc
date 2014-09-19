@@ -12,6 +12,7 @@
 #include "media/formats/mp4/mp4_media_parser.h"
 #include "media/test/test_data_util.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -129,3 +130,4 @@ TEST_F(MP4MediaParserTest, NON_FRAGMENTED_MP4) {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

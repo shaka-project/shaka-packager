@@ -10,6 +10,7 @@
 #include "media/base/key_source.h"
 #include "media/formats/mp4/encrypting_fragmenter.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -60,5 +61,6 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_KEY_ROTATION_FRAGMENTER_H_

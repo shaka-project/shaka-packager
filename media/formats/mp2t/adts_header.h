@@ -11,6 +11,7 @@
 
 #include <vector>
 
+namespace edash_packager {
 namespace media {
 namespace mp2t {
 
@@ -68,5 +69,6 @@ class AdtsHeader {
 
 }  // namespace mp2t
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP2T_ADTS_HEADER_H_

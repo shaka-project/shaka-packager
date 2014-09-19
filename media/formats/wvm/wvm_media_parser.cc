@@ -64,6 +64,7 @@ namespace {
   };
 }
 
+namespace edash_packager {
 namespace media {
 namespace wvm {
 
@@ -912,3 +913,4 @@ void PrevSampleData::Reset() {
 
 }  // namespace wvm
 }  // namespace media
+}  // namespace edash_packager

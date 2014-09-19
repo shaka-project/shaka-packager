@@ -15,10 +15,9 @@
 #include "media/file/file.h"
 #include "mpd/base/media_info.pb.h"
 
+namespace edash_packager {
 namespace media {
 namespace event {
-
-using dash_packager::MediaInfo;
 
 VodMediaInfoDumpMuxerListener::VodMediaInfoDumpMuxerListener(
     const std::string& output_file_name)
@@ -114,3 +113,4 @@ bool VodMediaInfoDumpMuxerListener::SerializeMediaInfoToFile() {
 
 }  // namespace event
 }  // namespace media
+}  // namespace edash_packager

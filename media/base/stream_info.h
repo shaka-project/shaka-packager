@@ -12,6 +12,7 @@
 
 #include "base/memory/ref_counted.h"
 
+namespace edash_packager {
 namespace media {
 
 enum StreamType {
@@ -87,5 +88,6 @@ class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_STREAM_INFO_H_

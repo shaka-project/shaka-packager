@@ -12,6 +12,7 @@
 #include "base/basictypes.h"
 #include "base/compiler_specific.h"
 
+namespace edash_packager {
 namespace media {
 
 /// A simple buffer reader implementation, which reads data of various types
@@ -75,5 +76,6 @@ class BufferReader {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_BUFFER_READER_H_

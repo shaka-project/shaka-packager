@@ -21,6 +21,7 @@
 
 using ::testing::ValuesIn;
 
+namespace edash_packager {
 namespace media {
 namespace {
 
@@ -371,3 +372,4 @@ INSTANTIATE_TEST_CASE_P(PackagerEndToEnd,
 INSTANTIATE_TEST_CASE_P(PackagerEndToEnd, PackagerTest, ValuesIn(kMediaFiles));
 
 }  // namespace media
+}  // namespace edash_packager

@@ -6,6 +6,7 @@
 
 #include "media/filters/h264_bit_reader.h"
 
+namespace edash_packager {
 namespace media {
 
 TEST(H264BitReaderTest, ReadStreamWithoutEscapeAndTrailingZeroBytes) {
@@ -72,3 +73,4 @@ TEST(H264BitReaderTest, StopBitOccupyFullByte) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

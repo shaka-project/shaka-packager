@@ -18,6 +18,7 @@
 struct aes_key_st;
 typedef struct aes_key_st AES_KEY;
 
+namespace edash_packager {
 namespace media {
 
 class AesCtrEncryptor {
@@ -168,5 +169,6 @@ class AesCbcDecryptor {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_AES_ENCRYPTOR_H_

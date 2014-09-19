@@ -19,7 +19,7 @@
 #include "mpd/base/media_info.pb.h"
 #include "mpd/base/xml/scoped_xml_ptr.h"
 
-namespace dash_packager {
+namespace edash_packager {
 
 struct SegmentInfo;
 
@@ -172,5 +172,5 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
 };
 
 }  // namespace xml
-}  // namespace dash_packager
+}  // namespace edash_packager
 #endif  // MPD_BASE_XML_XML_NODE_H_

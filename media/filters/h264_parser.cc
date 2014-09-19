@@ -8,6 +8,7 @@
 
 #include "media/filters/h264_parser.h"
 
+namespace edash_packager {
 namespace media {
 
 bool H264SliceHeader::IsPSlice() const {
@@ -1262,3 +1263,4 @@ H264Parser::Result H264Parser::ParseSEI(H264SEIMessage* sei_msg) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

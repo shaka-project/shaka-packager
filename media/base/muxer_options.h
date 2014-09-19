@@ -13,6 +13,7 @@
 
 #include "base/basictypes.h"
 
+namespace edash_packager {
 namespace media {
 
 /// This structure contains the list of configuration options for Muxer.
@@ -70,5 +71,6 @@ struct MuxerOptions {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_MUXER_OPTIONS_H_

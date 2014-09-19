@@ -10,6 +10,7 @@
 #include "media/base/media_sample.h"
 #include "media/formats/mp4/box_definitions.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -141,3 +142,4 @@ bool Fragmenter::StartsWithSAP() {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

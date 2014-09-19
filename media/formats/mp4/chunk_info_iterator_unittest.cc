@@ -17,6 +17,7 @@ struct ChunkProperty {
 };
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -110,3 +111,4 @@ TEST_F(ChunkInfoIteratorTest, AdvanceSample) {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

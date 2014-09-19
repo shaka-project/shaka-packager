@@ -9,6 +9,7 @@
 #include "media/base/byte_queue.h"
 #include "media/formats/mp2t/ts_section.h"
 
+namespace edash_packager {
 namespace media {
 
 class BitReader;
@@ -49,6 +50,7 @@ class TsSectionPsi : public TsSection {
 
 }  // namespace mp2t
 }  // namespace media
+}  // namespace edash_packager
 
 #endif
 

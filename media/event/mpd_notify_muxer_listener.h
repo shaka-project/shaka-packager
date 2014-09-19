@@ -16,10 +16,10 @@
 #include "media/base/muxer_options.h"
 #include "media/event/muxer_listener.h"
 
-namespace dash_packager {
+namespace edash_packager {
+
 class MediaInfo;
 class MpdNotifier;
-}  // namespace dash_packager
 
 namespace media {
 namespace event {
@@ -28,7 +28,7 @@ class MpdNotifyMuxerListener : public MuxerListener {
  public:
   /// @param mpd_notifier must be initialized, i.e mpd_notifier->Init() must be
   ///        called.
-  MpdNotifyMuxerListener(dash_packager::MpdNotifier* mpd_notifier);
+  MpdNotifyMuxerListener(MpdNotifier* mpd_notifier);
   virtual ~MpdNotifyMuxerListener();
 
   /// If the stream is encrypted use this as 'schemeIdUri' attribute for
@@ -58,9 +58,9 @@ class MpdNotifyMuxerListener : public MuxerListener {
   /// @}
 
  private:
-  dash_packager::MpdNotifier* const mpd_notifier_;
+  MpdNotifier* const mpd_notifier_;
   uint32 notification_id_;
-  scoped_ptr<dash_packager::MediaInfo> media_info_;
+  scoped_ptr<MediaInfo> media_info_;
   std::string scheme_id_uri_;
 
   DISALLOW_COPY_AND_ASSIGN(MpdNotifyMuxerListener);
@@ -68,5 +68,6 @@ class MpdNotifyMuxerListener : public MuxerListener {
 
 }  // namespace event
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_

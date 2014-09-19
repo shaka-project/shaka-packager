@@ -18,12 +18,11 @@
 #include "media/base/video_stream_info.h"
 #include "mpd/base/media_info.pb.h"
 
-using dash_packager::MediaInfo;
-
 namespace {
 const bool kEnableEncryption = true;
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 namespace event {
 
@@ -288,3 +287,4 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
 
 }  // namespace event
 }  // namespace media
+}  // namespace edash_packager

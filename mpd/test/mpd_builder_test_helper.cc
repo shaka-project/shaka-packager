@@ -16,7 +16,7 @@
 #include "mpd/base/xml/scoped_xml_ptr.h"
 #include "mpd/test/xml_compare.h"
 
-namespace dash_packager {
+namespace edash_packager {
 
 base::FilePath GetTestDataFilePath(const std::string& file_name) {
   base::FilePath file_path;
@@ -111,4 +111,4 @@ void ExpectMpdToEqualExpectedOutputFile(
       << "Actual:" << std::endl << mpd_string;
 }
 
-}  // namespace dash_packager
+}  // namespace edash_packager

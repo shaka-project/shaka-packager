@@ -51,14 +51,9 @@ const char kUsage[] =
     "If not specified, its value may be estimated.\n";
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 
-using dash_packager::DashProfile;
-using dash_packager::kOnDemandProfile;
-using dash_packager::kLiveProfile;
-using dash_packager::MpdNotifier;
-using dash_packager::MpdOptions;
-using dash_packager::SimpleMpdNotifier;
 using event::MpdNotifyMuxerListener;
 using event::MuxerListener;
 using event::VodMediaInfoDumpMuxerListener;
@@ -287,6 +282,7 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
 }
 
 }  // namespace media
+}  // namespace edash_packager
 
 int main(int argc, char** argv) {
   google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
@@ -295,17 +291,17 @@ int main(int argc, char** argv) {
     google::ShowUsageWithFlags(argv[0]);
     return 1;
   }
-  media::LibcryptoThreading libcrypto_threading;
+  edash_packager::media::LibcryptoThreading libcrypto_threading;
   if (!libcrypto_threading.Initialize()) {
     LOG(ERROR) << "Could not initialize libcrypto threading.";
     return 1;
   }
   // TODO(tinskip): Make InsertStreamDescriptor a member of
   // StreamDescriptorList.
-  media::StreamDescriptorList stream_descriptors;
+  edash_packager::media::StreamDescriptorList stream_descriptors;
   for (int i = 1; i < argc; ++i) {
     if (!InsertStreamDescriptor(argv[i], &stream_descriptors))
       return 1;
   }
-  return media::RunPackager(stream_descriptors) ? 0 : 1;
+  return edash_packager::media::RunPackager(stream_descriptors) ? 0 : 1;
 }

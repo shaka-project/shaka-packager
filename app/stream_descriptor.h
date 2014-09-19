@@ -12,6 +12,7 @@
 
 #include "base/basictypes.h"
 
+namespace edash_packager {
 namespace media {
 
 /// Defines a single input/output stream, it's input source, output destination,
@@ -49,5 +50,6 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
                             StreamDescriptorList* descriptor_list);
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // APP_STREAM_DESCRIPTOR_H_

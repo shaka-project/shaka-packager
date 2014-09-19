@@ -443,6 +443,7 @@ const uint8 kTestSignature_2048[] = {
 
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 
 RsaTestSet::RsaTestSet() {}
@@ -478,3 +479,4 @@ RsaTestData::RsaTestData() {
 RsaTestData::~RsaTestData() {}
 
 }  // namespace media
+}  // namespace edash_packager

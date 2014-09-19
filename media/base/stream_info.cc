@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 
+namespace edash_packager {
 namespace media {
 
 StreamInfo::StreamInfo(StreamType stream_type,
@@ -51,3 +52,4 @@ std::string StreamInfo::ToString() const {
 }
 
 }  // namespace media
+}  // namespace edash_packager

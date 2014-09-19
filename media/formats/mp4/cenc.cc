@@ -19,6 +19,7 @@ bool IsIvSizeValid(size_t iv_size) { return iv_size == 8 || iv_size == 16; }
 const size_t kSubsampleEntrySize = sizeof(uint16) + sizeof(uint32);
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -88,3 +89,4 @@ size_t FrameCENCInfo::GetTotalSizeOfSubsamples() const {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

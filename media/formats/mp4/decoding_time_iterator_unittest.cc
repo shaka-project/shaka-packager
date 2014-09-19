@@ -9,6 +9,7 @@
 #include "base/memory/scoped_ptr.h"
 #include "media/formats/mp4/decoding_time_iterator.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -78,3 +79,4 @@ TEST_F(DecodingTimeIteratorTest, Duration) {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

@@ -12,6 +12,7 @@
 #include "base/basictypes.h"
 #include "base/memory/scoped_ptr.h"
 
+namespace edash_packager {
 namespace media {
 
 class AesCbcEncryptor;
@@ -87,5 +88,6 @@ class RsaRequestSigner : public RequestSigner {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_REQUEST_SIGNER_H_

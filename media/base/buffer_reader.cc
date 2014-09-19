@@ -8,6 +8,7 @@
 
 #include "base/logging.h"
 
+namespace edash_packager {
 namespace media {
 
 bool BufferReader::Read1(uint8* v) {
@@ -77,3 +78,4 @@ bool BufferReader::ReadNBytes(T* v, size_t num_bytes) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

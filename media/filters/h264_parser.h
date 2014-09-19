@@ -14,6 +14,7 @@
 #include "base/basictypes.h"
 #include "media/filters/h264_bit_reader.h"
 
+namespace edash_packager {
 namespace media {
 
 // For explanations of each struct and its members, see H.264 specification
@@ -392,5 +393,6 @@ class H264Parser {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FILTERS_H264_PARSER_H_

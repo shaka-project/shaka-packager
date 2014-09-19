@@ -9,6 +9,7 @@
 
 #include "base/basictypes.h"
 
+namespace edash_packager {
 namespace media {
 
 class BitReader;
@@ -90,5 +91,6 @@ class AACAudioSpecificConfig {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_AAC_AUDIO_SPECIFIC_CONFIG_H_

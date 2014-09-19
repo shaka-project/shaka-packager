@@ -15,7 +15,7 @@
 #include "base/synchronization/lock.h"
 #include "mpd/base/mpd_notifier.h"
 
-namespace dash_packager {
+namespace edash_packager {
 
 class AdaptationSet;
 class MpdBuilder;
@@ -72,6 +72,6 @@ class SimpleMpdNotifier : public MpdNotifier {
   DISALLOW_COPY_AND_ASSIGN(SimpleMpdNotifier);
 };
 
-}  // namespace dash_packager
+}  // namespace edash_packager
 
 #endif  // MPD_BASE_SIMPLE_MPD_NOTIFIER_H_

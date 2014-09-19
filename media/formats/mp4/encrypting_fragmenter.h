@@ -9,6 +9,7 @@
 
 #include "media/formats/mp4/fragmenter.h"
 
+namespace edash_packager {
 namespace media {
 
 class AesCtrEncryptor;
@@ -78,5 +79,6 @@ class EncryptingFragmenter : public Fragmenter {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_ENCRYPTING_FRAGMENTER_H_

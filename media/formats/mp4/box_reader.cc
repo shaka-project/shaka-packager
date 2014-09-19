@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "media/formats/mp4/box.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -186,3 +187,4 @@ bool BoxReader::ReadHeader(bool* err) {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

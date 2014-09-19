@@ -12,6 +12,7 @@
 #include "media/file/udp_file.h"
 #include "base/strings/string_util.h"
 
+namespace edash_packager {
 namespace media {
 
 const char* kLocalFilePrefix = "file://";
@@ -93,3 +94,4 @@ bool File::ReadFileToString(const char* file_name, std::string* contents) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

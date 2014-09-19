@@ -9,6 +9,7 @@
 #include "base/memory/scoped_ptr.h"
 #include "media/base/offset_byte_queue.h"
 
+namespace edash_packager {
 namespace media {
 
 class OffsetByteQueueTest : public testing::Test {
@@ -90,3 +91,4 @@ TEST_F(OffsetByteQueueTest, Trim) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

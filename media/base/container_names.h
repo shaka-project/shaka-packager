@@ -7,6 +7,7 @@
 
 #include "base/basictypes.h"
 
+namespace edash_packager {
 namespace media {
 
 /// Container formats supported by this utility function. New formats should be
@@ -57,5 +58,6 @@ enum MediaContainerName {
 MediaContainerName DetermineContainer(const uint8* buffer, int buffer_size);
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_CONTAINER_NAMES_H_

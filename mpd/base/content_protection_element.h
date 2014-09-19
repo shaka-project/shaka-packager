@@ -15,7 +15,7 @@
 #include <map>
 #include <string>
 
-namespace dash_packager {
+namespace edash_packager {
 
 /// Structure to represent <ContentProtection> element in DASH MPD spec (ISO
 /// 23009-1:2012 MPD and Segment Formats).
@@ -33,6 +33,6 @@ struct ContentProtectionElement {
   std::string subelements;
 };
 
-}  // namespace dash_packager
+}  // namespace edash_packager
 
 #endif  // MPD_BASE_CONTENT_PROTECTION_ELEMENT_H_

@@ -11,6 +11,7 @@
 #include "media/base/container_names.h"
 #include "media/base/status.h"
 
+namespace edash_packager {
 namespace media {
 
 /// DecryptorSource is responsible for decryption key acquisition.
@@ -32,5 +33,6 @@ class DecryptorSource {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_DECRYPTOR_SOURCE_H_

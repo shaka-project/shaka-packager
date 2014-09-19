@@ -12,6 +12,7 @@
 #include "media/base/muxer.h"
 #include "media/formats/mp4/fourccs.h"
 
+namespace edash_packager {
 namespace media {
 
 class AudioStreamInfo;
@@ -75,5 +76,6 @@ class MP4Muxer : public Muxer {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_MP4_MUXER_H_

@@ -10,6 +10,7 @@
 #include "media/base/bit_reader.h"
 #include "media/formats/mp2t/mp2t_common.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp2t {
 
@@ -119,4 +120,5 @@ void TsSectionPat::ResetPsiSection() {
 
 }  // namespace mp2t
 }  // namespace media
+}  // namespace edash_packager
 

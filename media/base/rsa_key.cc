@@ -83,6 +83,7 @@ RSA* DeserializeRsaPublicKey(const std::string& serialized_key) {
 
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 
 RsaPrivateKey::RsaPrivateKey(RSA* rsa_key) : rsa_key_(rsa_key) {
@@ -246,3 +247,4 @@ bool RsaPublicKey::VerifySignature(const std::string& message,
 }
 
 }  // namespace media
+}  // namespace edash_packager

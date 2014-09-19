@@ -10,6 +10,7 @@
 #include "base/basictypes.h"
 #include "media/base/decrypt_config.h"
 
+namespace edash_packager {
 namespace media {
 
 class BufferReader;
@@ -45,5 +46,6 @@ class FrameCENCInfo {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_CENC_H_

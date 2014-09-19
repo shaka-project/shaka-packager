@@ -14,6 +14,7 @@
 #include "media/base/media_parser.h"
 #include "media/base/stream_info.h"
 
+namespace edash_packager {
 namespace media {
 
 class MediaSample;
@@ -91,5 +92,6 @@ class Mp2tMediaParser : public MediaParser {
 
 }  // namespace mp2t
 }  // namespace media
+}  // namespace edash_packager
 
 #endif

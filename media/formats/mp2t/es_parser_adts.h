@@ -15,12 +15,11 @@
 #include "media/base/byte_queue.h"
 #include "media/formats/mp2t/es_parser.h"
 
+namespace edash_packager {
 namespace media {
 class AudioTimestampHelper;
 class BitReader;
-}
 
-namespace media {
 namespace mp2t {
 
 class EsParserAdts : public EsParser {
@@ -77,5 +76,6 @@ class EsParserAdts : public EsParser {
 
 }  // namespace mp2t
 }  // namespace media
+}  // namespace edash_packager
 
 #endif

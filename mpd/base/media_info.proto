@@ -3,7 +3,7 @@
 
 syntax = "proto2";
 
-package dash_packager;
+package edash_packager;
 
 message Range {
   optional uint64 begin = 1;

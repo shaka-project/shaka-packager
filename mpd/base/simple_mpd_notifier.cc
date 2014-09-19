@@ -11,9 +11,9 @@
 #include "mpd/base/mpd_builder.h"
 #include "mpd/base/mpd_utils.h"
 
-using media::File;
+using edash_packager::media::File;
 
-namespace dash_packager {
+namespace edash_packager {
 
 SimpleMpdNotifier::SimpleMpdNotifier(DashProfile dash_profile,
                                      const MpdOptions& mpd_options,
@@ -137,4 +137,4 @@ bool SimpleMpdNotifier::WriteMpdToFile() {
   return file->Close();
 }
 
-}  // namespace dash_packager
+}  // namespace edash_packager

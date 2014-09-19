@@ -13,6 +13,7 @@
 #include "media/base/muxer.h"
 #include "media/base/stream_info.h"
 
+namespace edash_packager {
 namespace media {
 
 MediaStream::MediaStream(scoped_refptr<StreamInfo> info, Demuxer* demuxer)
@@ -105,3 +106,4 @@ std::string MediaStream::ToString() const {
 }
 
 }  // namespace media
+}  // namespace edash_packager

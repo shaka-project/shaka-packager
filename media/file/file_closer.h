@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "media/file/file.h"
 
+namespace edash_packager {
 namespace media {
 
 /// Used by scoped_ptr to automatically close the file when it goes out of
@@ -24,5 +25,6 @@ struct FileCloser {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FILE_FILE_CLOSER_H_

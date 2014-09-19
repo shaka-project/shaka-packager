@@ -28,6 +28,7 @@ unsigned long ThreadIdFunction() {
 
 } // anonymous namespace
 
+namespace edash_packager {
 namespace media {
 
 bool InitLibcryptoThreading() {
@@ -50,3 +51,4 @@ bool TerminateLibcryptoThreading() {
 }
 
 }  // namespace media
+}  // namespace edash_packager

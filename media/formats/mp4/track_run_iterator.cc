@@ -13,6 +13,7 @@
 #include "media/formats/mp4/rcheck.h"
 #include "media/formats/mp4/sync_sample_iterator.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -550,3 +551,4 @@ scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

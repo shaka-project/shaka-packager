@@ -9,6 +9,7 @@
 #include "base/file_util.h"
 #include "base/logging.h"
 
+namespace edash_packager {
 namespace media {
 
 LocalFile::LocalFile(const char* file_name, const char* mode)
@@ -72,3 +73,4 @@ bool LocalFile::Open() {
 }
 
 }  // namespace media
+}  // namespace edash_packager

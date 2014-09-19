@@ -9,6 +9,7 @@
 #include "media/base/aes_encryptor.h"
 #include "media/formats/mp4/box_definitions.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -105,5 +106,6 @@ void KeyRotationFragmenter::FinalizeFragmentForEncryption() {
       traf()->auxiliary_size.sample_count;
 }
 
-}  // namespace media
 }  // namespace mp4
+}  // namespace media
+}  // namespace edash_packager

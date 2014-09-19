@@ -14,7 +14,7 @@
 
 #include "mpd/base/mpd_builder.h"
 
-namespace dash_packager {
+namespace edash_packager {
 
 // This assumes that MpdBuilder is for VOD. This class also assumes that all the
 // container is for an AdaptationSet.
@@ -74,6 +74,6 @@ class SimpleVodMpdNotifier : public MpdNotifier {
   DISALLOW_COPY_AND_ASSIGN(SimpleVodMpdNotifier);
 };
 
-}  // namespace dash_packager
+}  // namespace edash_packager
 
 #endif  // MPD_BASE_SIMPLE_MPD_NOTIFIER_H_

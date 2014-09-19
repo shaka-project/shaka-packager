@@ -24,6 +24,7 @@ namespace {
 const size_t kBufSize = 0x40000;  // 256KB.
 }
 
+namespace edash_packager {
 namespace media {
 
 Demuxer::Demuxer(const std::string& file_name)
@@ -161,3 +162,4 @@ Status Demuxer::Parse() {
 }
 
 }  // namespace media
+}  // namespace edash_packager

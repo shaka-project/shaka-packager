@@ -11,6 +11,7 @@
 
 #include <vector>
 
+namespace edash_packager {
 namespace media {
 
 class BufferWriter;
@@ -53,5 +54,6 @@ class H264ByteToUnitStreamConverter {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FILTERS_H264_BYTE_TO_UNIT_STREAM_CONVERTER_H_

@@ -11,6 +11,7 @@
 
 #include "media/formats/mp4/box_definitions.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -66,5 +67,6 @@ class ChunkInfoIterator {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_CHUNK_INFO_ITERATOR_H_

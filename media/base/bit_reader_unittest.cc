@@ -6,6 +6,7 @@
 
 #include "media/base/bit_reader.h"
 
+namespace edash_packager {
 namespace media {
 
 TEST(BitReaderTest, NormalOperationTest) {
@@ -65,3 +66,4 @@ TEST(BitReaderTest, SkipBitsTest) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

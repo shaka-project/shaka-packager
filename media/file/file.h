@@ -11,6 +11,7 @@
 
 #include "base/basictypes.h"
 
+namespace edash_packager {
 namespace media {
 
 extern const char* kLocalFilePrefix;
@@ -97,5 +98,6 @@ class File {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // PACKAGER_FILE_FILE_H_

@@ -12,7 +12,7 @@
 
 #include "base/basictypes.h"
 
-namespace dash_packager {
+namespace edash_packager {
 
 class MediaInfo;
 struct ContentProtectionElement;
@@ -80,6 +80,6 @@ class MpdNotifier {
   DISALLOW_COPY_AND_ASSIGN(MpdNotifier);
 };
 
-}  // namespace dash_packager
+}  // namespace edash_packager
 
 #endif  // MPD_BASE_MPD_NOTIFIER_H_

@@ -11,7 +11,7 @@
 #include "mpd/test/mpd_builder_test_helper.h"
 #include "mpd/util/mpd_writer.h"
 
-namespace dash_packager {
+namespace edash_packager {
 
 // Note that these tests look very similar to MpdBuilder tests but these can
 // only handle MediaInfos with 1 stream in each file.
@@ -96,4 +96,4 @@ TEST(MpdWriterTest, EncryptedAudioMediaInfo) {
       generated_mpd, kFileNameExpectedMpdOutputEncryptedAudio));
 }
 
-}  // namespace dash_packager
+}  // namespace edash_packager

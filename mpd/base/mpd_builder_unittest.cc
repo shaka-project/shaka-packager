@@ -19,7 +19,7 @@
 #include "mpd/test/mpd_builder_test_helper.h"
 #include "mpd/test/xml_compare.h"
 
-namespace dash_packager {
+namespace edash_packager {
 
 namespace {
 const char kSElementTemplate[] =
@@ -817,4 +817,4 @@ TEST_F(TimeShiftBufferDepthTest, ManySegments) {
       kDefaultStartNumber + kExpectedRemovedSegments));
 }
 
-}  // namespace dash_packager
+}  // namespace edash_packager

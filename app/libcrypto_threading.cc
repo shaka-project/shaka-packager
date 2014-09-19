@@ -6,6 +6,7 @@
 
 #include "app/libcrypto_threading.h"
 
+namespace edash_packager {
 namespace media {
 
 LibcryptoThreading::LibcryptoThreading() {}
@@ -19,3 +20,4 @@ bool LibcryptoThreading::Initialize() {
 }
 
 }  // namespace media
+}  // namespace edash_packager

@@ -14,13 +14,15 @@
 
 #include "base/basictypes.h"
 
+namespace edash_packager {
 namespace media {
 
 class File;
 
 }  // namespace media
+}  // namespace edash_packager
 
-namespace dash_packager {
+namespace edash_packager {
 
 class MediaInfo;
 
@@ -70,6 +72,6 @@ class MpdWriter {
   DISALLOW_COPY_AND_ASSIGN(MpdWriter);
 };
 
-}  // namespace dash_packager
+}  // namespace edash_packager
 
 #endif  // MPD_UTIL_MPD_WRITER_H_

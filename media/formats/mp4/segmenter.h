@@ -14,6 +14,7 @@
 #include "base/memory/scoped_ptr.h"
 #include "media/base/status.h"
 
+namespace edash_packager {
 namespace media {
 
 struct MuxerOptions;
@@ -131,5 +132,6 @@ class Segmenter {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_SEGMENTER_H_

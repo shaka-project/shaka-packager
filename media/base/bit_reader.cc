@@ -4,6 +4,7 @@
 
 #include "media/base/bit_reader.h"
 
+namespace edash_packager {
 namespace media {
 
 BitReader::BitReader(const uint8* data, off_t size)
@@ -79,3 +80,4 @@ void BitReader::UpdateCurrByte() {
 }
 
 }  // namespace media
+}  // namespace edash_packager

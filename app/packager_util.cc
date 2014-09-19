@@ -24,8 +24,7 @@
 
 DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
 
-using dash_packager::MpdOptions;
-
+namespace edash_packager {
 namespace media {
 
 void DumpStreamInfo(const std::vector<MediaStream*>& streams) {
@@ -203,3 +202,4 @@ bool AddStreamToMuxer(const std::vector<MediaStream*>& streams,
 }
 
 }  // namespace media
+}  // namespace edash_packager

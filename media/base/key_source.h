@@ -12,6 +12,7 @@
 #include "base/memory/scoped_ptr.h"
 #include "media/base/status.h"
 
+namespace edash_packager {
 namespace media {
 
 struct EncryptionKey {
@@ -112,5 +113,6 @@ class KeySource {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_KEY_SOURCE_H_

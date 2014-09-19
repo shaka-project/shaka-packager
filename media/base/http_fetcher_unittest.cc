@@ -24,6 +24,7 @@ const char kExpectedPostResponse[] =
 const char kDelayTwoSecs[] = "delay=2";  // This causes host to delay 2 seconds.
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 
 static void CheckHttpGet(const std::string& url,
@@ -85,4 +86,5 @@ TEST(DISABLED_HttpFetcherTest, BigTimeout) {
 }
 
 }  // namespace media
+}  // namespace edash_packager
 

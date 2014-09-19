@@ -13,6 +13,7 @@
 
 #include "base/basictypes.h"
 
+namespace edash_packager {
 namespace media {
 
 /// Validates the segment template against segment URL construction rule
@@ -35,5 +36,6 @@ std::string GetSegmentName(const std::string& segment_template,
                            uint32 bandwidth);
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_MUXER_UTIL_H_

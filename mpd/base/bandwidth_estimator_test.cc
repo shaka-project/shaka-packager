@@ -10,7 +10,7 @@
 
 #include "mpd/base/bandwidth_estimator.h"
 
-namespace dash_packager {
+namespace edash_packager {
 
 namespace {
 const int kNumBlocksForEstimate = 5;
@@ -92,4 +92,4 @@ TEST(BandwidthEstimatorTest, FirstOneBlock) {
   EXPECT_EQ(kExptectedEstimate, be.Estimate());
 }
 
-} // dash_packager
+} // edash_packager

@@ -11,7 +11,13 @@
 
 #include "media/base/status.h"
 
-#define EXPECT_OK(val) EXPECT_EQ(media::Status::OK, (val))
-#define ASSERT_OK(val) ASSERT_EQ(media::Status::OK, (val))
+namespace edash_packager {
+namespace media {
+
+#define EXPECT_OK(val) EXPECT_EQ(Status::OK, (val))
+#define ASSERT_OK(val) ASSERT_EQ(Status::OK, (val))
+
+}  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_STATUS_TEST_UTIL_H_

@@ -7,6 +7,7 @@
 #include "base/basictypes.h"
 #include "base/logging.h"
 
+namespace edash_packager {
 namespace media {
 
 OffsetByteQueue::OffsetByteQueue() : buf_(NULL), size_(0), head_(0) {}
@@ -62,3 +63,4 @@ void OffsetByteQueue::Sync() {
 }
 
 }  // namespace media
+}  // namespace edash_packager

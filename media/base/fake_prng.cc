@@ -39,6 +39,7 @@ const RAND_METHOD kFakeRandMethod = {NULL,       // RAND_seed function.
 
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 namespace fake_prng {
 
@@ -71,3 +72,4 @@ void StopFakePrng() {
 
 }  // namespace fake_prng
 }  // namespace media
+}  // namespace edash_packager

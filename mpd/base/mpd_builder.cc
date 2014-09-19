@@ -23,7 +23,7 @@
 #include "mpd/base/mpd_utils.h"
 #include "mpd/base/xml/xml_node.h"
 
-namespace dash_packager {
+namespace edash_packager {
 
 using xml::XmlNode;
 using xml::RepresentationXmlNode;
@@ -788,4 +788,4 @@ bool Representation::GetEarliestTimestamp(double* timestamp_seconds) {
   return true;
 }
 
-}  // namespace dash_packager
+}  // namespace edash_packager

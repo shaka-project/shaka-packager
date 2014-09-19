@@ -18,6 +18,7 @@ namespace {
 const size_t kDefaultIvSize = 8u;
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -166,3 +167,4 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager

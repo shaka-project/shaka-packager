@@ -10,6 +10,7 @@
 #include "media/file/file_closer.h"
 #include "media/formats/mp4/segmenter.h"
 
+namespace edash_packager {
 namespace media {
 namespace mp4 {
 
@@ -52,5 +53,6 @@ class SingleSegmentSegmenter : public Segmenter {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_SINGLE_SEGMENT_SEGMENTER_H_

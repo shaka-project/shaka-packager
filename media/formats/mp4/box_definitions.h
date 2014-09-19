@@ -13,6 +13,7 @@
 #include "media/formats/mp4/es_descriptor.h"
 #include "media/formats/mp4/fourccs.h"
 
+namespace edash_packager {
 namespace media {
 
 class BufferReader;
@@ -594,5 +595,6 @@ struct MediaData {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_BOX_DEFINITIONS_H_

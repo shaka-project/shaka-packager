@@ -13,6 +13,7 @@
 #include "base/memory/scoped_ptr.h"
 #include "media/base/status.h"
 
+namespace edash_packager {
 namespace media {
 
 class BufferWriter;
@@ -106,5 +107,6 @@ bool Fragmenter::OptimizeSampleEntries(std::vector<T>* entries,
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_FRAGMENTER_H_

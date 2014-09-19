@@ -32,6 +32,7 @@ bool ValidateFormatTag(const std::string& format_tag) {
 }
 }  // namespace
 
+namespace edash_packager {
 namespace media {
 
 bool ValidateSegmentTemplate(const std::string& segment_template) {
@@ -152,4 +153,5 @@ std::string GetSegmentName(const std::string& segment_template,
   return segment_name;
 }
 
-} // namespace media
+}  // namespace media
+}  // namespace edash_packager

@@ -14,17 +14,17 @@
 #include "mpd/base/media_info.pb.h"
 #include "mpd/base/segment_info.h"
 
-using dash_packager::xml::XmlNode;
+using edash_packager::xml::XmlNode;
 
-using dash_packager::MediaInfo;
+using edash_packager::MediaInfo;
 typedef MediaInfo::ContentProtectionXml ContentProtectionXml;
 typedef ContentProtectionXml::AttributeNameValuePair AttributeNameValuePair;
 
-namespace dash_packager {
+namespace edash_packager {
 
 namespace {
 
-std::string RangeToString(const dash_packager::Range& range) {
+std::string RangeToString(const Range& range) {
   return base::Uint64ToString(range.begin()) + "-" +
          base::Uint64ToString(range.end());
 }
@@ -516,4 +516,4 @@ void RepresentationXmlNode::AddAudioSamplingRateInfo(
 }
 
 }  // namespace xml
-}  // namespace dash_packager
+}  // namespace edash_packager

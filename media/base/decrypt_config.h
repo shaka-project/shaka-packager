@@ -11,6 +11,7 @@
 #include "base/basictypes.h"
 #include "base/memory/scoped_ptr.h"
 
+namespace edash_packager {
 namespace media {
 
 /// The Common Encryption spec provides for subsample encryption, where portions
@@ -71,5 +72,6 @@ class DecryptConfig {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_DECRYPT_CONFIG_H_

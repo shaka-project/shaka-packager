@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "media/base/bit_reader.h"
 
+namespace edash_packager {
 namespace media {
 
 #define TAG(a, b, c, d)                                           \
@@ -1669,3 +1670,4 @@ MediaContainerName DetermineContainer(const uint8* buffer, int buffer_size) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

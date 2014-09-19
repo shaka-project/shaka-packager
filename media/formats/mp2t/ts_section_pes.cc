@@ -79,6 +79,7 @@ static int64 ConvertTimestampSectionToTimestamp(int64 timestamp_section) {
          (((timestamp_section >> 1) & 0x7fff) << 0);
 }
 
+namespace edash_packager {
 namespace media {
 namespace mp2t {
 
@@ -308,3 +309,4 @@ void TsSectionPes::ResetPesState() {
 
 }  // namespace mp2t
 }  // namespace media
+}  // namespace edash_packager

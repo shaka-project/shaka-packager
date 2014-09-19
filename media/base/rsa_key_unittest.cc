@@ -13,6 +13,7 @@
 #include "media/base/rsa_key.h"
 #include "media/base/rsa_test_data.h"
 
+namespace edash_packager {
 namespace media {
 
 class RsaKeyTest : public ::testing::TestWithParam<RsaTestSet> {
@@ -146,3 +147,4 @@ INSTANTIATE_TEST_CASE_P(RsaTestKeys,
                                           RsaTestData().test_set_2048_bits()));
 
 }  // namespace media
+}  // namespace edash_packager

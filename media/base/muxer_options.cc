@@ -6,6 +6,7 @@
 
 #include "media/base/muxer_options.h"
 
+namespace edash_packager {
 namespace media {
 
 MuxerOptions::MuxerOptions()
@@ -19,3 +20,4 @@ MuxerOptions::MuxerOptions()
 MuxerOptions::~MuxerOptions() {}
 
 }  // namespace media
+}  // namespace edash_packager

@@ -9,6 +9,7 @@
 
 #include "base/basictypes.h"
 
+namespace edash_packager {
 namespace media {
 
 namespace limits {
@@ -47,5 +48,6 @@ enum {
 }  // namespace limits
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_BASE_LIMITS_H_

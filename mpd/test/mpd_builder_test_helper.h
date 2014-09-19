@@ -13,7 +13,7 @@ namespace base {
 class FilePath;
 }
 
-namespace dash_packager {
+namespace edash_packager {
 
 class MediaInfo;
 
@@ -70,6 +70,6 @@ void ExpectMpdToEqualExpectedOutputFile(
     const std::string& mpd_string,
     const std::string& expected_output_file);
 
-}  // namespace dash_packager
+}  // namespace edash_packager
 
 #endif  // MPD_TEST_MPD_BUILDER_TEST_HELPER_H_

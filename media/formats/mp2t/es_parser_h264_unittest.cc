@@ -18,6 +18,7 @@
 #include "media/formats/mp2t/es_parser_h264.h"
 #include "media/test/test_data_util.h"
 
+namespace edash_packager {
 namespace media {
 class VideoStreamInfo;
 
@@ -285,3 +286,4 @@ TEST_F(EsParserH264Test, NonIFrameStart) {
 
 }  // namespace mp2t
 }  // namespace media
+}  // namespace edash_packager

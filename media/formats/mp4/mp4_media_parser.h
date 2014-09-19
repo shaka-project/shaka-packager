@@ -19,6 +19,7 @@
 #include "media/base/media_parser.h"
 #include "media/base/offset_byte_queue.h"
 
+namespace edash_packager {
 namespace media {
 
 class AesCtrEncryptor;
@@ -108,5 +109,6 @@ class MP4MediaParser : public MediaParser {
 
 }  // namespace mp4
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_MP4_MP4_MEDIA_PARSER_H_
