@@ -14,12 +14,20 @@
 #include <vector>
 
 #include "base/memory/scoped_ptr.h"
+#include "media/base/aes_encryptor.h"
+#include "media/base/audio_stream_info.h"
 #include "media/base/media_parser.h"
+#include "media/base/media_sample.h"
 #include "media/base/network_util.h"
+#include "media/base/video_stream_info.h"
 #include "media/filters/h264_byte_to_unit_stream_converter.h"
 
 namespace edash_packager {
 namespace media {
+
+struct EncryptionKey;
+class WidevineKeySource;
+
 namespace wvm {
 
 struct DemuxStreamIdMediaSample {
@@ -156,14 +164,7 @@ class WvmMediaParser : public MediaParser {
     ProgramEnd
   };
 
-  bool DecryptCBC(void* data,
-                  uint32_t length,
-                  uint32_t bytesRemaining,
-                  uint32_t& bytesDecrypted) {
-     return(true);
-   }
-
-   bool ProcessEcm(void* ecm, uint32_t size) { return (true); }
+  bool ProcessEcm();
 
   // Index denotes 'search index' in the WVM content.
   bool ParseIndexEntry();
@@ -201,6 +202,8 @@ class WvmMediaParser : public MediaParser {
 
   bool Output();
 
+  bool GetAssetKey(const uint32_t asset_id, EncryptionKey* encryption_key);
+
   // Callback invoked by the ES media parser
   // to emit a new audio/video access unit.
   void EmitSample(uint32_t parsed_audio_or_video_stream_id,
@@ -222,9 +225,6 @@ class WvmMediaParser : public MediaParser {
   // Internal content parsing state.
   State parse_state_;
 
-  bool is_demuxing_sample_;
-  bool is_first_pack_;
-
   bool is_psm_needed_;
   uint32_t skip_bytes_;
   bool metadata_is_complete_;
@@ -234,16 +234,15 @@ class WvmMediaParser : public MediaParser {
   uint16_t pes_packet_bytes_;
   uint8_t pes_flags_1_;
   uint8_t pes_flags_2_;
+  uint8_t prev_pes_flags_1_;
   uint8_t pes_header_data_bytes_;
   uint64_t timestamp_;
   uint64_t pts_;
   uint64_t dts_;
   uint8_t index_program_id_;
-
   SHA256_CTX* sha_context_;
   scoped_refptr<MediaSample> media_sample_;
   PrevSampleData prev_media_sample_data_;
-
   H264ByteToUnitStreamConverter byte_to_unit_stream_converter_;
 
   std::vector<uint8_t, std::allocator<uint8_t> > ecm_;
@@ -254,6 +253,8 @@ class WvmMediaParser : public MediaParser {
   std::vector<scoped_refptr<StreamInfo> > stream_infos_;
   std::deque<DemuxStreamIdMediaSample> media_sample_queue_;
   std::vector<uint8_t> sample_data_;
+  WidevineKeySource* decryption_key_source_;
+  AesCbcCtsDecryptor content_decryptor_;
 
   DISALLOW_COPY_AND_ASSIGN(WvmMediaParser);
 };

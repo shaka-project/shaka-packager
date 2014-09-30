@@ -12,15 +12,17 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/media_sample.h"
+#include "media/base/request_signer.h"
 #include "media/base/stream_info.h"
 #include "media/base/timestamp.h"
 #include "media/base/video_stream_info.h"
+#include "media/base/widevine_key_source.h"
 #include "media/formats/wvm/wvm_media_parser.h"
 #include "media/test/test_data_util.h"
 
 namespace {
-const char kClearWvmFile[] = "hb2_4stream_clear.wvm";
-// Constants associated with kClearWvmFile follows.
+const char kWvmFile[] = "hb2_4stream_encrypted.wvm";
+// Constants associated with kWvmFile follows.
 const uint32_t kExpectedStreams = 4;
 const int kExpectedVideoFrameCount = 6665;
 const int kExpectedAudioFrameCount = 11964;
@@ -38,12 +40,24 @@ class WvmMediaParserTest : public testing::Test {
         video_max_dts_(kNoTimestamp),
         current_track_id_(-1) {
     parser_.reset(new WvmMediaParser());
+    const std::string server_url =
+        "https://license.uat.widevine.com/cenc/getcontentkey/widevine_test";
+    const std::string aes_signing_key =
+        "1ae8ccd0e7985cc0b6203a55855a1034afc252980e970ca90e5202689f947ab9";
+    const std::string aes_signing_iv = "d58ce954203b7c9a9a9d467f59839249";
+    const std::string signer = "widevine_test";
+    request_signer_.reset(AesRequestSigner::CreateSigner(
+        signer, aes_signing_key, aes_signing_iv));
+    key_source_.reset(new WidevineKeySource(server_url,
+                                            request_signer_.Pass()));
   }
 
  protected:
   typedef std::map<int, scoped_refptr<StreamInfo> > StreamMap;
 
   scoped_ptr<WvmMediaParser> parser_;
+  scoped_ptr<RequestSigner> request_signer_;
+  scoped_ptr<WidevineKeySource> key_source_;
   StreamMap stream_map_;
   int audio_frame_count_;
   int video_frame_count_;
@@ -101,7 +115,7 @@ class WvmMediaParserTest : public testing::Test {
                    base::Unretained(this)),
         base::Bind(&WvmMediaParserTest::OnNewSample,
                    base::Unretained(this)),
-        NULL);
+        key_source_.get());
   }
 
   void Parse(const std::string& filename) {
@@ -112,22 +126,22 @@ class WvmMediaParserTest : public testing::Test {
   }
 };
 
-TEST_F(WvmMediaParserTest, ParseClear) {
-  Parse(kClearWvmFile);
+TEST_F(WvmMediaParserTest, ParseWvm) {
+  Parse(kWvmFile);
 }
 
 TEST_F(WvmMediaParserTest, StreamCount) {
-  Parse(kClearWvmFile);
+  Parse(kWvmFile);
   EXPECT_EQ(kExpectedStreams, stream_map_.size());
 }
 
 TEST_F(WvmMediaParserTest, VideoFrameCount) {
-  Parse(kClearWvmFile);
+  Parse(kWvmFile);
   EXPECT_EQ(kExpectedVideoFrameCount, video_frame_count_);
 }
 
 TEST_F(WvmMediaParserTest, AudioFrameCount) {
-  Parse(kClearWvmFile);
+  Parse(kWvmFile);
   EXPECT_EQ(kExpectedAudioFrameCount, audio_frame_count_);
 }
 

@@ -9,9 +9,8 @@
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
-#include "media/base/audio_stream_info.h"
-#include "media/base/media_sample.h"
-#include "media/base/video_stream_info.h"
+#include "media/base/status.h"
+#include "media/base/widevine_key_source.h"
 #include "media/formats/mp2t/adts_header.h"
 
 #define HAS_HEADER_EXTENSION(x) ((x != 0xBC) && (x != 0xBE) && (x != 0xBF) \
@@ -19,51 +18,60 @@
          && (x != 0xFF))
 
 namespace {
-const uint32_t kMpeg2ClockRate = 90000;
-const uint32_t kPesOptPts = 0x80;
-const uint32_t kPesOptDts = 0x40;
-const uint32_t kPesOptAlign = 0x04;
-const uint32_t kPsmStreamId = 0xBC;
-const uint32_t kPaddingStreamId = 0xBE;
-const uint32_t kIndexMagic = 0x49444d69;
-const uint32_t kIndexStreamId = 0xBF;  // private_stream_2
-const uint32_t kIndexVersion4HeaderSize = 12;
-const uint32_t kEcmStreamId = 0xF0;
-const uint32_t kV2MetadataStreamId = 0xF1;  // EMM_stream
-const uint32_t kScramblingBitsMask = 0x30;
-const uint32_t kStartCode1 = 0x00;
-const uint32_t kStartCode2 = 0x00;
-const uint32_t kStartCode3 = 0x01;
-const uint32_t kStartCode4Pack = 0xBA;
-const uint32_t kStartCode4System = 0xBB;
-const uint32_t kStartCode4ProgramEnd = 0xB9;
-const uint32_t kPesStreamIdVideoMask = 0xF0;
-const uint32_t kPesStreamIdVideo = 0xE0;
-const uint32_t kPesStreamIdAudioMask = 0xE0;
-const uint32_t kPesStreamIdAudio = 0xC0;
-const uint32_t kVersion4 = 4;
-const int kAdtsHeaderMinSize = 7;
-const uint8_t kAacSampleSizeBits = 16;
-// Applies to all video streams.
-const uint8_t kNaluLengthSize = 4;  // unit is bytes.
-// Placeholder sampling frequency for all audio streams, which
-// will be overwritten after filter parsing.
-const uint32_t kDefaultSamplingFrequency = 100;
+  const uint32_t kMpeg2ClockRate = 90000;
+  const uint32_t kPesOptPts = 0x80;
+  const uint32_t kPesOptDts = 0x40;
+  const uint32_t kPesOptAlign = 0x04;
+  const uint32_t kPsmStreamId = 0xBC;
+  const uint32_t kPaddingStreamId = 0xBE;
+  const uint32_t kIndexMagic = 0x49444d69;
+  const uint32_t kIndexStreamId = 0xBF;  // private_stream_2
+  const uint32_t kIndexVersion4HeaderSize = 12;
+  const uint32_t kEcmStreamId = 0xF0;
+  const uint32_t kV2MetadataStreamId = 0xF1;  // EMM_stream
+  const uint32_t kScramblingBitsMask = 0x30;
+  const uint32_t kStartCode1 = 0x00;
+  const uint32_t kStartCode2 = 0x00;
+  const uint32_t kStartCode3 = 0x01;
+  const uint32_t kStartCode4Pack = 0xBA;
+  const uint32_t kStartCode4System = 0xBB;
+  const uint32_t kStartCode4ProgramEnd = 0xB9;
+  const uint32_t kPesStreamIdVideoMask = 0xF0;
+  const uint32_t kPesStreamIdVideo = 0xE0;
+  const uint32_t kPesStreamIdAudioMask = 0xE0;
+  const uint32_t kPesStreamIdAudio = 0xC0;
+  const uint32_t kVersion4 = 4;
+  const int kAdtsHeaderMinSize = 7;
+  const uint8_t kAacSampleSizeBits = 16;
+  // Applies to all video streams.
+  const uint8 kNaluLengthSize = 4; // unit is bytes.
+  // Placeholder sampling frequency for all audio streams, which
+  // will be overwritten after filter parsing.
+  const uint32_t kDefaultSamplingFrequency = 100;
+  const uint16_t kEcmSizeBytes = 80;
+  const uint32_t kInitializationVectorSizeBytes = 16;
+  // ECM fields for processing.
+  const uint32_t kEcmContentKeySizeBytes = 16;
+  const uint32_t kEcmDCPFlagsSizeBytes = 3;
+  const uint32_t kEcmCCIFlagsSizeBytes = 1;
+  const uint32_t kEcmFlagsSizeBytes =
+      kEcmCCIFlagsSizeBytes + kEcmDCPFlagsSizeBytes;
+  const uint32_t kEcmPaddingSizeBytes = 12;
 
-enum Type {
-  Type_void = 0,
-  Type_uint8 = 1,
-  Type_int8 = 2,
-  Type_uint16 = 3,
-  Type_int16 = 4,
-  Type_uint32 = 5,
-  Type_int32 = 6,
-  Type_uint64 = 7,
-  Type_int64 = 8,
-  Type_string = 9,
-  Type_BinaryData = 10
-};
-}  // namespace
+  enum Type {
+    Type_void = 0,
+    Type_uint8 = 1,
+    Type_int8 = 2,
+    Type_uint16 = 3,
+    Type_int16 = 4,
+    Type_uint32 = 5,
+    Type_int32 = 6,
+    Type_uint64 = 7,
+    Type_int64 = 8,
+    Type_string = 9,
+    Type_BinaryData = 10
+  };
+} // namespace
 
 namespace edash_packager {
 namespace media {
@@ -71,8 +79,6 @@ namespace wvm {
 
 WvmMediaParser::WvmMediaParser() : is_initialized_(false),
                                    parse_state_(StartCode1),
-                                   is_demuxing_sample_(true), // Check this.
-                                   is_first_pack_(true),
                                    is_psm_needed_(true),
                                    skip_bytes_(0),
                                    metadata_is_complete_(false),
@@ -82,6 +88,7 @@ WvmMediaParser::WvmMediaParser() : is_initialized_(false),
                                    pes_packet_bytes_(0),
                                    pes_flags_1_(0),
                                    pes_flags_2_(0),
+                                   prev_pes_flags_1_(0),
                                    pes_header_data_bytes_(0),
                                    timestamp_(0),
                                    pts_(0),
@@ -89,7 +96,8 @@ WvmMediaParser::WvmMediaParser() : is_initialized_(false),
                                    index_program_id_(0),
                                    sha_context_(new SHA256_CTX()),
                                    media_sample_(NULL),
-                                   stream_id_count_(0) {
+                                   stream_id_count_(0),
+                                   decryption_key_source_(NULL) {
   SHA256_Init(sha_context_);
 }
 
@@ -101,7 +109,9 @@ void WvmMediaParser::Init(const InitCB& init_cb,
   DCHECK(!is_initialized_);
   DCHECK(!init_cb.is_null());
   DCHECK(!new_sample_cb.is_null());
-
+  DCHECK(decryption_key_source);
+  decryption_key_source_ =
+      reinterpret_cast<WidevineKeySource*>(decryption_key_source);
   init_cb_ = init_cb;
   new_sample_cb_ = new_sample_cb;
 }
@@ -238,8 +248,8 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
         }
         break;
       case PesExtension1:
+        prev_pes_flags_1_ = pes_flags_1_;
         pes_flags_1_ = *read_ptr;
-        // TODO(ramjic): Check if enable_decryption_ is needed.
         *read_ptr &= ~kScramblingBitsMask;
         --pes_packet_bytes_;
         parse_state_ = PesExtension2;
@@ -393,7 +403,7 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
           memcpy(&ecm_[prev_size], read_ptr, num_bytes);
         }
         if ((pes_packet_bytes_ == 0) && !ecm_.empty()) {
-          if (!ProcessEcm(&ecm_[0], ecm_.size())) {
+          if (!ProcessEcm()) {
             return(false);
           }
         }
@@ -458,6 +468,9 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
         parse_state_ = StartCode1;
         prev_media_sample_data_.Reset();
         current_program_id_++;
+        ecm_.clear();
+        index_data_.clear();
+        psm_data_.clear();
         break;
       default:
         break;
@@ -741,6 +754,10 @@ void WvmMediaParser::StartMediaSampleDemux(uint8_t* read_ptr) {
 }
 
 bool WvmMediaParser::Output() {
+  // Check decrypted sample data.
+  if (prev_pes_flags_1_ & kScramblingBitsMask) {
+    content_decryptor_.Decrypt(sample_data_, &sample_data_);
+  }
   if ((prev_pes_stream_id_ & kPesStreamIdVideoMask) == kPesStreamIdVideo) {
     // Set data on the video stream from the NalUnitStream.
     std::vector<uint8_t> nal_unit_stream;
@@ -895,9 +912,77 @@ void WvmMediaParser::EmitSample(uint32_t parsed_audio_or_video_stream_id,
   }
 }
 
+bool WvmMediaParser::GetAssetKey(const uint32_t asset_id,
+                                               EncryptionKey* encryption_key) {
+  Status status = decryption_key_source_->FetchKeys(asset_id);
+  if (!status.ok()) {
+    LOG(ERROR) << "Fetch Key(s) failed for AssetID = " << asset_id
+               << ", error = " << status;
+    return false;
+  }
+
+  status = decryption_key_source_->GetKey(KeySource::TRACK_TYPE_HD,
+                                          encryption_key);
+  if (!status.ok()) {
+    LOG(ERROR) << "Fetch Key(s) failed for AssetID = " << asset_id
+               << ", error = " << status;
+    return false;
+  }
+
+  return true;
+}
+
+bool WvmMediaParser::ProcessEcm() {
+  if (current_program_id_ > 0) {
+    return true;
+  }
+  if (ecm_.size() != kEcmSizeBytes) {
+    LOG(ERROR) << "Unexpected ECM size = " << ecm_.size()
+               << ", expected size = " << kEcmSizeBytes;
+    return false;
+  }
+  const uint8_t* ecm_data = ecm_.data();
+  DCHECK(ecm_data);
+  ecm_data += sizeof(uint32_t);  // old version field - skip.
+  ecm_data += sizeof(uint32_t);  // clear lead - skip.
+  ecm_data += sizeof(uint32_t);  // system id(includes ECM version) - skip.
+  uint32_t asset_id = ntohlFromBuffer(ecm_data);
+  if (asset_id == 0) {
+    LOG(ERROR) << "AssetID in ECM is not valid.";
+    return false;
+  }
+  ecm_data += sizeof(uint32_t);  // asset_id.
+  EncryptionKey encryption_key;
+  if (!GetAssetKey(asset_id, &encryption_key)) {
+    return false;
+  }
+  std::vector<uint8_t> iv(kInitializationVectorSizeBytes);
+  AesCbcCtsDecryptor asset_decryptor;
+  asset_decryptor.InitializeWithIv(encryption_key.key, iv);
+
+  std::vector<uint8_t> content_key_buffer;  // flags + contentKey + padding.
+  content_key_buffer.resize(
+      kEcmFlagsSizeBytes + kEcmContentKeySizeBytes + kEcmPaddingSizeBytes);
+  // Get content key + padding from ECM.
+  memcpy(&content_key_buffer[0], ecm_data,
+         kEcmFlagsSizeBytes + kEcmContentKeySizeBytes + kEcmPaddingSizeBytes);
+  asset_decryptor.Decrypt(content_key_buffer, &content_key_buffer);
+  if (content_key_buffer.empty()) {
+    LOG(ERROR) << "Decryption of content key failed for asset id = "
+               << asset_id;
+    return false;
+  }
+
+  std::vector<uint8_t> decrypted_content_key_vec(
+      content_key_buffer.begin() + 4,
+      content_key_buffer.begin() + 20);
+  content_decryptor_.InitializeWithIv(decrypted_content_key_vec, iv);
+  return(true);
+}
+
 DemuxStreamIdMediaSample::DemuxStreamIdMediaSample() :
-    demux_stream_id(0),
-    parsed_audio_or_video_stream_id(0) {}
+  demux_stream_id(0),
+  parsed_audio_or_video_stream_id(0) {}
 
 DemuxStreamIdMediaSample::~DemuxStreamIdMediaSample() {}
 
@@ -908,9 +993,12 @@ PrevSampleData::PrevSampleData() {
 PrevSampleData::~PrevSampleData() {}
 
 void PrevSampleData::Reset() {
-  audio_sample = video_sample = NULL;
-  audio_stream_id = video_stream_id = 0;
-  audio_sample_duration = video_sample_duration = 0;
+  audio_sample = NULL;
+  video_sample = NULL;
+  audio_stream_id = 0;
+  video_stream_id = 0;
+  audio_sample_duration = 0;
+  video_sample_duration = 0;
 }
 
 }  // namespace wvm
