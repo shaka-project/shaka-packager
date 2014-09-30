@@ -24,6 +24,7 @@
     }                                                   \
   } while (0)
 
+namespace edash_packager {
 namespace {
 
 const bool kEnableKeyRotation = true;
@@ -110,7 +111,6 @@ bool GetPsshDataFromTrack(const base::DictionaryValue& track_dict,
 
 }  // namespace
 
-namespace edash_packager {
 namespace media {
 
 // A ref counted wrapper for EncryptionKeyMap.

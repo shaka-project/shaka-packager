@@ -11,7 +11,6 @@
 #include <openssl/rand.h>
 
 #include "base/logging.h"
-#include "base/rand_util.h"
 
 namespace {
 

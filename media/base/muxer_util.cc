@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 
+namespace edash_packager {
 namespace {
 bool ValidateFormatTag(const std::string& format_tag) {
   DCHECK(!format_tag.empty());
@@ -32,7 +33,6 @@ bool ValidateFormatTag(const std::string& format_tag) {
 }
 }  // namespace
 
-namespace edash_packager {
 namespace media {
 
 bool ValidateSegmentTemplate(const std::string& segment_template) {
