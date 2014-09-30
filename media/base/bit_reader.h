@@ -19,7 +19,7 @@ class BitReader {
   /// Initialize the BitReader object to read a data buffer.
   /// @param data points to the beginning of the buffer.
   /// @param size is the buffer size in bytes.
-  BitReader(const uint8* data, off_t size);
+  BitReader(const uint8_t* data, off_t size);
   ~BitReader();
 
   /// Read a number of bits from stream.
@@ -33,7 +33,7 @@ class BitReader {
   ///         operations will always return false unless @a num_bits is 0.
   template<typename T> bool ReadBits(int num_bits, T *out) {
     DCHECK_LE(num_bits, static_cast<int>(sizeof(T) * 8));
-    uint64 temp;
+    uint64_t temp;
     bool ret = ReadBitsInternal(num_bits, &temp);
     *out = static_cast<T>(temp);
     return ret;
@@ -52,7 +52,7 @@ class BitReader {
 
  private:
   // Help function used by ReadBits to avoid inlining the bit reading logic.
-  bool ReadBitsInternal(int num_bits, uint64* out);
+  bool ReadBitsInternal(int num_bits, uint64_t* out);
 
   // Advance to the next byte, loading it into curr_byte_.
   // If the num_remaining_bits_in_curr_byte_ is 0 after this function returns,
@@ -60,14 +60,14 @@ class BitReader {
   void UpdateCurrByte();
 
   // Pointer to the next unread (not in curr_byte_) byte in the stream.
-  const uint8* data_;
+  const uint8_t* data_;
 
   // Bytes left in the stream (without the curr_byte_).
   off_t bytes_left_;
 
   // Contents of the current byte; first unread bit starting at position
   // 8 - num_remaining_bits_in_curr_byte_ from MSB.
-  uint8 curr_byte_;
+  uint8_t curr_byte_;
 
   // Number of bits remaining in curr_byte_
   int num_remaining_bits_in_curr_byte_;

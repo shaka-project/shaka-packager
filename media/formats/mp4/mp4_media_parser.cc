@@ -23,7 +23,9 @@
 
 namespace {
 
-uint64 Rescale(uint64 time_in_old_scale, uint32 old_scale, uint32 new_scale) {
+uint64_t Rescale(uint64_t time_in_old_scale,
+                 uint32_t old_scale,
+                 uint32_t new_scale) {
   return (static_cast<double>(time_in_old_scale) / old_scale) * new_scale;
 }
 
@@ -70,7 +72,7 @@ void MP4MediaParser::Flush() {
   ChangeState(kParsingBoxes);
 }
 
-bool MP4MediaParser::Parse(const uint8* buf, int size) {
+bool MP4MediaParser::Parse(const uint8_t* buf, int size) {
   DCHECK_NE(state_, kWaitingForInit);
 
   if (state_ == kError)
@@ -87,7 +89,7 @@ bool MP4MediaParser::Parse(const uint8* buf, int size) {
       DCHECK_EQ(kEmittingSamples, state_);
       result = EnqueueSample(&err);
       if (result) {
-        int64 max_clear = runs_->GetMaxClearOffset() + moof_head_;
+        int64_t max_clear = runs_->GetMaxClearOffset() + moof_head_;
         err = !ReadAndDiscardMDATsUntil(max_clear);
       }
     }
@@ -105,7 +107,7 @@ bool MP4MediaParser::Parse(const uint8* buf, int size) {
 }
 
 bool MP4MediaParser::ParseBox(bool* err) {
-  const uint8* buf;
+  const uint8_t* buf;
   int size;
   queue_.Peek(&buf, &size);
   if (!size)
@@ -156,10 +158,10 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
 
   for (std::vector<Track>::const_iterator track = moov_->tracks.begin();
        track != moov_->tracks.end(); ++track) {
-    const uint32 timescale = track->media.header.timescale;
+    const uint32_t timescale = track->media.header.timescale;
 
     // Calculate duration (based on timescale).
-    uint64 duration = 0;
+    uint64_t duration = 0;
     if (track->media.header.duration > 0) {
       duration = track->media.header.duration;
     } else if (moov_->extends.header.fragment_duration > 0) {
@@ -222,10 +224,10 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       }
 
       AudioCodec codec = kUnknownAudioCodec;
-      uint8 num_channels = 0;
-      uint32 sampling_frequency = 0;
-      uint8 audio_object_type = 0;
-      std::vector<uint8> extra_data;
+      uint8_t num_channels = 0;
+      uint32_t sampling_frequency = 0;
+      uint8_t audio_object_type = 0;
+      std::vector<uint8_t> extra_data;
       // Check if it is MPEG4 AAC defined in ISO 14496 Part 3 or
       // supported MPEG2 AAC variants.
       if (entry.esds.es_descriptor.IsAAC()) {
@@ -335,7 +337,7 @@ bool MP4MediaParser::FetchKeysIfNecessary(
 
   // TODO(tinskip): Pass in raw 'pssh' boxes to FetchKeys. This will allow
   // supporting multiple keysystems. Move this to KeySource.
-  std::vector<uint8> widevine_system_id;
+  std::vector<uint8_t> widevine_system_id;
   base::HexStringToBytes(kWidevineKeySystemId, &widevine_system_id);
   for (std::vector<ProtectionSystemSpecificHeader>::const_iterator iter =
            headers.begin(); iter != headers.end(); ++iter) {
@@ -371,7 +373,7 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
 
   DCHECK(!(*err));
 
-  const uint8* buf;
+  const uint8_t* buf;
   int buf_size;
   queue_.Peek(&buf, &buf_size);
   if (!buf_size)
@@ -432,7 +434,7 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
 }
 
 bool MP4MediaParser::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
-                                         uint8* buffer,
+                                         uint8_t* buffer,
                                          size_t buffer_size) {
   DCHECK(decrypt_config);
   DCHECK(buffer);
@@ -481,8 +483,8 @@ bool MP4MediaParser::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
 
   // Subsample decryption.
   const std::vector<SubsampleEntry>& subsamples = decrypt_config->subsamples();
-  uint8* current_ptr = buffer;
-  const uint8* buffer_end = buffer + buffer_size;
+  uint8_t* current_ptr = buffer;
+  const uint8_t* buffer_end = buffer + buffer_size;
   current_ptr += decrypt_config->data_offset();
   if (current_ptr > buffer_end) {
     LOG(ERROR) << "Subsample data_offset too large.";
@@ -505,15 +507,15 @@ bool MP4MediaParser::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
   return true;
 }
 
-bool MP4MediaParser::ReadAndDiscardMDATsUntil(const int64 offset) {
+bool MP4MediaParser::ReadAndDiscardMDATsUntil(const int64_t offset) {
   bool err = false;
   while (mdat_tail_ < offset) {
-    const uint8* buf;
+    const uint8_t* buf;
     int size;
     queue_.PeekAt(mdat_tail_, &buf, &size);
 
     FourCC type;
-    uint64 box_sz;
+    uint64_t box_sz;
     if (!BoxReader::StartTopLevelBox(buf, size, &type, &box_sz, &err))
       break;
 

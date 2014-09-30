@@ -46,28 +46,28 @@ class MP4Muxer : public Muxer {
   void InitializeTrak(const StreamInfo* info, Track* trak);
   void GenerateAudioTrak(const AudioStreamInfo* audio_info,
                          Track* trak,
-                         uint32 track_id);
+                         uint32_t track_id);
   void GenerateVideoTrak(const VideoStreamInfo* video_info,
                          Track* trak,
-                         uint32 track_id);
+                         uint32_t track_id);
 
   // Helper functions for events.
   void GetStreamInfo(std::vector<StreamInfo*>* stream_infos);
 
   // Gets |start| and |end| initialization range. Returns true if there is an
   // init range and sets start-end byte-range-spec specified in RFC2616.
-  bool GetInitRangeStartAndEnd(uint32* start, uint32* end);
+  bool GetInitRangeStartAndEnd(uint32_t* start, uint32_t* end);
 
   // Gets |start| and |end| index range. Returns true if there is an index range
   // and sets start-end byte-range-spec specified in RFC2616.
-  bool GetIndexRangeStartAndEnd(uint32* start, uint32* end);
+  bool GetIndexRangeStartAndEnd(uint32_t* start, uint32_t* end);
 
   // Fire events if there are no errors and Muxer::muxer_listener() is not NULL.
   void FireOnMediaStartEvent();
   void FireOnMediaEndEvent();
 
   // Get time in seconds since midnight, Jan. 1, 1904, in UTC Time.
-  uint64 IsoTimeNow();
+  uint64_t IsoTimeNow();
 
   scoped_ptr<Segmenter> segmenter_;
 

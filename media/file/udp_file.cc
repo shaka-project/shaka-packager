@@ -30,7 +30,7 @@ namespace {
 
 const int kInvalidSocket(-1);
 
-bool StringToIpv4Address(const std::string& addr_in, uint32* addr_out) {
+bool StringToIpv4Address(const std::string& addr_in, uint32_t* addr_out) {
   DCHECK(addr_out);
 
   *addr_out = 0;
@@ -53,8 +53,8 @@ bool StringToIpv4Address(const std::string& addr_in, uint32* addr_out) {
 }
 
 bool StringToIpv4AddressAndPort(const std::string& addr_and_port,
-                                uint32* addr,
-                                uint16* port) {
+                                uint32_t* addr,
+                                uint16_t* port) {
   DCHECK(addr);
   DCHECK(port);
 
@@ -73,7 +73,7 @@ bool StringToIpv4AddressAndPort(const std::string& addr_and_port,
   return true;
 }
 
-bool IsIpv4MulticastAddress(uint32 addr) {
+bool IsIpv4MulticastAddress(uint32_t addr) {
   return (addr & 0xf0000000) == 0xe0000000;
 }
 
@@ -94,7 +94,7 @@ bool UdpFile::Close() {
   return true;
 }
 
-int64 UdpFile::Read(void* buffer, uint64 length) {
+int64_t UdpFile::Read(void* buffer, uint64_t length) {
   DCHECK(buffer);
   DCHECK_GE(length, 65535u)
       << "Buffer may be too small to read entire datagram.";
@@ -102,7 +102,7 @@ int64 UdpFile::Read(void* buffer, uint64 length) {
   if (socket_ == kInvalidSocket)
     return -1;
 
-  int64 result;
+  int64_t result;
   do {
     result = recvfrom(socket_, buffer, length, 0, NULL, 0);
   } while ((result == -1) && (errno == EINTR));
@@ -110,12 +110,12 @@ int64 UdpFile::Read(void* buffer, uint64 length) {
   return result;
 }
 
-int64 UdpFile::Write(const void* buffer, uint64 length) {
+int64_t UdpFile::Write(const void* buffer, uint64_t length) {
   NOTIMPLEMENTED();
   return -1;
 }
 
-int64 UdpFile::Size() {
+int64_t UdpFile::Size() {
   if (socket_ == kInvalidSocket)
     return -1;
 
@@ -159,8 +159,8 @@ bool UdpFile::Open() {
   DCHECK_EQ(kInvalidSocket, socket_);
 
   // TODO(tinskip): Support IPv6 addresses.
-  uint32 dest_addr;
-  uint16 dest_port;
+  uint32_t dest_addr;
+  uint16_t dest_port;
   if (!StringToIpv4AddressAndPort(file_name(),
                                   &dest_addr,
                                   &dest_port)) {
@@ -187,7 +187,7 @@ bool UdpFile::Open() {
   }
 
   if (IsIpv4MulticastAddress(dest_addr)) {
-    uint32 if_addr;
+    uint32_t if_addr;
     if (!StringToIpv4Address(FLAGS_udp_interface_address, &if_addr)) {
       LOG(ERROR) << "Malformed IPv4 address for interface.";
       return false;

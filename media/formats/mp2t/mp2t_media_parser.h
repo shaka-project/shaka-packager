@@ -39,7 +39,7 @@ class Mp2tMediaParser : public MediaParser {
 
   virtual void Flush() OVERRIDE;
 
-  virtual bool Parse(const uint8* buf, int size) OVERRIDE;
+  virtual bool Parse(const uint8_t* buf, int size) OVERRIDE;
 
  private:
   typedef std::map<int, PidState*> PidMap;
@@ -60,7 +60,7 @@ class Mp2tMediaParser : public MediaParser {
 
   // Callback invoked by the ES media parser
   // to emit a new audio/video access unit.
-  void OnEmitSample(uint32 pes_pid, scoped_refptr<MediaSample>& new_sample);
+  void OnEmitSample(uint32_t pes_pid, scoped_refptr<MediaSample>& new_sample);
 
   // Invoke the initialization callback if needed.
   bool FinishInitializationIfNeeded();

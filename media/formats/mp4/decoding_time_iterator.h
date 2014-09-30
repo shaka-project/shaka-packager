@@ -34,16 +34,16 @@ class DecodingTimeIterator {
   bool IsValid() const;
 
   /// @return Sample delta for current sample.
-  uint32 sample_delta() const { return iterator_->sample_delta; }
+  uint32_t sample_delta() const { return iterator_->sample_delta; }
 
   /// @return Duration from start_sample to end_sample, both 1-based, inclusive.
-  uint64 Duration(uint32 start_sample, uint32 end_sample) const;
+  uint64_t Duration(uint32_t start_sample, uint32_t end_sample) const;
 
   /// @return Total number of samples in the table.
-  uint32 NumSamples() const;
+  uint32_t NumSamples() const;
 
  private:
-  uint32 sample_index_;
+  uint32_t sample_index_;
   const std::vector<DecodingTime>& decoding_time_table_;
   std::vector<DecodingTime>::const_iterator iterator_;
 

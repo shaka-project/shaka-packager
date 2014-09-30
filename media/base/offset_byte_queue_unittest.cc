@@ -15,7 +15,7 @@ namespace media {
 class OffsetByteQueueTest : public testing::Test {
  public:
   virtual void SetUp() OVERRIDE {
-    uint8 buf[256];
+    uint8_t buf[256];
     for (int i = 0; i < 256; i++) {
       buf[i] = i;
     }
@@ -36,7 +36,7 @@ TEST_F(OffsetByteQueueTest, SetUp) {
   EXPECT_EQ(384, queue_->head());
   EXPECT_EQ(512, queue_->tail());
 
-  const uint8* buf;
+  const uint8_t* buf;
   int size;
 
   queue_->Peek(&buf, &size);
@@ -46,7 +46,7 @@ TEST_F(OffsetByteQueueTest, SetUp) {
 }
 
 TEST_F(OffsetByteQueueTest, PeekAt) {
-  const uint8* buf;
+  const uint8_t* buf;
   int size;
 
   queue_->PeekAt(400, &buf, &size);
@@ -68,7 +68,7 @@ TEST_F(OffsetByteQueueTest, Trim) {
   EXPECT_EQ(400, queue_->head());
   EXPECT_EQ(512, queue_->tail());
 
-  const uint8* buf;
+  const uint8_t* buf;
   int size;
   queue_->PeekAt(400, &buf, &size);
   EXPECT_EQ(queue_->tail() - 400, size);

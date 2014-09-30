@@ -31,12 +31,12 @@ class SyncSampleIterator {
   bool IsSyncSample() const;
 
   /// @return true if @a sample (1-based) is a sync sample, false otherwise.
-  bool IsSyncSample(uint32 sample) const;
+  bool IsSyncSample(uint32_t sample) const;
 
  private:
-  uint32 sample_number_;
-  const std::vector<uint32>& sync_sample_vector_;
-  std::vector<uint32>::const_iterator iterator_;
+  uint32_t sample_number_;
+  const std::vector<uint32_t>& sync_sample_vector_;
+  std::vector<uint32_t>::const_iterator iterator_;
   bool is_empty_;
 
   DISALLOW_COPY_AND_ASSIGN(SyncSampleIterator);

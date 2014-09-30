@@ -15,7 +15,7 @@ namespace edash_packager {
 namespace {
 const int kNumBlocksForEstimate = 5;
 const int kFirstOneBlockForEstimate = -1;
-const uint64 kBitsInByte = 8;
+const uint64_t kBitsInByte = 8;
 const int kEstimateRoundError = 1;
 }  // namespace
 
@@ -24,21 +24,21 @@ const int kEstimateRoundError = 1;
 TEST(BandwidthEstimatorTest, FiveBlocksFiveBlocksAdded) {
   BandwidthEstimator be(kNumBlocksForEstimate);
   const double kDuration = 1.0;
-  const uint64 kExpectedResults[] = {
-    // Harmonic mean of [1 * 8], [1 * 8, 2 * 8], ...
-    // 8 is the number of bits in a byte and 1, 2, ... is from the loop
-    // counter below.
-    // Note that these are rounded up.
-    8,
-    11,
-    14,
-    16,
-    18
+  const uint64_t kExpectedResults[] = {
+      // Harmonic mean of [1 * 8], [1 * 8, 2 * 8], ...
+      // 8 is the number of bits in a byte and 1, 2, ... is from the loop
+      // counter below.
+      // Note that these are rounded up.
+      8,
+      11,
+      14,
+      16,
+      18
   };
 
   COMPILE_ASSERT(kNumBlocksForEstimate == arraysize(kExpectedResults),
                  incorrect_number_of_expectations);
-  for (uint64 i = 1; i <= arraysize(kExpectedResults); ++i) {
+  for (uint64_t i = 1; i <= arraysize(kExpectedResults); ++i) {
     be.AddBlock(i, kDuration);
     EXPECT_EQ(kExpectedResults[i - 1], be.Estimate());
   }
@@ -49,13 +49,13 @@ TEST(BandwidthEstimatorTest, FiveBlocksFiveBlocksAdded) {
 TEST(BandwidthEstimatorTest, FiveBlocksNormal) {
   BandwidthEstimator be(kNumBlocksForEstimate);
   const double kDuration = 10.0;
-  const uint64 kNumBlocksToAdd = 200;
-  const uint64 kExptectedEstimate = 800;
+  const uint64_t kNumBlocksToAdd = 200;
+  const uint64_t kExptectedEstimate = 800;
 
   // Doesn't matter what gets passed to the estimator except for the last 5
   // blocks which we add kExptectedEstimate / 8 bytes per second so that the
   // estimate becomes kExptectedEstimate.
-  for (uint64 i = 1; i <= kNumBlocksToAdd; ++i) {
+  for (uint64_t i = 1; i <= kNumBlocksToAdd; ++i) {
     if (i > kNumBlocksToAdd - kNumBlocksForEstimate) {
       be.AddBlock(kExptectedEstimate * kDuration / kBitsInByte, kDuration);
     } else {
@@ -69,13 +69,13 @@ TEST(BandwidthEstimatorTest, FiveBlocksNormal) {
 // Average all the blocks!
 TEST(BandwidthEstimatorTest, AllBlocks) {
   BandwidthEstimator be(BandwidthEstimator::kUseAllBlocks);
-  const uint64 kNumBlocksToAdd = 100;
+  const uint64_t kNumBlocksToAdd = 100;
   const double kDuration = 1.0;
-  for (uint64 i = 1; i <= kNumBlocksToAdd; ++i)
+  for (uint64_t i = 1; i <= kNumBlocksToAdd; ++i)
     be.AddBlock(i, kDuration);
 
   // The harmonic mean of 8, 16, ... , 800; rounded up.
-  const uint64 kExptectedEstimate = 155;
+  const uint64_t kExptectedEstimate = 155;
   EXPECT_EQ(kExptectedEstimate, be.Estimate());
 }
 
@@ -83,7 +83,7 @@ TEST(BandwidthEstimatorTest, AllBlocks) {
 TEST(BandwidthEstimatorTest, FirstOneBlock) {
   BandwidthEstimator be(kFirstOneBlockForEstimate);
   const double kDuration = 11.0;
-  const uint64 kExptectedEstimate = 123456;
+  const uint64_t kExptectedEstimate = 123456;
   be.AddBlock(kExptectedEstimate * kDuration / kBitsInByte, kDuration);
 
   // Anything. Should be ignored.

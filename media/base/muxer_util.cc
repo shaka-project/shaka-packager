@@ -99,9 +99,9 @@ bool ValidateSegmentTemplate(const std::string& segment_template) {
 }
 
 std::string GetSegmentName(const std::string& segment_template,
-                           uint64 segment_start_time,
-                           uint32 segment_index,
-                           uint32 bandwidth) {
+                           uint64_t segment_start_time,
+                           uint32_t segment_index,
+                           uint32_t bandwidth) {
   DCHECK(ValidateSegmentTemplate(segment_template));
 
   std::vector<std::string> splits;
@@ -131,23 +131,23 @@ std::string GetSegmentName(const std::string& segment_template,
     if (format_pos != std::string::npos) {
       format_tag = splits[i].substr(format_pos);
       DCHECK(ValidateFormatTag(format_tag));
-      // Replace %d formatting to correctly format uint64.
+      // Replace %d formatting to correctly format uint64_t.
       format_tag = format_tag.substr(0, format_tag.size() - 1) + PRIu64;
     } else {
-      // Default format tag "%01d", modified to format uint64 correctly.
+      // Default format tag "%01d", modified to format uint64_t correctly.
       format_tag = "%01" PRIu64;
     }
 
     if (identifier == "Number") {
       // SegmentNumber starts from 1.
       segment_name += base::StringPrintf(
-          format_tag.c_str(), static_cast<uint64>(segment_index + 1));
+          format_tag.c_str(), static_cast<uint64_t>(segment_index + 1));
     } else if (identifier == "Time") {
       segment_name +=
           base::StringPrintf(format_tag.c_str(), segment_start_time);
     } else if (identifier == "Bandwidth") {
-      segment_name += base::StringPrintf(
-          format_tag.c_str(), static_cast<uint64>(bandwidth));
+      segment_name += base::StringPrintf(format_tag.c_str(),
+                                         static_cast<uint64_t>(bandwidth));
     }
   }
   return segment_name;

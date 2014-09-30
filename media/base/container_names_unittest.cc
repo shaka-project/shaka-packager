@@ -14,9 +14,9 @@ namespace media {
 // Using a macros to simplify tests. Since EXPECT_EQ outputs the second argument
 // as a string when it fails, this lets the output identify what item actually
 // failed.
-#define VERIFY(buffer, name)                                           \
-  EXPECT_EQ(name,                                                      \
-            DetermineContainer(reinterpret_cast<const uint8*>(buffer), \
+#define VERIFY(buffer, name)                                             \
+  EXPECT_EQ(name,                                                        \
+            DetermineContainer(reinterpret_cast<const uint8_t*>(buffer), \
                                sizeof(buffer)))
 
 // Test that small buffers are handled correctly.
@@ -57,30 +57,30 @@ TEST(ContainerNamesTest, CheckSmallBuffer) {
 // Note that the comparisons need at least 12 bytes, so make sure the buffer is
 // at least that size.
 const char kAmrBuffer[12] = "#!AMR";
-uint8 kAsfBuffer[] = { 0x30, 0x26, 0xb2, 0x75, 0x8e, 0x66, 0xcf, 0x11, 0xa6,
-                       0xd9, 0x00, 0xaa, 0x00, 0x62, 0xce, 0x6c };
+uint8_t kAsfBuffer[] = {0x30, 0x26, 0xb2, 0x75, 0x8e, 0x66, 0xcf, 0x11,
+                        0xa6, 0xd9, 0x00, 0xaa, 0x00, 0x62, 0xce, 0x6c};
 const char kAss1Buffer[] = "[Script Info]";
 const char kAss2Buffer[] = BYTE_ORDER_MARK "[Script Info]";
-uint8 kCafBuffer[] = { 'c', 'a', 'f', 'f', 0, 1, 0, 0, 'd', 'e', 's', 'c', 0, 0,
-                       0, 0, 0, 0, 0, 32, 64, 229, 136, 128, 0, 0, 0, 0, 'a',
-                       'a', 'c', ' ', 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0,
-                       0, 2, 0, 0, 0, 0 };
+uint8_t kCafBuffer[] = {
+    'c', 'a', 'f', 'f', 0,   1, 0, 0, 'd', 'e', 's', 'c', 0,   0, 0, 0, 0, 0, 0,
+    32,  64,  229, 136, 128, 0, 0, 0, 0,   'a', 'a', 'c', ' ', 0, 0, 0, 2, 0, 0,
+    0,   0,   0,   0,   4,   0, 0, 0, 0,   2,   0,   0,   0,   0};
 const char kDtshdBuffer[12] = "DTSHDHDR";
 const char kDxaBuffer[16] = "DEXA";
 const char kFlacBuffer[12] = "fLaC";
-uint8 kFlvBuffer[12] = { 'F', 'L', 'V', 0, 0, 0, 0, 1, 0, 0, 0, 0 };
-uint8 kIrcamBuffer[] = { 0x64, 0xa3, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1 };
+uint8_t kFlvBuffer[12] = {'F', 'L', 'V', 0, 0, 0, 0, 1, 0, 0, 0, 0};
+uint8_t kIrcamBuffer[] = {0x64, 0xa3, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1};
 const char kRm1Buffer[12] = ".RMF\0\0";
 const char kRm2Buffer[12] = ".ra\xfd";
-uint8 kWtvBuffer[] = { 0xb7, 0xd8, 0x00, 0x20, 0x37, 0x49, 0xda, 0x11, 0xa6,
-                       0x4e, 0x00, 0x07, 0xe9, 0x5e, 0xad, 0x8d };
-uint8 kBug263073Buffer[] = {
-    0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x6d, 0x70, 0x34, 0x32,
-    0x00, 0x00, 0x00, 0x00, 0x69, 0x73, 0x6f, 0x6d, 0x6d, 0x70, 0x34, 0x32,
-    0x00, 0x00, 0x00, 0x01, 0x6d, 0x64, 0x61, 0x74, 0x00, 0x00, 0x00, 0x00,
-    0xaa, 0x2e, 0x22, 0xcf, 0x00, 0x00, 0x00, 0x37, 0x67, 0x64, 0x00, 0x28,
-    0xac, 0x2c, 0xa4, 0x01, 0xe0, 0x08, 0x9f, 0x97, 0x01, 0x52, 0x02, 0x02,
-    0x02, 0x80, 0x00, 0x01};
+uint8_t kWtvBuffer[] = {0xb7, 0xd8, 0x00, 0x20, 0x37, 0x49, 0xda, 0x11,
+                        0xa6, 0x4e, 0x00, 0x07, 0xe9, 0x5e, 0xad, 0x8d};
+uint8_t kBug263073Buffer[] = {
+    0x00, 0x00, 0x00, 0x18, 0x66, 0x74, 0x79, 0x70, 0x6d, 0x70, 0x34,
+    0x32, 0x00, 0x00, 0x00, 0x00, 0x69, 0x73, 0x6f, 0x6d, 0x6d, 0x70,
+    0x34, 0x32, 0x00, 0x00, 0x00, 0x01, 0x6d, 0x64, 0x61, 0x74, 0x00,
+    0x00, 0x00, 0x00, 0xaa, 0x2e, 0x22, 0xcf, 0x00, 0x00, 0x00, 0x37,
+    0x67, 0x64, 0x00, 0x28, 0xac, 0x2c, 0xa4, 0x01, 0xe0, 0x08, 0x9f,
+    0x97, 0x01, 0x52, 0x02, 0x02, 0x02, 0x80, 0x00, 0x01};
 
 // Test that containers that start with fixed strings are handled correctly.
 // This is to verify that the TAG matches the first 4 characters of the string.
@@ -108,14 +108,14 @@ void TestFile(MediaContainerName expected, const base::FilePath& filename) {
   // Windows implementation of ReadFile fails if file smaller than desired size,
   // so use file length if file less than 8192 bytes (http://crbug.com/243885).
   int read_size = sizeof(buffer);
-  int64 actual_size;
+  int64_t actual_size;
   if (base::GetFileSize(filename, &actual_size) && actual_size < read_size)
     read_size = actual_size;
   int read = base::ReadFile(filename, buffer, read_size);
 
   // Now verify the type.
   EXPECT_EQ(expected,
-            DetermineContainer(reinterpret_cast<const uint8*>(buffer), read))
+            DetermineContainer(reinterpret_cast<const uint8_t*>(buffer), read))
       << "Failure with file " << filename.value();
 }
 

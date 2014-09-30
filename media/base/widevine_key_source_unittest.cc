@@ -44,7 +44,7 @@ const char kClassicTrackFormat[] = "{\"type\":\"%s\",\"key\":\"%s\"}";
 const char kLicenseResponseFormat[] = "{\"status\":\"%s\",\"tracks\":[%s]}";
 const char kHttpResponseFormat[] = "{\"response\":\"%s\"}";
 const char kRequestPsshData[] = "PSSH data";
-const uint32 kClassicAssetId = 1234;
+const uint32_t kClassicAssetId = 1234;
 
 std::string Base64Encode(const std::string& input) {
   std::string output;
@@ -52,7 +52,7 @@ std::string Base64Encode(const std::string& input) {
   return output;
 }
 
-std::string ToString(const std::vector<uint8> v) {
+std::string ToString(const std::vector<uint8_t> v) {
   return std::string(v.begin(), v.end());
 }
 
@@ -150,9 +150,9 @@ class WidevineKeySourceTest : public ::testing::Test {
         mock_http_fetcher_(new MockHttpFetcher()) {}
 
   virtual void SetUp() OVERRIDE {
-    content_id_.assign(reinterpret_cast<const uint8*>(kContentId),
-                       reinterpret_cast<const uint8*>(kContentId) +
-                       strlen(kContentId));
+    content_id_.assign(
+        reinterpret_cast<const uint8_t*>(kContentId),
+        reinterpret_cast<const uint8_t*>(kContentId) + strlen(kContentId));
   }
 
  protected:
@@ -183,7 +183,7 @@ class WidevineKeySourceTest : public ::testing::Test {
   scoped_ptr<MockRequestSigner> mock_request_signer_;
   scoped_ptr<MockHttpFetcher> mock_http_fetcher_;
   scoped_ptr<WidevineKeySource> widevine_key_source_;
-  std::vector<uint8> content_id_;
+  std::vector<uint8_t> content_id_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WidevineKeySourceTest);
@@ -274,9 +274,9 @@ TEST_F(WidevineKeySourceTest, LicenseStatusCencWithPsshDataOK) {
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
   CreateWidevineKeySource();
-  std::vector<uint8> pssh_data(
-      reinterpret_cast<const uint8*>(kRequestPsshData),
-      reinterpret_cast<const uint8*>(kRequestPsshData) + strlen(kContentId));
+  std::vector<uint8_t> pssh_data(
+      reinterpret_cast<const uint8_t*>(kRequestPsshData),
+      reinterpret_cast<const uint8_t*>(kRequestPsshData) + strlen(kContentId));
   ASSERT_OK(widevine_key_source_->FetchKeys(pssh_data));
   VerifyKeys(false);
 }
@@ -366,16 +366,17 @@ const char kCryptoPeriodTrackFormat[] =
     "\"%s\",\"pssh\":[{\"drm_type\":\"WIDEVINE\",\"data\":\"\"}], "
     "\"crypto_period_index\":%u}";
 
-std::string GetMockKey(const std::string& track_type, uint32 index) {
+std::string GetMockKey(const std::string& track_type, uint32_t index) {
   return "MockKey" + track_type + "@" + base::UintToString(index);
 }
 
 std::string GenerateMockKeyRotationLicenseResponse(
-    uint32 initial_crypto_period_index, uint32 crypto_period_count) {
+    uint32_t initial_crypto_period_index,
+    uint32_t crypto_period_count) {
   const std::string kTrackTypes[] = {"SD", "HD", "AUDIO"};
   std::string tracks;
-  for (uint32 index = initial_crypto_period_index;
-      index < initial_crypto_period_index + crypto_period_count;
+  for (uint32_t index = initial_crypto_period_index;
+       index < initial_crypto_period_index + crypto_period_count;
        ++index) {
     for (size_t i = 0; i < 3; ++i) {
       if (!tracks.empty())
@@ -393,13 +394,13 @@ std::string GenerateMockKeyRotationLicenseResponse(
 }  // namespace
 
 TEST_F(WidevineKeySourceTest, KeyRotationTest) {
-  const uint32 kFirstCryptoPeriodIndex = 8;
-  const uint32 kCryptoPeriodCount = 10;
+  const uint32_t kFirstCryptoPeriodIndex = 8;
+  const uint32_t kCryptoPeriodCount = 10;
   // Array of indexes to be checked.
-  const uint32 kCryptoPeriodIndexes[] = {kFirstCryptoPeriodIndex, 17, 37,
-                                         38,                      36, 39};
+  const uint32_t kCryptoPeriodIndexes[] = {
+      kFirstCryptoPeriodIndex, 17, 37, 38, 36, 39};
   // Derived from kCryptoPeriodIndexes: ceiling((39 - 8 ) / 10).
-  const uint32 kCryptoIterations = 4;
+  const uint32_t kCryptoIterations = 4;
 
   // Generate expectations in sequence.
   InSequence dummy;
@@ -412,8 +413,8 @@ TEST_F(WidevineKeySourceTest, KeyRotationTest) {
   EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
-  for (uint32 i = 0; i < kCryptoIterations; ++i) {
-    uint32 first_crypto_period_index =
+  for (uint32_t i = 0; i < kCryptoIterations; ++i) {
+    uint32_t first_crypto_period_index =
         kFirstCryptoPeriodIndex - 1 + i * kCryptoPeriodCount;
     std::string expected_message =
         base::StringPrintf(kCryptoPeriodRequestMessageFormat,

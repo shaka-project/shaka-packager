@@ -47,7 +47,7 @@ class Muxer {
   ///        in seconds. A positive value means key rotation is enabled, the
   ///        key source must support key rotation in this case.
   void SetKeySource(KeySource* encryption_key_source,
-                    uint32 max_sd_pixels,
+                    uint32_t max_sd_pixels,
                     double clear_lead_in_seconds,
                     double crypto_period_duration_in_seconds);
 
@@ -78,7 +78,7 @@ class Muxer {
   KeySource* encryption_key_source() {
     return encryption_key_source_;
   }
-  uint32 max_sd_pixels() const { return max_sd_pixels_; }
+  uint32_t max_sd_pixels() const { return max_sd_pixels_; }
   double clear_lead_in_seconds() const { return clear_lead_in_seconds_; }
   double crypto_period_duration_in_seconds() const {
     return crypto_period_duration_in_seconds_;
@@ -107,7 +107,7 @@ class Muxer {
   bool initialized_;
   std::vector<MediaStream*> streams_;
   KeySource* encryption_key_source_;
-  uint32 max_sd_pixels_;
+  uint32_t max_sd_pixels_;
   double clear_lead_in_seconds_;
   double crypto_period_duration_in_seconds_;
 

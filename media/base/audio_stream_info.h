@@ -38,15 +38,15 @@ class AudioStreamInfo : public StreamInfo {
  public:
   /// Construct an initialized audio stream info object.
   AudioStreamInfo(int track_id,
-                  uint32 time_scale,
-                  uint64 duration,
+                  uint32_t time_scale,
+                  uint64_t duration,
                   AudioCodec codec,
                   const std::string& codec_string,
                   const std::string& language,
-                  uint8 sample_bits,
-                  uint8 num_channels,
-                  uint32 sampling_frequency,
-                  const uint8* extra_data,
+                  uint8_t sample_bits,
+                  uint8_t num_channels,
+                  uint32_t sampling_frequency,
+                  const uint8_t* extra_data,
                   size_t extra_data_size,
                   bool is_encrypted);
 
@@ -57,30 +57,31 @@ class AudioStreamInfo : public StreamInfo {
   /// @}
 
   AudioCodec codec() const { return codec_; }
-  uint8 sample_bits() const { return sample_bits_; }
-  uint8 sample_bytes() const { return sample_bits_ / 8; }
-  uint8 num_channels() const { return num_channels_; }
-  uint32 sampling_frequency() const { return sampling_frequency_; }
-  uint32 bytes_per_frame() const {
-    return static_cast<uint32>(num_channels_) * sample_bits_ / 8;
+  uint8_t sample_bits() const { return sample_bits_; }
+  uint8_t sample_bytes() const { return sample_bits_ / 8; }
+  uint8_t num_channels() const { return num_channels_; }
+  uint32_t sampling_frequency() const { return sampling_frequency_; }
+  uint32_t bytes_per_frame() const {
+    return static_cast<uint32_t>(num_channels_) * sample_bits_ / 8;
   }
 
-  void set_sampling_frequency(const uint32 sampling_frequency) {
+  void set_sampling_frequency(const uint32_t sampling_frequency) {
     sampling_frequency_ = sampling_frequency;
   }
 
 
   /// @param audio_object_type is only used by AAC Codec, ignored otherwise.
   /// @return The codec string.
-  static std::string GetCodecString(AudioCodec codec, uint8 audio_object_type);
+  static std::string GetCodecString(AudioCodec codec,
+                                    uint8_t audio_object_type);
 
  private:
   virtual ~AudioStreamInfo();
 
   AudioCodec codec_;
-  uint8 sample_bits_;
-  uint8 num_channels_;
-  uint32 sampling_frequency_;
+  uint8_t sample_bits_;
+  uint8_t num_channels_;
+  uint32_t sampling_frequency_;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the extra data is

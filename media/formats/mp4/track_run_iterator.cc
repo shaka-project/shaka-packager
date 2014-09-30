@@ -25,19 +25,19 @@ struct SampleInfo {
 };
 
 struct TrackRunInfo {
-  uint32 track_id;
+  uint32_t track_id;
   std::vector<SampleInfo> samples;
-  int64 timescale;
-  int64 start_dts;
-  int64 sample_start_offset;
+  int64_t timescale;
+  int64_t start_dts;
+  int64_t sample_start_offset;
 
   TrackType track_type;
   const AudioSampleEntry* audio_description;
   const VideoSampleEntry* video_description;
 
-  int64 aux_info_start_offset;  // Only valid if aux_info_total_size > 0.
+  int64_t aux_info_start_offset;  // Only valid if aux_info_total_size > 0.
   int aux_info_default_size;
-  std::vector<uint8> aux_info_sizes;  // Populated if default_size == 0.
+  std::vector<uint8_t> aux_info_sizes;  // Populated if default_size == 0.
   int aux_info_total_size;
 
   TrackRunInfo();
@@ -67,7 +67,7 @@ TrackRunIterator::~TrackRunIterator() {}
 static void PopulateSampleInfo(const TrackExtends& trex,
                                const TrackFragmentHeader& tfhd,
                                const TrackFragmentRun& trun,
-                               const uint32 i,
+                               const uint32_t i,
                                SampleInfo* sample_info) {
   if (i < trun.sample_sizes.size()) {
     sample_info->size = trun.sample_sizes[i];
@@ -91,7 +91,7 @@ static void PopulateSampleInfo(const TrackExtends& trex,
     sample_info->cts_offset = 0;
   }
 
-  uint32 flags;
+  uint32_t flags;
   if (i < trun.sample_flags.size()) {
     flags = trun.sample_flags[i];
   } else if (tfhd.flags & TrackFragmentHeader::kDefaultSampleFlagsPresentMask) {
@@ -116,13 +116,13 @@ static void PopulateSampleInfo(const TrackExtends& trex,
 class CompareMinTrackRunDataOffset {
  public:
   bool operator()(const TrackRunInfo& a, const TrackRunInfo& b) {
-    int64 a_aux = a.aux_info_total_size ? a.aux_info_start_offset : kint64max;
-    int64 b_aux = b.aux_info_total_size ? b.aux_info_start_offset : kint64max;
+    int64_t a_aux = a.aux_info_total_size ? a.aux_info_start_offset : kint64max;
+    int64_t b_aux = b.aux_info_total_size ? b.aux_info_start_offset : kint64max;
 
-    int64 a_lesser = std::min(a_aux, a.sample_start_offset);
-    int64 a_greater = std::max(a_aux, a.sample_start_offset);
-    int64 b_lesser = std::min(b_aux, b.sample_start_offset);
-    int64 b_greater = std::max(b_aux, b.sample_start_offset);
+    int64_t a_lesser = std::min(a_aux, a.sample_start_offset);
+    int64_t a_greater = std::max(a_aux, a.sample_start_offset);
+    int64_t b_lesser = std::min(b_aux, b.sample_start_offset);
+    int64_t b_greater = std::max(b_aux, b.sample_start_offset);
 
     if (a_lesser == b_lesser)
       return a_greater < b_greater;
@@ -169,13 +169,13 @@ bool TrackRunIterator::Init() {
 
     const SampleSize& sample_size =
         trak->media.information.sample_table.sample_size;
-    const std::vector<uint64>& chunk_offset_vector =
+    const std::vector<uint64_t>& chunk_offset_vector =
         trak->media.information.sample_table.chunk_large_offset.offsets;
 
-    int64 run_start_dts = 0;
+    int64_t run_start_dts = 0;
 
-    uint32 num_samples = sample_size.sample_count;
-    uint32 num_chunks = chunk_offset_vector.size();
+    uint32_t num_samples = sample_size.sample_count;
+    uint32_t num_chunks = chunk_offset_vector.size();
 
     // Check that total number of samples match.
     DCHECK_EQ(num_samples, decoding_time.NumSamples());
@@ -191,8 +191,8 @@ bool TrackRunIterator::Init() {
       RCHECK(chunk_info.IsValid());
     }
 
-    uint32 sample_index = 0;
-    for (uint32 chunk_index = 0; chunk_index < num_chunks; ++chunk_index) {
+    uint32_t sample_index = 0;
+    for (uint32_t chunk_index = 0; chunk_index < num_chunks; ++chunk_index) {
       RCHECK(chunk_info.current_chunk() == chunk_index + 1);
 
       TrackRunInfo tri;
@@ -201,7 +201,7 @@ bool TrackRunIterator::Init() {
       tri.start_dts = run_start_dts;
       tri.sample_start_offset = chunk_offset_vector[chunk_index];
 
-      uint32 desc_idx = chunk_info.sample_description_index();
+      uint32_t desc_idx = chunk_info.sample_description_index();
       RCHECK(desc_idx > 0);  // Descriptions are one-indexed in the file.
       desc_idx -= 1;
 
@@ -222,9 +222,9 @@ bool TrackRunIterator::Init() {
         RCHECK(!tri.video_description->sinf.info.track_encryption.is_encrypted);
       }
 
-      uint32 samples_per_chunk = chunk_info.samples_per_chunk();
+      uint32_t samples_per_chunk = chunk_info.samples_per_chunk();
       tri.samples.resize(samples_per_chunk);
-      for (uint32 k = 0; k < samples_per_chunk; ++k) {
+      for (uint32_t k = 0; k < samples_per_chunk; ++k) {
         SampleInfo& sample = tri.samples[k];
         sample.size = sample_size.sample_size != 0
                           ? sample_size.sample_size
@@ -294,7 +294,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
     RCHECK(desc_idx > 0);  // Descriptions are one-indexed in the file
     desc_idx -= 1;
 
-    int64 run_start_dts = traf.decode_time.decode_time;
+    int64_t run_start_dts = traf.decode_time.decode_time;
     int sample_count_sum = 0;
 
     for (size_t j = 0; j < traf.runs.size(); j++) {
@@ -330,7 +330,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
         tri.aux_info_default_size =
             traf.auxiliary_size.default_sample_info_size;
         if (tri.aux_info_default_size == 0) {
-          const std::vector<uint8>& sizes =
+          const std::vector<uint8_t>& sizes =
               traf.auxiliary_size.sample_info_sizes;
           tri.aux_info_sizes.insert(
               tri.aux_info_sizes.begin(),
@@ -400,11 +400,11 @@ bool TrackRunIterator::AuxInfoNeedsToBeCached() {
 }
 
 // This implementation currently only caches CENC auxiliary info.
-bool TrackRunIterator::CacheAuxInfo(const uint8* buf, int buf_size) {
+bool TrackRunIterator::CacheAuxInfo(const uint8_t* buf, int buf_size) {
   RCHECK(AuxInfoNeedsToBeCached() && buf_size >= aux_info_size());
 
   cenc_info_.resize(run_itr_->samples.size());
-  int64 pos = 0;
+  int64_t pos = 0;
   for (size_t i = 0; i < run_itr_->samples.size(); i++) {
     int info_size = run_itr_->aux_info_default_size;
     if (!info_size)
@@ -430,8 +430,8 @@ bool TrackRunIterator::IsSampleValid() const {
 // (The stronger condition - that no data is required before the minimum data
 // offset of this track alone - is not guaranteed, because the BMFF spec does
 // not have any inter-run ordering restrictions.)
-int64 TrackRunIterator::GetMaxClearOffset() {
-  int64 offset = kint64max;
+int64_t TrackRunIterator::GetMaxClearOffset() {
+  int64_t offset = kint64max;
 
   if (IsSampleValid()) {
     offset = std::min(offset, sample_offset_);
@@ -451,7 +451,7 @@ int64 TrackRunIterator::GetMaxClearOffset() {
   return offset;
 }
 
-uint32 TrackRunIterator::track_id() const {
+uint32_t TrackRunIterator::track_id() const {
   DCHECK(IsRunValid());
   return run_itr_->track_id;
 }
@@ -461,7 +461,7 @@ bool TrackRunIterator::is_encrypted() const {
   return track_encryption().is_encrypted;
 }
 
-int64 TrackRunIterator::aux_info_offset() const {
+int64_t TrackRunIterator::aux_info_offset() const {
   return run_itr_->aux_info_start_offset;
 }
 
@@ -491,7 +491,7 @@ const VideoSampleEntry& TrackRunIterator::video_description() const {
   return *run_itr_->video_description;
 }
 
-int64 TrackRunIterator::sample_offset() const {
+int64_t TrackRunIterator::sample_offset() const {
   DCHECK(IsSampleValid());
   return sample_offset_;
 }
@@ -501,17 +501,17 @@ int TrackRunIterator::sample_size() const {
   return sample_itr_->size;
 }
 
-int64 TrackRunIterator::dts() const {
+int64_t TrackRunIterator::dts() const {
   DCHECK(IsSampleValid());
   return sample_dts_;
 }
 
-int64 TrackRunIterator::cts() const {
+int64_t TrackRunIterator::cts() const {
   DCHECK(IsSampleValid());
   return sample_dts_ + sample_itr_->cts_offset;
 }
 
-int64 TrackRunIterator::duration() const {
+int64_t TrackRunIterator::duration() const {
   DCHECK(IsSampleValid());
   return sample_itr_->duration;
 }

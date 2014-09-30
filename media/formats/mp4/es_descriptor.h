@@ -34,21 +34,21 @@ class ESDescriptor {
   ESDescriptor();
   ~ESDescriptor();
 
-  bool Parse(const std::vector<uint8>& data);
+  bool Parse(const std::vector<uint8_t>& data);
   void Write(BufferWriter* writer) const;
   size_t ComputeSize() const;
 
-  uint16 esid() const { return esid_; }
-  void set_esid(uint16 esid) { esid_ = esid; }
+  uint16_t esid() const { return esid_; }
+  void set_esid(uint16_t esid) { esid_ = esid; }
 
   ObjectType object_type() const { return object_type_; }
   void set_object_type(ObjectType object_type) { object_type_ = object_type; }
 
-  const std::vector<uint8>& decoder_specific_info() const {
+  const std::vector<uint8_t>& decoder_specific_info() const {
     return decoder_specific_info_;
   }
   void set_decoder_specific_info(
-      const std::vector<uint8>& decoder_specific_info) {
+      const std::vector<uint8_t>& decoder_specific_info) {
     decoder_specific_info_ = decoder_specific_info;
   }
 
@@ -68,9 +68,9 @@ class ESDescriptor {
   bool ParseDecoderConfigDescriptor(BitReader* reader);
   bool ParseDecoderSpecificInfo(BitReader* reader);
 
-  uint16 esid_;  // Elementary Stream ID.
+  uint16_t esid_;  // Elementary Stream ID.
   ObjectType object_type_;
-  std::vector<uint8> decoder_specific_info_;
+  std::vector<uint8_t> decoder_specific_info_;
 };
 
 }  // namespace mp4

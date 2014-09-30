@@ -24,16 +24,16 @@ H264ByteToUnitStreamConverter::H264ByteToUnitStreamConverter() {}
 H264ByteToUnitStreamConverter::~H264ByteToUnitStreamConverter() {}
 
 bool H264ByteToUnitStreamConverter::ConvertByteStreamToNalUnitStream(
-    const uint8* input_frame,
+    const uint8_t* input_frame,
     size_t input_frame_size,
-    std::vector<uint8>* output_frame) {
+    std::vector<uint8_t>* output_frame) {
   DCHECK(input_frame);
   DCHECK(output_frame);
 
   BufferWriter output_buffer(input_frame_size + kStreamConversionOverhead);
 
-  const uint8* input_ptr(input_frame);
-  const uint8* input_end(input_ptr + input_frame_size);
+  const uint8_t* input_ptr(input_frame);
+  const uint8_t* input_end(input_ptr + input_frame_size);
   off_t next_start_code_offset;
   off_t next_start_code_size;
   bool first_nalu(true);
@@ -64,17 +64,16 @@ bool H264ByteToUnitStreamConverter::ConvertByteStreamToNalUnitStream(
   return true;
 }
 
-void H264ByteToUnitStreamConverter::ProcessNalu(
-    const uint8* nalu_ptr,
-    size_t nalu_size,
-    BufferWriter* output_buffer) {
+void H264ByteToUnitStreamConverter::ProcessNalu(const uint8_t* nalu_ptr,
+                                                size_t nalu_size,
+                                                BufferWriter* output_buffer) {
   DCHECK(nalu_ptr);
   DCHECK(output_buffer);
 
   if (!nalu_size)
     return;  // Edge case.
 
-  uint8 nalu_type = *nalu_ptr & 0x0f;
+  uint8_t nalu_type = *nalu_ptr & 0x0f;
   switch (nalu_type) {
     case H264NALU::kSPS:
       // Grab SPS NALU.
@@ -93,12 +92,12 @@ void H264ByteToUnitStreamConverter::ProcessNalu(
   }
 
   // Append 4-byte length and NAL unit data to the buffer.
-  output_buffer->AppendInt(static_cast<uint32>(nalu_size));
+  output_buffer->AppendInt(static_cast<uint32_t>(nalu_size));
   output_buffer->AppendArray(nalu_ptr, nalu_size);
 }
 
 bool H264ByteToUnitStreamConverter::GetAVCDecoderConfigurationRecord(
-    std::vector<uint8>* decoder_config) {
+    std::vector<uint8_t>* decoder_config) {
   DCHECK(decoder_config);
 
   if ((last_sps_.size() < 4) || last_pps_.empty()) {
@@ -109,20 +108,20 @@ bool H264ByteToUnitStreamConverter::GetAVCDecoderConfigurationRecord(
   // Construct an AVCDecoderConfigurationRecord containing a single SPS and a
   // single PPS NALU. Please refer to ISO/IEC 14496-15 for format specifics.
   BufferWriter buffer(last_sps_.size() + last_pps_.size() + 11);
-  uint8 version(1);
+  uint8_t version(1);
   buffer.AppendInt(version);
   buffer.AppendInt(last_sps_[1]);
   buffer.AppendInt(last_sps_[2]);
   buffer.AppendInt(last_sps_[3]);
-  uint8 reserved_and_length_size_minus_one(0xff);
+  uint8_t reserved_and_length_size_minus_one(0xff);
   buffer.AppendInt(reserved_and_length_size_minus_one);
-  uint8 reserved_and_num_sps(0xe1);
+  uint8_t reserved_and_num_sps(0xe1);
   buffer.AppendInt(reserved_and_num_sps);
-  buffer.AppendInt(static_cast<uint16>(last_sps_.size()));
+  buffer.AppendInt(static_cast<uint16_t>(last_sps_.size()));
   buffer.AppendVector(last_sps_);
-  uint8 num_pps(1);
+  uint8_t num_pps(1);
   buffer.AppendInt(num_pps);
-  buffer.AppendInt(static_cast<uint16>(last_pps_.size()));
+  buffer.AppendInt(static_cast<uint16_t>(last_pps_.size()));
   buffer.AppendVector(last_pps_);
   buffer.SwapBuffer(decoder_config);
 

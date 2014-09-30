@@ -93,7 +93,7 @@ bool Positive(double d) {
 }
 
 // Return current time in XML DateTime format.
-std::string XmlDateTimeNowWithOffset(int32 offset_seconds) {
+std::string XmlDateTimeNowWithOffset(int32_t offset_seconds) {
   base::Time time = base::Time::Now();
   time += base::TimeDelta::FromSeconds(offset_seconds);
   base::Time::Exploded time_exploded;
@@ -114,7 +114,7 @@ void SetIfPositive(const char* attr_name, double value, XmlNode* mpd) {
   }
 }
 
-uint32 GetTimeScale(const MediaInfo& media_info) {
+uint32_t GetTimeScale(const MediaInfo& media_info) {
   if (media_info.has_reference_time_scale()) {
     return media_info.reference_time_scale();
   }
@@ -131,17 +131,17 @@ uint32 GetTimeScale(const MediaInfo& media_info) {
   return 1;
 }
 
-uint64 LastSegmentStartTime(const SegmentInfo& segment_info) {
+uint64_t LastSegmentStartTime(const SegmentInfo& segment_info) {
   return segment_info.start_time + segment_info.duration * segment_info.repeat;
 }
 
 // This is equal to |segment_info| end time
-uint64 LastSegmentEndTime(const SegmentInfo& segment_info) {
+uint64_t LastSegmentEndTime(const SegmentInfo& segment_info) {
   return segment_info.start_time +
          segment_info.duration * (segment_info.repeat + 1);
 }
 
-uint64 LatestSegmentStartTime(const std::list<SegmentInfo>& segments) {
+uint64_t LatestSegmentStartTime(const std::list<SegmentInfo>& segments) {
   DCHECK(!segments.empty());
   const SegmentInfo& latest_segment = segments.back();
   return LastSegmentStartTime(latest_segment);
@@ -149,7 +149,7 @@ uint64 LatestSegmentStartTime(const std::list<SegmentInfo>& segments) {
 
 // Given |timeshift_limit|, finds out the number of segments that are no longer
 // valid and should be removed from |segment_info|.
-int SearchTimedOutRepeatIndex(uint64 timeshift_limit,
+int SearchTimedOutRepeatIndex(uint64_t timeshift_limit,
                               const SegmentInfo& segment_info) {
   DCHECK_LE(timeshift_limit, LastSegmentEndTime(segment_info));
   if (timeshift_limit < segment_info.start_time)
@@ -423,7 +423,7 @@ bool MpdBuilder::GetEarliestTimestamp(double* timestamp_seconds) {
   return true;
 }
 
-AdaptationSet::AdaptationSet(uint32 adaptation_set_id,
+AdaptationSet::AdaptationSet(uint32_t adaptation_set_id,
                              const MpdOptions& mpd_options,
                              base::AtomicSequenceNumber* counter)
     : representations_deleter_(&representations_),
@@ -500,15 +500,15 @@ bool AdaptationSet::GetEarliestTimestamp(double* timestamp_seconds) {
   return true;
 }
 
-
 Representation::Representation(const MediaInfo& media_info,
                                const MpdOptions& mpd_options,
-                               uint32 id)
+                               uint32_t id)
     : media_info_(media_info),
       id_(id),
       bandwidth_estimator_(BandwidthEstimator::kUseAllBlocks),
       mpd_options_(mpd_options),
-      start_number_(1) {}
+      start_number_(1) {
+}
 
 Representation::~Representation() {}
 
@@ -553,9 +553,9 @@ void Representation::AddContentProtectionElement(
   RemoveDuplicateAttributes(&content_protection_elements_.back());
 }
 
-void Representation::AddNewSegment(uint64 start_time,
-                                   uint64 duration,
-                                   uint64 size) {
+void Representation::AddNewSegment(uint64_t start_time,
+                                   uint64_t duration,
+                                   uint64_t size) {
   if (start_time == 0 && duration == 0) {
     LOG(WARNING) << "Got segment with start_time and duration == 0. Ignoring.";
     return;
@@ -590,9 +590,9 @@ xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
     return xml::ScopedXmlPtr<xmlNode>::type();
   }
 
-  const uint64 bandwidth = media_info_.has_bandwidth()
-                               ? media_info_.bandwidth()
-                               : bandwidth_estimator_.Estimate();
+  const uint64_t bandwidth = media_info_.has_bandwidth()
+                                 ? media_info_.bandwidth()
+                                 : bandwidth_estimator_.Estimate();
 
   DCHECK(!(HasVODOnlyFields(media_info_) && HasLiveOnlyFields(media_info_)));
 
@@ -670,17 +670,16 @@ bool Representation::HasRequiredMediaInfoFields() {
 // In Debug builds, some of the irregular cases crash. It is probably a
 // programming error but in production, it might not be best to stop the
 // pipeline, especially for live.
-bool Representation::IsContiguous(uint64 start_time,
-                                  uint64 duration,
-                                  uint64 size) const {
+bool Representation::IsContiguous(uint64_t start_time,
+                                  uint64_t duration,
+                                  uint64_t size) const {
   if (segment_infos_.empty() || segment_infos_.back().duration != duration)
     return false;
 
   // Contiguous segment.
   const SegmentInfo& previous = segment_infos_.back();
-  const uint64 previous_segment_end_time =
-      previous.start_time +
-      previous.duration * (previous.repeat + 1);
+  const uint64_t previous_segment_end_time =
+      previous.start_time + previous.duration * (previous.repeat + 1);
   if (previous_segment_end_time == start_time)
     return true;
 
@@ -689,9 +688,8 @@ bool Representation::IsContiguous(uint64 start_time,
     return false;
 
   // No out of order segments.
-  const uint64 previous_segment_start_time =
-      previous.start_time +
-      previous.duration * previous.repeat;
+  const uint64_t previous_segment_start_time =
+      previous.start_time + previous.duration * previous.repeat;
   if (previous_segment_start_time >= start_time) {
     LOG(ERROR) << "Segments should not be out of order segment. Adding segment "
                   "with start_time == " << start_time
@@ -702,7 +700,7 @@ bool Representation::IsContiguous(uint64 start_time,
   }
 
   // No overlapping segments.
-  const uint64 kRoundingErrorGrace = 5;
+  const uint64_t kRoundingErrorGrace = 5;
   if (start_time < previous_segment_end_time - kRoundingErrorGrace) {
     LOG(WARNING)
         << "Segments shold not be overlapping. The new segment starts at "
@@ -721,19 +719,19 @@ void Representation::SlideWindow() {
   if (mpd_options_.time_shift_buffer_depth <= 0.0)
     return;
 
-  const uint32 time_scale = GetTimeScale(media_info_);
+  const uint32_t time_scale = GetTimeScale(media_info_);
   DCHECK_GT(time_scale, 0u);
 
-  uint64 time_shift_buffer_depth =
-      static_cast<uint64>(mpd_options_.time_shift_buffer_depth * time_scale);
+  uint64_t time_shift_buffer_depth =
+      static_cast<uint64_t>(mpd_options_.time_shift_buffer_depth * time_scale);
 
   // The start time of the latest segment is considered the current_play_time,
   // and this should guarantee that the latest segment will stay in the list.
-  const uint64 current_play_time = LatestSegmentStartTime(segment_infos_);
+  const uint64_t current_play_time = LatestSegmentStartTime(segment_infos_);
   if (current_play_time <= time_shift_buffer_depth)
     return;
 
-  const uint64 timeshift_limit = current_play_time - time_shift_buffer_depth;
+  const uint64_t timeshift_limit = current_play_time - time_shift_buffer_depth;
 
   // First remove all the SegmentInfos that are completely out of range, by
   // looking at the very last segment's end time.
@@ -741,7 +739,7 @@ void Representation::SlideWindow() {
   std::list<SegmentInfo>::iterator last = first;
   size_t num_segments_removed = 0;
   for (; last != segment_infos_.end(); ++last) {
-    const uint64 last_segment_end_time = LastSegmentEndTime(*last);
+    const uint64_t last_segment_end_time = LastSegmentEndTime(*last);
     if (timeshift_limit < last_segment_end_time)
       break;
     num_segments_removed += last->repeat + 1;

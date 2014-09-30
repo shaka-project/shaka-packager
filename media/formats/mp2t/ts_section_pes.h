@@ -24,7 +24,8 @@ class TsSectionPes : public TsSection {
 
   // TsSection implementation.
   virtual bool Parse(bool payload_unit_start_indicator,
-                     const uint8* buf, int size) OVERRIDE;
+                     const uint8_t* buf,
+                     int size) OVERRIDE;
   virtual void Flush() OVERRIDE;
   virtual void Reset() OVERRIDE;
 
@@ -36,7 +37,7 @@ class TsSectionPes : public TsSection {
   bool Emit(bool emit_for_unknown_size);
 
   // Parse a PES packet, return true if successful.
-  bool ParseInternal(const uint8* raw_pes, int raw_pes_size);
+  bool ParseInternal(const uint8_t* raw_pes, int raw_pes_size);
 
   void ResetPesState();
 
@@ -51,9 +52,9 @@ class TsSectionPes : public TsSection {
 
   // Used to unroll PTS and DTS.
   bool previous_pts_valid_;
-  int64 previous_pts_;
+  int64_t previous_pts_;
   bool previous_dts_valid_;
-  int64 previous_dts_;
+  int64_t previous_dts_;
 
   DISALLOW_COPY_AND_ASSIGN(TsSectionPes);
 };

@@ -36,29 +36,29 @@ class ChunkInfoIterator {
   bool IsValid() const;
 
   /// @return Current chunk.
-  uint32 current_chunk() const { return current_chunk_; }
+  uint32_t current_chunk() const { return current_chunk_; }
 
   /// @return Samples per chunk for current chunk.
-  uint32 samples_per_chunk() const { return iterator_->samples_per_chunk; }
+  uint32_t samples_per_chunk() const { return iterator_->samples_per_chunk; }
 
   /// @return Sample description index for current chunk.
-  uint32 sample_description_index() const {
+  uint32_t sample_description_index() const {
     return iterator_->sample_description_index;
   }
 
   /// @return Number of samples from start_chunk to end_chunk, both 1-based,
   ///         inclusive.
-  uint32 NumSamples(uint32 start_chunk, uint32 end_chunk) const;
+  uint32_t NumSamples(uint32_t start_chunk, uint32_t end_chunk) const;
 
   /// @return The last first_chunk in chunk_info_table.
-  uint32 LastFirstChunk() const {
+  uint32_t LastFirstChunk() const {
     return chunk_info_table_.empty() ? 0
                                      : chunk_info_table_.back().first_chunk;
   }
 
  private:
-  uint32 chunk_sample_index_;
-  uint32 current_chunk_;
+  uint32_t chunk_sample_index_;
+  uint32_t current_chunk_;
   const std::vector<ChunkInfo>& chunk_info_table_;
   std::vector<ChunkInfo>::const_iterator iterator_;
 

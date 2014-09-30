@@ -28,12 +28,12 @@ AesRequestSigner::~AesRequestSigner() {}
 AesRequestSigner* AesRequestSigner::CreateSigner(const std::string& signer_name,
                                                  const std::string& aes_key_hex,
                                                  const std::string& iv_hex) {
-  std::vector<uint8> aes_key;
+  std::vector<uint8_t> aes_key;
   if (!base::HexStringToBytes(aes_key_hex, &aes_key)) {
     LOG(ERROR) << "Failed to convert hex string to bytes: " << aes_key_hex;
     return NULL;
   }
-  std::vector<uint8> iv;
+  std::vector<uint8_t> iv;
   if (!base::HexStringToBytes(iv_hex, &iv)) {
     LOG(ERROR) << "Failed to convert hex string to bytes: " << iv_hex;
     return NULL;

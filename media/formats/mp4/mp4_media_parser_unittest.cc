@@ -26,13 +26,15 @@ class MP4MediaParserTest : public testing::Test {
   scoped_ptr<MP4MediaParser> parser_;
   bool configs_received_;
 
-  bool AppendData(const uint8* data, size_t length) {
+  bool AppendData(const uint8_t* data, size_t length) {
     return parser_->Parse(data, length);
   }
 
-  bool AppendDataInPieces(const uint8* data, size_t length, size_t piece_size) {
-    const uint8* start = data;
-    const uint8* end = data + length;
+  bool AppendDataInPieces(const uint8_t* data,
+                          size_t length,
+                          size_t piece_size) {
+    const uint8_t* start = data;
+    const uint8_t* end = data + length;
     while (start < end) {
       size_t append_size = std::min(piece_size,
                                     static_cast<size_t>(end - start));
@@ -48,7 +50,7 @@ class MP4MediaParserTest : public testing::Test {
       configs_received_ = true;
   }
 
-  bool NewSampleF(uint32 track_id, const scoped_refptr<MediaSample>& sample) {
+  bool NewSampleF(uint32_t track_id, const scoped_refptr<MediaSample>& sample) {
     DVLOG(2) << "Track Id: " << track_id << " "
              << sample->ToString();
     return true;
@@ -64,7 +66,7 @@ class MP4MediaParserTest : public testing::Test {
   bool ParseMP4File(const std::string& filename, int append_bytes) {
     InitializeParser();
 
-    std::vector<uint8> buffer = ReadTestDataFile(filename);
+    std::vector<uint8_t> buffer = ReadTestDataFile(filename);
     EXPECT_TRUE(AppendDataInPieces(buffer.data(),
                                    buffer.size(),
                                    append_bytes));
@@ -93,7 +95,7 @@ TEST_F(MP4MediaParserTest, Flush) {
   // Flush while reading sample data, then start a new stream.
   InitializeParser();
 
-  std::vector<uint8> buffer = ReadTestDataFile("bear-1280x720-av_frag.mp4");
+  std::vector<uint8_t> buffer = ReadTestDataFile("bear-1280x720-av_frag.mp4");
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), 65536, 512));
   parser_->Flush();
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
@@ -102,7 +104,7 @@ TEST_F(MP4MediaParserTest, Flush) {
 TEST_F(MP4MediaParserTest, Reinitialization) {
   InitializeParser();
 
-  std::vector<uint8> buffer = ReadTestDataFile("bear-1280x720-av_frag.mp4");
+  std::vector<uint8_t> buffer = ReadTestDataFile("bear-1280x720-av_frag.mp4");
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
 }
@@ -115,7 +117,7 @@ TEST_F(MP4MediaParserTest, MPEG2_AAC_LC) {
 TEST_F(MP4MediaParserTest, NoMoovAfterFlush) {
   InitializeParser();
 
-  std::vector<uint8> buffer = ReadTestDataFile("bear-1280x720-av_frag.mp4");
+  std::vector<uint8_t> buffer = ReadTestDataFile("bear-1280x720-av_frag.mp4");
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
   parser_->Flush();
 

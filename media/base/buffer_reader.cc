@@ -11,7 +11,7 @@
 namespace edash_packager {
 namespace media {
 
-bool BufferReader::Read1(uint8* v) {
+bool BufferReader::Read1(uint8_t* v) {
   DCHECK(v != NULL);
   if (!HasBytes(1))
     return false;
@@ -19,20 +19,32 @@ bool BufferReader::Read1(uint8* v) {
   return true;
 }
 
-bool BufferReader::Read2(uint16* v) { return Read(v); }
-bool BufferReader::Read2s(int16* v) { return Read(v); }
-bool BufferReader::Read4(uint32* v) { return Read(v); }
-bool BufferReader::Read4s(int32* v) { return Read(v); }
-bool BufferReader::Read8(uint64* v) { return Read(v); }
-bool BufferReader::Read8s(int64* v) { return Read(v); }
-bool BufferReader::ReadNBytesInto8(uint64* v, size_t num_bytes) {
+bool BufferReader::Read2(uint16_t* v) {
+  return Read(v);
+}
+bool BufferReader::Read2s(int16_t* v) {
+  return Read(v);
+}
+bool BufferReader::Read4(uint32_t* v) {
+  return Read(v);
+}
+bool BufferReader::Read4s(int32_t* v) {
+  return Read(v);
+}
+bool BufferReader::Read8(uint64_t* v) {
+  return Read(v);
+}
+bool BufferReader::Read8s(int64_t* v) {
+  return Read(v);
+}
+bool BufferReader::ReadNBytesInto8(uint64_t* v, size_t num_bytes) {
   return ReadNBytes(v, num_bytes);
 }
-bool BufferReader::ReadNBytesInto8s(int64* v, size_t num_bytes) {
+bool BufferReader::ReadNBytesInto8s(int64_t* v, size_t num_bytes) {
   return ReadNBytes(v, num_bytes);
 }
 
-bool BufferReader::ReadToVector(std::vector<uint8>* vec, size_t count) {
+bool BufferReader::ReadToVector(std::vector<uint8_t>* vec, size_t count) {
   DCHECK(vec != NULL);
   if (!HasBytes(count))
     return false;
@@ -65,10 +77,10 @@ bool BufferReader::ReadNBytes(T* v, size_t num_bytes) {
   //     T is a signed type.
   const bool sign_extension_required =
       num_bytes < sizeof(*v) && static_cast<T>(-1) < 0;
-  // Perform sign extension by casting the byte value to int8, which will be
+  // Perform sign extension by casting the byte value to int8_t, which will be
   // sign extended automatically when it is implicitly converted to T.
-  T tmp =
-      sign_extension_required ? static_cast<int8>(buf_[pos_++]) : buf_[pos_++];
+  T tmp = sign_extension_required ? static_cast<int8_t>(buf_[pos_++])
+                                  : buf_[pos_++];
   for (size_t i = 1; i < num_bytes; ++i) {
     tmp <<= 8;
     tmp |= buf_[pos_++];

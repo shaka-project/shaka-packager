@@ -17,7 +17,7 @@ namespace media {
 base::FilePath GetTestDataFilePath(const std::string& name);
 
 // Reads a test file from media/test/data directory and returns its content.
-std::vector<uint8> ReadTestDataFile(const std::string& name);
+std::vector<uint8_t> ReadTestDataFile(const std::string& name);
 
 }  // namespace media
 }  // namespace edash_packager

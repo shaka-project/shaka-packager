@@ -31,7 +31,8 @@ Demuxer::Demuxer(const std::string& file_name)
     : file_name_(file_name),
       media_file_(NULL),
       init_event_received_(false),
-      buffer_(new uint8[kBufSize]) {}
+      buffer_(new uint8_t[kBufSize]) {
+}
 
 Demuxer::~Demuxer() {
   if (media_file_)
@@ -54,7 +55,7 @@ Status Demuxer::Initialize() {
   }
 
   // Determine media container.
-  int64 bytes_read = media_file_->Read(buffer_.get(), kBufSize);
+  int64_t bytes_read = media_file_->Read(buffer_.get(), kBufSize);
   if (bytes_read <= 0)
     return Status(error::FILE_FAILURE, "Cannot read file " + file_name_);
   MediaContainerName container = DetermineContainer(buffer_.get(), bytes_read);
@@ -101,7 +102,7 @@ void Demuxer::ParserInitEvent(
   }
 }
 
-bool Demuxer::NewSampleEvent(uint32 track_id,
+bool Demuxer::NewSampleEvent(uint32_t track_id,
                              const scoped_refptr<MediaSample>& sample) {
   std::vector<MediaStream*>::iterator it = streams_.begin();
   for (; it != streams_.end(); ++it) {
@@ -146,7 +147,7 @@ Status Demuxer::Parse() {
   DCHECK(parser_);
   DCHECK(buffer_);
 
-  int64 bytes_read = media_file_->Read(buffer_.get(), kBufSize);
+  int64_t bytes_read = media_file_->Read(buffer_.get(), kBufSize);
   if (bytes_read <= 0) {
     if (media_file_->Eof()) {
       parser_->Flush();

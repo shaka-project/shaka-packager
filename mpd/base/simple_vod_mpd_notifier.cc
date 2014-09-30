@@ -27,7 +27,7 @@ bool SimpleVodMpdNotifier::Init() {
 }
 
 bool SimpleVodMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
-                                              uint32* container_id) {
+                                              uint32_t* container_id) {
   DCHECK(container_id);
 
   if (media_info.video_info_size() > 0 && media_info.audio_info_size() > 0) {
@@ -52,15 +52,15 @@ bool SimpleVodMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   return mpd_builder_->WriteMpd();
 }
 
-bool SimpleVodMpdNotifier::NotifyNewSegment(uint32 container_id,
-                                            uint64 start_time,
-                                            uint64 duration) {
+bool SimpleVodMpdNotifier::NotifyNewSegment(uint32_t container_id,
+                                            uint64_t start_time,
+                                            uint64_t duration) {
   DLOG(INFO) << "VOD does not support this operation.";
   return false;
 }
 
 bool SimpleVodMpdNotifier::AddContentProtectionElement(
-    uint32 container_id,
+    uint32_t container_id,
     const ContentProtectionElement& content_protection_element) {
   if (!ContainsKey(id_to_representation_, container_id))
     return false;
@@ -74,7 +74,7 @@ bool SimpleVodMpdNotifier::AddContentProtectionElement(
 
 bool SimpleVodMpdNotifier::AddNewRepresentation(ContainerType type,
                                                 const MediaInfo& media_info,
-                                                uint32* container_id) {
+                                                uint32_t* container_id) {
   // Use pointer-pointer to set {video,audio}_adaptation_set_.
   AdaptationSet** adaptation_set_pp = NULL;
   if (type == kVideo) {
@@ -96,7 +96,7 @@ bool SimpleVodMpdNotifier::AddNewRepresentation(ContainerType type,
   if (!new_representation)
     return false;
 
-  const uint32 representation_id = new_representation->id();
+  const uint32_t representation_id = new_representation->id();
   id_to_representation_[representation_id] = new_representation;
   *container_id = representation_id;
 

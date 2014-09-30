@@ -16,16 +16,16 @@ namespace edash_packager {
 namespace media {
 namespace mp4 {
 namespace {
-const uint8 kData16Bytes[] = {8, 7, 6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6, 7, 8};
-const uint8 kData4[] = {1, 5, 4, 3, 15};
-const uint8 kData8[] = {1, 8, 42, 98, 156};
-const uint16 kData16[] = {1, 15, 45, 768, 60000};
-const uint32 kData32[] = {1, 24, 99, 1234, 9000000};
-const uint64 kData64[] = {1, 9000000, 12345678901234ULL, 56780909090900ULL};
+const uint8_t kData16Bytes[] = {8, 7, 6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6, 7, 8};
+const uint8_t kData4[] = {1, 5, 4, 3, 15};
+const uint8_t kData8[] = {1, 8, 42, 98, 156};
+const uint16_t kData16[] = {1, 15, 45, 768, 60000};
+const uint32_t kData32[] = {1, 24, 99, 1234, 9000000};
+const uint64_t kData64[] = {1, 9000000, 12345678901234ULL, 56780909090900ULL};
 const TrackType kSampleDescriptionTrackType = kVideo;
 
 // 4-byte FourCC + 4-bytes size.
-const uint32 kBoxSize = 8;
+const uint32_t kBoxSize = 8;
 }  // namespace
 
 template <typename T>
@@ -37,9 +37,9 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     // Create a fake skip box contains the buffer and Write it.
     BufferWriter buffer;
     buffer.Swap(buffer_.get());
-    uint32 skip_box_size = buffer.Size() + kBoxSize;
+    uint32_t skip_box_size = buffer.Size() + kBoxSize;
     buffer_->AppendInt(skip_box_size);
-    buffer_->AppendInt(static_cast<uint32>(FOURCC_SKIP));
+    buffer_->AppendInt(static_cast<uint32_t>(FOURCC_SKIP));
     buffer_->AppendBuffer(buffer);
     bool err = false;
     return BoxReader::ReadTopLevelBox(buffer_->Buffer(), buffer_->Size(), &err);
@@ -106,11 +106,11 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   bool IsOptional(const Box* box) { return false; }
 
   // Non-full box does not have version field.
-  uint8 GetAndClearVersion(Box* box) { return 0; }
+  uint8_t GetAndClearVersion(Box* box) { return 0; }
 
   // Get full box version and then reset it to 0.
-  uint8 GetAndClearVersion(FullBox* full_box) {
-    uint8 version = full_box->version;
+  uint8_t GetAndClearVersion(FullBox* full_box) {
+    uint8_t version = full_box->version;
     full_box->version = 0;
     return version;
   }
@@ -273,7 +273,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   void Modify(PixelAspectRatioBox* pasp) { pasp->v_spacing *= 8; }
 
   void Fill(AVCDecoderConfigurationRecord* avcc) {
-    const uint8 kAvccData[] = {
+    const uint8_t kAvccData[] = {
         0x01, 0x64, 0x00, 0x1f, 0xff, 0xe1, 0x00, 0x18, 0x67, 0x64, 0x00,
         0x1f, 0xac, 0xd9, 0x40, 0x50, 0x05, 0xbb, 0x01, 0x10, 0x00, 0x00,
         0x3e, 0x90, 0x00, 0x0e, 0xa6, 0x00, 0xf1, 0x83, 0x19, 0x60, 0x01,
@@ -284,7 +284,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Modify(AVCDecoderConfigurationRecord* avcc) {
-    const uint8 kAvccData[] = {
+    const uint8_t kAvccData[] = {
         0x01, 0x64, 0x00, 0x1e, 0xff, 0xe1, 0x00, 0x19, 0x67, 0x64, 0x00,
         0x1e, 0xac, 0xd9, 0x40, 0xa0, 0x2f, 0xf9, 0x70, 0x11, 0x00, 0x00,
         0x03, 0x03, 0xe9, 0x00, 0x00, 0xea, 0x60, 0x0f, 0x16, 0x2d, 0x96,
@@ -310,10 +310,10 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Fill(ElementaryStreamDescriptor* esds) {
-    const uint8 kDecoderSpecificInfo[] = {18, 16};
+    const uint8_t kDecoderSpecificInfo[] = {18, 16};
     esds->es_descriptor.set_esid(1);
     esds->es_descriptor.set_object_type(kISO_14496_3);
-    std::vector<uint8> decoder_specific_info(
+    std::vector<uint8_t> decoder_specific_info(
         kDecoderSpecificInfo,
         kDecoderSpecificInfo + sizeof(kDecoderSpecificInfo));
     esds->es_descriptor.set_decoder_specific_info(decoder_specific_info);
@@ -447,7 +447,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Fill(MediaHeader* mdhd) {
     mdhd->creation_time = 124231432;
-    mdhd->modification_time = static_cast<uint64>(kuint32max) + 1;
+    mdhd->modification_time = static_cast<uint64_t>(kuint32max) + 1;
     mdhd->timescale = 50000;
     mdhd->duration = 250000;
     strcpy(mdhd->language, "abc");
@@ -812,7 +812,7 @@ TYPED_TEST_P(BoxDefinitionsTestGeneral, WriteModifyWrite) {
   this->Fill(&box);
   // Save the expected version set earlier in function |Fill|, then clear
   // the version, expecting box.Write set version as expected.
-  uint8 version = this->GetAndClearVersion(&box);
+  uint8_t version = this->GetAndClearVersion(&box);
   box.Write(this->buffer_.get());
   EXPECT_EQ(version, this->GetAndClearVersion(&box));
 

@@ -26,7 +26,7 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   ///        Must not be NULL.
   /// @param size indicates sample size in bytes. Must not be negative.
   /// @param is_key_frame indicates whether the sample is a key frame.
-  static scoped_refptr<MediaSample> CopyFrom(const uint8* data,
+  static scoped_refptr<MediaSample> CopyFrom(const uint8_t* data,
                                              size_t size,
                                              bool is_key_frame);
 
@@ -40,9 +40,9 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   /// @param side_data_size indicates additional sample data size in bytes.
   ///        Must not be negative.
   /// @param is_key_frame indicates whether the sample is a key frame.
-  static scoped_refptr<MediaSample> CopyFrom(const uint8* data,
+  static scoped_refptr<MediaSample> CopyFrom(const uint8_t* data,
                                              size_t size,
-                                             const uint8* side_data,
+                                             const uint8_t* side_data,
                                              size_t side_data_size,
                                              bool is_key_frame);
 
@@ -54,30 +54,26 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   /// is disallowed.
   static scoped_refptr<MediaSample> CreateEOSBuffer();
 
-  int64 dts() const {
+  int64_t dts() const {
     DCHECK(!end_of_stream());
     return dts_;
   }
 
-  void set_dts(int64 dts) {
-    dts_ = dts;
-  }
+  void set_dts(int64_t dts) { dts_ = dts; }
 
-  int64 pts() const {
+  int64_t pts() const {
     DCHECK(!end_of_stream());
     return pts_;
   }
 
-  void set_pts(int64 pts) {
-    pts_ = pts;
-  }
+  void set_pts(int64_t pts) { pts_ = pts; }
 
-  int64 duration() const {
+  int64_t duration() const {
     DCHECK(!end_of_stream());
     return duration_;
   }
 
-  void set_duration(int64 duration) {
+  void set_duration(int64_t duration) {
     DCHECK(!end_of_stream());
     duration_ = duration;
   }
@@ -87,12 +83,12 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
     return is_key_frame_;
   }
 
-  const uint8* data() const {
+  const uint8_t* data() const {
     DCHECK(!end_of_stream());
     return &data_[0];
   }
 
-  uint8* writable_data() {
+  uint8_t* writable_data() {
     DCHECK(!end_of_stream());
     return &data_[0];
   }
@@ -102,7 +98,7 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
     return data_.size();
   }
 
-  const uint8* side_data() const {
+  const uint8_t* side_data() const {
     DCHECK(!end_of_stream());
     return &side_data_[0];
   }
@@ -112,7 +108,7 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
     return side_data_.size();
   }
 
-  void set_data(const uint8* data, const size_t data_size) {
+  void set_data(const uint8_t* data, const size_t data_size) {
     data_.assign(data, data + data_size);
   }
 
@@ -132,27 +128,27 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   // Create a MediaSample. Buffer will be padded and aligned as necessary.
   // |data|,|side_data| can be NULL, which indicates an empty sample.
   // |size|,|side_data_size| should not be negative.
-  MediaSample(const uint8* data,
+  MediaSample(const uint8_t* data,
               size_t size,
-              const uint8* side_data,
+              const uint8_t* side_data,
               size_t side_data_size,
               bool is_key_frame);
   MediaSample();
   virtual ~MediaSample();
 
   // Decoding time stamp.
-  int64 dts_;
+  int64_t dts_;
   // Presentation time stamp.
-  int64 pts_;
-  int64 duration_;
+  int64_t pts_;
+  int64_t duration_;
   bool is_key_frame_;
 
   // Main buffer data.
-  std::vector<uint8> data_;
+  std::vector<uint8_t> data_;
   // Contain additional buffers to complete the main one. Needed by WebM
   // http://www.matroska.org/technical/specs/index.html BlockAdditional[A5].
   // Not used by mp4 and other containers.
-  std::vector<uint8> side_data_;
+  std::vector<uint8_t> side_data_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSample);
 };

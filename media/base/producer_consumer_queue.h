@@ -19,7 +19,7 @@ namespace edash_packager {
 namespace media {
 
 static const size_t kUnlimitedCapacity = 0u;
-static const int64 kInfiniteTimeout = -1;
+static const int64_t kInfiniteTimeout = -1;
 
 /// A thread safe producer consumer queue implementation. It allows the standard
 /// push and pop operations. It also maintains a monotonically-increasing
@@ -48,7 +48,7 @@ class ProducerConsumerQueue {
   ///        return immediately. A negative value means waiting indefinitely.
   /// @return OK if the element was pushed successfully, STOPPED if Stop has
   ///         has been called, TIME_OUT if times out.
-  Status Push(const T& element, int64 timeout_ms);
+  Status Push(const T& element, int64_t timeout_ms);
 
   /// Pop an element from the front of the queue. If the queue is empty, block
   /// for an element to be available to be consumed or time out or stopped.
@@ -57,7 +57,7 @@ class ProducerConsumerQueue {
   ///        return immediately. A negative value means waiting indefinitely.
   /// @return STOPPED if Stop has been called and the queue is completely empty,
   ///         TIME_OUT if times out, OK otherwise.
-  Status Pop(T* element, int64 timeout_ms);
+  Status Pop(T* element, int64_t timeout_ms);
 
   /// Peek at the element at the specified position from the queue. If the
   /// element is not available yet, block until it to be available or time out
@@ -71,7 +71,7 @@ class ProducerConsumerQueue {
   /// @return STOPPED if Stop has been called and @a pos is out of range,
   ///         INVALID_ARGUMENT if the pos < Head(), TIME_OUT if times out,
   ///         OK otherwise.
-  Status Peek(size_t pos, T* element, int64 timeout_ms);
+  Status Peek(size_t pos, T* element, int64_t timeout_ms);
 
   /// Terminate Pop and Peek requests once the queue drains entirely.
   /// Also terminate all waiting and future Push requests immediately.
@@ -158,7 +158,7 @@ template <class T>
 ProducerConsumerQueue<T>::~ProducerConsumerQueue() {}
 
 template <class T>
-Status ProducerConsumerQueue<T>::Push(const T& element, int64 timeout_ms) {
+Status ProducerConsumerQueue<T>::Push(const T& element, int64_t timeout_ms) {
   base::AutoLock l(lock_);
   bool woken = false;
 
@@ -207,7 +207,7 @@ Status ProducerConsumerQueue<T>::Push(const T& element, int64 timeout_ms) {
 }
 
 template <class T>
-Status ProducerConsumerQueue<T>::Pop(T* element, int64 timeout_ms) {
+Status ProducerConsumerQueue<T>::Pop(T* element, int64_t timeout_ms) {
   base::AutoLock l(lock_);
   bool woken = false;
 
@@ -251,7 +251,7 @@ Status ProducerConsumerQueue<T>::Pop(T* element, int64 timeout_ms) {
 template <class T>
 Status ProducerConsumerQueue<T>::Peek(size_t pos,
                                       T* element,
-                                      int64 timeout_ms) {
+                                      int64_t timeout_ms) {
   base::AutoLock l(lock_);
   if (pos < head_pos_) {
     return Status(

@@ -66,7 +66,7 @@ class Segmenter {
   Status Initialize(const std::vector<MediaStream*>& streams,
                     event::MuxerListener* muxer_listener,
                     KeySource* encryption_key_source,
-                    uint32 max_sd_pixels,
+                    uint32_t max_sd_pixels,
                     double clear_lead_in_seconds,
                     double crypto_period_duration_in_seconds);
 
@@ -90,7 +90,7 @@ class Segmenter {
   ///         and @a size; or false if index byte range does not apply.
   virtual bool GetIndexRange(size_t* offset, size_t* size) = 0;
 
-  uint32 GetReferenceTimeScale() const;
+  uint32_t GetReferenceTimeScale() const;
 
   /// @return The total length, in seconds, of segmented media files.
   double GetDuration() const;
@@ -110,7 +110,7 @@ class Segmenter {
 
   void InitializeSegment();
   Status FinalizeSegment();
-  uint32 GetReferenceStreamId();
+  uint32_t GetReferenceStreamId();
 
   Status FinalizeFragment(Fragmenter* fragment);
 
@@ -121,8 +121,8 @@ class Segmenter {
   scoped_ptr<BufferWriter> fragment_buffer_;
   scoped_ptr<SegmentIndex> sidx_;
   std::vector<Fragmenter*> fragmenters_;
-  std::vector<uint64> segment_durations_;
-  std::map<const MediaStream*, uint32> stream_map_;
+  std::vector<uint64_t> segment_durations_;
+  std::map<const MediaStream*, uint32_t> stream_map_;
   bool segment_initialized_;
   bool end_of_segment_;
   event::MuxerListener* muxer_listener_;

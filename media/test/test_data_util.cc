@@ -22,10 +22,10 @@ base::FilePath GetTestDataFilePath(const std::string& name) {
   return file_path;
 }
 
-std::vector<uint8> ReadTestDataFile(const std::string& name) {
+std::vector<uint8_t> ReadTestDataFile(const std::string& name) {
   std::string buffer;
   CHECK(base::ReadFileToString(GetTestDataFilePath(name), &buffer));
-  return std::vector<uint8>(buffer.begin(), buffer.end());
+  return std::vector<uint8_t>(buffer.begin(), buffer.end());
 }
 
 }  // namespace media

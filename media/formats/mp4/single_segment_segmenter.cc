@@ -92,14 +92,14 @@ Status SingleSegmentSegmenter::DoFinalize() {
   }
 
   const int kBufSize = 0x40000;  // 256KB.
-  scoped_ptr<uint8[]> buf(new uint8[kBufSize]);
+  scoped_ptr<uint8_t[]> buf(new uint8_t[kBufSize]);
   while (!temp_file->Eof()) {
-    int64 size = temp_file->Read(buf.get(), kBufSize);
+    int64_t size = temp_file->Read(buf.get(), kBufSize);
     if (size <= 0) {
       return Status(error::FILE_FAILURE,
                     "Failed to read file " + temp_file_name_);
     }
-    int64 size_written = file->Write(buf.get(), size);
+    int64_t size_written = file->Write(buf.get(), size);
     if (size_written != size) {
       return Status(error::FILE_FAILURE,
                     "Failed to write file " + options().output_file_name);
@@ -116,9 +116,9 @@ Status SingleSegmentSegmenter::DoFinalizeSegment() {
   // reference, which contains all the fragments in sidx().
   std::vector<SegmentReference>& refs = sidx()->references;
   SegmentReference& vod_ref = refs[0];
-  uint64 first_sap_time =
+  uint64_t first_sap_time =
       refs[0].sap_delta_time + refs[0].earliest_presentation_time;
-  for (uint32 i = 1; i < sidx()->references.size(); ++i) {
+  for (uint32_t i = 1; i < sidx()->references.size(); ++i) {
     vod_ref.referenced_size += refs[i].referenced_size;
     // NOTE: We calculate subsegment duration based on the total duration of
     // this subsegment instead of subtracting earliest_presentation_time as

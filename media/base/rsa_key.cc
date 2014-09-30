@@ -113,8 +113,8 @@ bool RsaPrivateKey::Decrypt(const std::string& encrypted_message,
   decrypted_message->resize(rsa_size);
   int decrypted_size = RSA_private_decrypt(
       rsa_size,
-      reinterpret_cast<const uint8*>(encrypted_message.data()),
-      reinterpret_cast<uint8*>(string_as_array(decrypted_message)),
+      reinterpret_cast<const uint8_t*>(encrypted_message.data()),
+      reinterpret_cast<uint8_t*>(string_as_array(decrypted_message)),
       rsa_key_,
       RSA_PKCS1_OAEP_PADDING);
 
@@ -139,13 +139,13 @@ bool RsaPrivateKey::GenerateSignature(const std::string& message,
 
   // Add PSS padding.
   size_t rsa_size = RSA_size(rsa_key_);
-  std::vector<uint8> padded_digest(rsa_size);
+  std::vector<uint8_t> padded_digest(rsa_size);
   if (!RSA_padding_add_PKCS1_PSS(
-           rsa_key_,
-           &padded_digest[0],
-           reinterpret_cast<uint8*>(string_as_array(&message_digest)),
-           EVP_sha1(),
-           kPssSaltLength)) {
+          rsa_key_,
+          &padded_digest[0],
+          reinterpret_cast<uint8_t*>(string_as_array(&message_digest)),
+          EVP_sha1(),
+          kPssSaltLength)) {
     LOG(ERROR) << "RSA padding failure: " << ERR_error_string(ERR_get_error(),
                                                               NULL);
     return false;
@@ -153,12 +153,12 @@ bool RsaPrivateKey::GenerateSignature(const std::string& message,
 
   // Encrypt PSS padded digest.
   signature->resize(rsa_size);
-  int signature_size =
-      RSA_private_encrypt(padded_digest.size(),
-                          &padded_digest[0],
-                          reinterpret_cast<uint8*>(string_as_array(signature)),
-                          rsa_key_,
-                          RSA_NO_PADDING);
+  int signature_size = RSA_private_encrypt(
+      padded_digest.size(),
+      &padded_digest[0],
+      reinterpret_cast<uint8_t*>(string_as_array(signature)),
+      rsa_key_,
+      RSA_NO_PADDING);
 
   if (signature_size != static_cast<int>(rsa_size)) {
     LOG(ERROR) << "RSA private encrypt failure: " << ERR_error_string(
@@ -193,8 +193,8 @@ bool RsaPublicKey::Encrypt(const std::string& clear_message,
   encrypted_message->resize(rsa_size);
   int encrypted_size = RSA_public_encrypt(
       clear_message.size(),
-      reinterpret_cast<const uint8*>(clear_message.data()),
-      reinterpret_cast<uint8*>(string_as_array(encrypted_message)),
+      reinterpret_cast<const uint8_t*>(clear_message.data()),
+      reinterpret_cast<uint8_t*>(string_as_array(encrypted_message)),
       rsa_key_,
       RSA_PKCS1_OAEP_PADDING);
 
@@ -221,10 +221,10 @@ bool RsaPublicKey::VerifySignature(const std::string& message,
   }
 
   // Decrypt the signature.
-  std::vector<uint8> padded_digest(signature.size());
+  std::vector<uint8_t> padded_digest(signature.size());
   int decrypted_size =
       RSA_public_decrypt(signature.size(),
-                         reinterpret_cast<const uint8*>(signature.data()),
+                         reinterpret_cast<const uint8_t*>(signature.data()),
                          &padded_digest[0],
                          rsa_key_,
                          RSA_NO_PADDING);
@@ -240,7 +240,7 @@ bool RsaPublicKey::VerifySignature(const std::string& message,
   // Verify PSS padding.
   return RSA_verify_PKCS1_PSS(
              rsa_key_,
-             reinterpret_cast<const uint8*>(message_digest.data()),
+             reinterpret_cast<const uint8_t*>(message_digest.data()),
              EVP_sha1(),
              &padded_digest[0],
              kPssSaltLength) != 0;

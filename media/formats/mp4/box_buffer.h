@@ -57,43 +57,43 @@ class BoxBuffer {
 
   /// @name Read/write integers of various sizes and signedness.
   /// @{
-  bool ReadWriteUInt8(uint8* v) {
+  bool ReadWriteUInt8(uint8_t* v) {
     if (reader_)
       return reader_->Read1(v);
     writer_->AppendInt(*v);
     return true;
   }
-  bool ReadWriteUInt16(uint16* v) {
+  bool ReadWriteUInt16(uint16_t* v) {
     if (reader_)
       return reader_->Read2(v);
     writer_->AppendInt(*v);
     return true;
   }
-  bool ReadWriteUInt32(uint32* v) {
+  bool ReadWriteUInt32(uint32_t* v) {
     if (reader_)
       return reader_->Read4(v);
     writer_->AppendInt(*v);
     return true;
   }
-  bool ReadWriteUInt64(uint64* v) {
+  bool ReadWriteUInt64(uint64_t* v) {
     if (reader_)
       return reader_->Read8(v);
     writer_->AppendInt(*v);
     return true;
   }
-  bool ReadWriteInt16(int16* v) {
+  bool ReadWriteInt16(int16_t* v) {
     if (reader_)
       return reader_->Read2s(v);
     writer_->AppendInt(*v);
     return true;
   }
-  bool ReadWriteInt32(int32* v) {
+  bool ReadWriteInt32(int32_t* v) {
     if (reader_)
       return reader_->Read4s(v);
     writer_->AppendInt(*v);
     return true;
   }
-  bool ReadWriteInt64(int64* v) {
+  bool ReadWriteInt64(int64_t* v) {
     if (reader_)
       return reader_->Read8s(v);
     writer_->AppendInt(*v);
@@ -104,19 +104,19 @@ class BoxBuffer {
   /// Read/write the least significant |num_bytes| of |v| from/to the buffer.
   /// @param num_bytes should not be larger than sizeof(v), i.e. 8.
   /// @return true on success, false otherwise.
-  bool ReadWriteUInt64NBytes(uint64* v, size_t num_bytes) {
+  bool ReadWriteUInt64NBytes(uint64_t* v, size_t num_bytes) {
     if (reader_)
       return reader_->ReadNBytesInto8(v, num_bytes);
     writer_->AppendNBytes(*v, num_bytes);
     return true;
   }
-  bool ReadWriteInt64NBytes(int64* v, size_t num_bytes) {
+  bool ReadWriteInt64NBytes(int64_t* v, size_t num_bytes) {
     if (reader_)
       return reader_->ReadNBytesInto8s(v, num_bytes);
     writer_->AppendNBytes(*v, num_bytes);
     return true;
   }
-  bool ReadWriteVector(std::vector<uint8>* vector, size_t count) {
+  bool ReadWriteVector(std::vector<uint8_t>* vector, size_t count) {
     if (reader_)
       return reader_->ReadToVector(vector, count);
     DCHECK_EQ(vector->size(), count);
@@ -126,7 +126,7 @@ class BoxBuffer {
   bool ReadWriteFourCC(FourCC* fourcc) {
     if (reader_)
       return reader_->ReadFourCC(fourcc);
-    writer_->AppendInt(static_cast<uint32>(*fourcc));
+    writer_->AppendInt(static_cast<uint32_t>(*fourcc));
     return true;
   }
 
@@ -167,7 +167,7 @@ class BoxBuffer {
   bool IgnoreBytes(size_t num_bytes) {
     if (reader_)
       return reader_->SkipBytes(num_bytes);
-    std::vector<uint8> vector(num_bytes, 0);
+    std::vector<uint8_t> vector(num_bytes, 0);
     writer_->AppendVector(vector);
     return true;
   }

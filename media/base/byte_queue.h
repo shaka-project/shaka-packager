@@ -25,11 +25,11 @@ class ByteQueue {
   void Reset();
 
   /// Append new bytes to the end of the queue.
-  void Push(const uint8* data, int size);
+  void Push(const uint8_t* data, int size);
 
   /// Get a pointer to the front of the queue and the queue size.
   /// These values are only valid until the next Push() or Pop() call.
-  void Peek(const uint8** data, int* size) const;
+  void Peek(const uint8_t** data, int* size) const;
 
   /// Remove a number of bytes from the front of the queue.
   /// @param count specifies number of bytes to be popped.
@@ -37,9 +37,9 @@ class ByteQueue {
 
  private:
   // Returns a pointer to the front of the queue.
-  uint8* front() const;
+  uint8_t* front() const;
 
-  scoped_ptr<uint8[]> buffer_;
+  scoped_ptr<uint8_t[]> buffer_;
 
   // Size of |buffer_|.
   size_t size_;

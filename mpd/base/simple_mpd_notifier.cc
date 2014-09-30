@@ -38,7 +38,7 @@ bool SimpleMpdNotifier::Init() {
 }
 
 bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
-                                           uint32* container_id) {
+                                           uint32_t* container_id) {
   DCHECK(container_id);
 
   ContentType content_type = GetContentType(media_info);
@@ -68,10 +68,10 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   return true;
 }
 
-bool SimpleMpdNotifier::NotifyNewSegment(uint32 container_id,
-                                         uint64 start_time,
-                                         uint64 duration,
-                                         uint64 size) {
+bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
+                                         uint64_t start_time,
+                                         uint64_t duration,
+                                         uint64_t size) {
   base::AutoLock auto_lock(lock_);
 
   RepresentationMap::iterator it = representation_map_.find(container_id);
@@ -84,7 +84,7 @@ bool SimpleMpdNotifier::NotifyNewSegment(uint32 container_id,
 }
 
 bool SimpleMpdNotifier::AddContentProtectionElement(
-    uint32 container_id,
+    uint32_t container_id,
     const ContentProtectionElement& content_protection_element) {
   NOTIMPLEMENTED();
   return false;
@@ -125,7 +125,7 @@ bool SimpleMpdNotifier::WriteMpdToFile() {
   const char* mpd_char_ptr = mpd.data();
   size_t mpd_bytes_left = mpd.size();
   while (mpd_bytes_left > 0) {
-    int64 length = file->Write(mpd_char_ptr, mpd_bytes_left);
+    int64_t length = file->Write(mpd_char_ptr, mpd_bytes_left);
     if (length <= 0) {
       LOG(ERROR) << "Failed to write to file '" << output_path_ << "' ("
                  << length << ").";

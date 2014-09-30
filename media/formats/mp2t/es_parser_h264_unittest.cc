@@ -49,7 +49,7 @@ void ComputePacketSize(std::vector<Packet>& packets, size_t stream_size) {
 // This function assumes there is only one slice per access unit.
 // This is a very simplified access unit segmenter that is good
 // enough for unit tests.
-std::vector<Packet> GetAccessUnits(const uint8* stream, size_t stream_size) {
+std::vector<Packet> GetAccessUnits(const uint8_t* stream, size_t stream_size) {
   std::vector<Packet> access_units;
   bool start_access_unit = true;
 
@@ -92,12 +92,12 @@ std::vector<Packet> GetAccessUnits(const uint8* stream, size_t stream_size) {
 
 // Append an AUD NALU at the beginning of each access unit
 // needed for streams which do not already have AUD NALUs.
-void AppendAUD(
-    const uint8* stream, size_t stream_size,
-    const std::vector<Packet>& access_units,
-    std::vector<uint8>& stream_with_aud,
-    std::vector<Packet>& access_units_with_aud) {
-  uint8 aud[] = { 0x00, 0x00, 0x01, 0x09 };
+void AppendAUD(const uint8_t* stream,
+               size_t stream_size,
+               const std::vector<Packet>& access_units,
+               std::vector<uint8_t>& stream_with_aud,
+               std::vector<Packet>& access_units_with_aud) {
+  uint8_t aud[] = {0x00, 0x00, 0x01, 0x09};
   stream_with_aud.resize(stream_size + access_units.size() * sizeof(aud));
   access_units_with_aud.resize(access_units.size());
 
@@ -126,7 +126,7 @@ class EsParserH264Test : public testing::Test {
   void LoadStream(const char* filename);
   void ProcessPesPackets(const std::vector<Packet>& pes_packets);
 
-  void EmitSample(uint32 pid, scoped_refptr<MediaSample>& sample) {
+  void EmitSample(uint32_t pid, scoped_refptr<MediaSample>& sample) {
     sample_count_++;
     if (sample_count_ == 1)
       first_frame_is_key_frame_ = sample->is_key_frame();
@@ -139,7 +139,7 @@ class EsParserH264Test : public testing::Test {
   bool first_frame_is_key_frame() { return first_frame_is_key_frame_; }
 
   // Stream with AUD NALUs.
-  std::vector<uint8> stream_;
+  std::vector<uint8_t> stream_;
 
   // Access units of the stream with AUD NALUs.
   std::vector<Packet> access_units_;
@@ -168,7 +168,7 @@ void EsParserH264Test::LoadStream(const char* filename) {
 void EsParserH264Test::ProcessPesPackets(
     const std::vector<Packet>& pes_packets) {
   // Duration of one 25fps video frame in 90KHz clock units.
-  const uint32 kMpegTicksPerFrame = 3600;
+  const uint32_t kMpegTicksPerFrame = 3600;
 
   EsParserH264 es_parser(
       0,
@@ -189,8 +189,8 @@ void EsParserH264Test::ProcessPesPackets(
 
     // Check whether the PES packet includes the start of an access unit.
     // The timings are relevant only in this case.
-    int64 pts = kNoTimestamp;
-    int64 dts = kNoTimestamp;
+    int64_t pts = kNoTimestamp;
+    int64_t dts = kNoTimestamp;
     if (cur_pes_offset <= access_units_[au_idx].offset &&
         cur_pes_offset + cur_pes_size > access_units_[au_idx].offset) {
       pts = au_idx * kMpegTicksPerFrame;

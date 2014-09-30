@@ -51,15 +51,15 @@ std::string AudioCodecToString(AudioCodec audio_codec) {
 }  // namespace
 
 AudioStreamInfo::AudioStreamInfo(int track_id,
-                                 uint32 time_scale,
-                                 uint64 duration,
+                                 uint32_t time_scale,
+                                 uint64_t duration,
                                  AudioCodec codec,
                                  const std::string& codec_string,
                                  const std::string& language,
-                                 uint8 sample_bits,
-                                 uint8 num_channels,
-                                 uint32 sampling_frequency,
-                                 const uint8* extra_data,
+                                 uint8_t sample_bits,
+                                 uint8_t num_channels,
+                                 uint32_t sampling_frequency,
+                                 const uint8_t* extra_data,
                                  size_t extra_data_size,
                                  bool is_encrypted)
     : StreamInfo(kStreamAudio,
@@ -74,7 +74,8 @@ AudioStreamInfo::AudioStreamInfo(int track_id,
       codec_(codec),
       sample_bits_(sample_bits),
       num_channels_(num_channels),
-      sampling_frequency_(sampling_frequency) {}
+      sampling_frequency_(sampling_frequency) {
+}
 
 AudioStreamInfo::~AudioStreamInfo() {}
 
@@ -98,7 +99,7 @@ std::string AudioStreamInfo::ToString() const {
 }
 
 std::string AudioStreamInfo::GetCodecString(AudioCodec codec,
-                                            uint8 audio_object_type) {
+                                            uint8_t audio_object_type) {
   switch (codec) {
     case kCodecVorbis:
       return "vorbis";

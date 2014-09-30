@@ -24,8 +24,8 @@ namespace media {
 /// result, and then copying each byte from the decrypted block over the
 /// corresponding encrypted byte.
 struct SubsampleEntry {
-  uint16 clear_bytes;
-  uint32 cipher_bytes;
+  uint16_t clear_bytes;
+  uint32_t cipher_bytes;
 };
 
 /// Contains all the information that a decryptor needs to decrypt a media
@@ -44,22 +44,22 @@ class DecryptConfig {
   /// @param subsamples defines the clear and encrypted portions of the sample
   ///        as described in SubsampleEntry. A decrypted buffer will be equal
   ///        in size to the sum of the subsample sizes.
-  DecryptConfig(const std::vector<uint8>& key_id,
-                const std::vector<uint8>& iv,
+  DecryptConfig(const std::vector<uint8_t>& key_id,
+                const std::vector<uint8_t>& iv,
                 const int data_offset,
                 const std::vector<SubsampleEntry>& subsamples);
   ~DecryptConfig();
 
-  const std::vector<uint8>& key_id() const { return key_id_; }
-  const std::vector<uint8>& iv() const { return iv_; }
+  const std::vector<uint8_t>& key_id() const { return key_id_; }
+  const std::vector<uint8_t>& iv() const { return iv_; }
   int data_offset() const { return data_offset_; }
   const std::vector<SubsampleEntry>& subsamples() const { return subsamples_; }
 
  private:
-  const std::vector<uint8> key_id_;
+  const std::vector<uint8_t> key_id_;
 
   // Initialization vector.
-  const std::vector<uint8> iv_;
+  const std::vector<uint8_t> iv_;
 
   // Amount of data to be discarded before applying subsample information.
   const int data_offset_;

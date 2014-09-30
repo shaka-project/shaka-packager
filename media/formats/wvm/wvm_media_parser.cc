@@ -18,36 +18,36 @@
          && (x != 0xFF))
 
 namespace {
-  const uint32 kMpeg2ClockRate = 90000;
-  const uint32 kPesOptPts = 0x80;
-  const uint32 kPesOptDts = 0x40;
-  const uint32 kPesOptAlign = 0x04;
-  const uint32 kPsmStreamId = 0xBC;
-  const uint32 kPaddingStreamId = 0xBE;
-  const uint32 kIndexMagic = 0x49444d69;
-  const uint32 kIndexStreamId = 0xBF;  // private_stream_2
-  const uint32 kIndexVersion4HeaderSize = 12;
-  const uint32 kEcmStreamId = 0xF0;
-  const uint32 kV2MetadataStreamId = 0xF1;  // EMM_stream
-  const uint32 kScramblingBitsMask = 0x30;
-  const uint32 kStartCode1 = 0x00;
-  const uint32 kStartCode2 = 0x00;
-  const uint32 kStartCode3 = 0x01;
-  const uint32 kStartCode4Pack = 0xBA;
-  const uint32 kStartCode4System = 0xBB;
-  const uint32 kStartCode4ProgramEnd = 0xB9;
-  const uint32 kPesStreamIdVideoMask = 0xF0;
-  const uint32 kPesStreamIdVideo = 0xE0;
-  const uint32 kPesStreamIdAudioMask = 0xE0;
-  const uint32 kPesStreamIdAudio = 0xC0;
-  const uint32 kVersion4 = 4;
+const uint32_t kMpeg2ClockRate = 90000;
+const uint32_t kPesOptPts = 0x80;
+const uint32_t kPesOptDts = 0x40;
+const uint32_t kPesOptAlign = 0x04;
+const uint32_t kPsmStreamId = 0xBC;
+const uint32_t kPaddingStreamId = 0xBE;
+const uint32_t kIndexMagic = 0x49444d69;
+const uint32_t kIndexStreamId = 0xBF;  // private_stream_2
+const uint32_t kIndexVersion4HeaderSize = 12;
+const uint32_t kEcmStreamId = 0xF0;
+const uint32_t kV2MetadataStreamId = 0xF1;  // EMM_stream
+const uint32_t kScramblingBitsMask = 0x30;
+const uint32_t kStartCode1 = 0x00;
+const uint32_t kStartCode2 = 0x00;
+const uint32_t kStartCode3 = 0x01;
+const uint32_t kStartCode4Pack = 0xBA;
+const uint32_t kStartCode4System = 0xBB;
+const uint32_t kStartCode4ProgramEnd = 0xB9;
+const uint32_t kPesStreamIdVideoMask = 0xF0;
+const uint32_t kPesStreamIdVideo = 0xE0;
+const uint32_t kPesStreamIdAudioMask = 0xE0;
+const uint32_t kPesStreamIdAudio = 0xC0;
+const uint32_t kVersion4 = 4;
   const int kAdtsHeaderMinSize = 7;
-  const uint8 kAacSampleSizeBits = 16;
+  const uint8_t kAacSampleSizeBits = 16;
   // Applies to all video streams.
-  const uint8 kNaluLengthSize = 4; // unit is bytes.
+  const uint8_t kNaluLengthSize = 4;  // unit is bytes.
   // Placeholder sampling frequency for all audio streams, which
   // will be overwritten after filter parsing.
-  const uint32 kDefaultSamplingFrequency = 100;
+  const uint32_t kDefaultSamplingFrequency = 100;
 
   enum Type {
     Type_void = 0,
@@ -105,11 +105,11 @@ void WvmMediaParser::Init(const InitCB& init_cb,
   new_sample_cb_ = new_sample_cb;
 }
 
-bool WvmMediaParser::Parse(const uint8* buf, int size) {
-  uint32 num_bytes, prev_size;
+bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
+  uint32_t num_bytes, prev_size;
   num_bytes = prev_size = 0;
-  uint8* read_ptr = (uint8*)(&buf[0]);
-  uint8* end = read_ptr + size;
+  uint8_t* read_ptr = (uint8_t*)(&buf[0]);
+  uint8_t* end = read_ptr + size;
 
   while (read_ptr < end) {
     switch(parse_state_) {
@@ -189,7 +189,7 @@ bool WvmMediaParser::Parse(const uint8* buf, int size) {
         parse_state_ = SystemHeaderSkip;
         break;
       case PackHeaderStuffingSkip:
-        if ((end - read_ptr) >= (int32)skip_bytes_) {
+        if ((end - read_ptr) >= (int32_t)skip_bytes_) {
           read_ptr += skip_bytes_;
           skip_bytes_ = 0;
           parse_state_ = StartCode1;
@@ -199,12 +199,12 @@ bool WvmMediaParser::Parse(const uint8* buf, int size) {
         }
         continue;
       case SystemHeaderSkip:
-        if ((end - read_ptr) >= (int32)skip_bytes_) {
+        if ((end - read_ptr) >= (int32_t)skip_bytes_) {
           read_ptr += skip_bytes_;
           skip_bytes_ = 0;
           parse_state_ = StartCode1;
         } else {
-          uint32 remaining_size = end - read_ptr;
+          uint32_t remaining_size = end - read_ptr;
           skip_bytes_ -= remaining_size;
           read_ptr = end;
         }
@@ -466,11 +466,11 @@ bool WvmMediaParser::Parse(const uint8* buf, int size) {
   return true;
 }
 
-bool WvmMediaParser::EmitLastSample(uint32 stream_id,
+bool WvmMediaParser::EmitLastSample(uint32_t stream_id,
                                     scoped_refptr<MediaSample>& new_sample) {
   std::string key =  base::UintToString(current_program_id_).append(":")
       .append(base::UintToString(stream_id));
-  std::map<std::string, uint32>::iterator it =
+  std::map<std::string, uint32_t>::iterator it =
       program_demux_stream_map_.find(key);
   if (it != program_demux_stream_map_.end()) {
       EmitSample(stream_id, (*it).second, new_sample, true);
@@ -518,7 +518,7 @@ bool WvmMediaParser::ParseIndexEntry() {
   if (current_program_id_ > 0) {
     return true;
   }
-  uint32 index_size = 0;
+  uint32_t index_size = 0;
   if (index_data_.size() < kIndexVersion4HeaderSize) {
     return false;
   }
@@ -528,116 +528,116 @@ bool WvmMediaParser::ParseIndexEntry() {
     }
   }
 
-  const uint8* read_ptr_index = &index_data_[0];
+  const uint8_t* read_ptr_index = &index_data_[0];
   if (ntohlFromBuffer(read_ptr_index) != kIndexMagic) {
     index_data_.clear();
     return false;
   }
   read_ptr_index += 4;
 
-  uint32 version = ntohlFromBuffer(read_ptr_index);
+  uint32_t version = ntohlFromBuffer(read_ptr_index);
   read_ptr_index += 4;
   if (version == kVersion4) {
     index_size = kIndexVersion4HeaderSize + ntohlFromBuffer(read_ptr_index);
     if (index_data_.size() < index_size) {
       return false;
     }
-    read_ptr_index += sizeof(uint32);
+    read_ptr_index += sizeof(uint32_t);
 
     // Index metadata
-    uint32 index_metadata_max_size = index_size - kIndexVersion4HeaderSize;
-    if (index_metadata_max_size < sizeof(uint8)) {
+    uint32_t index_metadata_max_size = index_size - kIndexVersion4HeaderSize;
+    if (index_metadata_max_size < sizeof(uint8_t)) {
       index_data_.clear();
       return false;
     }
 
-    uint64 track_duration = 0;
-    uint32 sampling_frequency = kDefaultSamplingFrequency;
-    uint32 time_scale = kMpeg2ClockRate;
-    uint16 video_width = 0;
-    uint16 video_height = 0;
-    uint8 nalu_length_size = kNaluLengthSize;
-    uint8 num_channels = 0;
+    uint64_t track_duration = 0;
+    uint32_t sampling_frequency = kDefaultSamplingFrequency;
+    uint32_t time_scale = kMpeg2ClockRate;
+    uint16_t video_width = 0;
+    uint16_t video_height = 0;
+    uint8_t nalu_length_size = kNaluLengthSize;
+    uint8_t num_channels = 0;
     int audio_pes_stream_id = 0;
     int video_pes_stream_id = 0;
     bool has_video = false;
     bool has_audio = false;
-    std::vector<uint8> decoder_config_record;
+    std::vector<uint8_t> decoder_config_record;
     std::string video_codec_string;
     std::string audio_codec_string;
-    uint8 num_index_entries = *read_ptr_index;
+    uint8_t num_index_entries = *read_ptr_index;
     ++read_ptr_index;
     --index_metadata_max_size;
 
-   for (uint8 idx = 0; idx < num_index_entries; ++idx) {
-     if (index_metadata_max_size < (2 * sizeof(uint8)) + sizeof(uint32)) {
+    for (uint8_t idx = 0; idx < num_index_entries; ++idx) {
+      if (index_metadata_max_size < (2 * sizeof(uint8_t)) + sizeof(uint32_t)) {
        return false;
      }
-     uint8 tag = *read_ptr_index;
+     uint8_t tag = *read_ptr_index;
      ++read_ptr_index;
-     uint8 type = *read_ptr_index;
+     uint8_t type = *read_ptr_index;
      ++read_ptr_index;
-     uint32 length = ntohlFromBuffer(read_ptr_index);
-     read_ptr_index += sizeof(uint32);
-     index_metadata_max_size -= (2 * sizeof(uint8)) + sizeof(uint32);
+     uint32_t length = ntohlFromBuffer(read_ptr_index);
+     read_ptr_index += sizeof(uint32_t);
+     index_metadata_max_size -= (2 * sizeof(uint8_t)) + sizeof(uint32_t);
      if (index_metadata_max_size < length) {
         return false;
      }
      int value = 0;
      Tag tagtype = Unset;
-     std::vector<uint8> binary_data(length);
+     std::vector<uint8_t> binary_data(length);
      switch (Type(type)) {
        case Type_uint8:
-         if (length == sizeof(uint8)) {
+         if (length == sizeof(uint8_t)) {
           tagtype = GetTag(tag, length, read_ptr_index, &value);
         } else {
           return false;
         }
       break;
        case Type_int8:
-         if (length == sizeof(int8)) {
+         if (length == sizeof(int8_t)) {
            tagtype = GetTag(tag, length, read_ptr_index, &value);
          } else {
            return false;
          }
          break;
        case Type_uint16:
-         if (length == sizeof(uint16)) {
+         if (length == sizeof(uint16_t)) {
            tagtype = GetTag(tag, length, read_ptr_index, &value);
          } else {
            return false;
          }
          break;
        case Type_int16:
-         if (length == sizeof(int16)) {
+         if (length == sizeof(int16_t)) {
            tagtype = GetTag(tag, length, read_ptr_index, &value);
          } else {
            return false;
          }
          break;
        case Type_uint32:
-         if (length == sizeof(uint32)) {
+         if (length == sizeof(uint32_t)) {
            tagtype = GetTag(tag, length, read_ptr_index, &value);
          } else {
            return false;
          }
          break;
        case Type_int32:
-         if (length == sizeof(int32)) {
+         if (length == sizeof(int32_t)) {
            tagtype = GetTag(tag, length, read_ptr_index, &value);
          } else {
            return false;
          }
          break;
        case Type_uint64:
-         if (length == sizeof(uint64)) {
+         if (length == sizeof(uint64_t)) {
            tagtype = GetTag(tag, length, read_ptr_index, &value);
          } else {
            return false;
          }
          break;
        case Type_int64:
-         if (length == sizeof(int64)) {
+         if (length == sizeof(int64_t)) {
            tagtype = GetTag(tag, length, read_ptr_index, &value);
          } else {
            return false;
@@ -663,13 +663,13 @@ bool WvmMediaParser::ParseIndexEntry() {
          audio_pes_stream_id = value;
          break;
        case VideoWidth:
-         video_width = (uint16)value;
+         video_width = (uint16_t)value;
          break;
        case VideoHeight:
-         video_height = (uint16)value;
+         video_height = (uint16_t)value;
          break;
        case AudioNumChannels:
-         num_channels = (uint8)value;
+         num_channels = (uint8_t)value;
          break;
        case VideoType:
          has_video = true;
@@ -715,7 +715,7 @@ bool WvmMediaParser::ParseIndexEntry() {
   return true;
 }
 
-bool WvmMediaParser::DemuxNextPes(uint8* read_ptr, bool is_program_end) {
+bool WvmMediaParser::DemuxNextPes(uint8_t* read_ptr, bool is_program_end) {
   // Demux media sample if we are at program end or if we are not at a
   // continuation PES.
   if (is_program_end || (pes_flags_2_ & kPesOptPts)) {
@@ -729,7 +729,7 @@ bool WvmMediaParser::DemuxNextPes(uint8* read_ptr, bool is_program_end) {
   return true;
 }
 
-void WvmMediaParser::StartMediaSampleDemux(uint8* read_ptr) {
+void WvmMediaParser::StartMediaSampleDemux(uint8_t* read_ptr) {
   bool is_key_frame = ((pes_flags_1_ & kPesOptAlign) != 0);
   media_sample_ = MediaSample::CreateEmptyMediaSample();
   media_sample_->set_dts(dts_);
@@ -742,17 +742,17 @@ void WvmMediaParser::StartMediaSampleDemux(uint8* read_ptr) {
 bool WvmMediaParser::Output() {
   if ((prev_pes_stream_id_ & kPesStreamIdVideoMask) == kPesStreamIdVideo) {
     // Set data on the video stream from the NalUnitStream.
-    std::vector<uint8> nal_unit_stream;
+    std::vector<uint8_t> nal_unit_stream;
     byte_to_unit_stream_converter_.ConvertByteStreamToNalUnitStream(
         &sample_data_[0], sample_data_.size(), &nal_unit_stream);
     media_sample_->set_data(nal_unit_stream.data(), nal_unit_stream.size());
     if (!is_initialized_) {
       // Set extra data for video stream from AVC Decoder Config Record.
       // Also, set codec string from the AVC Decoder Config Record.
-      std::vector<uint8> decoder_config_record;
+      std::vector<uint8_t> decoder_config_record;
       byte_to_unit_stream_converter_.GetAVCDecoderConfigurationRecord(
           &decoder_config_record);
-      for (uint32 i = 0; i < stream_infos_.size(); i++) {
+      for (uint32_t i = 0; i < stream_infos_.size(); i++) {
         if (stream_infos_[i]->stream_type() == media::kStreamVideo &&
            stream_infos_[i]->extra_data().empty()) {
             stream_infos_[i]->set_extra_data(decoder_config_record);
@@ -769,8 +769,8 @@ bool WvmMediaParser::Output() {
           media::mp2t::AdtsHeader::GetAdtsFrameSize(&sample_data_[0],
                                                   kAdtsHeaderMinSize);
       media::mp2t::AdtsHeader adts_header;
-      const uint8* frame_ptr = &sample_data_[0];
-      std::vector<uint8> extra_data;
+      const uint8_t* frame_ptr = &sample_data_[0];
+      std::vector<uint8_t> extra_data;
       if (adts_header.Parse(frame_ptr, frame_size) &&
          (adts_header.GetAudioSpecificConfig(&extra_data))) {
         size_t header_size = adts_header.GetAdtsHeaderSize(frame_ptr,
@@ -778,8 +778,8 @@ bool WvmMediaParser::Output() {
         media_sample_->set_data(frame_ptr + header_size,
                                 frame_size - header_size);
         if (!is_initialized_) {
-          uint32 sampling_frequency = adts_header.GetSamplingFrequency();
-          for (uint32 i = 0; i < stream_infos_.size(); i++) {
+          uint32_t sampling_frequency = adts_header.GetSamplingFrequency();
+          for (uint32_t i = 0; i < stream_infos_.size(); i++) {
             AudioStreamInfo* audio_stream_info =
                 reinterpret_cast<AudioStreamInfo*>(
                     stream_infos_[i].get());
@@ -801,7 +801,7 @@ bool WvmMediaParser::Output() {
   if (!is_initialized_) {
     bool is_extra_data_in_stream_infos = true;
     // Check if all collected stream infos have extra_data set.
-    for (uint32 i = 0; i < stream_infos_.size(); i++) {
+    for (uint32_t i = 0; i < stream_infos_.size(); i++) {
       if (stream_infos_[i]->extra_data().empty()) {
         is_extra_data_in_stream_infos = false;
         break;
@@ -816,7 +816,7 @@ bool WvmMediaParser::Output() {
   DCHECK_GT(media_sample_->data_size(), 0UL);
   std::string key =  base::UintToString(current_program_id_).append(":")
       .append(base::UintToString(prev_pes_stream_id_));
-  std::map<std::string, uint32>::iterator it =
+  std::map<std::string, uint32_t>::iterator it =
       program_demux_stream_map_.find(key);
   if (it == program_demux_stream_map_.end()) {
     // TODO(ramjic): Log error message here and in other error cases through
@@ -842,9 +842,10 @@ bool WvmMediaParser::Output() {
   return true;
 }
 
-void WvmMediaParser::EmitSample(
-    uint32 parsed_audio_or_video_stream_id, uint32 stream_id,
-    scoped_refptr<MediaSample>& new_sample, bool isLastSample) {
+void WvmMediaParser::EmitSample(uint32_t parsed_audio_or_video_stream_id,
+                                uint32_t stream_id,
+                                scoped_refptr<MediaSample>& new_sample,
+                                bool isLastSample) {
   DCHECK(new_sample);
   if (isLastSample) {
     if ((parsed_audio_or_video_stream_id & kPesStreamIdVideoMask)

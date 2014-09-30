@@ -33,24 +33,24 @@ class H264ByteToUnitStreamConverter {
   /// @param output_frame is a pointer to a vector which will receive the
   ///        converted frame.
   /// @return true if successful, false otherwise.
-  bool ConvertByteStreamToNalUnitStream(const uint8* input_frame,
+  bool ConvertByteStreamToNalUnitStream(const uint8_t* input_frame,
                                         size_t input_frame_size,
-                                        std::vector<uint8>* output_frame);
+                                        std::vector<uint8_t>* output_frame);
 
   /// Synthesizes an AVCDecoderConfigurationRecord from the SPS and PPS NAL
   /// units extracted from the AVC byte stream.
   /// @param decoder_config is a pointer to a vector, which on successful
   ///        return will contain the computed AVCDecoderConfigurationRecord.
   /// @return true if successful, or false otherwise.
-  bool GetAVCDecoderConfigurationRecord(std::vector<uint8>* decoder_config);
+  bool GetAVCDecoderConfigurationRecord(std::vector<uint8_t>* decoder_config);
 
  private:
-  void ProcessNalu(const uint8* nalu_ptr,
+  void ProcessNalu(const uint8_t* nalu_ptr,
                    size_t nalu_size,
                    BufferWriter* output_buffer);
 
-  std::vector<uint8> last_sps_;
-  std::vector<uint8> last_pps_;
+  std::vector<uint8_t> last_sps_;
+  std::vector<uint8_t> last_pps_;
 };
 
 }  // namespace media

@@ -27,9 +27,9 @@ class LocalFile : public File {
   /// @name File implementation overrides.
   /// @{
   virtual bool Close() OVERRIDE;
-  virtual int64 Read(void* buffer, uint64 length) OVERRIDE;
-  virtual int64 Write(const void* buffer, uint64 length) OVERRIDE;
-  virtual int64 Size() OVERRIDE;
+  virtual int64_t Read(void* buffer, uint64_t length) OVERRIDE;
+  virtual int64_t Write(const void* buffer, uint64_t length) OVERRIDE;
+  virtual int64_t Size() OVERRIDE;
   virtual bool Flush() OVERRIDE;
   virtual bool Eof() OVERRIDE;
   /// @}

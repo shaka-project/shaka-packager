@@ -202,7 +202,7 @@ void XmlNode::SetStringAttribute(const char* attribute_name,
   xmlSetProp(node_.get(), BAD_CAST attribute_name, BAD_CAST attribute.c_str());
 }
 
-void XmlNode::SetIntegerAttribute(const char* attribute_name, uint64 number) {
+void XmlNode::SetIntegerAttribute(const char* attribute_name, uint64_t number) {
   DCHECK(node_);
   DCHECK(attribute_name);
   xmlSetProp(node_.get(),
@@ -219,7 +219,7 @@ void XmlNode::SetFloatingPointAttribute(const char* attribute_name,
              BAD_CAST (base::DoubleToString(number).c_str()));
 }
 
-void XmlNode::SetId(uint32 id) {
+void XmlNode::SetId(uint32_t id) {
   SetIntegerAttribute("id", id);
 }
 
@@ -322,8 +322,8 @@ RepresentationXmlNode::~RepresentationXmlNode() {}
 
 bool RepresentationXmlNode::AddVideoInfo(
     const RepeatedVideoInfo& repeated_video_info) {
-  uint32 width = 0;
-  uint32 height = 0;
+  uint32_t width = 0;
+  uint32_t height = 0;
 
   // Make sure that all the widths and heights match.
   for (int i = 0; i < repeated_video_info.size(); ++i) {
@@ -413,7 +413,7 @@ bool RepresentationXmlNode::AddVODOnlyInfo(const MediaInfo& media_info) {
 bool RepresentationXmlNode::AddLiveOnlyInfo(
     const MediaInfo& media_info,
     const std::list<SegmentInfo>& segment_infos,
-    uint32 start_number) {
+    uint32_t start_number) {
   XmlNode segment_template("SegmentTemplate");
   if (media_info.has_reference_time_scale()) {
     segment_template.SetIntegerAttribute("timescale",
@@ -459,13 +459,13 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
 // AudioChannelConfiguration for each number-of-channels.
 bool RepresentationXmlNode::AddAudioChannelInfo(
     const RepeatedAudioInfo& repeated_audio_info) {
-  std::set<uint32> num_channels;
+  std::set<uint32_t> num_channels;
   for (int i = 0; i < repeated_audio_info.size(); ++i) {
     if (repeated_audio_info.Get(i).has_num_channels())
       num_channels.insert(repeated_audio_info.Get(i).num_channels());
   }
 
-  std::set<uint32>::const_iterator num_channels_it = num_channels.begin();
+  std::set<uint32_t>::const_iterator num_channels_it = num_channels.begin();
   for (; num_channels_it != num_channels.end(); ++num_channels_it) {
     XmlNode audio_channel_config("AudioChannelConfiguration");
 
@@ -487,14 +487,14 @@ bool RepresentationXmlNode::AddAudioChannelInfo(
 void RepresentationXmlNode::AddAudioSamplingRateInfo(
     const RepeatedAudioInfo& repeated_audio_info) {
   bool has_sampling_frequency = false;
-  uint32 min_sampling_frequency = kuint32max;
-  uint32 max_sampling_frequency = 0;
+  uint32_t min_sampling_frequency = kuint32max;
+  uint32_t max_sampling_frequency = 0;
 
   for (int i = 0; i < repeated_audio_info.size(); ++i) {
     const MediaInfo_AudioInfo &audio_info = repeated_audio_info.Get(i);
     if (audio_info.has_sampling_frequency()) {
       has_sampling_frequency = true;
-      const uint32 sampling_frequency = audio_info.sampling_frequency();
+      const uint32_t sampling_frequency = audio_info.sampling_frequency();
       if (sampling_frequency < min_sampling_frequency)
         min_sampling_frequency = sampling_frequency;
 

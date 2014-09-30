@@ -34,16 +34,16 @@ class CompositionOffsetIterator {
   bool IsValid() const;
 
   /// @return Sample offset for current sample.
-  int32 sample_offset() const { return iterator_->sample_offset; }
+  int32_t sample_offset() const { return iterator_->sample_offset; }
 
   /// @return Sample offset @a sample, 1-based.
-  int32 SampleOffset(uint32 sample) const;
+  int32_t SampleOffset(uint32_t sample) const;
 
   /// @return Total number of samples.
-  uint32 NumSamples() const;
+  uint32_t NumSamples() const;
 
  private:
-  uint32 sample_index_;
+  uint32_t sample_index_;
   const std::vector<CompositionOffset>& composition_offset_table_;
   std::vector<CompositionOffset>::const_iterator iterator_;
 

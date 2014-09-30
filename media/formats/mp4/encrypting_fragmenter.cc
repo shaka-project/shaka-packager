@@ -25,8 +25,8 @@ namespace mp4 {
 EncryptingFragmenter::EncryptingFragmenter(
     TrackFragment* traf,
     scoped_ptr<EncryptionKey> encryption_key,
-    int64 clear_time,
-    uint8 nalu_length_size)
+    int64_t clear_time,
+    uint8_t nalu_length_size)
     : Fragmenter(traf),
       encryption_key_(encryption_key.Pass()),
       nalu_length_size_(nalu_length_size),
@@ -51,7 +51,7 @@ Status EncryptingFragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   return Fragmenter::AddSample(sample);
 }
 
-Status EncryptingFragmenter::InitializeFragment(int64 first_sample_dts) {
+Status EncryptingFragmenter::InitializeFragment(int64_t first_sample_dts) {
   Status status = Fragmenter::InitializeFragment(first_sample_dts);
   if (!status.ok())
     return status;
@@ -64,7 +64,7 @@ Status EncryptingFragmenter::InitializeFragment(int64 first_sample_dts) {
     // This fragment should be in clear text.
     // At most two sample description entries, an encrypted entry and a clear
     // entry, are generated. The 1-based clear entry index is always 2.
-    const uint32 kClearSampleDescriptionIndex = 2;
+    const uint32_t kClearSampleDescriptionIndex = 2;
 
     traf()->header.flags |=
         TrackFragmentHeader::kSampleDescriptionIndexPresentMask;
@@ -124,7 +124,7 @@ Status EncryptingFragmenter::CreateEncryptor() {
   return Status::OK;
 }
 
-void EncryptingFragmenter::EncryptBytes(uint8* data, uint32 size) {
+void EncryptingFragmenter::EncryptBytes(uint8_t* data, uint32_t size) {
   DCHECK(encryptor_);
   CHECK(encryptor_->Encrypt(data, size, data));
 }
@@ -133,13 +133,13 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
   DCHECK(encryptor_);
 
   FrameCENCInfo cenc_info(encryptor_->iv());
-  uint8* data = sample->writable_data();
+  uint8_t* data = sample->writable_data();
   if (!IsSubsampleEncryptionRequired()) {
     EncryptBytes(data, sample->data_size());
   } else {
     BufferReader reader(data, sample->data_size());
     while (reader.HasBytes(1)) {
-      uint64 nalu_length;
+      uint64_t nalu_length;
       if (!reader.ReadNBytesInto8(&nalu_length, nalu_length_size_))
         return Status(error::MUXER_FAILURE, "Fail to read nalu_length.");
 

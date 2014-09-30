@@ -16,7 +16,7 @@ namespace {
 bool IsIvSizeValid(size_t iv_size) { return iv_size == 8 || iv_size == 16; }
 
 // 16-bit |clear_bytes| and 32-bit |cipher_bytes|.
-const size_t kSubsampleEntrySize = sizeof(uint16) + sizeof(uint32);
+const size_t kSubsampleEntrySize = sizeof(uint16_t) + sizeof(uint32_t);
 }  // namespace
 
 namespace edash_packager {
@@ -24,10 +24,11 @@ namespace media {
 namespace mp4 {
 
 FrameCENCInfo::FrameCENCInfo() {}
-FrameCENCInfo::FrameCENCInfo(const std::vector<uint8>& iv) : iv_(iv) {}
+FrameCENCInfo::FrameCENCInfo(const std::vector<uint8_t>& iv) : iv_(iv) {
+}
 FrameCENCInfo::~FrameCENCInfo() {}
 
-bool FrameCENCInfo::Parse(uint8 iv_size, BufferReader* reader) {
+bool FrameCENCInfo::Parse(uint8_t iv_size, BufferReader* reader) {
   DCHECK(reader);
   // Mandated by CENC spec.
   RCHECK(IsIvSizeValid(iv_size));
@@ -38,14 +39,14 @@ bool FrameCENCInfo::Parse(uint8 iv_size, BufferReader* reader) {
   if (!reader->HasBytes(1))
     return true;
 
-  uint16 subsample_count;
+  uint16_t subsample_count;
   RCHECK(reader->Read2(&subsample_count) &&
          reader->HasBytes(subsample_count * kSubsampleEntrySize));
 
   subsamples_.resize(subsample_count);
-  for (uint16 i = 0; i < subsample_count; ++i) {
-    uint16 clear_bytes;
-    uint32 cipher_bytes;
+  for (uint16_t i = 0; i < subsample_count; ++i) {
+    uint16_t clear_bytes;
+    uint32_t cipher_bytes;
     RCHECK(reader->Read2(&clear_bytes) &&
            reader->Read4(&cipher_bytes));
     subsamples_[i].clear_bytes = clear_bytes;
@@ -59,19 +60,19 @@ void FrameCENCInfo::Write(BufferWriter* writer) const {
   DCHECK(IsIvSizeValid(iv_.size()));
   writer->AppendVector(iv_);
 
-  uint16 subsample_count = subsamples_.size();
+  uint16_t subsample_count = subsamples_.size();
   if (subsample_count == 0)
     return;
   writer->AppendInt(subsample_count);
 
-  for (uint16 i = 0; i < subsample_count; ++i) {
+  for (uint16_t i = 0; i < subsample_count; ++i) {
     writer->AppendInt(subsamples_[i].clear_bytes);
     writer->AppendInt(subsamples_[i].cipher_bytes);
   }
 }
 
 size_t FrameCENCInfo::ComputeSize() const {
-  uint16 subsample_count = subsamples_.size();
+  uint16_t subsample_count = subsamples_.size();
   if (subsample_count == 0)
     return iv_.size();
 

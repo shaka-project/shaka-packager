@@ -14,12 +14,12 @@
 
 namespace {
 const size_t kCapacity = 10u;
-const int64 kTimeout = 100;  // 0.1s.
+const int64_t kTimeout = 100;  // 0.1s.
 
 // Check that the |delta| is approximately |time_in_milliseconds|.
-bool CheckTimeApproxEqual(int64 time_in_milliseconds,
+bool CheckTimeApproxEqual(int64_t time_in_milliseconds,
                           const base::TimeDelta& delta) {
-  const int64 kOverhead = 10;   // 0.01s.
+  const int64_t kOverhead = 10;  // 0.01s.
   return delta.InMilliseconds() >= time_in_milliseconds &&
          delta.InMilliseconds() <= time_in_milliseconds + kOverhead;
 }

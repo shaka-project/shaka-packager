@@ -27,42 +27,43 @@ namespace media {
 // accumulated frames to reach a target timestamp.
 class AudioTimestampHelper {
  public:
-  explicit AudioTimestampHelper(uint32 timescale, uint32 samples_per_second);
+  explicit AudioTimestampHelper(uint32_t timescale,
+                                uint32_t samples_per_second);
 
   // Sets the base timestamp to |base_timestamp| and the sets count to 0.
-  void SetBaseTimestamp(int64 base_timestamp);
+  void SetBaseTimestamp(int64_t base_timestamp);
 
-  int64 base_timestamp() const;
-  int64 frame_count() const { return frame_count_; }
+  int64_t base_timestamp() const;
+  int64_t frame_count() const { return frame_count_; }
 
   // Adds |frame_count| to the frame counter.
   // Note: SetBaseTimestamp() must be called with a value other than
   // kNoTimestamp() before this method can be called.
-  void AddFrames(int64 frame_count);
+  void AddFrames(int64_t frame_count);
 
   // Get the current timestamp. This value is computed from the base_timestamp()
   // and the number of sample frames that have been added so far.
-  int64 GetTimestamp() const;
+  int64_t GetTimestamp() const;
 
   // Gets the duration if |frame_count| frames were added to the current
   // timestamp reported by GetTimestamp(). This method ensures that
   // (GetTimestamp() + GetFrameDuration(n)) will equal the timestamp that
   // GetTimestamp() will return if AddFrames(n) is called.
-  int64 GetFrameDuration(int64 frame_count) const;
+  int64_t GetFrameDuration(int64_t frame_count) const;
 
   // Returns the number of frames needed to reach the target timestamp.
   // Note: |target| must be >= |base_timestamp_|.
-  int64 GetFramesToTarget(int64 target) const;
+  int64_t GetFramesToTarget(int64_t target) const;
 
  private:
-  int64 ComputeTimestamp(int64 frame_count) const;
+  int64_t ComputeTimestamp(int64_t frame_count) const;
 
   double ticks_per_frame_;
 
-  int64 base_timestamp_;
+  int64_t base_timestamp_;
 
   // Number of frames accumulated by AddFrames() calls.
-  int64 frame_count_;
+  int64_t frame_count_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(AudioTimestampHelper);
 };

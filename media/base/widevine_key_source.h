@@ -34,15 +34,15 @@ class WidevineKeySource : public KeySource {
 
   /// @name KeySource implementation overrides.
   /// @{
-  virtual Status FetchKeys(const std::vector<uint8>& content_id,
+  virtual Status FetchKeys(const std::vector<uint8_t>& content_id,
                            const std::string& policy) OVERRIDE;
-  virtual Status FetchKeys(const std::vector<uint8>& pssh_data) OVERRIDE;
-  Status FetchKeys(uint32 asset_id);
+  virtual Status FetchKeys(const std::vector<uint8_t>& pssh_data) OVERRIDE;
+  Status FetchKeys(uint32_t asset_id);
 
   virtual Status GetKey(TrackType track_type, EncryptionKey* key) OVERRIDE;
-  virtual Status GetKey(const std::vector<uint8>& key_id,
+  virtual Status GetKey(const std::vector<uint8_t>& key_id,
                         EncryptionKey* key) OVERRIDE;
-  virtual Status GetCryptoPeriodKey(uint32 crypto_period_index,
+  virtual Status GetCryptoPeriodKey(uint32_t crypto_period_index,
                                     TrackType track_type,
                                     EncryptionKey* key) OVERRIDE;
   /// @}
@@ -58,7 +58,7 @@ class WidevineKeySource : public KeySource {
       EncryptionKeyQueue;
 
   // Internal routine for getting keys.
-  Status GetKeyInternal(uint32 crypto_period_index,
+  Status GetKeyInternal(uint32_t crypto_period_index,
                         TrackType track_type,
                         EncryptionKey* key);
 
@@ -70,13 +70,13 @@ class WidevineKeySource : public KeySource {
 
   // Fetch keys from server.
   Status FetchKeysInternal(bool enable_key_rotation,
-                           uint32 first_crypto_period_index,
+                           uint32_t first_crypto_period_index,
                            bool widevine_classic);
 
   // Fill |request| with necessary fields for Widevine encryption request.
   // |request| should not be NULL.
   void FillRequest(bool enable_key_rotation,
-                   uint32 first_crypto_period_index,
+                   uint32_t first_crypto_period_index,
                    std::string* request);
   // Sign and properly format |request|.
   // |signed_request| should not be NULL. Return OK on success.
@@ -103,11 +103,11 @@ class WidevineKeySource : public KeySource {
   scoped_ptr<RequestSigner> signer_;
   base::DictionaryValue request_dict_;
 
-  const uint32 crypto_period_count_;
+  const uint32_t crypto_period_count_;
   base::Lock lock_;
   bool key_production_started_;
   base::WaitableEvent start_key_production_;
-  uint32 first_crypto_period_index_;
+  uint32_t first_crypto_period_index_;
   ClosureThread key_production_thread_;
   scoped_ptr<EncryptionKeyQueue> key_pool_;
   EncryptionKeyMap encryption_key_map_;  // For non key rotation request.

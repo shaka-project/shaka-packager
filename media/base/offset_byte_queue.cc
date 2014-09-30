@@ -20,13 +20,13 @@ void OffsetByteQueue::Reset() {
   head_ = 0;
 }
 
-void OffsetByteQueue::Push(const uint8* buf, int size) {
+void OffsetByteQueue::Push(const uint8_t* buf, int size) {
   queue_.Push(buf, size);
   Sync();
   DVLOG(4) << "Buffer pushed. head=" << head() << " tail=" << tail();
 }
 
-void OffsetByteQueue::Peek(const uint8** buf, int* size) {
+void OffsetByteQueue::Peek(const uint8_t** buf, int* size) {
   *buf = size_ > 0 ? buf_ : NULL;
   *size = size_;
 }
@@ -37,7 +37,7 @@ void OffsetByteQueue::Pop(int count) {
   Sync();
 }
 
-void OffsetByteQueue::PeekAt(int64 offset, const uint8** buf, int* size) {
+void OffsetByteQueue::PeekAt(int64_t offset, const uint8_t** buf, int* size) {
   DCHECK(offset >= head());
   if (offset < head() || offset >= tail()) {
     *buf = NULL;
@@ -48,7 +48,7 @@ void OffsetByteQueue::PeekAt(int64 offset, const uint8** buf, int* size) {
   *size = tail() - offset;
 }
 
-bool OffsetByteQueue::Trim(int64 max_offset) {
+bool OffsetByteQueue::Trim(int64_t max_offset) {
   if (max_offset < head_) return true;
   if (max_offset > tail()) {
     Pop(size_);

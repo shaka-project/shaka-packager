@@ -20,7 +20,7 @@ AdtsHeader::AdtsHeader()
       sampling_frequency_index_(0),
       channel_configuration_(0) {}
 
-size_t AdtsHeader::GetAdtsFrameSize(const uint8* data, size_t num_bytes) {
+size_t AdtsHeader::GetAdtsFrameSize(const uint8_t* data, size_t num_bytes) {
   if (num_bytes < 6)
     return 0;
   return ((static_cast<int>(data[5]) >> 5) |
@@ -28,23 +28,22 @@ size_t AdtsHeader::GetAdtsFrameSize(const uint8* data, size_t num_bytes) {
           ((static_cast<int>(data[3]) & 0x3) << 11));
 }
 
-size_t AdtsHeader::GetAdtsHeaderSize(const uint8* data, size_t num_bytes) {
+size_t AdtsHeader::GetAdtsHeaderSize(const uint8_t* data, size_t num_bytes) {
   if (num_bytes < 2)
     return 0;
   if (data[1] & 0x01)
     return kAdtsHeaderMinSize;
-  return kAdtsHeaderMinSize + sizeof(uint16);  // Header + CRC.
+  return kAdtsHeaderMinSize + sizeof(uint16_t);  // Header + CRC.
 }
 
-bool AdtsHeader::Parse(
-    const uint8* adts_frame, size_t adts_frame_size) {
+bool AdtsHeader::Parse(const uint8_t* adts_frame, size_t adts_frame_size) {
   CHECK(adts_frame);
 
   valid_config_ = false;
 
   BitReader frame(adts_frame, adts_frame_size);
   // Verify frame starts with sync bits (0xfff).
-  uint32 sync;
+  uint32_t sync;
   RCHECK(frame.ReadBits(12, &sync));
   RCHECK(sync == 0xfff);
   // Skip MPEG version and layer.
@@ -66,12 +65,12 @@ bool AdtsHeader::Parse(
   // Skip originality, home and copyright info.
   RCHECK(frame.SkipBits(4));
   // Verify that the frame size matches input parameters.
-  uint16 frame_size;
+  uint16_t frame_size;
   RCHECK(frame.ReadBits(13, &frame_size));
   RCHECK(frame_size == adts_frame_size);
   // Skip buffer fullness indicator.
   RCHECK(frame.SkipBits(11));
-  uint8 num_blocks_minus_1;
+  uint8_t num_blocks_minus_1;
   RCHECK(frame.ReadBits(2, &num_blocks_minus_1));
   if (num_blocks_minus_1) {
     NOTIMPLEMENTED() << "ADTS frames with more than one data block "
@@ -83,8 +82,7 @@ bool AdtsHeader::Parse(
   return true;
 }
 
-bool AdtsHeader::GetAudioSpecificConfig(
-    std::vector<uint8>* buffer) const {
+bool AdtsHeader::GetAudioSpecificConfig(std::vector<uint8_t>* buffer) const {
   DCHECK(buffer);
   if (!valid_config_)
     return false;
@@ -96,16 +94,16 @@ bool AdtsHeader::GetAudioSpecificConfig(
   return true;
 }
 
-uint8 AdtsHeader::GetObjectType() const {
+uint8_t AdtsHeader::GetObjectType() const {
   return profile_ + 1;
 }
 
-uint32 AdtsHeader::GetSamplingFrequency() const {
+uint32_t AdtsHeader::GetSamplingFrequency() const {
   DCHECK_LT(sampling_frequency_index_, kAdtsFrequencyTableSize);
   return kAdtsFrequencyTable[sampling_frequency_index_];
 }
 
-uint8 AdtsHeader::GetNumChannels() const {
+uint8_t AdtsHeader::GetNumChannels() const {
   DCHECK_GT(channel_configuration_, 0);
   DCHECK_LT(channel_configuration_, kAdtsNumChannelsTableSize);
   return kAdtsNumChannelsTable[channel_configuration_];

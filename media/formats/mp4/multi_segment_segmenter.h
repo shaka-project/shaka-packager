@@ -51,7 +51,7 @@ class MultiSegmentSegmenter : public Segmenter {
   Status WriteSegment();
 
   scoped_ptr<SegmentType> styp_;
-  uint32 num_segments_;
+  uint32_t num_segments_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiSegmentSegmenter);
 };

@@ -31,39 +31,33 @@ class AACAudioSpecificConfig {
   /// ElementaryStreamDescriptor to get audio stream configurations.
   /// @param data contains decoder specific information from an @b esds box.
   /// @return true if successful, false otherwise.
-  bool Parse(const std::vector<uint8>& data);
+  bool Parse(const std::vector<uint8_t>& data);
 
   /// @param sbr_in_mimetype indicates whether SBR mode is specified in the
   ///        mimetype, i.e. codecs parameter contains mp4a.40.5.
   /// @return Output sample rate for the AAC stream.
-  uint32 GetOutputSamplesPerSecond(bool sbr_in_mimetype) const;
+  uint32_t GetOutputSamplesPerSecond(bool sbr_in_mimetype) const;
 
   /// @param sbr_in_mimetype indicates whether SBR mode is specified in the
   ///        mimetype, i.e. codecs parameter contains mp4a.40.5.
   /// @return Number of channels for the AAC stream.
-  uint8 GetNumChannels(bool sbr_in_mimetype) const;
+  uint8_t GetNumChannels(bool sbr_in_mimetype) const;
 
   /// Convert a raw AAC frame into an AAC frame with an ADTS header.
   /// @param[in,out] buffer contains the raw AAC frame on input, and the
   ///                converted frame on output if successful; it is untouched
   ///                on failure.
   /// @return true on success, false otherwise.
-  bool ConvertToADTS(std::vector<uint8>* buffer) const;
+  bool ConvertToADTS(std::vector<uint8_t>* buffer) const;
 
   /// @return The audio object type for this AAC config.
-  uint8 audio_object_type() const {
-    return audio_object_type_;
-  }
+  uint8_t audio_object_type() const { return audio_object_type_; }
 
   /// @return The sampling frequency for this AAC config.
-  uint32 frequency() const {
-    return frequency_;
-  }
+  uint32_t frequency() const { return frequency_; }
 
   /// @return Number of channels for this AAC config.
-  uint8 num_channels() const {
-    return num_channels_;
-  }
+  uint8_t num_channels() const { return num_channels_; }
 
   /// Size in bytes of the ADTS header added by ConvertEsdsToADTS().
   static const size_t kADTSHeaderSize = 7;
@@ -75,18 +69,18 @@ class AACAudioSpecificConfig {
 
   // The following variables store the AAC specific configuration information
   // that are used to generate the ADTS header.
-  uint8 audio_object_type_;
-  uint8 frequency_index_;
-  uint8 channel_config_;
+  uint8_t audio_object_type_;
+  uint8_t frequency_index_;
+  uint8_t channel_config_;
   // Is Parametric Stereo on?
   bool ps_present_;
 
   // The following variables store audio configuration information.
   // They are based on the AAC specific configuration but can be overridden
   // by extensions in elementary stream descriptor.
-  uint32 frequency_;
-  uint32 extension_frequency_;
-  uint8 num_channels_;
+  uint32_t frequency_;
+  uint32_t extension_frequency_;
+  uint8_t num_channels_;
 };
 
 }  // namespace mp4

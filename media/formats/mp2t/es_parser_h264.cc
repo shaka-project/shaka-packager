@@ -27,10 +27,9 @@ const int kMinAUDSize = 4;
 
 }  // anonymous namespace
 
-EsParserH264::EsParserH264(
-    uint32 pid,
-    const NewStreamInfoCB& new_stream_info_cb,
-    const EmitSampleCB& emit_sample_cb)
+EsParserH264::EsParserH264(uint32_t pid,
+                           const NewStreamInfoCB& new_stream_info_cb,
+                           const EmitSampleCB& emit_sample_cb)
     : EsParser(pid),
       new_stream_info_cb_(new_stream_info_cb),
       emit_sample_cb_(emit_sample_cb),
@@ -47,7 +46,10 @@ EsParserH264::EsParserH264(
 EsParserH264::~EsParserH264() {
 }
 
-bool EsParserH264::Parse(const uint8* buf, int size, int64 pts, int64 dts) {
+bool EsParserH264::Parse(const uint8_t* buf,
+                         int size,
+                         int64_t pts,
+                         int64_t dts) {
   // Note: Parse is invoked each time a PES packet has been reassembled.
   // Unfortunately, a PES packet does not necessarily map
   // to an h264 access unit, although the HLS recommendation is to use one PES
@@ -65,7 +67,7 @@ bool EsParserH264::Parse(const uint8* buf, int size, int64 pts, int64 dts) {
 
     // Link the end of the byte queue with the incoming timing descriptor.
     timing_desc_list_.push_back(
-        std::pair<int64, TimingDesc>(es_queue_->tail(), timing_desc));
+        std::pair<int64_t, TimingDesc>(es_queue_->tail(), timing_desc));
   }
 
   // Add the incoming bytes to the ES queue.
@@ -79,7 +81,7 @@ void EsParserH264::Flush() {
   if (FindAUD(&current_access_unit_pos_)) {
     // Simulate an additional AUD to force emitting the last access unit
     // which is assumed to be complete at this point.
-    uint8 aud[] = { 0x00, 0x00, 0x01, 0x09 };
+    uint8_t aud[] = {0x00, 0x00, 0x01, 0x09};
     es_queue_->Push(aud, sizeof(aud));
     ParseInternal();
   }
@@ -107,9 +109,9 @@ void EsParserH264::Reset() {
   waiting_for_key_frame_ = true;
 }
 
-bool EsParserH264::FindAUD(int64* stream_pos) {
+bool EsParserH264::FindAUD(int64_t* stream_pos) {
   while (true) {
-    const uint8* es;
+    const uint8_t* es;
     int size;
     es_queue_->PeekAt(*stream_pos, &es, &size);
 
@@ -170,10 +172,10 @@ bool EsParserH264::ParseInternal() {
   bool is_key_frame = false;
   int pps_id_for_access_unit = -1;
 
-  const uint8* es;
+  const uint8_t* es;
   int size;
   es_queue_->PeekAt(current_access_unit_pos_, &es, &size);
-  int access_unit_size = base::checked_cast<int, int64>(
+  int access_unit_size = base::checked_cast<int, int64_t>(
       next_access_unit_pos_ - current_access_unit_pos_);
   DCHECK_LE(access_unit_size, size);
   h264_parser_->SetStream(es, access_unit_size);
@@ -254,8 +256,10 @@ bool EsParserH264::ParseInternal() {
   return true;
 }
 
-bool EsParserH264::EmitFrame(int64 access_unit_pos, int access_unit_size,
-                             bool is_key_frame, int pps_id) {
+bool EsParserH264::EmitFrame(int64_t access_unit_pos,
+                             int access_unit_size,
+                             bool is_key_frame,
+                             int pps_id) {
   // Get the access unit timing info.
   TimingDesc current_timing_desc = {kNoTimestamp, kNoTimestamp};
   while (!timing_desc_list_.empty() &&
@@ -270,12 +274,12 @@ bool EsParserH264::EmitFrame(int64 access_unit_pos, int access_unit_size,
   DVLOG(LOG_LEVEL_ES) << "Emit frame: stream_pos=" << current_access_unit_pos_
                       << " size=" << access_unit_size;
   int es_size;
-  const uint8* es;
+  const uint8_t* es;
   es_queue_->PeekAt(current_access_unit_pos_, &es, &es_size);
   CHECK_GE(es_size, access_unit_size);
 
   // Convert frame to unit stream format.
-  std::vector<uint8> converted_frame;
+  std::vector<uint8_t> converted_frame;
   if (!stream_converter_->ConvertByteStreamToNalUnitStream(
           es, access_unit_size, &converted_frame)) {
     DLOG(ERROR) << "Failure to convert video frame to unit stream format.";
@@ -320,7 +324,7 @@ bool EsParserH264::EmitFrame(int64 access_unit_pos, int access_unit_size,
 }
 
 bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
-  std::vector<uint8> decoder_config_record;
+  std::vector<uint8_t> decoder_config_record;
   if (!stream_converter_->GetAVCDecoderConfigurationRecord(
           &decoder_config_record)) {
     DLOG(ERROR) << "Failure to construct an AVCDecoderConfigurationRecord";
@@ -342,8 +346,8 @@ bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
 
   // TODO: a MAP unit can be either 16 or 32 pixels.
   // although it's 16 pixels for progressive non MBAFF frames.
-  uint16 width = (sps->pic_width_in_mbs_minus1 + 1) * 16;
-  uint16 height = (sps->pic_height_in_map_units_minus1 + 1) * 16;
+  uint16_t width = (sps->pic_width_in_mbs_minus1 + 1) * 16;
+  uint16_t height = (sps->pic_height_in_map_units_minus1 + 1) * 16;
 
   last_video_decoder_config_ = scoped_refptr<StreamInfo>(
       new VideoStreamInfo(

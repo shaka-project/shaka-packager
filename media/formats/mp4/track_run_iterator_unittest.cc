@@ -18,7 +18,7 @@ static const int kSumAscending1 = 45;
 static const int kAudioScale = 48000;
 static const int kVideoScale = 25;
 
-static const uint8 kAuxInfo[] = {
+static const uint8_t kAuxInfo[] = {
     // Sample 1: IV (no subsumples).
     0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x31,
     // Sample 2: IV.
@@ -32,8 +32,9 @@ static const uint8 kAuxInfo[] = {
 
 static const char kIv1[] = {0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x31, };
 
-static const uint8 kKeyId[] = {0x41, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x54,
-                               0x65, 0x73, 0x74, 0x4b, 0x65, 0x79, 0x49, 0x44};
+static const uint8_t kKeyId[] = {0x41, 0x47, 0x6f, 0x6f, 0x67, 0x6c,
+                                 0x65, 0x54, 0x65, 0x73, 0x74, 0x4b,
+                                 0x65, 0x79, 0x49, 0x44};
 
 namespace edash_packager {
 namespace media {
@@ -142,7 +143,7 @@ class TrackRunIteratorTest : public testing::Test {
     frag->runs[0].sample_sizes[1] = 10;
   }
 
-  void SetAscending(std::vector<uint32>* vec) {
+  void SetAscending(std::vector<uint32_t>* vec) {
     vec->resize(10);
     for (size_t i = 0; i < vec->size(); i++)
       (*vec)[i] = i + 1;
@@ -195,7 +196,7 @@ TEST_F(TrackRunIteratorTest, BasicOperationTest) {
   EXPECT_EQ(iter_->track_id(), 2u);
   EXPECT_EQ(iter_->sample_offset(), 200 + kSumAscending1);
   EXPECT_EQ(iter_->sample_size(), 10);
-  int64 base_dts = kSumAscending1 + moof.tracks[1].decode_time.decode_time;
+  int64_t base_dts = kSumAscending1 + moof.tracks[1].decode_time.decode_time;
   EXPECT_EQ(iter_->dts(), base_dts);
   EXPECT_EQ(iter_->duration(), 10);
   EXPECT_FALSE(iter_->is_keyframe());
@@ -267,7 +268,7 @@ TEST_F(TrackRunIteratorTest, ReorderingTest) {
   // would simply be [0, 3, -2]. Since CTS offsets should be non-negative for
   // maximum compatibility, these values are biased up to [2, 5, 0].
   MovieFragment moof = CreateFragment();
-  std::vector<int32>& cts_offsets =
+  std::vector<int32_t>& cts_offsets =
       moof.tracks[1].runs[0].sample_composition_time_offsets;
   cts_offsets.resize(10);
   cts_offsets[0] = 2;
@@ -316,7 +317,7 @@ TEST_F(TrackRunIteratorTest, DecryptConfigTest) {
   EXPECT_EQ(iter_->track_id(), 2u);
   EXPECT_TRUE(iter_->is_encrypted());
   EXPECT_TRUE(iter_->AuxInfoNeedsToBeCached());
-  EXPECT_EQ(static_cast<uint32>(iter_->aux_info_size()), arraysize(kAuxInfo));
+  EXPECT_EQ(static_cast<uint32_t>(iter_->aux_info_size()), arraysize(kAuxInfo));
   EXPECT_EQ(iter_->aux_info_offset(), 50);
   EXPECT_EQ(iter_->GetMaxClearOffset(), 50);
   EXPECT_FALSE(iter_->CacheAuxInfo(NULL, 0));

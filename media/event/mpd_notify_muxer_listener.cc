@@ -36,7 +36,7 @@ void MpdNotifyMuxerListener::SetContentProtectionSchemeIdUri(
 void MpdNotifyMuxerListener::OnMediaStart(
     const MuxerOptions& muxer_options,
     const std::vector<StreamInfo*>& stream_infos,
-    uint32 time_scale,
+    uint32_t time_scale,
     ContainerType container_type,
     bool is_encrypted) {
   scoped_ptr<MediaInfo> media_info(new MediaInfo());
@@ -66,13 +66,13 @@ void MpdNotifyMuxerListener::OnMediaStart(
 }
 
 void MpdNotifyMuxerListener::OnMediaEnd(bool has_init_range,
-                                        uint64 init_range_start,
-                                        uint64 init_range_end,
+                                        uint64_t init_range_start,
+                                        uint64_t init_range_end,
                                         bool has_index_range,
-                                        uint64 index_range_start,
-                                        uint64 index_range_end,
+                                        uint64_t index_range_start,
+                                        uint64_t index_range_end,
                                         float duration_seconds,
-                                        uint64 file_size) {
+                                        uint64_t file_size) {
   if (mpd_notifier_->dash_profile() == kLiveProfile) return;
 
   DCHECK(media_info_);
@@ -89,14 +89,14 @@ void MpdNotifyMuxerListener::OnMediaEnd(bool has_init_range,
     return;
   }
 
-  uint32 id;  // Result unused.
+  uint32_t id;  // Result unused.
   // TODO(kqyang): Check return result.
   mpd_notifier_->NotifyNewContainer(*media_info_, &id);
 }
 
-void MpdNotifyMuxerListener::OnNewSegment(uint64 start_time,
-                                          uint64 duration,
-                                          uint64 segment_file_size) {
+void MpdNotifyMuxerListener::OnNewSegment(uint64_t start_time,
+                                          uint64_t duration,
+                                          uint64_t segment_file_size) {
   if (mpd_notifier_->dash_profile() != kLiveProfile) return;
   // TODO(kqyang): Check return result.
   mpd_notifier_->NotifyNewSegment(

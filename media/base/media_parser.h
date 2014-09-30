@@ -38,8 +38,8 @@ class MediaParser {
   /// @param media_sample is the new media sample.
   /// @return true if the sample is accepted, false if something was wrong
   ///         with the sample and a parsing error should be signaled.
-  typedef base::Callback<
-      bool(uint32 track_id, const scoped_refptr<MediaSample>& media_sample)>
+  typedef base::Callback<bool(uint32_t track_id,
+                              const scoped_refptr<MediaSample>& media_sample)>
       NewSampleCB;
 
   /// Initialize the parser with necessary callbacks. Must be called before any
@@ -59,7 +59,7 @@ class MediaParser {
 
   /// Should be called when there is new data to parse.
   /// @return true if successful.
-  virtual bool Parse(const uint8* buf, int size) = 0;
+  virtual bool Parse(const uint8_t* buf, int size) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MediaParser);

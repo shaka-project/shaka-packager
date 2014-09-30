@@ -26,7 +26,7 @@ class H264BitReader {
   // Initialize the reader to start reading at |data|, |size| being size
   // of |data| in bytes.
   // Return false on insufficient size of stream..
-  bool Initialize(const uint8* data, off_t size);
+  bool Initialize(const uint8_t* data, off_t size);
 
   // Read |num_bits| next bits from stream and return in |*out|, first bit
   // from the stream starting at |num_bits| position in |*out|.
@@ -50,7 +50,7 @@ class H264BitReader {
   bool UpdateCurrByte();
 
   // Pointer to the next unread (not in curr_byte_) byte in the stream.
-  const uint8* data_;
+  const uint8_t* data_;
 
   // Bytes left in the stream (without the curr_byte_).
   off_t bytes_left_;

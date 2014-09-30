@@ -19,10 +19,10 @@ struct EncryptionKey {
   EncryptionKey();
   ~EncryptionKey();
 
-  std::vector<uint8> key_id;
-  std::vector<uint8> key;
-  std::vector<uint8> pssh;
-  std::vector<uint8> iv;
+  std::vector<uint8_t> key_id;
+  std::vector<uint8_t> key;
+  std::vector<uint8_t> pssh;
+  std::vector<uint8_t> iv;
 };
 
 /// KeySource is responsible for encryption key acquisition.
@@ -42,14 +42,14 @@ class KeySource {
   /// @param content_id the unique id identify the content.
   /// @param policy specifies the DRM content rights.
   /// @return OK on success, an error status otherwise.
-  virtual Status FetchKeys(const std::vector<uint8>& content_id,
+  virtual Status FetchKeys(const std::vector<uint8_t>& content_id,
                            const std::string& policy);
 
   /// Fetch keys for CENC from the key server.
   /// @param pssh_data is the Data portion of the PSSH box for the content
   /// to be decrypted.
   /// @return OK on success, an error status otherwise.
-  virtual Status FetchKeys(const std::vector<uint8>& pssh_data);
+  virtual Status FetchKeys(const std::vector<uint8_t>& pssh_data);
 
   /// Get encryption key of the specified track type.
   /// @param track_type is the type of track for which retrieving the key.
@@ -63,7 +63,7 @@ class KeySource {
   /// @param key is a pointer to the EncryptionKey which will hold the retrieved
   ///        key. Owner retains ownership, and may not be NULL.
   /// @return OK on success, or an error status otherwise.
-  virtual Status GetKey(const std::vector<uint8>& key_id, EncryptionKey* key);
+  virtual Status GetKey(const std::vector<uint8_t>& key_id, EncryptionKey* key);
 
   /// Get encryption key of the specified track type at the specified index.
   /// @param crypto_period_index is the sequence number of the key rotation
@@ -72,7 +72,7 @@ class KeySource {
   /// @param key is a pointer to the EncryptionKey which will hold the retrieved
   ///        key. Owner retains ownership, and may not be NULL.
   /// @return OK on success, an error status otherwise.
-  virtual Status GetCryptoPeriodKey(uint32 crypto_period_index,
+  virtual Status GetCryptoPeriodKey(uint32_t crypto_period_index,
                                     TrackType track_type,
                                     EncryptionKey* key);
 
@@ -101,8 +101,8 @@ class KeySource {
 
   /// @return the raw bytes of the pssh box with system ID and box header
   ///         included.
-  static std::vector<uint8> PsshBoxFromPsshData(
-      const std::vector<uint8>& pssh_data);
+  static std::vector<uint8_t> PsshBoxFromPsshData(
+      const std::vector<uint8_t>& pssh_data);
 
  private:
   explicit KeySource(scoped_ptr<EncryptionKey> encryption_key);

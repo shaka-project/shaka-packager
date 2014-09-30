@@ -42,7 +42,7 @@ class Fragmenter {
   /// @param first_sample_dts specifies the decoding timestamp for the first
   ///        sample for this fragment.
   /// @return OK on success, an error status otherwise.
-  virtual Status InitializeFragment(int64 first_sample_dts);
+  virtual Status InitializeFragment(int64_t first_sample_dts);
 
   /// Finalize and optimize the fragment.
   virtual void FinalizeFragment();
@@ -50,9 +50,9 @@ class Fragmenter {
   /// Fill @a reference with current fragment information.
   void GenerateSegmentReference(SegmentReference* reference);
 
-  uint64 fragment_duration() const { return fragment_duration_; }
-  uint64 first_sap_time() const { return first_sap_time_; }
-  uint64 earliest_presentation_time() const {
+  uint64_t fragment_duration() const { return fragment_duration_; }
+  uint64_t first_sap_time() const { return first_sap_time_; }
+  uint64_t earliest_presentation_time() const {
     return earliest_presentation_time_;
   }
   bool fragment_initialized() const { return fragment_initialized_; }
@@ -76,10 +76,10 @@ class Fragmenter {
   TrackFragment* traf_;
   bool fragment_initialized_;
   bool fragment_finalized_;
-  uint64 fragment_duration_;
-  int64 presentation_start_time_;
-  int64 earliest_presentation_time_;
-  int64 first_sap_time_;
+  uint64_t fragment_duration_;
+  int64_t presentation_start_time_;
+  int64_t earliest_presentation_time_;
+  int64_t first_sap_time_;
   scoped_ptr<BufferWriter> data_;
   scoped_ptr<BufferWriter> aux_data_;
 

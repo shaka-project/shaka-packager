@@ -29,20 +29,20 @@ namespace internal {
 /// @return true on success, false otherwise.
 bool GenerateMediaInfo(const MuxerOptions& muxer_options,
                        const std::vector<StreamInfo*>& stream_infos,
-                       uint32 reference_time_scale_,
+                       uint32_t reference_time_scale_,
                        MuxerListener::ContainerType container_type,
                        MediaInfo* media_info);
 
 /// @param[in,out] media_info points to the MediaInfo object to be filled.
 /// @return true on success, false otherwise.
 bool SetVodInformation(bool has_init_range,
-                       uint64 init_range_start,
-                       uint64 init_range_end,
+                       uint64_t init_range_start,
+                       uint64_t init_range_end,
                        bool has_index_range,
-                       uint64 index_range_start,
-                       uint64 index_range_end,
+                       uint64_t index_range_start,
+                       uint64_t index_range_end,
                        float duration_seconds,
-                       uint64 file_size,
+                       uint64_t file_size,
                        MediaInfo* media_info);
 
 /// @param container_type specifies container type. A default ContentProtection

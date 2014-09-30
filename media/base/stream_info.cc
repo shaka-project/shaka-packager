@@ -16,11 +16,11 @@ namespace media {
 
 StreamInfo::StreamInfo(StreamType stream_type,
                        int track_id,
-                       uint32 time_scale,
-                       uint64 duration,
+                       uint32_t time_scale,
+                       uint64_t duration,
                        const std::string& codec_string,
                        const std::string& language,
-                       const uint8* extra_data,
+                       const uint8_t* extra_data,
                        size_t extra_data_size,
                        bool is_encrypted)
     : stream_type_(stream_type),
@@ -30,7 +30,6 @@ StreamInfo::StreamInfo(StreamType stream_type,
       codec_string_(codec_string),
       language_(language),
       is_encrypted_(is_encrypted) {
-
   if (extra_data_size > 0) {
     extra_data_.assign(extra_data, extra_data + extra_data_size);
   }

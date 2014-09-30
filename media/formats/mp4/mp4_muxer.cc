@@ -27,12 +27,12 @@ namespace {
 // |start| and |end| are for byte-range-spec specified in RFC2616.
 void SetStartAndEndFromOffsetAndSize(size_t offset,
                                      size_t size,
-                                     uint32* start,
-                                     uint32* end) {
+                                     uint32_t* start,
+                                     uint32_t* end) {
   DCHECK(start && end);
-  *start = static_cast<uint32>(offset);
+  *start = static_cast<uint32_t>(offset);
   // Note that ranges are inclusive. So we need - 1.
-  *end = *start + static_cast<uint32>(size) - 1;
+  *end = *start + static_cast<uint32_t>(size) - 1;
 }
 }  // namespace
 
@@ -64,7 +64,7 @@ Status MP4Muxer::Initialize() {
   moov->extends.tracks.resize(streams().size());
 
   // Initialize tracks.
-  for (uint32 i = 0; i < streams().size(); ++i) {
+  for (uint32_t i = 0; i < streams().size(); ++i) {
     Track& trak = moov->tracks[i];
     trak.header.track_id = i + 1;
 
@@ -132,7 +132,7 @@ Status MP4Muxer::DoAddSample(const MediaStream* stream,
 }
 
 void MP4Muxer::InitializeTrak(const StreamInfo* info, Track* trak) {
-  int64 now = IsoTimeNow();
+  int64_t now = IsoTimeNow();
   trak->header.creation_time = now;
   trak->header.modification_time = now;
   trak->header.duration = 0;
@@ -150,7 +150,7 @@ void MP4Muxer::InitializeTrak(const StreamInfo* info, Track* trak) {
 
 void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
                                  Track* trak,
-                                 uint32 track_id) {
+                                 uint32_t track_id) {
   InitializeTrak(video_info, trak);
 
   trak->header.width = video_info->width();
@@ -171,7 +171,7 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
 
 void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
                                  Track* trak,
-                                 uint32 track_id) {
+                                 uint32_t track_id) {
   InitializeTrak(audio_info, trak);
 
   trak->header.volume = 0x100;
@@ -207,7 +207,7 @@ void MP4Muxer::GetStreamInfo(std::vector<StreamInfo*>* stream_infos) {
   }
 }
 
-bool MP4Muxer::GetInitRangeStartAndEnd(uint32* start, uint32* end) {
+bool MP4Muxer::GetInitRangeStartAndEnd(uint32_t* start, uint32_t* end) {
   DCHECK(start && end);
   size_t range_offset = 0;
   size_t range_size = 0;
@@ -220,7 +220,7 @@ bool MP4Muxer::GetInitRangeStartAndEnd(uint32* start, uint32* end) {
   return true;
 }
 
-bool MP4Muxer::GetIndexRangeStartAndEnd(uint32* start, uint32* end) {
+bool MP4Muxer::GetIndexRangeStartAndEnd(uint32_t* start, uint32_t* end) {
   DCHECK(start && end);
   size_t range_offset = 0;
   size_t range_size = 0;
@@ -239,7 +239,7 @@ void MP4Muxer::FireOnMediaStartEvent() {
 
   std::vector<StreamInfo*> stream_info_vec;
   GetStreamInfo(&stream_info_vec);
-  const uint32 timescale = segmenter_->GetReferenceTimeScale();
+  const uint32_t timescale = segmenter_->GetReferenceTimeScale();
   muxer_listener()->OnMediaStart(options(),
                                  stream_info_vec,
                                  timescale,
@@ -251,19 +251,20 @@ void MP4Muxer::FireOnMediaEndEvent() {
   if (!muxer_listener())
     return;
 
-  uint32 init_range_start = 0;
-  uint32 init_range_end = 0;
+  uint32_t init_range_start = 0;
+  uint32_t init_range_end = 0;
   const bool has_init_range =
       GetInitRangeStartAndEnd(&init_range_start, &init_range_end);
 
-  uint32 index_range_start = 0;
-  uint32 index_range_end = 0;
+  uint32_t index_range_start = 0;
+  uint32_t index_range_end = 0;
   const bool has_index_range =
       GetIndexRangeStartAndEnd(&index_range_start, &index_range_end);
 
   const float duration_seconds = static_cast<float>(segmenter_->GetDuration());
 
-  const int64 file_size = File::GetFileSize(options().output_file_name.c_str());
+  const int64_t file_size =
+      File::GetFileSize(options().output_file_name.c_str());
   if (file_size <= 0) {
     LOG(ERROR) << "Invalid file size: " << file_size;
     return;
@@ -279,9 +280,9 @@ void MP4Muxer::FireOnMediaEndEvent() {
                                file_size);
 }
 
-uint64 MP4Muxer::IsoTimeNow() {
+uint64_t MP4Muxer::IsoTimeNow() {
   // Time in seconds from Jan. 1, 1904 to epoch time, i.e. Jan. 1, 1970.
-  const uint64 kIsomTimeOffset = 2082844800l;
+  const uint64_t kIsomTimeOffset = 2082844800l;
   return kIsomTimeOffset +
          (clock() ? clock()->Now() : base::Time::Now()).ToDoubleT();
 }

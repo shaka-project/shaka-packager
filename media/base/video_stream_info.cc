@@ -39,15 +39,15 @@ std::string VideoCodecToString(VideoCodec video_codec) {
 }  // namespace
 
 VideoStreamInfo::VideoStreamInfo(int track_id,
-                                 uint32 time_scale,
-                                 uint64 duration,
+                                 uint32_t time_scale,
+                                 uint64_t duration,
                                  VideoCodec codec,
                                  const std::string& codec_string,
                                  const std::string& language,
-                                 uint16 width,
-                                 uint16 height,
-                                 uint8 nalu_length_size,
-                                 const uint8* extra_data,
+                                 uint16_t width,
+                                 uint16_t height,
+                                 uint8_t nalu_length_size,
+                                 const uint8_t* extra_data,
                                  size_t extra_data_size,
                                  bool is_encrypted)
     : StreamInfo(kStreamVideo,
@@ -62,7 +62,8 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
       codec_(codec),
       width_(width),
       height_(height),
-      nalu_length_size_(nalu_length_size) {}
+      nalu_length_size_(nalu_length_size) {
+}
 
 VideoStreamInfo::~VideoStreamInfo() {}
 
@@ -84,16 +85,16 @@ std::string VideoStreamInfo::ToString() const {
 }
 
 std::string VideoStreamInfo::GetCodecString(VideoCodec codec,
-                                            uint8 profile,
-                                            uint8 compatible_profiles,
-                                            uint8 level) {
+                                            uint8_t profile,
+                                            uint8_t compatible_profiles,
+                                            uint8_t level) {
   switch (codec) {
     case kCodecVP8:
       return "vp8";
     case kCodecVP9:
       return "vp9";
     case kCodecH264: {
-      const uint8 bytes[] = {profile, compatible_profiles, level};
+      const uint8_t bytes[] = {profile, compatible_profiles, level};
       return "avc1." +
              StringToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));
     }

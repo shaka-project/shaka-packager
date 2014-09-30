@@ -40,17 +40,17 @@ class File {
   /// @param length indicates number of bytes to be read.
   /// @return Number of bytes read, or a value < 0 on error.
   ///         Zero on end-of-file, or if 'length' is zero.
-  virtual int64 Read(void* buffer, uint64 length) = 0;
+  virtual int64_t Read(void* buffer, uint64_t length) = 0;
 
   /// Write block of data.
   /// @param buffer points to a block of memory with at least @a length bytes.
   /// @param length indicates number of bytes to write.
   /// @return Number of bytes written, or a value < 0 on error.
-  virtual int64 Write(const void* buffer, uint64 length) = 0;
+  virtual int64_t Write(const void* buffer, uint64_t length) = 0;
 
   /// @return Size of the file in bytes. A return value less than zero
   ///         indicates a problem getting the size.
-  virtual int64 Size() = 0;
+  virtual int64_t Size() = 0;
 
   /// Flush the file so that recently written data will survive an
   /// application crash (but not necessarily an OS crash). For
@@ -71,7 +71,7 @@ class File {
 
   /// @return The size of a file in bytes on success, a value < 0 otherwise.
   ///         The file will be opened and closed in the process.
-  static int64 GetFileSize(const char* file_name);
+  static int64_t GetFileSize(const char* file_name);
 
   /// Read the file into string.
   /// @param file_name is the file to be read. It should be a valid file.

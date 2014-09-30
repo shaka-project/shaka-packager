@@ -136,7 +136,7 @@ void H264Parser::Reset() {
   bytes_left_ = 0;
 }
 
-void H264Parser::SetStream(const uint8* stream, off_t stream_size) {
+void H264Parser::SetStream(const uint8_t* stream, off_t stream_size) {
   DCHECK(stream);
   DCHECK_GT(stream_size, 0);
 
@@ -152,13 +152,15 @@ const H264SPS* H264Parser::GetSPS(int sps_id) {
   return active_SPSes_[sps_id];
 }
 
-static inline bool IsStartCode(const uint8* data) {
+static inline bool IsStartCode(const uint8_t* data) {
   return data[0] == 0x00 && data[1] == 0x00 && data[2] == 0x01;
 }
 
 // static
-bool H264Parser::FindStartCode(const uint8* data, off_t data_size,
-                               off_t* offset, off_t* start_code_size) {
+bool H264Parser::FindStartCode(const uint8_t* data,
+                               off_t data_size,
+                               off_t* offset,
+                               off_t* start_code_size) {
   DCHECK_GE(data_size, 0);
   off_t bytes_left = data_size;
 
@@ -206,7 +208,7 @@ bool H264Parser::LocateNALU(off_t* nalu_size, off_t* start_code_size) {
   stream_ += nalu_start_off;
   bytes_left_ -= nalu_start_off;
 
-  const uint8* nalu_data = stream_ + annexb_start_code_size;
+  const uint8_t* nalu_data = stream_ + annexb_start_code_size;
   off_t max_nalu_data_size = bytes_left_ - annexb_start_code_size;
   if (max_nalu_data_size <= 0) {
     DVLOG(3) << "End of stream";

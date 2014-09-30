@@ -22,7 +22,7 @@ namespace media {
 
 // Return true if buf corresponds to an ADTS syncword.
 // |buf| size must be at least 2.
-static bool isAdtsSyncWord(const uint8* buf) {
+static bool isAdtsSyncWord(const uint8_t* buf) {
   return (buf[0] == 0xff) && ((buf[1] & 0xf6) == 0xf0);
 }
 
@@ -33,9 +33,11 @@ static bool isAdtsSyncWord(const uint8* buf) {
 // In every case, the returned value in |new_pos| is such that new_pos >= pos
 // |frame_sz| returns the size of the ADTS frame (if found).
 // Return whether a syncword was found.
-static bool LookForSyncWord(const uint8* raw_es, int raw_es_size,
+static bool LookForSyncWord(const uint8_t* raw_es,
+                            int raw_es_size,
                             int pos,
-                            int* new_pos, int* frame_sz) {
+                            int* new_pos,
+                            int* frame_sz) {
   DCHECK_GE(pos, 0);
   DCHECK_LE(pos, raw_es_size);
 
@@ -52,7 +54,7 @@ static bool LookForSyncWord(const uint8* raw_es, int raw_es_size,
   }
 
   for (int offset = pos; offset < max_offset; offset++) {
-    const uint8* cur_buf = &raw_es[offset];
+    const uint8_t* cur_buf = &raw_es[offset];
 
     if (!isAdtsSyncWord(cur_buf))
       // The first 12 bits must be 1.
@@ -85,11 +87,10 @@ static bool LookForSyncWord(const uint8* raw_es, int raw_es_size,
 
 namespace mp2t {
 
-EsParserAdts::EsParserAdts(
-    uint32 pid,
-    const NewStreamInfoCB& new_stream_info_cb,
-    const EmitSampleCB& emit_sample_cb,
-    bool sbr_in_mimetype)
+EsParserAdts::EsParserAdts(uint32_t pid,
+                           const NewStreamInfoCB& new_stream_info_cb,
+                           const EmitSampleCB& emit_sample_cb,
+                           bool sbr_in_mimetype)
     : EsParser(pid),
       new_stream_info_cb_(new_stream_info_cb),
       emit_sample_cb_(emit_sample_cb),
@@ -99,9 +100,12 @@ EsParserAdts::EsParserAdts(
 EsParserAdts::~EsParserAdts() {
 }
 
-bool EsParserAdts::Parse(const uint8* buf, int size, int64 pts, int64 dts) {
+bool EsParserAdts::Parse(const uint8_t* buf,
+                         int size,
+                         int64_t pts,
+                         int64_t dts) {
   int raw_es_size;
-  const uint8* raw_es;
+  const uint8_t* raw_es;
 
   // The incoming PTS applies to the access unit that comes just after
   // the beginning of |buf|.
@@ -119,7 +123,7 @@ bool EsParserAdts::Parse(const uint8* buf, int size, int64 pts, int64 dts) {
   int frame_size;
   while (LookForSyncWord(raw_es, raw_es_size, es_position,
                          &es_position, &frame_size)) {
-    const uint8* frame_ptr = raw_es + es_position;
+    const uint8_t* frame_ptr = raw_es + es_position;
     DVLOG(LOG_LEVEL_ES)
         << "ADTS syncword @ pos=" << es_position
         << " frame_size=" << frame_size;
@@ -146,8 +150,8 @@ bool EsParserAdts::Parse(const uint8* buf, int size, int64 pts, int64 dts) {
       pts_list_.pop_front();
     }
 
-    int64 current_pts = audio_timestamp_helper_->GetTimestamp();
-    int64 frame_duration =
+    int64_t current_pts = audio_timestamp_helper_->GetTimestamp();
+    int64_t frame_duration =
         audio_timestamp_helper_->GetFrameDuration(kSamplesPerAACFrame);
 
     // Emit an audio frame.
@@ -185,17 +189,16 @@ void EsParserAdts::Reset() {
   last_audio_decoder_config_ = scoped_refptr<AudioStreamInfo>();
 }
 
-bool EsParserAdts::UpdateAudioConfiguration(const uint8* adts_frame,
+bool EsParserAdts::UpdateAudioConfiguration(const uint8_t* adts_frame,
                                             size_t adts_frame_size) {
-
-  const uint8 kAacSampleSizeBits(16);
+  const uint8_t kAacSampleSizeBits(16);
 
   AdtsHeader adts_header;
   if (!adts_header.Parse(adts_frame, adts_frame_size)) {
     LOG(ERROR) << "Error parsing ADTS frame header.";
     return false;
   }
-  std::vector<uint8> audio_specific_config;
+  std::vector<uint8_t> audio_specific_config;
   if (!adts_header.GetAudioSpecificConfig(&audio_specific_config))
     return false;
 
@@ -239,7 +242,7 @@ bool EsParserAdts::UpdateAudioConfiguration(const uint8* adts_frame,
   DVLOG(1) << "Object type: " << adts_header.GetObjectType();
   // Reset the timestamp helper to use a new sampling frequency.
   if (audio_timestamp_helper_) {
-    int64 base_timestamp = audio_timestamp_helper_->GetTimestamp();
+    int64_t base_timestamp = audio_timestamp_helper_->GetTimestamp();
     audio_timestamp_helper_.reset(
         new AudioTimestampHelper(kMpeg2Timescale, samples_per_second));
     audio_timestamp_helper_->SetBaseTimestamp(base_timestamp);

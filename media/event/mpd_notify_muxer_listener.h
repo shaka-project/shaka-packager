@@ -39,27 +39,27 @@ class MpdNotifyMuxerListener : public MuxerListener {
   /// @{
   virtual void OnMediaStart(const MuxerOptions& muxer_options,
                             const std::vector<StreamInfo*>& stream_infos,
-                            uint32 time_scale,
+                            uint32_t time_scale,
                             ContainerType container_type,
                             bool is_encrypted) OVERRIDE;
 
   virtual void OnMediaEnd(bool has_init_range,
-                          uint64 init_range_start,
-                          uint64 init_range_end,
+                          uint64_t init_range_start,
+                          uint64_t init_range_end,
                           bool has_index_range,
-                          uint64 index_range_start,
-                          uint64 index_range_end,
+                          uint64_t index_range_start,
+                          uint64_t index_range_end,
                           float duration_seconds,
-                          uint64 file_size) OVERRIDE;
+                          uint64_t file_size) OVERRIDE;
 
-  virtual void OnNewSegment(uint64 start_time,
-                            uint64 duration,
-                            uint64 segment_file_size) OVERRIDE;
+  virtual void OnNewSegment(uint64_t start_time,
+                            uint64_t duration,
+                            uint64_t segment_file_size) OVERRIDE;
   /// @}
 
  private:
   MpdNotifier* const mpd_notifier_;
-  uint32 notification_id_;
+  uint32_t notification_id_;
   scoped_ptr<MediaInfo> media_info_;
   std::string scheme_id_uri_;
 

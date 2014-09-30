@@ -44,7 +44,7 @@ class MpdNotifier {
   ///             populated on success.
   /// @return true on success, false otherwise.
   virtual bool NotifyNewContainer(const MediaInfo& media_info,
-                                  uint32* container_id) = 0;
+                                  uint32_t* container_id) = 0;
 
   /// Notifies MpdBuilder that there is a new segment ready. Used only for live
   /// profile.
@@ -56,10 +56,10 @@ class MpdNotifier {
   ///        stream's time scale.
   /// @param size is the new segment size in bytes.
   /// @return true on success, false otherwise.
-  virtual bool NotifyNewSegment(uint32 container_id,
-                                uint64 start_time,
-                                uint64 duration,
-                                uint64 size) = 0;
+  virtual bool NotifyNewSegment(uint32_t container_id,
+                                uint64_t start_time,
+                                uint64_t duration,
+                                uint64_t size) = 0;
 
   /// Adds content protection information to the MPD.
   /// @param container_id is the nummeric container ID obtained from calling
@@ -68,7 +68,7 @@ class MpdNotifier {
   ///        specification.
   /// @return true on success, false otherwise.
   virtual bool AddContentProtectionElement(
-      uint32 container_id,
+      uint32_t container_id,
       const ContentProtectionElement& content_protection_element) = 0;
 
   /// @return The dash profile for this object.

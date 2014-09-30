@@ -25,7 +25,7 @@ Muxer::Muxer(const MuxerOptions& options)
 Muxer::~Muxer() {}
 
 void Muxer::SetKeySource(KeySource* encryption_key_source,
-                         uint32 max_sd_pixels,
+                         uint32_t max_sd_pixels,
                          double clear_lead_in_seconds,
                          double crypto_period_duration_in_seconds) {
   DCHECK(encryption_key_source);
@@ -54,7 +54,7 @@ Status Muxer::Run() {
       return status;
   }
 
-  uint32 current_stream_id = 0;
+  uint32_t current_stream_id = 0;
   while (status.ok()) {
     scoped_refptr<MediaSample> sample;
     status = streams_[current_stream_id]->PullSample(&sample);

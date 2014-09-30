@@ -21,26 +21,40 @@ BufferWriter::BufferWriter(size_t reserved_size_in_bytes) {
 }
 BufferWriter::~BufferWriter() {}
 
-void BufferWriter::AppendInt(uint8 v) { buf_.push_back(v); }
-void BufferWriter::AppendInt(uint16 v) { AppendInternal(base::HostToNet16(v)); }
-void BufferWriter::AppendInt(uint32 v) { AppendInternal(base::HostToNet32(v)); }
-void BufferWriter::AppendInt(uint64 v) { AppendInternal(base::HostToNet64(v)); }
-void BufferWriter::AppendInt(int16 v) { AppendInternal(base::HostToNet16(v)); }
-void BufferWriter::AppendInt(int32 v) { AppendInternal(base::HostToNet32(v)); }
-void BufferWriter::AppendInt(int64 v) { AppendInternal(base::HostToNet64(v)); }
+void BufferWriter::AppendInt(uint8_t v) {
+  buf_.push_back(v);
+}
+void BufferWriter::AppendInt(uint16_t v) {
+  AppendInternal(base::HostToNet16(v));
+}
+void BufferWriter::AppendInt(uint32_t v) {
+  AppendInternal(base::HostToNet32(v));
+}
+void BufferWriter::AppendInt(uint64_t v) {
+  AppendInternal(base::HostToNet64(v));
+}
+void BufferWriter::AppendInt(int16_t v) {
+  AppendInternal(base::HostToNet16(v));
+}
+void BufferWriter::AppendInt(int32_t v) {
+  AppendInternal(base::HostToNet32(v));
+}
+void BufferWriter::AppendInt(int64_t v) {
+  AppendInternal(base::HostToNet64(v));
+}
 
-void BufferWriter::AppendNBytes(uint64 v, size_t num_bytes) {
+void BufferWriter::AppendNBytes(uint64_t v, size_t num_bytes) {
   DCHECK_GE(sizeof(v), num_bytes);
   v = base::HostToNet64(v);
-  const uint8* data = reinterpret_cast<uint8*>(&v);
+  const uint8_t* data = reinterpret_cast<uint8_t*>(&v);
   AppendArray(&data[sizeof(v) - num_bytes], num_bytes);
 }
 
-void BufferWriter::AppendVector(const std::vector<uint8>& v) {
+void BufferWriter::AppendVector(const std::vector<uint8_t>& v) {
   buf_.insert(buf_.end(), v.begin(), v.end());
 }
 
-void BufferWriter::AppendArray(const uint8* buf, size_t size) {
+void BufferWriter::AppendArray(const uint8_t* buf, size_t size) {
   buf_.insert(buf_.end(), buf, buf + size);
 }
 
@@ -52,9 +66,9 @@ Status BufferWriter::WriteToFile(File* file) {
   DCHECK(file);
 
   size_t remaining_size = buf_.size();
-  const uint8* buf = &buf_[0];
+  const uint8_t* buf = &buf_[0];
   while (remaining_size > 0) {
-    int64 size_written = file->Write(buf, remaining_size);
+    int64_t size_written = file->Write(buf, remaining_size);
     if (size_written <= 0) {
       return Status(error::FILE_FAILURE,
                     "Fail to write to file in BufferWriter");
@@ -68,7 +82,7 @@ Status BufferWriter::WriteToFile(File* file) {
 
 template <typename T>
 void BufferWriter::AppendInternal(T v) {
-  AppendArray(reinterpret_cast<uint8*>(&v), sizeof(T));
+  AppendArray(reinterpret_cast<uint8_t*>(&v), sizeof(T));
 }
 
 }  // namespace media

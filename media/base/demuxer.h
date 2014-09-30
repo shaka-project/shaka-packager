@@ -64,7 +64,7 @@ class Demuxer {
  private:
   // Parser event handlers.
   void ParserInitEvent(const std::vector<scoped_refptr<StreamInfo> >& streams);
-  bool NewSampleEvent(uint32 track_id,
+  bool NewSampleEvent(uint32_t track_id,
                       const scoped_refptr<MediaSample>& sample);
 
   std::string file_name_;
@@ -72,7 +72,7 @@ class Demuxer {
   bool init_event_received_;
   scoped_ptr<MediaParser> parser_;
   std::vector<MediaStream*> streams_;
-  scoped_ptr<uint8[]> buffer_;
+  scoped_ptr<uint8_t[]> buffer_;
   scoped_ptr<KeySource> key_source_;
 
   DISALLOW_COPY_AND_ASSIGN(Demuxer);

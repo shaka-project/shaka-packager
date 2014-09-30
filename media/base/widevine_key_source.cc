@@ -46,7 +46,7 @@ const int kGetKeyTimeoutInSeconds = 5 * 60;  // 5 minutes.
 const int kHttpTimeoutInSeconds = 60;  // 1 minute.
 
 bool Base64StringToBytes(const std::string& base64_string,
-                         std::vector<uint8>* bytes) {
+                         std::vector<uint8_t>* bytes) {
   DCHECK(bytes);
   std::string str;
   if (!base::Base64Decode(base64_string, &str))
@@ -55,7 +55,7 @@ bool Base64StringToBytes(const std::string& base64_string,
   return true;
 }
 
-void BytesToBase64String(const std::vector<uint8>& bytes,
+void BytesToBase64String(const std::vector<uint8_t>& bytes,
                          std::string* base64_string) {
   DCHECK(base64_string);
   base::Base64Encode(base::StringPiece(reinterpret_cast<const char*>
@@ -64,7 +64,7 @@ void BytesToBase64String(const std::vector<uint8>& bytes,
 }
 
 bool GetKeyFromTrack(const base::DictionaryValue& track_dict,
-                     std::vector<uint8>* key) {
+                     std::vector<uint8_t>* key) {
   DCHECK(key);
   std::string key_base64_string;
   RCHECK(track_dict.GetString("key", &key_base64_string));
@@ -74,7 +74,7 @@ bool GetKeyFromTrack(const base::DictionaryValue& track_dict,
 }
 
 bool GetKeyIdFromTrack(const base::DictionaryValue& track_dict,
-                       std::vector<uint8>* key_id) {
+                       std::vector<uint8_t>* key_id) {
   DCHECK(key_id);
   std::string key_id_base64_string;
   RCHECK(track_dict.GetString("key_id", &key_id_base64_string));
@@ -84,7 +84,7 @@ bool GetKeyIdFromTrack(const base::DictionaryValue& track_dict,
 }
 
 bool GetPsshDataFromTrack(const base::DictionaryValue& track_dict,
-                          std::vector<uint8>* pssh_data) {
+                          std::vector<uint8_t>* pssh_data) {
   DCHECK(pssh_data);
 
   const base::ListValue* pssh_list;
@@ -164,7 +164,7 @@ WidevineKeySource::~WidevineKeySource() {
   }
 }
 
-Status WidevineKeySource::FetchKeys(const std::vector<uint8>& content_id,
+Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& content_id,
                                     const std::string& policy) {
   base::AutoLock scoped_lock(lock_);
   request_dict_.Clear();
@@ -175,8 +175,7 @@ Status WidevineKeySource::FetchKeys(const std::vector<uint8>& content_id,
   return FetchKeysCommon(false);
 }
 
-Status WidevineKeySource::FetchKeys(
-    const std::vector<uint8>& pssh_data) {
+Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& pssh_data) {
   base::AutoLock scoped_lock(lock_);
   request_dict_.Clear();
   std::string pssh_data_base64_string;
@@ -185,7 +184,7 @@ Status WidevineKeySource::FetchKeys(
   return FetchKeysCommon(false);
 }
 
-Status WidevineKeySource::FetchKeys(uint32 asset_id) {
+Status WidevineKeySource::FetchKeys(uint32_t asset_id) {
   base::AutoLock scoped_lock(lock_);
   request_dict_.Clear();
   request_dict_.SetInteger("asset_id", asset_id);
@@ -214,7 +213,7 @@ Status WidevineKeySource::GetKey(TrackType track_type,
   return Status::OK;
 }
 
-Status WidevineKeySource::GetKey(const std::vector<uint8>& key_id,
+Status WidevineKeySource::GetKey(const std::vector<uint8_t>& key_id,
                                  EncryptionKey* key) {
   DCHECK(key);
   for (std::map<TrackType, EncryptionKey*>::iterator iter =
@@ -230,10 +229,9 @@ Status WidevineKeySource::GetKey(const std::vector<uint8>& key_id,
                 "Cannot find key with specified key ID");
 }
 
-Status WidevineKeySource::GetCryptoPeriodKey(
-    uint32 crypto_period_index,
-    TrackType track_type,
-    EncryptionKey* key) {
+Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
+                                             TrackType track_type,
+                                             EncryptionKey* key) {
   DCHECK(key_production_thread_.HasBeenStarted());
   // TODO(kqyang): This is not elegant. Consider refactoring later.
   {
@@ -257,10 +255,9 @@ void WidevineKeySource::set_http_fetcher(
   http_fetcher_ = http_fetcher.Pass();
 }
 
-Status WidevineKeySource::GetKeyInternal(
-    uint32 crypto_period_index,
-    TrackType track_type,
-    EncryptionKey* key) {
+Status WidevineKeySource::GetKeyInternal(uint32_t crypto_period_index,
+                                         TrackType track_type,
+                                         EncryptionKey* key) {
   DCHECK(key_pool_);
   DCHECK(key);
   DCHECK_LE(track_type, NUM_VALID_TRACK_TYPES);
@@ -307,7 +304,7 @@ void WidevineKeySource::FetchKeysTask() {
 }
 
 Status WidevineKeySource::FetchKeysInternal(bool enable_key_rotation,
-                                            uint32 first_crypto_period_index,
+                                            uint32_t first_crypto_period_index,
                                             bool widevine_classic) {
   std::string request;
   FillRequest(enable_key_rotation,
@@ -321,7 +318,7 @@ Status WidevineKeySource::FetchKeysInternal(bool enable_key_rotation,
   VLOG(1) << "Message: " << message;
 
   std::string raw_response;
-  int64 sleep_duration = kFirstRetryDelayMilliseconds;
+  int64_t sleep_duration = kFirstRetryDelayMilliseconds;
 
   // Perform client side retries if seeing server transient error to workaround
   // server limitation.
@@ -364,7 +361,7 @@ Status WidevineKeySource::FetchKeysInternal(bool enable_key_rotation,
 }
 
 void WidevineKeySource::FillRequest(bool enable_key_rotation,
-                                    uint32 first_crypto_period_index,
+                                    uint32_t first_crypto_period_index,
                                     std::string* request) {
   DCHECK(request);
   DCHECK(!request_dict_.empty());
@@ -516,7 +513,7 @@ bool WidevineKeySource::ExtractEncryptionKey(
       if (!GetKeyIdFromTrack(*track_dict, &encryption_key->key_id))
         return false;
 
-      std::vector<uint8> pssh_data;
+      std::vector<uint8_t> pssh_data;
       if (!GetPsshDataFromTrack(*track_dict, &pssh_data))
         return false;
       encryption_key->pssh = PsshBoxFromPsshData(pssh_data);

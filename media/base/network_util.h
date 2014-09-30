@@ -11,9 +11,9 @@
 namespace edash_packager {
 namespace media {
 
-uint32 ntohlFromBuffer(const unsigned char * buf);
-uint16 ntohsFromBuffer(const unsigned char * buf);
-uint64 ntohllFromBuffer(const unsigned char * buf);
+uint32_t ntohlFromBuffer(const unsigned char* buf);
+uint16_t ntohsFromBuffer(const unsigned char* buf);
+uint64_t ntohllFromBuffer(const unsigned char* buf);
 
 }  // namespace media
 }  // namespace edash_packager

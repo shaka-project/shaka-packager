@@ -25,19 +25,19 @@ bool LocalFile::Close() {
   return result;
 }
 
-int64 LocalFile::Read(void* buffer, uint64 length) {
+int64_t LocalFile::Read(void* buffer, uint64_t length) {
   DCHECK(buffer != NULL);
   DCHECK(internal_file_ != NULL);
   return fread(buffer, sizeof(char), length, internal_file_);
 }
 
-int64 LocalFile::Write(const void* buffer, uint64 length) {
+int64_t LocalFile::Write(const void* buffer, uint64_t length) {
   DCHECK(buffer != NULL);
   DCHECK(internal_file_ != NULL);
   return fwrite(buffer, sizeof(char), length, internal_file_);
 }
 
-int64 LocalFile::Size() {
+int64_t LocalFile::Size() {
   DCHECK(internal_file_ != NULL);
 
   // Flush any buffered data, so we get the true file size.
@@ -46,7 +46,7 @@ int64 LocalFile::Size() {
     return -1;
   }
 
-  int64 file_size;
+  int64_t file_size;
   if (!base::GetFileSize(base::FilePath(file_name()), &file_size)) {
     LOG(ERROR) << "Cannot get file size.";
     return -1;

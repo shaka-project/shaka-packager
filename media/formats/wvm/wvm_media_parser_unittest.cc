@@ -21,7 +21,7 @@
 namespace {
 const char kClearWvmFile[] = "hb2_4stream_clear.wvm";
 // Constants associated with kClearWvmFile follows.
-const uint32 kExpectedStreams = 4;
+const uint32_t kExpectedStreams = 4;
 const int kExpectedVideoFrameCount = 6665;
 const int kExpectedAudioFrameCount = 11964;
 }
@@ -47,8 +47,8 @@ class WvmMediaParserTest : public testing::Test {
   StreamMap stream_map_;
   int audio_frame_count_;
   int video_frame_count_;
-  int64 video_max_dts_;
-  uint32 current_track_id_;
+  int64_t video_max_dts_;
+  uint32_t current_track_id_;
 
   void OnInit(const std::vector<scoped_refptr<StreamInfo> >& stream_infos) {
     DVLOG(1) << "OnInit: " << stream_infos.size() << " streams.";
@@ -59,7 +59,8 @@ class WvmMediaParserTest : public testing::Test {
     }
   }
 
-  bool OnNewSample(uint32 track_id, const scoped_refptr<MediaSample>& sample) {
+  bool OnNewSample(uint32_t track_id,
+                   const scoped_refptr<MediaSample>& sample) {
     std::string stream_type;
     if (track_id != current_track_id_) {
       // onto next track.
@@ -106,7 +107,7 @@ class WvmMediaParserTest : public testing::Test {
   void Parse(const std::string& filename) {
     InitializeParser();
 
-    std::vector<uint8> buffer = ReadTestDataFile(filename);
+    std::vector<uint8_t> buffer = ReadTestDataFile(filename);
     EXPECT_TRUE(parser_->Parse(buffer.data(), buffer.size()));
   }
 };

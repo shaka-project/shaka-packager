@@ -23,27 +23,27 @@ namespace {
 
 // This will return a positive value, given that |file_size| and
 // |duration_seconds| are positive.
-uint32 EstimateRequiredBandwidth(uint64 file_size, float duration_seconds) {
-  const uint64 file_size_bits = file_size * 8;
+uint32_t EstimateRequiredBandwidth(uint64_t file_size, float duration_seconds) {
+  const uint64_t file_size_bits = file_size * 8;
   const float bits_per_second = file_size_bits / duration_seconds;
 
   // Note that casting |bits_per_second| to an integer might make it 0. Take the
   // ceiling and make sure that it returns a positive value.
-  return static_cast<uint32>(ceil(bits_per_second));
+  return static_cast<uint32_t>(ceil(bits_per_second));
 }
 
-void SetRange(uint64 begin, uint64 end, Range* range) {
+void SetRange(uint64_t begin, uint64_t end, Range* range) {
   DCHECK(range);
   range->set_begin(begin);
   range->set_end(end);
 }
 
 void SetMediaInfoRanges(bool has_init_range,
-                        uint64 init_range_start,
-                        uint64 init_range_end,
+                        uint64_t init_range_start,
+                        uint64_t init_range_end,
                         bool has_index_range,
-                        uint64 index_range_start,
-                        uint64 index_range_end,
+                        uint64_t index_range_start,
+                        uint64_t index_range_end,
                         MediaInfo* media_info) {
   if (has_init_range) {
     SetRange(
@@ -87,7 +87,7 @@ void AddVideoInfo(const VideoStreamInfo* video_stream_info,
   video_info->set_height(video_stream_info->height());
   video_info->set_time_scale(video_stream_info->time_scale());
 
-  const std::vector<uint8>& extra_data = video_stream_info->extra_data();
+  const std::vector<uint8_t>& extra_data = video_stream_info->extra_data();
   if (!extra_data.empty()) {
     video_info->set_decoder_config(&extra_data[0], extra_data.size());
   }
@@ -109,7 +109,7 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
     audio_info->set_language(language);
   }
 
-  const std::vector<uint8>& extra_data = audio_stream_info->extra_data();
+  const std::vector<uint8_t>& extra_data = audio_stream_info->extra_data();
   if (!extra_data.empty()) {
     audio_info->set_decoder_config(&extra_data[0], extra_data.size());
   }
@@ -152,7 +152,7 @@ void SetMediaInfoMuxerOptions(const MuxerOptions& muxer_options,
 
 bool GenerateMediaInfo(const MuxerOptions& muxer_options,
                        const std::vector<StreamInfo*>& stream_infos,
-                       uint32 reference_time_scale,
+                       uint32_t reference_time_scale,
                        MuxerListener::ContainerType container_type,
                        MediaInfo* media_info) {
   DCHECK(media_info);
@@ -168,13 +168,13 @@ bool GenerateMediaInfo(const MuxerOptions& muxer_options,
 }
 
 bool SetVodInformation(bool has_init_range,
-                       uint64 init_range_start,
-                       uint64 init_range_end,
+                       uint64_t init_range_start,
+                       uint64_t init_range_end,
                        bool has_index_range,
-                       uint64 index_range_start,
-                       uint64 index_range_end,
+                       uint64_t index_range_start,
+                       uint64_t index_range_end,
                        float duration_seconds,
-                       uint64 file_size,
+                       uint64_t file_size,
                        MediaInfo* media_info) {
   DCHECK(media_info);
   if (file_size == 0) {

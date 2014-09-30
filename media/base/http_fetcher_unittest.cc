@@ -70,7 +70,7 @@ TEST(DISABLED_HttpFetcherTest, UrlWithPort) {
 }
 
 TEST(DISABLED_HttpFetcherTest, SmallTimeout) {
-  const uint32 kTimeoutInSeconds = 1;
+  const uint32_t kTimeoutInSeconds = 1;
   SimpleHttpFetcher fetcher(kTimeoutInSeconds);
   std::string response;
   Status status = fetcher.Post(kTestUrl, kDelayTwoSecs, &response);
@@ -78,7 +78,7 @@ TEST(DISABLED_HttpFetcherTest, SmallTimeout) {
 }
 
 TEST(DISABLED_HttpFetcherTest, BigTimeout) {
-  const uint32 kTimeoutInSeconds = 5;
+  const uint32_t kTimeoutInSeconds = 5;
   SimpleHttpFetcher fetcher(kTimeoutInSeconds);
   std::string response;
   Status status = fetcher.Post(kTestUrl, kDelayTwoSecs, &response);

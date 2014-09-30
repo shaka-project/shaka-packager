@@ -187,7 +187,7 @@ bool MpdWriter::WriteMpdToFile(const char* file_name) {
   const char* mpd_char_ptr = mpd.data();
   size_t mpd_bytes_left = mpd.size();
   while (mpd_bytes_left > 0) {
-    int64 length = file->Write(mpd_char_ptr, mpd_bytes_left);
+    int64_t length = file->Write(mpd_char_ptr, mpd_bytes_left);
     if (length < 0) {
       LOG(ERROR) << "Write error " << length;
       return false;

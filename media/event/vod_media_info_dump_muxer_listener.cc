@@ -33,7 +33,7 @@ void VodMediaInfoDumpMuxerListener::SetContentProtectionSchemeIdUri(
 void VodMediaInfoDumpMuxerListener::OnMediaStart(
     const MuxerOptions& muxer_options,
     const std::vector<StreamInfo*>& stream_infos,
-    uint32 time_scale,
+    uint32_t time_scale,
     ContainerType container_type,
     bool is_encrypted) {
   DCHECK(muxer_options.single_segment);
@@ -57,13 +57,13 @@ void VodMediaInfoDumpMuxerListener::OnMediaStart(
 }
 
 void VodMediaInfoDumpMuxerListener::OnMediaEnd(bool has_init_range,
-                                               uint64 init_range_start,
-                                               uint64 init_range_end,
+                                               uint64_t init_range_start,
+                                               uint64_t init_range_end,
                                                bool has_index_range,
-                                               uint64 index_range_start,
-                                               uint64 index_range_end,
+                                               uint64_t index_range_start,
+                                               uint64_t index_range_end,
                                                float duration_seconds,
-                                               uint64 file_size) {
+                                               uint64_t file_size) {
   DCHECK(media_info_);
   if (!internal::SetVodInformation(has_init_range,
                                    init_range_start,
@@ -80,9 +80,9 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(bool has_init_range,
   SerializeMediaInfoToFile();
 }
 
-void VodMediaInfoDumpMuxerListener::OnNewSegment(uint64 start_time,
-                                                 uint64 duration,
-                                                 uint64 segment_file_size) {
+void VodMediaInfoDumpMuxerListener::OnNewSegment(uint64_t start_time,
+                                                 uint64_t duration,
+                                                 uint64_t segment_file_size) {
   NOTIMPLEMENTED();
 }
 

@@ -34,13 +34,13 @@ class BoxBuffer;
   virtual ~T();                                       \
   virtual bool ReadWrite(BoxBuffer* buffer) OVERRIDE; \
   virtual FourCC BoxType() const OVERRIDE;            \
-  virtual uint32 ComputeSize() OVERRIDE;
+  virtual uint32_t ComputeSize() OVERRIDE;
 
 struct FileType : Box {
   DECLARE_BOX_METHODS(FileType);
 
   FourCC major_brand;
-  uint32 minor_version;
+  uint32_t minor_version;
   std::vector<FourCC> compatible_brands;
 };
 
@@ -51,23 +51,23 @@ struct SegmentType : FileType {
 struct ProtectionSystemSpecificHeader : FullBox {
   DECLARE_BOX_METHODS(ProtectionSystemSpecificHeader);
 
-  std::vector<uint8> system_id;
-  std::vector<uint8> data;
-  std::vector<uint8> raw_box;
+  std::vector<uint8_t> system_id;
+  std::vector<uint8_t> data;
+  std::vector<uint8_t> raw_box;
 };
 
 struct SampleAuxiliaryInformationOffset : FullBox {
   DECLARE_BOX_METHODS(SampleAuxiliaryInformationOffset);
 
-  std::vector<uint64> offsets;
+  std::vector<uint64_t> offsets;
 };
 
 struct SampleAuxiliaryInformationSize : FullBox {
   DECLARE_BOX_METHODS(SampleAuxiliaryInformationSize);
 
-  uint8 default_sample_info_size;
-  uint32 sample_count;
-  std::vector<uint8> sample_info_sizes;
+  uint8_t default_sample_info_size;
+  uint32_t sample_count;
+  std::vector<uint8_t> sample_info_sizes;
 };
 
 struct OriginalFormat : Box {
@@ -80,7 +80,7 @@ struct SchemeType : FullBox {
   DECLARE_BOX_METHODS(SchemeType);
 
   FourCC type;
-  uint32 version;
+  uint32_t version;
 };
 
 struct TrackEncryption : FullBox {
@@ -88,8 +88,8 @@ struct TrackEncryption : FullBox {
 
   // Note: this definition is specific to the CENC protection type.
   bool is_encrypted;
-  uint8 default_iv_size;
-  std::vector<uint8> default_kid;
+  uint8_t default_iv_size;
+  std::vector<uint8_t> default_kid;
 };
 
 struct SchemeInfo : Box {
@@ -109,13 +109,13 @@ struct ProtectionSchemeInfo : Box {
 struct MovieHeader : FullBox {
   DECLARE_BOX_METHODS(MovieHeader);
 
-  uint64 creation_time;
-  uint64 modification_time;
-  uint32 timescale;
-  uint64 duration;
-  int32 rate;
-  int16 volume;
-  uint32 next_track_id;
+  uint64_t creation_time;
+  uint64_t modification_time;
+  uint32_t timescale;
+  uint64_t duration;
+  int32_t rate;
+  int16_t volume;
+  uint32_t next_track_id;
 };
 
 struct TrackHeader : FullBox {
@@ -127,22 +127,22 @@ struct TrackHeader : FullBox {
 
   DECLARE_BOX_METHODS(TrackHeader);
 
-  uint64 creation_time;
-  uint64 modification_time;
-  uint32 track_id;
-  uint64 duration;
-  int16 layer;
-  int16 alternate_group;
-  int16 volume;
-  uint32 width;
-  uint32 height;
+  uint64_t creation_time;
+  uint64_t modification_time;
+  uint32_t track_id;
+  uint64_t duration;
+  int16_t layer;
+  int16_t alternate_group;
+  int16_t volume;
+  uint32_t width;
+  uint32_t height;
 };
 
 struct EditListEntry {
-  uint64 segment_duration;
-  int64 media_time;
-  int16 media_rate_integer;
-  int16 media_rate_fraction;
+  uint64_t segment_duration;
+  int64_t media_time;
+  int16_t media_rate_integer;
+  int16_t media_rate_fraction;
 };
 
 struct EditList : FullBox {
@@ -171,16 +171,16 @@ struct AVCDecoderConfigurationRecord : Box {
   // 5.2.4.1, including possible extension bytes described in paragraph 3.
   // Known fields defined in the spec are also parsed and included in this
   // structure.
-  std::vector<uint8> data;
+  std::vector<uint8_t> data;
 
-  uint8 version;
-  uint8 profile_indication;
-  uint8 profile_compatibility;
-  uint8 avc_level;
-  uint8 length_size;
+  uint8_t version;
+  uint8_t profile_indication;
+  uint8_t profile_compatibility;
+  uint8_t avc_level;
+  uint8_t length_size;
 
-  typedef std::vector<uint8> SPS;
-  typedef std::vector<uint8> PPS;
+  typedef std::vector<uint8_t> SPS;
+  typedef std::vector<uint8_t> PPS;
 
   std::vector<SPS> sps_list;
   std::vector<PPS> pps_list;
@@ -189,17 +189,17 @@ struct AVCDecoderConfigurationRecord : Box {
 struct PixelAspectRatioBox : Box {
   DECLARE_BOX_METHODS(PixelAspectRatioBox);
 
-  uint32 h_spacing;
-  uint32 v_spacing;
+  uint32_t h_spacing;
+  uint32_t v_spacing;
 };
 
 struct VideoSampleEntry : Box {
   DECLARE_BOX_METHODS(VideoSampleEntry);
 
   FourCC format;
-  uint16 data_reference_index;
-  uint16 width;
-  uint16 height;
+  uint16_t data_reference_index;
+  uint16_t width;
+  uint16_t height;
 
   PixelAspectRatioBox pixel_aspect;
   ProtectionSchemeInfo sinf;
@@ -219,10 +219,10 @@ struct AudioSampleEntry : Box {
   DECLARE_BOX_METHODS(AudioSampleEntry);
 
   FourCC format;
-  uint16 data_reference_index;
-  uint16 channelcount;
-  uint16 samplesize;
-  uint32 samplerate;
+  uint16_t data_reference_index;
+  uint16_t channelcount;
+  uint16_t samplesize;
+  uint32_t samplerate;
 
   ProtectionSchemeInfo sinf;
   ElementaryStreamDescriptor esds;
@@ -237,8 +237,8 @@ struct SampleDescription : FullBox {
 };
 
 struct DecodingTime {
-  uint32 sample_count;
-  uint32 sample_delta;
+  uint32_t sample_count;
+  uint32_t sample_delta;
 };
 
 // stts.
@@ -249,12 +249,12 @@ struct DecodingTimeToSample : FullBox {
 };
 
 struct CompositionOffset {
-  uint32 sample_count;
-  // If version == 0, sample_offset is uint32;
-  // If version == 1, sample_offset is int32.
+  uint32_t sample_count;
+  // If version == 0, sample_offset is uint32_t;
+  // If version == 1, sample_offset is int32_t.
   // Always use signed version, which should work unless the offset
   // exceeds 31 bits, which shouldn't happen.
-  int32 sample_offset;
+  int32_t sample_offset;
 };
 
 // ctts. Optional.
@@ -265,9 +265,9 @@ struct CompositionTimeToSample : FullBox {
 };
 
 struct ChunkInfo {
-  uint32 first_chunk;
-  uint32 samples_per_chunk;
-  uint32 sample_description_index;
+  uint32_t first_chunk;
+  uint32_t samples_per_chunk;
+  uint32_t sample_description_index;
 };
 
 // stsc.
@@ -281,24 +281,24 @@ struct SampleToChunk : FullBox {
 struct SampleSize : FullBox {
   DECLARE_BOX_METHODS(SampleSize);
 
-  uint32 sample_size;
-  uint32 sample_count;
-  std::vector<uint32> sizes;
+  uint32_t sample_size;
+  uint32_t sample_count;
+  std::vector<uint32_t> sizes;
 };
 
 // stz2.
 struct CompactSampleSize : FullBox {
   DECLARE_BOX_METHODS(CompactSampleSize);
 
-  uint8 field_size;
-  std::vector<uint32> sizes;
+  uint8_t field_size;
+  std::vector<uint32_t> sizes;
 };
 
 // co64.
 struct ChunkLargeOffset : FullBox {
   DECLARE_BOX_METHODS(ChunkLargeOffset);
 
-  std::vector<uint64> offsets;
+  std::vector<uint64_t> offsets;
 };
 
 // stco.
@@ -310,7 +310,7 @@ struct ChunkOffset : ChunkLargeOffset {
 struct SyncSample : FullBox {
   DECLARE_BOX_METHODS(SyncSample);
 
-  std::vector<uint32> sample_number;
+  std::vector<uint32_t> sample_number;
 };
 
 struct SampleTable : Box {
@@ -331,10 +331,10 @@ struct SampleTable : Box {
 struct MediaHeader : FullBox {
   DECLARE_BOX_METHODS(MediaHeader);
 
-  uint64 creation_time;
-  uint64 modification_time;
-  uint32 timescale;
-  uint64 duration;
+  uint64_t creation_time;
+  uint64_t modification_time;
+  uint32_t timescale;
+  uint64_t duration;
   // 3-char language code + 1 null terminating char.
   char language[4];
 };
@@ -342,22 +342,22 @@ struct MediaHeader : FullBox {
 struct VideoMediaHeader : FullBox {
   DECLARE_BOX_METHODS(VideoMediaHeader);
 
-  uint16 graphicsmode;
-  uint16 opcolor_red;
-  uint16 opcolor_green;
-  uint16 opcolor_blue;
+  uint16_t graphicsmode;
+  uint16_t opcolor_red;
+  uint16_t opcolor_green;
+  uint16_t opcolor_blue;
 };
 
 struct SoundMediaHeader : FullBox {
   DECLARE_BOX_METHODS(SoundMediaHeader);
 
-  uint16 balance;
+  uint16_t balance;
 };
 
 struct DataEntryUrl : FullBox {
   DECLARE_BOX_METHODS(DataEntryUrl);
 
-  std::vector<uint8> location;
+  std::vector<uint8_t> location;
 };
 
 struct DataReference : FullBox {
@@ -402,17 +402,17 @@ struct Track : Box {
 struct MovieExtendsHeader : FullBox {
   DECLARE_BOX_METHODS(MovieExtendsHeader);
 
-  uint64 fragment_duration;
+  uint64_t fragment_duration;
 };
 
 struct TrackExtends : FullBox {
   DECLARE_BOX_METHODS(TrackExtends);
 
-  uint32 track_id;
-  uint32 default_sample_description_index;
-  uint32 default_sample_duration;
-  uint32 default_sample_size;
-  uint32 default_sample_flags;
+  uint32_t track_id;
+  uint32_t default_sample_description_index;
+  uint32_t default_sample_duration;
+  uint32_t default_sample_size;
+  uint32_t default_sample_flags;
 };
 
 struct MovieExtends : Box {
@@ -434,13 +434,13 @@ struct Movie : Box {
 struct TrackFragmentDecodeTime : FullBox {
   DECLARE_BOX_METHODS(TrackFragmentDecodeTime);
 
-  uint64 decode_time;
+  uint64_t decode_time;
 };
 
 struct MovieFragmentHeader : FullBox {
   DECLARE_BOX_METHODS(MovieFragmentHeader);
 
-  uint32 sequence_number;
+  uint32_t sequence_number;
 };
 
 struct TrackFragmentHeader : FullBox {
@@ -466,11 +466,11 @@ struct TrackFragmentHeader : FullBox {
 
   DECLARE_BOX_METHODS(TrackFragmentHeader);
 
-  uint32 track_id;
-  uint32 sample_description_index;
-  uint32 default_sample_duration;
-  uint32 default_sample_size;
-  uint32 default_sample_flags;
+  uint32_t track_id;
+  uint32_t sample_description_index;
+  uint32_t default_sample_duration;
+  uint32_t default_sample_size;
+  uint32_t default_sample_flags;
 };
 
 struct TrackFragmentRun : FullBox {
@@ -485,12 +485,12 @@ struct TrackFragmentRun : FullBox {
 
   DECLARE_BOX_METHODS(TrackFragmentRun);
 
-  uint32 sample_count;
-  uint32 data_offset;
-  std::vector<uint32> sample_flags;
-  std::vector<uint32> sample_sizes;
-  std::vector<uint32> sample_durations;
-  std::vector<int32> sample_composition_time_offsets;
+  uint32_t sample_count;
+  uint32_t data_offset;
+  std::vector<uint32_t> sample_flags;
+  std::vector<uint32_t> sample_sizes;
+  std::vector<uint32_t> sample_durations;
+  std::vector<int32_t> sample_composition_time_offsets;
 };
 
 struct SampleToGroupEntry {
@@ -499,15 +499,15 @@ struct SampleToGroupEntry {
     kTrackFragmentGroupDescriptionIndexBase = 0x10000,
   };
 
-  uint32 sample_count;
-  uint32 group_description_index;
+  uint32_t sample_count;
+  uint32_t group_description_index;
 };
 
 struct SampleToGroup : FullBox {
   DECLARE_BOX_METHODS(SampleToGroup);
 
-  uint32 grouping_type;
-  uint32 grouping_type_parameter;  // Version 1 only.
+  uint32_t grouping_type;
+  uint32_t grouping_type_parameter;  // Version 1 only.
   std::vector<SampleToGroupEntry> entries;
 };
 
@@ -516,14 +516,14 @@ struct CencSampleEncryptionInfoEntry {
   ~CencSampleEncryptionInfoEntry();
 
   bool is_encrypted;
-  uint8 iv_size;
-  std::vector<uint8> key_id;
+  uint8_t iv_size;
+  std::vector<uint8_t> key_id;
 };
 
 struct SampleGroupDescription : FullBox {
   DECLARE_BOX_METHODS(SampleGroupDescription);
 
-  uint32 grouping_type;
+  uint32_t grouping_type;
   std::vector<CencSampleEncryptionInfoEntry> entries;
 };
 
@@ -559,23 +559,23 @@ struct SegmentReference {
   };
 
   bool reference_type;
-  uint32 referenced_size;
-  uint32 subsegment_duration;
+  uint32_t referenced_size;
+  uint32_t subsegment_duration;
   bool starts_with_sap;
   SAPType sap_type;
-  uint32 sap_delta_time;
+  uint32_t sap_delta_time;
   // We add this field to keep track of earliest_presentation_time in this
   // subsegment. It is not part of SegmentReference.
-  uint64 earliest_presentation_time;
+  uint64_t earliest_presentation_time;
 };
 
 struct SegmentIndex : FullBox {
   DECLARE_BOX_METHODS(SegmentIndex);
 
-  uint32 reference_id;
-  uint32 timescale;
-  uint64 earliest_presentation_time;
-  uint64 first_offset;
+  uint32_t reference_id;
+  uint32_t timescale;
+  uint64_t earliest_presentation_time;
+  uint64_t first_offset;
   std::vector<SegmentReference> references;
 };
 
@@ -585,10 +585,10 @@ struct MediaData {
   MediaData();
   ~MediaData();
   void Write(BufferWriter* buffer_writer);
-  uint32 ComputeSize();
+  uint32_t ComputeSize();
   FourCC BoxType() const;
 
-  uint32 data_size;
+  uint32_t data_size;
 };
 
 #undef DECLARE_BOX

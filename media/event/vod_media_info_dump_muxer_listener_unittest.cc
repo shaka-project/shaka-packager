@@ -29,28 +29,28 @@ namespace event {
 namespace {
 struct VideoStreamInfoParameters {
   int track_id;
-  uint32 time_scale;
-  uint64 duration;
+  uint32_t time_scale;
+  uint64_t duration;
   VideoCodec codec;
   std::string codec_string;
   std::string language;
-  uint16 width;
-  uint16 height;
-  uint8 nalu_length_size;
-  std::vector<uint8> extra_data;
+  uint16_t width;
+  uint16_t height;
+  uint8_t nalu_length_size;
+  std::vector<uint8_t> extra_data;
   bool is_encrypted;
 };
 
 // Note that this does not have vector of StreamInfo pointer.
 struct OnMediaEndParameters {
   bool has_init_range;
-  uint64 init_range_start;
-  uint64 init_range_end;
+  uint64_t init_range_start;
+  uint64_t init_range_end;
   bool has_index_range;
-  uint64 index_range_start;
-  uint64 index_range_end;
+  uint64_t index_range_start;
+  uint64_t index_range_end;
   float duration_seconds;
-  uint64 file_size;
+  uint64_t file_size;
 };
 
 scoped_refptr<StreamInfo> CreateVideoStreamInfo(
@@ -72,17 +72,17 @@ scoped_refptr<StreamInfo> CreateVideoStreamInfo(
 
 VideoStreamInfoParameters GetDefaultVideoStreamInfoParams() {
   const int kTrackId = 0;
-  const uint32 kTimeScale = 10;
-  const uint64 kVideoStreamDuration = 200;
+  const uint32_t kTimeScale = 10;
+  const uint64_t kVideoStreamDuration = 200;
   const VideoCodec kH264Codec = kCodecH264;
-  const uint8 kH264Profile = 1;
-  const uint8 kH264CompatibleProfile = 1;
-  const uint8 kH264Level = 1;
+  const uint8_t kH264Profile = 1;
+  const uint8_t kH264CompatibleProfile = 1;
+  const uint8_t kH264Level = 1;
   const char* kLanuageUndefined = "und";
-  const uint16 kWidth = 720;
-  const uint16 kHeight = 480;
-  const uint8 kNaluLengthSize = 1;
-  const std::vector<uint8> kExtraData;
+  const uint16_t kWidth = 720;
+  const uint16_t kHeight = 480;
+  const uint8_t kNaluLengthSize = 1;
+  const std::vector<uint8_t> kExtraData;
   const bool kEncryptedFlag = false;
 
   VideoStreamInfoParameters param = {
@@ -98,13 +98,13 @@ OnMediaEndParameters GetDefaultOnMediaEndParams() {
   // Values for {init, index} range {start, end} are arbitrary, but makes sure
   // that it is monotonically increasing and contiguous.
   const bool kHasInitRange = true;
-  const uint64 kInitRangeStart = 0;
-  const uint64 kInitRangeEnd = kInitRangeStart + 120;
-  const uint64 kHasIndexRange = true;
-  const uint64 kIndexRangeStart = kInitRangeEnd + 1;
-  const uint64 kIndexRangeEnd = kIndexRangeStart + 100;
+  const uint64_t kInitRangeStart = 0;
+  const uint64_t kInitRangeEnd = kInitRangeStart + 120;
+  const uint64_t kHasIndexRange = true;
+  const uint64_t kIndexRangeStart = kInitRangeEnd + 1;
+  const uint64_t kIndexRangeEnd = kIndexRangeStart + 100;
   const float kMediaDuration = 10.5f;
-  const uint64 kFileSize = 10000;
+  const uint64_t kFileSize = 10000;
   OnMediaEndParameters param = {
       kHasInitRange,    kInitRangeStart, kInitRangeEnd,  kHasIndexRange,
       kIndexRangeStart, kIndexRangeEnd,  kMediaDuration, kFileSize};
@@ -171,7 +171,7 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
       bool enable_encryption) {
     MuxerOptions muxer_options;
     SetDefaultMuxerOptionsValues(&muxer_options);
-    const uint32 kReferenceTimeScale = 1000;
+    const uint32_t kReferenceTimeScale = 1000;
     listener_->OnMediaStart(muxer_options,
                             stream_infos,
                             kReferenceTimeScale,

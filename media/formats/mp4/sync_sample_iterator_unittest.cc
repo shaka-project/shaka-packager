@@ -9,12 +9,12 @@
 #include "media/formats/mp4/sync_sample_iterator.h"
 
 namespace {
-const uint32 kNumSamples = 100;
-const uint32 kSyncSamples[] = {3, 10, 30, 35, 89, 97};
+const uint32_t kNumSamples = 100;
+const uint32_t kSyncSamples[] = {3, 10, 30, 35, 89, 97};
 
 // Check if sample is an element in kSyncSamples.
-bool InSyncSamples(uint32 sample) {
-  for (uint32 i = 0; i < sizeof(kSyncSamples) / sizeof(uint32); ++i) {
+bool InSyncSamples(uint32_t sample) {
+  for (uint32_t i = 0; i < sizeof(kSyncSamples) / sizeof(uint32_t); ++i) {
     if (sample == kSyncSamples[i])
       return true;
   }
@@ -36,10 +36,10 @@ TEST(SyncSampleIteratorTest, EmptySyncSample) {
 TEST(SyncSampleIteratorTest, SyncSample) {
   SyncSample sync_sample;
   sync_sample.sample_number.assign(
-      kSyncSamples, kSyncSamples + sizeof(kSyncSamples) / sizeof(uint32));
+      kSyncSamples, kSyncSamples + sizeof(kSyncSamples) / sizeof(uint32_t));
   SyncSampleIterator iterator(sync_sample);
 
-  uint32 i = 1;
+  uint32_t i = 1;
 
   // Check if it is sync sample using SyncSampleIterator::AdvanceSample() and
   // SyncSampleIterator::IsSyncSample().
@@ -48,7 +48,8 @@ TEST(SyncSampleIteratorTest, SyncSample) {
     ASSERT_TRUE(iterator.AdvanceSample());
   }
 
-  // Check if it is sync sample using SyncSampleIterator::IsSyncSample(uint32).
+  // Check if it is sync sample using
+  // SyncSampleIterator::IsSyncSample(uint32_t).
   // No need to advance sample for this case.
   for (; i <= kNumSamples / 2; ++i) {
     ASSERT_EQ(InSyncSamples(i), iterator.IsSyncSample(i));

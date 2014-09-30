@@ -32,46 +32,46 @@ class AesCtrEncryptor {
   /// @param key should be 16 bytes in size as specified in CENC spec.
   /// @param iv_size should be either 8 or 16 as specified in CENC spec.
   /// @return true on successful initialization, false otherwise.
-  bool InitializeWithRandomIv(const std::vector<uint8>& key, uint8 iv_size);
+  bool InitializeWithRandomIv(const std::vector<uint8_t>& key, uint8_t iv_size);
 
   /// Initialize the encryptor with specified key and IV. block_offset() is
   /// reset to 0 on success.
   /// @param key should be 16 bytes in size as specified in CENC spec.
   /// @param iv should be 8 bytes or 16 bytes in size as specified in CENC spec.
   /// @return true on successful initialization, false otherwise.
-  bool InitializeWithIv(const std::vector<uint8>& key,
-                        const std::vector<uint8>& iv);
+  bool InitializeWithIv(const std::vector<uint8_t>& key,
+                        const std::vector<uint8_t>& iv);
 
   /// @name Various forms of encrypt calls.
   /// block_offset() will be updated according to input plaintext size.
   /// @{
-  bool Encrypt(const uint8* plaintext,
+  bool Encrypt(const uint8_t* plaintext,
                size_t plaintext_size,
-               uint8* ciphertext);
+               uint8_t* ciphertext);
 
-  bool Encrypt(const std::vector<uint8>& plaintext,
-               std::vector<uint8>* ciphertext) {
+  bool Encrypt(const std::vector<uint8_t>& plaintext,
+               std::vector<uint8_t>* ciphertext) {
     ciphertext->resize(plaintext.size());
     return Encrypt(&plaintext[0], plaintext.size(), &(*ciphertext)[0]);
   }
 
   bool Encrypt(const std::string& plaintext, std::string* ciphertext) {
     ciphertext->resize(plaintext.size());
-    return Encrypt(reinterpret_cast<const uint8*>(plaintext.data()),
+    return Encrypt(reinterpret_cast<const uint8_t*>(plaintext.data()),
                    plaintext.size(),
-                   reinterpret_cast<uint8*>(string_as_array(ciphertext)));
+                   reinterpret_cast<uint8_t*>(string_as_array(ciphertext)));
   }
   /// @}
 
   // For AES CTR, encryption and decryption are identical.
-  bool Decrypt(const uint8* ciphertext,
+  bool Decrypt(const uint8_t* ciphertext,
                size_t ciphertext_size,
-               uint8* plaintext) {
+               uint8_t* plaintext) {
     return Encrypt(ciphertext, ciphertext_size, plaintext);
   }
 
-  bool Decrypt(const std::vector<uint8>& ciphertext,
-               std::vector<uint8>* plaintext) {
+  bool Decrypt(const std::vector<uint8_t>& ciphertext,
+               std::vector<uint8_t>* plaintext) {
     return Encrypt(ciphertext, plaintext);
   }
 
@@ -87,23 +87,23 @@ class AesCtrEncryptor {
 
   /// Set IV. @a block_offset_ is reset to 0 on success.
   /// @return true if successful, false if the input is invalid.
-  bool SetIv(const std::vector<uint8>& iv);
+  bool SetIv(const std::vector<uint8_t>& iv);
 
-  const std::vector<uint8>& iv() const { return iv_; }
+  const std::vector<uint8_t>& iv() const { return iv_; }
 
-  uint32 block_offset() const { return block_offset_; }
+  uint32_t block_offset() const { return block_offset_; }
 
  private:
   // Initialization vector, with size 8 or 16.
-  std::vector<uint8> iv_;
+  std::vector<uint8_t> iv_;
   // Current block offset.
-  uint32 block_offset_;
+  uint32_t block_offset_;
   // Openssl AES_KEY.
   scoped_ptr<AES_KEY> aes_key_;
   // Current AES-CTR counter.
-  std::vector<uint8> counter_;
+  std::vector<uint8_t> counter_;
   // Encrypted counter.
-  std::vector<uint8> encrypted_counter_;
+  std::vector<uint8_t> encrypted_counter_;
   // Keep track of whether the counter has overflowed.
   bool counter_overflow_;
 
@@ -122,20 +122,20 @@ class AesCbcPkcs5Encryptor {
   ///        in AES spec.
   /// @param iv should be 16 bytes in size.
   /// @return true on successful initialization, false otherwise.
-  bool InitializeWithIv(const std::vector<uint8>& key,
-                        const std::vector<uint8>& iv);
+  bool InitializeWithIv(const std::vector<uint8_t>& key,
+                        const std::vector<uint8_t>& iv);
 
   /// @param plaintext will be PKCS5 padded before being encrypted.
   /// @param ciphertext should not be NULL.
   void Encrypt(const std::string& plaintext, std::string* ciphertext);
 
   /// @return true if successful, false if the input is invalid.
-  bool SetIv(const std::vector<uint8>& iv);
+  bool SetIv(const std::vector<uint8_t>& iv);
 
-  const std::vector<uint8>& iv() const { return iv_; }
+  const std::vector<uint8_t>& iv() const { return iv_; }
 
  private:
-  std::vector<uint8> iv_;
+  std::vector<uint8_t> iv_;
   scoped_ptr<AES_KEY> encrypt_key_;
 
   DISALLOW_COPY_AND_ASSIGN(AesCbcPkcs5Encryptor);
@@ -153,8 +153,8 @@ class AesCbcPkcs5Decryptor {
   ///        in AES spec.
   /// @param iv should be 16 bytes in size.
   /// @return true on successful initialization, false otherwise.
-  bool InitializeWithIv(const std::vector<uint8>& key,
-                        const std::vector<uint8>& iv);
+  bool InitializeWithIv(const std::vector<uint8_t>& key,
+                        const std::vector<uint8_t>& iv);
 
   /// @param ciphertext is expected to be padded with PKCS5 padding.
   /// @param plaintext should not be NULL.
@@ -162,12 +162,12 @@ class AesCbcPkcs5Decryptor {
   bool Decrypt(const std::string& ciphertext, std::string* plaintext);
 
   /// @return true if successful, false if the input is invalid.
-  bool SetIv(const std::vector<uint8>& iv);
+  bool SetIv(const std::vector<uint8_t>& iv);
 
-  const std::vector<uint8>& iv() const { return iv_; }
+  const std::vector<uint8_t>& iv() const { return iv_; }
 
  private:
-  std::vector<uint8> iv_;
+  std::vector<uint8_t> iv_;
   scoped_ptr<AES_KEY> decrypt_key_;
 
   DISALLOW_COPY_AND_ASSIGN(AesCbcPkcs5Decryptor);
@@ -185,32 +185,30 @@ class AesCbcCtsEncryptor {
   ///        in AES spec.
   /// @param iv should be 16 bytes in size.
   /// @return true on successful initialization, false otherwise.
-  bool InitializeWithIv(const std::vector<uint8>& key,
-                        const std::vector<uint8>& iv);
+  bool InitializeWithIv(const std::vector<uint8_t>& key,
+                        const std::vector<uint8_t>& iv);
 
   /// @param plaintext points to the data to be encrypted.
   /// @param size is the number of bytes to be encrypted. If less than 16
   ///        bytes, it will be copied in the clear.
   /// @param ciphertext should not be NULL. The buffer should be at least
   ///        @a size bytes in length.
-  void Encrypt(const uint8* plaintext,
-               size_t size,
-               uint8* ciphertext);
+  void Encrypt(const uint8_t* plaintext, size_t size, uint8_t* ciphertext);
 
   /// @param plaintext contains the data to be encrypted. If less than 16
   ///        bytes in size, it will be copied in the clear.
   /// @param ciphertext should not be NULL. Caller retains ownership.
-  void Encrypt(const std::vector<uint8>& plaintext,
-               std::vector<uint8>* ciphertext);
+  void Encrypt(const std::vector<uint8_t>& plaintext,
+               std::vector<uint8_t>* ciphertext);
 
   /// @param iv is the initialization vector. Should be 16 bytes in size.
   /// @return true if successful, false if the input is invalid.
-  bool SetIv(const std::vector<uint8>& iv);
+  bool SetIv(const std::vector<uint8_t>& iv);
 
-  const std::vector<uint8>& iv() const { return iv_; }
+  const std::vector<uint8_t>& iv() const { return iv_; }
 
  private:
-  std::vector<uint8> iv_;
+  std::vector<uint8_t> iv_;
   scoped_ptr<AES_KEY> encrypt_key_;
 
   DISALLOW_COPY_AND_ASSIGN(AesCbcCtsEncryptor);
@@ -228,31 +226,29 @@ class AesCbcCtsDecryptor {
   ///        in AES spec.
   /// @param iv should be 16 bytes in size.
   /// @return true on successful initialization, false otherwise.
-  bool InitializeWithIv(const std::vector<uint8>& key,
-                        const std::vector<uint8>& iv);
+  bool InitializeWithIv(const std::vector<uint8_t>& key,
+                        const std::vector<uint8_t>& iv);
 
   /// @param ciphertext points to the data to be decrypted.
   /// @param size is the number of bytes to be decrypted. If less than 16
   ///        bytes, it will be copied in the clear.
   /// @param plaintext should not be NULL. The buffer should be at least
   ///        @a size bytes in length.
-  void Decrypt(const uint8* ciphertext,
-               size_t size,
-               uint8* plaintext);
+  void Decrypt(const uint8_t* ciphertext, size_t size, uint8_t* plaintext);
 
   /// @param ciphertext contains the data to be decrypted. If less than 16
   ///        bytes in size, it will be copied in the clear.
   /// @param plaintext should not be NULL. Caller retains ownership.
-  void Decrypt(const std::vector<uint8>& ciphertext,
-               std::vector<uint8>* plaintext);
+  void Decrypt(const std::vector<uint8_t>& ciphertext,
+               std::vector<uint8_t>* plaintext);
 
   /// @return true if successful, false if the input is invalid.
-  bool SetIv(const std::vector<uint8>& iv);
+  bool SetIv(const std::vector<uint8_t>& iv);
 
-  const std::vector<uint8>& iv() const { return iv_; }
+  const std::vector<uint8_t>& iv() const { return iv_; }
 
  private:
-  std::vector<uint8> iv_;
+  std::vector<uint8_t> iv_;
   scoped_ptr<AES_KEY> decrypt_key_;
 
   DISALLOW_COPY_AND_ASSIGN(AesCbcCtsDecryptor);

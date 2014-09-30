@@ -35,7 +35,7 @@ class BoxReader : public BufferReader {
   ///         function may return NULL if an intact, complete box is not
   ///         available in the buffer. For MDAT box only, a BoxReader object is
   ///         returned as long as the box header is available.
-  static BoxReader* ReadTopLevelBox(const uint8* buf,
+  static BoxReader* ReadTopLevelBox(const uint8_t* buf,
                                     const size_t buf_size,
                                     bool* err);
 
@@ -48,10 +48,10 @@ class BoxReader : public BufferReader {
   ///             reading the box.
   /// @return true if there is enough data to read the header and the header is
   ///         sane, which does not imply that the entire box is in the buffer.
-  static bool StartTopLevelBox(const uint8* buf,
+  static bool StartTopLevelBox(const uint8_t* buf,
                                const size_t buf_size,
                                FourCC* type,
-                               uint64* box_size,
+                               uint64_t* box_size,
                                bool* err) WARN_UNUSED_RESULT;
 
   /// @return true if @a type is recognized to be the fourcc of a top-level box,
@@ -95,7 +95,7 @@ class BoxReader : public BufferReader {
   bool ReadAllChildren(std::vector<T>* children) WARN_UNUSED_RESULT;
 
   bool ReadFourCC(FourCC* fourcc) {
-    uint32 val;
+    uint32_t val;
     if (!Read4(&val))
       return false;
     *fourcc = static_cast<FourCC>(val);
@@ -105,7 +105,7 @@ class BoxReader : public BufferReader {
   FourCC type() const { return type_; }
 
  private:
-  BoxReader(const uint8* buf, size_t size);
+  BoxReader(const uint8_t* buf, size_t size);
 
   // Must be called immediately after init. If the return is false, this
   // indicates that the box header and its contents were not available in the

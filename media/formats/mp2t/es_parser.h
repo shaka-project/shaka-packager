@@ -20,15 +20,18 @@ namespace mp2t {
 class EsParser {
  public:
   typedef base::Callback<void(scoped_refptr<StreamInfo>&)> NewStreamInfoCB;
-  typedef base::Callback<void(uint32, scoped_refptr<MediaSample>&)> EmitSampleCB;
+  typedef base::Callback<void(uint32_t, scoped_refptr<MediaSample>&)>
+      EmitSampleCB;
 
-  EsParser(uint32 pid)
-      : pid_(pid) {}
+  EsParser(uint32_t pid) : pid_(pid) {}
   virtual ~EsParser() {}
 
   // ES parsing.
   // Should use kNoTimestamp when a timestamp is not valid.
-  virtual bool Parse(const uint8* buf, int size, int64 pts, int64 dts) = 0;
+  virtual bool Parse(const uint8_t* buf,
+                     int size,
+                     int64_t pts,
+                     int64_t dts) = 0;
 
   // Flush any pending buffer.
   virtual void Flush() = 0;
@@ -36,10 +39,10 @@ class EsParser {
   // Reset the state of the ES parser.
   virtual void Reset() = 0;
 
-  uint32 pid() { return pid_; }
+  uint32_t pid() { return pid_; }
 
  private:
-  uint32 pid_;
+  uint32_t pid_;
 };
 
 }  // namespace mp2t

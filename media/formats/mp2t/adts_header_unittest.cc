@@ -30,7 +30,7 @@ const char kValidAdtsFrame[] =
     "f2112c2202973b00de71bb49f906ed1bc63768dda378c8f9c6ed1bb48f68"
     "dda378c9f68dda3768dda3768de323da3768de31bb4e";
 
-const uint8 kExpectedAudioSpecificConfig[] = { 0x12, 0x10 };
+const uint8_t kExpectedAudioSpecificConfig[] = {0x12, 0x10};
 
 }  // anonymous namespace
 
@@ -45,27 +45,26 @@ class AdtsHeaderTest : public testing::Test {
   }
 
  protected:
-  std::vector<uint8> adts_frame_;
+  std::vector<uint8_t> adts_frame_;
 };
 
 TEST_F(AdtsHeaderTest, ParseSuccess) {
-  const uint8 kExpectedObjectType(2);
-  const uint32 kExpectedSamplingFrequency(44100);
-  const uint8 kExpectedNumChannels(2);
+  const uint8_t kExpectedObjectType(2);
+  const uint32_t kExpectedSamplingFrequency(44100);
+  const uint8_t kExpectedNumChannels(2);
   AdtsHeader adts_header;
   EXPECT_TRUE(adts_header.Parse(adts_frame_.data(), adts_frame_.size()));
   EXPECT_EQ(kExpectedObjectType, adts_header.GetObjectType());
   EXPECT_EQ(kExpectedSamplingFrequency, adts_header.GetSamplingFrequency());
   EXPECT_EQ(kExpectedNumChannels, adts_header.GetNumChannels());
-  std::vector<uint8> audio_specific_config;
+  std::vector<uint8_t> audio_specific_config;
   ASSERT_TRUE(adts_header.GetAudioSpecificConfig(&audio_specific_config));
   EXPECT_EQ(arraysize(kExpectedAudioSpecificConfig),
             audio_specific_config.size());
-  EXPECT_EQ(
-      std::vector<uint8>(
-          kExpectedAudioSpecificConfig,
-          kExpectedAudioSpecificConfig + arraysize(kExpectedAudioSpecificConfig)),
-      audio_specific_config);
+  EXPECT_EQ(std::vector<uint8_t>(kExpectedAudioSpecificConfig,
+                                 kExpectedAudioSpecificConfig +
+                                     arraysize(kExpectedAudioSpecificConfig)),
+            audio_specific_config);
 }
 
 TEST_F(AdtsHeaderTest, ParseFailFrameSize) {

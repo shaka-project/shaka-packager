@@ -19,7 +19,7 @@ FILE* g_rand_source_fp = NULL;
 const char kFakePrngDataFile[] = "fake_prng_data.bin";
 
 // RAND_bytes and RAND_pseudorand implementation.
-int FakeBytes(uint8* buf, int num) {
+int FakeBytes(uint8_t* buf, int num) {
   DCHECK(buf);
   DCHECK(g_rand_source_fp);
 

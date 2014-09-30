@@ -19,7 +19,7 @@ BandwidthEstimator::BandwidthEstimator(int num_blocks)
       num_blocks_added_(0) {}
 BandwidthEstimator::~BandwidthEstimator() {}
 
-void BandwidthEstimator::AddBlock(uint64 size, double duration) {
+void BandwidthEstimator::AddBlock(uint64_t size, double duration) {
   DCHECK_GT(duration, 0.0);
   DCHECK_GT(size, 0u);
 
@@ -52,12 +52,12 @@ void BandwidthEstimator::AddBlock(uint64 size, double duration) {
   return;
 }
 
-uint64 BandwidthEstimator::Estimate() const {
+uint64_t BandwidthEstimator::Estimate() const {
   if (harmonic_mean_denominator_ == 0.0)
     return 0;
 
-  const uint64 num_blocks = num_blocks_for_estimation_ == kUseAllBlocks
-                                ? num_blocks_added_
-                                : history_.size();
-  return static_cast<uint64>(ceil(num_blocks / harmonic_mean_denominator_));
+  const uint64_t num_blocks = num_blocks_for_estimation_ == kUseAllBlocks
+                                  ? num_blocks_added_
+                                  : history_.size();
+  return static_cast<uint64_t>(ceil(num_blocks / harmonic_mean_denominator_));
 }

@@ -9,13 +9,13 @@
 #include "media/base/bit_reader.h"
 #include "media/formats/mp2t/mp2t_common.h"
 
-static bool IsCrcValid(const uint8* buf, int size) {
-  uint32 crc = 0xffffffffu;
-  const uint32 kCrcPoly = 0x4c11db7;
+static bool IsCrcValid(const uint8_t* buf, int size) {
+  uint32_t crc = 0xffffffffu;
+  const uint32_t kCrcPoly = 0x4c11db7;
 
   for (int k = 0; k < size; k++) {
     int nbits = 8;
-    uint32 data_msb_aligned = buf[k];
+    uint32_t data_msb_aligned = buf[k];
     data_msb_aligned <<= (32 - nbits);
 
     while (nbits > 0) {
@@ -47,7 +47,8 @@ TsSectionPsi::~TsSectionPsi() {
 }
 
 bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
-                         const uint8* buf, int size) {
+                         const uint8_t* buf,
+                         int size) {
   // Ignore partial PSI.
   if (wait_for_pusi_ && !payload_unit_start_indicator)
     return true;
@@ -78,7 +79,7 @@ bool TsSectionPsi::Parse(bool payload_unit_start_indicator,
   // Add the data to the parser state.
   psi_byte_queue_.Push(buf, size);
   int raw_psi_size;
-  const uint8* raw_psi;
+  const uint8_t* raw_psi;
   psi_byte_queue_.Peek(&raw_psi, &raw_psi_size);
 
   // Check whether we have enough data to start parsing.

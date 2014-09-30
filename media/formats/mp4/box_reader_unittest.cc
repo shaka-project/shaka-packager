@@ -15,7 +15,7 @@ namespace edash_packager {
 namespace media {
 namespace mp4 {
 
-static const uint8 kSkipBox[] = {
+static const uint8_t kSkipBox[] = {
     // Top-level test box containing three children.
     0x00, 0x00, 0x00, 0x40, 's',  'k',  'i',  'p',  0x01, 0x02, 0x03, 0x04,
     0x05, 0x06, 0x07, 0x08, 0xf9, 0x0a, 0x0b, 0x0c, 0xfd, 0x0e, 0x0f, 0x10,
@@ -34,7 +34,7 @@ struct FreeBox : Box {
     return true;
   }
   virtual FourCC BoxType() const OVERRIDE { return FOURCC_FREE; }
-  virtual uint32 ComputeSize() OVERRIDE {
+  virtual uint32_t ComputeSize() OVERRIDE {
     NOTIMPLEMENTED();
     return 0;
   }
@@ -45,22 +45,20 @@ struct PsshBox : Box {
     return buffer->ReadWriteUInt32(&val);
   }
   virtual FourCC BoxType() const OVERRIDE { return FOURCC_PSSH; }
-  virtual uint32 ComputeSize() OVERRIDE {
+  virtual uint32_t ComputeSize() OVERRIDE {
     NOTIMPLEMENTED();
     return 0;
   }
 
-  uint32 val;
+  uint32_t val;
 };
 
 struct SkipBox : FullBox {
   virtual bool ReadWrite(BoxBuffer* buffer) OVERRIDE {
-    RCHECK(FullBox::ReadWrite(buffer) &&
-           buffer->ReadWriteUInt8(&a) &&
-           buffer->ReadWriteUInt8(&b) &&
-           buffer->ReadWriteUInt16(&c) &&
+    RCHECK(FullBox::ReadWrite(buffer) && buffer->ReadWriteUInt8(&a) &&
+           buffer->ReadWriteUInt8(&b) && buffer->ReadWriteUInt16(&c) &&
            buffer->ReadWriteInt32(&d) &&
-           buffer->ReadWriteInt64NBytes(&e, sizeof(uint32)));
+           buffer->ReadWriteInt64NBytes(&e, sizeof(uint32_t)));
     RCHECK(buffer->PrepareChildren());
     if (buffer->Reading()) {
       DCHECK(buffer->reader());
@@ -71,15 +69,15 @@ struct SkipBox : FullBox {
     return buffer->TryReadWriteChild(&empty);
   }
   virtual FourCC BoxType() const OVERRIDE { return FOURCC_SKIP; }
-  virtual uint32 ComputeSize() OVERRIDE {
+  virtual uint32_t ComputeSize() OVERRIDE {
     NOTIMPLEMENTED();
     return 0;
   }
 
-  uint8 a, b;
-  uint16 c;
-  int32 d;
-  int64 e;
+  uint8_t a, b;
+  uint16_t c;
+  int32_t d;
+  int64_t e;
 
   std::vector<PsshBox> kids;
   FreeBox empty;
@@ -87,13 +85,13 @@ struct SkipBox : FullBox {
 
 class BoxReaderTest : public testing::Test {
  protected:
-  std::vector<uint8> GetBuf() {
-    return std::vector<uint8>(kSkipBox, kSkipBox + sizeof(kSkipBox));
+  std::vector<uint8_t> GetBuf() {
+    return std::vector<uint8_t>(kSkipBox, kSkipBox + sizeof(kSkipBox));
   }
 };
 
 TEST_F(BoxReaderTest, ExpectedOperationTest) {
-  std::vector<uint8> buf = GetBuf();
+  std::vector<uint8_t> buf = GetBuf();
   bool err;
   scoped_ptr<BoxReader> reader(
       BoxReader::ReadTopLevelBox(&buf[0], buf.size(), &err));
@@ -107,19 +105,19 @@ TEST_F(BoxReaderTest, ExpectedOperationTest) {
   EXPECT_EQ(0x05, box.a);
   EXPECT_EQ(0x06, box.b);
   EXPECT_EQ(0x0708, box.c);
-  EXPECT_EQ(static_cast<int32>(0xf90a0b0c), box.d);
-  EXPECT_EQ(static_cast<int32>(0xfd0e0f10), box.e);
+  EXPECT_EQ(static_cast<int32_t>(0xf90a0b0c), box.d);
+  EXPECT_EQ(static_cast<int32_t>(0xfd0e0f10), box.e);
 
   EXPECT_EQ(2u, box.kids.size());
   EXPECT_EQ(0xdeadbeef, box.kids[0].val);
   EXPECT_EQ(0xfacecafe, box.kids[1].val);
 
   // Accounting for the extra byte outside of the box above.
-  EXPECT_EQ(buf.size(), static_cast<uint64>(reader->size() + 1));
+  EXPECT_EQ(buf.size(), static_cast<uint64_t>(reader->size() + 1));
 }
 
 TEST_F(BoxReaderTest, OuterTooShortTest) {
-  std::vector<uint8> buf = GetBuf();
+  std::vector<uint8_t> buf = GetBuf();
   bool err;
 
   // Create a soft failure by truncating the outer box.
@@ -131,7 +129,7 @@ TEST_F(BoxReaderTest, OuterTooShortTest) {
 }
 
 TEST_F(BoxReaderTest, InnerTooLongTest) {
-  std::vector<uint8> buf = GetBuf();
+  std::vector<uint8_t> buf = GetBuf();
   bool err;
 
   // Make an inner box too big for its outer box.
@@ -144,7 +142,7 @@ TEST_F(BoxReaderTest, InnerTooLongTest) {
 }
 
 TEST_F(BoxReaderTest, WrongFourCCTest) {
-  std::vector<uint8> buf = GetBuf();
+  std::vector<uint8_t> buf = GetBuf();
   bool err;
 
   // Set an unrecognized top-level FourCC.
@@ -156,7 +154,7 @@ TEST_F(BoxReaderTest, WrongFourCCTest) {
 }
 
 TEST_F(BoxReaderTest, ScanChildrenTest) {
-  std::vector<uint8> buf = GetBuf();
+  std::vector<uint8_t> buf = GetBuf();
   bool err;
   scoped_ptr<BoxReader> reader(
       BoxReader::ReadTopLevelBox(&buf[0], buf.size(), &err));
@@ -178,7 +176,7 @@ TEST_F(BoxReaderTest, ScanChildrenTest) {
 }
 
 TEST_F(BoxReaderTest, ReadAllChildrenTest) {
-  std::vector<uint8> buf = GetBuf();
+  std::vector<uint8_t> buf = GetBuf();
   // Modify buffer to exclude its last 'free' box.
   buf[3] = 0x38;
   bool err;
@@ -192,11 +190,17 @@ TEST_F(BoxReaderTest, ReadAllChildrenTest) {
 }
 
 TEST_F(BoxReaderTest, SkippingBloc) {
-  static const uint8 kData[] = {0x00, 0x00, 0x00, 0x09,  // Box size.
-                                'b',  'l',  'o',  'c',   // FourCC.
-                                0x00};                   // Reserved byte.
+  static const uint8_t kData[] = {0x00,
+                                  0x00,
+                                  0x00,
+                                  0x09,  // Box size.
+                                  'b',
+                                  'l',
+                                  'o',
+                                  'c',    // FourCC.
+                                  0x00};  // Reserved byte.
 
-  std::vector<uint8> buf(kData, kData + sizeof(kData));
+  std::vector<uint8_t> buf(kData, kData + sizeof(kData));
 
   bool err;
   scoped_ptr<BoxReader> reader(

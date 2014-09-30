@@ -13,14 +13,13 @@ namespace edash_packager {
 namespace media {
 namespace mp4 {
 
-KeyRotationFragmenter::KeyRotationFragmenter(
-    MovieFragment* moof,
-    TrackFragment* traf,
-    KeySource* encryption_key_source,
-    KeySource::TrackType track_type,
-    int64 crypto_period_duration,
-    int64 clear_time,
-    uint8 nalu_length_size)
+KeyRotationFragmenter::KeyRotationFragmenter(MovieFragment* moof,
+                                             TrackFragment* traf,
+                                             KeySource* encryption_key_source,
+                                             KeySource::TrackType track_type,
+                                             int64_t crypto_period_duration,
+                                             int64_t clear_time,
+                                             uint8_t nalu_length_size)
     : EncryptingFragmenter(traf,
                            scoped_ptr<EncryptionKey>(new EncryptionKey()),
                            clear_time,

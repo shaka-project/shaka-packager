@@ -36,9 +36,9 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
                         TrackFragment* traf,
                         KeySource* encryption_key_source,
                         KeySource::TrackType track_type,
-                        int64 crypto_period_duration,
-                        int64 clear_time,
-                        uint8 nalu_length_size);
+                        int64_t crypto_period_duration,
+                        int64_t clear_time,
+                        uint8_t nalu_length_size);
   virtual ~KeyRotationFragmenter();
 
  protected:
@@ -53,7 +53,7 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
 
   KeySource* encryption_key_source_;
   KeySource::TrackType track_type_;
-  const int64 crypto_period_duration_;
+  const int64_t crypto_period_duration_;
   size_t prev_crypto_period_index_;
 
   DISALLOW_COPY_AND_ASSIGN(KeyRotationFragmenter);

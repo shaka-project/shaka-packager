@@ -67,7 +67,7 @@ struct MuxerOptions {
 
   /// User-specified bit rate for the media stream. If zero, the muxer will
   /// attempt to estimate.
-  uint32 bandwidth;
+  uint32_t bandwidth;
 };
 
 }  // namespace media

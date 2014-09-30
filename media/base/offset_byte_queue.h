@@ -23,8 +23,8 @@ class OffsetByteQueue {
   /// @name These work like their underlying ByteQueue counterparts.
   /// @{
   void Reset();
-  void Push(const uint8* buf, int size);
-  void Peek(const uint8** buf, int* size);
+  void Push(const uint8_t* buf, int size);
+  void Peek(const uint8_t** buf, int* size);
   void Pop(int count);
   /// @}
 
@@ -34,7 +34,7 @@ class OffsetByteQueue {
   /// It is an error if the offset is before the current head. It's not an error
   /// if the current offset is beyond tail(), but you will of course get back
   /// a null @a buf and a @a size of zero.
-  void PeekAt(int64 offset, const uint8** buf, int* size);
+  void PeekAt(int64_t offset, const uint8_t** buf, int* size);
 
   /// Mark the bytes up to (but not including) @a max_offset as ready for
   /// deletion. This is relatively inexpensive, but will not necessarily reduce
@@ -45,22 +45,22 @@ class OffsetByteQueue {
   ///         head.
   /// @return false if @a max_offset > tail() (although all bytes currently
   ///         buffered are still cleared).
-  bool Trim(int64 max_offset);
+  bool Trim(int64_t max_offset);
 
   /// @return The head position, in terms of the file's absolute offset.
-  int64 head() { return head_; }
+  int64_t head() { return head_; }
   /// @return The tail position (exclusive), in terms of the file's absolute
   ///         offset.
-  int64 tail() { return head_ + size_; }
+  int64_t tail() { return head_ + size_; }
 
  private:
   // Synchronize |buf_| and |size_| with |queue_|.
   void Sync();
 
   ByteQueue queue_;
-  const uint8* buf_;
+  const uint8_t* buf_;
   int size_;
-  int64 head_;
+  int64_t head_;
 
   DISALLOW_COPY_AND_ASSIGN(OffsetByteQueue);
 };

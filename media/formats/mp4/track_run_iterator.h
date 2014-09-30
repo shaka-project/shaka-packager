@@ -62,7 +62,7 @@ class TrackRunIterator {
   /// @param buf must be a buffer starting at the offset given by cenc_offset().
   /// @param size must be at least cenc_size().
   /// @return true on success, false on error.
-  bool CacheAuxInfo(const uint8* buf, int size);
+  bool CacheAuxInfo(const uint8_t* buf, int size);
 
   /// @return the maximum buffer location at which no data earlier in the
   ///         stream will be required in order to read the current or any
@@ -70,12 +70,12 @@ class TrackRunIterator {
   ///         before reading the current sample safely. Result is in the same
   ///         units as offset() (for Media Source this is in bytes past the
   ///         head of the MOOF box).
-  int64 GetMaxClearOffset();
+  int64_t GetMaxClearOffset();
 
   /// @name Properties of the current run. Only valid if IsRunValid().
   /// @{
-  uint32 track_id() const;
-  int64 aux_info_offset() const;
+  uint32_t track_id() const;
+  int64_t aux_info_offset() const;
   int aux_info_size() const;
   bool is_encrypted() const;
   bool is_audio() const;
@@ -89,11 +89,11 @@ class TrackRunIterator {
 
   /// @name Properties of the current sample. Only valid if IsSampleValid().
   /// @{
-  int64 sample_offset() const;
+  int64_t sample_offset() const;
   int sample_size() const;
-  int64 dts() const;
-  int64 cts() const;
-  int64 duration() const;
+  int64_t dts() const;
+  int64_t cts() const;
+  int64_t duration() const;
   bool is_keyframe() const;
   /// @}
 
@@ -113,8 +113,8 @@ class TrackRunIterator {
 
   std::vector<FrameCENCInfo> cenc_info_;
 
-  int64 sample_dts_;
-  int64 sample_offset_;
+  int64_t sample_dts_;
+  int64_t sample_offset_;
 
   DISALLOW_COPY_AND_ASSIGN(TrackRunIterator);
 };

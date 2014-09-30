@@ -9,8 +9,8 @@
 namespace edash_packager {
 namespace media {
 
-DecryptConfig::DecryptConfig(const std::vector<uint8>& key_id,
-                             const std::vector<uint8>& iv,
+DecryptConfig::DecryptConfig(const std::vector<uint8_t>& key_id,
+                             const std::vector<uint8_t>& iv,
                              const int data_offset,
                              const std::vector<SubsampleEntry>& subsamples)
     : key_id_(key_id),

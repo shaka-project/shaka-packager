@@ -13,8 +13,8 @@
 namespace edash_packager {
 namespace media {
 
-const int64 kNoTimestamp = kint64min;
-const int64 kInfiniteDuration = kint64max;
+const int64_t kNoTimestamp = kint64min;
+const int64_t kInfiniteDuration = kint64max;
 
 }  // namespace media
 }  // namespace edash_packager

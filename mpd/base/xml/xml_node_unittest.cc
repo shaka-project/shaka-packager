@@ -203,7 +203,7 @@ TEST_F(RepresentationTest, AddContentProtectionXml) {
 // Some template names cannot be used for init segment name.
 TEST_F(RepresentationTest, InvalidLiveInitSegmentName) {
   MediaInfo media_info;
-  const uint32 kDefaultStartNumber = 1;
+  const uint32_t kDefaultStartNumber = 1;
 
   // $Number$ cannot be used for segment name.
   media_info.set_init_segment_name("$Number$.mp4");

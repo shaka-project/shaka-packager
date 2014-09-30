@@ -27,8 +27,8 @@ struct DemuxStreamIdMediaSample {
  public:
   DemuxStreamIdMediaSample();
   ~DemuxStreamIdMediaSample();
-  uint32 demux_stream_id;
-  uint32 parsed_audio_or_video_stream_id;
+  uint32_t demux_stream_id;
+  uint32_t parsed_audio_or_video_stream_id;
   scoped_refptr<MediaSample> media_sample;
 };
 
@@ -39,10 +39,10 @@ struct PrevSampleData {
   void Reset();
   scoped_refptr<MediaSample> audio_sample;
   scoped_refptr<MediaSample> video_sample;
-  uint32 audio_stream_id;
-  uint32 video_stream_id;
-  int64 audio_sample_duration;
-  int64 video_sample_duration;
+  uint32_t audio_stream_id;
+  uint32_t video_stream_id;
+  int64_t audio_sample_duration;
+  int64_t video_sample_duration;
 };
 
 class WvmMediaParser : public MediaParser {
@@ -57,7 +57,7 @@ class WvmMediaParser : public MediaParser {
 
   virtual void Flush() OVERRIDE;
 
-  virtual bool Parse(const uint8* buf, int size) OVERRIDE;
+  virtual bool Parse(const uint8_t* buf, int size) OVERRIDE;
 
  private:
   enum Tag {
@@ -157,41 +157,43 @@ class WvmMediaParser : public MediaParser {
     ProgramEnd
   };
 
-  bool DecryptCBC(void* data, uint32 length, uint32 bytesRemaining,
-                  uint32& bytesDecrypted) {
+  bool DecryptCBC(void* data,
+                  uint32_t length,
+                  uint32_t bytesRemaining,
+                  uint32_t& bytesDecrypted) {
      return(true);
    }
 
-  bool ProcessEcm(void* ecm, uint32 size) {
-    return(true);
-  }
+   bool ProcessEcm(void* ecm, uint32_t size) { return (true); }
 
   // Index denotes 'search index' in the WVM content.
   bool ParseIndexEntry();
 
-  bool DemuxNextPes(uint8* start, bool is_program_end);
+  bool DemuxNextPes(uint8_t* start, bool is_program_end);
 
-  void StartMediaSampleDemux(uint8* start);
+  void StartMediaSampleDemux(uint8_t* start);
 
-  template<typename T>
-  Tag GetTag(const uint8& tag, const uint32& length,
-             const uint8* start_index, T* value) {
-    if (length == sizeof(uint8)) {
-      *value = (uint8)(*start_index);
-    } else if (length == sizeof(int8)) {
-      *value = (int8)(*start_index);
-    } else if (length == sizeof(uint16)) {
-      *value = (uint16)(ntohsFromBuffer(start_index));
-    } else if (length == sizeof(int16)) {
-      *value = (int16)(ntohsFromBuffer(start_index));
-    } else if (length == sizeof(uint32)) {
-      *value = (uint32)(ntohlFromBuffer(start_index));
-    } else if (length == sizeof(int32)) {
-      *value = (int32)(ntohlFromBuffer(start_index));
-    } else if (length == sizeof(uint64)) {
-      *value = (uint64)(ntohllFromBuffer(start_index));
-    } else if (length == sizeof(int64)) {
-      *value = (int64)(ntohllFromBuffer(start_index));
+  template <typename T>
+  Tag GetTag(const uint8_t& tag,
+             const uint32_t& length,
+             const uint8_t* start_index,
+             T* value) {
+    if (length == sizeof(uint8_t)) {
+      *value = (uint8_t)(*start_index);
+    } else if (length == sizeof(int8_t)) {
+      *value = (int8_t)(*start_index);
+    } else if (length == sizeof(uint16_t)) {
+      *value = (uint16_t)(ntohsFromBuffer(start_index));
+    } else if (length == sizeof(int16_t)) {
+      *value = (int16_t)(ntohsFromBuffer(start_index));
+    } else if (length == sizeof(uint32_t)) {
+      *value = (uint32_t)(ntohlFromBuffer(start_index));
+    } else if (length == sizeof(int32_t)) {
+      *value = (int32_t)(ntohlFromBuffer(start_index));
+    } else if (length == sizeof(uint64_t)) {
+      *value = (uint64_t)(ntohllFromBuffer(start_index));
+    } else if (length == sizeof(int64_t)) {
+      *value = (int64_t)(ntohllFromBuffer(start_index));
     } else {
       *value = 0;
     }
@@ -202,13 +204,15 @@ class WvmMediaParser : public MediaParser {
 
   // Callback invoked by the ES media parser
   // to emit a new audio/video access unit.
-  void EmitSample(
-      uint32 parsed_audio_or_video_stream_id, uint32 stream_id,
-      scoped_refptr<MediaSample>& new_sample, bool isLastSample);
+  void EmitSample(uint32_t parsed_audio_or_video_stream_id,
+                  uint32_t stream_id,
+                  scoped_refptr<MediaSample>& new_sample,
+                  bool isLastSample);
 
   void EmitPendingSamples();
 
-  bool EmitLastSample(uint32 stream_id, scoped_refptr<MediaSample>& new_sample);
+  bool EmitLastSample(uint32_t stream_id,
+                      scoped_refptr<MediaSample>& new_sample);
 
   // List of callbacks.t
   InitCB init_cb_;
@@ -223,19 +227,19 @@ class WvmMediaParser : public MediaParser {
   bool is_first_pack_;
 
   bool is_psm_needed_;
-  uint32 skip_bytes_;
+  uint32_t skip_bytes_;
   bool metadata_is_complete_;
-  uint8 current_program_id_;
-  uint32 pes_stream_id_;
-  uint32 prev_pes_stream_id_;
-  uint16 pes_packet_bytes_;
-  uint8 pes_flags_1_;
-  uint8 pes_flags_2_;
-  uint8 pes_header_data_bytes_;
-  uint64 timestamp_;
-  uint64 pts_;
-  uint64 dts_;
-  uint8 index_program_id_;
+  uint8_t current_program_id_;
+  uint32_t pes_stream_id_;
+  uint32_t prev_pes_stream_id_;
+  uint16_t pes_packet_bytes_;
+  uint8_t pes_flags_1_;
+  uint8_t pes_flags_2_;
+  uint8_t pes_header_data_bytes_;
+  uint64_t timestamp_;
+  uint64_t pts_;
+  uint64_t dts_;
+  uint8_t index_program_id_;
 
   SHA256_CTX* sha_context_;
   scoped_refptr<MediaSample> media_sample_;
@@ -243,14 +247,14 @@ class WvmMediaParser : public MediaParser {
 
   H264ByteToUnitStreamConverter byte_to_unit_stream_converter_;
 
-  std::vector<uint8, std::allocator<uint8> > ecm_;
-  std::vector<uint8> psm_data_;
-  std::vector<uint8> index_data_;
-  std::map<std::string, uint32> program_demux_stream_map_;
+  std::vector<uint8_t, std::allocator<uint8_t> > ecm_;
+  std::vector<uint8_t> psm_data_;
+  std::vector<uint8_t> index_data_;
+  std::map<std::string, uint32_t> program_demux_stream_map_;
   int stream_id_count_;
   std::vector<scoped_refptr<StreamInfo> > stream_infos_;
   std::deque<DemuxStreamIdMediaSample> media_sample_queue_;
-  std::vector<uint8> sample_data_;
+  std::vector<uint8_t> sample_data_;
 
   DISALLOW_COPY_AND_ASSIGN(WvmMediaParser);
 };

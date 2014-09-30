@@ -20,10 +20,10 @@ class DecodingTimeIteratorTest : public testing::Test {
  public:
   DecodingTimeIteratorTest() {
     // Build decoding time table from kDecodingTimes.
-    uint32 decoding_time = 0;
-    uint32 length = sizeof(kDecodingTimes) / sizeof(DecodingTime);
-    for (uint32 i = 0; i < length; ++i) {
-      for (uint32 j = 0; j < kDecodingTimes[i].sample_count; ++j) {
+    uint32_t decoding_time = 0;
+    uint32_t length = sizeof(kDecodingTimes) / sizeof(DecodingTime);
+    for (uint32_t i = 0; i < length; ++i) {
+      for (uint32_t j = 0; j < kDecodingTimes[i].sample_count; ++j) {
         decoding_time += kDecodingTimes[i].sample_delta;
         decoding_time_table_.push_back(decoding_time);
       }
@@ -36,7 +36,7 @@ class DecodingTimeIteratorTest : public testing::Test {
   }
 
  protected:
-  std::vector<uint32> decoding_time_table_;
+  std::vector<uint32_t> decoding_time_table_;
   DecodingTimeToSample decoding_time_to_sample_;
   scoped_ptr<DecodingTimeIterator> decoding_time_iterator_;
 
@@ -57,7 +57,7 @@ TEST_F(DecodingTimeIteratorTest, NumSamples) {
 
 TEST_F(DecodingTimeIteratorTest, AdvanceSample) {
   ASSERT_EQ(decoding_time_table_[0], decoding_time_iterator_->sample_delta());
-  for (uint32 sample = 1; sample < decoding_time_table_.size(); ++sample) {
+  for (uint32_t sample = 1; sample < decoding_time_table_.size(); ++sample) {
     ASSERT_TRUE(decoding_time_iterator_->AdvanceSample());
     ASSERT_EQ(decoding_time_table_[sample] - decoding_time_table_[sample - 1],
               decoding_time_iterator_->sample_delta());
@@ -68,8 +68,8 @@ TEST_F(DecodingTimeIteratorTest, AdvanceSample) {
 }
 
 TEST_F(DecodingTimeIteratorTest, Duration) {
-  for (uint32 i = 0; i < decoding_time_table_.size(); ++i) {
-    for (uint32 j = i; j < decoding_time_table_.size(); ++j) {
+  for (uint32_t i = 0; i < decoding_time_table_.size(); ++i) {
+    for (uint32_t j = i; j < decoding_time_table_.size(); ++j) {
       ASSERT_EQ(
           decoding_time_table_[j] - (i == 0 ? 0 : decoding_time_table_[i - 1]),
           decoding_time_iterator_->Duration(i + 1, j + 1));

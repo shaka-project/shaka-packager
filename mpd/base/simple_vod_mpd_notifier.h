@@ -35,20 +35,20 @@ class SimpleVodMpdNotifier : public MpdNotifier {
   // can both audio and video be empty.
   // On success this writes out MPD and returns true, otherwise returns false.
   virtual bool NotifyNewContainer(const MediaInfo& media_info,
-                                  uint32* id) OVERRIDE;
+                                  uint32_t* id) OVERRIDE;
 
   // As documented in MpdNotifier. This is Live only feature. This will return
   // false.
-  virtual bool NotifyNewSegment(uint32 id,
-                                uint64 start_time,
-                                uint64 duration) OVERRIDE;
+  virtual bool NotifyNewSegment(uint32_t id,
+                                uint64_t start_time,
+                                uint64_t duration) OVERRIDE;
 
   // Adds content protection information to the container added via
   // NotifyNewContainer(). This will fail if |id| is not a value populated by
   // calling NotifyNewContainer().
   // On success this writes out MPD and returns true, otherwise returns false.
   virtual bool AddContentProtectionElement(
-      uint32 id,
+      uint32_t id,
       const ContentProtectionElement& content_protection_element) OVERRIDE;
 
  private:
@@ -61,7 +61,7 @@ class SimpleVodMpdNotifier : public MpdNotifier {
   // Sets {audio,video}_adaptation_set_ depending on |type|, if it is NULL.
   bool AddNewRepresentation(ContainerType type,
                             const MediaInfo& media_info,
-                            uint32* id);
+                            uint32_t* id);
 
   // None of these are owned by this object.
   MpdBuilder* const mpd_builder_;
@@ -69,7 +69,7 @@ class SimpleVodMpdNotifier : public MpdNotifier {
   AdaptationSet* video_adaptation_set_;
   Representation* representation_;
 
-  std::map<uint32, Representation*> id_to_representation_;
+  std::map<uint32_t, Representation*> id_to_representation_;
 
   DISALLOW_COPY_AND_ASSIGN(SimpleVodMpdNotifier);
 };

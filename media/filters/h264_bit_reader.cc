@@ -18,7 +18,7 @@ H264BitReader::H264BitReader()
 
 H264BitReader::~H264BitReader() {}
 
-bool H264BitReader::Initialize(const uint8* data, off_t size) {
+bool H264BitReader::Initialize(const uint8_t* data, off_t size) {
   DCHECK(data);
 
   if (size < 1)

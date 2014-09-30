@@ -47,7 +47,7 @@ SimpleHttpFetcher::SimpleHttpFetcher() : timeout_in_seconds_(0) {
   curl_global_init(CURL_GLOBAL_DEFAULT);
 }
 
-SimpleHttpFetcher::SimpleHttpFetcher(uint32 timeout_in_seconds)
+SimpleHttpFetcher::SimpleHttpFetcher(uint32_t timeout_in_seconds)
     : timeout_in_seconds_(timeout_in_seconds) {
   curl_global_init(CURL_GLOBAL_DEFAULT);
 }

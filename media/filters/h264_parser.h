@@ -37,7 +37,7 @@ struct H264NALU {
 
   // After (without) start code; we don't own the underlying memory
   // and a shallow copy should be made when copying this struct.
-  const uint8* data;
+  const uint8_t* data;
   off_t size;  // From after start code to start code of next NALU (or EOS).
 
   int nal_ref_idc;
@@ -180,7 +180,7 @@ struct H264SliceHeader {
 
   bool idr_pic_flag;       // from NAL header
   int nal_ref_idc;         // from NAL header
-  const uint8* nalu_data;  // from NAL header
+  const uint8_t* nalu_data;  // from NAL header
   off_t nalu_size;         // from NAL header
   off_t header_bit_size;   // calculated
 
@@ -277,8 +277,10 @@ class H264Parser {
   // - |*offset| is between 0 and |data_size| included.
   //   It is strictly less than |data_size| if |data_size| > 0.
   // - |*start_code_size| is either 0, 3 or 4.
-  static bool FindStartCode(const uint8* data, off_t data_size,
-                            off_t* offset, off_t* start_code_size);
+  static bool FindStartCode(const uint8_t* data,
+                            off_t data_size,
+                            off_t* offset,
+                            off_t* start_code_size);
 
   H264Parser();
   ~H264Parser();
@@ -286,7 +288,7 @@ class H264Parser {
   void Reset();
   // Set current stream pointer to |stream| of |stream_size| in bytes,
   // |stream| owned by caller.
-  void SetStream(const uint8* stream, off_t stream_size);
+  void SetStream(const uint8_t* stream, off_t stream_size);
 
   // Read the stream to find the next NALU, identify it and return
   // that information in |*nalu|. This advances the stream to the beginning
@@ -376,7 +378,7 @@ class H264Parser {
   Result ParseDecRefPicMarking(H264SliceHeader* shdr);
 
   // Pointer to the current NALU in the stream.
-  const uint8* stream_;
+  const uint8_t* stream_;
 
   // Bytes left in the stream after the current NALU.
   off_t bytes_left_;

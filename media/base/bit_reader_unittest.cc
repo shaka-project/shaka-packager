@@ -10,10 +10,10 @@ namespace edash_packager {
 namespace media {
 
 TEST(BitReaderTest, NormalOperationTest) {
-  uint8 value8;
-  uint64 value64;
+  uint8_t value8;
+  uint64_t value64;
   // 0101 0101 1001 1001 repeats 4 times
-  uint8 buffer[] = {0x55, 0x99, 0x55, 0x99, 0x55, 0x99, 0x55, 0x99};
+  uint8_t buffer[] = {0x55, 0x99, 0x55, 0x99, 0x55, 0x99, 0x55, 0x99};
   BitReader reader1(buffer, 6);  // Initialize with 6 bytes only
 
   EXPECT_TRUE(reader1.ReadBits(1, &value8));
@@ -36,8 +36,8 @@ TEST(BitReaderTest, NormalOperationTest) {
 }
 
 TEST(BitReaderTest, ReadBeyondEndTest) {
-  uint8 value8;
-  uint8 buffer[] = {0x12};
+  uint8_t value8;
+  uint8_t buffer[] = {0x12};
   BitReader reader1(buffer, sizeof(buffer));
 
   EXPECT_TRUE(reader1.ReadBits(4, &value8));
@@ -47,8 +47,8 @@ TEST(BitReaderTest, ReadBeyondEndTest) {
 }
 
 TEST(BitReaderTest, SkipBitsTest) {
-  uint8 value8;
-  uint8 buffer[] = { 0x0a, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+  uint8_t value8;
+  uint8_t buffer[] = {0x0a, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
   BitReader reader1(buffer, sizeof(buffer));
 
   EXPECT_TRUE(reader1.SkipBits(2));

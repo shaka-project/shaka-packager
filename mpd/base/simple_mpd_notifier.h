@@ -37,13 +37,13 @@ class SimpleMpdNotifier : public MpdNotifier {
   /// @{
   virtual bool Init() OVERRIDE;
   virtual bool NotifyNewContainer(const MediaInfo& media_info,
-                                  uint32* id) OVERRIDE;
-  virtual bool NotifyNewSegment(uint32 id,
-                                uint64 start_time,
-                                uint64 duration,
-                                uint64 size) OVERRIDE;
+                                  uint32_t* id) OVERRIDE;
+  virtual bool NotifyNewSegment(uint32_t id,
+                                uint64_t start_time,
+                                uint64_t duration,
+                                uint64_t size) OVERRIDE;
   virtual bool AddContentProtectionElement(
-      uint32 id,
+      uint32_t id,
       const ContentProtectionElement& content_protection_element) OVERRIDE;
   /// @}
 
@@ -66,7 +66,7 @@ class SimpleMpdNotifier : public MpdNotifier {
   typedef std::map<ContentType, AdaptationSet*> AdaptationSetMap;
   AdaptationSetMap adaptation_set_map_;
 
-  typedef std::map<uint32, Representation*> RepresentationMap;
+  typedef std::map<uint32_t, Representation*> RepresentationMap;
   RepresentationMap representation_map_;
 
   DISALLOW_COPY_AND_ASSIGN(SimpleMpdNotifier);

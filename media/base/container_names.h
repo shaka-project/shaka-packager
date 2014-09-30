@@ -55,7 +55,7 @@ enum MediaContainerName {
 };
 
 /// Determine the container type.
-MediaContainerName DetermineContainer(const uint8* buffer, int buffer_size);
+MediaContainerName DetermineContainer(const uint8_t* buffer, int buffer_size);
 
 }  // namespace media
 }  // namespace edash_packager

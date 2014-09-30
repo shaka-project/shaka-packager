@@ -11,9 +11,9 @@
 #include "media/base/buffer_writer.h"
 
 namespace {
-const uint8 kWidevineSystemId[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,
-                                   0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc,
-                                   0xd5, 0x1d, 0x21, 0xed};
+const uint8_t kWidevineSystemId[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,
+                                     0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc,
+                                     0xd5, 0x1d, 0x21, 0xed};
 }  // namespace
 
 namespace edash_packager {
@@ -24,13 +24,13 @@ EncryptionKey::~EncryptionKey() {}
 
 KeySource::~KeySource() {}
 
-Status KeySource::FetchKeys(const std::vector<uint8>& content_id,
+Status KeySource::FetchKeys(const std::vector<uint8_t>& content_id,
                             const std::string& policy) {
   // Do nothing for fixed key decryption.
   return Status::OK;
 }
 
-Status KeySource::FetchKeys(const std::vector<uint8>& pssh_data) {
+Status KeySource::FetchKeys(const std::vector<uint8_t>& pssh_data) {
   // Do nothing for fixed key decryption.
   return Status::OK;
 }
@@ -42,7 +42,7 @@ Status KeySource::GetKey(TrackType track_type, EncryptionKey* key) {
   return Status::OK;
 }
 
-Status KeySource::GetKey(const std::vector<uint8>& key_id,
+Status KeySource::GetKey(const std::vector<uint8_t>& key_id,
                          EncryptionKey* key) {
   DCHECK(key);
   DCHECK(encryption_key_);
@@ -55,7 +55,7 @@ Status KeySource::GetKey(const std::vector<uint8>& key_id,
   return Status::OK;
 }
 
-Status KeySource::GetCryptoPeriodKey(uint32 crypto_period_index,
+Status KeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
                                      TrackType track_type,
                                      EncryptionKey* key) {
   NOTIMPLEMENTED();
@@ -79,7 +79,7 @@ scoped_ptr<KeySource> KeySource::CreateFromHexStrings(
     return scoped_ptr<KeySource>();
   }
 
-  std::vector<uint8> pssh_data;
+  std::vector<uint8_t> pssh_data;
   if (!pssh_data_hex.empty() &&
       !base::HexStringToBytes(pssh_data_hex, &pssh_data)) {
     LOG(ERROR) << "Cannot parse pssh_hex " << pssh_data_hex;
@@ -124,13 +124,13 @@ std::string KeySource::TrackTypeToString(TrackType track_type) {
   }
 }
 
-std::vector<uint8> KeySource::PsshBoxFromPsshData(
-    const std::vector<uint8>& pssh_data) {
-  const uint8 kPsshFourCC[] = {'p', 's', 's', 'h'};
-  const uint32 kVersionAndFlags = 0;
+std::vector<uint8_t> KeySource::PsshBoxFromPsshData(
+    const std::vector<uint8_t>& pssh_data) {
+  const uint8_t kPsshFourCC[] = {'p', 's', 's', 'h'};
+  const uint32_t kVersionAndFlags = 0;
 
-  const uint32 pssh_data_size = pssh_data.size();
-  const uint32 total_size =
+  const uint32_t pssh_data_size = pssh_data.size();
+  const uint32_t total_size =
       sizeof(total_size) + sizeof(kPsshFourCC) + sizeof(kVersionAndFlags) +
       sizeof(kWidevineSystemId) + sizeof(pssh_data_size) + pssh_data_size;
 
@@ -141,7 +141,7 @@ std::vector<uint8> KeySource::PsshBoxFromPsshData(
   writer.AppendArray(kWidevineSystemId, sizeof(kWidevineSystemId));
   writer.AppendInt(pssh_data_size);
   writer.AppendVector(pssh_data);
-  return std::vector<uint8>(writer.Buffer(), writer.Buffer() + writer.Size());
+  return std::vector<uint8_t>(writer.Buffer(), writer.Buffer() + writer.Size());
 }
 
 KeySource::KeySource() {}

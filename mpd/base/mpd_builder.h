@@ -171,9 +171,7 @@ class AdaptationSet {
   xml::ScopedXmlPtr<xmlNode>::type GetXml();
 
   // Must be unique in the Period.
-  uint32 id() const {
-    return id_;
-  }
+  uint32_t id() const { return id_; }
 
  private:
   friend class MpdBuilder;
@@ -182,7 +180,7 @@ class AdaptationSet {
   /// @param adaptation_set_id is an ID number for this AdaptationSet.
   /// @param representation_counter is a Counter for assigning ID numbers to
   ///        Representation. It can not be NULL.
-  AdaptationSet(uint32 adaptation_set_id,
+  AdaptationSet(uint32_t adaptation_set_id,
                 const MpdOptions& mpd_options_,
                 base::AtomicSequenceNumber* representation_counter);
 
@@ -198,7 +196,7 @@ class AdaptationSet {
 
   base::AtomicSequenceNumber* const representation_counter_;
 
-  const uint32 id_;
+  const uint32_t id_;
   const MpdOptions& mpd_options_;
 
   DISALLOW_COPY_AND_ASSIGN(AdaptationSet);
@@ -228,15 +226,13 @@ class Representation {
   /// @param duration is the duration of the segment, in units of the stream's
   ///        time scale.
   /// @param size of the segment in bytes.
-  void AddNewSegment(uint64 start_time, uint64 duration, uint64 size);
+  void AddNewSegment(uint64_t start_time, uint64_t duration, uint64_t size);
 
   /// @return Copy of <Representation>.
   xml::ScopedXmlPtr<xmlNode>::type GetXml();
 
   /// @return ID number for <Representation>.
-  uint32 id() const {
-    return id_;
-  }
+  uint32_t id() const { return id_; }
 
  private:
   friend class AdaptationSet;
@@ -249,7 +245,7 @@ class Representation {
   /// @param representation_id is the numeric ID for the <Representation>.
   Representation(const MediaInfo& media_info,
                  const MpdOptions& mpd_options,
-                 uint32 representation_id);
+                 uint32_t representation_id);
 
   bool AddLiveInfo(xml::RepresentationXmlNode* representation);
 
@@ -259,7 +255,9 @@ class Representation {
 
   // Return false if the segment should be considered a new segment. True if the
   // segment is contiguous.
-  bool IsContiguous(uint64 start_time, uint64 duration, uint64 size) const;
+  bool IsContiguous(uint64_t start_time,
+                    uint64_t duration,
+                    uint64_t size) const;
 
   // Remove elements from |segment_infos_| if
   // mpd_options_.time_shift_buffer_depth is specified. Increments
@@ -281,7 +279,7 @@ class Representation {
 
   base::Lock lock_;
 
-  const uint32 id_;
+  const uint32_t id_;
   std::string mime_type_;
   std::string codecs_;
   BandwidthEstimator bandwidth_estimator_;
@@ -289,7 +287,7 @@ class Representation {
 
   // startNumber attribute for SegmentTemplate.
   // Starts from 1.
-  uint32 start_number_;
+  uint32_t start_number_;
 
   DISALLOW_COPY_AND_ASSIGN(Representation);
 };

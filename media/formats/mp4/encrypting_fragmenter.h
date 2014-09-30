@@ -28,15 +28,15 @@ class EncryptingFragmenter : public Fragmenter {
   ///        for subsample encryption.
   EncryptingFragmenter(TrackFragment* traf,
                        scoped_ptr<EncryptionKey> encryption_key,
-                       int64 clear_time,
-                       uint8 nalu_length_size);
+                       int64_t clear_time,
+                       uint8_t nalu_length_size);
 
   virtual ~EncryptingFragmenter();
 
   /// @name Fragmenter implementation overrides.
   /// @{
   virtual Status AddSample(scoped_refptr<MediaSample> sample) OVERRIDE;
-  virtual Status InitializeFragment(int64 first_sample_dts) OVERRIDE;
+  virtual Status InitializeFragment(int64_t first_sample_dts) OVERRIDE;
   virtual void FinalizeFragment() OVERRIDE;
   /// @}
 
@@ -60,7 +60,7 @@ class EncryptingFragmenter : public Fragmenter {
   }
 
  private:
-  void EncryptBytes(uint8* data, uint32 size);
+  void EncryptBytes(uint8_t* data, uint32_t size);
   Status EncryptSample(scoped_refptr<MediaSample> sample);
 
   // Should we enable subsample encryption?
@@ -71,8 +71,8 @@ class EncryptingFragmenter : public Fragmenter {
   // If this stream contains AVC, subsample encryption specifies that the size
   // and type of NAL units remain unencrypted. This field specifies the size of
   // the size field. Can be 1, 2 or 4 bytes.
-  const uint8 nalu_length_size_;
-  int64 clear_time_;
+  const uint8_t nalu_length_size_;
+  int64_t clear_time_;
 
   DISALLOW_COPY_AND_ASSIGN(EncryptingFragmenter);
 };

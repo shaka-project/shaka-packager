@@ -184,14 +184,14 @@ void Mp2tMediaParser::Flush() {
   ts_byte_queue_.Reset();
 }
 
-bool Mp2tMediaParser::Parse(const uint8* buf, int size) {
+bool Mp2tMediaParser::Parse(const uint8_t* buf, int size) {
   DVLOG(1) << "Mp2tMediaParser::Parse size=" << size;
 
   // Add the data to the parser state.
   ts_byte_queue_.Push(buf, size);
 
   while (true) {
-    const uint8* ts_buffer;
+    const uint8_t* ts_buffer;
     int ts_buffer_size;
     ts_byte_queue_.Peek(&ts_buffer, &ts_buffer_size);
     if (ts_buffer_size < TsPacket::kPacketSize)
@@ -354,7 +354,7 @@ bool Mp2tMediaParser::FinishInitializationIfNeeded() {
     return true;
 
   std::vector<scoped_refptr<StreamInfo> > all_stream_info;
-  uint32 num_es(0);
+  uint32_t num_es(0);
   for (PidMap::const_iterator iter = pids_.begin(); iter != pids_.end();
        ++iter) {
     if (((iter->second->pid_type() == PidState::kPidAudioPes) ||
@@ -374,7 +374,7 @@ bool Mp2tMediaParser::FinishInitializationIfNeeded() {
   return true;
 }
 
-void Mp2tMediaParser::OnEmitSample(uint32 pes_pid,
+void Mp2tMediaParser::OnEmitSample(uint32_t pes_pid,
                                    scoped_refptr<MediaSample>& new_sample) {
   DCHECK(new_sample);
   DVLOG(LOG_LEVEL_ES)

@@ -40,16 +40,18 @@ class Mp2tMediaParserTest : public testing::Test {
   StreamMap stream_map_;
   int audio_frame_count_;
   int video_frame_count_;
-  int64 video_min_dts_;
-  int64 video_max_dts_;
+  int64_t video_min_dts_;
+  int64_t video_max_dts_;
 
-  bool AppendData(const uint8* data, size_t length) {
+  bool AppendData(const uint8_t* data, size_t length) {
     return parser_->Parse(data, length);
   }
 
-  bool AppendDataInPieces(const uint8* data, size_t length, size_t piece_size) {
-    const uint8* start = data;
-    const uint8* end = data + length;
+  bool AppendDataInPieces(const uint8_t* data,
+                          size_t length,
+                          size_t piece_size) {
+    const uint8_t* start = data;
+    const uint8_t* end = data + length;
     while (start < end) {
       size_t append_size = std::min(piece_size,
                                     static_cast<size_t>(end - start));
@@ -69,7 +71,8 @@ class Mp2tMediaParserTest : public testing::Test {
     }
   }
 
-  bool OnNewSample(uint32 track_id, const scoped_refptr<MediaSample>& sample) {
+  bool OnNewSample(uint32_t track_id,
+                   const scoped_refptr<MediaSample>& sample) {
     std::string stream_type;
     StreamMap::const_iterator stream = stream_map_.find(track_id);
     if (stream != stream_map_.end()) {
@@ -110,7 +113,7 @@ class Mp2tMediaParserTest : public testing::Test {
   bool ParseMpeg2TsFile(const std::string& filename, int append_bytes) {
     InitializeParser();
 
-    std::vector<uint8> buffer = ReadTestDataFile(filename);
+    std::vector<uint8_t> buffer = ReadTestDataFile(filename);
     EXPECT_TRUE(AppendDataInPieces(buffer.data(),
                                    buffer.size(),
                                    append_bytes));
@@ -144,7 +147,7 @@ TEST_F(Mp2tMediaParserTest, TimestampWrapAround) {
   EXPECT_EQ(video_frame_count_, 82);
   EXPECT_GE(video_min_dts_, (95443 - 1) * kMpeg2Timescale);
   EXPECT_LE(video_max_dts_,
-            static_cast<int64>((95443 + 4)) * kMpeg2Timescale);
+            static_cast<int64_t>((95443 + 4)) * kMpeg2Timescale);
 }
 
 }  // namespace mp2t

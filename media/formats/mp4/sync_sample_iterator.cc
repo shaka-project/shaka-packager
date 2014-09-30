@@ -33,7 +33,7 @@ bool SyncSampleIterator::IsSyncSample() const {
   return iterator_ != sync_sample_vector_.end() && sample_number_ == *iterator_;
 }
 
-bool SyncSampleIterator::IsSyncSample(uint32 sample) const {
+bool SyncSampleIterator::IsSyncSample(uint32_t sample) const {
   // If the sync sample box is not present, every sample is a sync sample.
   if (is_empty_)
     return true;

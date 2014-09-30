@@ -66,11 +66,11 @@ File* File::Open(const char* file_name, const char* mode) {
   return file;
 }
 
-int64 File::GetFileSize(const char* file_name) {
+int64_t File::GetFileSize(const char* file_name) {
   File* file = File::Open(file_name, "r");
   if (!file)
     return -1;
-  int64 res = file->Size();
+  int64_t res = file->Size();
   file->Close();
   return res;
 }
@@ -85,7 +85,7 @@ bool File::ReadFileToString(const char* file_name, std::string* contents) {
   const size_t kBufferSize = 0x40000;  // 256KB.
   scoped_ptr<char[]> buf(new char[kBufferSize]);
 
-  int64 len;
+  int64_t len;
   while ((len = file->Read(buf.get(), kBufferSize)) > 0)
     contents->append(buf.get(), len);
 

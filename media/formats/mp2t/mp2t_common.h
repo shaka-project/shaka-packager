@@ -22,7 +22,7 @@
 namespace edash_packager {
 namespace media {
 
-const uint32 kMpeg2Timescale = 90000;
+const uint32_t kMpeg2Timescale = 90000;
 
 }  // namespace media
 }  // namespace edash_packager

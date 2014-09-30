@@ -24,7 +24,7 @@ bool Box::Parse(BoxReader* reader) {
 
 void Box::Write(BufferWriter* writer) {
   DCHECK(writer != NULL);
-  uint32 size = ComputeSize();
+  uint32_t size = ComputeSize();
   DCHECK_EQ(size, this->atom_size);
 
   size_t buffer_size_before_write = writer->Size();
@@ -50,7 +50,7 @@ FullBox::~FullBox() {}
 bool FullBox::ReadWrite(BoxBuffer* buffer) {
   RCHECK(Box::ReadWrite(buffer));
 
-  uint32 vflags;
+  uint32_t vflags;
   if (buffer->Reading()) {
     RCHECK(buffer->ReadWriteUInt32(&vflags));
     this->version = vflags >> 24;

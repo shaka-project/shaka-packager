@@ -38,7 +38,7 @@ struct Box {
   void Write(BufferWriter* writer);
   /// Compute the size of this box.
   /// The calculated size will be saved in |atom_size| for later consumption.
-  virtual uint32 ComputeSize() = 0;
+  virtual uint32_t ComputeSize() = 0;
   virtual FourCC BoxType() const = 0;
 
  protected:
@@ -48,7 +48,7 @@ struct Box {
 
   /// We don't support 64-bit atom sizes. 32-bit should be large enough for our
   /// current needs.
-  uint32 atom_size;
+  uint32_t atom_size;
 };
 
 /// Defines FullBox, the other base ISO BMFF box objects as defined in
@@ -59,8 +59,8 @@ struct FullBox : Box {
   FullBox();
   virtual ~FullBox();
 
-  uint8 version;
-  uint32 flags;
+  uint8_t version;
+  uint32_t flags;
 
  protected:
   virtual bool ReadWrite(BoxBuffer* buffer) OVERRIDE;

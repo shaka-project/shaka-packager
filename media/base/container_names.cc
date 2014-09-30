@@ -14,11 +14,10 @@
 namespace edash_packager {
 namespace media {
 
-#define TAG(a, b, c, d)                                           \
-  ((static_cast<uint32>(static_cast<uint8>(a)) << 24) |           \
-   (static_cast<uint8>(b) << 16) |                                \
-   (static_cast<uint8>(c) << 8) |                                 \
-   (static_cast<uint8>(d)))
+#define TAG(a, b, c, d)                                               \
+  ((static_cast<uint32_t>(static_cast<uint8_t>(a)) << 24) |           \
+   (static_cast<uint8_t>(b) << 16) | (static_cast<uint8_t>(c) << 8) | \
+   (static_cast<uint8_t>(d)))
 
 #define RCHECK(x)     \
     do {              \
@@ -29,28 +28,28 @@ namespace media {
 #define UTF8_BYTE_ORDER_MARK "\xef\xbb\xbf"
 
 // Helper function to read 2 bytes (16 bits, big endian) from a buffer.
-static int Read16(const uint8* p) {
+static int Read16(const uint8_t* p) {
   return p[0] << 8 | p[1];
 }
 
 // Helper function to read 3 bytes (24 bits, big endian) from a buffer.
-static uint32 Read24(const uint8* p) {
+static uint32_t Read24(const uint8_t* p) {
   return p[0] << 16 | p[1] << 8 | p[2];
 }
 
 // Helper function to read 4 bytes (32 bits, big endian) from a buffer.
-static uint32 Read32(const uint8* p) {
+static uint32_t Read32(const uint8_t* p) {
   return p[0] << 24 | p[1] << 16 | p[2] << 8 | p[3];
 }
 
 // Helper function to read 4 bytes (32 bits, little endian) from a buffer.
-static uint32 Read32LE(const uint8* p) {
+static uint32_t Read32LE(const uint8_t* p) {
   return p[3] << 24 | p[2] << 16 | p[1] << 8 | p[0];
 }
 
 // Helper function to do buffer comparisons with a string without going off the
 // end of the buffer.
-static bool StartsWith(const uint8* buffer,
+static bool StartsWith(const uint8_t* buffer,
                        size_t buffer_size,
                        const char* prefix) {
   size_t prefix_size = strlen(prefix);
@@ -60,19 +59,19 @@ static bool StartsWith(const uint8* buffer,
 
 // Helper function to do buffer comparisons with another buffer (to allow for
 // embedded \0 in the comparison) without going off the end of the buffer.
-static bool StartsWith(const uint8* buffer,
+static bool StartsWith(const uint8_t* buffer,
                        size_t buffer_size,
-                       const uint8* prefix,
+                       const uint8_t* prefix,
                        size_t prefix_size) {
   return (prefix_size <= buffer_size &&
           memcmp(buffer, prefix, prefix_size) == 0);
 }
 
 // Helper function to read up to 64 bits from a bit stream.
-static uint64 ReadBits(BitReader* reader, int num_bits) {
+static uint64_t ReadBits(BitReader* reader, int num_bits) {
   DCHECK_GE(reader->bits_available(), num_bits);
   DCHECK((num_bits > 0) && (num_bits <= 64));
-  uint64 value;
+  uint64_t value;
   reader->ReadBits(num_bits, &value);
   return value;
 }
@@ -92,7 +91,7 @@ const int kAc3FrameSizeTable[38][3] = {
 };
 
 // Checks for an ADTS AAC container.
-static bool CheckAac(const uint8* buffer, int buffer_size) {
+static bool CheckAac(const uint8_t* buffer, int buffer_size) {
   // Audio Data Transport Stream (ADTS) header is 7 or 9 bytes
   // (from http://wiki.multimedia.cx/index.php?title=ADTS)
   RCHECK(buffer_size > 6);
@@ -128,10 +127,10 @@ static bool CheckAac(const uint8* buffer, int buffer_size) {
   return true;
 }
 
-const uint16 kAc3SyncWord = 0x0b77;
+const uint16_t kAc3SyncWord = 0x0b77;
 
 // Checks for an AC3 container.
-static bool CheckAc3(const uint8* buffer, int buffer_size) {
+static bool CheckAc3(const uint8_t* buffer, int buffer_size) {
   // Reference: ATSC Standard: Digital Audio Compression (AC-3, E-AC-3)
   //            Doc. A/52:2012
   // (http://www.atsc.org/cms/standards/A52-2012(12-17).pdf)
@@ -166,7 +165,7 @@ static bool CheckAc3(const uint8* buffer, int buffer_size) {
 }
 
 // Checks for an EAC3 container (very similar to AC3)
-static bool CheckEac3(const uint8* buffer, int buffer_size) {
+static bool CheckEac3(const uint8_t* buffer, int buffer_size) {
   // Reference: ATSC Standard: Digital Audio Compression (AC-3, E-AC-3)
   //            Doc. A/52:2012
   // (http://www.atsc.org/cms/standards/A52-2012(12-17).pdf)
@@ -204,7 +203,7 @@ static bool CheckEac3(const uint8* buffer, int buffer_size) {
 }
 
 // Additional checks for a BINK container.
-static bool CheckBink(const uint8* buffer, int buffer_size) {
+static bool CheckBink(const uint8_t* buffer, int buffer_size) {
   // Reference: http://wiki.multimedia.cx/index.php?title=Bink_Container
   RCHECK(buffer_size >= 44);
 
@@ -230,7 +229,7 @@ static bool CheckBink(const uint8* buffer, int buffer_size) {
 }
 
 // Additional checks for a CAF container.
-static bool CheckCaf(const uint8* buffer, int buffer_size) {
+static bool CheckCaf(const uint8_t* buffer, int buffer_size) {
   // Reference: Apple Core Audio Format Specification 1.0
   // (https://developer.apple.com/library/mac/#documentation/MusicAudio/Reference/CAFSpec/CAF_spec/CAF_spec.html)
   RCHECK(buffer_size >= 52);
@@ -271,7 +270,7 @@ static bool kExtAudioIdValid[8] = { true, false, true, false, false, false,
                                     true, false };
 
 // Additional checks for a DTS container.
-static bool CheckDts(const uint8* buffer, int buffer_size) {
+static bool CheckDts(const uint8_t* buffer, int buffer_size) {
   // Reference: ETSI TS 102 114 V1.3.1 (2011-08)
   // (http://www.etsi.org/deliver/etsi_ts/102100_102199/102114/01.03.01_60/ts_102114v010301p.pdf)
   RCHECK(buffer_size > 11);
@@ -326,7 +325,7 @@ static bool CheckDts(const uint8* buffer, int buffer_size) {
 }
 
 // Checks for a DV container.
-static bool CheckDV(const uint8* buffer, int buffer_size) {
+static bool CheckDV(const uint8_t* buffer, int buffer_size) {
   // Reference: SMPTE 314M (Annex A has differences with IEC 61834).
   // (http://standards.smpte.org/content/978-1-61482-454-1/st-314-2005/SEC1.body.pdf)
   RCHECK(buffer_size > 11);
@@ -389,7 +388,7 @@ static bool CheckDV(const uint8* buffer, int buffer_size) {
 
 
 // Checks for a GSM container.
-static bool CheckGsm(const uint8* buffer, int buffer_size) {
+static bool CheckGsm(const uint8_t* buffer, int buffer_size) {
   // Reference: ETSI EN 300 961 V8.1.1
   // (http://www.etsi.org/deliver/etsi_en/300900_300999/300961/08.01.01_60/en_300961v080101p.pdf)
   // also http://tools.ietf.org/html/rfc3551#page-24
@@ -410,20 +409,20 @@ static bool CheckGsm(const uint8* buffer, int buffer_size) {
 // number of bytes that must remain in the buffer when |start_code| is found.
 // Returns true if start_code found (and enough space in the buffer after it),
 // false otherwise.
-static bool AdvanceToStartCode(const uint8* buffer,
+static bool AdvanceToStartCode(const uint8_t* buffer,
                                int buffer_size,
                                int* offset,
                                int bytes_needed,
                                int num_bits,
-                               uint32 start_code) {
+                               uint32_t start_code) {
   DCHECK_GE(bytes_needed, 3);
   DCHECK_LE(num_bits, 24);  // Only supports up to 24 bits.
 
   // Create a mask to isolate |num_bits| bits, once shifted over.
-  uint32 bits_to_shift = 24 - num_bits;
-  uint32 mask = (1 << num_bits) - 1;
+  uint32_t bits_to_shift = 24 - num_bits;
+  uint32_t mask = (1 << num_bits) - 1;
   while (*offset + bytes_needed < buffer_size) {
-    uint32 next = Read24(buffer + *offset);
+    uint32_t next = Read24(buffer + *offset);
     if (((next >> bits_to_shift) & mask) == start_code)
       return true;
     ++(*offset);
@@ -432,7 +431,7 @@ static bool AdvanceToStartCode(const uint8* buffer,
 }
 
 // Checks for an H.261 container.
-static bool CheckH261(const uint8* buffer, int buffer_size) {
+static bool CheckH261(const uint8_t* buffer, int buffer_size) {
   // Reference: ITU-T Recommendation H.261 (03/1993)
   // (http://www.itu.int/rec/T-REC-H.261-199303-I/en)
   RCHECK(buffer_size > 16);
@@ -480,7 +479,7 @@ static bool CheckH261(const uint8* buffer, int buffer_size) {
 }
 
 // Checks for an H.263 container.
-static bool CheckH263(const uint8* buffer, int buffer_size) {
+static bool CheckH263(const uint8_t* buffer, int buffer_size) {
   // Reference: ITU-T Recommendation H.263 (01/2005)
   // (http://www.itu.int/rec/T-REC-H.263-200501-I/en)
   // header is PSC(22b) + TR(8b) + PTYPE(8+b).
@@ -548,7 +547,7 @@ static bool CheckH263(const uint8* buffer, int buffer_size) {
 }
 
 // Checks for an H.264 container.
-static bool CheckH264(const uint8* buffer, int buffer_size) {
+static bool CheckH264(const uint8_t* buffer, int buffer_size) {
   // Reference: ITU-T Recommendation H.264 (01/2012)
   // (http://www.itu.int/rec/T-REC-H.264)
   // Section B.1: Byte stream NAL unit syntax and semantics.
@@ -604,7 +603,7 @@ static const char kHls2[] = "#EXT-X-TARGETDURATION:";
 static const char kHls3[] = "#EXT-X-MEDIA-SEQUENCE:";
 
 // Additional checks for a HLS container.
-static bool CheckHls(const uint8* buffer, int buffer_size) {
+static bool CheckHls(const uint8_t* buffer, int buffer_size) {
   // HLS is simply a play list used for Apple HTTP Live Streaming.
   // Reference: Apple HTTP Live Streaming Overview
   // (http://goo.gl/MIwxj)
@@ -630,7 +629,7 @@ static bool CheckHls(const uint8* buffer, int buffer_size) {
 }
 
 // Checks for a MJPEG stream.
-static bool CheckMJpeg(const uint8* buffer, int buffer_size) {
+static bool CheckMJpeg(const uint8_t* buffer, int buffer_size) {
   // Reference: ISO/IEC 10918-1 : 1993(E), Annex B
   // (http://www.w3.org/Graphics/JPEG/itu-t81.pdf)
   RCHECK(buffer_size >= 16);
@@ -641,7 +640,7 @@ static bool CheckMJpeg(const uint8* buffer, int buffer_size) {
   while (offset + 5 < buffer_size) {
     // Marker codes are always a two byte code with the first byte xFF.
     RCHECK(buffer[offset] == 0xff);
-    uint8 code = buffer[offset + 1];
+    uint8_t code = buffer[offset + 1];
     RCHECK(code >= 0xc0 || code == 1);
 
     // Skip sequences of xFF.
@@ -699,7 +698,7 @@ enum Mpeg2StartCodes {
 };
 
 // Checks for a MPEG2 Program Stream.
-static bool CheckMpeg2ProgramStream(const uint8* buffer, int buffer_size) {
+static bool CheckMpeg2ProgramStream(const uint8_t* buffer, int buffer_size) {
   // Reference: ISO/IEC 13818-1 : 2000 (E) / ITU-T Rec. H.222.0 (2000 E).
   RCHECK(buffer_size > 14);
 
@@ -794,10 +793,10 @@ static bool CheckMpeg2ProgramStream(const uint8* buffer, int buffer_size) {
   return true;
 }
 
-const uint8 kMpeg2SyncWord = 0x47;
+const uint8_t kMpeg2SyncWord = 0x47;
 
 // Checks for a MPEG2 Transport Stream.
-static bool CheckMpeg2TransportStream(const uint8* buffer, int buffer_size) {
+static bool CheckMpeg2TransportStream(const uint8_t* buffer, int buffer_size) {
   // Spec: ISO/IEC 13818-1 : 2000 (E) / ITU-T Rec. H.222.0 (2000 E).
   // Normal packet size is 188 bytes. However, some systems add various error
   // correction data at the end, resulting in packet of length 192/204/208
@@ -870,7 +869,7 @@ enum Mpeg4StartCodes {
 };
 
 // Checks for a raw MPEG4 bitstream container.
-static bool CheckMpeg4BitStream(const uint8* buffer, int buffer_size) {
+static bool CheckMpeg4BitStream(const uint8_t* buffer, int buffer_size) {
   // Defined in ISO/IEC 14496-2:2001.
   // However, no length ... simply scan for start code values.
   // Note tags are very similar to H.264.
@@ -946,7 +945,7 @@ static bool CheckMpeg4BitStream(const uint8* buffer, int buffer_size) {
 }
 
 // Additional checks for a MOV/QuickTime/MPEG4 container.
-static bool CheckMov(const uint8* buffer, int buffer_size) {
+static bool CheckMov(const uint8_t* buffer, int buffer_size) {
   // Reference: ISO/IEC 14496-12:2005(E).
   // (http://standards.iso.org/ittf/PubliclyAvailableStandards/c061988_ISO_IEC_14496-12_2012.zip)
   RCHECK(buffer_size > 8);
@@ -954,7 +953,7 @@ static bool CheckMov(const uint8* buffer, int buffer_size) {
   int offset = 0;
   while (offset + 8 < buffer_size) {
     int atomsize = Read32(buffer + offset);
-    uint32 atomtype = Read32(buffer + offset + 4);
+    uint32_t atomtype = Read32(buffer + offset + 4);
     // Only need to check for ones that are valid at the top level.
     switch (atomtype) {
       case TAG('f','t','y','p'):
@@ -1021,7 +1020,7 @@ static int kBitRateTableV2L1[16] = { 0, 32, 48, 56, 64, 80, 96, 112, 128, 144,
 static int kBitRateTableV2L23[16] = { 0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96,
                                       112, 128, 144, 160, 0 };
 
-static bool ValidMpegAudioFrameHeader(const uint8* header,
+static bool ValidMpegAudioFrameHeader(const uint8_t* header,
                                       int header_size,
                                       int* framesize) {
   // Reference: http://mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm.
@@ -1081,7 +1080,7 @@ static bool ValidMpegAudioFrameHeader(const uint8* header,
 }
 
 // Extract a size encoded the MP3 way.
-static int GetMp3HeaderSize(const uint8* buffer, int buffer_size) {
+static int GetMp3HeaderSize(const uint8_t* buffer, int buffer_size) {
   DCHECK_GE(buffer_size, 9);
   int size = ((buffer[6] & 0x7f) << 21) + ((buffer[7] & 0x7f) << 14) +
              ((buffer[8] & 0x7f) << 7) + (buffer[9] & 0x7f) + 10;
@@ -1091,7 +1090,7 @@ static int GetMp3HeaderSize(const uint8* buffer, int buffer_size) {
 }
 
 // Additional checks for a MP3 container.
-static bool CheckMp3(const uint8* buffer, int buffer_size, bool seenHeader) {
+static bool CheckMp3(const uint8_t* buffer, int buffer_size, bool seenHeader) {
   RCHECK(buffer_size >= 10);  // Must be enough to read the initial header.
 
   int framesize;
@@ -1122,7 +1121,7 @@ static bool CheckMp3(const uint8* buffer, int buffer_size, bool seenHeader) {
 // accepted is optional whitespace followed by 1 or more digits. |max_digits|
 // specifies the maximum number of digits to process. Returns true if a valid
 // number is found, false otherwise.
-static bool VerifyNumber(const uint8* buffer,
+static bool VerifyNumber(const uint8_t* buffer,
                          int buffer_size,
                          int* offset,
                          int max_digits) {
@@ -1150,7 +1149,7 @@ static bool VerifyNumber(const uint8* buffer,
 // Check that the next character in |buffer| is one of |c1| or |c2|. |c2| is
 // optional. Returns true if there is a match, false if no match or out of
 // space.
-static inline bool VerifyCharacters(const uint8* buffer,
+static inline bool VerifyCharacters(const uint8_t* buffer,
                                     int buffer_size,
                                     int* offset,
                                     char c1,
@@ -1161,7 +1160,7 @@ static inline bool VerifyCharacters(const uint8* buffer,
 }
 
 // Checks for a SRT container.
-static bool CheckSrt(const uint8* buffer, int buffer_size) {
+static bool CheckSrt(const uint8_t* buffer, int buffer_size) {
   // Reference: http://en.wikipedia.org/wiki/SubRip
   RCHECK(buffer_size > 20);
 
@@ -1222,7 +1221,7 @@ static int GetElementId(BitReader* reader) {
 }
 
 // Read a Matroska Unsigned Integer (VINT).
-static uint64 GetVint(BitReader* reader) {
+static uint64_t GetVint(BitReader* reader) {
   // Values are coded with the leading zero bits (max 7) determining size.
   // If it is an invalid coding or the end of the buffer is reached,
   // return something that will go off the end of the buffer.
@@ -1244,7 +1243,7 @@ static uint64 GetVint(BitReader* reader) {
 }
 
 // Additional checks for a WEBM container.
-static bool CheckWebm(const uint8* buffer, int buffer_size) {
+static bool CheckWebm(const uint8_t* buffer, int buffer_size) {
   // Reference: http://www.matroska.org/technical/specs/index.html
   RCHECK(buffer_size > 12);
 
@@ -1297,7 +1296,7 @@ enum VC1StartCodes {
 };
 
 // Checks for a VC1 bitstream container.
-static bool CheckVC1(const uint8* buffer, int buffer_size) {
+static bool CheckVC1(const uint8_t* buffer, int buffer_size) {
   // Reference: SMPTE 421M
   // (http://standards.smpte.org/content/978-1-61482-555-5/st-421-2006/SEC1.body.pdf)
   // However, no length ... simply scan for start code values.
@@ -1405,27 +1404,27 @@ static bool CheckVC1(const uint8* buffer, int buffer_size) {
 // For some formats the signature is a bunch of characters. They are defined
 // below. Note that the first 4 characters of the string may be used as a TAG
 // in LookupContainerByFirst4. For signatures that contain embedded \0, use
-// uint8[].
+// uint8_t[].
 static const char kAmrSignature[] = "#!AMR";
-static const uint8 kAsfSignature[] = { 0x30, 0x26, 0xb2, 0x75, 0x8e, 0x66, 0xcf,
-                                       0x11, 0xa6, 0xd9, 0x00, 0xaa, 0x00, 0x62,
-                                       0xce, 0x6c };
+static const uint8_t kAsfSignature[] = {0x30, 0x26, 0xb2, 0x75, 0x8e, 0x66,
+                                        0xcf, 0x11, 0xa6, 0xd9, 0x00, 0xaa,
+                                        0x00, 0x62, 0xce, 0x6c};
 static const char kAssSignature[] = "[Script Info]";
 static const char kAssBomSignature[] = UTF8_BYTE_ORDER_MARK "[Script Info]";
-static const uint8 kWtvSignature[] = { 0xb7, 0xd8, 0x00, 0x20, 0x37, 0x49, 0xda,
-                                       0x11, 0xa6, 0x4e, 0x00, 0x07, 0xe9, 0x5e,
-                                       0xad, 0x8d };
+static const uint8_t kWtvSignature[] = {0xb7, 0xd8, 0x00, 0x20, 0x37, 0x49,
+                                        0xda, 0x11, 0xa6, 0x4e, 0x00, 0x07,
+                                        0xe9, 0x5e, 0xad, 0x8d};
 
 // Attempt to determine the container type from the buffer provided. This is
 // a simple pass, that uses the first 4 bytes of the buffer as an index to get
 // a rough idea of the container format.
-static MediaContainerName LookupContainerByFirst4(const uint8* buffer,
+static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
                                                   int buffer_size) {
   // Minimum size that the code expects to exist without checking size.
   if (buffer_size < 12)
     return CONTAINER_UNKNOWN;
 
-  uint32 first4 = Read32(buffer);
+  uint32_t first4 = Read32(buffer);
   switch (first4) {
     case 0x1a45dfa3:
       if (CheckWebm(buffer, buffer_size))
@@ -1580,7 +1579,7 @@ static MediaContainerName LookupContainerByFirst4(const uint8* buffer,
 
   // Now try a few different ones that look at something other
   // than the first 4 bytes.
-  uint32 first3 = first4 & 0xffffff00;
+  uint32_t first3 = first4 & 0xffffff00;
   switch (first3) {
     case TAG('C','W','S',0):
     case TAG('F','W','S',0):
@@ -1593,7 +1592,7 @@ static MediaContainerName LookupContainerByFirst4(const uint8* buffer,
   }
 
   // Maybe the first 2 characters are something we can use.
-  uint32 first2 = Read16(buffer);
+  uint32_t first2 = Read16(buffer);
   switch (first2) {
     case kAc3SyncWord:
       if (CheckAc3(buffer, buffer_size))
@@ -1619,7 +1618,7 @@ static MediaContainerName LookupContainerByFirst4(const uint8* buffer,
 }
 
 // Attempt to determine the container name from the buffer provided.
-MediaContainerName DetermineContainer(const uint8* buffer, int buffer_size) {
+MediaContainerName DetermineContainer(const uint8_t* buffer, int buffer_size) {
   DCHECK(buffer);
 
   // Since MOV/QuickTime/MPEG4 streams are common, check for them first.

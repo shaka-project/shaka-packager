@@ -10,8 +10,8 @@
 namespace edash_packager {
 namespace media {
 
-static const uint32 kDefaultSampleRate = 44100;
-static const uint32 kTimescale = 1000000;
+static const uint32_t kDefaultSampleRate = 44100;
+static const uint32_t kTimescale = 1000000;
 
 class AudioTimestampHelperTest : public ::testing::Test {
  public:
@@ -21,12 +21,12 @@ class AudioTimestampHelperTest : public ::testing::Test {
 
   // Adds frames to the helper and returns the current timestamp in
   // microseconds.
-  int64 AddFrames(int frames) {
+  int64_t AddFrames(int frames) {
     helper_.AddFrames(frames);
     return helper_.GetTimestamp();
   }
 
-  int64 FramesToTarget(int target_in_microseconds) {
+  int64_t FramesToTarget(int target_in_microseconds) {
     return helper_.GetFramesToTarget(target_in_microseconds);
   }
 
@@ -59,7 +59,7 @@ TEST_F(AudioTimestampHelperTest, Basic) {
 
   // Verify that adding frames one frame at a time matches the timestamp
   // returned if the same number of frames are added all at once.
-  int64 timestamp_1  = helper_.GetTimestamp();
+  int64_t timestamp_1 = helper_.GetTimestamp();
   helper_.SetBaseTimestamp(kNoTimestamp);
   EXPECT_TRUE(kNoTimestamp == helper_.base_timestamp());
   helper_.SetBaseTimestamp(0);
@@ -75,14 +75,14 @@ TEST_F(AudioTimestampHelperTest, GetDuration) {
   helper_.SetBaseTimestamp(100);
 
   int frame_count = 5;
-  int64 expected_durations[] = { 113, 113, 114, 113, 113, 114 };
+  int64_t expected_durations[] = {113, 113, 114, 113, 113, 114};
   for (size_t i = 0; i < arraysize(expected_durations); ++i) {
-    int64 duration = helper_.GetFrameDuration(frame_count);
+    int64_t duration = helper_.GetFrameDuration(frame_count);
     EXPECT_EQ(expected_durations[i], duration);
 
-    int64 timestamp_1 = helper_.GetTimestamp() + duration;
+    int64_t timestamp_1 = helper_.GetTimestamp() + duration;
     helper_.AddFrames(frame_count);
-    int64 timestamp_2 = helper_.GetTimestamp();
+    int64_t timestamp_2 = helper_.GetTimestamp();
     EXPECT_TRUE(timestamp_1 == timestamp_2);
   }
 }

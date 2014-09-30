@@ -12,8 +12,8 @@ namespace mp4 {
 
 TEST(AACAudioSpecificConfigTest, BasicProfileTest) {
   AACAudioSpecificConfig aac_audio_specific_config;
-  uint8 buffer[] = {0x12, 0x10};
-  std::vector<uint8> data;
+  uint8_t buffer[] = {0x12, 0x10};
+  std::vector<uint8_t> data;
 
   data.assign(buffer, buffer + sizeof(buffer));
 
@@ -24,8 +24,8 @@ TEST(AACAudioSpecificConfigTest, BasicProfileTest) {
 
 TEST(AACAudioSpecificConfigTest, ExtensionTest) {
   AACAudioSpecificConfig aac_audio_specific_config;
-  uint8 buffer[] = {0x13, 0x08, 0x56, 0xe5, 0x9d, 0x48, 0x80};
-  std::vector<uint8> data;
+  uint8_t buffer[] = {0x13, 0x08, 0x56, 0xe5, 0x9d, 0x48, 0x80};
+  std::vector<uint8_t> data;
 
   data.assign(buffer, buffer + sizeof(buffer));
 
@@ -41,8 +41,8 @@ TEST(AACAudioSpecificConfigTest, ExtensionTest) {
 // See ISO-14496-3 Section 1.6.6.1.2 for details about this special casing.
 TEST(AACAudioSpecificConfigTest, ImplicitSBR_ChannelConfig0) {
   AACAudioSpecificConfig aac_audio_specific_config;
-  uint8 buffer[] = {0x13, 0x08};
-  std::vector<uint8> data;
+  uint8_t buffer[] = {0x13, 0x08};
+  std::vector<uint8_t> data;
 
   data.assign(buffer, buffer + sizeof(buffer));
 
@@ -60,8 +60,8 @@ TEST(AACAudioSpecificConfigTest, ImplicitSBR_ChannelConfig0) {
 // Tests implicit SBR with a stereo channel config.
 TEST(AACAudioSpecificConfigTest, ImplicitSBR_ChannelConfig1) {
   AACAudioSpecificConfig aac_audio_specific_config;
-  uint8 buffer[] = {0x13, 0x10};
-  std::vector<uint8> data;
+  uint8_t buffer[] = {0x13, 0x10};
+  std::vector<uint8_t> data;
 
   data.assign(buffer, buffer + sizeof(buffer));
 
@@ -78,8 +78,8 @@ TEST(AACAudioSpecificConfigTest, ImplicitSBR_ChannelConfig1) {
 
 TEST(AACAudioSpecificConfigTest, SixChannelTest) {
   AACAudioSpecificConfig aac_audio_specific_config;
-  uint8 buffer[] = {0x11, 0xb0};
-  std::vector<uint8> data;
+  uint8_t buffer[] = {0x11, 0xb0};
+  std::vector<uint8_t> data;
 
   data.assign(buffer, buffer + sizeof(buffer));
 
@@ -90,7 +90,7 @@ TEST(AACAudioSpecificConfigTest, SixChannelTest) {
 
 TEST(AACAudioSpecificConfigTest, DataTooShortTest) {
   AACAudioSpecificConfig aac_audio_specific_config;
-  std::vector<uint8> data;
+  std::vector<uint8_t> data;
 
   EXPECT_FALSE(aac_audio_specific_config.Parse(data));
 
@@ -100,8 +100,8 @@ TEST(AACAudioSpecificConfigTest, DataTooShortTest) {
 
 TEST(AACAudioSpecificConfigTest, IncorrectProfileTest) {
   AACAudioSpecificConfig aac_audio_specific_config;
-  uint8 buffer[] = {0x0, 0x08};
-  std::vector<uint8> data;
+  uint8_t buffer[] = {0x0, 0x08};
+  std::vector<uint8_t> data;
 
   data.assign(buffer, buffer + sizeof(buffer));
 
@@ -116,8 +116,8 @@ TEST(AACAudioSpecificConfigTest, IncorrectProfileTest) {
 
 TEST(AACAudioSpecificConfigTest, IncorrectFrequencyTest) {
   AACAudioSpecificConfig aac_audio_specific_config;
-  uint8 buffer[] = {0x0f, 0x88};
-  std::vector<uint8> data;
+  uint8_t buffer[] = {0x0f, 0x88};
+  std::vector<uint8_t> data;
 
   data.assign(buffer, buffer + sizeof(buffer));
 
@@ -130,8 +130,8 @@ TEST(AACAudioSpecificConfigTest, IncorrectFrequencyTest) {
 
 TEST(AACAudioSpecificConfigTest, IncorrectChannelTest) {
   AACAudioSpecificConfig aac_audio_specific_config;
-  uint8 buffer[] = {0x0e, 0x00};
-  std::vector<uint8> data;
+  uint8_t buffer[] = {0x0e, 0x00};
+  std::vector<uint8_t> data;
 
   data.assign(buffer, buffer + sizeof(buffer));
 

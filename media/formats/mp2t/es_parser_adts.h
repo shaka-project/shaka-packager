@@ -24,28 +24,29 @@ namespace mp2t {
 
 class EsParserAdts : public EsParser {
  public:
-  EsParserAdts(uint32 pid,
+  EsParserAdts(uint32_t pid,
                const NewStreamInfoCB& new_stream_info_cb,
                const EmitSampleCB& emit_sample_cb,
                bool sbr_in_mimetype);
   virtual ~EsParserAdts();
 
   // EsParser implementation.
-  virtual bool Parse(const uint8* buf, int size,
-                     int64 pts,
-                     int64 dts) OVERRIDE;
+  virtual bool Parse(const uint8_t* buf,
+                     int size,
+                     int64_t pts,
+                     int64_t dts) OVERRIDE;
   virtual void Flush() OVERRIDE;
   virtual void Reset() OVERRIDE;
 
  private:
   // Used to link a PTS with a byte position in the ES stream.
-  typedef std::pair<int, int64> EsPts;
+  typedef std::pair<int, int64_t> EsPts;
   typedef std::list<EsPts> EsPtsList;
 
   // Signal any audio configuration change (if any).
   // Return false if the current audio config is not
   // a supported ADTS audio config.
-  bool UpdateAudioConfiguration(const uint8* adts_frame, size_t frame_size);
+  bool UpdateAudioConfiguration(const uint8_t* adts_frame, size_t frame_size);
 
   // Discard some bytes from the ES stream.
   void DiscardEs(int nbytes);

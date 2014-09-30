@@ -13,13 +13,12 @@
 namespace {
 
 // Sampling Frequency Index table, from ISO 14496-3 Table 1.16
-static const uint32 kSampleRates[] = {
-  96000, 88200, 64000, 48000, 44100, 32000, 24000,
-  22050, 16000, 12000, 11025, 8000, 7350
-};
+static const uint32_t kSampleRates[] = {96000, 88200, 64000, 48000, 44100,
+                                        32000, 24000, 22050, 16000, 12000,
+                                        11025, 8000,  7350};
 
 // Channel Configuration table, from ISO 14496-3 Table 1.17
-const uint8 kChannelConfigs[] = {0, 1, 2, 3, 4, 5, 6, 8};
+const uint8_t kChannelConfigs[] = {0, 1, 2, 3, 4, 5, 6, 8};
 
 }  // namespace
 
@@ -39,13 +38,13 @@ AACAudioSpecificConfig::AACAudioSpecificConfig()
 
 AACAudioSpecificConfig::~AACAudioSpecificConfig() {}
 
-bool AACAudioSpecificConfig::Parse(const std::vector<uint8>& data) {
+bool AACAudioSpecificConfig::Parse(const std::vector<uint8_t>& data) {
   if (data.empty())
     return false;
 
   BitReader reader(&data[0], data.size());
-  uint8 extension_type = 0;
-  uint8 extension_frequency_index = 0xff;
+  uint8_t extension_type = 0;
+  uint8_t extension_frequency_index = 0xff;
 
   ps_present_ = false;
   frequency_ = 0;
@@ -82,9 +81,9 @@ bool AACAudioSpecificConfig::Parse(const std::vector<uint8>& data) {
   // Read extension configuration again
   // Note: The check for 16 available bits comes from the AAC spec.
   if (extension_type != 5 && reader.bits_available() >= 16) {
-    uint16 sync_extension_type;
-    uint8 sbr_present_flag;
-    uint8 ps_present_flag;
+    uint16_t sync_extension_type;
+    uint8_t sbr_present_flag;
+    uint8_t ps_present_flag;
 
     if (reader.ReadBits(11, &sync_extension_type) &&
         sync_extension_type == 0x2b7) {
@@ -128,8 +127,8 @@ bool AACAudioSpecificConfig::Parse(const std::vector<uint8>& data) {
          channel_config_ <= 7;
 }
 
-uint32 AACAudioSpecificConfig::GetOutputSamplesPerSecond(bool sbr_in_mimetype)
-    const {
+uint32_t AACAudioSpecificConfig::GetOutputSamplesPerSecond(
+    bool sbr_in_mimetype) const {
   if (extension_frequency_ > 0)
     return extension_frequency_;
 
@@ -143,7 +142,7 @@ uint32 AACAudioSpecificConfig::GetOutputSamplesPerSecond(bool sbr_in_mimetype)
   return std::min(2 * frequency_, 48000u);
 }
 
-uint8 AACAudioSpecificConfig::GetNumChannels(bool sbr_in_mimetype) const {
+uint8_t AACAudioSpecificConfig::GetNumChannels(bool sbr_in_mimetype) const {
   // Check for implicit signalling of HE-AAC and indicate stereo output
   // if the mono channel configuration is signalled.
   // See ISO-14496-3 Section 1.6.6.1.2 for details about this special casing.
@@ -157,7 +156,7 @@ uint8 AACAudioSpecificConfig::GetNumChannels(bool sbr_in_mimetype) const {
   return num_channels_;
 }
 
-bool AACAudioSpecificConfig::ConvertToADTS(std::vector<uint8>* buffer) const {
+bool AACAudioSpecificConfig::ConvertToADTS(std::vector<uint8_t>* buffer) const {
   size_t size = buffer->size() + kADTSHeaderSize;
 
   DCHECK(audio_object_type_ >= 1 && audio_object_type_ <= 4 &&
@@ -167,7 +166,7 @@ bool AACAudioSpecificConfig::ConvertToADTS(std::vector<uint8>* buffer) const {
   if (size >= (1 << 13))
     return false;
 
-  std::vector<uint8>& adts = *buffer;
+  std::vector<uint8_t>& adts = *buffer;
 
   adts.insert(buffer->begin(), kADTSHeaderSize, 0);
   adts[0] = 0xff;
@@ -229,9 +228,9 @@ bool AACAudioSpecificConfig::SkipErrorSpecificConfig() const {
 // The following code is written according to ISO 14496 part 3 Table 4.1 -
 // GASpecificConfig.
 bool AACAudioSpecificConfig::SkipGASpecificConfig(BitReader* bit_reader) const {
-  uint8 extension_flag = 0;
-  uint8 depends_on_core_coder;
-  uint16 dummy;
+  uint8_t extension_flag = 0;
+  uint8_t depends_on_core_coder;
+  uint16_t dummy;
 
   RCHECK(bit_reader->ReadBits(1, &dummy));  // frameLengthFlag
   RCHECK(bit_reader->ReadBits(1, &depends_on_core_coder));

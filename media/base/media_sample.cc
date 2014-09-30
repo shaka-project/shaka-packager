@@ -14,9 +14,9 @@
 namespace edash_packager {
 namespace media {
 
-MediaSample::MediaSample(const uint8* data,
+MediaSample::MediaSample(const uint8_t* data,
                          size_t size,
-                         const uint8* side_data,
+                         const uint8_t* side_data,
                          size_t side_data_size,
                          bool is_key_frame)
     : dts_(0), pts_(0), duration_(0), is_key_frame_(is_key_frame) {
@@ -38,7 +38,7 @@ MediaSample::MediaSample() : dts_(0), pts_(0),
 MediaSample::~MediaSample() {}
 
 // static
-scoped_refptr<MediaSample> MediaSample::CopyFrom(const uint8* data,
+scoped_refptr<MediaSample> MediaSample::CopyFrom(const uint8_t* data,
                                                  size_t data_size,
                                                  bool is_key_frame) {
   // If you hit this CHECK you likely have a bug in a demuxer. Go fix it.
@@ -48,9 +48,9 @@ scoped_refptr<MediaSample> MediaSample::CopyFrom(const uint8* data,
 }
 
 // static
-scoped_refptr<MediaSample> MediaSample::CopyFrom(const uint8* data,
+scoped_refptr<MediaSample> MediaSample::CopyFrom(const uint8_t* data,
                                                  size_t data_size,
-                                                 const uint8* side_data,
+                                                 const uint8_t* side_data,
                                                  size_t side_data_size,
                                                  bool is_key_frame) {
   // If you hit this CHECK you likely have a bug in a demuxer. Go fix it.

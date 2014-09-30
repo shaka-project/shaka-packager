@@ -61,9 +61,9 @@ TEST(MuxerUtilTest, ValidateSegmentTemplateWithFormatTag) {
 }
 
 TEST(MuxerUtilTest, GetSegmentName) {
-  const uint64 kSegmentStartTime = 180180;
-  const uint32 kSegmentIndex = 11;
-  const uint32 kBandwidth = 1234;
+  const uint64_t kSegmentStartTime = 180180;
+  const uint32_t kSegmentIndex = 11;
+  const uint32_t kBandwidth = 1234;
   EXPECT_EQ("12", GetSegmentName("$Number$",
                                  kSegmentStartTime,
                                  kSegmentIndex,
@@ -118,9 +118,9 @@ TEST(MuxerUtilTest, GetSegmentName) {
 }
 
 TEST(MuxerUtilTest, GetSegmentNameWithIndexZero) {
-  const uint64 kSegmentStartTime = 0;
-  const uint32 kSegmentIndex = 0;
-  const uint32 kBandwidth = 0;
+  const uint64_t kSegmentStartTime = 0;
+  const uint32_t kSegmentIndex = 0;
+  const uint32_t kBandwidth = 0;
   EXPECT_EQ("1", GetSegmentName("$Number$",
                                 kSegmentStartTime,
                                 kSegmentIndex,
@@ -143,9 +143,9 @@ TEST(MuxerUtilTest, GetSegmentNameWithIndexZero) {
 }
 
 TEST(MuxerUtilTest, GetSegmentNameLargeTime) {
-  const uint64 kSegmentStartTime = 1601599839840ULL;
-  const uint32 kSegmentIndex = 8888888;
-  const uint32 kBandwidth = 444444;
+  const uint64_t kSegmentStartTime = 1601599839840ULL;
+  const uint32_t kSegmentIndex = 8888888;
+  const uint32_t kBandwidth = 444444;
   EXPECT_EQ("1601599839840",
             GetSegmentName("$Time$",
                            kSegmentStartTime,

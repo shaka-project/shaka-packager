@@ -36,9 +36,9 @@ enum SLPredefinedTags {
 
 // The elementary stream size is specific by up to 4 bytes.
 // The MSB of a byte indicates if there are more bytes for the size.
-bool ReadESSize(BitReader* reader, uint32* size) {
-  uint8 msb;
-  uint8 byte;
+bool ReadESSize(BitReader* reader, uint32_t* size) {
+  uint8_t msb;
+  uint8_t byte;
 
   *size = 0;
 
@@ -67,14 +67,14 @@ ESDescriptor::ESDescriptor() : esid_(0), object_type_(kForbidden) {}
 
 ESDescriptor::~ESDescriptor() {}
 
-bool ESDescriptor::Parse(const std::vector<uint8>& data) {
+bool ESDescriptor::Parse(const std::vector<uint8_t>& data) {
   BitReader reader(&data[0], data.size());
-  uint8 tag;
-  uint32 size;
-  uint8 stream_dependency_flag;
-  uint8 url_flag;
-  uint8 ocr_stream_flag;
-  uint16 dummy;
+  uint8_t tag;
+  uint32_t size;
+  uint8_t stream_dependency_flag;
+  uint8_t url_flag;
+  uint8_t ocr_stream_flag;
+  uint16_t dummy;
 
   RCHECK(reader.ReadBits(8, &tag));
   RCHECK(tag == kESDescrTag);
@@ -98,9 +98,9 @@ bool ESDescriptor::Parse(const std::vector<uint8>& data) {
 }
 
 bool ESDescriptor::ParseDecoderConfigDescriptor(BitReader* reader) {
-  uint8 tag;
-  uint32 size;
-  uint64 dummy;
+  uint8_t tag;
+  uint32_t size;
+  uint64_t dummy;
 
   RCHECK(reader->ReadBits(8, &tag));
   RCHECK(tag == kDecoderConfigDescrTag);
@@ -116,15 +116,15 @@ bool ESDescriptor::ParseDecoderConfigDescriptor(BitReader* reader) {
 
 bool ESDescriptor::ParseDecoderSpecificInfo(BitReader* reader) {
   DCHECK(reader);
-  uint8 tag;
-  uint32 size;
+  uint8_t tag;
+  uint32_t size;
 
   RCHECK(reader->ReadBits(8, &tag));
   RCHECK(tag == kDecoderSpecificInfoTag);
   RCHECK(ReadESSize(reader, &size));
 
   decoder_specific_info_.resize(size);
-  for (uint32 i = 0; i < size; ++i)
+  for (uint32_t i = 0; i < size; ++i)
     RCHECK(reader->ReadBits(8, &decoder_specific_info_[i]));
 
   return true;
@@ -134,55 +134,55 @@ void ESDescriptor::Write(BufferWriter* writer) const {
   DCHECK(writer);
   CHECK_LT(decoder_specific_info_.size(), kMaxDecoderSpecificInfoSize);
 
-  const std::vector<uint8> kEmptyDecodingBufferSize(3, 0);
-  const uint32 kUnknownBitrate = 0;
-  const uint8 kNoEsFlags = 0;
+  const std::vector<uint8_t> kEmptyDecodingBufferSize(3, 0);
+  const uint32_t kUnknownBitrate = 0;
+  const uint8_t kNoEsFlags = 0;
 
-  const uint8 decoder_specific_info_size = decoder_specific_info_.size();
+  const uint8_t decoder_specific_info_size = decoder_specific_info_.size();
 
   // 6 bit stream type. The last bit is reserved with 1.
-  const uint8 stream_type = (kAudioStreamType << 2) | 1;
-  const uint8 decoder_config_size = decoder_specific_info_size + kHeaderSize +
-                                    sizeof(uint8) +  // object_type_.
-                                    sizeof(stream_type) +
-                                    kEmptyDecodingBufferSize.size() +
-                                    sizeof(kUnknownBitrate) * 2;
+  const uint8_t stream_type = (kAudioStreamType << 2) | 1;
+  const uint8_t decoder_config_size = decoder_specific_info_size + kHeaderSize +
+                                      sizeof(uint8_t) +  // object_type_.
+                                      sizeof(stream_type) +
+                                      kEmptyDecodingBufferSize.size() +
+                                      sizeof(kUnknownBitrate) * 2;
 
-  const uint8 sl_config_size = sizeof(uint8);  // predefined.
-  const uint8 es_size = decoder_config_size + kHeaderSize + sl_config_size +
-                        kHeaderSize + sizeof(esid_) + sizeof(kNoEsFlags);
+  const uint8_t sl_config_size = sizeof(uint8_t);  // predefined.
+  const uint8_t es_size = decoder_config_size + kHeaderSize + sl_config_size +
+                          kHeaderSize + sizeof(esid_) + sizeof(kNoEsFlags);
 
-  writer->AppendInt(static_cast<uint8>(kESDescrTag));
+  writer->AppendInt(static_cast<uint8_t>(kESDescrTag));
   writer->AppendInt(es_size);
   writer->AppendInt(esid_);
   writer->AppendInt(kNoEsFlags);
 
-  writer->AppendInt(static_cast<uint8>(kDecoderConfigDescrTag));
+  writer->AppendInt(static_cast<uint8_t>(kDecoderConfigDescrTag));
   writer->AppendInt(decoder_config_size);
-  writer->AppendInt(static_cast<uint8>(object_type_));
+  writer->AppendInt(static_cast<uint8_t>(object_type_));
   writer->AppendInt(stream_type);
   writer->AppendVector(kEmptyDecodingBufferSize);
   writer->AppendInt(kUnknownBitrate);  // max_bitrate.
   writer->AppendInt(kUnknownBitrate);  // avg_bitrate.
 
-  writer->AppendInt(static_cast<uint8>(kDecoderSpecificInfoTag));
+  writer->AppendInt(static_cast<uint8_t>(kDecoderSpecificInfoTag));
   writer->AppendInt(decoder_specific_info_size);
   writer->AppendVector(decoder_specific_info_);
 
-  writer->AppendInt(static_cast<uint8>(kSLConfigTag));
+  writer->AppendInt(static_cast<uint8_t>(kSLConfigTag));
   writer->AppendInt(sl_config_size);
-  writer->AppendInt(static_cast<uint8>(kSLPredefinedMP4));
+  writer->AppendInt(static_cast<uint8_t>(kSLPredefinedMP4));
 }
 
 size_t ESDescriptor::ComputeSize() const {
   // A bit magical. Refer to ESDescriptor::Write for details.
-  const uint8 decoder_specific_info_size = decoder_specific_info_.size();
-  const uint8 decoder_config_size = decoder_specific_info_size + kHeaderSize +
-                                    sizeof(uint8) * 5 + sizeof(uint32) * 2;
-  const uint8 sl_config_size = sizeof(uint8);
-  const uint8 es_size = decoder_config_size + kHeaderSize +
-                        sl_config_size + kHeaderSize +
-                        sizeof(esid_) + sizeof(uint8);
+  const uint8_t decoder_specific_info_size = decoder_specific_info_.size();
+  const uint8_t decoder_config_size = decoder_specific_info_size + kHeaderSize +
+                                      sizeof(uint8_t) * 5 +
+                                      sizeof(uint32_t) * 2;
+  const uint8_t sl_config_size = sizeof(uint8_t);
+  const uint8_t es_size = decoder_config_size + kHeaderSize + sl_config_size +
+                          kHeaderSize + sizeof(esid_) + sizeof(uint8_t);
   return es_size + kHeaderSize;
 }
 

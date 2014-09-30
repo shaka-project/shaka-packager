@@ -19,7 +19,7 @@ static const int kPesStartCode = 0x000001;
 // |time| + k * (2 ^ 33)
 // where k is estimated so that the unrolled timestamp
 // is as close as possible to |previous_unrolled_time|.
-static int64 UnrollTimestamp(int64 previous_unrolled_time, int64 time) {
+static int64_t UnrollTimestamp(int64_t previous_unrolled_time, int64_t time) {
   // Mpeg2 TS timestamps have an accuracy of 33 bits.
   const int nbits = 33;
 
@@ -28,17 +28,16 @@ static int64 UnrollTimestamp(int64 previous_unrolled_time, int64 time) {
   DCHECK_EQ((time >> nbits), 0);
 
   // Consider 3 possibilities to estimate the missing high bits of |time|.
-  int64 previous_unrolled_time_high =
-      (previous_unrolled_time >> nbits);
-  int64 time0 = ((previous_unrolled_time_high - 1) << nbits) | time;
-  int64 time1 = ((previous_unrolled_time_high + 0) << nbits) | time;
-  int64 time2 = ((previous_unrolled_time_high + 1) << nbits) | time;
+  int64_t previous_unrolled_time_high = (previous_unrolled_time >> nbits);
+  int64_t time0 = ((previous_unrolled_time_high - 1) << nbits) | time;
+  int64_t time1 = ((previous_unrolled_time_high + 0) << nbits) | time;
+  int64_t time2 = ((previous_unrolled_time_high + 1) << nbits) | time;
 
   // Select the min absolute difference with the current time
   // so as to ensure time continuity.
-  int64 diff0 = time0 - previous_unrolled_time;
-  int64 diff1 = time1 - previous_unrolled_time;
-  int64 diff2 = time2 - previous_unrolled_time;
+  int64_t diff0 = time0 - previous_unrolled_time;
+  int64_t diff1 = time1 - previous_unrolled_time;
+  int64_t diff2 = time2 - previous_unrolled_time;
   if (diff0 < 0)
     diff0 = -diff0;
   if (diff1 < 0)
@@ -46,8 +45,8 @@ static int64 UnrollTimestamp(int64 previous_unrolled_time, int64 time) {
   if (diff2 < 0)
     diff2 = -diff2;
 
-  int64 unrolled_time;
-  int64 min_diff;
+  int64_t unrolled_time;
+  int64_t min_diff;
   if (diff1 < diff0) {
     unrolled_time = time1;
     min_diff = diff1;
@@ -61,7 +60,7 @@ static int64 UnrollTimestamp(int64 previous_unrolled_time, int64 time) {
   return unrolled_time;
 }
 
-static bool IsTimestampSectionValid(int64 timestamp_section) {
+static bool IsTimestampSectionValid(int64_t timestamp_section) {
   // |pts_section| has 40 bits:
   // - starting with either '0010' or '0011' or '0001'
   // - and ending with a marker bit.
@@ -73,7 +72,7 @@ static bool IsTimestampSectionValid(int64 timestamp_section) {
          ((timestamp_section & 0x100000000LL) != 0);
 }
 
-static int64 ConvertTimestampSectionToTimestamp(int64 timestamp_section) {
+static int64_t ConvertTimestampSectionToTimestamp(int64_t timestamp_section) {
   return (((timestamp_section >> 33) & 0x7) << 30) |
          (((timestamp_section >> 17) & 0x7fff) << 15) |
          (((timestamp_section >> 1) & 0x7fff) << 0);
@@ -97,7 +96,8 @@ TsSectionPes::~TsSectionPes() {
 }
 
 bool TsSectionPes::Parse(bool payload_unit_start_indicator,
-                             const uint8* buf, int size) {
+                         const uint8_t* buf,
+                         int size) {
   // Ignore partial PES.
   if (wait_for_pusi_ && !payload_unit_start_indicator)
     return true;
@@ -108,7 +108,7 @@ bool TsSectionPes::Parse(bool payload_unit_start_indicator,
     // with an undefined size.
     // In this case, a unit is emitted when the next unit is coming.
     int raw_pes_size;
-    const uint8* raw_pes;
+    const uint8_t* raw_pes;
     pes_byte_queue_.Peek(&raw_pes, &raw_pes_size);
     if (raw_pes_size > 0)
       parse_result = Emit(true);
@@ -150,7 +150,7 @@ void TsSectionPes::Reset() {
 
 bool TsSectionPes::Emit(bool emit_for_unknown_size) {
   int raw_pes_size;
-  const uint8* raw_pes;
+  const uint8_t* raw_pes;
   pes_byte_queue_.Peek(&raw_pes, &raw_pes_size);
 
   // A PES should be at least 6 bytes.
@@ -181,7 +181,7 @@ bool TsSectionPes::Emit(bool emit_for_unknown_size) {
   return parse_result;
 }
 
-bool TsSectionPes::ParseInternal(const uint8* raw_pes, int raw_pes_size) {
+bool TsSectionPes::ParseInternal(const uint8_t* raw_pes, int raw_pes_size) {
   BitReader bit_reader(raw_pes, raw_pes_size);
 
   // Read up to the pes_packet_length (6 bytes).
@@ -247,8 +247,8 @@ bool TsSectionPes::ParseInternal(const uint8* raw_pes, int raw_pes_size) {
   // Read the timing information section.
   bool is_pts_valid = false;
   bool is_dts_valid = false;
-  int64 pts_section = 0;
-  int64 dts_section = 0;
+  int64_t pts_section = 0;
+  int64_t dts_section = 0;
   if (pts_dts_flags == 0x2) {
     RCHECK(bit_reader.ReadBits(40, &pts_section));
     RCHECK((((pts_section >> 36) & 0xf) == 0x2) &&
@@ -267,10 +267,10 @@ bool TsSectionPes::ParseInternal(const uint8* raw_pes, int raw_pes_size) {
   }
 
   // Convert and unroll the timestamps.
-  int64 media_pts(kNoTimestamp);
-  int64 media_dts(kNoTimestamp);
+  int64_t media_pts(kNoTimestamp);
+  int64_t media_dts(kNoTimestamp);
   if (is_pts_valid) {
-    int64 pts = ConvertTimestampSectionToTimestamp(pts_section);
+    int64_t pts = ConvertTimestampSectionToTimestamp(pts_section);
     if (previous_pts_valid_)
       pts = UnrollTimestamp(previous_pts_, pts);
     previous_pts_ = pts;
@@ -278,7 +278,7 @@ bool TsSectionPes::ParseInternal(const uint8* raw_pes, int raw_pes_size) {
     media_pts = pts;
   }
   if (is_dts_valid) {
-    int64 dts = ConvertTimestampSectionToTimestamp(dts_section);
+    int64_t dts = ConvertTimestampSectionToTimestamp(dts_section);
     if (previous_dts_valid_)
       dts = UnrollTimestamp(previous_dts_, dts);
     previous_dts_ = dts;

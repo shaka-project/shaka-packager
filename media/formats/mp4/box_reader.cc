@@ -15,7 +15,7 @@ namespace edash_packager {
 namespace media {
 namespace mp4 {
 
-BoxReader::BoxReader(const uint8* buf, size_t size)
+BoxReader::BoxReader(const uint8_t* buf, size_t size)
     : BufferReader(buf, size), type_(FOURCC_NULL), scanned_(false) {
   DCHECK(buf);
   DCHECK_LT(0u, size);
@@ -32,7 +32,7 @@ BoxReader::~BoxReader() {
 }
 
 // static
-BoxReader* BoxReader::ReadTopLevelBox(const uint8* buf,
+BoxReader* BoxReader::ReadTopLevelBox(const uint8_t* buf,
                                       const size_t buf_size,
                                       bool* err) {
   scoped_ptr<BoxReader> reader(new BoxReader(buf, buf_size));
@@ -55,10 +55,10 @@ BoxReader* BoxReader::ReadTopLevelBox(const uint8* buf,
 }
 
 // static
-bool BoxReader::StartTopLevelBox(const uint8* buf,
+bool BoxReader::StartTopLevelBox(const uint8_t* buf,
                                  const size_t buf_size,
                                  FourCC* type,
-                                 uint64* box_size,
+                                 uint64_t* box_size,
                                  bool* err) {
   BoxReader reader(buf, buf_size);
   if (!reader.ReadHeader(err))
@@ -142,10 +142,10 @@ bool BoxReader::TryReadChild(Box* child) {
 }
 
 bool BoxReader::ReadHeader(bool* err) {
-  uint64 size = 0;
+  uint64_t size = 0;
   *err = false;
 
-  if (!ReadNBytesInto8(&size, sizeof(uint32)) || !ReadFourCC(&type_))
+  if (!ReadNBytesInto8(&size, sizeof(uint32_t)) || !ReadFourCC(&type_))
     return false;
 
   if (size == 0) {
@@ -170,7 +170,7 @@ bool BoxReader::ReadHeader(bool* err) {
   }
 
   // 'mdat' box could have a 64-bit size; other boxes should be very small.
-  if (size > static_cast<uint64>(kint32max) && type_ != FOURCC_MDAT) {
+  if (size > static_cast<uint64_t>(kint32max) && type_ != FOURCC_MDAT) {
     LOG(ERROR) << base::StringPrintf("Box '%s' size (%" PRIu64
                                      ") is too large.",
                                      FourCCToString(type_).c_str(),

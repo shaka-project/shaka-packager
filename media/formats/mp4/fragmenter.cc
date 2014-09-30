@@ -15,7 +15,7 @@ namespace media {
 namespace mp4 {
 
 namespace {
-const int64 kInvalidTime = kint64max;
+const int64_t kInvalidTime = kint64max;
 }  // namespace
 
 Fragmenter::Fragmenter(TrackFragment* traf)
@@ -50,7 +50,7 @@ Status Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   data_->AppendArray(sample->data(), sample->data_size());
   fragment_duration_ += sample->duration();
 
-  int64 pts = sample->pts();
+  int64_t pts = sample->pts();
 
   // Set |earliest_presentation_time_| to |pts| if |pts| is smaller or if it is
   // not yet initialized (kInvalidTime > pts is always true).
@@ -68,7 +68,7 @@ Status Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   return Status::OK;
 }
 
-Status Fragmenter::InitializeFragment(int64 first_sample_dts) {
+Status Fragmenter::InitializeFragment(int64_t first_sample_dts) {
   fragment_initialized_ = true;
   fragment_finalized_ = false;
   traf_->decode_time.decode_time = first_sample_dts;
@@ -128,7 +128,7 @@ void Fragmenter::GenerateSegmentReference(SegmentReference* reference) {
 
 bool Fragmenter::StartsWithSAP() {
   DCHECK(!traf_->runs.empty());
-  uint32 start_sample_flag;
+  uint32_t start_sample_flag;
   if (traf_->runs[0].flags & TrackFragmentRun::kSampleFlagsPresentMask) {
     DCHECK(!traf_->runs[0].sample_flags.empty());
     start_sample_flag = traf_->runs[0].sample_flags[0];

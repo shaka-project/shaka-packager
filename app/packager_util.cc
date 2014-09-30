@@ -70,7 +70,7 @@ scoped_ptr<KeySource> CreateEncryptionKeySource() {
   scoped_ptr<KeySource> encryption_key_source;
   if (FLAGS_enable_widevine_encryption) {
     scoped_ptr<RequestSigner> signer(CreateSigner());
-    std::vector<uint8> content_id;
+    std::vector<uint8_t> content_id;
     if (!base::HexStringToBytes(FLAGS_content_id, &content_id)) {
       LOG(ERROR) << "Invalid content_id hex string specified.";
       return scoped_ptr<KeySource>();

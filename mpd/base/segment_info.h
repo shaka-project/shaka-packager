@@ -12,14 +12,14 @@ namespace edash_packager {
 /// Used for keeping track of all the segments used for generating MPD with
 /// dynamic  profile.
 struct SegmentInfo {
-  uint64 start_time;
-  uint64 duration;
+  uint64_t start_time;
+  uint64_t duration;
   // This is the number of times same duration segments are repeated not
   // inclusive. In other words if this is the only one segment that starts at
   // |start_time| and has |duration| but none others have |start_time| * N and
   // |duration|, then this should be set to 0. The semantics is the same as S@r
   // in the DASH MPD spec.
-  uint64 repeat;
+  uint64_t repeat;
 };
 }  // namespace edash_packager
 

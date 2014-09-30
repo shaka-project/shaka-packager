@@ -82,18 +82,18 @@ Status MultiSegmentSegmenter::DoFinalizeSegment() {
   // sidx() contains pre-generated segment references with one reference per
   // fragment. Calculate |num_fragments_per_subsegment| and combine
   // pre-generated references into final subsegment references.
-  uint32 num_fragments = sidx()->references.size();
-  uint32 num_fragments_per_subsegment =
+  uint32_t num_fragments = sidx()->references.size();
+  uint32_t num_fragments_per_subsegment =
       (num_fragments - 1) / options().num_subsegments_per_sidx + 1;
   if (num_fragments_per_subsegment <= 1)
     return WriteSegment();
 
-  uint32 frag_index = 0;
-  uint32 subseg_index = 0;
+  uint32_t frag_index = 0;
+  uint32_t subseg_index = 0;
   std::vector<SegmentReference>& refs = sidx()->references;
-  uint64 first_sap_time =
+  uint64_t first_sap_time =
       refs[0].sap_delta_time + refs[0].earliest_presentation_time;
-  for (uint32 i = 1; i < num_fragments; ++i) {
+  for (uint32_t i = 1; i < num_fragments; ++i) {
     refs[subseg_index].referenced_size += refs[i].referenced_size;
     refs[subseg_index].subsegment_duration += refs[i].subsegment_duration;
     refs[subseg_index].earliest_presentation_time =
@@ -175,7 +175,7 @@ Status MultiSegmentSegmenter::WriteSegment() {
     LOG(WARNING) << "Failed to close the file properly: " << file_name;
 
   if (status.ok() && muxer_listener()) {
-    uint64 segment_duration = 0;
+    uint64_t segment_duration = 0;
     // ISO/IEC 23009-1:2012: the value shall be identical to sum of the the
     // values of all Subsegment_duration fields in the first ‘sidx’ box.
     for (size_t i = 0; i < sidx()->references.size(); ++i)

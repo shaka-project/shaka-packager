@@ -50,7 +50,7 @@ class SimpleHttpFetcher : public HttpFetcher {
   SimpleHttpFetcher();
   /// Create a fetcher with timeout.
   /// @param timeout_in_seconds specifies the timeout in seconds.
-  SimpleHttpFetcher(uint32 timeout_in_seconds);
+  SimpleHttpFetcher(uint32_t timeout_in_seconds);
   virtual ~SimpleHttpFetcher();
 
   /// @name HttpFetcher implementation overrides.
@@ -72,7 +72,7 @@ class SimpleHttpFetcher : public HttpFetcher {
   Status FetchInternal(HttpMethod method, const std::string& url,
                        const std::string& data, std::string* response);
 
-  const uint32 timeout_in_seconds_;
+  const uint32_t timeout_in_seconds_;
 
   DISALLOW_COPY_AND_ASSIGN(SimpleHttpFetcher);
 };

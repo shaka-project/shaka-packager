@@ -31,20 +31,23 @@ namespace mp2t {
 //
 class EsParserH264 : public EsParser {
  public:
-  EsParserH264(uint32 pid,
+  EsParserH264(uint32_t pid,
                const NewStreamInfoCB& new_stream_info_cb,
                const EmitSampleCB& emit_sample_cb);
   virtual ~EsParserH264();
 
   // EsParser implementation overrides.
-  virtual bool Parse(const uint8* buf, int size, int64 pts, int64 dts) OVERRIDE;
+  virtual bool Parse(const uint8_t* buf,
+                     int size,
+                     int64_t pts,
+                     int64_t dts) OVERRIDE;
   virtual void Flush() OVERRIDE;
   virtual void Reset() OVERRIDE;
 
  private:
   struct TimingDesc {
-    int64 dts;
-    int64 pts;
+    int64_t dts;
+    int64_t pts;
   };
 
   // Find the AUD located at or after |*stream_pos|.
@@ -52,7 +55,7 @@ class EsParserH264 : public EsParser {
   // If found, |*stream_pos| corresponds to the position of the AUD start code
   // in the stream. Otherwise, |*stream_pos| corresponds to the last position
   // of the start code parser.
-  bool FindAUD(int64* stream_pos);
+  bool FindAUD(int64_t* stream_pos);
 
   // Resumes the H264 ES parsing.
   // Return true if successful.
@@ -60,8 +63,10 @@ class EsParserH264 : public EsParser {
 
   // Emit a frame whose position in the ES queue starts at |access_unit_pos|.
   // Returns true if successful, false if no PTS is available for the frame.
-  bool EmitFrame(int64 access_unit_pos, int access_unit_size,
-                 bool is_key_frame, int pps_id);
+  bool EmitFrame(int64_t access_unit_pos,
+                 int access_unit_size,
+                 bool is_key_frame,
+                 int pps_id);
 
   // Update the video decoder config based on an H264 SPS.
   // Return true if successful.
@@ -73,14 +78,14 @@ class EsParserH264 : public EsParser {
 
   // Bytes of the ES stream that have not been emitted yet.
   scoped_ptr<media::OffsetByteQueue> es_queue_;
-  std::list<std::pair<int64, TimingDesc> > timing_desc_list_;
+  std::list<std::pair<int64_t, TimingDesc> > timing_desc_list_;
 
   // H264 parser state.
   // - |current_access_unit_pos_| is pointing to an annexB syncword
   // representing the first NALU of an H264 access unit.
   scoped_ptr<H264Parser> h264_parser_;
-  int64 current_access_unit_pos_;
-  int64 next_access_unit_pos_;
+  int64_t current_access_unit_pos_;
+  int64_t next_access_unit_pos_;
 
   // Filter to convert H.264 Annex B byte stream to unit stream.
   scoped_ptr<H264ByteToUnitStreamConverter> stream_converter_;
@@ -91,7 +96,7 @@ class EsParserH264 : public EsParser {
 
   // Frame for which we do not yet have a duration.
   scoped_refptr<MediaSample> pending_sample_;
-  uint64 pending_sample_duration_;
+  uint64_t pending_sample_duration_;
 
   // Indicates whether waiting for first key frame.
   bool waiting_for_key_frame_;

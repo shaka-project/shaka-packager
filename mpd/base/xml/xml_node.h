@@ -50,7 +50,7 @@ class XmlNode {
   /// Sets an interger attribute.
   /// @param attribute_name The name (lhs) of the attribute.
   /// @param number The value (rhs) of the attribute.
-  void SetIntegerAttribute(const char* attribute_name, uint64 number);
+  void SetIntegerAttribute(const char* attribute_name, uint64_t number);
 
   /// Set a floating point number attribute.
   /// @param attribute_name is the name of the attribute to set.
@@ -59,7 +59,7 @@ class XmlNode {
 
   /// Sets 'id=@a id' attribute.
   /// @param id is the ID for this element.
-  void SetId(uint32 id);
+  void SetId(uint32_t id);
 
   /// Set the contents of an XML element using a string.
   /// Note: This function does not work well with AddChild(). Use either
@@ -157,7 +157,7 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
   ///        SegmentInfos are sorted by its start time.
   bool AddLiveOnlyInfo(const MediaInfo& media_info,
                        const std::list<SegmentInfo>& segment_infos,
-                       uint32 start_number);
+                       uint32_t start_number);
 
  private:
   // Add AudioChannelConfiguration elements. This will add multiple

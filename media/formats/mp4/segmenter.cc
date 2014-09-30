@@ -31,7 +31,9 @@ const size_t kCencKeyIdSize = 16u;
 // The version of cenc implemented here. CENC 4.
 const int kCencSchemeVersion = 0x00010000;
 
-uint64 Rescale(uint64 time_in_old_scale, uint32 old_scale, uint32 new_scale) {
+uint64_t Rescale(uint64_t time_in_old_scale,
+                 uint32_t old_scale,
+                 uint32_t new_scale) {
   return static_cast<double>(time_in_old_scale) / old_scale * new_scale;
 }
 
@@ -87,7 +89,7 @@ void GenerateEncryptedSampleEntryForKeyRotation(
       encryption_key, clear_lead_in_seconds, description);
 }
 
-uint8 GetNaluLengthSize(const StreamInfo& stream_info) {
+uint8_t GetNaluLengthSize(const StreamInfo& stream_info) {
   if (stream_info.stream_type() != kStreamVideo)
     return 0;
   const VideoStreamInfo& video_stream_info =
@@ -95,15 +97,15 @@ uint8 GetNaluLengthSize(const StreamInfo& stream_info) {
   return video_stream_info.nalu_length_size();
 }
 
-KeySource::TrackType GetTrackTypeForEncryption(
-    const StreamInfo& stream_info, uint32 max_sd_pixels) {
+KeySource::TrackType GetTrackTypeForEncryption(const StreamInfo& stream_info,
+                                               uint32_t max_sd_pixels) {
   if (stream_info.stream_type() == kStreamAudio)
     return KeySource::TRACK_TYPE_AUDIO;
 
   DCHECK_EQ(kStreamVideo, stream_info.stream_type());
   const VideoStreamInfo& video_stream_info =
       static_cast<const VideoStreamInfo&>(stream_info);
-  uint32 pixels = video_stream_info.width() * video_stream_info.height();
+  uint32_t pixels = video_stream_info.width() * video_stream_info.height();
   return (pixels > max_sd_pixels) ? KeySource::TRACK_TYPE_HD
                                   : KeySource::TRACK_TYPE_SD;
 }
@@ -128,7 +130,7 @@ Segmenter::~Segmenter() { STLDeleteElements(&fragmenters_); }
 Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
                              event::MuxerListener* muxer_listener,
                              KeySource* encryption_key_source,
-                             uint32 max_sd_pixels,
+                             uint32_t max_sd_pixels,
                              double clear_lead_in_seconds,
                              double crypto_period_duration_in_seconds) {
   DCHECK_LT(0u, streams.size());
@@ -138,7 +140,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
   moof_->tracks.resize(streams.size());
   segment_durations_.resize(streams.size());
   fragmenters_.resize(streams.size());
-  for (uint32 i = 0; i < streams.size(); ++i) {
+  for (uint32_t i = 0; i < streams.size(); ++i) {
     stream_map_[streams[i]] = i;
     moof_->tracks[i].header.track_id = i + 1;
     if (streams[i]->info()->stream_type() == kStreamVideo) {
@@ -151,7 +153,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
       continue;
     }
 
-    uint8 nalu_length_size = GetNaluLengthSize(*streams[i]->info());
+    uint8_t nalu_length_size = GetNaluLengthSize(*streams[i]->info());
     KeySource::TrackType track_type =
         GetTrackTypeForEncryption(*streams[i]->info(), max_sd_pixels);
     SampleDescription& description =
@@ -237,7 +239,7 @@ Status Segmenter::AddSample(const MediaStream* stream,
   // Find the fragmenter for this stream.
   DCHECK(stream);
   DCHECK(stream_map_.find(stream) != stream_map_.end());
-  uint32 stream_id = stream_map_[stream];
+  uint32_t stream_id = stream_map_[stream];
   Fragmenter* fragmenter = fragmenters_[stream_id];
 
   // Set default sample duration if it has not been set yet.
@@ -287,7 +289,7 @@ Status Segmenter::AddSample(const MediaStream* stream,
   return Status::OK;
 }
 
-uint32 Segmenter::GetReferenceTimeScale() const {
+uint32_t Segmenter::GetReferenceTimeScale() const {
   return moov_->header.timescale;
 }
 
@@ -303,7 +305,7 @@ double Segmenter::GetDuration() const {
 void Segmenter::InitializeSegment() {
   sidx_->references.clear();
   end_of_segment_ = false;
-  std::vector<uint64>::iterator it = segment_durations_.begin();
+  std::vector<uint64_t>::iterator it = segment_durations_.begin();
   for (; it != segment_durations_.end(); ++it)
     *it = 0;
 }
@@ -313,7 +315,7 @@ Status Segmenter::FinalizeSegment() {
   return DoFinalizeSegment();
 }
 
-uint32 Segmenter::GetReferenceStreamId() {
+uint32_t Segmenter::GetReferenceStreamId() {
   DCHECK(sidx_);
   return sidx_->reference_id - 1;
 }
@@ -332,7 +334,7 @@ Status Segmenter::FinalizeFragment(Fragmenter* fragmenter) {
   MediaData mdat;
   // Fill in data offsets. Data offset base is moof size + mdat box size.
   // (mdat is still empty, mdat size is the same as mdat box size).
-  uint64 base = moof_->ComputeSize() + mdat.ComputeSize();
+  uint64_t base = moof_->ComputeSize() + mdat.ComputeSize();
   for (uint i = 0; i < moof_->tracks.size(); ++i) {
     TrackFragment& traf = moof_->tracks[i];
     Fragmenter* fragmenter = fragmenters_[i];

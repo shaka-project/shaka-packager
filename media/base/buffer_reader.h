@@ -20,7 +20,7 @@ namespace media {
 class BufferReader {
  public:
   /// Create a BufferReader from a raw buffer.
-  BufferReader(const uint8* buf, size_t size)
+  BufferReader(const uint8_t* buf, size_t size)
       : buf_(buf), size_(size), pos_(0) {}
   ~BufferReader() {}
 
@@ -32,13 +32,13 @@ class BufferReader {
   /// the stream pointer.
   /// @return false if there are not enough bytes in the buffer.
   /// @{
-  bool Read1(uint8* v) WARN_UNUSED_RESULT;
-  bool Read2(uint16* v) WARN_UNUSED_RESULT;
-  bool Read2s(int16* v) WARN_UNUSED_RESULT;
-  bool Read4(uint32* v) WARN_UNUSED_RESULT;
-  bool Read4s(int32* v) WARN_UNUSED_RESULT;
-  bool Read8(uint64* v) WARN_UNUSED_RESULT;
-  bool Read8s(int64* v) WARN_UNUSED_RESULT;
+  bool Read1(uint8_t* v) WARN_UNUSED_RESULT;
+  bool Read2(uint16_t* v) WARN_UNUSED_RESULT;
+  bool Read2s(int16_t* v) WARN_UNUSED_RESULT;
+  bool Read4(uint32_t* v) WARN_UNUSED_RESULT;
+  bool Read4s(int32_t* v) WARN_UNUSED_RESULT;
+  bool Read8(uint64_t* v) WARN_UNUSED_RESULT;
+  bool Read8s(int64_t* v) WARN_UNUSED_RESULT;
   /// @}
 
   /// Read N-byte integer of the corresponding signedness and store it in the
@@ -46,17 +46,17 @@ class BufferReader {
   /// @param num_bytes should not be larger than 8 bytes.
   /// @return false if there are not enough bytes in the buffer, true otherwise.
   /// @{
-  bool ReadNBytesInto8(uint64* v, size_t num_bytes) WARN_UNUSED_RESULT;
-  bool ReadNBytesInto8s(int64* v, size_t num_bytes) WARN_UNUSED_RESULT;
+  bool ReadNBytesInto8(uint64_t* v, size_t num_bytes) WARN_UNUSED_RESULT;
+  bool ReadNBytesInto8s(int64_t* v, size_t num_bytes) WARN_UNUSED_RESULT;
   /// @}
 
-  bool ReadToVector(std::vector<uint8>* t, size_t count) WARN_UNUSED_RESULT;
+  bool ReadToVector(std::vector<uint8_t>* t, size_t count) WARN_UNUSED_RESULT;
 
   /// Advance the stream by this many bytes.
   /// @return false if there are not enough bytes in the buffer, true otherwise.
   bool SkipBytes(size_t num_bytes) WARN_UNUSED_RESULT;
 
-  const uint8* data() const { return buf_; }
+  const uint8_t* data() const { return buf_; }
   size_t size() const { return size_; }
   void set_size(size_t size) { size_ = size; }
   size_t pos() const { return pos_; }
@@ -68,7 +68,7 @@ class BufferReader {
   template <typename T>
   bool ReadNBytes(T* t, size_t num_bytes) WARN_UNUSED_RESULT;
 
-  const uint8* buf_;
+  const uint8_t* buf_;
   size_t size_;
   size_t pos_;
 

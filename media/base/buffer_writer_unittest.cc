@@ -16,20 +16,20 @@ namespace {
 const int kReservedBufferCapacity = 1000;
 // Min values for various integers of different size. Min values for signed
 // integers are already defined in //base/basictypes.h.
-const uint8 kuint8min = 0;
-const uint16 kuint16min = 0;
-const uint32 kuint32min = 0;
-const uint64 kuint64min = 0;
+const uint8_t kuint8min = 0;
+const uint16_t kuint16min = 0;
+const uint32_t kuint32min = 0;
+const uint64_t kuint64min = 0;
 // Max values for various integers are already defined in //base/basictypes.h.
 // Other integer values.
-const uint8 kuint8 = 10;
-const uint16 kuint16 = 1000;
-const int16 kint16 = -1000;
-const uint32 kuint32 = 1000000;
-const int32 kint32 = -1000000;
-const uint64 kuint64 = 10000000000ULL;
-const int64 kint64 = -10000000000LL;
-const uint8 kuint8Array[] = {10, 1, 100, 5, 3, 60};
+const uint8_t kuint8 = 10;
+const uint16_t kuint16 = 1000;
+const int16_t kint16 = -1000;
+const uint32_t kuint32 = 1000000;
+const int32_t kint32 = -1000000;
+const uint64_t kuint64 = 10000000000ULL;
+const int64_t kint64 = -10000000000LL;
+const uint8_t kuint8Array[] = {10, 1, 100, 5, 3, 60};
 }  // namespace
 
 namespace edash_packager {
@@ -43,13 +43,13 @@ class BufferWriterTest : public testing::Test {
     reader_.reset(new BufferReader(writer_->Buffer(), writer_->Size()));
   }
 
-  bool ReadInt(uint8* v) { return reader_->Read1(v); }
-  bool ReadInt(uint16* v) { return reader_->Read2(v); }
-  bool ReadInt(int16* v) { return reader_->Read2s(v); }
-  bool ReadInt(uint32* v) { return reader_->Read4(v); }
-  bool ReadInt(int32* v) { return reader_->Read4s(v); }
-  bool ReadInt(uint64* v) { return reader_->Read8(v); }
-  bool ReadInt(int64* v) { return reader_->Read8s(v); }
+  bool ReadInt(uint8_t* v) { return reader_->Read1(v); }
+  bool ReadInt(uint16_t* v) { return reader_->Read2(v); }
+  bool ReadInt(int16_t* v) { return reader_->Read2s(v); }
+  bool ReadInt(uint32_t* v) { return reader_->Read4(v); }
+  bool ReadInt(int32_t* v) { return reader_->Read4s(v); }
+  bool ReadInt(uint64_t* v) { return reader_->Read8(v); }
+  bool ReadInt(int64_t* v) { return reader_->Read8s(v); }
 
   template <typename T>
   void ReadAndExpect(T expectation) {
@@ -89,26 +89,26 @@ TEST_F(BufferWriterTest, Append8s) { Verify(kint64min, kint64max, kint64); }
 
 TEST_F(BufferWriterTest, AppendNBytes) {
   // Write the least significant four bytes and verify the result.
-  writer_->AppendNBytes(kuint64, sizeof(uint32));
-  ASSERT_EQ(sizeof(uint32), writer_->Size());
+  writer_->AppendNBytes(kuint64, sizeof(uint32_t));
+  ASSERT_EQ(sizeof(uint32_t), writer_->Size());
 
   CreateReader();
-  ReadAndExpect(static_cast<uint32>(kuint64 & 0xFFFFFFFF));
+  ReadAndExpect(static_cast<uint32_t>(kuint64 & 0xFFFFFFFF));
 }
 
 TEST_F(BufferWriterTest, AppendEmptyVector) {
-  std::vector<uint8> v;
+  std::vector<uint8_t> v;
   writer_->AppendVector(v);
   ASSERT_EQ(0u, writer_->Size());
 }
 
 TEST_F(BufferWriterTest, AppendVector) {
-  std::vector<uint8> v(kuint8Array, kuint8Array + sizeof(kuint8Array));
+  std::vector<uint8_t> v(kuint8Array, kuint8Array + sizeof(kuint8Array));
   writer_->AppendVector(v);
   ASSERT_EQ(sizeof(kuint8Array), writer_->Size());
 
   CreateReader();
-  std::vector<uint8> data_read;
+  std::vector<uint8_t> data_read;
   ASSERT_TRUE(reader_->ReadToVector(&data_read, sizeof(kuint8Array)));
   ASSERT_EQ(v, data_read);
 }
@@ -118,7 +118,7 @@ TEST_F(BufferWriterTest, AppendArray) {
   ASSERT_EQ(sizeof(kuint8Array), writer_->Size());
 
   CreateReader();
-  std::vector<uint8> data_read;
+  std::vector<uint8_t> data_read;
   ASSERT_TRUE(reader_->ReadToVector(&data_read, sizeof(kuint8Array)));
   for (size_t i = 0; i < sizeof(kuint8Array); ++i)
     EXPECT_EQ(kuint8Array[i], data_read[i]);
@@ -177,7 +177,7 @@ TEST_F(BufferWriterTest, WriteToFile) {
   // Read the file and verify.
   File* const input_file = File::Open(path.value().c_str(), "r");
   ASSERT_TRUE(input_file != NULL);
-  std::vector<uint8> data_read(sizeof(kuint8Array), 0);
+  std::vector<uint8_t> data_read(sizeof(kuint8Array), 0);
   EXPECT_EQ(
       sizeof(kuint8Array),
       static_cast<size_t>(input_file->Read(&data_read[0], data_read.size())));

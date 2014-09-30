@@ -20,12 +20,12 @@ class BandwidthEstimator {
 
   // @param size is the size of the block in bytes. Should be positive.
   // @param duration is the length in seconds. Should be positive.
-  void AddBlock(uint64 size, double duration);
+  void AddBlock(uint64_t size, double duration);
 
   // @return The estimate bandwidth, in bits per second, from the harmonic mean
   //         of the number of blocks specified in the constructor. The value is
   //         rounded up to the nearest integer.
-  uint64 Estimate() const;
+  uint64_t Estimate() const;
 
   static const int kUseAllBlocks;
 

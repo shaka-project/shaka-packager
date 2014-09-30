@@ -43,7 +43,7 @@ class MP4MediaParser : public MediaParser {
                     const NewSampleCB& new_sample_cb,
                     KeySource* decryption_key_source) OVERRIDE;
   virtual void Flush() OVERRIDE;
-  virtual bool Parse(const uint8* buf, int size) OVERRIDE;
+  virtual bool Parse(const uint8_t* buf, int size) OVERRIDE;
   /// @}
 
  private:
@@ -62,7 +62,7 @@ class MP4MediaParser : public MediaParser {
       const std::vector<ProtectionSystemSpecificHeader>& headers);
 
   bool DecryptSampleBuffer(const DecryptConfig* decrypt_config,
-                           uint8* buffer,
+                           uint8_t* buffer,
                            size_t buffer_size);
 
   // To retain proper framing, each 'mdat' atom must be read; to limit memory
@@ -71,7 +71,7 @@ class MP4MediaParser : public MediaParser {
   // to |offset|, updating the |mdat_tail_| value so that framing can be
   // retained after all 'mdat' information has been read.
   // Returns 'true' on success, 'false' if there was an error.
-  bool ReadAndDiscardMDATsUntil(const int64 offset);
+  bool ReadAndDiscardMDATsUntil(const int64_t offset);
 
   void ChangeState(State new_state);
 
@@ -93,15 +93,15 @@ class MP4MediaParser : public MediaParser {
   // |moof_head_| is the offset of the start of the most recently parsed moof
   // block. All byte offsets in sample information are relative to this offset,
   // as mandated by the Media Source spec.
-  int64 moof_head_;
+  int64_t moof_head_;
   // |mdat_tail_| is the stream offset of the end of the current 'mdat' box.
   // Valid iff it is greater than the head of the queue.
-  int64 mdat_tail_;
+  int64_t mdat_tail_;
 
   scoped_ptr<Movie> moov_;
   scoped_ptr<TrackRunIterator> runs_;
 
-  typedef std::map<std::vector<uint8>, AesCtrEncryptor*> DecryptorMap;
+  typedef std::map<std::vector<uint8_t>, AesCtrEncryptor*> DecryptorMap;
   DecryptorMap decryptor_map_;
 
   DISALLOW_COPY_AND_ASSIGN(MP4MediaParser);

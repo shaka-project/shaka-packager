@@ -20,9 +20,9 @@ class CompositionOffsetIteratorTest : public testing::Test {
  public:
   CompositionOffsetIteratorTest() {
     // Build composition offset table from kCompositionOffsets.
-    uint32 length = sizeof(kCompositionOffsets) / sizeof(CompositionOffset);
-    for (uint32 i = 0; i < length; ++i) {
-      for (uint32 j = 0; j < kCompositionOffsets[i].sample_count; ++j) {
+    uint32_t length = sizeof(kCompositionOffsets) / sizeof(CompositionOffset);
+    for (uint32_t i = 0; i < length; ++i) {
+      for (uint32_t j = 0; j < kCompositionOffsets[i].sample_count; ++j) {
         composition_offset_table_.push_back(
             kCompositionOffsets[i].sample_offset);
       }
@@ -35,7 +35,7 @@ class CompositionOffsetIteratorTest : public testing::Test {
   }
 
  protected:
-  std::vector<int32> composition_offset_table_;
+  std::vector<int32_t> composition_offset_table_;
   CompositionTimeToSample composition_time_to_sample_;
   scoped_ptr<CompositionOffsetIterator> composition_offset_iterator_;
 
@@ -58,7 +58,8 @@ TEST_F(CompositionOffsetIteratorTest, NumSamples) {
 TEST_F(CompositionOffsetIteratorTest, AdvanceSample) {
   ASSERT_EQ(composition_offset_table_[0],
             composition_offset_iterator_->sample_offset());
-  for (uint32 sample = 1; sample < composition_offset_table_.size(); ++sample) {
+  for (uint32_t sample = 1; sample < composition_offset_table_.size();
+       ++sample) {
     ASSERT_TRUE(composition_offset_iterator_->AdvanceSample());
     ASSERT_EQ(composition_offset_table_[sample],
               composition_offset_iterator_->sample_offset());
@@ -69,7 +70,8 @@ TEST_F(CompositionOffsetIteratorTest, AdvanceSample) {
 }
 
 TEST_F(CompositionOffsetIteratorTest, SampleOffset) {
-  for (uint32 sample = 0; sample < composition_offset_table_.size(); ++sample) {
+  for (uint32_t sample = 0; sample < composition_offset_table_.size();
+       ++sample) {
     ASSERT_EQ(composition_offset_table_[sample],
               composition_offset_iterator_->SampleOffset(sample+1));
   }
