@@ -7,9 +7,11 @@
 #ifndef PACKAGER_FILE_FILE_H_
 #define PACKAGER_FILE_FILE_H_
 
+#include <stdint.h>
+
 #include <string>
 
-#include "base/basictypes.h"
+#include "base/macros.h"
 
 namespace edash_packager {
 namespace media {

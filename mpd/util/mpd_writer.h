@@ -12,13 +12,11 @@
 #include <list>
 #include <string>
 
-#include "base/basictypes.h"
+#include "base/macros.h"
 
 namespace edash_packager {
 namespace media {
-
 class File;
-
 }  // namespace media
 }  // namespace edash_packager
 

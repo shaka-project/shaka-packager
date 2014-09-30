@@ -5,9 +5,9 @@
 #ifndef MEDIA_BASE_BIT_READER_H_
 #define MEDIA_BASE_BIT_READER_H_
 
+#include <stdint.h>
 #include <sys/types.h>
 
-#include "base/basictypes.h"
 #include "base/logging.h"
 
 namespace edash_packager {
@@ -31,7 +31,8 @@ class BitReader {
   ///         bits in the stream), true otherwise. When false is returned, the
   ///         stream will enter a state where further ReadBits/SkipBits
   ///         operations will always return false unless @a num_bits is 0.
-  template<typename T> bool ReadBits(int num_bits, T *out) {
+  template <typename T>
+  bool ReadBits(int num_bits, T* out) {
     DCHECK_LE(num_bits, static_cast<int>(sizeof(T) * 8));
     uint64_t temp;
     bool ret = ReadBitsInternal(num_bits, &temp);

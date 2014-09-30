@@ -8,13 +8,15 @@
 #ifndef MEDIA_BASE_TIMESTAMP_H_
 #define MEDIA_BASE_TIMESTAMP_H_
 
-#include "base/basictypes.h"
+#include <stdint.h>
+
+#include <limits>
 
 namespace edash_packager {
 namespace media {
 
-const int64_t kNoTimestamp = kint64min;
-const int64_t kInfiniteDuration = kint64max;
+const int64_t kNoTimestamp = std::numeric_limits<int64_t>::min();
+const int64_t kInfiniteDuration = std::numeric_limits<int64_t>::max();
 
 }  // namespace media
 }  // namespace edash_packager

@@ -4,7 +4,8 @@
 
 #include "media/formats/mp2t/es_parser_h264.h"
 
-#include "base/basictypes.h"
+#include <stdint.h>
+
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/media_sample.h"

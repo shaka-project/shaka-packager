@@ -12,7 +12,7 @@
 
 #include <string>
 
-#include "base/basictypes.h"
+#include "base/macros.h"
 
 struct rsa_st;
 typedef struct rsa_st RSA;

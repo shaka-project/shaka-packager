@@ -10,7 +10,7 @@
 #ifndef MPD_BASE_MPD_NOTIFIER_H_
 #define MPD_BASE_MPD_NOTIFIER_H_
 
-#include "base/basictypes.h"
+#include <stdint.h>
 
 namespace edash_packager {
 

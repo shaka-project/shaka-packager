@@ -7,9 +7,11 @@
 #ifndef MEDIA_FORMATS_MP2T_ADTS_HEADER_H_
 #define MEDIA_FORMATS_MP2T_ADTS_HEADER_H_
 
-#include "base/basictypes.h"
+#include <stdint.h>
 
 #include <vector>
+
+#include "base/macros.h"
 
 namespace edash_packager {
 namespace media {

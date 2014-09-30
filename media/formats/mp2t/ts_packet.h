@@ -5,7 +5,9 @@
 #ifndef MEDIA_FORMATS_MP2T_TS_PACKET_H_
 #define MEDIA_FORMATS_MP2T_TS_PACKET_H_
 
-#include "base/basictypes.h"
+#include <stdint.h>
+
+#include "base/macros.h"
 
 namespace edash_packager {
 namespace media {

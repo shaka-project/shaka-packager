@@ -5,8 +5,7 @@
 #ifndef MEDIA_BASE_NETWORK_UTIL_H_
 #define MEDIA_BASE_NETWORK_UTIL_H_
 
-#include "base/base_export.h"
-#include "base/basictypes.h"
+#include <stdint.h>
 
 namespace edash_packager {
 namespace media {

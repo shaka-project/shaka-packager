@@ -13,8 +13,6 @@
 
 #include <string>
 
-#include "base/basictypes.h"
-
 namespace edash_packager {
 
 class MediaInfo;

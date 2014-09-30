@@ -5,9 +5,10 @@
 #ifndef MEDIA_FORMATS_MP4_ES_DESCRIPTOR_H_
 #define MEDIA_FORMATS_MP4_ES_DESCRIPTOR_H_
 
-#include <vector>
+#include <stddef.h>
+#include <stdint.h>
 
-#include "base/basictypes.h"
+#include <vector>
 
 namespace edash_packager {
 namespace media {

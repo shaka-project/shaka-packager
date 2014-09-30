@@ -7,9 +7,10 @@
 #ifndef MEDIA_FILTERS_H264_BIT_READER_H_
 #define MEDIA_FILTERS_H264_BIT_READER_H_
 
+#include <stdint.h>
 #include <sys/types.h>
 
-#include "base/basictypes.h"
+#include "base/macros.h"
 
 namespace edash_packager {
 namespace media {

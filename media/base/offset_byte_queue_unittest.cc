@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include <gtest/gtest.h>
+#include <stdint.h>
 #include <string.h>
 
-#include "base/basictypes.h"
 #include "base/memory/scoped_ptr.h"
 #include "media/base/offset_byte_queue.h"
 

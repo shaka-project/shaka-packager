@@ -5,7 +5,9 @@
 #ifndef MEDIA_BASE_AUDIO_TIMESTAMP_HELPER_H_
 #define MEDIA_BASE_AUDIO_TIMESTAMP_HELPER_H_
 
-#include "base/basictypes.h"
+#include <stdint.h>
+
+#include "base/macros.h"
 
 namespace edash_packager {
 namespace media {

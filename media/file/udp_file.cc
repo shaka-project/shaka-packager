@@ -12,6 +12,8 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include <limits>
+
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "gflags/gflags.h"
@@ -119,7 +121,7 @@ int64_t UdpFile::Size() {
   if (socket_ == kInvalidSocket)
     return -1;
 
-  return kint64max;
+  return std::numeric_limits<int64_t>::max();
 }
 
 bool UdpFile::Flush() {

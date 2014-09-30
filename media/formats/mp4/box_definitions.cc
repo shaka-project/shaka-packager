@@ -4,6 +4,8 @@
 
 #include "media/formats/mp4/box_definitions.h"
 
+#include <limits>
+
 #include "base/logging.h"
 #include "media/base/bit_reader.h"
 #include "media/formats/mp4/box_buffer.h"
@@ -31,10 +33,11 @@ const uint16_t kVideoFrameCount = 1;
 const uint16_t kVideoDepth = 0x0018;
 
 bool IsFitIn32Bits(uint64_t a) {
-  return a <= kuint32max;
+  return a <= std::numeric_limits<uint32_t>::max();
 }
 bool IsFitIn32Bits(int64_t a) {
-  return a <= kint32max && a >= kint32min;
+  return a <= std::numeric_limits<int32_t>::max() &&
+         a >= std::numeric_limits<int32_t>::min();
 }
 bool IsFitIn32Bits(uint64_t a, uint64_t b) {
   return IsFitIn32Bits(a) && IsFitIn32Bits(b);

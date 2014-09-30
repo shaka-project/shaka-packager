@@ -4,10 +4,11 @@
 
 #include "media/base/container_names.h"
 
+#include <stdint.h>
+
 #include <cctype>
 #include <limits>
 
-#include "base/basictypes.h"
 #include "base/logging.h"
 #include "media/base/bit_reader.h"
 

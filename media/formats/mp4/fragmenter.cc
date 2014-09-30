@@ -6,6 +6,8 @@
 
 #include "media/formats/mp4/fragmenter.h"
 
+#include <limits>
+
 #include "media/base/buffer_writer.h"
 #include "media/base/media_sample.h"
 #include "media/formats/mp4/box_definitions.h"
@@ -15,7 +17,7 @@ namespace media {
 namespace mp4 {
 
 namespace {
-const int64_t kInvalidTime = kint64max;
+const int64_t kInvalidTime = std::numeric_limits<int64_t>::max();
 }  // namespace
 
 Fragmenter::Fragmenter(TrackFragment* traf)

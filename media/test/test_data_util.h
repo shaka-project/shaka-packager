@@ -5,9 +5,10 @@
 #ifndef MEDIA_TEST_TEST_DATA_UTIL_H_
 #define MEDIA_TEST_TEST_DATA_UTIL_H_
 
+#include <stdint.h>
+
 #include <string>
 
-#include "base/basictypes.h"
 #include "base/files/file_path.h"
 
 namespace edash_packager {

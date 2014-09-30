@@ -6,6 +6,8 @@
 
 #include "media/base/buffer_writer.h"
 
+#include <limits>
+
 #include "base/file_util.h"
 #include "base/memory/scoped_ptr.h"
 #include "media/base/buffer_reader.h"
@@ -14,14 +16,6 @@
 
 namespace {
 const int kReservedBufferCapacity = 1000;
-// Min values for various integers of different size. Min values for signed
-// integers are already defined in //base/basictypes.h.
-const uint8_t kuint8min = 0;
-const uint16_t kuint16min = 0;
-const uint32_t kuint32min = 0;
-const uint64_t kuint64min = 0;
-// Max values for various integers are already defined in //base/basictypes.h.
-// Other integer values.
 const uint8_t kuint8 = 10;
 const uint16_t kuint16 = 1000;
 const int16_t kint16 = -1000;
@@ -59,7 +53,10 @@ class BufferWriterTest : public testing::Test {
   }
 
   template <typename T>
-  void Verify(T min, T max, T val) {
+  void Verify(T val) {
+    T min = std::numeric_limits<T>::min();
+    T max = std::numeric_limits<T>::max();
+
     writer_->AppendInt(min);
     writer_->AppendInt(max);
     writer_->AppendInt(val);
@@ -79,13 +76,13 @@ class BufferWriterTest : public testing::Test {
   DISALLOW_COPY_AND_ASSIGN(BufferWriterTest);
 };
 
-TEST_F(BufferWriterTest, Append1) { Verify(kuint8min, kuint8max, kuint8); }
-TEST_F(BufferWriterTest, Append2) { Verify(kuint16min, kuint16max, kuint16); }
-TEST_F(BufferWriterTest, Append2s) { Verify(kint16min, kint16max, kint16); }
-TEST_F(BufferWriterTest, Append4) { Verify(kuint32min, kuint32max, kuint32); }
-TEST_F(BufferWriterTest, Append4s) { Verify(kint32min, kint32max, kint32); }
-TEST_F(BufferWriterTest, Append8) { Verify(kuint64min, kuint64max, kuint64); }
-TEST_F(BufferWriterTest, Append8s) { Verify(kint64min, kint64max, kint64); }
+TEST_F(BufferWriterTest, Append1) { Verify(kuint8); }
+TEST_F(BufferWriterTest, Append2) { Verify(kuint16); }
+TEST_F(BufferWriterTest, Append2s) { Verify(kint16); }
+TEST_F(BufferWriterTest, Append4) { Verify(kuint32); }
+TEST_F(BufferWriterTest, Append4s) { Verify(kint32); }
+TEST_F(BufferWriterTest, Append8) { Verify(kuint64); }
+TEST_F(BufferWriterTest, Append8s) { Verify(kint64); }
 
 TEST_F(BufferWriterTest, AppendNBytes) {
   // Write the least significant four bytes and verify the result.

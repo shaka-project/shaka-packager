@@ -8,6 +8,7 @@
 
 #include <cmath>
 
+#include "base/macros.h"
 #include "mpd/base/bandwidth_estimator.h"
 
 namespace edash_packager {

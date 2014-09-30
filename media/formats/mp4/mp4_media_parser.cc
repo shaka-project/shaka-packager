@@ -4,6 +4,8 @@
 
 #include "media/formats/mp4/mp4_media_parser.h"
 
+#include <limits>
+
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
@@ -170,7 +172,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                          moov_->header.timescale,
                          timescale);
     } else if (moov_->header.duration > 0 &&
-               moov_->header.duration != kuint64max) {
+               moov_->header.duration != std::numeric_limits<uint64_t>::max()) {
       DCHECK(moov_->header.timescale != 0);
       duration =
           Rescale(moov_->header.duration, moov_->header.timescale, timescale);

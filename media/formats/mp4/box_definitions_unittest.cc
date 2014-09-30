@@ -6,6 +6,8 @@
 
 #include <gtest/gtest.h>
 
+#include <limits>
+
 #include "base/memory/scoped_ptr.h"
 #include "media/base/buffer_writer.h"
 #include "media/formats/mp4/box_definitions.h"
@@ -447,7 +449,8 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Fill(MediaHeader* mdhd) {
     mdhd->creation_time = 124231432;
-    mdhd->modification_time = static_cast<uint64_t>(kuint32max) + 1;
+    mdhd->modification_time =
+        static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) + 1;
     mdhd->timescale = 50000;
     mdhd->duration = 250000;
     strcpy(mdhd->language, "abc");
@@ -456,7 +459,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Modify(MediaHeader* mdhd) {
     mdhd->creation_time = 2;
-    mdhd->modification_time = kuint32max;
+    mdhd->modification_time = std::numeric_limits<uint32_t>::max();
     strcpy(mdhd->language, "und");
     mdhd->version = 0;
   }

@@ -6,6 +6,7 @@
 
 #include "mpd/base/xml/xml_node.h"
 
+#include <limits>
 #include <set>
 
 #include "base/logging.h"
@@ -487,7 +488,7 @@ bool RepresentationXmlNode::AddAudioChannelInfo(
 void RepresentationXmlNode::AddAudioSamplingRateInfo(
     const RepeatedAudioInfo& repeated_audio_info) {
   bool has_sampling_frequency = false;
-  uint32_t min_sampling_frequency = kuint32max;
+  uint32_t min_sampling_frequency = std::numeric_limits<uint32_t>::max();
   uint32_t max_sampling_frequency = 0;
 
   for (int i = 0; i < repeated_audio_info.size(); ++i) {

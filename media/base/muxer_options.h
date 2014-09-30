@@ -7,11 +7,9 @@
 #ifndef MEDIA_BASE_MUXER_OPTIONS_H_
 #define MEDIA_BASE_MUXER_OPTIONS_H_
 
-#include "base/basictypes.h"
+#include <stdint.h>
 
 #include <string>
-
-#include "base/basictypes.h"
 
 namespace edash_packager {
 namespace media {

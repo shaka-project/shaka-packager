@@ -7,8 +7,11 @@
 #ifndef MEDIA_FORMATS_MP4_SYNC_SAMPLE_ITERATOR_H_
 #define MEDIA_FORMATS_MP4_SYNC_SAMPLE_ITERATOR_H_
 
+#include <stdint.h>
+
 #include <vector>
 
+#include "base/macros.h"
 #include "media/formats/mp4/box_definitions.h"
 
 namespace edash_packager {

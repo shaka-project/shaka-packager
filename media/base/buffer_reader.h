@@ -7,10 +7,12 @@
 #ifndef MEDIA_BASE_BUFFER_READER_H_
 #define MEDIA_BASE_BUFFER_READER_H_
 
+#include <stdint.h>
+
 #include <vector>
 
-#include "base/basictypes.h"
 #include "base/compiler_specific.h"
+#include "base/macros.h"
 
 namespace edash_packager {
 namespace media {

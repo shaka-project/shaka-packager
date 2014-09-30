@@ -5,10 +5,11 @@
 #ifndef MEDIA_BASE_DECRYPT_CONFIG_H_
 #define MEDIA_BASE_DECRYPT_CONFIG_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include "base/basictypes.h"
 #include "base/memory/scoped_ptr.h"
 
 namespace edash_packager {

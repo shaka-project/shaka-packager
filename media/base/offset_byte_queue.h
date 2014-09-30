@@ -5,7 +5,8 @@
 #ifndef MEDIA_BASE_OFFSET_BYTE_QUEUE_H_
 #define MEDIA_BASE_OFFSET_BYTE_QUEUE_H_
 
-#include "base/basictypes.h"
+#include <stdint.h>
+
 #include "media/base/byte_queue.h"
 
 namespace edash_packager {

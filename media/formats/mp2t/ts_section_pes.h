@@ -5,7 +5,8 @@
 #ifndef MEDIA_FORMATS_MP2T_TS_SECTION_PES_H_
 #define MEDIA_FORMATS_MP2T_TS_SECTION_PES_H_
 
-#include "base/basictypes.h"
+#include <stdint.h>
+
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_ptr.h"
 #include "media/base/byte_queue.h"

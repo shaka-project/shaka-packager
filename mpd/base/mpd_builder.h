@@ -10,11 +10,12 @@
 #ifndef MPD_BASE_MPD_BUILDER_H_
 #define MPD_BASE_MPD_BUILDER_H_
 
+#include <stdint.h>
+
 #include <list>
 #include <string>
 
 #include "base/atomic_sequence_num.h"
-#include "base/basictypes.h"
 #include "base/gtest_prod_util.h"
 #include "base/stl_util.h"
 #include "base/synchronization/lock.h"

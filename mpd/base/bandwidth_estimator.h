@@ -7,9 +7,10 @@
 #ifndef MPD_BASE_BANDWIDTH_ESTIMATOR_H_
 #define MPD_BASE_BANDWIDTH_ESTIMATOR_H_
 
-#include <list>
+#include <stddef.h>
+#include <stdint.h>
 
-#include "base/basictypes.h"
+#include <list>
 
 class BandwidthEstimator {
  public:

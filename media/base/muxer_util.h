@@ -9,9 +9,9 @@
 #ifndef MEDIA_BASE_MUXER_UTIL_H_
 #define MEDIA_BASE_MUXER_UTIL_H_
 
-#include <string>
+#include <stdint.h>
 
-#include "base/basictypes.h"
+#include <string>
 
 namespace edash_packager {
 namespace media {

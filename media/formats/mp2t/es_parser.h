@@ -5,7 +5,8 @@
 #ifndef MEDIA_FORMATS_MP2T_ES_PARSER_H_
 #define MEDIA_FORMATS_MP2T_ES_PARSER_H_
 
-#include "base/basictypes.h"
+#include <stdint.h>
+
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 

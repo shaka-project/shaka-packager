@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include <gtest/gtest.h>
+#include <stdint.h>
 
-#include "base/basictypes.h"
 #include "base/logging.h"
 #include "base/memory/scoped_ptr.h"
 #include "media/formats/mp4/box_definitions.h"

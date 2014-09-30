@@ -5,6 +5,7 @@
 #include "media/formats/mp4/track_run_iterator.h"
 
 #include <algorithm>
+#include <limits>
 
 #include "media/base/buffer_reader.h"
 #include "media/formats/mp4/chunk_info_iterator.h"
@@ -12,6 +13,10 @@
 #include "media/formats/mp4/decoding_time_iterator.h"
 #include "media/formats/mp4/rcheck.h"
 #include "media/formats/mp4/sync_sample_iterator.h"
+
+namespace {
+const int64_t kInvalidOffset = std::numeric_limits<int64_t>::max();
+}  // namespace
 
 namespace edash_packager {
 namespace media {
@@ -116,8 +121,8 @@ static void PopulateSampleInfo(const TrackExtends& trex,
 class CompareMinTrackRunDataOffset {
  public:
   bool operator()(const TrackRunInfo& a, const TrackRunInfo& b) {
-    int64_t a_aux = a.aux_info_total_size ? a.aux_info_start_offset : kint64max;
-    int64_t b_aux = b.aux_info_total_size ? b.aux_info_start_offset : kint64max;
+    int64_t a_aux = a.aux_info_total_size ? a.aux_info_start_offset : kInvalidOffset;
+    int64_t b_aux = b.aux_info_total_size ? b.aux_info_start_offset : kInvalidOffset;
 
     int64_t a_lesser = std::min(a_aux, a.sample_start_offset);
     int64_t a_greater = std::max(a_aux, a.sample_start_offset);
@@ -431,7 +436,7 @@ bool TrackRunIterator::IsSampleValid() const {
 // offset of this track alone - is not guaranteed, because the BMFF spec does
 // not have any inter-run ordering restrictions.)
 int64_t TrackRunIterator::GetMaxClearOffset() {
-  int64_t offset = kint64max;
+  int64_t offset = kInvalidOffset;
 
   if (IsSampleValid()) {
     offset = std::min(offset, sample_offset_);
@@ -446,7 +451,7 @@ int64_t TrackRunIterator::GetMaxClearOffset() {
         offset = std::min(offset, next_run->aux_info_start_offset);
     }
   }
-  if (offset == kint64max)
+  if (offset == kInvalidOffset)
     return runs_.empty() ? 0 : runs_[0].sample_start_offset;
   return offset;
 }

@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/basictypes.h"
 #include "base/memory/scoped_ptr.h"
 
 namespace edash_packager {

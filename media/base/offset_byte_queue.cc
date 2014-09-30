@@ -4,7 +4,8 @@
 
 #include "media/base/offset_byte_queue.h"
 
-#include "base/basictypes.h"
+#include <stdint.h>
+
 #include "base/logging.h"
 
 namespace edash_packager {

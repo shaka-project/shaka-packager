@@ -9,9 +9,9 @@
 #ifndef MEDIA_EVENT_MUXER_LISTENER_H_
 #define MEDIA_EVENT_MUXER_LISTENER_H_
 
-#include <vector>
+#include <stdint.h>
 
-#include "base/basictypes.h"
+#include <vector>
 
 namespace edash_packager {
 namespace media {

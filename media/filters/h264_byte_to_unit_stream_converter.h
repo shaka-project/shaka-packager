@@ -7,7 +7,8 @@
 #ifndef MEDIA_FILTERS_H264_BYTE_TO_UNIT_STREAM_CONVERTER_H_
 #define MEDIA_FILTERS_H264_BYTE_TO_UNIT_STREAM_CONVERTER_H_
 
-#include "base/basictypes.h"
+#include <stddef.h>
+#include <stdint.h>
 
 #include <vector>
 

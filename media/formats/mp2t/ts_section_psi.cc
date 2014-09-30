@@ -4,7 +4,8 @@
 
 #include "media/formats/mp2t/ts_section_psi.h"
 
-#include "base/basictypes.h"
+#include <stdint.h>
+
 #include "base/logging.h"
 #include "media/base/bit_reader.h"
 #include "media/formats/mp2t/mp2t_common.h"

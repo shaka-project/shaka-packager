@@ -7,10 +7,11 @@
 #ifndef MEDIA_FORMATS_MP4_MP4_MEDIA_PARSER_H_
 #define MEDIA_FORMATS_MP4_MP4_MEDIA_PARSER_H_
 
+#include <stdint.h>
+
 #include <map>
 #include <vector>
 
-#include "base/basictypes.h"
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_ptr.h"

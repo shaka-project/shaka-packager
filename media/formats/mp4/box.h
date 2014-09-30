@@ -7,7 +7,8 @@
 #ifndef MEDIA_FORMATS_MP4_BOX_H_
 #define MEDIA_FORMATS_MP4_BOX_H_
 
-#include "base/basictypes.h"
+#include <stdint.h>
+
 #include "base/compiler_specific.h"
 #include "media/formats/mp4/fourccs.h"
 

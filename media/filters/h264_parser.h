@@ -7,11 +7,11 @@
 #ifndef MEDIA_FILTERS_H264_PARSER_H_
 #define MEDIA_FILTERS_H264_PARSER_H_
 
+#include <stdint.h>
 #include <sys/types.h>
 
 #include <map>
 
-#include "base/basictypes.h"
 #include "media/filters/h264_bit_reader.h"
 
 namespace edash_packager {

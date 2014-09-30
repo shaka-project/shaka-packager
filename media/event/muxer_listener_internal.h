@@ -7,10 +7,11 @@
 #ifndef MEDIA_EVENT_MUXER_LISTENER_INTERNAL_H_
 #define MEDIA_EVENT_MUXER_LISTENER_INTERNAL_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include "base/basictypes.h"
 #include "media/event/muxer_listener.h"
 
 namespace edash_packager {

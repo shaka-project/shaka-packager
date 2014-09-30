@@ -7,8 +7,8 @@
 #include "mpd/util/mpd_writer.h"
 
 #include <google/protobuf/text_format.h>
+#include <stdint.h>
 
-#include "base/basictypes.h"
 #include "media/file/file.h"
 #include "mpd/base/mpd_builder.h"
 

@@ -5,10 +5,11 @@
 #ifndef MEDIA_FORMATS_MP2T_ES_PARSER_H264_H_
 #define MEDIA_FORMATS_MP2T_ES_PARSER_H264_H_
 
+#include <stdint.h>
+
 #include <list>
 #include <utility>
 
-#include "base/basictypes.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_ptr.h"

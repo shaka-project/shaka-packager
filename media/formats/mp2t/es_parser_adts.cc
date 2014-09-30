@@ -4,9 +4,10 @@
 
 #include "media/formats/mp2t/es_parser_adts.h"
 
+#include <stdint.h>
+
 #include <list>
 
-#include "base/basictypes.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/audio_timestamp_helper.h"

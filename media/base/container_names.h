@@ -5,7 +5,7 @@
 #ifndef MEDIA_BASE_CONTAINER_NAMES_H_
 #define MEDIA_BASE_CONTAINER_NAMES_H_
 
-#include "base/basictypes.h"
+#include <stdint.h>
 
 namespace edash_packager {
 namespace media {

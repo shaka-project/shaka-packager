@@ -6,6 +6,8 @@
 
 #include <inttypes.h>
 
+#include <limits>
+
 #include "base/logging.h"
 #include "base/memory/scoped_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -170,7 +172,8 @@ bool BoxReader::ReadHeader(bool* err) {
   }
 
   // 'mdat' box could have a 64-bit size; other boxes should be very small.
-  if (size > static_cast<uint64_t>(kint32max) && type_ != FOURCC_MDAT) {
+  if (size > static_cast<uint64_t>(std::numeric_limits<int32_t>::max()) &&
+      type_ != FOURCC_MDAT) {
     LOG(ERROR) << base::StringPrintf("Box '%s' size (%" PRIu64
                                      ") is too large.",
                                      FourCCToString(type_).c_str(),
