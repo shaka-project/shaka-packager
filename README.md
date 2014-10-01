@@ -13,8 +13,8 @@ This document provides the information needed to create a DASH packager that is 
 3. Get the source
 
   ```Shell
-  mkdir packager
-  cd packager
+  mkdir edash_packager
+  cd edash_packager
   gclient config https://www.github.com/google/edash-packager.git --name=src
   gclient sync
   ```
@@ -34,17 +34,13 @@ This document provides the information needed to create a DASH packager that is 
   ```
   Refer to ninja manual for details.
 
-  We also provide a mechanism to change build configurations, for example, developers can change build system to “make” by overriding *GYP_GENERATORS* using *gyp_packager.py* script, i.e.
+  We also provide a mechanism to change build configurations, for example, developers can change build system to “make” by overriding *GYP_GENERATORS*.
   ```Shell
-  GYP_GENERATORS='make' ./gyp_packager.py
+  GYP_GENERATORS='make' gclient runhooks
   ```
   Another example, developers can also enable clang by overriding *GYP_DEFINE*.
   ```Shell
-  GYP_DEFINES='clang=1' ./gyp_packager.py
-  ```
-  Take note that clang needs to be setup for the first time if it is not setup yet.
-  ```Shell
-  tools/clang/scripts/update.sh
+  GYP_DEFINES='clang=1' gclient runhooks
   ```
 
 5. Updating the code

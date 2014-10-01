@@ -15,7 +15,8 @@ base::FilePath GetTestDataFilePath(const std::string& name) {
   base::FilePath file_path;
   CHECK(PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
 
-  file_path = file_path.Append(FILE_PATH_LITERAL("media"))
+  file_path = file_path.Append(FILE_PATH_LITERAL("packager"))
+                  .Append(FILE_PATH_LITERAL("media"))
                   .Append(FILE_PATH_LITERAL("test"))
                   .Append(FILE_PATH_LITERAL("data"))
                   .AppendASCII(name);

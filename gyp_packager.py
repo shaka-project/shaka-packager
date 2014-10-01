@@ -34,7 +34,8 @@
 import os
 import sys
 
-src_dir = os.path.dirname(os.path.realpath(__file__))
+checkout_dir = os.path.dirname(os.path.realpath(__file__))
+src_dir = os.path.join(checkout_dir, 'packager')
 
 sys.path.insert(0, os.path.join(src_dir, 'build'))
 import gyp_helper  # Workaround the dynamic path. pylint: disable-msg=F0401
@@ -78,6 +79,18 @@ if __name__ == '__main__':
   # Default to ninja, but only if no generator has explicitly been set.
   if not os.environ.get('GYP_GENERATORS'):
     os.environ['GYP_GENERATORS'] = 'ninja'
+
+  # TODO(kqyang): Find a better way to handle the depth. This workaround works
+  # only if this script is executed in 'src' directory.
+  if ['--depth' in arg for arg in args].count(True) == 0:
+    args.append('--depth=packager')
+
+  output_dir = os.path.join(checkout_dir, 'out')
+  gyp_generator_flags = 'output_dir="' + output_dir + '"'
+  if os.environ.get('GYP_GENERATOR_FLAGS'):
+    os.environ['GYP_GENERATOR_FLAGS'] += " " + gyp_generator_flags
+  else:
+    os.environ['GYP_GENERATOR_FLAGS'] = gyp_generator_flags
 
   print 'Updating projects from gyp files...'
   sys.stdout.flush()

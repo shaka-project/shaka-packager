@@ -22,7 +22,8 @@ base::FilePath GetTestDataFilePath(const std::string& file_name) {
   base::FilePath file_path;
   CHECK(PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
 
-  file_path = file_path.Append(FILE_PATH_LITERAL("mpd"))
+  file_path = file_path.Append(FILE_PATH_LITERAL("packager"))
+      .Append(FILE_PATH_LITERAL("mpd"))
       .Append(FILE_PATH_LITERAL("test"))
       .Append(FILE_PATH_LITERAL("data"))
       .AppendASCII(file_name);
@@ -33,7 +34,8 @@ base::FilePath GetSchemaPath() {
   base::FilePath file_path;
   CHECK(PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
 
-  file_path = file_path.Append(FILE_PATH_LITERAL("mpd"))
+  file_path = file_path.Append(FILE_PATH_LITERAL("packager"))
+      .Append(FILE_PATH_LITERAL("mpd"))
       .Append(FILE_PATH_LITERAL("test"))
       .Append(FILE_PATH_LITERAL("schema"))
       .Append(FILE_PATH_LITERAL("DASH-MPD.xsd"));
