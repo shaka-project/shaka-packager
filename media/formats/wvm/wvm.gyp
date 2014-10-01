@@ -5,15 +5,9 @@
 # https://developers.google.com/open-source/licenses/bsd
 
 {
-  'variables': {
-    # Compile as chromium code to enable warnings and warnings-as-errors.
-    'chromium_code': 1,
-  },
-  'target_defaults': {
-    'include_dirs': [
-      '../../..',
-    ],
-  },
+  'includes': [
+    '../../../common.gypi',
+  ],
   'targets': [
     {
       'target_name': 'wvm',
@@ -25,7 +19,7 @@
       'dependencies': [
         '../../base/media_base.gyp:base',
         '../../filters/filters.gyp:filters',
-	'../../formats/mp2t/mp2t.gyp:mp2t',
+        '../../formats/mp2t/mp2t.gyp:mp2t',
         '../mpeg/mpeg.gyp:mpeg',
       ],
     },

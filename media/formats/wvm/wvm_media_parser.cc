@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdio.h>
-#include <stdlib.h>
+#include "media/formats/wvm/wvm_media_parser.h"
+
 #include <map>
 #include <sstream>
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
+#include "media/base/audio_stream_info.h"
+#include "media/base/media_sample.h"
+#include "media/base/video_stream_info.h"
 #include "media/formats/mp2t/adts_header.h"
-#include "media/formats/wvm/wvm_media_parser.h"
-
 
 #define HAS_HEADER_EXTENSION(x) ((x != 0xBC) && (x != 0xBE) && (x != 0xBF) \
          && (x != 0xF0) && (x != 0xF2) && (x != 0xF8) \
@@ -41,28 +42,28 @@ const uint32_t kPesStreamIdVideo = 0xE0;
 const uint32_t kPesStreamIdAudioMask = 0xE0;
 const uint32_t kPesStreamIdAudio = 0xC0;
 const uint32_t kVersion4 = 4;
-  const int kAdtsHeaderMinSize = 7;
-  const uint8_t kAacSampleSizeBits = 16;
-  // Applies to all video streams.
-  const uint8_t kNaluLengthSize = 4;  // unit is bytes.
-  // Placeholder sampling frequency for all audio streams, which
-  // will be overwritten after filter parsing.
-  const uint32_t kDefaultSamplingFrequency = 100;
+const int kAdtsHeaderMinSize = 7;
+const uint8_t kAacSampleSizeBits = 16;
+// Applies to all video streams.
+const uint8_t kNaluLengthSize = 4;  // unit is bytes.
+// Placeholder sampling frequency for all audio streams, which
+// will be overwritten after filter parsing.
+const uint32_t kDefaultSamplingFrequency = 100;
 
-  enum Type {
-    Type_void = 0,
-    Type_uint8 = 1,
-    Type_int8 = 2,
-    Type_uint16 = 3,
-    Type_int16 = 4,
-    Type_uint32 = 5,
-    Type_int32 = 6,
-    Type_uint64 = 7,
-    Type_int64 = 8,
-    Type_string = 9,
-    Type_BinaryData = 10
-  };
-}
+enum Type {
+  Type_void = 0,
+  Type_uint8 = 1,
+  Type_int8 = 2,
+  Type_uint16 = 3,
+  Type_int16 = 4,
+  Type_uint32 = 5,
+  Type_int32 = 6,
+  Type_uint64 = 7,
+  Type_int64 = 8,
+  Type_string = 9,
+  Type_BinaryData = 10
+};
+}  // namespace
 
 namespace edash_packager {
 namespace media {

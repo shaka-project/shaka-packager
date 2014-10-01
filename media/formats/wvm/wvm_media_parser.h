@@ -6,18 +6,17 @@
 #ifndef MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_
 #define MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_
 
+#include <openssl/sha.h>
+
 #include <deque>
 #include <map>
 #include <string>
 #include <vector>
+
 #include "base/memory/scoped_ptr.h"
 #include "media/base/media_parser.h"
-#include "media/base/audio_stream_info.h"
-#include "media/base/video_stream_info.h"
-#include "media/base/media_sample.h"
 #include "media/base/network_util.h"
 #include "media/filters/h264_byte_to_unit_stream_converter.h"
-#include "openssl/sha.h"
 
 namespace edash_packager {
 namespace media {

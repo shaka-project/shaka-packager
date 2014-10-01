@@ -6,10 +6,10 @@
 
 #include "app/libcrypto_threading.h"
 
+#include <openssl/crypto.h>
 #include <pthread.h>
-#include <vector>
 
-#include "openssl/crypto.h"
+#include <vector>
 
 namespace {
 
