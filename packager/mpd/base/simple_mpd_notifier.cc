@@ -4,12 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "mpd/base/simple_mpd_notifier.h"
+#include "packager/mpd/base/simple_mpd_notifier.h"
 
-#include "base/logging.h"
-#include "media/file/file.h"
-#include "mpd/base/mpd_builder.h"
-#include "mpd/base/mpd_utils.h"
+#include "packager/base/logging.h"
+#include "packager/media/file/file.h"
+#include "packager/mpd/base/mpd_builder.h"
+#include "packager/mpd/base/mpd_utils.h"
 
 using edash_packager::media::File;
 

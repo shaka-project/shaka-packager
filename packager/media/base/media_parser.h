@@ -10,10 +10,10 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_ptr.h"
-#include "media/base/container_names.h"
+#include "packager/base/callback.h"
+#include "packager/base/memory/ref_counted.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/container_names.h"
 
 namespace edash_packager {
 namespace media {

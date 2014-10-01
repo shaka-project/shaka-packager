@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/mp2t/es_parser_adts.h"
+#include "packager/media/formats/mp2t/es_parser_adts.h"
 
 #include <stdint.h>
 
 #include <list>
 
-#include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
-#include "media/base/audio_timestamp_helper.h"
-#include "media/base/bit_reader.h"
-#include "media/base/media_sample.h"
-#include "media/base/timestamp.h"
-#include "media/formats/mp2t/adts_header.h"
-#include "media/formats/mp2t/mp2t_common.h"
-#include "media/formats/mpeg/adts_constants.h"
+#include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/base/audio_timestamp_helper.h"
+#include "packager/media/base/bit_reader.h"
+#include "packager/media/base/media_sample.h"
+#include "packager/media/base/timestamp.h"
+#include "packager/media/formats/mp2t/adts_header.h"
+#include "packager/media/formats/mp2t/mp2t_common.h"
+#include "packager/media/formats/mpeg/adts_constants.h"
 
 namespace edash_packager {
 namespace media {

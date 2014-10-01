@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/file/udp_file.h"
+#include "packager/media/file/udp_file.h"
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -15,8 +15,8 @@
 
 #include <limits>
 
-#include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
+#include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
 
 // TODO(tinskip): Adapt to work with winsock.
 

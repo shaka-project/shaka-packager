@@ -4,23 +4,23 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/formats/mp4/mp4_muxer.h"
+#include "packager/media/formats/mp4/mp4_muxer.h"
 
-#include "base/time/clock.h"
-#include "base/time/time.h"
-#include "media/base/aes_encryptor.h"
-#include "media/base/audio_stream_info.h"
-#include "media/base/key_source.h"
-#include "media/base/media_sample.h"
-#include "media/base/media_stream.h"
-#include "media/base/video_stream_info.h"
-#include "media/event/muxer_listener.h"
-#include "media/file/file.h"
-#include "media/formats/mp4/box_definitions.h"
-#include "media/formats/mp4/es_descriptor.h"
-#include "media/formats/mp4/fourccs.h"
-#include "media/formats/mp4/multi_segment_segmenter.h"
-#include "media/formats/mp4/single_segment_segmenter.h"
+#include "packager/base/time/clock.h"
+#include "packager/base/time/time.h"
+#include "packager/media/base/aes_encryptor.h"
+#include "packager/media/base/audio_stream_info.h"
+#include "packager/media/base/key_source.h"
+#include "packager/media/base/media_sample.h"
+#include "packager/media/base/media_stream.h"
+#include "packager/media/base/video_stream_info.h"
+#include "packager/media/event/muxer_listener.h"
+#include "packager/media/file/file.h"
+#include "packager/media/formats/mp4/box_definitions.h"
+#include "packager/media/formats/mp4/es_descriptor.h"
+#include "packager/media/formats/mp4/fourccs.h"
+#include "packager/media/formats/mp4/multi_segment_segmenter.h"
+#include "packager/media/formats/mp4/single_segment_segmenter.h"
 
 namespace {
 // Sets the range start and end value from offset and size.

@@ -7,18 +7,18 @@
 #include <algorithm>
 #include <string>
 
-#include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/logging.h"
-#include "base/memory/ref_counted.h"
-#include "media/base/media_sample.h"
-#include "media/base/request_signer.h"
-#include "media/base/stream_info.h"
-#include "media/base/timestamp.h"
-#include "media/base/video_stream_info.h"
-#include "media/base/widevine_key_source.h"
-#include "media/formats/wvm/wvm_media_parser.h"
-#include "media/test/test_data_util.h"
+#include "packager/base/bind.h"
+#include "packager/base/bind_helpers.h"
+#include "packager/base/logging.h"
+#include "packager/base/memory/ref_counted.h"
+#include "packager/media/base/media_sample.h"
+#include "packager/media/base/request_signer.h"
+#include "packager/media/base/stream_info.h"
+#include "packager/media/base/timestamp.h"
+#include "packager/media/base/video_stream_info.h"
+#include "packager/media/base/widevine_key_source.h"
+#include "packager/media/formats/wvm/wvm_media_parser.h"
+#include "packager/media/test/test_data_util.h"
 
 namespace {
 const char kWvmFile[] = "hb2_4stream_encrypted.wvm";

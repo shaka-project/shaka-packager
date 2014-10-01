@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "base/callback.h"
-#include "base/memory/scoped_ptr.h"
-#include "base/time/time.h"
+#include "packager/base/callback.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/time/time.h"
 
 namespace edash_packager {
 namespace media {

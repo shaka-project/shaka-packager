@@ -6,7 +6,7 @@
 //
 // Defines Mpd flags.
 
-#include "app/mpd_flags.h"
+#include "packager/app/mpd_flags.h"
 
 // TODO(rkuroiwa, kqyang): Remove the 'Exclusive' statements once
 // --output_media_info can work together with --mpd_output.

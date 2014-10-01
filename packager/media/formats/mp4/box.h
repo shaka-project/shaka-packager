@@ -9,8 +9,8 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
-#include "media/formats/mp4/fourccs.h"
+#include "packager/base/compiler_specific.h"
+#include "packager/media/formats/mp4/fourccs.h"
 
 namespace edash_packager {
 namespace media {

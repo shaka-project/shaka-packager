@@ -11,11 +11,11 @@
 
 #include <vector>
 
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_ptr.h"
-#include "base/time/clock.h"
-#include "media/base/muxer_options.h"
-#include "media/base/status.h"
+#include "packager/base/memory/ref_counted.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/time/clock.h"
+#include "packager/media/base/muxer_options.h"
+#include "packager/media/base/status.h"
 
 namespace edash_packager {
 namespace media {

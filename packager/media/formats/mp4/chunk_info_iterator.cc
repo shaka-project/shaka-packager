@@ -4,12 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/formats/mp4/chunk_info_iterator.h"
+#include "packager/media/formats/mp4/chunk_info_iterator.h"
 
 #include <algorithm>
 #include <limits>
 
-#include "base/logging.h"
+#include "packager/base/logging.h"
 
 namespace edash_packager {
 namespace media {

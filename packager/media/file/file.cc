@@ -4,13 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/file/file.h"
+#include "packager/media/file/file.h"
 
-#include "base/logging.h"
-#include "base/memory/scoped_ptr.h"
-#include "media/file/local_file.h"
-#include "media/file/udp_file.h"
-#include "base/strings/string_util.h"
+#include "packager/base/logging.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/file/local_file.h"
+#include "packager/media/file/udp_file.h"
+#include "packager/base/strings/string_util.h"
 
 namespace edash_packager {
 namespace media {

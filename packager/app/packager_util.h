@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/scoped_ptr.h"
+#include "packager/base/memory/scoped_ptr.h"
 
 DECLARE_bool(dump_stream_info);
 

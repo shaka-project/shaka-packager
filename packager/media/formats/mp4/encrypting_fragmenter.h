@@ -7,7 +7,7 @@
 #ifndef MEDIA_FORMATS_MP4_ENCRYPTING_FRAGMENTER_H_
 #define MEDIA_FORMATS_MP4_ENCRYPTING_FRAGMENTER_H_
 
-#include "media/formats/mp4/fragmenter.h"
+#include "packager/media/formats/mp4/fragmenter.h"
 
 namespace edash_packager {
 namespace media {

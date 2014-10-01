@@ -8,10 +8,10 @@
 #include <string>
 #include <vector>
 
-#include "media/formats/mp4/aac_audio_specific_config.h"
-#include "media/formats/mp4/box.h"
-#include "media/formats/mp4/es_descriptor.h"
-#include "media/formats/mp4/fourccs.h"
+#include "packager/media/formats/mp4/aac_audio_specific_config.h"
+#include "packager/media/formats/mp4/box.h"
+#include "packager/media/formats/mp4/es_descriptor.h"
+#include "packager/media/formats/mp4/fourccs.h"
 
 namespace edash_packager {
 namespace media {

@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "packager/base/memory/ref_counted.h"
 
 namespace edash_packager {
 namespace media {

@@ -9,7 +9,7 @@
 
 #include <gtest/gtest.h>
 
-#include "media/base/status.h"
+#include "packager/media/base/status.h"
 
 namespace edash_packager {
 namespace media {

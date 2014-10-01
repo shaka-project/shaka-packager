@@ -6,10 +6,10 @@
 //
 // Defines command line flags for widevine_encryption.
 
-#include "app/widevine_encryption_flags.h"
+#include "packager/app/widevine_encryption_flags.h"
 
-#include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
+#include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
 
 DEFINE_bool(enable_widevine_encryption,
             false,

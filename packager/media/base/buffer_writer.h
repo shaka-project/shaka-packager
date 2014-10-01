@@ -9,8 +9,8 @@
 
 #include <vector>
 
-#include "base/stl_util.h"
-#include "media/base/status.h"
+#include "packager/base/stl_util.h"
+#include "packager/media/base/status.h"
 
 namespace edash_packager {
 namespace media {

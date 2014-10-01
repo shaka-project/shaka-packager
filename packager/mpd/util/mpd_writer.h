@@ -12,7 +12,7 @@
 #include <list>
 #include <string>
 
-#include "base/macros.h"
+#include "packager/base/macros.h"
 
 namespace edash_packager {
 namespace media {

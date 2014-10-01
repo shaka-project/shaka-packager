@@ -7,8 +7,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "base/strings/string_number_conversions.h"
-#include "media/base/status.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/base/status.h"
 
 namespace edash_packager {
 namespace media {

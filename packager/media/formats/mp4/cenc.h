@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "media/base/decrypt_config.h"
+#include "packager/media/base/decrypt_config.h"
 
 namespace edash_packager {
 namespace media {

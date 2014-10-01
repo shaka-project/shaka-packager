@@ -6,8 +6,8 @@
 
 #include <gtest/gtest.h>
 
-#include "base/file_util.h"
-#include "media/file/file.h"
+#include "packager/base/file_util.h"
+#include "packager/media/file/file.h"
 
 namespace {
 const int kDataSize = 1024;

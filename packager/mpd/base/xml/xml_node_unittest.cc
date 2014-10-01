@@ -9,11 +9,11 @@
 
 #include <list>
 
-#include "base/logging.h"
-#include "base/strings/string_util.h"
-#include "mpd/base/mpd_builder.h"
-#include "mpd/base/xml/xml_node.h"
-#include "mpd/test/xml_compare.h"
+#include "packager/base/logging.h"
+#include "packager/base/strings/string_util.h"
+#include "packager/mpd/base/mpd_builder.h"
+#include "packager/mpd/base/xml/xml_node.h"
+#include "packager/mpd/test/xml_compare.h"
 
 namespace edash_packager {
 namespace xml {

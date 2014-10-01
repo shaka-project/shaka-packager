@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "media/base/byte_queue.h"
+#include "packager/media/base/byte_queue.h"
 
 namespace edash_packager {
 namespace media {

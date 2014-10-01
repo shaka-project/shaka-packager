@@ -5,9 +5,9 @@
 #ifndef MEDIA_FORMATS_MP2T_TS_SECTION_PSI_H_
 #define MEDIA_FORMATS_MP2T_TS_SECTION_PSI_H_
 
-#include "base/compiler_specific.h"
-#include "media/base/byte_queue.h"
-#include "media/formats/mp2t/ts_section.h"
+#include "packager/base/compiler_specific.h"
+#include "packager/media/base/byte_queue.h"
+#include "packager/media/formats/mp2t/ts_section.h"
 
 namespace edash_packager {
 namespace media {

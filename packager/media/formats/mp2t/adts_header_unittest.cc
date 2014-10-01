@@ -4,9 +4,9 @@
 
 #include <gtest/gtest.h>
 
-#include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
-#include "media/formats/mp2t/adts_header.h"
+#include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/formats/mp2t/adts_header.h"
 
 namespace {
 

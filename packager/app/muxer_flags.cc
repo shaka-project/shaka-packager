@@ -6,7 +6,7 @@
 //
 // Defines Muxer flags.
 
-#include "app/muxer_flags.h"
+#include "packager/app/muxer_flags.h"
 
 DEFINE_string(profile,
               "",

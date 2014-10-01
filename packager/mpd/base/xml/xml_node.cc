@@ -4,16 +4,16 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "mpd/base/xml/xml_node.h"
+#include "packager/mpd/base/xml/xml_node.h"
 
 #include <limits>
 #include <set>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
-#include "base/strings/string_number_conversions.h"
-#include "mpd/base/media_info.pb.h"
-#include "mpd/base/segment_info.h"
+#include "packager/base/logging.h"
+#include "packager/base/stl_util.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/mpd/base/media_info.pb.h"
+#include "packager/mpd/base/segment_info.h"
 
 using edash_packager::xml::XmlNode;
 

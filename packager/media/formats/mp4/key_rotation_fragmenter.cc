@@ -4,10 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/formats/mp4/key_rotation_fragmenter.h"
+#include "packager/media/formats/mp4/key_rotation_fragmenter.h"
 
-#include "media/base/aes_encryptor.h"
-#include "media/formats/mp4/box_definitions.h"
+#include "packager/media/base/aes_encryptor.h"
+#include "packager/media/formats/mp4/box_definitions.h"
 
 namespace edash_packager {
 namespace media {

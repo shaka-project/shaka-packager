@@ -5,7 +5,7 @@
 #ifndef MEDIA_FORMATS_MP4_RCHECK_H_
 #define MEDIA_FORMATS_MP4_RCHECK_H_
 
-#include "base/logging.h"
+#include "packager/base/logging.h"
 
 #define RCHECK(x)                                           \
   do {                                                      \

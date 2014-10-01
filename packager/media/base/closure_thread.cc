@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/closure_thread.h"
+#include "packager/media/base/closure_thread.h"
 
 namespace edash_packager {
 namespace media {

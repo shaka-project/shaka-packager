@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/wvm/wvm_media_parser.h"
+#include "packager/media/formats/wvm/wvm_media_parser.h"
 
 #include <map>
 #include <sstream>
 #include <vector>
 
-#include "base/strings/string_number_conversions.h"
-#include "media/base/status.h"
-#include "media/base/widevine_key_source.h"
-#include "media/formats/mp2t/adts_header.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/base/audio_stream_info.h"
+#include "packager/media/base/media_sample.h"
+#include "packager/media/base/status.h"
+#include "packager/media/base/video_stream_info.h"
+#include "packager/media/base/widevine_key_source.h"
+#include "packager/media/formats/mp2t/adts_header.h"
 
 #define HAS_HEADER_EXTENSION(x) ((x != 0xBC) && (x != 0xBE) && (x != 0xBF) \
          && (x != 0xF0) && (x != 0xF2) && (x != 0xF8) \
@@ -44,7 +47,7 @@ namespace {
   const int kAdtsHeaderMinSize = 7;
   const uint8_t kAacSampleSizeBits = 16;
   // Applies to all video streams.
-  const uint8 kNaluLengthSize = 4; // unit is bytes.
+  const uint8_t kNaluLengthSize = 4; // unit is bytes.
   // Placeholder sampling frequency for all audio streams, which
   // will be overwritten after filter parsing.
   const uint32_t kDefaultSamplingFrequency = 100;
@@ -482,8 +485,9 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
 
 bool WvmMediaParser::EmitLastSample(uint32_t stream_id,
                                     scoped_refptr<MediaSample>& new_sample) {
-  std::string key =  base::UintToString(current_program_id_).append(":")
-      .append(base::UintToString(stream_id));
+  std::string key = base::UintToString(current_program_id_)
+                        .append(":")
+                        .append(base::UintToString(stream_id));
   std::map<std::string, uint32_t>::iterator it =
       program_demux_stream_map_.find(key);
   if (it != program_demux_stream_map_.end()) {
@@ -709,10 +713,9 @@ bool WvmMediaParser::ParseIndexEntry() {
          stream_id_count_, time_scale, track_duration, video_codec,
          video_codec_string, std::string(), video_width, video_height,
          nalu_length_size, NULL, 0, true));
-     program_demux_stream_map_[base::UintToString(index_program_id_)
-                               + ":"
-                               + base::UintToString(video_pes_stream_id)]
-                               = stream_id_count_++;
+     program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
+                               base::UintToString(video_pes_stream_id)] =
+         stream_id_count_++;
    }
    if (has_audio) {
      AudioCodec audio_codec = kCodecAAC;
@@ -720,10 +723,9 @@ bool WvmMediaParser::ParseIndexEntry() {
          stream_id_count_, time_scale, track_duration, audio_codec,
          audio_codec_string, std::string(), kAacSampleSizeBits, num_channels,
          sampling_frequency, NULL, 0, true));
-     program_demux_stream_map_[base::UintToString(index_program_id_)
-                               + ":"
-                               + base::UintToString(audio_pes_stream_id)]
-                               = stream_id_count_++;
+     program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
+                               base::UintToString(audio_pes_stream_id)] =
+         stream_id_count_++;
    }
  }
   return true;
@@ -783,9 +785,8 @@ bool WvmMediaParser::Output() {
   } else if ((prev_pes_stream_id_ & kPesStreamIdAudioMask) ==
       kPesStreamIdAudio) {
       // Set data on the audio stream from AdtsHeader.
-      int frame_size =
-          media::mp2t::AdtsHeader::GetAdtsFrameSize(&sample_data_[0],
-                                                  kAdtsHeaderMinSize);
+    int frame_size = media::mp2t::AdtsHeader::GetAdtsFrameSize(
+        &sample_data_[0], kAdtsHeaderMinSize);
       media::mp2t::AdtsHeader adts_header;
       const uint8_t* frame_ptr = &sample_data_[0];
       std::vector<uint8_t> extra_data;
@@ -913,7 +914,7 @@ void WvmMediaParser::EmitSample(uint32_t parsed_audio_or_video_stream_id,
 }
 
 bool WvmMediaParser::GetAssetKey(const uint32_t asset_id,
-                                               EncryptionKey* encryption_key) {
+                                 EncryptionKey* encryption_key) {
   Status status = decryption_key_source_->FetchKeys(asset_id);
   if (!status.ok()) {
     LOG(ERROR) << "Fetch Key(s) failed for AssetID = " << asset_id

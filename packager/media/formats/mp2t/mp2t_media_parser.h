@@ -8,11 +8,11 @@
 #include <deque>
 #include <map>
 
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_ptr.h"
-#include "media/base/byte_queue.h"
-#include "media/base/media_parser.h"
-#include "media/base/stream_info.h"
+#include "packager/base/memory/ref_counted.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/byte_queue.h"
+#include "packager/media/base/media_parser.h"
+#include "packager/media/base/stream_info.h"
 
 namespace edash_packager {
 namespace media {

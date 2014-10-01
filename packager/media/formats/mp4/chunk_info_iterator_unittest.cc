@@ -6,9 +6,9 @@
 
 #include <gtest/gtest.h>
 
-#include "base/logging.h"
-#include "base/memory/scoped_ptr.h"
-#include "media/formats/mp4/chunk_info_iterator.h"
+#include "packager/base/logging.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/formats/mp4/chunk_info_iterator.h"
 
 namespace {
 struct ChunkProperty {

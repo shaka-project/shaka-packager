@@ -6,9 +6,9 @@
 
 #include <gtest/gtest.h>
 
-#include "base/at_exit.h"
-#include "base/command_line.h"
-#include "base/logging.h"
+#include "packager/base/at_exit.h"
+#include "packager/base/command_line.h"
+#include "packager/base/logging.h"
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

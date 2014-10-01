@@ -4,14 +4,14 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/formats/mp4/encrypting_fragmenter.h"
+#include "packager/media/formats/mp4/encrypting_fragmenter.h"
 
-#include "media/base/aes_encryptor.h"
-#include "media/base/buffer_reader.h"
-#include "media/base/key_source.h"
-#include "media/base/media_sample.h"
-#include "media/formats/mp4/box_definitions.h"
-#include "media/formats/mp4/cenc.h"
+#include "packager/media/base/aes_encryptor.h"
+#include "packager/media/base/buffer_reader.h"
+#include "packager/media/base/key_source.h"
+#include "packager/media/base/media_sample.h"
+#include "packager/media/formats/mp4/box_definitions.h"
+#include "packager/media/formats/mp4/cenc.h"
 
 namespace {
 // Generate 64bit IV by default.

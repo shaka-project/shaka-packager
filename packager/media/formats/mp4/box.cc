@@ -4,10 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/formats/mp4/box.h"
+#include "packager/media/formats/mp4/box.h"
 
-#include "base/logging.h"
-#include "media/formats/mp4/box_buffer.h"
+#include "packager/base/logging.h"
+#include "packager/media/formats/mp4/box_buffer.h"
 
 namespace edash_packager {
 namespace media {

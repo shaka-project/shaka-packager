@@ -4,12 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "mpd/base/bandwidth_estimator.h"
+#include "packager/mpd/base/bandwidth_estimator.h"
 
 #include <cmath>
 #include <cstdlib>
 
-#include "base/logging.h"
+#include "packager/base/logging.h"
 
 const int BandwidthEstimator::kUseAllBlocks = 0;
 

@@ -4,17 +4,17 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "mpd/test/mpd_builder_test_helper.h"
+#include "packager/mpd/test/mpd_builder_test_helper.h"
 
 #include <google/protobuf/text_format.h>
 #include <gtest/gtest.h>
 
-#include "base/file_util.h"
-#include "base/path_service.h"
-#include "mpd/base/media_info.pb.h"
-#include "mpd/base/mpd_builder.h"
-#include "mpd/base/xml/scoped_xml_ptr.h"
-#include "mpd/test/xml_compare.h"
+#include "packager/base/file_util.h"
+#include "packager/base/path_service.h"
+#include "packager/mpd/base/media_info.pb.h"
+#include "packager/mpd/base/mpd_builder.h"
+#include "packager/mpd/base/xml/scoped_xml_ptr.h"
+#include "packager/mpd/test/xml_compare.h"
 
 namespace edash_packager {
 

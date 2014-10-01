@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include "media/formats/mp4/es_descriptor.h"
+#include "packager/media/formats/mp4/es_descriptor.h"
 
 namespace edash_packager {
 namespace media {

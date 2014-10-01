@@ -16,16 +16,16 @@
 //   Mask generation function: mgf1SHA1
 //   Label (encoding paramter): empty std::string
 
-#include "media/base/rsa_key.h"
+#include "packager/media/base/rsa_key.h"
 
 #include <openssl/err.h>
 #include <openssl/rsa.h>
 #include <openssl/x509.h>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/sha1.h"
-#include "base/stl_util.h"
+#include "packager/base/logging.h"
+#include "packager/base/sha1.h"
+#include "packager/base/stl_util.h"
 
 namespace {
 

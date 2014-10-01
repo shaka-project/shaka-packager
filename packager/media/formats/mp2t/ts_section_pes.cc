@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/mp2t/ts_section_pes.h"
+#include "packager/media/formats/mp2t/ts_section_pes.h"
 
-#include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
-#include "media/base/bit_reader.h"
-#include "media/base/timestamp.h"
-#include "media/formats/mp2t/es_parser.h"
-#include "media/formats/mp2t/mp2t_common.h"
+#include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/base/bit_reader.h"
+#include "packager/media/base/timestamp.h"
+#include "packager/media/formats/mp2t/es_parser.h"
+#include "packager/media/formats/mp2t/mp2t_common.h"
 
 static const int kPesStartCode = 0x000001;
 

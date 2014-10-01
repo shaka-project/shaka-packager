@@ -12,8 +12,8 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/scoped_ptr.h"
-#include "base/stl_util.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/stl_util.h"
 
 struct aes_key_st;
 typedef struct aes_key_st AES_KEY;

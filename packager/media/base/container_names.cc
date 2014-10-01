@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/container_names.h"
+#include "packager/media/base/container_names.h"
 
 #include <stdint.h>
 
 #include <cctype>
 #include <limits>
 
-#include "base/logging.h"
-#include "media/base/bit_reader.h"
+#include "packager/base/logging.h"
+#include "packager/media/base/bit_reader.h"
 
 namespace edash_packager {
 namespace media {

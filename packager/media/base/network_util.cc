@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/network_util.h"
+#include "packager/media/base/network_util.h"
 
 namespace edash_packager {
 namespace media {

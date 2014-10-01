@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "mpd/base/simple_vod_mpd_notifier.h"
+#include "packager/mpd/base/simple_vod_mpd_notifier.h"
 
-#include "base/stl_util.h"
-#include "mpd/base/content_protection_element.h"
-#include "mpd/base/media_info.pb.h"
+#include "packager/base/stl_util.h"
+#include "packager/mpd/base/content_protection_element.h"
+#include "packager/mpd/base/media_info.pb.h"
 
 namespace edash_packager {
 

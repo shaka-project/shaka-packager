@@ -6,18 +6,18 @@
 
 #include <gtest/gtest.h>
 
-#include "base/file_util.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "base/time/clock.h"
-#include "media/base/demuxer.h"
-#include "media/base/key_source.h"
-#include "media/base/media_stream.h"
-#include "media/base/muxer.h"
-#include "media/base/status_test_util.h"
-#include "media/base/stream_info.h"
-#include "media/formats/mp4/mp4_muxer.h"
-#include "media/test/test_data_util.h"
+#include "packager/base/file_util.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/strings/stringprintf.h"
+#include "packager/base/time/clock.h"
+#include "packager/media/base/demuxer.h"
+#include "packager/media/base/key_source.h"
+#include "packager/media/base/media_stream.h"
+#include "packager/media/base/muxer.h"
+#include "packager/media/base/status_test_util.h"
+#include "packager/media/base/stream_info.h"
+#include "packager/media/formats/mp4/mp4_muxer.h"
+#include "packager/media/test/test_data_util.h"
 
 using ::testing::ValuesIn;
 

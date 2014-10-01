@@ -15,16 +15,16 @@
 #include <list>
 #include <string>
 
-#include "base/atomic_sequence_num.h"
-#include "base/gtest_prod_util.h"
-#include "base/stl_util.h"
-#include "base/synchronization/lock.h"
-#include "mpd/base/bandwidth_estimator.h"
-#include "mpd/base/content_protection_element.h"
-#include "mpd/base/media_info.pb.h"
-#include "mpd/base/mpd_utils.h"
-#include "mpd/base/segment_info.h"
-#include "mpd/base/xml/scoped_xml_ptr.h"
+#include "packager/base/atomic_sequence_num.h"
+#include "packager/base/gtest_prod_util.h"
+#include "packager/base/stl_util.h"
+#include "packager/base/synchronization/lock.h"
+#include "packager/mpd/base/bandwidth_estimator.h"
+#include "packager/mpd/base/content_protection_element.h"
+#include "packager/mpd/base/media_info.pb.h"
+#include "packager/mpd/base/mpd_utils.h"
+#include "packager/mpd/base/segment_info.h"
+#include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
 // TODO(rkuroiwa): For classes with |id_|, consider removing the field and let
 // the MPD (XML) generation functions take care of assigning an ID to each

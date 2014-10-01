@@ -8,16 +8,16 @@
 #include <inttypes.h>
 #include <libxml/xmlstring.h>
 
-#include "base/file_util.h"
-#include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "media/file/file.h"
-#include "mpd/base/mpd_builder.h"
-#include "mpd/base/mpd_utils.h"
-#include "mpd/test/mpd_builder_test_helper.h"
-#include "mpd/test/xml_compare.h"
+#include "packager/base/file_util.h"
+#include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/strings/string_util.h"
+#include "packager/base/strings/stringprintf.h"
+#include "packager/media/file/file.h"
+#include "packager/mpd/base/mpd_builder.h"
+#include "packager/mpd/base/mpd_utils.h"
+#include "packager/mpd/test/mpd_builder_test_helper.h"
+#include "packager/mpd/test/xml_compare.h"
 
 namespace edash_packager {
 

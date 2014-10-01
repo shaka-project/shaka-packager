@@ -7,10 +7,10 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
-#include "base/memory/scoped_ptr.h"
-#include "media/base/byte_queue.h"
-#include "media/formats/mp2t/ts_section.h"
+#include "packager/base/compiler_specific.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/byte_queue.h"
+#include "packager/media/formats/mp2t/ts_section.h"
 
 namespace edash_packager {
 namespace media {

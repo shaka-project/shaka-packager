@@ -4,13 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "mpd/util/mpd_writer.h"
+#include "packager/mpd/util/mpd_writer.h"
 
 #include <google/protobuf/text_format.h>
 #include <stdint.h>
 
-#include "media/file/file.h"
-#include "mpd/base/mpd_builder.h"
+#include "packager/media/file/file.h"
+#include "packager/mpd/base/mpd_builder.h"
 
 using edash_packager::media::File;
 

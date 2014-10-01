@@ -12,7 +12,7 @@
 
 #include <map>
 
-#include "media/filters/h264_bit_reader.h"
+#include "packager/media/filters/h264_bit_reader.h"
 
 namespace edash_packager {
 namespace media {

@@ -7,10 +7,10 @@
 #ifndef MEDIA_FORMATS_MP4_BOX_BUFFER_H_
 #define MEDIA_FORMATS_MP4_BOX_BUFFER_H_
 
-#include "base/compiler_specific.h"
-#include "media/base/buffer_writer.h"
-#include "media/formats/mp4/box.h"
-#include "media/formats/mp4/box_reader.h"
+#include "packager/base/compiler_specific.h"
+#include "packager/media/base/buffer_writer.h"
+#include "packager/media/formats/mp4/box.h"
+#include "packager/media/formats/mp4/box_reader.h"
 
 namespace edash_packager {
 namespace media {

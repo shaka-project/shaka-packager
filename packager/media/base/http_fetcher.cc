@@ -4,10 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/http_fetcher.h"
+#include "packager/media/base/http_fetcher.h"
 
 #include <curl/curl.h>
-#include "base/strings/stringprintf.h"
+#include "packager/base/strings/stringprintf.h"
 
 namespace {
 const char kUserAgentString[] = "edash-packager-http_fetcher/1.0";

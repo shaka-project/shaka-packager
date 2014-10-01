@@ -9,8 +9,8 @@
 
 #include <vector>
 
-#include "media/base/muxer.h"
-#include "media/formats/mp4/fourccs.h"
+#include "packager/media/base/muxer.h"
+#include "packager/media/formats/mp4/fourccs.h"
 
 namespace edash_packager {
 namespace media {

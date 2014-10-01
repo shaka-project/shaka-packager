@@ -4,19 +4,19 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/formats/mp4/segmenter.h"
+#include "packager/media/formats/mp4/segmenter.h"
 
 #include <algorithm>
 
-#include "base/stl_util.h"
-#include "media/base/buffer_writer.h"
-#include "media/base/key_source.h"
-#include "media/base/media_sample.h"
-#include "media/base/media_stream.h"
-#include "media/base/muxer_options.h"
-#include "media/base/video_stream_info.h"
-#include "media/formats/mp4/box_definitions.h"
-#include "media/formats/mp4/key_rotation_fragmenter.h"
+#include "packager/base/stl_util.h"
+#include "packager/media/base/buffer_writer.h"
+#include "packager/media/base/key_source.h"
+#include "packager/media/base/media_sample.h"
+#include "packager/media/base/media_stream.h"
+#include "packager/media/base/muxer_options.h"
+#include "packager/media/base/video_stream_info.h"
+#include "packager/media/formats/mp4/box_definitions.h"
+#include "packager/media/formats/mp4/key_rotation_fragmenter.h"
 
 namespace edash_packager {
 namespace media {

@@ -4,17 +4,17 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/formats/mp4/multi_segment_segmenter.h"
+#include "packager/media/formats/mp4/multi_segment_segmenter.h"
 
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "media/base/buffer_writer.h"
-#include "media/base/media_stream.h"
-#include "media/base/muxer_options.h"
-#include "media/base/muxer_util.h"
-#include "media/event/muxer_listener.h"
-#include "media/file/file.h"
-#include "media/formats/mp4/box_definitions.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/strings/string_util.h"
+#include "packager/media/base/buffer_writer.h"
+#include "packager/media/base/media_stream.h"
+#include "packager/media/base/muxer_options.h"
+#include "packager/media/base/muxer_util.h"
+#include "packager/media/event/muxer_listener.h"
+#include "packager/media/file/file.h"
+#include "packager/media/formats/mp4/box_definitions.h"
 
 namespace edash_packager {
 namespace media {

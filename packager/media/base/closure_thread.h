@@ -7,8 +7,8 @@
 #ifndef MEDIA_BASE_CLOSURE_THREAD_H_
 #define MEDIA_BASE_CLOSURE_THREAD_H_
 
-#include "base/callback.h"
-#include "base/threading/simple_thread.h"
+#include "packager/base/callback.h"
+#include "packager/base/threading/simple_thread.h"
 
 namespace edash_packager {
 namespace media {

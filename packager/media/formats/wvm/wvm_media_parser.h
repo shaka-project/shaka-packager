@@ -13,14 +13,11 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/scoped_ptr.h"
-#include "media/base/aes_encryptor.h"
-#include "media/base/audio_stream_info.h"
-#include "media/base/media_parser.h"
-#include "media/base/media_sample.h"
-#include "media/base/network_util.h"
-#include "media/base/video_stream_info.h"
-#include "media/filters/h264_byte_to_unit_stream_converter.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/aes_encryptor.h"
+#include "packager/media/base/media_parser.h"
+#include "packager/media/base/network_util.h"
+#include "packager/media/filters/h264_byte_to_unit_stream_converter.h"
 
 namespace edash_packager {
 namespace media {

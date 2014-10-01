@@ -4,8 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include "media/base/audio_timestamp_helper.h"
-#include "media/base/timestamp.h"
+#include "packager/media/base/audio_timestamp_helper.h"
+#include "packager/media/base/timestamp.h"
 
 namespace edash_packager {
 namespace media {

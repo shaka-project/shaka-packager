@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/filters/h264_byte_to_unit_stream_converter.h"
+#include "packager/media/filters/h264_byte_to_unit_stream_converter.h"
 
-#include "base/logging.h"
-#include "media/base/buffer_writer.h"
-#include "media/filters/h264_parser.h"
+#include "packager/base/logging.h"
+#include "packager/media/base/buffer_writer.h"
+#include "packager/media/filters/h264_parser.h"
 
 namespace edash_packager {
 namespace media {

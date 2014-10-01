@@ -2,26 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/mp4/mp4_media_parser.h"
+#include "packager/media/formats/mp4/mp4_media_parser.h"
 
 #include <limits>
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
-#include "base/logging.h"
-#include "base/memory/ref_counted.h"
-#include "base/strings/string_number_conversions.h"
-#include "media/base/aes_encryptor.h"
-#include "media/base/audio_stream_info.h"
-#include "media/base/decrypt_config.h"
-#include "media/base/key_source.h"
-#include "media/base/media_sample.h"
-#include "media/base/video_stream_info.h"
-#include "media/formats/mp4/box_definitions.h"
-#include "media/formats/mp4/box_reader.h"
-#include "media/formats/mp4/es_descriptor.h"
-#include "media/formats/mp4/rcheck.h"
-#include "media/formats/mp4/track_run_iterator.h"
+#include "packager/base/callback.h"
+#include "packager/base/callback_helpers.h"
+#include "packager/base/logging.h"
+#include "packager/base/memory/ref_counted.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/base/aes_encryptor.h"
+#include "packager/media/base/audio_stream_info.h"
+#include "packager/media/base/decrypt_config.h"
+#include "packager/media/base/key_source.h"
+#include "packager/media/base/media_sample.h"
+#include "packager/media/base/video_stream_info.h"
+#include "packager/media/formats/mp4/box_definitions.h"
+#include "packager/media/formats/mp4/box_reader.h"
+#include "packager/media/formats/mp4/es_descriptor.h"
+#include "packager/media/formats/mp4/rcheck.h"
+#include "packager/media/formats/mp4/track_run_iterator.h"
 
 namespace {
 

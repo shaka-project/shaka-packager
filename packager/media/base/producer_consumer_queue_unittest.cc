@@ -6,11 +6,11 @@
 
 #include <gtest/gtest.h>
 
-#include "base/bind.h"
-#include "base/synchronization/waitable_event.h"
-#include "media/base/closure_thread.h"
-#include "media/base/producer_consumer_queue.h"
-#include "media/base/status_test_util.h"
+#include "packager/base/bind.h"
+#include "packager/base/synchronization/waitable_event.h"
+#include "packager/media/base/closure_thread.h"
+#include "packager/media/base/producer_consumer_queue.h"
+#include "packager/media/base/status_test_util.h"
 
 namespace {
 const size_t kCapacity = 10u;

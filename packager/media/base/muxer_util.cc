@@ -4,17 +4,17 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/muxer_util.h"
+#include "packager/media/base/muxer_util.h"
 
 #include <inttypes.h>
 
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
+#include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/strings/string_split.h"
+#include "packager/base/strings/stringprintf.h"
 
 namespace edash_packager {
 namespace {

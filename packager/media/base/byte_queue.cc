@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/byte_queue.h"
+#include "packager/media/base/byte_queue.h"
 
-#include "base/logging.h"
+#include "packager/base/logging.h"
 
 namespace edash_packager {
 namespace media {

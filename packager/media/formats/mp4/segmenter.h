@@ -10,9 +10,9 @@
 #include <map>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_ptr.h"
-#include "media/base/status.h"
+#include "packager/base/memory/ref_counted.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/status.h"
 
 namespace edash_packager {
 namespace media {

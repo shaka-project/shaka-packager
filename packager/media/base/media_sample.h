@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_ptr.h"
+#include "packager/base/logging.h"
+#include "packager/base/memory/ref_counted.h"
+#include "packager/base/memory/scoped_ptr.h"
 
 namespace edash_packager {
 namespace media {

@@ -7,20 +7,20 @@
 #include <gflags/gflags.h>
 #include <iostream>
 
-#include "app/fixed_key_encryption_flags.h"
-#include "app/mpd_flags.h"
-#include "app/muxer_flags.h"
-#include "app/widevine_encryption_flags.h"
-#include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
-#include "media/base/media_stream.h"
-#include "media/base/muxer.h"
-#include "media/base/muxer_options.h"
-#include "media/base/request_signer.h"
-#include "media/base/stream_info.h"
-#include "media/base/widevine_key_source.h"
-#include "media/file/file.h"
-#include "mpd/base/mpd_builder.h"
+#include "packager/app/fixed_key_encryption_flags.h"
+#include "packager/app/mpd_flags.h"
+#include "packager/app/muxer_flags.h"
+#include "packager/app/widevine_encryption_flags.h"
+#include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/base/media_stream.h"
+#include "packager/media/base/muxer.h"
+#include "packager/media/base/muxer_options.h"
+#include "packager/media/base/request_signer.h"
+#include "packager/media/base/stream_info.h"
+#include "packager/media/base/widevine_key_source.h"
+#include "packager/media/file/file.h"
+#include "packager/mpd/base/mpd_builder.h"
 
 DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
 

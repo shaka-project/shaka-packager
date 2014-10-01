@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/mp4/box_reader.h"
+#include "packager/media/formats/mp4/box_reader.h"
 
 #include <inttypes.h>
 
 #include <limits>
 
-#include "base/logging.h"
-#include "base/memory/scoped_ptr.h"
-#include "base/strings/stringprintf.h"
-#include "media/formats/mp4/box.h"
+#include "packager/base/logging.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/strings/stringprintf.h"
+#include "packager/media/formats/mp4/box.h"
 
 namespace edash_packager {
 namespace media {

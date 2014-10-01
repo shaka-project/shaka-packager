@@ -6,10 +6,10 @@
 
 #include <gtest/gtest.h>
 
-#include "base/logging.h"
-#include "base/memory/scoped_ptr.h"
-#include "base/strings/string_number_conversions.h"
-#include "media/base/aes_encryptor.h"
+#include "packager/base/logging.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/base/aes_encryptor.h"
 
 namespace {
 

@@ -8,12 +8,12 @@
 #include <list>
 #include <utility>
 
-#include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/memory/scoped_ptr.h"
-#include "media/base/audio_stream_info.h"
-#include "media/base/byte_queue.h"
-#include "media/formats/mp2t/es_parser.h"
+#include "packager/base/callback.h"
+#include "packager/base/compiler_specific.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/audio_stream_info.h"
+#include "packager/media/base/byte_queue.h"
+#include "packager/media/formats/mp2t/es_parser.h"
 
 namespace edash_packager {
 namespace media {

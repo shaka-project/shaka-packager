@@ -11,8 +11,8 @@
 
 #include <vector>
 
-#include "base/macros.h"
-#include "media/formats/mp4/box_definitions.h"
+#include "packager/base/macros.h"
+#include "packager/media/formats/mp4/box_definitions.h"
 
 namespace edash_packager {
 namespace media {

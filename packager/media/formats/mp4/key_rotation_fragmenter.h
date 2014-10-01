@@ -7,8 +7,8 @@
 #ifndef MEDIA_FORMATS_MP4_KEY_ROTATION_FRAGMENTER_H_
 #define MEDIA_FORMATS_MP4_KEY_ROTATION_FRAGMENTER_H_
 
-#include "media/base/key_source.h"
-#include "media/formats/mp4/encrypting_fragmenter.h"
+#include "packager/media/base/key_source.h"
+#include "packager/media/formats/mp4/encrypting_fragmenter.h"
 
 namespace edash_packager {
 namespace media {

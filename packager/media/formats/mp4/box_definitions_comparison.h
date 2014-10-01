@@ -9,7 +9,7 @@
 #ifndef MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_
 #define MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_
 
-#include "media/formats/mp4/box_definitions.h"
+#include "packager/media/formats/mp4/box_definitions.h"
 
 namespace edash_packager {
 namespace media {

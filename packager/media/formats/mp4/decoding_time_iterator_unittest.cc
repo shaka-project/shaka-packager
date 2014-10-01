@@ -6,8 +6,8 @@
 
 #include <gtest/gtest.h>
 
-#include "base/memory/scoped_ptr.h"
-#include "media/formats/mp4/decoding_time_iterator.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/formats/mp4/decoding_time_iterator.h"
 
 namespace edash_packager {
 namespace media {

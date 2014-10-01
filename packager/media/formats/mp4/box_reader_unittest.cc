@@ -6,10 +6,10 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "base/logging.h"
-#include "base/memory/scoped_ptr.h"
-#include "media/formats/mp4/box_buffer.h"
-#include "media/formats/mp4/rcheck.h"
+#include "packager/base/logging.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/formats/mp4/box_buffer.h"
+#include "packager/media/formats/mp4/rcheck.h"
 
 namespace edash_packager {
 namespace media {

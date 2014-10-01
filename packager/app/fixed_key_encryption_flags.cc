@@ -6,7 +6,7 @@
 //
 // Defines command line flags for fixed key encryption.
 
-#include "app/fixed_key_encryption_flags.h"
+#include "packager/app/fixed_key_encryption_flags.h"
 
 DEFINE_bool(enable_fixed_key_encryption,
             false,

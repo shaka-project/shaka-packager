@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "mpd/base/content_protection_element.h"
+#include "packager/mpd/base/content_protection_element.h"
 
 namespace edash_packager {
 ContentProtectionElement::ContentProtectionElement() {}

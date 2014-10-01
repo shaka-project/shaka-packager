@@ -4,9 +4,9 @@
 
 #include <gtest/gtest.h>
 
-#include "base/file_util.h"
-#include "media/base/container_names.h"
-#include "media/test/test_data_util.h"
+#include "packager/base/file_util.h"
+#include "packager/media/base/container_names.h"
+#include "packager/media/test/test_data_util.h"
 
 namespace edash_packager {
 namespace media {

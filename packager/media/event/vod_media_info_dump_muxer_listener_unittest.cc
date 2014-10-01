@@ -9,14 +9,14 @@
 
 #include <vector>
 
-#include "base/file_util.h"
-#include "base/files/file_path.h"
-#include "base/stl_util.h"
-#include "media/event/vod_media_info_dump_muxer_listener.h"
-#include "media/file/file.h"
-#include "media/base/muxer_options.h"
-#include "media/base/video_stream_info.h"
-#include "mpd/base/media_info.pb.h"
+#include "packager/base/file_util.h"
+#include "packager/base/files/file_path.h"
+#include "packager/base/stl_util.h"
+#include "packager/media/event/vod_media_info_dump_muxer_listener.h"
+#include "packager/media/file/file.h"
+#include "packager/media/base/muxer_options.h"
+#include "packager/media/base/video_stream_info.h"
+#include "packager/mpd/base/media_info.pb.h"
 
 namespace {
 const bool kEnableEncryption = true;

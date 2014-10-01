@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "media/base/stream_info.h"
+#include "packager/media/base/stream_info.h"
 
 namespace edash_packager {
 namespace media {

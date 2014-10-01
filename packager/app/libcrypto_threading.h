@@ -7,7 +7,7 @@
 #ifndef APP_LIBCRYPTO_THREADING_H_
 #define APP_LIBCRYPTO_THREADING_H_
 
-#include "base/macros.h"
+#include "packager/base/macros.h"
 
 namespace edash_packager {
 namespace media {

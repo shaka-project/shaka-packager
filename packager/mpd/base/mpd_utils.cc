@@ -4,15 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "mpd/base/mpd_utils.h"
+#include "packager/mpd/base/mpd_utils.h"
 
 #include <libxml/tree.h>
 
-#include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
-#include "mpd/base/content_protection_element.h"
-#include "mpd/base/media_info.pb.h"
-#include "mpd/base/xml/scoped_xml_ptr.h"
+#include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/mpd/base/content_protection_element.h"
+#include "packager/mpd/base/media_info.pb.h"
+#include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
 namespace {
 

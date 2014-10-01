@@ -4,9 +4,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/status.h"
+#include "packager/media/base/status.h"
 
-#include "base/strings/stringprintf.h"
+#include "packager/base/strings/stringprintf.h"
 
 namespace edash_packager {
 namespace media {

@@ -6,8 +6,8 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "base/memory/scoped_ptr.h"
-#include "media/base/offset_byte_queue.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/offset_byte_queue.h"
 
 namespace edash_packager {
 namespace media {

@@ -2,22 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/mp2t/mp2t_media_parser.h"
+#include "packager/media/formats/mp2t/mp2t_media_parser.h"
 
-#include "base/bind.h"
-#include "base/memory/scoped_ptr.h"
-#include "base/stl_util.h"
-#include "media/base/media_sample.h"
-#include "media/base/stream_info.h"
-#include "media/formats/mp2t/es_parser.h"
-#include "media/formats/mp2t/es_parser_adts.h"
-#include "media/formats/mp2t/es_parser_h264.h"
-#include "media/formats/mp2t/mp2t_common.h"
-#include "media/formats/mp2t/ts_packet.h"
-#include "media/formats/mp2t/ts_section.h"
-#include "media/formats/mp2t/ts_section_pat.h"
-#include "media/formats/mp2t/ts_section_pes.h"
-#include "media/formats/mp2t/ts_section_pmt.h"
+#include "packager/base/bind.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/stl_util.h"
+#include "packager/media/base/media_sample.h"
+#include "packager/media/base/stream_info.h"
+#include "packager/media/formats/mp2t/es_parser.h"
+#include "packager/media/formats/mp2t/es_parser_adts.h"
+#include "packager/media/formats/mp2t/es_parser_h264.h"
+#include "packager/media/formats/mp2t/mp2t_common.h"
+#include "packager/media/formats/mp2t/ts_packet.h"
+#include "packager/media/formats/mp2t/ts_section.h"
+#include "packager/media/formats/mp2t/ts_section_pat.h"
+#include "packager/media/formats/mp2t/ts_section_pes.h"
+#include "packager/media/formats/mp2t/ts_section_pmt.h"
 
 namespace edash_packager {
 namespace media {

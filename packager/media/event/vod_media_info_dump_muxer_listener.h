@@ -14,10 +14,10 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/memory/scoped_ptr.h"
-#include "media/base/muxer_options.h"
-#include "media/event/muxer_listener.h"
+#include "packager/base/compiler_specific.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/muxer_options.h"
+#include "packager/media/event/muxer_listener.h"
 
 namespace edash_packager {
 

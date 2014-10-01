@@ -4,15 +4,15 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/event/muxer_listener_internal.h"
+#include "packager/media/event/muxer_listener_internal.h"
 
 #include <math.h>
 
-#include "base/logging.h"
-#include "media/base/audio_stream_info.h"
-#include "media/base/muxer_options.h"
-#include "media/base/video_stream_info.h"
-#include "mpd/base/media_info.pb.h"
+#include "packager/base/logging.h"
+#include "packager/media/base/audio_stream_info.h"
+#include "packager/media/base/muxer_options.h"
+#include "packager/media/base/video_stream_info.h"
+#include "packager/mpd/base/media_info.pb.h"
 
 namespace edash_packager {
 namespace media {

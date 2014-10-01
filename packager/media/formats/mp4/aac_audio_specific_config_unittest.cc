@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include "media/formats/mp4/aac_audio_specific_config.h"
+#include "packager/media/formats/mp4/aac_audio_specific_config.h"
 
 namespace edash_packager {
 namespace media {

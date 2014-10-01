@@ -4,12 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/http_fetcher.h"
+#include "packager/media/base/http_fetcher.h"
 
-#include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
-#include "media/base/status_test_util.h"
+#include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/strings/string_util.h"
+#include "packager/media/base/status_test_util.h"
 
 namespace {
 const char kTestUrl[] = "http://packager-test.appspot.com/http_test";

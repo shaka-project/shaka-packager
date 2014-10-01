@@ -7,16 +7,16 @@
 #include <algorithm>
 #include <vector>
 
-#include "base/bind.h"
-#include "base/command_line.h"
-#include "base/files/memory_mapped_file.h"
-#include "base/logging.h"
-#include "base/path_service.h"
-#include "media/base/media_sample.h"
-#include "media/base/timestamp.h"
-#include "media/filters/h264_parser.h"
-#include "media/formats/mp2t/es_parser_h264.h"
-#include "media/test/test_data_util.h"
+#include "packager/base/bind.h"
+#include "packager/base/command_line.h"
+#include "packager/base/files/memory_mapped_file.h"
+#include "packager/base/logging.h"
+#include "packager/base/path_service.h"
+#include "packager/media/base/media_sample.h"
+#include "packager/media/base/timestamp.h"
+#include "packager/media/filters/h264_parser.h"
+#include "packager/media/formats/mp2t/es_parser_h264.h"
+#include "packager/media/test/test_data_util.h"
 
 namespace edash_packager {
 namespace media {

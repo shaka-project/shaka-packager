@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/mp4/cenc.h"
+#include "packager/media/formats/mp4/cenc.h"
 
 #include <cstring>
 
-#include "media/base/buffer_reader.h"
-#include "media/base/buffer_writer.h"
-#include "media/formats/mp4/rcheck.h"
+#include "packager/media/base/buffer_reader.h"
+#include "packager/media/base/buffer_writer.h"
+#include "packager/media/formats/mp4/rcheck.h"
 
 namespace {
 // According to ISO/IEC FDIS 23001-7: CENC spec, IV should be either

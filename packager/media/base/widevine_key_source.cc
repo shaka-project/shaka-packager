@@ -4,17 +4,17 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/widevine_key_source.h"
+#include "packager/media/base/widevine_key_source.h"
 
-#include "base/base64.h"
-#include "base/bind.h"
-#include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
-#include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
-#include "media/base/http_fetcher.h"
-#include "media/base/producer_consumer_queue.h"
-#include "media/base/request_signer.h"
+#include "packager/base/base64.h"
+#include "packager/base/bind.h"
+#include "packager/base/json/json_reader.h"
+#include "packager/base/json/json_writer.h"
+#include "packager/base/memory/ref_counted.h"
+#include "packager/base/stl_util.h"
+#include "packager/media/base/http_fetcher.h"
+#include "packager/media/base/producer_consumer_queue.h"
+#include "packager/media/base/request_signer.h"
 
 #define RCHECK(x)                                       \
   do {                                                  \

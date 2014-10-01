@@ -4,9 +4,9 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/buffer_reader.h"
+#include "packager/media/base/buffer_reader.h"
 
-#include "base/logging.h"
+#include "packager/base/logging.h"
 
 namespace edash_packager {
 namespace media {

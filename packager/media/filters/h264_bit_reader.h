@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "base/macros.h"
+#include "packager/base/macros.h"
 
 namespace edash_packager {
 namespace media {

@@ -1,4 +1,4 @@
-#include "mpd/test/xml_compare.h"
+#include "packager/mpd/test/xml_compare.h"
 
 #include <libxml/tree.h>
 
@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "base/logging.h"
-#include "mpd/base/xml/scoped_xml_ptr.h"
+#include "packager/base/logging.h"
+#include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
 namespace edash_packager {
 

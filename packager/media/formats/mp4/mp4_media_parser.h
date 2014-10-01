@@ -12,13 +12,13 @@
 #include <map>
 #include <vector>
 
-#include "base/callback_forward.h"
-#include "base/compiler_specific.h"
-#include "base/memory/scoped_ptr.h"
-#include "base/memory/ref_counted.h"
-#include "base/memory/scoped_ptr.h"
-#include "media/base/media_parser.h"
-#include "media/base/offset_byte_queue.h"
+#include "packager/base/callback_forward.h"
+#include "packager/base/compiler_specific.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/memory/ref_counted.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/media_parser.h"
+#include "packager/media/base/offset_byte_queue.h"
 
 namespace edash_packager {
 namespace media {

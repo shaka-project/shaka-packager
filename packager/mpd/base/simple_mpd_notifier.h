@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/scoped_ptr.h"
-#include "base/synchronization/lock.h"
-#include "mpd/base/mpd_notifier.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/synchronization/lock.h"
+#include "packager/mpd/base/mpd_notifier.h"
 
 namespace edash_packager {
 

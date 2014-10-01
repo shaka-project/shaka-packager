@@ -9,11 +9,11 @@
 
 #include <map>
 
-#include "base/memory/scoped_ptr.h"
-#include "base/synchronization/waitable_event.h"
-#include "base/values.h"
-#include "media/base/closure_thread.h"
-#include "media/base/key_source.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/synchronization/waitable_event.h"
+#include "packager/base/values.h"
+#include "packager/media/base/closure_thread.h"
+#include "packager/media/base/key_source.h"
 
 namespace edash_packager {
 namespace media {

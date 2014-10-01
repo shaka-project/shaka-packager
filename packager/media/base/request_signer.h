@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/memory/scoped_ptr.h"
+#include "packager/base/memory/scoped_ptr.h"
 
 namespace edash_packager {
 namespace media {

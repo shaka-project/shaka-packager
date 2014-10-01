@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/test/test_data_util.h"
+#include "packager/media/test/test_data_util.h"
 
-#include "base/file_util.h"
-#include "base/logging.h"
-#include "base/path_service.h"
+#include "packager/base/file_util.h"
+#include "packager/base/logging.h"
+#include "packager/base/path_service.h"
 
 namespace edash_packager {
 namespace media {

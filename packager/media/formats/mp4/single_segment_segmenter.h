@@ -7,8 +7,8 @@
 #ifndef MEDIA_FORMATS_MP4_SINGLE_SEGMENT_SEGMENTER_H_
 #define MEDIA_FORMATS_MP4_SINGLE_SEGMENT_SEGMENTER_H_
 
-#include "media/file/file_closer.h"
-#include "media/formats/mp4/segmenter.h"
+#include "packager/media/file/file_closer.h"
+#include "packager/media/formats/mp4/segmenter.h"
 
 namespace edash_packager {
 namespace media {

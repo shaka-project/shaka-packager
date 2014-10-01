@@ -4,21 +4,21 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/demuxer.h"
+#include "packager/media/base/demuxer.h"
 
-#include "base/bind.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
-#include "media/base/container_names.h"
-#include "media/base/decryptor_source.h"
-#include "media/base/key_source.h"
-#include "media/base/media_sample.h"
-#include "media/base/media_stream.h"
-#include "media/base/stream_info.h"
-#include "media/file/file.h"
-#include "media/formats/mp2t/mp2t_media_parser.h"
-#include "media/formats/mp4/mp4_media_parser.h"
-#include "media/formats/wvm/wvm_media_parser.h"
+#include "packager/base/bind.h"
+#include "packager/base/logging.h"
+#include "packager/base/stl_util.h"
+#include "packager/media/base/container_names.h"
+#include "packager/media/base/decryptor_source.h"
+#include "packager/media/base/key_source.h"
+#include "packager/media/base/media_sample.h"
+#include "packager/media/base/media_stream.h"
+#include "packager/media/base/stream_info.h"
+#include "packager/media/file/file.h"
+#include "packager/media/formats/mp2t/mp2t_media_parser.h"
+#include "packager/media/formats/mp4/mp4_media_parser.h"
+#include "packager/media/formats/wvm/wvm_media_parser.h"
 
 namespace {
 const size_t kBufSize = 0x40000;  // 256KB.

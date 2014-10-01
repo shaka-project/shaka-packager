@@ -5,11 +5,11 @@
 #include <gtest/gtest.h>
 #include <stdint.h>
 
-#include "base/logging.h"
-#include "base/memory/scoped_ptr.h"
-#include "media/formats/mp4/box_definitions.h"
-#include "media/formats/mp4/rcheck.h"
-#include "media/formats/mp4/track_run_iterator.h"
+#include "packager/base/logging.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/formats/mp4/box_definitions.h"
+#include "packager/media/formats/mp4/rcheck.h"
+#include "packager/media/formats/mp4/track_run_iterator.h"
 
 // The sum of the elements in a vector initialized with SumAscending,
 // less the value of the last element.

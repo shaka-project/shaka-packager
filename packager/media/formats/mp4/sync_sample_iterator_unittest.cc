@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 
-#include "media/formats/mp4/sync_sample_iterator.h"
+#include "packager/media/formats/mp4/sync_sample_iterator.h"
 
 namespace {
 const uint32_t kNumSamples = 100;

@@ -7,9 +7,9 @@
 #include <gtest/gtest.h>
 #include <stdio.h>
 
-#include "base/strings/string_number_conversions.h"
-#include "media/filters/h264_byte_to_unit_stream_converter.h"
-#include "media/test/test_data_util.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/filters/h264_byte_to_unit_stream_converter.h"
+#include "packager/media/test/test_data_util.h"
 
 namespace {
 const char kExpectedConfigRecord[] =

@@ -4,13 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/aes_encryptor.h"
+#include "packager/media/base/aes_encryptor.h"
 
 #include <openssl/aes.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
 
-#include "base/logging.h"
+#include "packager/base/logging.h"
 
 namespace {
 

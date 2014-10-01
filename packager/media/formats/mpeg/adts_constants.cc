@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/mpeg/adts_constants.h"
+#include "packager/media/formats/mpeg/adts_constants.h"
 
-#include "base/macros.h"
+#include "packager/base/macros.h"
 
 namespace edash_packager {
 namespace media {

@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "mpd/base/mpd_builder.h"
+#include "packager/mpd/base/mpd_builder.h"
 
 #include <libxml/tree.h>
 #include <libxml/xmlstring.h>
@@ -13,15 +13,15 @@
 #include <list>
 #include <string>
 
-#include "base/logging.h"
-#include "base/memory/scoped_ptr.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "base/time/time.h"
-#include "media/file/file.h"
-#include "mpd/base/content_protection_element.h"
-#include "mpd/base/mpd_utils.h"
-#include "mpd/base/xml/xml_node.h"
+#include "packager/base/logging.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/strings/stringprintf.h"
+#include "packager/base/time/time.h"
+#include "packager/media/file/file.h"
+#include "packager/mpd/base/content_protection_element.h"
+#include "packager/mpd/base/mpd_utils.h"
+#include "packager/mpd/base/xml/xml_node.h"
 
 namespace edash_packager {
 

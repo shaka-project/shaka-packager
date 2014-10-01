@@ -7,8 +7,8 @@
 #ifndef MEDIA_FILE_FILE_CLOSER_H_
 #define MEDIA_FILE_FILE_CLOSER_H_
 
-#include "base/logging.h"
-#include "media/file/file.h"
+#include "packager/base/logging.h"
+#include "packager/media/file/file.h"
 
 namespace edash_packager {
 namespace media {

@@ -7,7 +7,7 @@
 #ifndef MEDIA_BASE_VIDEO_STREAM_INFO_H_
 #define MEDIA_BASE_VIDEO_STREAM_INFO_H_
 
-#include "media/base/stream_info.h"
+#include "packager/media/base/stream_info.h"
 
 namespace edash_packager {
 namespace media {

@@ -11,8 +11,8 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "media/file/file.h"
+#include "packager/base/compiler_specific.h"
+#include "packager/media/file/file.h"
 
 namespace edash_packager {
 namespace media {

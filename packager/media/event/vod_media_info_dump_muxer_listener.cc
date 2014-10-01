@@ -4,16 +4,16 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/event/vod_media_info_dump_muxer_listener.h"
+#include "packager/media/event/vod_media_info_dump_muxer_listener.h"
 
 #include <google/protobuf/text_format.h>
 
-#include "base/logging.h"
-#include "media/base/muxer_options.h"
-#include "media/base/stream_info.h"
-#include "media/event/muxer_listener_internal.h"
-#include "media/file/file.h"
-#include "mpd/base/media_info.pb.h"
+#include "packager/base/logging.h"
+#include "packager/media/base/muxer_options.h"
+#include "packager/media/base/stream_info.h"
+#include "packager/media/event/muxer_listener_internal.h"
+#include "packager/media/file/file.h"
+#include "packager/mpd/base/media_info.pb.h"
 
 namespace edash_packager {
 namespace media {

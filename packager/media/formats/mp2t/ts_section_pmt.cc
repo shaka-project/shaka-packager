@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/mp2t/ts_section_pmt.h"
+#include "packager/media/formats/mp2t/ts_section_pmt.h"
 
 #include <map>
 
-#include "base/logging.h"
-#include "media/base/bit_reader.h"
-#include "media/formats/mp2t/mp2t_common.h"
+#include "packager/base/logging.h"
+#include "packager/media/base/bit_reader.h"
+#include "packager/media/formats/mp2t/mp2t_common.h"
 
 namespace edash_packager {
 namespace media {

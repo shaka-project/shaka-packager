@@ -10,9 +10,9 @@
 #ifndef MPD_BASE_SIMPLE_MPD_NOTIFIER_H_
 #define MPD_BASE_SIMPLE_MPD_NOTIFIER_H_
 
-#include "mpd/base/mpd_notifier.h"
+#include "packager/mpd/base/mpd_notifier.h"
 
-#include "mpd/base/mpd_builder.h"
+#include "packager/mpd/base/mpd_builder.h"
 
 namespace edash_packager {
 

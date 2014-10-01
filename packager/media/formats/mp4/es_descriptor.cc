@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/mp4/es_descriptor.h"
+#include "packager/media/formats/mp4/es_descriptor.h"
 
-#include "media/base/bit_reader.h"
-#include "media/base/buffer_writer.h"
-#include "media/formats/mp4/rcheck.h"
+#include "packager/media/base/bit_reader.h"
+#include "packager/media/base/buffer_writer.h"
+#include "packager/media/formats/mp4/rcheck.h"
 
 namespace edash_packager {
 namespace media {

@@ -7,13 +7,13 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "base/base64.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
-#include "media/base/http_fetcher.h"
-#include "media/base/request_signer.h"
-#include "media/base/status_test_util.h"
-#include "media/base/widevine_key_source.h"
+#include "packager/base/base64.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/strings/stringprintf.h"
+#include "packager/media/base/http_fetcher.h"
+#include "packager/media/base/request_signer.h"
+#include "packager/media/base/status_test_util.h"
+#include "packager/media/base/widevine_key_source.h"
 
 namespace {
 const char kServerUrl[] = "http://www.foo.com/getcontentkey";

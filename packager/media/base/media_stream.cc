@@ -4,14 +4,14 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/media_stream.h"
+#include "packager/media/base/media_stream.h"
 
-#include "base/logging.h"
-#include "base/strings/stringprintf.h"
-#include "media/base/demuxer.h"
-#include "media/base/media_sample.h"
-#include "media/base/muxer.h"
-#include "media/base/stream_info.h"
+#include "packager/base/logging.h"
+#include "packager/base/strings/stringprintf.h"
+#include "packager/media/base/demuxer.h"
+#include "packager/media/base/media_sample.h"
+#include "packager/media/base/muxer.h"
+#include "packager/media/base/stream_info.h"
 
 namespace edash_packager {
 namespace media {

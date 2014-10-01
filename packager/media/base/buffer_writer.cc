@@ -4,10 +4,10 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/buffer_writer.h"
+#include "packager/media/base/buffer_writer.h"
 
-#include "base/sys_byteorder.h"
-#include "media/file/file.h"
+#include "packager/base/sys_byteorder.h"
+#include "packager/media/file/file.h"
 
 namespace edash_packager {
 namespace media {

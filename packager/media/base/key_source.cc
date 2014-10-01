@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/key_source.h"
+#include "packager/media/base/key_source.h"
 
-#include "base/strings/string_number_conversions.h"
-#include "media/base/aes_encryptor.h"
-#include "media/base/buffer_writer.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/base/aes_encryptor.h"
+#include "packager/media/base/buffer_writer.h"
 
 namespace {
 const uint8_t kWidevineSystemId[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,

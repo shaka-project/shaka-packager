@@ -7,10 +7,10 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "base/bind.h"
-#include "base/memory/scoped_ptr.h"
-#include "base/synchronization/waitable_event.h"
-#include "media/base/closure_thread.h"
+#include "packager/base/bind.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/synchronization/waitable_event.h"
+#include "packager/media/base/closure_thread.h"
 
 using ::testing::DoAll;
 using ::testing::Invoke;

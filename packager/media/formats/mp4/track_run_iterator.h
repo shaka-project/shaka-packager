@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "base/memory/scoped_ptr.h"
-#include "media/formats/mp4/box_definitions.h"
-#include "media/formats/mp4/cenc.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/formats/mp4/box_definitions.h"
+#include "packager/media/formats/mp4/cenc.h"
 
 namespace edash_packager {
 namespace media {

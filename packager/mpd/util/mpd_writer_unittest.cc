@@ -6,10 +6,10 @@
 
 #include <gtest/gtest.h>
 
-#include "base/file_util.h"
-#include "base/path_service.h"
-#include "mpd/test/mpd_builder_test_helper.h"
-#include "mpd/util/mpd_writer.h"
+#include "packager/base/file_util.h"
+#include "packager/base/path_service.h"
+#include "packager/mpd/test/mpd_builder_test_helper.h"
+#include "packager/mpd/util/mpd_writer.h"
 
 namespace edash_packager {
 

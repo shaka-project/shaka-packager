@@ -7,8 +7,8 @@
 #ifndef MEDIA_BASE_HTTP_FETCHER_H_
 #define MEDIA_BASE_HTTP_FETCHER_H_
 
-#include "base/compiler_specific.h"
-#include "media/base/status.h"
+#include "packager/base/compiler_specific.h"
+#include "packager/media/base/status.h"
 
 namespace edash_packager {
 namespace media {

@@ -4,12 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "app/stream_descriptor.h"
+#include "packager/app/stream_descriptor.h"
 
-#include "app/packager_util.h"
-#include "base/logging.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
+#include "packager/app/packager_util.h"
+#include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/strings/string_split.h"
 
 namespace edash_packager {
 namespace media {

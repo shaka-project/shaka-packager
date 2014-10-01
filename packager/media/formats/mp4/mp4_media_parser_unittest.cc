@@ -6,11 +6,11 @@
 
 #include <gtest/gtest.h>
 
-#include "base/bind.h"
-#include "base/logging.h"
-#include "media/base/media_sample.h"
-#include "media/formats/mp4/mp4_media_parser.h"
-#include "media/test/test_data_util.h"
+#include "packager/base/bind.h"
+#include "packager/base/logging.h"
+#include "packager/media/base/media_sample.h"
+#include "packager/media/formats/mp4/mp4_media_parser.h"
+#include "packager/media/test/test_data_util.h"
 
 namespace edash_packager {
 namespace media {

@@ -4,13 +4,13 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/formats/mp4/fragmenter.h"
+#include "packager/media/formats/mp4/fragmenter.h"
 
 #include <limits>
 
-#include "media/base/buffer_writer.h"
-#include "media/base/media_sample.h"
-#include "media/formats/mp4/box_definitions.h"
+#include "packager/media/base/buffer_writer.h"
+#include "packager/media/base/media_sample.h"
+#include "packager/media/formats/mp4/box_definitions.h"
 
 namespace edash_packager {
 namespace media {

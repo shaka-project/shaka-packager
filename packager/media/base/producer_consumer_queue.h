@@ -9,11 +9,11 @@
 
 #include <deque>
 
-#include "base/strings/stringprintf.h"
-#include "base/synchronization/condition_variable.h"
-#include "base/synchronization/lock.h"
-#include "base/timer/elapsed_timer.h"
-#include "media/base/status.h"
+#include "packager/base/strings/stringprintf.h"
+#include "packager/base/synchronization/condition_variable.h"
+#include "packager/base/synchronization/lock.h"
+#include "packager/base/timer/elapsed_timer.h"
+#include "packager/media/base/status.h"
 
 namespace edash_packager {
 namespace media {

@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
-#include "base/callback.h"
-#include "base/memory/ref_counted.h"
+#include "packager/base/callback.h"
+#include "packager/base/memory/ref_counted.h"
 
 namespace edash_packager {
 namespace media {

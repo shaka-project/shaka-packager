@@ -4,12 +4,12 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/base/media_sample.h"
+#include "packager/media/base/media_sample.h"
 
 #include <inttypes.h>
 
-#include "base/logging.h"
-#include "base/strings/stringprintf.h"
+#include "packager/base/logging.h"
+#include "packager/base/strings/stringprintf.h"
 
 namespace edash_packager {
 namespace media {

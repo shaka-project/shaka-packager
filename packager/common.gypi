@@ -14,6 +14,7 @@
   'target_defaults': {
     'include_dirs': [
       '.',
+      '..',
     ],
     'conditions': [
       ['clang==1', {

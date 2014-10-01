@@ -5,9 +5,9 @@
 #ifndef MEDIA_FORMATS_MP2T_TS_SECTION_PMT_H_
 #define MEDIA_FORMATS_MP2T_TS_SECTION_PMT_H_
 
-#include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "media/formats/mp2t/ts_section_psi.h"
+#include "packager/base/callback.h"
+#include "packager/base/compiler_specific.h"
+#include "packager/media/formats/mp2t/ts_section_psi.h"
 
 namespace edash_packager {
 namespace media {

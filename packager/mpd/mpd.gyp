@@ -20,7 +20,7 @@
       ],
       'variables': {
         'proto_in_dir': 'base',
-        'proto_out_dir': 'mpd/base',
+        'proto_out_dir': 'packager/mpd/base',
       },
       'includes': ['../build/protoc.gypi'],
       'dependencies': [

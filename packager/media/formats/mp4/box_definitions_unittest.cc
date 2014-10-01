@@ -8,11 +8,11 @@
 
 #include <limits>
 
-#include "base/memory/scoped_ptr.h"
-#include "media/base/buffer_writer.h"
-#include "media/formats/mp4/box_definitions.h"
-#include "media/formats/mp4/box_definitions_comparison.h"
-#include "media/formats/mp4/box_reader.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/buffer_writer.h"
+#include "packager/media/formats/mp4/box_definitions.h"
+#include "packager/media/formats/mp4/box_definitions_comparison.h"
+#include "packager/media/formats/mp4/box_reader.h"
 
 namespace edash_packager {
 namespace media {

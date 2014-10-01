@@ -4,11 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "app/mpd_generator_flags.h"
-#include "base/logging.h"
-#include "base/strings/string_split.h"
-#include "base/strings/stringprintf.h"
-#include "mpd/util/mpd_writer.h"
+#include "packager/app/mpd_generator_flags.h"
+#include "packager/base/logging.h"
+#include "packager/base/strings/string_split.h"
+#include "packager/base/strings/stringprintf.h"
+#include "packager/mpd/util/mpd_writer.h"
 
 namespace {
 const char kUsage[] =
