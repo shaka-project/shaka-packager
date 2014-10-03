@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <algorithm>
@@ -21,15 +22,63 @@
 #include "packager/media/test/test_data_util.h"
 
 namespace {
+const int64_t kNoTimestamp = std::numeric_limits<int64_t>::min();
 const char kWvmFile[] = "hb2_4stream_encrypted.wvm";
 // Constants associated with kWvmFile follows.
 const uint32_t kExpectedStreams = 4;
 const int kExpectedVideoFrameCount = 6665;
 const int kExpectedAudioFrameCount = 11964;
-}
+const char kServerUrl[] = "fake_server_url";
+const char kSigner[] = "fake_signer";
+const uint8 kExpectedAssetKey[16] = {'\006', static_cast<uint8>('\201'), '\177',
+  'H', 'k', static_cast<uint8>('\362'), '\177', '>', static_cast<uint8>('\307'),
+  '9', static_cast<uint8>('\250'), '?', '\022', '\n',
+  static_cast<uint8>('\322'), static_cast<uint8>('\374')};
+}  //  namespace
+
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::InSequence;
+using ::testing::Return;
+using ::testing::SetArgPointee;
 
 namespace edash_packager {
 namespace media {
+
+class FakeRequestSigner : public RequestSigner {
+ public:
+  FakeRequestSigner() : RequestSigner(kSigner) {}
+  virtual ~FakeRequestSigner() {}
+
+  virtual bool GenerateSignature(const std::string& message,
+                                 std::string* signature) OVERRIDE {
+    return true;
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(FakeRequestSigner);
+};
+
+scoped_ptr<FakeRequestSigner> kFakeRequestSigner(new FakeRequestSigner());
+
+class MockKeySource : public WidevineKeySource {
+ public:
+  MockKeySource() : WidevineKeySource(
+      kServerUrl, kFakeRequestSigner.PassAs<RequestSigner>()) {
+    // KeyProduction thread started in test because FetchKeys()
+    // is mocked.  ~ClosureThread expects to terminate this thread.
+    key_production_thread_.Start();
+  }
+  virtual ~MockKeySource() {}
+
+  MOCK_METHOD1(FetchKeys, Status(uint32_t asset_id));
+  MOCK_METHOD2(GetKey, Status(TrackType track_type,
+                              EncryptionKey* key));
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(MockKeySource);
+};
+
 namespace wvm {
 
 class WvmMediaParserTest : public testing::Test {
@@ -40,29 +89,21 @@ class WvmMediaParserTest : public testing::Test {
         video_max_dts_(kNoTimestamp),
         current_track_id_(-1) {
     parser_.reset(new WvmMediaParser());
-    const std::string server_url =
-        "https://license.uat.widevine.com/cenc/getcontentkey/widevine_test";
-    const std::string aes_signing_key =
-        "1ae8ccd0e7985cc0b6203a55855a1034afc252980e970ca90e5202689f947ab9";
-    const std::string aes_signing_iv = "d58ce954203b7c9a9a9d467f59839249";
-    const std::string signer = "widevine_test";
-    request_signer_.reset(AesRequestSigner::CreateSigner(
-        signer, aes_signing_key, aes_signing_iv));
-    key_source_.reset(new WidevineKeySource(server_url,
-                                            request_signer_.Pass()));
+    key_source_.reset(new MockKeySource());
+    encryption_key_.key.assign(kExpectedAssetKey, kExpectedAssetKey + 16);
   }
 
  protected:
   typedef std::map<int, scoped_refptr<StreamInfo> > StreamMap;
 
   scoped_ptr<WvmMediaParser> parser_;
-  scoped_ptr<RequestSigner> request_signer_;
-  scoped_ptr<WidevineKeySource> key_source_;
+  scoped_ptr<MockKeySource> key_source_;
   StreamMap stream_map_;
   int audio_frame_count_;
   int video_frame_count_;
   int64_t video_max_dts_;
   uint32_t current_track_id_;
+  EncryptionKey encryption_key_;
 
   void OnInit(const std::vector<scoped_refptr<StreamInfo> >& stream_infos) {
     DVLOG(1) << "OnInit: " << stream_infos.size() << " streams.";
@@ -127,21 +168,12 @@ class WvmMediaParserTest : public testing::Test {
 };
 
 TEST_F(WvmMediaParserTest, ParseWvm) {
-  Parse(kWvmFile);
-}
-
-TEST_F(WvmMediaParserTest, StreamCount) {
+  EXPECT_CALL(*key_source_, FetchKeys(_)).WillOnce(Return(Status::OK));
+  EXPECT_CALL(*key_source_, GetKey(_,_))
+      .WillOnce(DoAll(SetArgPointee<1>(encryption_key_), Return(Status::OK)));
   Parse(kWvmFile);
   EXPECT_EQ(kExpectedStreams, stream_map_.size());
-}
-
-TEST_F(WvmMediaParserTest, VideoFrameCount) {
-  Parse(kWvmFile);
   EXPECT_EQ(kExpectedVideoFrameCount, video_frame_count_);
-}
-
-TEST_F(WvmMediaParserTest, AudioFrameCount) {
-  Parse(kWvmFile);
   EXPECT_EQ(kExpectedAudioFrameCount, audio_frame_count_);
 }
 

@@ -37,7 +37,7 @@ class WidevineKeySource : public KeySource {
   virtual Status FetchKeys(const std::vector<uint8_t>& content_id,
                            const std::string& policy) OVERRIDE;
   virtual Status FetchKeys(const std::vector<uint8_t>& pssh_data) OVERRIDE;
-  Status FetchKeys(uint32_t asset_id);
+  virtual Status FetchKeys(uint32_t asset_id);
 
   virtual Status GetKey(TrackType track_type, EncryptionKey* key) OVERRIDE;
   virtual Status GetKey(const std::vector<uint8_t>& key_id,
@@ -50,6 +50,9 @@ class WidevineKeySource : public KeySource {
   /// Inject an @b HttpFetcher object, mainly used for testing.
   /// @param http_fetcher points to the @b HttpFetcher object to be injected.
   void set_http_fetcher(scoped_ptr<HttpFetcher> http_fetcher);
+
+ protected:
+   ClosureThread key_production_thread_;
 
  private:
   typedef std::map<TrackType, EncryptionKey*> EncryptionKeyMap;
@@ -108,7 +111,6 @@ class WidevineKeySource : public KeySource {
   bool key_production_started_;
   base::WaitableEvent start_key_production_;
   uint32_t first_crypto_period_index_;
-  ClosureThread key_production_thread_;
   scoped_ptr<EncryptionKeyQueue> key_pool_;
   EncryptionKeyMap encryption_key_map_;  // For non key rotation request.
   Status common_encryption_request_status_;

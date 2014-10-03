@@ -23,19 +23,18 @@
         '../mpeg/mpeg.gyp:mpeg',
       ],
     },
-    # TODO(ramjic): Re-enable when KeySource::FetchKeys() is mocked.
-    #{
-      #'target_name': 'wvm_unittest',
-      #'type': '<(gtest_target_type)',
-      #'sources': [
-      #  'wvm_media_parser_unittest.cc',
-      #],
-      #'dependencies': [
-      #  '../../../testing/gtest.gyp:gtest',
-      #  '../../../testing/gmock.gyp:gmock',
-      #  '../../test/media_test.gyp:media_test_support',
-      #  'wvm',
-      #]
-    #},
+    {
+      'target_name': 'wvm_unittest',
+      'type': '<(gtest_target_type)',
+      'sources': [
+        'wvm_media_parser_unittest.cc',
+      ],
+      'dependencies': [
+        '../../../testing/gtest.gyp:gtest',
+        '../../../testing/gmock.gyp:gmock',
+        '../../test/media_test.gyp:media_test_support',
+        'wvm',
+      ]
+    },
   ],
 }

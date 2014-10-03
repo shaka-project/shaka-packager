@@ -139,17 +139,17 @@ class WidevineKeySource::RefCountedEncryptionKeyMap
 WidevineKeySource::WidevineKeySource(
     const std::string& server_url,
     scoped_ptr<RequestSigner> signer)
-    : http_fetcher_(new SimpleHttpFetcher(kHttpTimeoutInSeconds)),
+    : key_production_thread_(
+          "KeyProductionThread",
+          base::Bind(&WidevineKeySource::FetchKeysTask,
+                     base::Unretained(this))),
+      http_fetcher_(new SimpleHttpFetcher(kHttpTimeoutInSeconds)),
       server_url_(server_url),
       signer_(signer.Pass()),
       crypto_period_count_(kDefaultCryptoPeriodCount),
       key_production_started_(false),
       start_key_production_(false, false),
-      first_crypto_period_index_(0),
-      key_production_thread_(
-          "KeyProductionThread",
-          base::Bind(&WidevineKeySource::FetchKeysTask,
-                     base::Unretained(this))) {
+      first_crypto_period_index_(0) {
   DCHECK(signer_);
 }
 
