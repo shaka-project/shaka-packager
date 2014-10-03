@@ -161,13 +161,13 @@ bool PopulateSegmentTimeline(const std::list<SegmentInfo>& segment_infos,
   for (std::list<SegmentInfo>::const_iterator it = segment_infos.begin();
        it != segment_infos.end();
        ++it) {
-    XmlNode* s_element = new XmlNode("S");
-    s_element->SetIntegerAttribute("t", it->start_time);
-    s_element->SetIntegerAttribute("d", it->duration);
+    XmlNode s_element("S");
+    s_element.SetIntegerAttribute("t", it->start_time);
+    s_element.SetIntegerAttribute("d", it->duration);
     if (it->repeat > 0)
-      s_element->SetIntegerAttribute("r", it->repeat);
+      s_element.SetIntegerAttribute("r", it->repeat);
 
-    CHECK(segment_timeline->AddChild(s_element->PassScopedPtr()));
+    CHECK(segment_timeline->AddChild(s_element.PassScopedPtr()));
   }
 
   return true;

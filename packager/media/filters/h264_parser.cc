@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "packager/media/filters/h264_parser.h"
+
 #include "packager/base/logging.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/stl_util.h"
-
-#include "packager/media/filters/h264_parser.h"
 
 namespace edash_packager {
 namespace media {

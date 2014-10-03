@@ -97,11 +97,9 @@ WvmMediaParser::WvmMediaParser() : is_initialized_(false),
                                    pts_(0),
                                    dts_(0),
                                    index_program_id_(0),
-                                   sha_context_(new SHA256_CTX()),
                                    media_sample_(NULL),
                                    stream_id_count_(0),
                                    decryption_key_source_(NULL) {
-  SHA256_Init(sha_context_);
 }
 
 WvmMediaParser::~WvmMediaParser() {}
@@ -539,11 +537,6 @@ bool WvmMediaParser::ParseIndexEntry() {
   uint32_t index_size = 0;
   if (index_data_.size() < kIndexVersion4HeaderSize) {
     return false;
-  }
-  if (sha_context_ != NULL) {
-    if (SHA256_Update(sha_context_, &index_data_[0], index_data_.size()) != 1) {
-      return false;
-    }
   }
 
   const uint8_t* read_ptr_index = &index_data_[0];

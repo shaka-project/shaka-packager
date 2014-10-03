@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 
+#include "packager/base/compiler_specific.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/formats/mp2t/adts_header.h"

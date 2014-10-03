@@ -10,6 +10,7 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/mpd/util/mpd_writer.h"
 
+namespace edash_packager {
 namespace {
 const char kUsage[] =
     "MPD generation driver program.\n"
@@ -53,7 +54,6 @@ ExitStatus RunMpdGenerator() {
 
   base::SplitString(FLAGS_input, ',', &input_files);
 
-
   if (!FLAGS_base_urls.empty()) {
     base::SplitString(FLAGS_base_urls, ',', &base_urls);
   }
@@ -76,9 +76,7 @@ ExitStatus RunMpdGenerator() {
   return kSuccess;
 }
 
-}  // namespace
-
-int main(int argc, char** argv) {
+int MpdMain(int argc, char** argv) {
   google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
   google::ParseCommandLineFlags(&argc, &argv, true);
 
@@ -89,4 +87,11 @@ int main(int argc, char** argv) {
   }
 
   return RunMpdGenerator();
+}
+
+}  // namespace
+}  // namespace edash_packager
+
+int main(int argc, char** argv) {
+  return edash_packager::MpdMain(argc, argv);
 }

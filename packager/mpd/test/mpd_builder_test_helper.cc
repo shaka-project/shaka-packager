@@ -45,7 +45,7 @@ base::FilePath GetSchemaPath() {
 std::string GetPathContent(const base::FilePath& file_path) {
   std::string content;
   bool file_read_to_string = base::ReadFileToString(file_path, &content);
-  DCHECK(file_read_to_string);
+  DCHECK(file_read_to_string) << file_path.value();
   return content;
 }
 

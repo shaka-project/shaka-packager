@@ -6,8 +6,6 @@
 #ifndef MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_
 #define MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_
 
-#include <openssl/sha.h>
-
 #include <deque>
 #include <map>
 #include <string>
@@ -237,7 +235,6 @@ class WvmMediaParser : public MediaParser {
   uint64_t pts_;
   uint64_t dts_;
   uint8_t index_program_id_;
-  SHA256_CTX* sha_context_;
   scoped_refptr<MediaSample> media_sample_;
   PrevSampleData prev_media_sample_data_;
   H264ByteToUnitStreamConverter byte_to_unit_stream_converter_;

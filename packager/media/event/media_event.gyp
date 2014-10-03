@@ -26,6 +26,7 @@
         # Depends on full protobuf to read/write with TextFormat.
         '../../third_party/protobuf/protobuf.gyp:protobuf_full_do_not_use',
         '../base/media_base.gyp:base',
+        '../file/file.gyp:file',
       ],
     },
     {
@@ -41,7 +42,6 @@
         '../../testing/gtest.gyp:gtest_main',
         # Depends on full protobuf to read/write with TextFormat.
         '../../third_party/protobuf/protobuf.gyp:protobuf_full_do_not_use',
-        '../file/file.gyp:file',
         'media_event',
       ],
     },

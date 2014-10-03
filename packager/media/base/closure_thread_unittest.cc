@@ -112,7 +112,9 @@ TEST_F(ClosureThreadTest, NotJoined) {
 }
 
 // Expect death if the thread is destroyed without being started.
-TEST_F(ClosureThreadTest, NotStarted) {
+// Note: This test is disabled since it causes memory leak in Debug mode as the
+// thread object cannot be cleaned up due to the expected death.
+TEST_F(ClosureThreadTest, DISABLED_NotStarted) {
   ASSERT_FALSE(thread_->HasBeenStarted());
   ClosureThread* thread = thread_.release();
   EXPECT_DEBUG_DEATH(delete thread, ".*Check failed: HasBeenStarted.*");

@@ -48,14 +48,14 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   bool ReadBack(Box* box) {
-    BoxReader* reader = CreateReader();
+    scoped_ptr<BoxReader> reader(CreateReader());
     RCHECK(reader->ScanChildren() && reader->ReadChild(box));
     return true;
   }
 
   // FourCC for VideoSampleEntry is not a constant, e.g. could be avc1, or encv.
   bool ReadBack(VideoSampleEntry* video) {
-    BoxReader* reader = CreateReader();
+    scoped_ptr<BoxReader> reader(CreateReader());
     std::vector<VideoSampleEntry> video_entries;
     RCHECK(reader->ReadAllChildren(&video_entries));
     RCHECK(video_entries.size() == 1);
@@ -65,7 +65,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   // FourCC for AudioSampleEntry is not a constant, e.g. could be mp4a, or enca.
   bool ReadBack(AudioSampleEntry* audio) {
-    BoxReader* reader = CreateReader();
+    scoped_ptr<BoxReader> reader(CreateReader());
     std::vector<AudioSampleEntry> audio_entries;
     RCHECK(reader->ReadAllChildren(&audio_entries));
     RCHECK(audio_entries.size() == 1);
@@ -77,7 +77,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   // be preset before scanning the box.
   bool ReadBack(SampleDescription* stsd) {
     stsd->type = kSampleDescriptionTrackType;
-    BoxReader* reader = CreateReader();
+    scoped_ptr<BoxReader> reader(CreateReader());
     RCHECK(reader->ScanChildren() && reader->ReadChild(stsd));
     return true;
   }
@@ -85,7 +85,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   // SampleTable contains SampleDescription, which cannot parse on its own.
   bool ReadBack(SampleTable* stbl) {
     stbl->description.type = kSampleDescriptionTrackType;
-    BoxReader* reader = CreateReader();
+    scoped_ptr<BoxReader> reader(CreateReader());
     RCHECK(reader->ScanChildren() && reader->ReadChild(stbl));
     return true;
   }
@@ -93,7 +93,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   // MediaInformation contains SampleDescription, which cannot parse on its own.
   bool ReadBack(MediaInformation* minf) {
     minf->sample_table.description.type = kSampleDescriptionTrackType;
-    BoxReader* reader = CreateReader();
+    scoped_ptr<BoxReader> reader(CreateReader());
     RCHECK(reader->ScanChildren() && reader->ReadChild(minf));
     return true;
   }

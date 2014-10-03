@@ -12,6 +12,7 @@
 #include "packager/media/base/producer_consumer_queue.h"
 #include "packager/media/base/status_test_util.h"
 
+namespace edash_packager {
 namespace {
 const size_t kCapacity = 10u;
 const int64_t kTimeout = 100;  // 0.1s.
@@ -26,7 +27,6 @@ bool CheckTimeApproxEqual(int64_t time_in_milliseconds,
 
 }  // namespace
 
-namespace edash_packager {
 namespace media {
 
 TEST(ProducerConsumerQueueTest, CheckEmpty) {

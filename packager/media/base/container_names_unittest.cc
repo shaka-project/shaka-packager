@@ -112,6 +112,7 @@ void TestFile(MediaContainerName expected, const base::FilePath& filename) {
   if (base::GetFileSize(filename, &actual_size) && actual_size < read_size)
     read_size = actual_size;
   int read = base::ReadFile(filename, buffer, read_size);
+  ASSERT_GT(read, 0) << filename.value();
 
   // Now verify the type.
   EXPECT_EQ(expected,

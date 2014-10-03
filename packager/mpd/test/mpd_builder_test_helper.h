@@ -9,9 +9,7 @@
 
 #include <string>
 
-namespace base {
-class FilePath;
-}
+#include "packager/base/files/file_path.h"
 
 namespace edash_packager {
 

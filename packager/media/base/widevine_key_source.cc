@@ -162,6 +162,7 @@ WidevineKeySource::~WidevineKeySource() {
     start_key_production_.Signal();
     key_production_thread_.Join();
   }
+  STLDeleteValues(&encryption_key_map_);
 }
 
 Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& content_id,

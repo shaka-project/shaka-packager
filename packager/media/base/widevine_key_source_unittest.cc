@@ -15,6 +15,14 @@
 #include "packager/media/base/status_test_util.h"
 #include "packager/media/base/widevine_key_source.h"
 
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::InSequence;
+using ::testing::Return;
+using ::testing::SetArgPointee;
+using ::testing::StrEq;
+
+namespace edash_packager {
 namespace {
 const char kServerUrl[] = "http://www.foo.com/getcontentkey";
 const char kContentId[] = "ContentFoo";
@@ -106,13 +114,6 @@ std::string GetPsshDataFromPsshBox(const std::string& pssh_box) {
 
 }  // namespace
 
-using ::testing::_;
-using ::testing::DoAll;
-using ::testing::InSequence;
-using ::testing::Return;
-using ::testing::SetArgPointee;
-
-namespace edash_packager {
 namespace media {
 
 class MockRequestSigner : public RequestSigner {
@@ -223,7 +224,8 @@ TEST_F(WidevineKeySourceTest, HttpPostFailure) {
                          Base64Encode(kMockSignature).c_str(),
                          kSignerName);
   const Status kMockStatus = Status::UNKNOWN;
-  EXPECT_CALL(*mock_http_fetcher_, Post(kServerUrl, expected_post_data, _))
+  EXPECT_CALL(*mock_http_fetcher_,
+              Post(StrEq(kServerUrl), expected_post_data, _))
       .WillOnce(Return(kMockStatus));
 
   CreateWidevineKeySource();

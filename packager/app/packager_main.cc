@@ -281,10 +281,7 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
   return true;
 }
 
-}  // namespace media
-}  // namespace edash_packager
-
-int main(int argc, char** argv) {
+int PackagerMain(int argc, char** argv) {
   google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
   google::ParseCommandLineFlags(&argc, &argv, true);
   if (argc < 2) {
@@ -298,10 +295,17 @@ int main(int argc, char** argv) {
   }
   // TODO(tinskip): Make InsertStreamDescriptor a member of
   // StreamDescriptorList.
-  edash_packager::media::StreamDescriptorList stream_descriptors;
+  StreamDescriptorList stream_descriptors;
   for (int i = 1; i < argc; ++i) {
     if (!InsertStreamDescriptor(argv[i], &stream_descriptors))
       return 1;
   }
-  return edash_packager::media::RunPackager(stream_descriptors) ? 0 : 1;
+  return RunPackager(stream_descriptors) ? 0 : 1;
+}
+
+}  // namespace media
+}  // namespace edash_packager
+
+int main(int argc, char** argv) {
+  return edash_packager::media::PackagerMain(argc, argv);
 }

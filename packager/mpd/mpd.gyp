@@ -13,7 +13,6 @@
   'targets': [
     {
       'target_name': 'media_info_proto',
-
       'type': 'static_library',
       'sources': [
         'base/media_info.proto',
