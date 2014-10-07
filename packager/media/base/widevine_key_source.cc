@@ -12,7 +12,7 @@
 #include "packager/base/json/json_writer.h"
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/stl_util.h"
-#include "packager/media/base/http_fetcher.h"
+#include "packager/media/base/http_key_fetcher.h"
 #include "packager/media/base/producer_consumer_queue.h"
 #include "packager/media/base/request_signer.h"
 
@@ -43,7 +43,7 @@ const int kFirstRetryDelayMilliseconds = 1000;
 // key rotation enabled request.
 const int kDefaultCryptoPeriodCount = 10;
 const int kGetKeyTimeoutInSeconds = 5 * 60;  // 5 minutes.
-const int kHttpTimeoutInSeconds = 60;  // 1 minute.
+const int kKeyFetchTimeoutInSeconds = 60;  // 1 minute.
 
 bool Base64StringToBytes(const std::string& base64_string,
                          std::vector<uint8_t>* bytes) {
@@ -143,7 +143,7 @@ WidevineKeySource::WidevineKeySource(
           "KeyProductionThread",
           base::Bind(&WidevineKeySource::FetchKeysTask,
                      base::Unretained(this))),
-      http_fetcher_(new SimpleHttpFetcher(kHttpTimeoutInSeconds)),
+      key_fetcher_(new HttpKeyFetcher(kKeyFetchTimeoutInSeconds)),
       server_url_(server_url),
       signer_(signer.Pass()),
       crypto_period_count_(kDefaultCryptoPeriodCount),
@@ -251,9 +251,9 @@ Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
   return GetKeyInternal(crypto_period_index, track_type, key);
 }
 
-void WidevineKeySource::set_http_fetcher(
-    scoped_ptr<HttpFetcher> http_fetcher) {
-  http_fetcher_ = http_fetcher.Pass();
+void WidevineKeySource::set_key_fetcher(
+    scoped_ptr<KeyFetcher> key_fetcher) {
+  key_fetcher_ = key_fetcher.Pass();
 }
 
 Status WidevineKeySource::GetKeyInternal(uint32_t crypto_period_index,
@@ -324,7 +324,7 @@ Status WidevineKeySource::FetchKeysInternal(bool enable_key_rotation,
   // Perform client side retries if seeing server transient error to workaround
   // server limitation.
   for (int i = 0; i < kNumTransientErrorRetries; ++i) {
-    status = http_fetcher_->Post(server_url_, message, &raw_response);
+    status = key_fetcher_->FetchKeys(server_url_, message, &raw_response);
     if (status.ok()) {
       VLOG(1) << "Retry [" << i << "] Response:" << raw_response;
 

@@ -36,8 +36,10 @@
         'decrypt_config.cc',
         'decrypt_config.h',
         'decryptor_source.h',
-        'http_fetcher.cc',
-        'http_fetcher.h',
+        'http_key_fetcher.cc',
+        'http_key_fetcher.h',
+        'key_fetcher.cc',
+        'key_fetcher.h',
         'key_source.cc',
         'key_source.h',
         'limits.h',
@@ -90,7 +92,7 @@
         'container_names_unittest.cc',
         'fake_prng.cc',  # For rsa_key_unittest
         'fake_prng.h',   # For rsa_key_unittest
-        'http_fetcher_unittest.cc',
+        'http_key_fetcher_unittest.cc',
         'muxer_util_unittest.cc',
         'offset_byte_queue_unittest.cc',
         'producer_consumer_queue_unittest.cc',

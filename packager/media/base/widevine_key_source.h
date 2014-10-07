@@ -17,7 +17,7 @@
 
 namespace edash_packager {
 namespace media {
-class HttpFetcher;
+class KeyFetcher;
 class RequestSigner;
 template <class T> class ProducerConsumerQueue;
 
@@ -47,9 +47,9 @@ class WidevineKeySource : public KeySource {
                                     EncryptionKey* key) OVERRIDE;
   /// @}
 
-  /// Inject an @b HttpFetcher object, mainly used for testing.
-  /// @param http_fetcher points to the @b HttpFetcher object to be injected.
-  void set_http_fetcher(scoped_ptr<HttpFetcher> http_fetcher);
+  /// Inject an @b KeyFetcher object, mainly used for testing.
+  /// @param key_fetcher points to the @b KeyFetcher object to be injected.
+  void set_key_fetcher(scoped_ptr<KeyFetcher> key_fetcher);
 
  protected:
    ClosureThread key_production_thread_;
@@ -98,10 +98,10 @@ class WidevineKeySource : public KeySource {
   // Push the keys to the key pool.
   bool PushToKeyPool(EncryptionKeyMap* encryption_key_map);
 
-  // The fetcher object used to fetch HTTP response from server.
+  // The fetcher object used to fetch keys from the license service.
   // It is initialized to a default fetcher on class initialization.
-  // Can be overridden using set_http_fetcher for testing or other purposes.
-  scoped_ptr<HttpFetcher> http_fetcher_;
+  // Can be overridden using set_key_fetcher for testing or other purposes.
+  scoped_ptr<KeyFetcher> key_fetcher_;
   std::string server_url_;
   scoped_ptr<RequestSigner> signer_;
   base::DictionaryValue request_dict_;

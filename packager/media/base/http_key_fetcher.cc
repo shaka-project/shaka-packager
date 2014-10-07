@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/http_fetcher.h"
+#include "packager/media/base/http_key_fetcher.h"
 
 #include <curl/curl.h>
 #include "packager/base/strings/stringprintf.h"
@@ -40,36 +40,39 @@ size_t AppendToString(char* ptr, size_t size, size_t nmemb, std::string* respons
 namespace edash_packager {
 namespace media {
 
-HttpFetcher::HttpFetcher() {}
-HttpFetcher::~HttpFetcher() {}
-
-SimpleHttpFetcher::SimpleHttpFetcher() : timeout_in_seconds_(0) {
+HttpKeyFetcher::HttpKeyFetcher() : timeout_in_seconds_(0) {
   curl_global_init(CURL_GLOBAL_DEFAULT);
 }
 
-SimpleHttpFetcher::SimpleHttpFetcher(uint32_t timeout_in_seconds)
+HttpKeyFetcher::HttpKeyFetcher(uint32_t timeout_in_seconds)
     : timeout_in_seconds_(timeout_in_seconds) {
   curl_global_init(CURL_GLOBAL_DEFAULT);
 }
 
-SimpleHttpFetcher::~SimpleHttpFetcher() {
+HttpKeyFetcher::~HttpKeyFetcher() {
   curl_global_cleanup();
 }
 
-Status SimpleHttpFetcher::Get(const std::string& path, std::string* response) {
+Status HttpKeyFetcher::FetchKeys(const std::string& url,
+                                 const std::string& request,
+                                 std::string* response) {
+  return Post(url, request, response);
+}
+
+Status HttpKeyFetcher::Get(const std::string& path, std::string* response) {
   return FetchInternal(GET, path, "", response);
 }
 
-Status SimpleHttpFetcher::Post(const std::string& path,
-                               const std::string& data,
-                               std::string* response) {
+Status HttpKeyFetcher::Post(const std::string& path,
+                            const std::string& data,
+                            std::string* response) {
   return FetchInternal(POST, path, data, response);
 }
 
-Status SimpleHttpFetcher::FetchInternal(HttpMethod method,
-                                        const std::string& path,
-                                        const std::string& data,
-                                        std::string* response) {
+Status HttpKeyFetcher::FetchInternal(HttpMethod method,
+                                     const std::string& path,
+                                     const std::string& data,
+                                     std::string* response) {
   DCHECK(method == GET || method == POST);
 
   ScopedCurl scoped_curl;

@@ -10,7 +10,7 @@
 #include "packager/base/base64.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
-#include "packager/media/base/http_fetcher.h"
+#include "packager/media/base/key_fetcher.h"
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/status_test_util.h"
 #include "packager/media/base/widevine_key_source.h"
@@ -129,26 +129,25 @@ class MockRequestSigner : public RequestSigner {
   DISALLOW_COPY_AND_ASSIGN(MockRequestSigner);
 };
 
-class MockHttpFetcher : public HttpFetcher {
+class MockKeyFetcher : public KeyFetcher {
  public:
-  MockHttpFetcher() : HttpFetcher() {}
-  virtual ~MockHttpFetcher() {}
+  MockKeyFetcher() : KeyFetcher() {}
+  virtual ~MockKeyFetcher() {}
 
-  MOCK_METHOD2(Get, Status(const std::string& url, std::string* response));
-  MOCK_METHOD3(Post,
-               Status(const std::string& url,
+  MOCK_METHOD3(FetchKeys,
+               Status(const std::string& service_address,
                       const std::string& data,
                       std::string* response));
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(MockHttpFetcher);
+  DISALLOW_COPY_AND_ASSIGN(MockKeyFetcher);
 };
 
 class WidevineKeySourceTest : public ::testing::Test {
  public:
   WidevineKeySourceTest()
       : mock_request_signer_(new MockRequestSigner(kSignerName)),
-        mock_http_fetcher_(new MockHttpFetcher()) {}
+        mock_key_fetcher_(new MockKeyFetcher()) {}
 
   virtual void SetUp() OVERRIDE {
     content_id_.assign(
@@ -161,8 +160,8 @@ class WidevineKeySourceTest : public ::testing::Test {
     widevine_key_source_.reset(new WidevineKeySource(
         kServerUrl,
         mock_request_signer_.PassAs<RequestSigner>()));
-    widevine_key_source_->set_http_fetcher(
-        mock_http_fetcher_.PassAs<HttpFetcher>());
+    widevine_key_source_->set_key_fetcher(
+        mock_key_fetcher_.PassAs<KeyFetcher>());
   }
 
   void VerifyKeys(bool classic) {
@@ -182,7 +181,7 @@ class WidevineKeySourceTest : public ::testing::Test {
     }
   }
   scoped_ptr<MockRequestSigner> mock_request_signer_;
-  scoped_ptr<MockHttpFetcher> mock_http_fetcher_;
+  scoped_ptr<MockKeyFetcher> mock_key_fetcher_;
   scoped_ptr<WidevineKeySource> widevine_key_source_;
   std::vector<uint8_t> content_id_;
 
@@ -212,7 +211,7 @@ TEST_F(WidevineKeySourceTest, GenerateSignatureFailure) {
 
 // Check whether expected request message and post data was generated and
 // verify the correct behavior on http failure.
-TEST_F(WidevineKeySourceTest, HttpPostFailure) {
+TEST_F(WidevineKeySourceTest, HttpFetchFailure) {
   std::string expected_message = base::StringPrintf(
       kExpectedRequestMessageFormat, Base64Encode(kContentId).c_str(), kPolicy);
   EXPECT_CALL(*mock_request_signer_, GenerateSignature(expected_message, _))
@@ -224,8 +223,8 @@ TEST_F(WidevineKeySourceTest, HttpPostFailure) {
                          Base64Encode(kMockSignature).c_str(),
                          kSignerName);
   const Status kMockStatus = Status::UNKNOWN;
-  EXPECT_CALL(*mock_http_fetcher_,
-              Post(StrEq(kServerUrl), expected_post_data, _))
+  EXPECT_CALL(*mock_key_fetcher_,
+              FetchKeys(kServerUrl, expected_post_data, _))
       .WillOnce(Return(kMockStatus));
 
   CreateWidevineKeySource();
@@ -240,7 +239,7 @@ TEST_F(WidevineKeySourceTest, LicenseStatusCencOK) {
   std::string mock_response = base::StringPrintf(
       kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
 
-  EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
+  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
   CreateWidevineKeySource();
@@ -256,7 +255,7 @@ TEST_F(WidevineKeySourceTest, LicenseStatusCencNotOK) {
       kHttpResponseFormat, Base64Encode(
           GenerateMockClassicLicenseResponse()).c_str());
 
-  EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
+  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
   CreateWidevineKeySource();
@@ -272,7 +271,7 @@ TEST_F(WidevineKeySourceTest, LicenseStatusCencWithPsshDataOK) {
   std::string mock_response = base::StringPrintf(
       kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
 
-  EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
+  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
   CreateWidevineKeySource();
@@ -291,7 +290,7 @@ TEST_F(WidevineKeySourceTest, LicenseStatusClassicOK) {
       kHttpResponseFormat, Base64Encode(
           GenerateMockClassicLicenseResponse()).c_str());
 
-  EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
+  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
   CreateWidevineKeySource();
@@ -307,7 +306,7 @@ TEST_F(WidevineKeySourceTest, RetryOnHttpTimeout) {
       kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
 
   // Retry is expected on HTTP timeout.
-  EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
+  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
       .WillOnce(Return(Status(error::TIME_OUT, "")))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
@@ -329,7 +328,7 @@ TEST_F(WidevineKeySourceTest, RetryOnTransientError) {
       kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
 
   // Retry is expected on transient error.
-  EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
+  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)))
       .WillOnce(DoAll(SetArgPointee<2>(expected_retried_response),
                       Return(Status::OK)));
@@ -348,7 +347,7 @@ TEST_F(WidevineKeySourceTest, NoRetryOnUnknownError) {
   std::string mock_response = base::StringPrintf(
       kHttpResponseFormat, Base64Encode(mock_license_status).c_str());
 
-  EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
+  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
   CreateWidevineKeySource();
@@ -412,7 +411,7 @@ TEST_F(WidevineKeySourceTest, KeyRotationTest) {
       .WillOnce(Return(true));
   std::string mock_response = base::StringPrintf(
       kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
-  EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
+  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
   for (uint32_t i = 0; i < kCryptoIterations; ++i) {
@@ -432,7 +431,7 @@ TEST_F(WidevineKeySourceTest, KeyRotationTest) {
         Base64Encode(GenerateMockKeyRotationLicenseResponse(
                          first_crypto_period_index, kCryptoPeriodCount))
             .c_str());
-    EXPECT_CALL(*mock_http_fetcher_, Post(_, _, _))
+    EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
         .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
   }
 

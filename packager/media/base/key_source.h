@@ -55,7 +55,7 @@ class KeySource {
   /// @param asset_id is the Widevine Classic asset ID for the content to be
   /// decrypted.
   /// @return OK on success, an error status otherwise.
-  virtual Status FetchKeys(uint32_t asset_id) OVERRIDE;
+  virtual Status FetchKeys(uint32_t asset_id);
 
   /// Get encryption key of the specified track type.
   /// @param track_type is the type of track for which retrieving the key.

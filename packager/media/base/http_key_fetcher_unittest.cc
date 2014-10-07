@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/http_fetcher.h"
+#include "packager/media/base/http_key_fetcher.h"
 
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
@@ -29,7 +29,7 @@ namespace media {
 
 static void CheckHttpGet(const std::string& url,
                          const std::string& expected_response) {
-  SimpleHttpFetcher fetcher;
+  HttpKeyFetcher fetcher;
   std::string response;
   ASSERT_OK(fetcher.Get(url, &response));
   base::RemoveChars(response, "\r\n\t ", &response);
@@ -38,13 +38,12 @@ static void CheckHttpGet(const std::string& url,
 
 static void CheckHttpPost(const std::string& url, const std::string& data,
                           const std::string& expected_response) {
-  SimpleHttpFetcher fetcher;
+  HttpKeyFetcher fetcher;
   std::string response;
   ASSERT_OK(fetcher.Post(url, data, &response));
   base::RemoveChars(response, "\r\n\t ", &response);
   EXPECT_EQ(expected_response, response);
 }
-
 
 TEST(DISABLED_HttpFetcherTest, HttpGet) {
   CheckHttpGet(kTestUrl, kExpectedGetResponse);
@@ -54,34 +53,45 @@ TEST(DISABLED_HttpFetcherTest, HttpPost) {
   CheckHttpPost(kTestUrl, kPostData, kExpectedPostResponse);
 }
 
-TEST(DISABLED_HttpFetcherTest, InvalidUrl) {
-  const char kHttpNotFound[] = "404";
+TEST(DISABLED_HttpKeyFetcherTest, HttpFetchKeys) {
+  HttpKeyFetcher fetcher;
+  std::string response;
+  ASSERT_OK(fetcher.FetchKeys(kTestUrl, kPostData, &response));
+  base::RemoveChars(response, "\r\n\t ", &response);
+  EXPECT_EQ(kExpectedPostResponse, response);
+}
 
-  SimpleHttpFetcher fetcher;
+TEST(DISABLED_HttpKeyFetcherTest, InvalidUrl) {
+  const char kHttpNotFound[] = "404";
+  HttpKeyFetcher fetcher;
   std::string response;
   const std::string invalid_url(kTestUrl, sizeof(kTestUrl) - 2);
-  Status status = fetcher.Get(invalid_url, &response);
+  Status status = fetcher.FetchKeys(invalid_url, kPostData, &response);
   EXPECT_EQ(error::HTTP_FAILURE, status.error_code());
   EXPECT_NE(std::string::npos, status.error_message().find(kHttpNotFound));
 }
 
-TEST(DISABLED_HttpFetcherTest, UrlWithPort) {
-  CheckHttpGet(kTestUrlWithPort, kExpectedGetResponse);
+TEST(DISABLED_HttpKeyFetcherTest, UrlWithPort) {
+  HttpKeyFetcher fetcher;
+  std::string response;
+  ASSERT_OK(fetcher.FetchKeys(kTestUrlWithPort, kPostData, &response));
+  base::RemoveChars(response, "\r\n\t ", &response);
+  EXPECT_EQ(kExpectedPostResponse, response);
 }
 
-TEST(DISABLED_HttpFetcherTest, SmallTimeout) {
+TEST(DISABLED_HttpKeyFetcherTest, SmallTimeout) {
   const uint32_t kTimeoutInSeconds = 1;
-  SimpleHttpFetcher fetcher(kTimeoutInSeconds);
+  HttpKeyFetcher fetcher(kTimeoutInSeconds);
   std::string response;
-  Status status = fetcher.Post(kTestUrl, kDelayTwoSecs, &response);
+  Status status = fetcher.FetchKeys(kTestUrl, kDelayTwoSecs, &response);
   EXPECT_EQ(error::TIME_OUT, status.error_code());
 }
 
-TEST(DISABLED_HttpFetcherTest, BigTimeout) {
+TEST(DISABLED_HttpKeyFetcherTest, BigTimeout) {
   const uint32_t kTimeoutInSeconds = 5;
-  SimpleHttpFetcher fetcher(kTimeoutInSeconds);
+  HttpKeyFetcher fetcher(kTimeoutInSeconds);
   std::string response;
-  Status status = fetcher.Post(kTestUrl, kDelayTwoSecs, &response);
+  Status status = fetcher.FetchKeys(kTestUrl, kDelayTwoSecs, &response);
   EXPECT_OK(status);
 }
 
