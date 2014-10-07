@@ -8,10 +8,8 @@
 #include <vector>
 
 #include "packager/base/bind.h"
-#include "packager/base/command_line.h"
-#include "packager/base/files/memory_mapped_file.h"
 #include "packager/base/logging.h"
-#include "packager/base/path_service.h"
+#include "packager/base/stl_util.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/timestamp.h"
 #include "packager/media/filters/h264_parser.h"
@@ -150,19 +148,17 @@ class EsParserH264Test : public testing::Test {
 };
 
 void EsParserH264Test::LoadStream(const char* filename) {
-  base::FilePath file_path = GetTestDataFilePath(filename);
-
-  base::MemoryMappedFile stream_without_aud;
-  ASSERT_TRUE(stream_without_aud.Initialize(file_path))
-      << "Couldn't open stream file: " << file_path.MaybeAsASCII();
+  std::vector<uint8_t> buffer = ReadTestDataFile(filename);
 
   // The input file does not have AUDs.
-  std::vector<Packet> access_units_without_aud = GetAccessUnits(
-      stream_without_aud.data(), stream_without_aud.length());
+  std::vector<Packet> access_units_without_aud =
+      GetAccessUnits(vector_as_array(&buffer), buffer.size());
   ASSERT_GT(access_units_without_aud.size(), 0u);
-  AppendAUD(stream_without_aud.data(), stream_without_aud.length(),
+  AppendAUD(vector_as_array(&buffer),
+            buffer.size(),
             access_units_without_aud,
-            stream_, access_units_);
+            stream_,
+            access_units_);
 }
 
 void EsParserH264Test::ProcessPesPackets(

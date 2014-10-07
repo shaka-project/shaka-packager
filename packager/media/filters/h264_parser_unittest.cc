@@ -4,10 +4,8 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/base/command_line.h"
-#include "packager/base/files/memory_mapped_file.h"
 #include "packager/base/logging.h"
-#include "packager/base/path_service.h"
+#include "packager/base/stl_util.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/test/test_data_util.h"
 #include "packager/media/filters/h264_parser.h"
@@ -16,16 +14,13 @@ namespace edash_packager {
 namespace media {
 
 TEST(H264ParserTest, StreamFileParsing) {
-  base::FilePath file_path = GetTestDataFilePath("test-25fps.h264");
+  std::vector<uint8_t> buffer = ReadTestDataFile("test-25fps.h264");
+
   // Number of NALUs in the test stream to be parsed.
   int num_nalus = 759;
 
-  base::MemoryMappedFile stream;
-  ASSERT_TRUE(stream.Initialize(file_path))
-      << "Couldn't open stream file: " << file_path.MaybeAsASCII();
-
   H264Parser parser;
-  parser.SetStream(stream.data(), stream.length());
+  parser.SetStream(vector_as_array(&buffer), buffer.size());
 
   // Parse until the end of stream/unsupported stream/error in stream is found.
   int num_parsed_nalus = 0;

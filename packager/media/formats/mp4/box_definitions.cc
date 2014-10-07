@@ -32,21 +32,24 @@ const uint32_t kVideoResolution = 0x00480000;  // 72 dpi.
 const uint16_t kVideoFrameCount = 1;
 const uint16_t kVideoDepth = 0x0018;
 
+// Utility functions to check if the 64bit integers can fit in 32bit integer.
 bool IsFitIn32Bits(uint64_t a) {
   return a <= std::numeric_limits<uint32_t>::max();
 }
+
 bool IsFitIn32Bits(int64_t a) {
   return a <= std::numeric_limits<int32_t>::max() &&
          a >= std::numeric_limits<int32_t>::min();
 }
-bool IsFitIn32Bits(uint64_t a, uint64_t b) {
-  return IsFitIn32Bits(a) && IsFitIn32Bits(b);
+
+template <typename T1, typename T2>
+bool IsFitIn32Bits(T1 a1, T2 a2) {
+  return IsFitIn32Bits(a1) && IsFitIn32Bits(a2);
 }
-bool IsFitIn32Bits(uint64_t a, int64_t b) {
-  return IsFitIn32Bits(a) && IsFitIn32Bits(b);
-}
-bool IsFitIn32Bits(uint64_t a, uint64_t b, uint64_t c) {
-  return IsFitIn32Bits(a) && IsFitIn32Bits(b) && IsFitIn32Bits(c);
+
+template <typename T1, typename T2, typename T3>
+bool IsFitIn32Bits(T1 a1, T2 a2, T3 a3) {
+  return IsFitIn32Bits(a1) && IsFitIn32Bits(a2) && IsFitIn32Bits(a3);
 }
 
 }  // namespace

@@ -41,16 +41,6 @@ TEST(Status, ConstructorOK) {
   CheckStatus(Status(error::OK, "msg"), error::OK, "");
 }
 
-TEST(Status, CheckOK) {
-  CHECK_OK(Status());
-}
-
-TEST(Status, CheckOKDeath) {
-  Status status(error::UNKNOWN, "Status Unknown");
-  ASSERT_DEATH(CHECK_OK(status), "Status Unknown");
-  ASSERT_DEATH(CHECK_OK(status) << "Foo1234", "Foo1234");
-}
-
 TEST(Status, SetError) {
   Status status;
   status.SetError(error::CANCELLED, "message");

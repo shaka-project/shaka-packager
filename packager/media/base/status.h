@@ -160,12 +160,6 @@ class Status {
 
 extern std::ostream& operator<<(std::ostream& os, const Status& x);
 
-// Status success comparison.
-// This is better than CHECK((val).ok()) because the embedded
-// error string gets printed by the CHECK_EQ.
-#define CHECK_OK(val) CHECK_EQ(Status::OK, (val))
-#define DCHECK_OK(val) DCHECK_EQ(Status::OK, (val))
-
 }  // namespace media
 }  // namespace edash_packager
 
