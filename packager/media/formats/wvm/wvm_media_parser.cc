@@ -10,10 +10,10 @@
 
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/audio_stream_info.h"
+#include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/status.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/base/widevine_key_source.h"
 #include "packager/media/formats/mp2t/adts_header.h"
 
 #define HAS_HEADER_EXTENSION(x) ((x != 0xBC) && (x != 0xBE) && (x != 0xBF) \
@@ -110,9 +110,7 @@ void WvmMediaParser::Init(const InitCB& init_cb,
   DCHECK(!is_initialized_);
   DCHECK(!init_cb.is_null());
   DCHECK(!new_sample_cb.is_null());
-  DCHECK(decryption_key_source);
-  decryption_key_source_ =
-      reinterpret_cast<WidevineKeySource*>(decryption_key_source);
+  decryption_key_source_ = decryption_key_source;
   init_cb_ = init_cb;
   new_sample_cb_ = new_sample_cb;
 }
@@ -756,8 +754,11 @@ bool WvmMediaParser::Output() {
   if ((prev_pes_stream_id_ & kPesStreamIdVideoMask) == kPesStreamIdVideo) {
     // Set data on the video stream from the NalUnitStream.
     std::vector<uint8_t> nal_unit_stream;
-    byte_to_unit_stream_converter_.ConvertByteStreamToNalUnitStream(
-        &sample_data_[0], sample_data_.size(), &nal_unit_stream);
+    if (!byte_to_unit_stream_converter_.ConvertByteStreamToNalUnitStream(
+            &sample_data_[0], sample_data_.size(), &nal_unit_stream)) {
+      LOG(ERROR) << "Could not convert h.264 byte stream sample";
+      return false;
+    }
     media_sample_->set_data(nal_unit_stream.data(), nal_unit_stream.size());
     if (!is_initialized_) {
       // Set extra data for video stream from AVC Decoder Config Record.
@@ -767,48 +768,50 @@ bool WvmMediaParser::Output() {
           &decoder_config_record);
       for (uint32_t i = 0; i < stream_infos_.size(); i++) {
         if (stream_infos_[i]->stream_type() == media::kStreamVideo &&
-           stream_infos_[i]->extra_data().empty()) {
-            stream_infos_[i]->set_extra_data(decoder_config_record);
-            stream_infos_[i]->set_codec_string(VideoStreamInfo::GetCodecString(
-                kCodecH264, decoder_config_record[1], decoder_config_record[2],
-                decoder_config_record[3]));
+            stream_infos_[i]->extra_data().empty()) {
+          stream_infos_[i]->set_extra_data(decoder_config_record);
+          stream_infos_[i]->set_codec_string(VideoStreamInfo::GetCodecString(
+              kCodecH264, decoder_config_record[1], decoder_config_record[2],
+              decoder_config_record[3]));
         }
       }
     }
   } else if ((prev_pes_stream_id_ & kPesStreamIdAudioMask) ==
       kPesStreamIdAudio) {
-      // Set data on the audio stream from AdtsHeader.
+    // Set data on the audio stream from AdtsHeader.
     int frame_size = media::mp2t::AdtsHeader::GetAdtsFrameSize(
         &sample_data_[0], kAdtsHeaderMinSize);
-      media::mp2t::AdtsHeader adts_header;
-      const uint8_t* frame_ptr = &sample_data_[0];
-      std::vector<uint8_t> extra_data;
-      if (adts_header.Parse(frame_ptr, frame_size) &&
-         (adts_header.GetAudioSpecificConfig(&extra_data))) {
-        size_t header_size = adts_header.GetAdtsHeaderSize(frame_ptr,
-                                                           frame_size);
-        media_sample_->set_data(frame_ptr + header_size,
-                                frame_size - header_size);
-        if (!is_initialized_) {
-          uint32_t sampling_frequency = adts_header.GetSamplingFrequency();
-          for (uint32_t i = 0; i < stream_infos_.size(); i++) {
-            AudioStreamInfo* audio_stream_info =
-                reinterpret_cast<AudioStreamInfo*>(
-                    stream_infos_[i].get());
-            audio_stream_info->set_sampling_frequency(sampling_frequency);
-            // Set extra data and codec string on the audio stream from the
-            // AdtsHeader.
-            if (stream_infos_[i]->stream_type() == media::kStreamAudio &&
-                stream_infos_[i]->extra_data().empty()) {
-              stream_infos_[i]->set_extra_data(extra_data);
-              stream_infos_[i]->set_codec_string(
-                  AudioStreamInfo::GetCodecString(
-                      kCodecAAC, adts_header.GetObjectType()));
-            }
-          }
+    media::mp2t::AdtsHeader adts_header;
+    const uint8_t* frame_ptr = &sample_data_[0];
+    std::vector<uint8_t> extra_data;
+    if (!adts_header.Parse(frame_ptr, frame_size) ||
+        !adts_header.GetAudioSpecificConfig(&extra_data)) {
+      LOG(ERROR) << "Could not parse ADTS header";
+      return false;
+    }
+    size_t header_size = adts_header.GetAdtsHeaderSize(frame_ptr,
+                                                       frame_size);
+    media_sample_->set_data(frame_ptr + header_size,
+                            frame_size - header_size);
+    if (!is_initialized_) {
+      for (uint32_t i = 0; i < stream_infos_.size(); i++) {
+        if (stream_infos_[i]->stream_type() == media::kStreamAudio &&
+            stream_infos_[i]->extra_data().empty()) {
+          // Set AudioStreamInfo fields using information from the ADTS
+          // header.
+          AudioStreamInfo* audio_stream_info =
+              reinterpret_cast<AudioStreamInfo*>(
+                  stream_infos_[i].get());
+          audio_stream_info->set_sampling_frequency(
+              adts_header.GetSamplingFrequency());
+          audio_stream_info->set_extra_data(extra_data);
+          audio_stream_info->set_codec_string(
+              AudioStreamInfo::GetCodecString(
+                  kCodecAAC, adts_header.GetObjectType()));
         }
       }
     }
+  }
 
   if (!is_initialized_) {
     bool is_extra_data_in_stream_infos = true;
@@ -908,6 +911,10 @@ void WvmMediaParser::EmitSample(uint32_t parsed_audio_or_video_stream_id,
 
 bool WvmMediaParser::GetAssetKey(const uint32_t asset_id,
                                  EncryptionKey* encryption_key) {
+  if (decryption_key_source_ == NULL) {
+    LOG(ERROR) << "Source content is encrypted, but decryption not enabled";
+    return false;
+  }
   Status status = decryption_key_source_->FetchKeys(asset_id);
   if (!status.ok()) {
     LOG(ERROR) << "Fetch Key(s) failed for AssetID = " << asset_id

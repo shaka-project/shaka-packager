@@ -26,12 +26,17 @@ KeySource::~KeySource() {}
 
 Status KeySource::FetchKeys(const std::vector<uint8_t>& content_id,
                             const std::string& policy) {
-  // Do nothing for fixed key decryption.
+  // Do nothing for fixed key encryption/decryption.
   return Status::OK;
 }
 
 Status KeySource::FetchKeys(const std::vector<uint8_t>& pssh_data) {
-  // Do nothing for fixed key decryption.
+  // Do nothing for fixed key encryption/decryption.
+  return Status::OK;
+}
+
+Status KeySource::FetchKeys(uint32_t asset_id) {
+  // Do nothing for fixed key encryption/decryption.
   return Status::OK;
 }
 

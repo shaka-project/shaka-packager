@@ -37,7 +37,7 @@ class WidevineKeySource : public KeySource {
   virtual Status FetchKeys(const std::vector<uint8_t>& content_id,
                            const std::string& policy) OVERRIDE;
   virtual Status FetchKeys(const std::vector<uint8_t>& pssh_data) OVERRIDE;
-  virtual Status FetchKeys(uint32_t asset_id);
+  virtual Status FetchKeys(uint32_t asset_id) OVERRIDE;
 
   virtual Status GetKey(TrackType track_type, EncryptionKey* key) OVERRIDE;
   virtual Status GetKey(const std::vector<uint8_t>& key_id,
