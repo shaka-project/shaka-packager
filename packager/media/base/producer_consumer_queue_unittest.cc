@@ -10,7 +10,7 @@
 #include "packager/base/synchronization/waitable_event.h"
 #include "packager/media/base/closure_thread.h"
 #include "packager/media/base/producer_consumer_queue.h"
-#include "packager/media/base/status_test_util.h"
+#include "packager/media/base/test/status_test_util.h"
 
 namespace edash_packager {
 namespace {

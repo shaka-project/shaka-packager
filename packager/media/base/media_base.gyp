@@ -90,18 +90,18 @@
         'buffer_writer_unittest.cc',
         'closure_thread_unittest.cc',
         'container_names_unittest.cc',
-        'fake_prng.cc',  # For rsa_key_unittest
-        'fake_prng.h',   # For rsa_key_unittest
         'http_key_fetcher_unittest.cc',
         'muxer_util_unittest.cc',
         'offset_byte_queue_unittest.cc',
         'producer_consumer_queue_unittest.cc',
         'rsa_key_unittest.cc',
-        'rsa_test_data.cc',  # For rsa_key_unittest
-        'rsa_test_data.h',   # For rsa_key_unittest
-        'status_test_util.h',
         'status_test_util_unittest.cc',
         'status_unittest.cc',
+        'test/fake_prng.cc',  # For rsa_key_unittest
+        'test/fake_prng.h',   # For rsa_key_unittest
+        'test/rsa_test_data.cc',  # For rsa_key_unittest
+        'test/rsa_test_data.h',   # For rsa_key_unittest
+        'test/status_test_util.h',
         'widevine_key_source_unittest.cc',
       ],
       'dependencies': [

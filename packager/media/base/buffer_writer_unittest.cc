@@ -11,7 +11,7 @@
 #include "packager/base/file_util.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/buffer_reader.h"
-#include "packager/media/base/status_test_util.h"
+#include "packager/media/base/test/status_test_util.h"
 #include "packager/media/file/file.h"
 
 namespace {

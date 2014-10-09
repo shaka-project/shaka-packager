@@ -14,8 +14,8 @@
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer.h"
-#include "packager/media/base/status_test_util.h"
 #include "packager/media/base/stream_info.h"
+#include "packager/media/base/test/status_test_util.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
 #include "packager/media/test/test_data_util.h"
 

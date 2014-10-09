@@ -6,7 +6,7 @@
 
 #include <gtest/gtest-spi.h>
 
-#include "packager/media/base/status_test_util.h"
+#include "packager/media/base/test/status_test_util.h"
 
 namespace edash_packager {
 namespace media {

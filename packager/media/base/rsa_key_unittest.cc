@@ -9,9 +9,9 @@
 #include <gtest/gtest.h>
 
 #include "packager/base/memory/scoped_ptr.h"
-#include "packager/media/base/fake_prng.h"
 #include "packager/media/base/rsa_key.h"
-#include "packager/media/base/rsa_test_data.h"
+#include "packager/media/base/test/fake_prng.h"
+#include "packager/media/base/test/rsa_test_data.h"
 
 namespace edash_packager {
 namespace media {

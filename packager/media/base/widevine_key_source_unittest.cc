@@ -12,7 +12,7 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/base/key_fetcher.h"
 #include "packager/media/base/request_signer.h"
-#include "packager/media/base/status_test_util.h"
+#include "packager/media/base/test/status_test_util.h"
 #include "packager/media/base/widevine_key_source.h"
 
 using ::testing::_;
@@ -224,7 +224,7 @@ TEST_F(WidevineKeySourceTest, HttpFetchFailure) {
                          kSignerName);
   const Status kMockStatus = Status::UNKNOWN;
   EXPECT_CALL(*mock_key_fetcher_,
-              FetchKeys(kServerUrl, expected_post_data, _))
+              FetchKeys(StrEq(kServerUrl), expected_post_data, _))
       .WillOnce(Return(kMockStatus));
 
   CreateWidevineKeySource();

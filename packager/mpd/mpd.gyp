@@ -42,6 +42,7 @@
         'base/mpd_notifier.h',
         'base/mpd_utils.cc',
         'base/mpd_utils.h',
+        'base/segment_info.h',
         'base/simple_mpd_notifier.cc',
         'base/simple_mpd_notifier.h',
         'base/xml/scoped_xml_ptr.h',
@@ -63,7 +64,7 @@
       'target_name': 'mpd_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
-        'base/bandwidth_estimator_test.cc',
+        'base/bandwidth_estimator_unittest.cc',
         'base/mpd_builder_unittest.cc',
         'base/xml/xml_node_unittest.cc',
         'test/mpd_builder_test_helper.cc',

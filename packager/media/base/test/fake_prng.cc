@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/base/fake_prng.h"
+#include "packager/media/base/test/fake_prng.h"
 
 #include <openssl/rand.h>
 
