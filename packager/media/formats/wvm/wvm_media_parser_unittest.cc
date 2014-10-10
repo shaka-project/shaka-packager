@@ -17,7 +17,7 @@
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/timestamp.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/base/widevine_key_source.h"
+#include "packager/media/base/key_source.h"
 #include "packager/media/formats/wvm/wvm_media_parser.h"
 #include "packager/media/test/test_data_util.h"
 
@@ -28,47 +28,21 @@ const char kWvmFile[] = "hb2_4stream_encrypted.wvm";
 const uint32_t kExpectedStreams = 4;
 const int kExpectedVideoFrameCount = 6665;
 const int kExpectedAudioFrameCount = 11964;
-const char kServerUrl[] = "fake_server_url";
-const char kSigner[] = "fake_signer";
-const uint8 kExpectedAssetKey[16] = {'\006', static_cast<uint8>('\201'), '\177',
-  'H', 'k', static_cast<uint8>('\362'), '\177', '>', static_cast<uint8>('\307'),
-  '9', static_cast<uint8>('\250'), '?', '\022', '\n',
-  static_cast<uint8>('\322'), static_cast<uint8>('\374')};
-}  //  namespace
+const uint8_t kExpectedAssetKey[] =
+    "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc";
+}  // namespace
 
 using ::testing::_;
 using ::testing::DoAll;
-using ::testing::InSequence;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 
 namespace edash_packager {
 namespace media {
 
-class FakeRequestSigner : public RequestSigner {
+class MockKeySource : public KeySource {
  public:
-  FakeRequestSigner() : RequestSigner(kSigner) {}
-  virtual ~FakeRequestSigner() {}
-
-  virtual bool GenerateSignature(const std::string& message,
-                                 std::string* signature) OVERRIDE {
-    return true;
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeRequestSigner);
-};
-
-scoped_ptr<FakeRequestSigner> kFakeRequestSigner(new FakeRequestSigner());
-
-class MockKeySource : public WidevineKeySource {
- public:
-  MockKeySource() : WidevineKeySource(
-      kServerUrl, kFakeRequestSigner.PassAs<RequestSigner>()) {
-    // KeyProduction thread started in test because FetchKeys()
-    // is mocked.  ~ClosureThread expects to terminate this thread.
-    key_production_thread_.Start();
-  }
+  MockKeySource() {}
   virtual ~MockKeySource() {}
 
   MOCK_METHOD1(FetchKeys, Status(uint32_t asset_id));
@@ -169,7 +143,7 @@ class WvmMediaParserTest : public testing::Test {
 
 TEST_F(WvmMediaParserTest, ParseWvm) {
   EXPECT_CALL(*key_source_, FetchKeys(_)).WillOnce(Return(Status::OK));
-  EXPECT_CALL(*key_source_, GetKey(_,_))
+  EXPECT_CALL(*key_source_, GetKey(_, _))
       .WillOnce(DoAll(SetArgPointee<1>(encryption_key_), Return(Status::OK)));
   Parse(kWvmFile);
   EXPECT_EQ(kExpectedStreams, stream_map_.size());

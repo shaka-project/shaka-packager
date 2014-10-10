@@ -136,13 +136,11 @@ class WidevineKeySource::RefCountedEncryptionKeyMap
   DISALLOW_COPY_AND_ASSIGN(RefCountedEncryptionKeyMap);
 };
 
-WidevineKeySource::WidevineKeySource(
-    const std::string& server_url,
-    scoped_ptr<RequestSigner> signer)
-    : key_production_thread_(
-          "KeyProductionThread",
-          base::Bind(&WidevineKeySource::FetchKeysTask,
-                     base::Unretained(this))),
+WidevineKeySource::WidevineKeySource(const std::string& server_url,
+                                     scoped_ptr<RequestSigner> signer)
+    : key_production_thread_("KeyProductionThread",
+                             base::Bind(&WidevineKeySource::FetchKeysTask,
+                                        base::Unretained(this))),
       key_fetcher_(new HttpKeyFetcher(kKeyFetchTimeoutInSeconds)),
       server_url_(server_url),
       signer_(signer.Pass()),
@@ -150,7 +148,6 @@ WidevineKeySource::WidevineKeySource(
       key_production_started_(false),
       start_key_production_(false, false),
       first_crypto_period_index_(0) {
-  DCHECK(signer_);
 }
 
 WidevineKeySource::~WidevineKeySource() {
@@ -313,7 +310,7 @@ Status WidevineKeySource::FetchKeysInternal(bool enable_key_rotation,
               &request);
 
   std::string message;
-  Status status = SignRequest(request, &message);
+  Status status = GenerateKeyMessage(request, &message);
   if (!status.ok())
     return status;
   VLOG(1) << "Message: " << message;
@@ -397,28 +394,30 @@ void WidevineKeySource::FillRequest(bool enable_key_rotation,
   base::JSONWriter::Write(&request_dict_, request);
 }
 
-Status WidevineKeySource::SignRequest(const std::string& request,
-                                      std::string* signed_request) {
-  DCHECK(signed_request);
+Status WidevineKeySource::GenerateKeyMessage(const std::string& request,
+                                             std::string* message) {
+  DCHECK(message);
 
-  // Sign the request.
-  std::string signature;
-  if (!signer_->GenerateSignature(request, &signature))
-    return Status(error::INTERNAL_ERROR, "Signature generation failed.");
-
-  // Encode request and signature using Base64 encoding.
   std::string request_base64_string;
   base::Base64Encode(request, &request_base64_string);
 
-  std::string signature_base64_string;
-  base::Base64Encode(signature, &signature_base64_string);
+  base::DictionaryValue request_dict;
+  request_dict.SetString("request", request_base64_string);
 
-  base::DictionaryValue signed_request_dict;
-  signed_request_dict.SetString("request", request_base64_string);
-  signed_request_dict.SetString("signature", signature_base64_string);
-  signed_request_dict.SetString("signer", signer_->signer_name());
+  // Sign the request.
+  if (signer_) {
+    std::string signature;
+    if (!signer_->GenerateSignature(request, &signature))
+      return Status(error::INTERNAL_ERROR, "Signature generation failed.");
 
-  base::JSONWriter::Write(&signed_request_dict, signed_request);
+    std::string signature_base64_string;
+    base::Base64Encode(signature, &signature_base64_string);
+
+    request_dict.SetString("signature", signature_base64_string);
+    request_dict.SetString("signer", signer_->signer_name());
+  }
+
+  base::JSONWriter::Write(&request_dict, message);
   return Status::OK;
 }
 

@@ -26,7 +26,7 @@ template <class T> class ProducerConsumerQueue;
 class WidevineKeySource : public KeySource {
  public:
   /// @param server_url is the Widevine common encryption server url.
-  /// @param signer signs the request message. It should not be NULL.
+  /// @param signer signs the request message. Can be NULL.
   WidevineKeySource(const std::string& server_url,
                     scoped_ptr<RequestSigner> signer);
 
@@ -81,9 +81,9 @@ class WidevineKeySource : public KeySource {
   void FillRequest(bool enable_key_rotation,
                    uint32_t first_crypto_period_index,
                    std::string* request);
-  // Sign and properly format |request|.
-  // |signed_request| should not be NULL. Return OK on success.
-  Status SignRequest(const std::string& request, std::string* signed_request);
+  // Base64 escape and format the request. Optionally sign the request if a
+  // signer is provided. |message| should not be NULL. Return OK on success.
+  Status GenerateKeyMessage(const std::string& request, std::string* message);
   // Decode |response| from JSON formatted |raw_response|.
   // |response| should not be NULL.
   bool DecodeResponse(const std::string& raw_response, std::string* response);
