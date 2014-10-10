@@ -1,4 +1,4 @@
-Media packaging SDK is intended for C++ programmers writing DASH packager application with common encryption support.
+Media packaging SDK intended for C++ programmers writing DASH packager applications with common encryption support, Widevine DRM support, Live, and Video-On-Demand.
 
 This document provides the information needed to create a DASH packager that is able to remux and encrypt a video into fragmented ISO BMFF format with common encryption (CENC) support. The DASH packaging API is also designed in such a way for easy extension to more source and destination formats.
 
@@ -56,7 +56,7 @@ This document provides the information needed to create a DASH packager that is 
 
 Major modules are described below:
 
-Demuxer is responsible for extracting elementary stream samples from a multimedia file, e.g. an ISO BMFF file. The demuxed streams can be fed into a muxer to generate multimedia files. For encrypted media, the users should implement the abstract DecryptorSource interface, which is used by Demuxer to decrypt the streams. The concrete DecryptorSource implementation wraps the fetching and management of decryption keys.
+Demuxer is responsible for extracting elementary stream samples from a multimedia file, e.g. an ISO BMFF file. The demuxed streams can be fed into a muxer to generate multimedia files. An optional KeySource can be provided to Demuxer to decrypt CENC and WVM source content.
 
 Demuxer reads from source through the File interface. A concrete LocalFile class is already implemented. The users may also implement their own File class if they want to read/write using a different kinds of protocol, e.g. network storage, http etc.
 
@@ -66,11 +66,8 @@ Demuxer and Muxer are connected using MediaStream. MediaStream wraps the element
 
 MpdBuilder is responsible for the creation of Media Presentation Description as specified in ISO/IEC 23009-1 DASH MPD spec.
 
-Supported source formats: ISO BMFF (both fragmented and non-fragmented), IPTV; the only output format supported right now is fragmented ISO BMFF with CENC. Support for more formats will be added soon.
+Supported source formats: ISO BMFF (both fragmented and non-fragmented), MPEG-2 TS, IPTV (MPEG-2 TS over UDP), and WVM (Widevine); the only output format supported currently is fragmented ISO BMFF with CENC. Support for more formats will be added soon.
 
-##Creating DecryptorSource##
-
-Not implemented yet. Not needed for now.
 
 ##Creating Demuxer##
 
@@ -80,9 +77,34 @@ Not implemented yet. Not needed for now.
 // implemented a network file interface with prefix “network”,
 // |input_media_file| with value “network://xxxx” would open a network
 // file automatically.
-// |decryptor_source| should be NULL if the input media is not encrypted.
-Demuxer demuxer(input_media_file, decryptor_source);
+Demuxer demuxer(input_media_file);
 ```
+
+##Creating KeySource for source content decryption##
+
+```C++
+// A KeySource is required if the source content is encrypted, since the media
+// must be decrytped prior to further processing.
+```
+
+###WidevineKeySource###
+
+```C++
+// Users may use WidevineKeySource to fetch keys from Widevine
+// common encryption server.
+
+// A request signer is required to sign the common encryption request.
+scoped_ptr<RequestSigner> signer(
+    RsaRequestSigner::CreateSigner(signer, pkcs1_rsa_private_key));
+if (!signer) { … }
+
+scoped_ptr<WidevineKeySource> widevine_decryption_key_source(
+    new WidevineKeySource(key_server_url, signer.Pass()));
+
+// Set encryption key source to demuxer.
+muxer->SetKeySource(widevine_decryption_key_source.Pass());
+```
+
 
 ##Creating MpdBuilder##
 
@@ -199,7 +221,7 @@ muxer_options.temp_dir = …;
 muxer_options.bandwidth = 0;
 ```
 
-##Creating KeySource##
+##Creating KeySource for content encryption##
 
 ```C++
 // A KeySource is optional. The stream won’t be encrypted if an
@@ -303,7 +325,7 @@ packager \
 --mpd_output live.mpd
 ```
 
-Demux video from the input and generate an encrypted fragmented mp4 using widevine encryption with RSA signing key file *widevine_test_private.der*:
+Demux video from the input and generate an encrypted fragmented mp4 using Widevine encryption with RSA signing key file *widevine_test_private.der*:
 ```Shell
 packager input=sintel.mp4,stream=video,output=encrypted_sintel.mp4 \
 --enable_widevine_encryption \
@@ -325,6 +347,17 @@ packager input=sintel.mp4,stream=video,output=encrypted_sintel.mp4 \
 --crypto_period_duration 1800
 ```
 
+Demux and decrypt video from a WVM container, and generate encrypted fragmented mp4 using Widevine encryption with RSA signing key file *widevine_test_private.der*:
+```Shell
+packager input=sintel.wvm,stream=video,output=encrypted_sintel.mp4 \
+--enable_widevine_decryption \
+--enable_widevine_encryption \
+--key_server_url "https://license.uat.widevine.com/cenc/getcontentkey/widevine_test" \
+--content_id "content_sintel" \
+--signer "widevine_test" \
+--rsa_signing_key_path "widevine_test_private.der"
+```
+
 The program can be told to generate MediaInfo files, which can be fed to **mpd_generate** to generate the mpd file.
 ```Shell
 packager \
@@ -336,4 +369,3 @@ mpd_generator \
 --input "sintel_video.mp4.media_info,sintel_audio.mp4.media_info" \
 --output "sintel.mpd"
 ```
-
