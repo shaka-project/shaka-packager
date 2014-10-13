@@ -4,9 +4,11 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 //
-// Defines command line flags for fixed key encryption.
+// Defines command line flags for fixed key encryption/decryption.
 
 #include "packager/app/fixed_key_encryption_flags.h"
+
+#include "packager/app/validate_flag.h"
 
 DEFINE_bool(enable_fixed_key_encryption,
             false,
@@ -18,23 +20,34 @@ DEFINE_string(key_id, "", "Key id in hex string format.");
 DEFINE_string(key, "", "Key in hex string format.");
 DEFINE_string(pssh, "", "PSSH in hex string format.");
 
-static bool IsNotEmptyWithFixedKeyEncryption(const char* flag_name,
-                                             const std::string& flag_value) {
-  if (FLAGS_enable_fixed_key_encryption && flag_value.empty())
-    return false;
-  std::string flag_name_str(flag_name);
-  if (FLAGS_enable_fixed_key_decryption && (flag_name_str != "pssh") &&
-      flag_value.empty())
-    return false;
-  return true;
+namespace edash_packager {
+
+bool ValidateFixedCryptoFlags() {
+  bool success = true;
+
+  const bool fixed_crypto =
+      FLAGS_enable_fixed_key_encryption || FLAGS_enable_fixed_key_decryption;
+  const char fixed_crypto_label[] = "--enable_fixed_key_encryption/decryption";
+  // --key_id and --key are associated with --enable_fixed_key_encryption and
+  // --enable_fixed_key_decryption.
+  if (!ValidateFlag(
+          "key_id", FLAGS_key_id, fixed_crypto, false, fixed_crypto_label)) {
+    success = false;
+  }
+  if (!ValidateFlag(
+          "key", FLAGS_key, fixed_crypto, false, fixed_crypto_label)) {
+    success = false;
+  }
+
+  // --pssh is associated with --enable_fix_key_encryption.
+  if (!ValidateFlag("pssh",
+                    FLAGS_pssh,
+                    FLAGS_enable_fixed_key_encryption,
+                    false,
+                    "--enable_fixed_key_encryption")) {
+    success = false;
+  }
+  return success;
 }
 
-static bool dummy_key_id_validator =
-    google::RegisterFlagValidator(&FLAGS_key_id,
-                                  &IsNotEmptyWithFixedKeyEncryption);
-static bool dummy_key_validator =
-    google::RegisterFlagValidator(&FLAGS_key,
-                                  &IsNotEmptyWithFixedKeyEncryption);
-static bool dummy_pssh_validator =
-    google::RegisterFlagValidator(&FLAGS_pssh,
-                                  &IsNotEmptyWithFixedKeyEncryption);
+}  // namespace edash_packager

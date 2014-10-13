@@ -35,32 +35,29 @@ void DumpStreamInfo(const std::vector<MediaStream*>& streams) {
 
 scoped_ptr<RequestSigner> CreateSigner() {
   scoped_ptr<RequestSigner> signer;
-  if (FLAGS_enable_widevine_encryption || FLAGS_enable_widevine_decryption) {
-    if (!FLAGS_aes_signing_key.empty()) {
-      signer.reset(
-          AesRequestSigner::CreateSigner(FLAGS_signer, FLAGS_aes_signing_key,
-                                         FLAGS_aes_signing_iv));
-      if (!signer) {
-        LOG(ERROR) << "Cannot create an AES signer object from '"
-                   << FLAGS_aes_signing_key << "':'" << FLAGS_aes_signing_iv
-                   << "'.";
-        return scoped_ptr<RequestSigner>();
-      }
-    } else if (!FLAGS_rsa_signing_key_path.empty()) {
-      std::string rsa_private_key;
-      if (!File::ReadFileToString(FLAGS_rsa_signing_key_path.c_str(),
-                                  &rsa_private_key)) {
-        LOG(ERROR) << "Failed to read from '" << FLAGS_rsa_signing_key_path
-                   << "'.";
-        return scoped_ptr<RequestSigner>();
-      }
-      signer.reset(
-          RsaRequestSigner::CreateSigner(FLAGS_signer, rsa_private_key));
-      if (!signer) {
-        LOG(ERROR) << "Cannot create a RSA signer object from '"
-                   << FLAGS_rsa_signing_key_path << "'.";
-        return scoped_ptr<RequestSigner>();
-      }
+
+  if (!FLAGS_aes_signing_key.empty()) {
+    signer.reset(AesRequestSigner::CreateSigner(
+        FLAGS_signer, FLAGS_aes_signing_key, FLAGS_aes_signing_iv));
+    if (!signer) {
+      LOG(ERROR) << "Cannot create an AES signer object from '"
+                 << FLAGS_aes_signing_key << "':'" << FLAGS_aes_signing_iv
+                 << "'.";
+      return scoped_ptr<RequestSigner>();
+    }
+  } else if (!FLAGS_rsa_signing_key_path.empty()) {
+    std::string rsa_private_key;
+    if (!File::ReadFileToString(FLAGS_rsa_signing_key_path.c_str(),
+                                &rsa_private_key)) {
+      LOG(ERROR) << "Failed to read from '" << FLAGS_rsa_signing_key_path
+                 << "'.";
+      return scoped_ptr<RequestSigner>();
+    }
+    signer.reset(RsaRequestSigner::CreateSigner(FLAGS_signer, rsa_private_key));
+    if (!signer) {
+      LOG(ERROR) << "Cannot create a RSA signer object from '"
+                 << FLAGS_rsa_signing_key_path << "'.";
+      return scoped_ptr<RequestSigner>();
     }
   }
   return signer.Pass();

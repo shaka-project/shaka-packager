@@ -23,4 +23,12 @@ DECLARE_string(aes_signing_iv);
 DECLARE_string(rsa_signing_key_path);
 DECLARE_int32(crypto_period_duration);
 
+namespace edash_packager {
+
+/// Validate widevine encryption/decryption flags.
+/// @return true on success, false otherwise.
+bool ValidateWidevineCryptoFlags();
+
+}  // namespace edash_packager
+
 #endif  // APP_WIDEVINE_ENCRYPTION_FLAGS_H_

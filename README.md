@@ -353,7 +353,7 @@ packager input=sintel.wvm,stream=video,output=encrypted_sintel.mp4 \
 --enable_widevine_decryption \
 --enable_widevine_encryption \
 --key_server_url "https://license.uat.widevine.com/cenc/getcontentkey/widevine_test" \
---content_id "content_sintel" \
+--content_id "01020304050607" \
 --signer "widevine_test" \
 --rsa_signing_key_path "widevine_test_private.der"
 ```

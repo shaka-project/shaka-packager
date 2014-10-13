@@ -49,6 +49,14 @@ const char kUsage[] =
     "content bit rate for the stream, in bits/sec. If specified, this value is "
     "propagated to the $Bandwidth$ template parameter for segment names. "
     "If not specified, its value may be estimated.\n";
+
+enum ExitStatus {
+  kSuccess = 0,
+  kNoArgument,
+  kArgumentValidationFailed,
+  kPackagingFailed,
+  kInternalError,
+};
 }  // namespace
 
 namespace edash_packager {
@@ -286,21 +294,25 @@ int PackagerMain(int argc, char** argv) {
   google::ParseCommandLineFlags(&argc, &argv, true);
   if (argc < 2) {
     google::ShowUsageWithFlags(argv[0]);
-    return 1;
+    return kNoArgument;
   }
+
+  if (!ValidateWidevineCryptoFlags() || !ValidateFixedCryptoFlags())
+    return kArgumentValidationFailed;
+
   edash_packager::media::LibcryptoThreading libcrypto_threading;
   if (!libcrypto_threading.Initialize()) {
     LOG(ERROR) << "Could not initialize libcrypto threading.";
-    return 1;
+    return kInternalError;
   }
   // TODO(tinskip): Make InsertStreamDescriptor a member of
   // StreamDescriptorList.
   StreamDescriptorList stream_descriptors;
   for (int i = 1; i < argc; ++i) {
     if (!InsertStreamDescriptor(argv[i], &stream_descriptors))
-      return 1;
+      return kArgumentValidationFailed;
   }
-  return RunPackager(stream_descriptors) ? 0 : 1;
+  return RunPackager(stream_descriptors) ? kSuccess : kPackagingFailed;
 }
 
 }  // namespace media

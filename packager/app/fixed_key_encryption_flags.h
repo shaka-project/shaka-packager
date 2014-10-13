@@ -17,4 +17,12 @@ DECLARE_string(key_id);
 DECLARE_string(key);
 DECLARE_string(pssh);
 
+namespace edash_packager {
+
+/// Validate fixed encryption/decryption flags.
+/// @return true on success, false otherwise.
+bool ValidateFixedCryptoFlags();
+
+}  // namespace edash_packager
+
 #endif  // APP_FIXED_KEY_ENCRYPTION_FLAGS_H_

@@ -26,6 +26,8 @@
         'app/packager_util.h',
         'app/stream_descriptor.cc',
         'app/stream_descriptor.h',
+        'app/validate_flag.cc',
+        'app/validate_flag.h',
         'app/widevine_encryption_flags.cc',
         'app/widevine_encryption_flags.h',
       ],
