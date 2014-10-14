@@ -23,7 +23,7 @@ class PackagerAppTest(unittest.TestCase):
   def setUp(self):
     self.packager = packager_app.PackagerApp()
     self.input = os.path.join(
-        test_env.SRC_DIR, 'media', 'test', 'data', 'bear-1280x720.mp4')
+        test_env.SRC_DIR, 'packager', 'media', 'test', 'data', 'bear-1280x720.mp4')
     self.tmpdir = tempfile.mkdtemp()
     fd, self.output = tempfile.mkstemp(dir=self.tmpdir)
     os.close(fd)

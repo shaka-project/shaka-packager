@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/base/aes_encryptor.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
@@ -749,7 +750,11 @@ void WvmMediaParser::StartMediaSampleDemux(uint8_t* read_ptr) {
 bool WvmMediaParser::Output() {
   // Check decrypted sample data.
   if (prev_pes_flags_1_ & kScramblingBitsMask) {
-    content_decryptor_.Decrypt(sample_data_, &sample_data_);
+    if (!content_decryptor_) {
+      LOG(ERROR) << "Source content is encrypted, but decryption not enabled";
+      return false;
+    }
+    content_decryptor_->Decrypt(sample_data_, &sample_data_);
   }
   if ((prev_pes_stream_id_ & kPesStreamIdVideoMask) == kPesStreamIdVideo) {
     // Set data on the video stream from the NalUnitStream.
@@ -911,10 +916,7 @@ void WvmMediaParser::EmitSample(uint32_t parsed_audio_or_video_stream_id,
 
 bool WvmMediaParser::GetAssetKey(const uint32_t asset_id,
                                  EncryptionKey* encryption_key) {
-  if (decryption_key_source_ == NULL) {
-    LOG(ERROR) << "Source content is encrypted, but decryption not enabled";
-    return false;
-  }
+  DCHECK(decryption_key_source_);
   Status status = decryption_key_source_->FetchKeys(asset_id);
   if (!status.ok()) {
     LOG(ERROR) << "Fetch Key(s) failed for AssetID = " << asset_id
@@ -934,6 +936,10 @@ bool WvmMediaParser::GetAssetKey(const uint32_t asset_id,
 }
 
 bool WvmMediaParser::ProcessEcm() {
+  // An error will be returned later if the samples need to be decrypted.
+  if (!decryption_key_source_)
+    return true;
+
   if (current_program_id_ > 0) {
     return true;
   }
@@ -959,26 +965,29 @@ bool WvmMediaParser::ProcessEcm() {
   }
   std::vector<uint8_t> iv(kInitializationVectorSizeBytes);
   AesCbcCtsDecryptor asset_decryptor;
-  asset_decryptor.InitializeWithIv(encryption_key.key, iv);
-
-  std::vector<uint8_t> content_key_buffer;  // flags + contentKey + padding.
-  content_key_buffer.resize(
-      kEcmFlagsSizeBytes + kEcmContentKeySizeBytes + kEcmPaddingSizeBytes);
-  // Get content key + padding from ECM.
-  memcpy(&content_key_buffer[0], ecm_data,
-         kEcmFlagsSizeBytes + kEcmContentKeySizeBytes + kEcmPaddingSizeBytes);
-  asset_decryptor.Decrypt(content_key_buffer, &content_key_buffer);
-  if (content_key_buffer.empty()) {
-    LOG(ERROR) << "Decryption of content key failed for asset id = "
-               << asset_id;
+  if (!asset_decryptor.InitializeWithIv(encryption_key.key, iv)) {
+    LOG(ERROR) << "Failed to initialize asset_decryptor.";
     return false;
   }
+
+  const size_t content_key_buffer_size =
+      kEcmFlagsSizeBytes + kEcmContentKeySizeBytes +
+      kEcmPaddingSizeBytes;  // flags + contentKey + padding.
+  std::vector<uint8_t> content_key_buffer(content_key_buffer_size);
+  asset_decryptor.Decrypt(
+      ecm_data, content_key_buffer_size, &content_key_buffer[0]);
 
   std::vector<uint8_t> decrypted_content_key_vec(
       content_key_buffer.begin() + 4,
       content_key_buffer.begin() + 20);
-  content_decryptor_.InitializeWithIv(decrypted_content_key_vec, iv);
-  return(true);
+  scoped_ptr<AesCbcCtsDecryptor> content_decryptor(new AesCbcCtsDecryptor);
+  if (!content_decryptor->InitializeWithIv(decrypted_content_key_vec, iv)) {
+    LOG(ERROR) << "Failed to initialize content decryptor.";
+    return false;
+  }
+
+  content_decryptor_ = content_decryptor.Pass();
+  return true;
 }
 
 DemuxStreamIdMediaSample::DemuxStreamIdMediaSample() :

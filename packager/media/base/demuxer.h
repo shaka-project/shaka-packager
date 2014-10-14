@@ -70,6 +70,7 @@ class Demuxer {
   std::string file_name_;
   File* media_file_;
   bool init_event_received_;
+  Status init_parsing_status_;
   scoped_ptr<MediaParser> parser_;
   std::vector<MediaStream*> streams_;
   scoped_ptr<uint8_t[]> buffer_;

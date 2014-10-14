@@ -20,7 +20,7 @@ import sys
 
 
 # Define static global objects and attributes.
-SRC_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..')
+SRC_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../..')
 
 
 # Parse arguments and calculate dynamic global objects and attributes.

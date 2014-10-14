@@ -337,7 +337,7 @@ void AesCbcCtsEncryptor::Encrypt(const std::vector<uint8_t>& plaintext,
   if (plaintext.empty())
     return;
 
-  return Encrypt(plaintext.data(), plaintext.size(), &(*ciphertext)[0]);
+  Encrypt(plaintext.data(), plaintext.size(), &(*ciphertext)[0]);
 }
 
 bool AesCbcCtsEncryptor::SetIv(const std::vector<uint8_t>& iv) {
@@ -461,7 +461,7 @@ void AesCbcCtsDecryptor::Decrypt(const std::vector<uint8_t>& ciphertext,
   if (ciphertext.empty())
     return;
 
-  return Decrypt(ciphertext.data(), ciphertext.size(), &(*plaintext)[0]);
+  Decrypt(ciphertext.data(), ciphertext.size(), &(*plaintext)[0]);
 }
 
 bool AesCbcCtsDecryptor::SetIv(const std::vector<uint8_t>& iv) {

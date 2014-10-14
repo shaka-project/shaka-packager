@@ -30,6 +30,7 @@ const int kExpectedVideoFrameCount = 6665;
 const int kExpectedAudioFrameCount = 11964;
 const uint8_t kExpectedAssetKey[] =
     "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc";
+const size_t kInitDataSize = 0x4000;
 }  // namespace
 
 using ::testing::_;
@@ -140,6 +141,23 @@ class WvmMediaParserTest : public testing::Test {
     EXPECT_TRUE(parser_->Parse(buffer.data(), buffer.size()));
   }
 };
+
+TEST_F(WvmMediaParserTest, ParseWvmWithoutKeySource) {
+  // Parsing should fail but it will get the streams successfully.
+  key_source_.reset();
+  InitializeParser();
+  std::vector<uint8_t> buffer = ReadTestDataFile(kWvmFile);
+  EXPECT_FALSE(parser_->Parse(buffer.data(), buffer.size()));
+  EXPECT_EQ(kExpectedStreams, stream_map_.size());
+}
+
+TEST_F(WvmMediaParserTest, ParseWvmInitWithoutKeySource) {
+  key_source_.reset();
+  InitializeParser();
+  std::vector<uint8_t> buffer = ReadTestDataFile(kWvmFile);
+  EXPECT_TRUE(parser_->Parse(buffer.data(), kInitDataSize));
+  EXPECT_EQ(kExpectedStreams, stream_map_.size());
+}
 
 TEST_F(WvmMediaParserTest, ParseWvm) {
   EXPECT_CALL(*key_source_, FetchKeys(_)).WillOnce(Return(Status::OK));

@@ -21,6 +21,8 @@
 #include "packager/media/formats/wvm/wvm_media_parser.h"
 
 namespace {
+const size_t kInitBufSize = 0x4000;  // 16KB, sufficient to determine the
+                                     // container and likely all init data.
 const size_t kBufSize = 0x40000;  // 256KB.
 }
 
@@ -55,7 +57,7 @@ Status Demuxer::Initialize() {
   }
 
   // Determine media container.
-  int64_t bytes_read = media_file_->Read(buffer_.get(), kBufSize);
+  int64_t bytes_read = media_file_->Read(buffer_.get(), kInitBufSize);
   if (bytes_read <= 0)
     return Status(error::FILE_FAILURE, "Cannot read file " + file_name_);
   MediaContainerName container = DetermineContainer(buffer_.get(), bytes_read);
@@ -80,16 +82,16 @@ Status Demuxer::Initialize() {
                 base::Bind(&Demuxer::NewSampleEvent, base::Unretained(this)),
                 key_source_.get());
 
-  if (!parser_->Parse(buffer_.get(), bytes_read))
-    return Status(error::PARSER_FAILURE,
-                  "Cannot parse media file " + file_name_);
-
-  Status status;
-  while (!init_event_received_) {
-    if (!(status = Parse()).ok())
-      break;
+  if (!parser_->Parse(buffer_.get(), bytes_read)) {
+    init_parsing_status_ =
+        Status(error::PARSER_FAILURE, "Cannot parse media file " + file_name_);
   }
-  return status;
+
+  // Parse until init event received or on error.
+  while (!init_event_received_ && init_parsing_status_.ok())
+    init_parsing_status_ = Parse();
+  // Defer error reporting if init completed successfully.
+  return init_event_received_ ? Status::OK : init_parsing_status_;
 }
 
 void Demuxer::ParserInitEvent(
@@ -146,6 +148,11 @@ Status Demuxer::Parse() {
   DCHECK(media_file_);
   DCHECK(parser_);
   DCHECK(buffer_);
+
+  // Return early and avoid call Parse(...) again if it has already failed at
+  // the initialization.
+  if (!init_parsing_status_.ok())
+    return init_parsing_status_;
 
   int64_t bytes_read = media_file_->Read(buffer_.get(), kBufSize);
   if (bytes_read <= 0) {

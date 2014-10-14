@@ -332,10 +332,9 @@ bool MP4MediaParser::FetchKeysIfNecessary(
   if (headers.empty())
     return true;
 
-  if (!decryption_key_source_) {
-    LOG(ERROR) << "Content is encrypted, but content decryption not enabled.";
-    return false;
-  }
+  // An error will be returned later if the samples need to be decrypted.
+  if (!decryption_key_source_)
+    return true;
 
   // TODO(tinskip): Pass in raw 'pssh' boxes to FetchKeys. This will allow
   // supporting multiple keysystems. Move this to KeySource.
@@ -408,14 +407,14 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
       buf, runs_->sample_size(), runs_->is_keyframe()));
   if (runs_->is_encrypted()) {
     scoped_ptr<DecryptConfig> decrypt_config = runs_->GetDecryptConfig();
-    if (!decrypt_config) {
+    if (!decrypt_config ||
+        !DecryptSampleBuffer(decrypt_config.get(),
+                             stream_sample->writable_data(),
+                             stream_sample->data_size())) {
       *err = true;
+      LOG(ERROR) << "Cannot decrypt samples.";
       return false;
     }
-    if (!DecryptSampleBuffer(decrypt_config.get(),
-                             stream_sample->writable_data(),
-                             stream_sample->data_size()))
-      return false;
   }
 
   stream_sample->set_dts(runs_->dts());
