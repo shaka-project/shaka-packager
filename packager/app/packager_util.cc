@@ -66,23 +66,27 @@ scoped_ptr<RequestSigner> CreateSigner() {
 scoped_ptr<KeySource> CreateEncryptionKeySource() {
   scoped_ptr<KeySource> encryption_key_source;
   if (FLAGS_enable_widevine_encryption) {
-    scoped_ptr<RequestSigner> signer(CreateSigner());
+    scoped_ptr<WidevineKeySource> widevine_key_source(
+        new WidevineKeySource(FLAGS_key_server_url));
+    if (!FLAGS_signer.empty()) {
+      scoped_ptr<RequestSigner> request_signer(CreateSigner());
+      if (!request_signer)
+        return scoped_ptr<KeySource>();
+      widevine_key_source->set_signer(request_signer.Pass());
+    }
+
     std::vector<uint8_t> content_id;
     if (!base::HexStringToBytes(FLAGS_content_id, &content_id)) {
       LOG(ERROR) << "Invalid content_id hex string specified.";
       return scoped_ptr<KeySource>();
     }
-    scoped_ptr<WidevineKeySource> widevine_encryption_key_source(
-        new WidevineKeySource(FLAGS_key_server_url,
-                              signer.Pass()));
-    Status status = widevine_encryption_key_source->FetchKeys(content_id,
-                                                              FLAGS_policy);
+    Status status = widevine_key_source->FetchKeys(content_id, FLAGS_policy);
     if (!status.ok()) {
       LOG(ERROR) << "Widevine encryption key source failed to fetch keys: "
                  << status.ToString();
       return scoped_ptr<KeySource>();
     }
-    encryption_key_source = widevine_encryption_key_source.Pass();
+    encryption_key_source = widevine_key_source.Pass();
   } else if (FLAGS_enable_fixed_key_encryption) {
     encryption_key_source = KeySource::CreateFromHexStrings(
         FLAGS_key_id, FLAGS_key, FLAGS_pssh, "");
@@ -93,12 +97,19 @@ scoped_ptr<KeySource> CreateEncryptionKeySource() {
 scoped_ptr<KeySource> CreateDecryptionKeySource() {
   scoped_ptr<KeySource> decryption_key_source;
   if (FLAGS_enable_widevine_decryption) {
-    scoped_ptr<RequestSigner> signer(CreateSigner());
-    decryption_key_source.reset(new WidevineKeySource(FLAGS_key_server_url,
-                                                      signer.Pass()));
+    scoped_ptr<WidevineKeySource> widevine_key_source(
+        new WidevineKeySource(FLAGS_key_server_url));
+    if (!FLAGS_signer.empty()) {
+      scoped_ptr<RequestSigner> request_signer(CreateSigner());
+      if (!request_signer)
+        return scoped_ptr<KeySource>();
+      widevine_key_source->set_signer(request_signer.Pass());
+    }
+
+    decryption_key_source = widevine_key_source.Pass();
   } else if (FLAGS_enable_fixed_key_decryption) {
-    decryption_key_source = KeySource::CreateFromHexStrings(
-        FLAGS_key_id, FLAGS_key, "", "");
+    decryption_key_source =
+        KeySource::CreateFromHexStrings(FLAGS_key_id, FLAGS_key, "", "");
   }
   return decryption_key_source.Pass();
 }

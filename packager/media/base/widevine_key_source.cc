@@ -136,14 +136,12 @@ class WidevineKeySource::RefCountedEncryptionKeyMap
   DISALLOW_COPY_AND_ASSIGN(RefCountedEncryptionKeyMap);
 };
 
-WidevineKeySource::WidevineKeySource(const std::string& server_url,
-                                     scoped_ptr<RequestSigner> signer)
+WidevineKeySource::WidevineKeySource(const std::string& server_url)
     : key_production_thread_("KeyProductionThread",
                              base::Bind(&WidevineKeySource::FetchKeysTask,
                                         base::Unretained(this))),
       key_fetcher_(new HttpKeyFetcher(kKeyFetchTimeoutInSeconds)),
       server_url_(server_url),
-      signer_(signer.Pass()),
       crypto_period_count_(kDefaultCryptoPeriodCount),
       key_production_started_(false),
       start_key_production_(false, false),
@@ -248,8 +246,11 @@ Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
   return GetKeyInternal(crypto_period_index, track_type, key);
 }
 
-void WidevineKeySource::set_key_fetcher(
-    scoped_ptr<KeyFetcher> key_fetcher) {
+void WidevineKeySource::set_signer(scoped_ptr<RequestSigner> signer) {
+  signer_ = signer.Pass();
+}
+
+void WidevineKeySource::set_key_fetcher(scoped_ptr<KeyFetcher> key_fetcher) {
   key_fetcher_ = key_fetcher.Pass();
 }
 

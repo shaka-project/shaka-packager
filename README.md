@@ -93,13 +93,14 @@ Demuxer demuxer(input_media_file);
 // Users may use WidevineKeySource to fetch keys from Widevine
 // common encryption server.
 
-// A request signer is required to sign the common encryption request.
-scoped_ptr<RequestSigner> signer(
-    RsaRequestSigner::CreateSigner(signer, pkcs1_rsa_private_key));
-if (!signer) { … }
-
 scoped_ptr<WidevineKeySource> widevine_decryption_key_source(
-    new WidevineKeySource(key_server_url, signer.Pass()));
+    new WidevineKeySource(key_server_url));
+
+// A request signer might be required to sign the common encryption request.
+scoped_ptr<RequestSigner> signer(
+    RsaRequestSigner::CreateSigner(signer_name, pkcs1_rsa_private_key));
+if (!signer) { … }
+widevine_decryption_key_source->set_signer(signer.Pass());
 
 // Set encryption key source to demuxer.
 muxer->SetKeySource(widevine_decryption_key_source.Pass());
@@ -234,13 +235,14 @@ muxer_options.bandwidth = 0;
 // Users may use WidevineKeySource to fetch keys from Widevine
 // common encryption server.
 
-// A request signer is required to sign the common encryption request.
-scoped_ptr<RequestSigner> signer(
-    RsaRequestSigner::CreateSigner(signer, pkcs1_rsa_private_key));
-if (!signer) { … }
-
 scoped_ptr<WidevineKeySource> widevine_encryption_key_source(
     new WidevineKeySource(key_server_url, signer.Pass()));
+
+// A request signer might be required to sign the common encryption request.
+scoped_ptr<RequestSigner> signer(
+    RsaRequestSigner::CreateSigner(signer_name, pkcs1_rsa_private_key));
+if (!signer) { … }
+widevine_encryption_key_source->set_signer(signer.Pass());
 
 // Grab keys for the content.
 status = widevine_encryption_key_source->FetchKeys(content_id, policy));

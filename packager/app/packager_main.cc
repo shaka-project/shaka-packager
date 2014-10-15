@@ -127,7 +127,13 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     if (stream_iter->input != previous_input) {
       // New remux job needed. Create demux and job thread.
       scoped_ptr<Demuxer> demuxer(new Demuxer(stream_iter->input));
-      demuxer->SetKeySource(CreateDecryptionKeySource());
+      if (FLAGS_enable_widevine_decryption ||
+          FLAGS_enable_fixed_key_decryption) {
+        scoped_ptr<KeySource> key_source(CreateDecryptionKeySource());
+        if (!key_source)
+          return false;
+        demuxer->SetKeySource(key_source.Pass());
+      }
       Status status = demuxer->Initialize();
       if (!status.ok()) {
         LOG(ERROR) << "Demuxer failed to initialize: " << status.ToString();

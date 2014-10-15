@@ -26,9 +26,7 @@ template <class T> class ProducerConsumerQueue;
 class WidevineKeySource : public KeySource {
  public:
   /// @param server_url is the Widevine common encryption server url.
-  /// @param signer signs the request message. Can be NULL.
-  WidevineKeySource(const std::string& server_url,
-                    scoped_ptr<RequestSigner> signer);
+  WidevineKeySource(const std::string& server_url);
 
   virtual ~WidevineKeySource();
 
@@ -46,6 +44,10 @@ class WidevineKeySource : public KeySource {
                                     TrackType track_type,
                                     EncryptionKey* key) OVERRIDE;
   /// @}
+
+  /// Set signer for the key source.
+  /// @param signer signs the request message.
+  void set_signer(scoped_ptr<RequestSigner> signer);
 
   /// Inject an @b KeyFetcher object, mainly used for testing.
   /// @param key_fetcher points to the @b KeyFetcher object to be injected.
