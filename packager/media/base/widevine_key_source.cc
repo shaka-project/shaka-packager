@@ -146,6 +146,7 @@ WidevineKeySource::WidevineKeySource(const std::string& server_url)
       key_production_started_(false),
       start_key_production_(false, false),
       first_crypto_period_index_(0) {
+  key_production_thread_.Start();
 }
 
 WidevineKeySource::~WidevineKeySource() {
@@ -168,7 +169,7 @@ Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& content_id,
   BytesToBase64String(content_id, &content_id_base64_string);
   request_dict_.SetString("content_id", content_id_base64_string);
   request_dict_.SetString("policy", policy);
-  return FetchKeysCommon(false);
+  return FetchKeysInternal(!kEnableKeyRotation, 0, false);
 }
 
 Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& pssh_data) {
@@ -177,29 +178,17 @@ Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& pssh_data) {
   std::string pssh_data_base64_string;
   BytesToBase64String(pssh_data, &pssh_data_base64_string);
   request_dict_.SetString("pssh_data", pssh_data_base64_string);
-  return FetchKeysCommon(false);
+  return FetchKeysInternal(!kEnableKeyRotation, 0, false);
 }
 
 Status WidevineKeySource::FetchKeys(uint32_t asset_id) {
   base::AutoLock scoped_lock(lock_);
   request_dict_.Clear();
   request_dict_.SetInteger("asset_id", asset_id);
-  return FetchKeysCommon(true);
+  return FetchKeysInternal(!kEnableKeyRotation, 0, true);
 }
 
-Status WidevineKeySource::FetchKeysCommon(bool widevine_classic) {
-  // TODO(tinskip): Make this method callable multiple times to fetch
-  // different keys.
-  DCHECK(!key_production_thread_.HasBeenStarted());
-  key_production_thread_.Start();
-
-  // Perform a fetch request to find out if the key source is healthy.
-  // It also stores the keys fetched for consumption later.
-  return FetchKeysInternal(!kEnableKeyRotation, 0, widevine_classic);
-}
-
-Status WidevineKeySource::GetKey(TrackType track_type,
-                                 EncryptionKey* key) {
+Status WidevineKeySource::GetKey(TrackType track_type, EncryptionKey* key) {
   DCHECK(key);
   if (encryption_key_map_.find(track_type) == encryption_key_map_.end()) {
     return Status(error::INTERNAL_ERROR,
@@ -235,7 +224,8 @@ Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
     if (!key_production_started_) {
       // Another client may have a slightly smaller starting crypto period
       // index. Set the initial value to account for that.
-      first_crypto_period_index_ = crypto_period_index ? crypto_period_index - 1 : 0;
+      first_crypto_period_index_ =
+          crypto_period_index ? crypto_period_index - 1 : 0;
       DCHECK(!key_pool_);
       key_pool_.reset(new EncryptionKeyQueue(crypto_period_count_,
                                              first_crypto_period_index_));

@@ -18,6 +18,9 @@ const uint32_t kBoxSize = kFourCCSize + sizeof(uint32_t);
 // Additional 1-byte version and 3-byte flags.
 const uint32_t kFullBoxSize = kBoxSize + 4;
 
+// Key Id size as defined in CENC spec.
+const uint32_t kCencKeyIdSize = 16;
+
 // 9 uint32_t in big endian formatted array.
 const uint8_t kUnityMatrix[] = {0, 1, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0,
                                 0, 0, 0, 0, 0, 1, 0, 0, 0,    0, 0, 0,
@@ -226,12 +229,21 @@ TrackEncryption::~TrackEncryption() {}
 FourCC TrackEncryption::BoxType() const { return FOURCC_TENC; }
 
 bool TrackEncryption::ReadWrite(BoxBuffer* buffer) {
+  if (!buffer->Reading()) {
+    if (default_kid.size() != kCencKeyIdSize) {
+      LOG(WARNING) << "CENC defines key id length of " << kCencKeyIdSize
+                   << " bytes; got " << default_kid.size()
+                   << ". Resized accordingly.";
+      default_kid.resize(kCencKeyIdSize);
+    }
+  }
+
   uint8_t flag = is_encrypted ? 1 : 0;
   RCHECK(FullBox::ReadWrite(buffer) &&
          buffer->IgnoreBytes(2) &&  // reserved.
          buffer->ReadWriteUInt8(&flag) &&
          buffer->ReadWriteUInt8(&default_iv_size) &&
-         buffer->ReadWriteVector(&default_kid, 16));
+         buffer->ReadWriteVector(&default_kid, kCencKeyIdSize));
   if (buffer->Reading()) {
     is_encrypted = (flag != 0);
     if (is_encrypted) {
@@ -244,7 +256,7 @@ bool TrackEncryption::ReadWrite(BoxBuffer* buffer) {
 }
 
 uint32_t TrackEncryption::ComputeSize() {
-  atom_size = kFullBoxSize + sizeof(uint32_t) + default_kid.size();
+  atom_size = kFullBoxSize + sizeof(uint32_t) + kCencKeyIdSize;
   return atom_size;
 }
 
@@ -1674,8 +1686,7 @@ bool SampleGroupDescription::ReadWrite(BoxBuffer* buffer) {
     return true;
   }
 
-  const size_t kKeyIdSize = 16;
-  const size_t kEntrySize = sizeof(uint32_t) + kKeyIdSize;
+  const size_t kEntrySize = sizeof(uint32_t) + kCencKeyIdSize;
   uint32_t default_length = 0;
   if (version == 1) {
     if (buffer->Reading()) {
@@ -1699,14 +1710,20 @@ bool SampleGroupDescription::ReadWrite(BoxBuffer* buffer) {
       }
     }
 
-    if (!buffer->Reading())
-      RCHECK(entries[i].key_id.size() == kKeyIdSize);
+    if (!buffer->Reading()) {
+      if (entries[i].key_id.size() != kCencKeyIdSize) {
+        LOG(WARNING) << "CENC defines key id length of " << kCencKeyIdSize
+                     << " bytes; got " << entries[i].key_id.size()
+                     << ". Resized accordingly.";
+        entries[i].key_id.resize(kCencKeyIdSize);
+      }
+    }
 
     uint8_t flag = entries[i].is_encrypted ? 1 : 0;
     RCHECK(buffer->IgnoreBytes(2) &&  // reserved.
            buffer->ReadWriteUInt8(&flag) &&
            buffer->ReadWriteUInt8(&entries[i].iv_size) &&
-           buffer->ReadWriteVector(&entries[i].key_id, kKeyIdSize));
+           buffer->ReadWriteVector(&entries[i].key_id, kCencKeyIdSize));
 
     if (buffer->Reading()) {
       entries[i].is_encrypted = (flag != 0);
@@ -1726,8 +1743,7 @@ uint32_t SampleGroupDescription::ComputeSize() {
   // This box is optional. Skip it if it is not used.
   atom_size = 0;
   if (!entries.empty()) {
-    const size_t kKeyIdSize = 16;
-    const size_t kEntrySize = sizeof(uint32_t) + kKeyIdSize;
+    const size_t kEntrySize = sizeof(uint32_t) + kCencKeyIdSize;
     atom_size = kFullBoxSize + sizeof(grouping_type) +
                 (version == 1 ? sizeof(uint32_t) : 0) + sizeof(uint32_t) +
                 entries.size() * kEntrySize;

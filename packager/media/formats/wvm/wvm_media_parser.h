@@ -201,12 +201,12 @@ class WvmMediaParser : public MediaParser {
 
   // Callback invoked by the ES media parser
   // to emit a new audio/video access unit.
-  void EmitSample(uint32_t parsed_audio_or_video_stream_id,
+  bool EmitSample(uint32_t parsed_audio_or_video_stream_id,
                   uint32_t stream_id,
                   scoped_refptr<MediaSample>& new_sample,
                   bool isLastSample);
 
-  void EmitPendingSamples();
+  bool EmitPendingSamples();
 
   bool EmitLastSample(uint32_t stream_id,
                       scoped_refptr<MediaSample>& new_sample);

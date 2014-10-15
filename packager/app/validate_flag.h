@@ -6,6 +6,9 @@
 //
 // Flag validation help functions.
 
+#ifndef APP_VALIDATE_FLAG_H_
+#define APP_VALIDATE_FLAG_H_
+
 #include <string>
 
 namespace edash_packager {
@@ -31,3 +34,5 @@ bool ValidateFlag(const char* flag_name,
 void PrintError(const std::string& error_message);
 
 }  // namespace edash_packager
+
+#endif  // APP_VALIDATE_FLAG_H_

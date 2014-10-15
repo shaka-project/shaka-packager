@@ -26,7 +26,7 @@ template <class T> class ProducerConsumerQueue;
 class WidevineKeySource : public KeySource {
  public:
   /// @param server_url is the Widevine common encryption server url.
-  WidevineKeySource(const std::string& server_url);
+  explicit WidevineKeySource(const std::string& server_url);
 
   virtual ~WidevineKeySource();
 
@@ -66,9 +66,6 @@ class WidevineKeySource : public KeySource {
   Status GetKeyInternal(uint32_t crypto_period_index,
                         TrackType track_type,
                         EncryptionKey* key);
-
-  // Common implementation of FetchKeys methods above.
-  Status FetchKeysCommon(bool widevine_classic);
 
   // The closure task to fetch keys repeatedly.
   void FetchKeysTask();

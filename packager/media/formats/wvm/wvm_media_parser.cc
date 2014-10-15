@@ -488,25 +488,25 @@ bool WvmMediaParser::EmitLastSample(uint32_t stream_id,
                         .append(base::UintToString(stream_id));
   std::map<std::string, uint32_t>::iterator it =
       program_demux_stream_map_.find(key);
-  if (it != program_demux_stream_map_.end()) {
-      EmitSample(stream_id, (*it).second, new_sample, true);
-  } else {
+  if (it == program_demux_stream_map_.end())
     return false;
-  }
-  return true;
+  return EmitSample(stream_id, (*it).second, new_sample, true);
 }
 
-void WvmMediaParser::EmitPendingSamples() {
+bool WvmMediaParser::EmitPendingSamples() {
   // Emit queued samples which were built when not initialized.
   while (!media_sample_queue_.empty()) {
     DemuxStreamIdMediaSample& demux_stream_media_sample =
         media_sample_queue_.front();
-    EmitSample(
-        demux_stream_media_sample.parsed_audio_or_video_stream_id,
-        demux_stream_media_sample.demux_stream_id,
-        demux_stream_media_sample.media_sample, false);
+    if (!EmitSample(demux_stream_media_sample.parsed_audio_or_video_stream_id,
+                    demux_stream_media_sample.demux_stream_id,
+                    demux_stream_media_sample.media_sample,
+                    false)) {
+      return false;
+    }
     media_sample_queue_.pop_front();
   }
+  return true;
 }
 
 void WvmMediaParser::Flush() {
@@ -855,64 +855,76 @@ bool WvmMediaParser::Output() {
   } else {
     // flush the sample queue and emit all queued samples.
     while (!media_sample_queue_.empty()) {
-      EmitPendingSamples();
+      if (!EmitPendingSamples())
+        return false;
     }
     // Emit current sample.
-    EmitSample(prev_pes_stream_id_, (*it).second, media_sample_, false);
+    if (!EmitSample(prev_pes_stream_id_, (*it).second, media_sample_, false))
+      return false;
   }
   return true;
 }
 
-void WvmMediaParser::EmitSample(uint32_t parsed_audio_or_video_stream_id,
+bool WvmMediaParser::EmitSample(uint32_t parsed_audio_or_video_stream_id,
                                 uint32_t stream_id,
                                 scoped_refptr<MediaSample>& new_sample,
                                 bool isLastSample) {
   DCHECK(new_sample);
   if (isLastSample) {
-    if ((parsed_audio_or_video_stream_id & kPesStreamIdVideoMask)
-        == kPesStreamIdVideo) {
+    if ((parsed_audio_or_video_stream_id & kPesStreamIdVideoMask) ==
+        kPesStreamIdVideo) {
       new_sample->set_duration(prev_media_sample_data_.video_sample_duration);
-    } else if ((parsed_audio_or_video_stream_id & kPesStreamIdAudioMask)
-        == kPesStreamIdAudio) {
+    } else if ((parsed_audio_or_video_stream_id & kPesStreamIdAudioMask) ==
+               kPesStreamIdAudio) {
       new_sample->set_duration(prev_media_sample_data_.audio_sample_duration);
     }
-    new_sample_cb_.Run(stream_id, new_sample);
-    return;
+    if (!new_sample_cb_.Run(stream_id, new_sample)) {
+      LOG(ERROR) << "Failed to process the last sample.";
+      return false;
+    }
+    return true;
   }
 
   // Cannot emit current sample.  Compute duration first and then,
   // emit previous sample.
-  if ((parsed_audio_or_video_stream_id & kPesStreamIdVideoMask)
-      == kPesStreamIdVideo) {
+  if ((parsed_audio_or_video_stream_id & kPesStreamIdVideoMask) ==
+      kPesStreamIdVideo) {
     if (prev_media_sample_data_.video_sample == NULL) {
       prev_media_sample_data_.video_sample = new_sample;
       prev_media_sample_data_.video_stream_id = stream_id;
-      return;
+      return true;
     }
     prev_media_sample_data_.video_sample->set_duration(
         new_sample->dts() - prev_media_sample_data_.video_sample->dts());
     prev_media_sample_data_.video_sample_duration =
         prev_media_sample_data_.video_sample->duration();
-    new_sample_cb_.Run(prev_media_sample_data_.video_stream_id,
-                       prev_media_sample_data_.video_sample);
+    if (!new_sample_cb_.Run(prev_media_sample_data_.video_stream_id,
+                            prev_media_sample_data_.video_sample)) {
+      LOG(ERROR) << "Failed to process the video sample.";
+      return false;
+    }
     prev_media_sample_data_.video_sample = new_sample;
     prev_media_sample_data_.video_stream_id = stream_id;
-  } else if ((parsed_audio_or_video_stream_id & kPesStreamIdAudioMask)
-      == kPesStreamIdAudio) {
+  } else if ((parsed_audio_or_video_stream_id & kPesStreamIdAudioMask) ==
+             kPesStreamIdAudio) {
     if (prev_media_sample_data_.audio_sample == NULL) {
       prev_media_sample_data_.audio_sample = new_sample;
       prev_media_sample_data_.audio_stream_id = stream_id;
-      return;
+      return true;
     }
     prev_media_sample_data_.audio_sample->set_duration(
         new_sample->dts() - prev_media_sample_data_.audio_sample->dts());
     prev_media_sample_data_.audio_sample_duration =
         prev_media_sample_data_.audio_sample->duration();
-    new_sample_cb_.Run(prev_media_sample_data_.audio_stream_id,
-                       prev_media_sample_data_.audio_sample);
+    if (!new_sample_cb_.Run(prev_media_sample_data_.audio_stream_id,
+                            prev_media_sample_data_.audio_sample)) {
+      LOG(ERROR) << "Failed to process the audio sample.";
+      return false;
+    }
     prev_media_sample_data_.audio_sample = new_sample;
     prev_media_sample_data_.audio_stream_id = stream_id;
   }
+  return true;
 }
 
 bool WvmMediaParser::GetAssetKey(const uint32_t asset_id,

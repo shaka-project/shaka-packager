@@ -428,7 +428,11 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
            << ", cts=" << runs_->cts()
            << ", size=" << runs_->sample_size();
 
-  new_sample_cb_.Run(runs_->track_id(), stream_sample);
+  if (!new_sample_cb_.Run(runs_->track_id(), stream_sample)) {
+    *err = true;
+    LOG(ERROR) << "Failed to process the sample.";
+    return false;
+  }
 
   runs_->AdvanceSample();
   return true;
