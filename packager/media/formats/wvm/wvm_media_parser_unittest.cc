@@ -30,6 +30,11 @@ const int kExpectedVideoFrameCount = 6665;
 const int kExpectedAudioFrameCount = 11964;
 const uint8_t kExpectedAssetKey[] =
     "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc";
+const uint8_t k64ByteAssetKey[] =
+    "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc"
+    "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc"
+    "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc"
+    "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc";
 const size_t kInitDataSize = 0x4000;
 }  // namespace
 
@@ -65,6 +70,7 @@ class WvmMediaParserTest : public testing::Test {
         current_track_id_(-1) {
     parser_.reset(new WvmMediaParser());
     key_source_.reset(new MockKeySource());
+    encryption_key_.key.resize(16);
     encryption_key_.key.assign(kExpectedAssetKey, kExpectedAssetKey + 16);
   }
 
@@ -161,6 +167,19 @@ TEST_F(WvmMediaParserTest, ParseWvmInitWithoutKeySource) {
 
 TEST_F(WvmMediaParserTest, ParseWvm) {
   EXPECT_CALL(*key_source_, FetchKeys(_)).WillOnce(Return(Status::OK));
+  EXPECT_CALL(*key_source_, GetKey(_, _))
+      .WillOnce(DoAll(SetArgPointee<1>(encryption_key_), Return(Status::OK)));
+  Parse(kWvmFile);
+  EXPECT_EQ(kExpectedStreams, stream_map_.size());
+  EXPECT_EQ(kExpectedVideoFrameCount, video_frame_count_);
+  EXPECT_EQ(kExpectedAudioFrameCount, audio_frame_count_);
+}
+
+TEST_F(WvmMediaParserTest, ParseWvmWith64ByteAssetKey) {
+  EXPECT_CALL(*key_source_, FetchKeys(_)).WillOnce(Return(Status::OK));
+  // WVM uses only the first 16 bytes of the asset key.
+  encryption_key_.key.resize(64);
+  encryption_key_.key.assign(k64ByteAssetKey, k64ByteAssetKey + 64);
   EXPECT_CALL(*key_source_, GetKey(_, _))
       .WillOnce(DoAll(SetArgPointee<1>(encryption_key_), Return(Status::OK)));
   Parse(kWvmFile);

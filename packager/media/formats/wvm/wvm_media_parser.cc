@@ -61,6 +61,7 @@ namespace {
   const uint32_t kEcmFlagsSizeBytes =
       kEcmCCIFlagsSizeBytes + kEcmDCPFlagsSizeBytes;
   const uint32_t kEcmPaddingSizeBytes = 12;
+  const uint32_t kAssetKeySizeBytes = 16;
 
   enum Type {
     Type_void = 0,
@@ -963,9 +964,21 @@ bool WvmMediaParser::ProcessEcm() {
   if (!GetAssetKey(asset_id, &encryption_key)) {
     return false;
   }
+  if (encryption_key.key.size() < kAssetKeySizeBytes) {
+    LOG(ERROR) << "Asset Key size of " << encryption_key.key.size()
+               << " for AssetID = " << asset_id
+               << " is less than minimum asset key size.";
+    return false;
+  }
+  // Legacy WVM content may have asset keys > 16 bytes.
+  // Use only the first 16 bytes of the asset key to get
+  // the content key.
+  std::vector<uint8_t> asset_key(
+      encryption_key.key.begin(),
+      encryption_key.key.begin() + kAssetKeySizeBytes);
   std::vector<uint8_t> iv(kInitializationVectorSizeBytes);
   AesCbcCtsDecryptor asset_decryptor;
-  if (!asset_decryptor.InitializeWithIv(encryption_key.key, iv)) {
+  if (!asset_decryptor.InitializeWithIv(asset_key, iv)) {
     LOG(ERROR) << "Failed to initialize asset_decryptor.";
     return false;
   }
