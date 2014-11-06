@@ -230,6 +230,7 @@ Status Segmenter::Finalize() {
     if (track->header.duration > moov_->header.duration)
       moov_->header.duration = track->header.duration;
   }
+  moov_->extends.header.fragment_duration = moov_->header.duration;
 
   return DoFinalize();
 }

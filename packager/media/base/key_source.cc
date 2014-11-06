@@ -111,6 +111,8 @@ KeySource::TrackType KeySource::GetTrackTypeFromString(
     return TRACK_TYPE_HD;
   if (track_type_string == "AUDIO")
     return TRACK_TYPE_AUDIO;
+  if (track_type_string == "UNSPECIFIED")
+    return TRACK_TYPE_UNSPECIFIED;
   LOG(WARNING) << "Unexpected track type: " << track_type_string;
   return TRACK_TYPE_UNKNOWN;
 }

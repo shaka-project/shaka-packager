@@ -33,7 +33,8 @@ class KeySource {
     TRACK_TYPE_SD = 1,
     TRACK_TYPE_HD = 2,
     TRACK_TYPE_AUDIO = 3,
-    NUM_VALID_TRACK_TYPES = 3
+    TRACK_TYPE_UNSPECIFIED = 4,
+    NUM_VALID_TRACK_TYPES = 4
   };
 
   virtual ~KeySource();

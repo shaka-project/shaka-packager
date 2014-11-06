@@ -459,9 +459,9 @@ bool WidevineKeySource::ExtractEncryptionKey(
 
   const base::ListValue* tracks;
   RCHECK(license_dict->GetList("tracks", &tracks));
-  RCHECK(enable_key_rotation
-             ? tracks->GetSize() >= NUM_VALID_TRACK_TYPES * crypto_period_count_
-             : tracks->GetSize() >= NUM_VALID_TRACK_TYPES);
+  // Should have at least one track per crypto_period.
+  RCHECK(enable_key_rotation ? tracks->GetSize() >= 1 * crypto_period_count_
+                             : tracks->GetSize() >= 1);
 
   int current_crypto_period_index = first_crypto_period_index_;
 
