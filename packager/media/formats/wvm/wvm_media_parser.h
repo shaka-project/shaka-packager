@@ -236,6 +236,7 @@ class WvmMediaParser : public MediaParser {
   uint64_t dts_;
   uint8_t index_program_id_;
   scoped_refptr<MediaSample> media_sample_;
+  uint32_t crypto_unit_start_pos_;
   PrevSampleData prev_media_sample_data_;
   H264ByteToUnitStreamConverter byte_to_unit_stream_converter_;
 

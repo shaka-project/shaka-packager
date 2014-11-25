@@ -82,26 +82,28 @@ namespace edash_packager {
 namespace media {
 namespace wvm {
 
-WvmMediaParser::WvmMediaParser() : is_initialized_(false),
-                                   parse_state_(StartCode1),
-                                   is_psm_needed_(true),
-                                   skip_bytes_(0),
-                                   metadata_is_complete_(false),
-                                   current_program_id_(0),
-                                   pes_stream_id_(0),
-                                   prev_pes_stream_id_(0),
-                                   pes_packet_bytes_(0),
-                                   pes_flags_1_(0),
-                                   pes_flags_2_(0),
-                                   prev_pes_flags_1_(0),
-                                   pes_header_data_bytes_(0),
-                                   timestamp_(0),
-                                   pts_(0),
-                                   dts_(0),
-                                   index_program_id_(0),
-                                   media_sample_(NULL),
-                                   stream_id_count_(0),
-                                   decryption_key_source_(NULL) {
+WvmMediaParser::WvmMediaParser()
+    : is_initialized_(false),
+      parse_state_(StartCode1),
+      is_psm_needed_(true),
+      skip_bytes_(0),
+      metadata_is_complete_(false),
+      current_program_id_(0),
+      pes_stream_id_(0),
+      prev_pes_stream_id_(0),
+      pes_packet_bytes_(0),
+      pes_flags_1_(0),
+      pes_flags_2_(0),
+      prev_pes_flags_1_(0),
+      pes_header_data_bytes_(0),
+      timestamp_(0),
+      pts_(0),
+      dts_(0),
+      index_program_id_(0),
+      media_sample_(NULL),
+      crypto_unit_start_pos_(0),
+      stream_id_count_(0),
+      decryption_key_source_(NULL) {
 }
 
 WvmMediaParser::~WvmMediaParser() {}
@@ -725,9 +727,19 @@ bool WvmMediaParser::ParseIndexEntry() {
 }
 
 bool WvmMediaParser::DemuxNextPes(uint8_t* read_ptr, bool is_program_end) {
+  if (!sample_data_.empty() && (prev_pes_flags_1_ & kScramblingBitsMask)) {
+    // Decrypt crypto unit.
+    if (!content_decryptor_) {
+      LOG(ERROR) << "Source content is encrypted, but decryption not enabled";
+      return false;
+    }
+    content_decryptor_->Decrypt(&sample_data_[crypto_unit_start_pos_],
+                                sample_data_.size() - crypto_unit_start_pos_,
+                                &sample_data_[crypto_unit_start_pos_]);
+  }
   // Demux media sample if we are at program end or if we are not at a
   // continuation PES.
-  if (is_program_end || (pes_flags_2_ & kPesOptPts)) {
+  if ((pes_flags_2_ & kPesOptPts) || is_program_end) {
     if (!sample_data_.empty()) {
       if (!Output()) {
         return false;
@@ -735,6 +747,8 @@ bool WvmMediaParser::DemuxNextPes(uint8_t* read_ptr, bool is_program_end) {
     }
     StartMediaSampleDemux(read_ptr);
   }
+
+  crypto_unit_start_pos_ = sample_data_.size();
   return true;
 }
 
@@ -749,14 +763,6 @@ void WvmMediaParser::StartMediaSampleDemux(uint8_t* read_ptr) {
 }
 
 bool WvmMediaParser::Output() {
-  // Check decrypted sample data.
-  if (prev_pes_flags_1_ & kScramblingBitsMask) {
-    if (!content_decryptor_) {
-      LOG(ERROR) << "Source content is encrypted, but decryption not enabled";
-      return false;
-    }
-    content_decryptor_->Decrypt(sample_data_, &sample_data_);
-  }
   if ((prev_pes_stream_id_ & kPesStreamIdVideoMask) == kPesStreamIdVideo) {
     // Set data on the video stream from the NalUnitStream.
     std::vector<uint8_t> nal_unit_stream;
