@@ -429,8 +429,6 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
             if (!ParseIndexEntry()) {
               return false;
             }
-            index_program_id_++;
-            index_data_.clear();
           }
         }
         read_ptr += num_bytes;
@@ -553,7 +551,8 @@ bool WvmMediaParser::ParseIndexEntry() {
   if (version == kVersion4) {
     index_size = kIndexVersion4HeaderSize + ntohlFromBuffer(read_ptr_index);
     if (index_data_.size() < index_size) {
-      return false;
+      // We do not yet have the full index. Keep accumulating index data.
+      return true;
     }
     read_ptr_index += sizeof(uint32_t);
 
@@ -722,7 +721,10 @@ bool WvmMediaParser::ParseIndexEntry() {
                                base::UintToString(audio_pes_stream_id)] =
          stream_id_count_++;
    }
- }
+  }
+
+  index_program_id_++;
+  index_data_.clear();
   return true;
 }
 
