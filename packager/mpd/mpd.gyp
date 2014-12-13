@@ -40,6 +40,7 @@
         'base/mpd_builder.cc',
         'base/mpd_builder.h',
         'base/mpd_notifier.h',
+        'base/mpd_options.h',
         'base/mpd_utils.cc',
         'base/mpd_utils.h',
         'base/segment_info.h',

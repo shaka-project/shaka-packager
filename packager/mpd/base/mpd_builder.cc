@@ -183,16 +183,6 @@ bool WriteXmlCharArrayToOutput(xmlChar* doc,
 
 }  // namespace
 
-MpdOptions::MpdOptions()
-    : availability_time_offset(0),
-      minimum_update_period(0),
-      // TODO(tinskip): Set min_buffer_time in unit tests rather than here.
-      min_buffer_time(2.0),
-      time_shift_buffer_depth(0),
-      suggested_presentation_delay(0) {}
-
-MpdOptions::~MpdOptions() {}
-
 MpdBuilder::MpdBuilder(MpdType type, const MpdOptions& mpd_options)
     : type_(type),
       mpd_options_(mpd_options),

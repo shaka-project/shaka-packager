@@ -64,6 +64,7 @@ void BufferWriter::AppendBuffer(const BufferWriter& buffer) {
 
 Status BufferWriter::WriteToFile(File* file) {
   DCHECK(file);
+  DCHECK(!buf_.empty());
 
   size_t remaining_size = buf_.size();
   const uint8_t* buf = &buf_[0];

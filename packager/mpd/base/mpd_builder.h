@@ -22,6 +22,7 @@
 #include "packager/mpd/base/bandwidth_estimator.h"
 #include "packager/mpd/base/content_protection_element.h"
 #include "packager/mpd/base/media_info.pb.h"
+#include "packager/mpd/base/mpd_options.h"
 #include "packager/mpd/base/mpd_utils.h"
 #include "packager/mpd/base/segment_info.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
@@ -44,17 +45,6 @@ class XmlNode;
 class RepresentationXmlNode;
 
 }  // namespace xml
-
-struct MpdOptions {
-  MpdOptions();
-  ~MpdOptions();
-
-  double availability_time_offset;
-  double minimum_update_period;
-  double min_buffer_time;
-  double time_shift_buffer_depth;
-  double suggested_presentation_delay;
-};
 
 /// This class generates DASH MPDs (Media Presentation Descriptions).
 class MpdBuilder {
