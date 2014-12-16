@@ -82,6 +82,14 @@ class MpdBuilder {
   /// @return The mpd type.
   MpdType type() { return type_; }
 
+  /// Adjusts the fields of MediaInfo so that paths are relative to the
+  /// specified MPD path.
+  /// @param mpd_path is the file path of the MPD file.
+  /// @param media_info is the MediaInfo object to be updated with relative
+  ///        paths.
+  static void MakePathsRelativeToMpd(const std::string& mpd_path,
+                                     MediaInfo* media_info);
+
  private:
   // DynamicMpdBuilderTest needs to set availabilityStartTime so that the test
   // doesn't need to depend on current time.

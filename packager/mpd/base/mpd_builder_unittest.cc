@@ -21,6 +21,8 @@
 
 namespace edash_packager {
 
+using base::FilePath;
+
 namespace {
 const char kSElementTemplate[] =
     "<S t=\"%" PRIu64 "\" d=\"%" PRIu64 "\" r=\"%" PRIu64 "\"/>\n";
@@ -814,6 +816,53 @@ TEST_F(TimeShiftBufferDepthTest, ManySegments) {
       expected_s_element,
       kTimeShiftBufferDepth,
       kDefaultStartNumber + kExpectedRemovedSegments));
+}
+
+TEST(RelativePaths, PathsModified) {
+  const std::string kCommonPath(FilePath("foo").Append("bar").value());
+  const std::string kMediaFileBase("media.mp4");
+  const std::string kInitSegmentBase("init.mp4");
+  const std::string kSegmentTemplateBase("segment-$Number$.mp4");
+  const std::string kMediaFile(
+      FilePath(kCommonPath).Append(kMediaFileBase).value());
+  const std::string kInitSegment(
+      FilePath(kCommonPath).Append(kInitSegmentBase).value());
+  const std::string kSegmentTemplate(
+      FilePath(kCommonPath).Append(kSegmentTemplateBase).value());
+  const std::string kMpd(FilePath(kCommonPath).Append("media.mpd").value());
+  MediaInfo media_info;
+
+  media_info.set_media_file_name(kMediaFile);
+  media_info.set_init_segment_name(kInitSegment);
+  media_info.set_segment_template(kSegmentTemplate);
+  MpdBuilder::MakePathsRelativeToMpd(kMpd, &media_info);
+  EXPECT_EQ(kMediaFileBase, media_info.media_file_name());
+  EXPECT_EQ(kInitSegmentBase, media_info.init_segment_name());
+  EXPECT_EQ(kSegmentTemplateBase, media_info.segment_template());
+}
+
+TEST(RelativePaths, PathsNotModified) {
+  const std::string kMediaCommon(FilePath("foo").Append("bar").value());
+  const std::string kMediaFileBase("media.mp4");
+  const std::string kInitSegmentBase("init.mp4");
+  const std::string kSegmentTemplateBase("segment-$Number$.mp4");
+  const std::string kMediaFile(
+      FilePath(kMediaCommon).Append(kMediaFileBase).value());
+  const std::string kInitSegment(
+      FilePath(kMediaCommon).Append(kInitSegmentBase).value());
+  const std::string kSegmentTemplate(
+      FilePath(kMediaCommon).Append(kSegmentTemplateBase).value());
+  const std::string kMpd(
+      FilePath("foo").Append("baz").Append("media.mpd").value());
+  MediaInfo media_info;
+
+  media_info.set_media_file_name(kMediaFile);
+  media_info.set_init_segment_name(kInitSegment);
+  media_info.set_segment_template(kSegmentTemplate);
+  MpdBuilder::MakePathsRelativeToMpd(kMpd, &media_info);
+  EXPECT_EQ(kMediaFile, media_info.media_file_name());
+  EXPECT_EQ(kInitSegment, media_info.init_segment_name());
+  EXPECT_EQ(kSegmentTemplate, media_info.segment_template());
 }
 
 }  // namespace edash_packager

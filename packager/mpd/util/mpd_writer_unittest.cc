@@ -19,7 +19,7 @@ TEST(MpdWriterTest, VideoMediaInfo) {
   MpdWriter mpd_writer;
   base::FilePath media_info_file = GetTestDataFilePath(kFileNameVideoMediaInfo1);
 
-  ASSERT_TRUE(mpd_writer.AddFile(media_info_file.value().c_str()));
+  ASSERT_TRUE(mpd_writer.AddFile(media_info_file.value().c_str(), ""));
   std::string generated_mpd;
   ASSERT_TRUE(mpd_writer.WriteMpdToString(&generated_mpd));
   ASSERT_TRUE(ValidateMpdSchema(generated_mpd));
@@ -36,8 +36,8 @@ TEST(MpdWriterTest, TwoVideoMediaInfo) {
   base::FilePath media_info_file2 =
       GetTestDataFilePath(kFileNameVideoMediaInfo2);
 
-  ASSERT_TRUE(mpd_writer.AddFile(media_info_file1.value().c_str()));
-  ASSERT_TRUE(mpd_writer.AddFile(media_info_file2.value().c_str()));
+  ASSERT_TRUE(mpd_writer.AddFile(media_info_file1.value().c_str(), ""));
+  ASSERT_TRUE(mpd_writer.AddFile(media_info_file2.value().c_str(), ""));
 
   std::string generated_mpd;
   ASSERT_TRUE(mpd_writer.WriteMpdToString(&generated_mpd));
@@ -52,7 +52,7 @@ TEST(MpdWriterTest, AudioMediaInfo) {
   MpdWriter mpd_writer;
   base::FilePath media_info_file = GetTestDataFilePath(kFileNameAudioMediaInfo1);
 
-  ASSERT_TRUE(mpd_writer.AddFile(media_info_file.value().c_str()));
+  ASSERT_TRUE(mpd_writer.AddFile(media_info_file.value().c_str(), ""));
   std::string generated_mpd;
   ASSERT_TRUE(mpd_writer.WriteMpdToString(&generated_mpd));
   ASSERT_TRUE(ValidateMpdSchema(generated_mpd));
@@ -69,8 +69,8 @@ TEST(MpdWriterTest, VideoAudioMediaInfo) {
   base::FilePath video_media_info =
       GetTestDataFilePath(kFileNameVideoMediaInfo1);
 
-  ASSERT_TRUE(mpd_writer.AddFile(audio_media_info.value().c_str()));
-  ASSERT_TRUE(mpd_writer.AddFile(video_media_info.value().c_str()));
+  ASSERT_TRUE(mpd_writer.AddFile(audio_media_info.value().c_str(), ""));
+  ASSERT_TRUE(mpd_writer.AddFile(video_media_info.value().c_str(), ""));
 
   std::string generated_mpd;
   ASSERT_TRUE(mpd_writer.WriteMpdToString(&generated_mpd));
@@ -86,7 +86,8 @@ TEST(MpdWriterTest, EncryptedAudioMediaInfo) {
   base::FilePath encrypted_audio_media_info =
       GetTestDataFilePath(kFileNameEncytpedAudioMediaInfo);
 
-  ASSERT_TRUE(mpd_writer.AddFile(encrypted_audio_media_info.value().c_str()));
+  ASSERT_TRUE(mpd_writer.AddFile(encrypted_audio_media_info.value().c_str(),
+                                 ""));
 
   std::string generated_mpd;
   ASSERT_TRUE(mpd_writer.WriteMpdToString(&generated_mpd));

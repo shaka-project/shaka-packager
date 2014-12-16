@@ -63,7 +63,7 @@ ExitStatus RunMpdGenerator() {
     mpd_writer.AddBaseUrl(*it);
 
   for (Iterator it = input_files.begin(); it != input_files.end(); ++it) {
-    if (!mpd_writer.AddFile(it->c_str())) {
+    if (!mpd_writer.AddFile(it->c_str(), FLAGS_output)) {
       LOG(WARNING) << "MpdWriter failed to read " << *it << ", skipping.";
     }
   }

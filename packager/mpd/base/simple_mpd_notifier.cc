@@ -53,8 +53,10 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
     *adaptation_set = mpd_builder_->AddAdaptationSet();
 
   DCHECK(*adaptation_set);
+  MediaInfo adjusted_media_info(media_info);
+  MpdBuilder::MakePathsRelativeToMpd(output_path_, &adjusted_media_info);
   Representation* representation =
-      (*adaptation_set)->AddRepresentation(media_info);
+      (*adaptation_set)->AddRepresentation(adjusted_media_info);
   if (representation == NULL)
     return false;
 

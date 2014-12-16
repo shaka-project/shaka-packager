@@ -125,12 +125,12 @@ bool SetMediaInfosToMpdBuilder(const std::list<MediaInfo>& media_infos,
 MpdWriter::MpdWriter() {}
 MpdWriter::~MpdWriter() {}
 
-bool MpdWriter::AddFile(const char* file_name) {
-  CHECK(file_name);
-
+bool MpdWriter::AddFile(const std::string& media_info_path,
+                        const std::string& mpd_path) {
   std::string file_content;
-  if (!media::File::ReadFileToString(file_name, &file_content)) {
-    LOG(ERROR) << "Failed to read " << file_name << " to string.";
+  if (!media::File::ReadFileToString(media_info_path.c_str(),
+                                     &file_content)) {
+    LOG(ERROR) << "Failed to read " << media_info_path << " to string.";
     return false;
   }
 
@@ -141,6 +141,7 @@ bool MpdWriter::AddFile(const char* file_name) {
     return false;
   }
 
+  MpdBuilder::MakePathsRelativeToMpd(mpd_path, &media_info);
   media_infos_.push_back(media_info);
   return true;
 }

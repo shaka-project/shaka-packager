@@ -13,6 +13,7 @@
 #include <list>
 #include <string>
 
+#include "packager/base/files/file_path.h"
 #include "packager/base/logging.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/strings/string_number_conversions.h"
@@ -25,6 +26,7 @@
 
 namespace edash_packager {
 
+using base::FilePath;
 using xml::XmlNode;
 using xml::RepresentationXmlNode;
 using xml::AdaptationSetXmlNode;
@@ -179,6 +181,10 @@ bool WriteXmlCharArrayToOutput(xmlChar* doc,
     return false;
 
   return output->Flush();
+}
+
+std::string MakePathRelative(const std::string& path, const std::string& mpd_dir) {
+  return (path.find(mpd_dir) == 0) ? path.substr(mpd_dir.size()) : path;
 }
 
 }  // namespace
@@ -411,6 +417,33 @@ bool MpdBuilder::GetEarliestTimestamp(double* timestamp_seconds) {
 
   *timestamp_seconds = earliest_timestamp;
   return true;
+}
+
+void MpdBuilder::MakePathsRelativeToMpd(const std::string& mpd_path,
+                                        MediaInfo* media_info) {
+  DCHECK(media_info);
+  const std::string kFileProtocol("file://");
+  std::string mpd_file_path = (mpd_path.find(kFileProtocol) == 0) ?
+      mpd_path.substr(kFileProtocol.size()) : mpd_path;
+
+  if (!mpd_file_path.empty()) {
+    std::string mpd_dir(
+        FilePath(mpd_file_path).DirName().AsEndingWithSeparator().value());
+    if (!mpd_dir.empty()) {
+      if (media_info->has_media_file_name()) {
+        media_info->set_media_file_name(
+            MakePathRelative(media_info->media_file_name(), mpd_dir));
+      }
+      if (media_info->has_init_segment_name()) {
+        media_info->set_init_segment_name(
+            MakePathRelative(media_info->init_segment_name(), mpd_dir));
+      }
+      if (media_info->has_segment_template()) {
+        media_info->set_segment_template(
+            MakePathRelative(media_info->segment_template(), mpd_dir));
+      }
+    }
+  }
 }
 
 AdaptationSet::AdaptationSet(uint32_t adaptation_set_id,

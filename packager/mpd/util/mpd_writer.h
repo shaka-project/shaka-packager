@@ -36,12 +36,13 @@ class MpdWriter {
   MpdWriter();
   ~MpdWriter();
 
-  // Add |file_name| for MPD generation. |file_name| should not be NULL.
-  // The content of |media_info_file| should be a string representation of
+  // Add |media_info_path| for MPD generation.
+  // The content of |media_info_path| should be a string representation of
   // MediaInfo, i.e. the content should be a result of using
   // google::protobuf::TestFormat::Print*() methods.
   // If necessary, this method can be called after WriteMpd*() methods.
-  bool AddFile(const char* file_name);
+  bool AddFile(const std::string& media_info_path,
+               const std::string& mpd_path);
 
   // |base_url| will be used for <BaseURL> element for the MPD. The BaseURL
   // element will be a direct child element of the <MPD> element.
