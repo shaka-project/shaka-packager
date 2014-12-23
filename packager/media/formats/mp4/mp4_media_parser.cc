@@ -399,9 +399,16 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
     return !*err;
   }
 
-  queue_.PeekAt(runs_->sample_offset() + moof_head_, &buf, &buf_size);
-  if (buf_size < runs_->sample_size())
+  int64_t sample_offset = runs_->sample_offset() + moof_head_;
+  queue_.PeekAt(sample_offset, &buf, &buf_size);
+  if (buf_size < runs_->sample_size()) {
+    if (sample_offset < queue_.head()) {
+      LOG(ERROR) << "Incorrect sample offset " << sample_offset
+                 << " < " << queue_.head();
+      *err = true;
+    }
     return false;
+  }
 
   scoped_refptr<MediaSample> stream_sample(MediaSample::CopyFrom(
       buf, runs_->sample_size(), runs_->is_keyframe()));
