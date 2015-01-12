@@ -19,7 +19,11 @@ MediaSample::MediaSample(const uint8_t* data,
                          const uint8_t* side_data,
                          size_t side_data_size,
                          bool is_key_frame)
-    : dts_(0), pts_(0), duration_(0), is_key_frame_(is_key_frame) {
+    : dts_(0),
+      pts_(0),
+      duration_(0),
+      is_key_frame_(is_key_frame),
+      is_encrypted_(false) {
   if (!data) {
     CHECK_EQ(size, 0u);
     CHECK(!side_data);
@@ -31,9 +35,11 @@ MediaSample::MediaSample(const uint8_t* data,
     side_data_.assign(side_data, side_data + side_data_size);
 }
 
-MediaSample::MediaSample() : dts_(0), pts_(0),
+MediaSample::MediaSample() : dts_(0),
+                             pts_(0),
                              duration_(0),
-                             is_key_frame_(false) {}
+                             is_key_frame_(false),
+                             is_encrypted_(false) {}
 
 MediaSample::~MediaSample() {}
 

@@ -83,6 +83,10 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
     return is_key_frame_;
   }
 
+  bool is_encrypted() const {
+    DCHECK(!end_of_stream());
+    return is_encrypted_;
+  }
   const uint8_t* data() const {
     DCHECK(!end_of_stream());
     return &data_[0];
@@ -116,6 +120,10 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
     is_key_frame_ = value;
   }
 
+  void set_is_encrypted(bool value) {
+    is_encrypted_ = value;
+  }
+
   // If there's no data in this buffer, it represents end of stream.
   bool end_of_stream() const { return data_.size() == 0; }
 
@@ -142,6 +150,8 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   int64_t pts_;
   int64_t duration_;
   bool is_key_frame_;
+  // is sample encrypted ?
+  bool is_encrypted_;
 
   // Main buffer data.
   std::vector<uint8_t> data_;

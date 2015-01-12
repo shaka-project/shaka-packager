@@ -28,6 +28,7 @@ const char kWvmFile[] = "hb2_4stream_encrypted.wvm";
 const uint32_t kExpectedStreams = 4;
 const int kExpectedVideoFrameCount = 6665;
 const int kExpectedAudioFrameCount = 11964;
+const int kExpectedEncryptedSampleCount = 17287;
 const uint8_t kExpectedAssetKey[] =
     "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc";
 const uint8_t k64ByteAssetKey[] =
@@ -66,6 +67,7 @@ class WvmMediaParserTest : public testing::Test {
   WvmMediaParserTest()
       : audio_frame_count_(0),
         video_frame_count_(0),
+        encrypted_sample_count_(0),
         video_max_dts_(kNoTimestamp),
         current_track_id_(-1) {
     parser_.reset(new WvmMediaParser());
@@ -82,6 +84,7 @@ class WvmMediaParserTest : public testing::Test {
   StreamMap stream_map_;
   int audio_frame_count_;
   int video_frame_count_;
+  int encrypted_sample_count_;
   int64_t video_max_dts_;
   uint32_t current_track_id_;
   EncryptionKey encryption_key_;
@@ -128,6 +131,9 @@ class WvmMediaParserTest : public testing::Test {
       }
     }
 
+    if (sample->is_encrypted()) {
+      ++encrypted_sample_count_;
+    }
     return true;
   }
 
@@ -149,12 +155,14 @@ class WvmMediaParserTest : public testing::Test {
 };
 
 TEST_F(WvmMediaParserTest, ParseWvmWithoutKeySource) {
-  // Parsing should fail but it will get the streams successfully.
   key_source_.reset();
   InitializeParser();
   std::vector<uint8_t> buffer = ReadTestDataFile(kWvmFile);
-  EXPECT_FALSE(parser_->Parse(buffer.data(), buffer.size()));
+  EXPECT_TRUE(parser_->Parse(buffer.data(), buffer.size()));
   EXPECT_EQ(kExpectedStreams, stream_map_.size());
+  EXPECT_EQ(kExpectedVideoFrameCount, video_frame_count_);
+  EXPECT_EQ(kExpectedAudioFrameCount, audio_frame_count_);
+  EXPECT_EQ(kExpectedEncryptedSampleCount, encrypted_sample_count_);
 }
 
 TEST_F(WvmMediaParserTest, ParseWvmInitWithoutKeySource) {
@@ -173,6 +181,7 @@ TEST_F(WvmMediaParserTest, ParseWvm) {
   EXPECT_EQ(kExpectedStreams, stream_map_.size());
   EXPECT_EQ(kExpectedVideoFrameCount, video_frame_count_);
   EXPECT_EQ(kExpectedAudioFrameCount, audio_frame_count_);
+  EXPECT_EQ(0, encrypted_sample_count_);
 }
 
 TEST_F(WvmMediaParserTest, ParseWvmWith64ByteAssetKey) {

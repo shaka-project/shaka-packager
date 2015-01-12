@@ -373,7 +373,7 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
             parse_state_ = IndexPayload;
             continue;
           default:
-            if (!DemuxNextPes(read_ptr, false)) {
+            if (!DemuxNextPes(false)) {
               return false;
             }
             parse_state_ = EsPayload;
@@ -460,7 +460,7 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
       case ProgramEnd:
         parse_state_ = StartCode1;
         metadata_is_complete_ = true;
-        if (!DemuxNextPes(read_ptr, true)) {
+        if (!DemuxNextPes(true)) {
           return false;
         }
         Flush();
@@ -728,33 +728,34 @@ bool WvmMediaParser::ParseIndexEntry() {
   return true;
 }
 
-bool WvmMediaParser::DemuxNextPes(uint8_t* read_ptr, bool is_program_end) {
+bool WvmMediaParser::DemuxNextPes(bool is_program_end) {
+  bool output_encrypted_sample = false;
   if (!sample_data_.empty() && (prev_pes_flags_1_ & kScramblingBitsMask)) {
     // Decrypt crypto unit.
     if (!content_decryptor_) {
-      LOG(ERROR) << "Source content is encrypted, but decryption not enabled";
-      return false;
+      output_encrypted_sample = true;
+    } else {
+      content_decryptor_->Decrypt(&sample_data_[crypto_unit_start_pos_],
+                                  sample_data_.size() - crypto_unit_start_pos_,
+                                  &sample_data_[crypto_unit_start_pos_]);
     }
-    content_decryptor_->Decrypt(&sample_data_[crypto_unit_start_pos_],
-                                sample_data_.size() - crypto_unit_start_pos_,
-                                &sample_data_[crypto_unit_start_pos_]);
   }
   // Demux media sample if we are at program end or if we are not at a
   // continuation PES.
   if ((pes_flags_2_ & kPesOptPts) || is_program_end) {
     if (!sample_data_.empty()) {
-      if (!Output()) {
+      if (!Output(output_encrypted_sample)) {
         return false;
       }
     }
-    StartMediaSampleDemux(read_ptr);
+    StartMediaSampleDemux();
   }
 
   crypto_unit_start_pos_ = sample_data_.size();
   return true;
 }
 
-void WvmMediaParser::StartMediaSampleDemux(uint8_t* read_ptr) {
+void WvmMediaParser::StartMediaSampleDemux() {
   bool is_key_frame = ((pes_flags_1_ & kPesOptAlign) != 0);
   media_sample_ = MediaSample::CreateEmptyMediaSample();
   media_sample_->set_dts(dts_);
@@ -764,64 +765,69 @@ void WvmMediaParser::StartMediaSampleDemux(uint8_t* read_ptr) {
   sample_data_.clear();
 }
 
-bool WvmMediaParser::Output() {
-  if ((prev_pes_stream_id_ & kPesStreamIdVideoMask) == kPesStreamIdVideo) {
-    // Set data on the video stream from the NalUnitStream.
-    std::vector<uint8_t> nal_unit_stream;
-    if (!byte_to_unit_stream_converter_.ConvertByteStreamToNalUnitStream(
-            &sample_data_[0], sample_data_.size(), &nal_unit_stream)) {
-      LOG(ERROR) << "Could not convert h.264 byte stream sample";
-      return false;
-    }
-    media_sample_->set_data(nal_unit_stream.data(), nal_unit_stream.size());
-    if (!is_initialized_) {
-      // Set extra data for video stream from AVC Decoder Config Record.
-      // Also, set codec string from the AVC Decoder Config Record.
-      std::vector<uint8_t> decoder_config_record;
-      byte_to_unit_stream_converter_.GetAVCDecoderConfigurationRecord(
-          &decoder_config_record);
-      for (uint32_t i = 0; i < stream_infos_.size(); i++) {
-        if (stream_infos_[i]->stream_type() == media::kStreamVideo &&
-            stream_infos_[i]->extra_data().empty()) {
-          stream_infos_[i]->set_extra_data(decoder_config_record);
-          stream_infos_[i]->set_codec_string(VideoStreamInfo::GetCodecString(
-              kCodecH264, decoder_config_record[1], decoder_config_record[2],
-              decoder_config_record[3]));
+bool WvmMediaParser::Output(bool output_encrypted_sample) {
+  if (output_encrypted_sample) {
+    media_sample_->set_data(&sample_data_[0], sample_data_.size());
+    media_sample_->set_is_encrypted(true);
+  } else {
+    if ((prev_pes_stream_id_ & kPesStreamIdVideoMask) == kPesStreamIdVideo) {
+      // Set data on the video stream from the NalUnitStream.
+      std::vector<uint8_t> nal_unit_stream;
+      if (!byte_to_unit_stream_converter_.ConvertByteStreamToNalUnitStream(
+              &sample_data_[0], sample_data_.size(), &nal_unit_stream)) {
+        LOG(ERROR) << "Could not convert h.264 byte stream sample";
+        return false;
+      }
+      media_sample_->set_data(nal_unit_stream.data(), nal_unit_stream.size());
+      if (!is_initialized_) {
+        // Set extra data for video stream from AVC Decoder Config Record.
+        // Also, set codec string from the AVC Decoder Config Record.
+        std::vector<uint8_t> decoder_config_record;
+        byte_to_unit_stream_converter_.GetAVCDecoderConfigurationRecord(
+            &decoder_config_record);
+        for (uint32_t i = 0; i < stream_infos_.size(); i++) {
+          if (stream_infos_[i]->stream_type() == media::kStreamVideo &&
+              stream_infos_[i]->extra_data().empty()) {
+            stream_infos_[i]->set_extra_data(decoder_config_record);
+            stream_infos_[i]->set_codec_string(VideoStreamInfo::GetCodecString(
+                kCodecH264, decoder_config_record[1], decoder_config_record[2],
+                decoder_config_record[3]));
+          }
         }
       }
-    }
-  } else if ((prev_pes_stream_id_ & kPesStreamIdAudioMask) ==
-      kPesStreamIdAudio) {
-    // Set data on the audio stream from AdtsHeader.
-    int frame_size = media::mp2t::AdtsHeader::GetAdtsFrameSize(
-        &sample_data_[0], kAdtsHeaderMinSize);
-    media::mp2t::AdtsHeader adts_header;
-    const uint8_t* frame_ptr = &sample_data_[0];
-    std::vector<uint8_t> extra_data;
-    if (!adts_header.Parse(frame_ptr, frame_size) ||
-        !adts_header.GetAudioSpecificConfig(&extra_data)) {
-      LOG(ERROR) << "Could not parse ADTS header";
-      return false;
-    }
-    size_t header_size = adts_header.GetAdtsHeaderSize(frame_ptr,
-                                                       frame_size);
-    media_sample_->set_data(frame_ptr + header_size,
-                            frame_size - header_size);
-    if (!is_initialized_) {
-      for (uint32_t i = 0; i < stream_infos_.size(); i++) {
-        if (stream_infos_[i]->stream_type() == media::kStreamAudio &&
-            stream_infos_[i]->extra_data().empty()) {
-          // Set AudioStreamInfo fields using information from the ADTS
-          // header.
-          AudioStreamInfo* audio_stream_info =
-              reinterpret_cast<AudioStreamInfo*>(
-                  stream_infos_[i].get());
-          audio_stream_info->set_sampling_frequency(
-              adts_header.GetSamplingFrequency());
-          audio_stream_info->set_extra_data(extra_data);
-          audio_stream_info->set_codec_string(
-              AudioStreamInfo::GetCodecString(
-                  kCodecAAC, adts_header.GetObjectType()));
+    } else if ((prev_pes_stream_id_ & kPesStreamIdAudioMask) ==
+        kPesStreamIdAudio) {
+      // Set data on the audio stream from AdtsHeader.
+      int frame_size = media::mp2t::AdtsHeader::GetAdtsFrameSize(
+          &sample_data_[0], kAdtsHeaderMinSize);
+      media::mp2t::AdtsHeader adts_header;
+      const uint8_t* frame_ptr = &sample_data_[0];
+      std::vector<uint8_t> extra_data;
+      if (!adts_header.Parse(frame_ptr, frame_size) ||
+          !adts_header.GetAudioSpecificConfig(&extra_data)) {
+        LOG(ERROR) << "Could not parse ADTS header";
+        return false;
+      }
+      size_t header_size = adts_header.GetAdtsHeaderSize(frame_ptr,
+                                                         frame_size);
+      media_sample_->set_data(frame_ptr + header_size,
+                              frame_size - header_size);
+      if (!is_initialized_) {
+        for (uint32_t i = 0; i < stream_infos_.size(); i++) {
+          if (stream_infos_[i]->stream_type() == media::kStreamAudio &&
+              stream_infos_[i]->extra_data().empty()) {
+            // Set AudioStreamInfo fields using information from the ADTS
+            // header.
+            AudioStreamInfo* audio_stream_info =
+                reinterpret_cast<AudioStreamInfo*>(
+                    stream_infos_[i].get());
+            audio_stream_info->set_sampling_frequency(
+                adts_header.GetSamplingFrequency());
+            audio_stream_info->set_extra_data(extra_data);
+            audio_stream_info->set_codec_string(
+                AudioStreamInfo::GetCodecString(
+                    kCodecAAC, adts_header.GetObjectType()));
+          }
         }
       }
     }

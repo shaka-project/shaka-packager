@@ -91,6 +91,9 @@ Status Muxer::AddSample(const MediaStream* stream,
     // to Muxer. In this case, there should be only one stream in Muxer.
     DCHECK_EQ(1u, streams_.size());
     return Finalize();
+  } else if (sample->is_encrypted()) {
+    LOG(ERROR) << "Unable to multiplex encrypted media sample";
+    return Status(error::INTERNAL_ERROR, "Encrypted media sample.");
   }
   return DoAddSample(stream, sample);
 }

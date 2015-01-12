@@ -164,9 +164,9 @@ class WvmMediaParser : public MediaParser {
   // Index denotes 'search index' in the WVM content.
   bool ParseIndexEntry();
 
-  bool DemuxNextPes(uint8_t* start, bool is_program_end);
+  bool DemuxNextPes(bool is_program_end);
 
-  void StartMediaSampleDemux(uint8_t* start);
+  void StartMediaSampleDemux();
 
   template <typename T>
   Tag GetTag(const uint8_t& tag,
@@ -195,7 +195,9 @@ class WvmMediaParser : public MediaParser {
     return Tag(tag);
   }
 
-  bool Output();
+  // |must_process_encrypted| setting determines if Output() should attempt
+  // to ouput media sample as encrypted.
+  bool Output(bool must_process_encrypted);
 
   bool GetAssetKey(const uint32_t asset_id, EncryptionKey* encryption_key);
 
