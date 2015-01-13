@@ -83,7 +83,6 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(bool has_init_range,
 void VodMediaInfoDumpMuxerListener::OnNewSegment(uint64_t start_time,
                                                  uint64_t duration,
                                                  uint64_t segment_file_size) {
-  NOTIMPLEMENTED();
 }
 
 bool VodMediaInfoDumpMuxerListener::SerializeMediaInfoToFile() {
