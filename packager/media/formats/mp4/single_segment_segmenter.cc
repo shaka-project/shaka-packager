@@ -10,6 +10,7 @@
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
+#include "packager/media/event/muxer_listener.h"
 #include "packager/media/file/file.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 
@@ -168,7 +169,14 @@ Status SingleSegmentSegmenter::DoFinalizeSegment() {
   vod_sidx_->references.push_back(vod_ref);
 
   // Append fragment buffer to temp file.
-  return fragment_buffer()->WriteToFile(temp_file_.get());
+  size_t segment_size = fragment_buffer()->Size();
+  Status status = fragment_buffer()->WriteToFile(temp_file_.get());
+  if (!status.ok()) return status;
+  if (muxer_listener()) {
+    muxer_listener()->OnNewSegment(vod_ref.earliest_presentation_time,
+                                   vod_ref.subsegment_duration, segment_size);
+  }
+  return Status::OK;
 }
 
 }  // namespace mp4
