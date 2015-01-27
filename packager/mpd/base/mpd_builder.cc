@@ -690,25 +690,20 @@ bool Representation::HasRequiredMediaInfoFields() {
   return true;
 }
 
-// In Debug builds, some of the irregular cases crash. It is probably a
-// programming error but in production, it might not be best to stop the
-// pipeline, especially for live.
 bool Representation::IsContiguous(uint64_t start_time,
                                   uint64_t duration,
                                   uint64_t size) const {
-  if (segment_infos_.empty() || segment_infos_.back().duration != duration)
+  if (segment_infos_.empty())
     return false;
 
   // Contiguous segment.
   const SegmentInfo& previous = segment_infos_.back();
   const uint64_t previous_segment_end_time =
       previous.start_time + previous.duration * (previous.repeat + 1);
-  if (previous_segment_end_time == start_time)
+  if (previous_segment_end_time == start_time &&
+      segment_infos_.back().duration == duration) {
     return true;
-
-  // A gap since previous.
-  if (previous_segment_end_time < start_time)
-    return false;
+  }
 
   // No out of order segments.
   const uint64_t previous_segment_start_time =
@@ -718,22 +713,31 @@ bool Representation::IsContiguous(uint64_t start_time,
                   "with start_time == " << start_time
                << " but the previous segment starts at " << previous.start_time
                << ".";
-    DCHECK(false);
+    return false;
+  }
+
+  // A gap since previous.
+  const uint64_t kRoundingErrorGrace = 5;
+  if (previous_segment_end_time + kRoundingErrorGrace < start_time) {
+    LOG(WARNING) << "Found a gap of size "
+                 << (start_time - previous_segment_end_time)
+                 << " > kRoundingErrorGrace (" << kRoundingErrorGrace
+                 << "). The new segment starts at " << start_time
+                 << " but the previous segment ends at "
+                 << previous_segment_end_time << ".";
     return false;
   }
 
   // No overlapping segments.
-  const uint64_t kRoundingErrorGrace = 5;
   if (start_time < previous_segment_end_time - kRoundingErrorGrace) {
     LOG(WARNING)
-        << "Segments shold not be overlapping. The new segment starts at "
+        << "Segments should not be overlapping. The new segment starts at "
         << start_time << " but the previous segment ends at "
         << previous_segment_end_time << ".";
-    DCHECK(false);
     return false;
   }
 
-  // Within rounding error grace but technically not contiguous interms of MPD.
+  // Within rounding error grace but technically not contiguous in terms of MPD.
   return false;
 }
 

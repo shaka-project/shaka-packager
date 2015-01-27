@@ -231,13 +231,13 @@ void XmlNode::SetContent(const std::string& content) {
 }
 
 ScopedXmlPtr<xmlNode>::type XmlNode::PassScopedPtr() {
-  DLOG(INFO) << "Passing node_.";
+  DVLOG(2) << "Passing node_.";
   DCHECK(node_);
   return node_.Pass();
 }
 
 xmlNodePtr XmlNode::Release() {
-  DLOG(INFO) << "Releasing node_.";
+  DVLOG(2) << "Releasing node_.";
   DCHECK(node_);
   return node_.release();
 }
