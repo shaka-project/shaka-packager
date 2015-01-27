@@ -18,14 +18,21 @@ BitReader::~BitReader() {}
 
 bool BitReader::SkipBits(int num_bits) {
   DCHECK_GE(num_bits, 0);
-  DLOG_IF(INFO, num_bits > 100)
-      << "BitReader::SkipBits inefficient for large skips";
 
   // Skip any bits in the current byte waiting to be processed, then
   // process full bytes until less than 8 bits remaining.
-  while (num_bits > 0 && num_bits > num_remaining_bits_in_curr_byte_) {
+  if (num_bits > num_remaining_bits_in_curr_byte_) {
     num_bits -= num_remaining_bits_in_curr_byte_;
     num_remaining_bits_in_curr_byte_ = 0;
+
+    int num_bytes = num_bits / 8;
+    num_bits %= 8;
+    if (bytes_left_ < num_bytes) {
+      bytes_left_ = 0;
+      return false;
+    }
+    bytes_left_ -= num_bytes;
+    data_ += num_bytes;
     UpdateCurrByte();
 
     // If there is no more data remaining, only return true if we
