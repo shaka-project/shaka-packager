@@ -270,6 +270,7 @@ bool TrackRunIterator::Init() {
 bool TrackRunIterator::Init(const MovieFragment& moof) {
   runs_.clear();
 
+  next_fragment_start_dts_.resize(moof.tracks.size(), 0);
   for (size_t i = 0; i < moof.tracks.size(); i++) {
     const TrackFragment& traf = moof.tracks[i];
 
@@ -299,7 +300,9 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
     RCHECK(desc_idx > 0);  // Descriptions are one-indexed in the file
     desc_idx -= 1;
 
-    int64_t run_start_dts = traf.decode_time.decode_time;
+    int64_t run_start_dts = traf.decode_time_absent
+                                ? next_fragment_start_dts_[i]
+                                : traf.decode_time.decode_time;
     int sample_count_sum = 0;
 
     for (size_t j = 0; j < traf.runs.size(); j++) {
@@ -368,6 +371,7 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
       runs_.push_back(tri);
       sample_count_sum += trun.sample_count;
     }
+    next_fragment_start_dts_[i] = run_start_dts;
   }
 
   std::sort(runs_.begin(), runs_.end(), CompareMinTrackRunDataOffset());

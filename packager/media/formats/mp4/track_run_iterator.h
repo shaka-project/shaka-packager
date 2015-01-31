@@ -112,6 +112,9 @@ class TrackRunIterator {
   std::vector<SampleInfo>::const_iterator sample_itr_;
 
   std::vector<FrameCENCInfo> cenc_info_;
+  // Track the start dts of the next segment, only useful if decode_time box is
+  // absent.
+  std::vector<int64_t> next_fragment_start_dts_;
 
   int64_t sample_dts_;
   int64_t sample_offset_;

@@ -1485,16 +1485,15 @@ bool TrackFragmentHeader::ReadWrite(BoxBuffer* buffer) {
   RCHECK(FullBox::ReadWrite(buffer) &&
          buffer->ReadWriteUInt32(&track_id));
 
-  // Media Source specific: reject tracks that set 'base-data-offset-present'.
-  // Although the Media Source requires that 'default-base-is-moof' (14496-12
-  // Amendment 2) be set, we omit this check as many otherwise-valid files in
-  // the wild don't set it.
-  //
-  //  RCHECK((flags & kDefaultBaseIsMoofMask) &&
-  //         !(flags & kBaseDataOffsetPresentMask));
-  if (flags & kDataOffsetPresentMask) {
-    NOTIMPLEMENTED() << " base-data-offset-present is not supported.";
-    return false;
+  if (flags & kBaseDataOffsetPresentMask) {
+    // MSE requires 'default-base-is-moof' to be set and
+    // 'base-data-offset-present' not to be set. We omit these checks as some
+    // valid files in the wild don't follow these rules, though they use moof as
+    // base.
+    uint64_t base_data_offset;
+    RCHECK(buffer->ReadWriteUInt64(&base_data_offset));
+    DLOG(WARNING) << "base-data-offset-present is not expected. Assumes "
+                     "default-base-is-moof.";
   }
 
   if (flags & kSampleDescriptionIndexPresentMask) {
@@ -1751,18 +1750,19 @@ uint32_t SampleGroupDescription::ComputeSize() {
   return atom_size;
 }
 
-TrackFragment::TrackFragment() {}
+TrackFragment::TrackFragment() : decode_time_absent(false) {}
 TrackFragment::~TrackFragment() {}
 FourCC TrackFragment::BoxType() const { return FOURCC_TRAF; }
 
 bool TrackFragment::ReadWrite(BoxBuffer* buffer) {
   RCHECK(Box::ReadWrite(buffer) &&
          buffer->PrepareChildren() &&
-         buffer->ReadWriteChild(&header) &&
-         // Media Source specific: 'tfdt' required
-         buffer->ReadWriteChild(&decode_time));
+         buffer->ReadWriteChild(&header));
   if (buffer->Reading()) {
     DCHECK(buffer->reader());
+    decode_time_absent = !buffer->reader()->ChildExist(&decode_time);
+    if (!decode_time_absent)
+      RCHECK(buffer->ReadWriteChild(&decode_time));
     RCHECK(buffer->reader()->TryReadChildren(&runs));
 
     // There could be multiple SampleGroupDescription and SampleToGroup boxes
@@ -1778,6 +1778,8 @@ bool TrackFragment::ReadWrite(BoxBuffer* buffer) {
       RCHECK(buffer->reader()->ReadChild(&sample_group_description));
     }
   } else {
+    if (!decode_time_absent)
+      RCHECK(buffer->ReadWriteChild(&decode_time));
     for (uint32_t i = 0; i < runs.size(); ++i)
       RCHECK(runs[i].ReadWrite(buffer));
     RCHECK(buffer->TryReadWriteChild(&sample_to_group) &&

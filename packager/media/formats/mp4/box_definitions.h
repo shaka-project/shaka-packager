@@ -445,7 +445,7 @@ struct MovieFragmentHeader : FullBox {
 
 struct TrackFragmentHeader : FullBox {
   enum TrackFragmentFlagsMasks {
-    kDataOffsetPresentMask              = 0x000001,
+    kBaseDataOffsetPresentMask          = 0x000001,
     kSampleDescriptionIndexPresentMask  = 0x000002,
     kDefaultSampleDurationPresentMask   = 0x000008,
     kDefaultSampleSizePresentMask       = 0x000010,
@@ -532,6 +532,7 @@ struct TrackFragment : Box {
 
   TrackFragmentHeader header;
   std::vector<TrackFragmentRun> runs;
+  bool decode_time_absent;
   TrackFragmentDecodeTime decode_time;
   SampleToGroup sample_to_group;
   SampleGroupDescription sample_group_description;

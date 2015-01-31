@@ -496,8 +496,7 @@ TEST_F(SegmentTemplateTest, OutOfOrder) {
   const uint64_t kRepeat = 0;
 
   AddSegments(kLaterStartTime, kDuration, kSize, kRepeat);
-  EXPECT_DEBUG_DEATH(AddSegments(kEarlierStartTime, kDuration, kSize, kRepeat),
-                     "");
+  AddSegments(kEarlierStartTime, kDuration, kSize, kRepeat);
 
   ASSERT_NO_FATAL_FAILURE(CheckMpdAgainstExpectedResult());
 }
@@ -513,8 +512,7 @@ TEST_F(SegmentTemplateTest, OverlappingSegments) {
   CHECK_GT(kDuration, kOverlappingSegmentStartTime);
 
   AddSegments(kEarlierStartTime, kDuration, kSize, kRepeat);
-  EXPECT_DEBUG_DEATH(
-      AddSegments(kOverlappingSegmentStartTime, kDuration, kSize, kRepeat), "");
+  AddSegments(kOverlappingSegmentStartTime, kDuration, kSize, kRepeat);
 
   ASSERT_NO_FATAL_FAILURE(CheckMpdAgainstExpectedResult());
 }
