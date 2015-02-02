@@ -48,9 +48,13 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   base::AutoLock auto_lock(lock_);
   // TODO(kqyang): Consider adding a new method MpdBuilder::AddRepresentation.
   // Most of the codes here can be moved inside.
-  AdaptationSet** adaptation_set = &adaptation_set_map_[content_type];
+  std::string lang;
+  if (media_info.audio_info().size() > 0) {
+    lang = media_info.audio_info(0).language();
+  }
+  AdaptationSet** adaptation_set = &adaptation_set_map_[content_type][lang];
   if (*adaptation_set == NULL)
-    *adaptation_set = mpd_builder_->AddAdaptationSet();
+    *adaptation_set = mpd_builder_->AddAdaptationSet(lang);
 
   DCHECK(*adaptation_set);
   MediaInfo adjusted_media_info(media_info);

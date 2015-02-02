@@ -66,7 +66,7 @@ class MpdBuilder {
 
   /// Adds <AdaptationSet> to the MPD.
   /// @return The new adaptation set, which is owned by this instance.
-  AdaptationSet* AddAdaptationSet();
+  AdaptationSet* AddAdaptationSet(const std::string& lang);
 
   /// Write the MPD to specified file.
   /// @param[out] output_file is MPD destination. output_file will be
@@ -180,7 +180,8 @@ class AdaptationSet {
   /// @param representation_counter is a Counter for assigning ID numbers to
   ///        Representation. It can not be NULL.
   AdaptationSet(uint32_t adaptation_set_id,
-                const MpdOptions& mpd_options_,
+                const std::string& lang,
+                const MpdOptions& mpd_options,
                 base::AtomicSequenceNumber* representation_counter);
 
   // Gets the earliest, normalized segment timestamp. Returns true if
@@ -196,6 +197,7 @@ class AdaptationSet {
   base::AtomicSequenceNumber* const representation_counter_;
 
   const uint32_t id_;
+  const std::string lang_;
   const MpdOptions& mpd_options_;
 
   DISALLOW_COPY_AND_ASSIGN(AdaptationSet);

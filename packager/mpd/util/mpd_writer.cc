@@ -88,14 +88,15 @@ bool SetMediaInfosToMpdBuilder(const std::list<MediaInfo>& media_infos,
     return false;
 
   DCHECK(mpd_builder);
-  AdaptationSet* video_adaptation_set =
-      has_video ? mpd_builder->AddAdaptationSet() : NULL;
-  AdaptationSet* audio_adaptation_set =
-      has_audio ? mpd_builder->AddAdaptationSet() : NULL;
-  AdaptationSet* text_adaptation_set =
-      has_text ? mpd_builder->AddAdaptationSet() : NULL;
 
-  DCHECK(video_adaptation_set || audio_adaptation_set ||  text_adaptation_set);
+  // [type][lang] = AdaptationSet
+  std::map<std::string, std::map<std::string, AdaptationSet*> > map;
+  // This puts video sets into the map first, which keeps some pre-existing
+  // test expectations from changing.
+  if (has_video) {
+    map["video"][""] = mpd_builder->AddAdaptationSet("");
+  }
+
   for (std::list<MediaInfo>::const_iterator it = media_infos.begin();
        it != media_infos.end();
        ++it) {
@@ -103,15 +104,22 @@ bool SetMediaInfosToMpdBuilder(const std::list<MediaInfo>& media_infos,
     DCHECK(OnlyOneTrue(
         HasVideo(media_info), HasAudio(media_info), HasText(media_info)));
 
-    Representation* representation = NULL;
+    std::string lang;
+    AdaptationSet** adaptation_set = NULL;
     if (HasVideo(media_info)) {
-      representation = video_adaptation_set->AddRepresentation(media_info);
+      adaptation_set = &map["video"][lang];
     } else if (HasAudio(media_info)) {
-      representation = audio_adaptation_set->AddRepresentation(media_info);
+      lang = media_info.audio_info(0).language();
+      adaptation_set = &map["audio"][lang];
     } else if (HasText(media_info)) {
-      representation = text_adaptation_set->AddRepresentation(media_info);
+      adaptation_set = &map["text"][lang];
+    }
+    if (!*adaptation_set) {
+      *adaptation_set = mpd_builder->AddAdaptationSet(lang);
     }
 
+    Representation* representation =
+        (*adaptation_set)->AddRepresentation(media_info);
     if (!representation) {
       LOG(ERROR) << "Failed to add representation.";
       return false;

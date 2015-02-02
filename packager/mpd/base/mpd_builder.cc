@@ -21,6 +21,7 @@
 #include "packager/base/time/time.h"
 #include "packager/media/file/file.h"
 #include "packager/mpd/base/content_protection_element.h"
+#include "packager/mpd/base/language_utils.h"
 #include "packager/mpd/base/mpd_utils.h"
 #include "packager/mpd/base/xml/xml_node.h"
 
@@ -201,10 +202,11 @@ void MpdBuilder::AddBaseUrl(const std::string& base_url) {
   base_urls_.push_back(base_url);
 }
 
-AdaptationSet* MpdBuilder::AddAdaptationSet() {
+AdaptationSet* MpdBuilder::AddAdaptationSet(const std::string& lang) {
   base::AutoLock scoped_lock(lock_);
   scoped_ptr<AdaptationSet> adaptation_set(new AdaptationSet(
-      adaptation_set_counter_.GetNext(), mpd_options_, &representation_counter_));
+      adaptation_set_counter_.GetNext(), lang, mpd_options_,
+      &representation_counter_));
 
   DCHECK(adaptation_set);
   adaptation_sets_.push_back(adaptation_set.get());
@@ -447,11 +449,13 @@ void MpdBuilder::MakePathsRelativeToMpd(const std::string& mpd_path,
 }
 
 AdaptationSet::AdaptationSet(uint32_t adaptation_set_id,
+                             const std::string& lang,
                              const MpdOptions& mpd_options,
                              base::AtomicSequenceNumber* counter)
     : representations_deleter_(&representations_),
       representation_counter_(counter),
       id_(adaptation_set_id),
+      lang_(lang),
       mpd_options_(mpd_options) {
   DCHECK(counter);
 }
@@ -498,6 +502,9 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
   }
 
   adaptation_set.SetId(id_);
+  if (!lang_.empty() && lang_ != "und") {
+    adaptation_set.SetStringAttribute("lang", LanguageToShortestForm(lang_));
+  }
   return adaptation_set.PassScopedPtr();
 }
 

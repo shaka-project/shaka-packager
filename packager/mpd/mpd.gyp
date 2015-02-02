@@ -37,6 +37,8 @@
         'base/bandwidth_estimator.h',
         'base/content_protection_element.cc',
         'base/content_protection_element.h',
+        'base/language_utils.cc',
+        'base/language_utils.h',
         'base/mpd_builder.cc',
         'base/mpd_builder.h',
         'base/mpd_notifier.h',

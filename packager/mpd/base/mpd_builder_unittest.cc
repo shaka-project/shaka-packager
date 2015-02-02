@@ -74,7 +74,7 @@ class MpdBuilderTest: public ::testing::Test {
 
  protected:
   void AddRepresentation(const MediaInfo& media_info) {
-    AdaptationSet* adaptation_set = mpd_.AddAdaptationSet();
+    AdaptationSet* adaptation_set = mpd_.AddAdaptationSet("");
     ASSERT_TRUE(adaptation_set);
 
     Representation* representation =
@@ -294,7 +294,7 @@ TEST_F(StaticMpdBuilderTest, CheckAdaptationSetId) {
   const uint32_t kAdaptationSetId = 42;
 
   AdaptationSet adaptation_set(
-      kAdaptationSetId, MpdOptions(), &sequence_counter);
+      kAdaptationSetId, "", MpdOptions(), &sequence_counter);
   ASSERT_NO_FATAL_FAILURE(CheckIdEqual(kAdaptationSetId, &adaptation_set));
 }
 
@@ -321,10 +321,10 @@ TEST_F(StaticMpdBuilderTest, VideoAndAudio) {
   MediaInfo audio_media_info = GetTestMediaInfo(kFileNameAudioMediaInfo1);
 
   // The order matters here to check against expected output.
-  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet();
+  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet("");
   ASSERT_TRUE(video_adaptation_set);
 
-  AdaptationSet* audio_adaptation_set = mpd_.AddAdaptationSet();
+  AdaptationSet* audio_adaptation_set = mpd_.AddAdaptationSet("");
   ASSERT_TRUE(audio_adaptation_set);
 
   Representation* audio_representation =
@@ -344,7 +344,7 @@ TEST_F(StaticMpdBuilderTest, AudioChannelConfigurationWithContentProtection) {
   MediaInfo encrypted_audio_media_info =
       GetTestMediaInfo(kFileNameEncytpedAudioMediaInfo);
 
-  AdaptationSet* audio_adaptation_set = mpd_.AddAdaptationSet();
+  AdaptationSet* audio_adaptation_set = mpd_.AddAdaptationSet("");
   ASSERT_TRUE(audio_adaptation_set);
 
   Representation* audio_representation =
@@ -367,7 +367,7 @@ TEST_F(StaticMpdBuilderTest, MediaInfoMissingBandwidth) {
 
 TEST_F(StaticMpdBuilderTest, WriteToFile) {
   MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
-  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet();
+  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet("");
   ASSERT_TRUE(video_adaptation_set);
 
   Representation* video_representation =
