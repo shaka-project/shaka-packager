@@ -60,6 +60,8 @@ class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
     codec_string_ = codec_string;
   }
 
+  void set_language(const std::string& language) { language_ = language; }
+
  protected:
   friend class base::RefCountedThreadSafe<StreamInfo>;
   virtual ~StreamInfo();

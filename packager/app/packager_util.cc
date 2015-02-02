@@ -179,6 +179,7 @@ MediaStream* FindFirstAudioStream(const std::vector<MediaStream*>& streams) {
 
 bool AddStreamToMuxer(const std::vector<MediaStream*>& streams,
                       const std::string& stream_selector,
+                      const std::string& language_override,
                       Muxer* muxer) {
   DCHECK(muxer);
 
@@ -207,6 +208,11 @@ bool AddStreamToMuxer(const std::vector<MediaStream*>& streams,
     LOG(ERROR) << "No " << stream_selector << " stream found in the input.";
     return false;
   }
+
+  if (!language_override.empty()) {
+    stream->info()->set_language(language_override);
+  }
+
   muxer->AddStream(stream);
   return true;
 }

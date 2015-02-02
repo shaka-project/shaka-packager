@@ -10,6 +10,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_split.h"
+#include "packager/mpd/base/language_utils.h"
 
 namespace edash_packager {
 namespace media {
@@ -23,6 +24,7 @@ enum FieldType {
   kOutputField,
   kSegmentTemplateField,
   kBandwidthField,
+  kLanguageField,
 };
 
 struct FieldNameToTypeMapping {
@@ -43,6 +45,8 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
   { "bandwidth", kBandwidthField },
   { "bw", kBandwidthField },
   { "bitrate", kBandwidthField },
+  { "language", kLanguageField },
+  { "lang", kLanguageField },
 };
 
 FieldType GetFieldType(const std::string& field_name) {
@@ -94,6 +98,16 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
           return false;
         }
         descriptor.bandwidth = bw;
+        break;
+      }
+      case kLanguageField: {
+        std::string language = LanguageToISO_639_2(iter->second);
+        if (language == "und") {
+          LOG(ERROR) << "Unknown/invalid language specified: " << iter->second;
+          return false;
+        }
+        DCHECK_EQ(3, language.size());
+        descriptor.language = language;
         break;
       }
       default:

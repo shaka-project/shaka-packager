@@ -59,9 +59,12 @@ bool GetMpdOptions(edash_packager::MpdOptions* mpd_options);
 ///        "audio" to select the first audio track, "video" to select the first
 ///        video track, or a decimal number indicating which track number to
 ///        select (start at "1").
+/// @param language_override is a string which, if non-empty, overrides the
+///        stream's language metadata.
 /// @return true if successful, false otherwise.
 bool AddStreamToMuxer(const std::vector<MediaStream*>& streams,
                       const std::string& stream_selector,
+                      const std::string& language_override,
                       Muxer* muxer);
 
 }  // namespace media

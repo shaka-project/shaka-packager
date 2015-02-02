@@ -141,10 +141,14 @@ void MP4Muxer::InitializeTrak(const StreamInfo* info, Track* trak) {
   trak->media.header.timescale = info->time_scale();
   trak->media.header.duration = 0;
   if (!info->language().empty()) {
-    DCHECK_EQ(info->language().size(),
-              arraysize(trak->media.header.language) - 1);
-    strcpy(trak->media.header.language, info->language().c_str());
-    trak->media.header.language[info->language().size()] = '\0';
+    const size_t language_size = arraysize(trak->media.header.language) - 1;
+    if (info->language().size() != language_size) {
+      LOG(WARNING) << "'" << info->language() << "' is not a valid ISO-639-2 "
+                   << "language code, ignoring.";
+    } else {
+      memcpy(trak->media.header.language, info->language().c_str(),
+             language_size + 1);
+    }
   }
 }
 

@@ -26,6 +26,7 @@ struct StreamDescriptor {
   std::string output;
   std::string segment_template;
   uint32_t bandwidth;
+  std::string language;
 };
 
 class StreamDescriptorCompareFn {

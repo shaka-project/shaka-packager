@@ -48,7 +48,10 @@ const char kUsage[] =
     "  - bandwidth (bw): Optional value which contains a user-specified "
     "content bit rate for the stream, in bits/sec. If specified, this value is "
     "propagated to the $Bandwidth$ template parameter for segment names. "
-    "If not specified, its value may be estimated.\n";
+    "If not specified, its value may be estimated.\n"
+    "  - language (lang): Optional value which contains a user-specified "
+    "language tag. If specified, this value overrides any language metadata "
+    "in the input track.\n";
 
 enum ExitStatus {
   kSuccess = 0,
@@ -161,11 +164,11 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     scoped_ptr<MuxerListener> muxer_listener;
     DCHECK(!(FLAGS_output_media_info && mpd_notifier));
     if (FLAGS_output_media_info) {
-      const std::string output_mpd_file_name =
+      const std::string output_media_info_file_name =
           stream_muxer_options.output_file_name + ".media_info";
       scoped_ptr<VodMediaInfoDumpMuxerListener>
           vod_media_info_dump_muxer_listener(
-              new VodMediaInfoDumpMuxerListener(output_mpd_file_name));
+              new VodMediaInfoDumpMuxerListener(output_media_info_file_name));
       vod_media_info_dump_muxer_listener->SetContentProtectionSchemeIdUri(
           FLAGS_scheme_id_uri);
       muxer_listener = vod_media_info_dump_muxer_listener.Pass();
@@ -185,6 +188,7 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
 
     if (!AddStreamToMuxer(remux_jobs->back()->demuxer()->streams(),
                           stream_iter->stream_selector,
+                          stream_iter->language,
                           muxer.get()))
       return false;
     remux_jobs->back()->AddMuxer(muxer.Pass());
