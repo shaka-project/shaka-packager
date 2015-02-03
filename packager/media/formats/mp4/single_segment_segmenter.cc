@@ -6,7 +6,11 @@
 
 #include "packager/media/formats/mp4/single_segment_segmenter.h"
 
+#include <inttypes.h>
+
 #include "packager/base/file_util.h"
+#include "packager/base/strings/stringprintf.h"
+#include "packager/base/time/time.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
@@ -17,6 +21,15 @@
 namespace edash_packager {
 namespace media {
 namespace mp4 {
+namespace {
+// Create a temp file name using process/thread id and current time.
+std::string TempFileName() {
+  int32_t tid = static_cast<int32_t>(pthread_self());
+  int32_t pid = static_cast<int32_t>(getpid());
+  int64_t now = base::Time::Now().ToInternalValue();
+  return base::StringPrintf("packager-tempfile-%x-%d-%" PRIx64, tid, pid, now);
+}
+}  // namespace
 
 SingleSegmentSegmenter::SingleSegmentSegmenter(const MuxerOptions& options,
                                                scoped_ptr<FileType> ftyp,
@@ -40,15 +53,17 @@ bool SingleSegmentSegmenter::GetIndexRange(size_t* offset, size_t* size) {
 }
 
 Status SingleSegmentSegmenter::DoInitialize() {
-  base::FilePath temp_file_path;
-  if (options().temp_dir.empty() ?
-      !base::CreateTemporaryFile(&temp_file_path) :
-      !base::CreateTemporaryFileInDir(base::FilePath(options().temp_dir),
-                                      &temp_file_path)) {
-    return Status(error::FILE_FAILURE, "Unable to create temporary file.");
+  if (options().temp_dir.empty()) {
+    base::FilePath temp_file_path;
+    if (!base::CreateTemporaryFile(&temp_file_path)) {
+      LOG(ERROR) << "Failed to create temporary file.";
+      return Status(error::FILE_FAILURE, "Unable to create temporary file.");
+    }
+    temp_file_name_ = temp_file_path.value();
+  } else {
+    temp_file_name_ =
+        base::FilePath(options().temp_dir).Append(TempFileName()).value();
   }
-  temp_file_name_ = temp_file_path.value();
-
   temp_file_.reset(File::Open(temp_file_name_.c_str(), "w"));
   return temp_file_
              ? Status::OK
