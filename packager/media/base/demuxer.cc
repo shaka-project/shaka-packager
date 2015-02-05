@@ -21,9 +21,9 @@
 #include "packager/media/formats/wvm/wvm_media_parser.h"
 
 namespace {
-const size_t kInitBufSize = 0x4000;  // 16KB, sufficient to determine the
-                                     // container and likely all init data.
-const size_t kBufSize = 0x200000;  // 2MB
+const size_t kInitBufSize = 0x10000;  // 65KB, sufficient to determine the
+                                      // container and likely all init data.
+const size_t kBufSize = 0x200000;     // 2MB
 }
 
 namespace edash_packager {
