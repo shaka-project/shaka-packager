@@ -9,7 +9,6 @@
 
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/media/formats/mp4/cenc.h"
 
 namespace edash_packager {
 namespace media {
@@ -111,7 +110,6 @@ class TrackRunIterator {
   std::vector<TrackRunInfo>::const_iterator run_itr_;
   std::vector<SampleInfo>::const_iterator sample_itr_;
 
-  std::vector<FrameCENCInfo> cenc_info_;
   // Track the start dts of the next segment, only useful if decode_time box is
   // absent.
   std::vector<int64_t> next_fragment_start_dts_;

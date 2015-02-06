@@ -22,8 +22,6 @@
         'box_definitions.h',
         'box_reader.cc',
         'box_reader.h',
-        'cenc.cc',
-        'cenc.h',
         'chunk_info_iterator.cc',
         'chunk_info_iterator.h',
         'composition_offset_iterator.cc',

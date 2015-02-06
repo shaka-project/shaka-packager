@@ -59,7 +59,6 @@ class Fragmenter {
   bool fragment_initialized() const { return fragment_initialized_; }
   bool fragment_finalized() const { return fragment_finalized_; }
   BufferWriter* data() { return data_.get(); }
-  BufferWriter* aux_data() { return aux_data_.get(); }
 
  protected:
   TrackFragment* traf() { return traf_; }
@@ -82,7 +81,6 @@ class Fragmenter {
   int64_t earliest_presentation_time_;
   int64_t first_sap_time_;
   scoped_ptr<BufferWriter> data_;
-  scoped_ptr<BufferWriter> aux_data_;
 
   DISALLOW_COPY_AND_ASSIGN(Fragmenter);
 };

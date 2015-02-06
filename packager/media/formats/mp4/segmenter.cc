@@ -385,39 +385,41 @@ Status Segmenter::FinalizeFragment(bool finalize_segment,
   }
 
   MediaData mdat;
-  // Fill in data offsets. Data offset base is moof size + mdat box size.
-  // (mdat is still empty, mdat size is the same as mdat box size).
-  uint64_t base = moof_->ComputeSize() + mdat.ComputeSize();
+  // Data offset relative to 'moof': moof size + mdat header size.
+  // The code will also update box sizes for moof_ and its child boxes.
+  uint64_t data_offset = moof_->ComputeSize() + mdat.HeaderSize();
+  // 'traf' should follow 'mfhd' moof header box.
+  uint64_t next_traf_position = moof_->HeaderSize() + moof_->header.box_size();
   for (size_t i = 0; i < moof_->tracks.size(); ++i) {
     TrackFragment& traf = moof_->tracks[i];
-    Fragmenter* fragmenter = fragmenters_[i];
-    if (fragmenter->aux_data()->Size() > 0) {
-      traf.auxiliary_offset.offsets[0] += base;
-      base += fragmenter->aux_data()->Size();
+    if (traf.auxiliary_offset.offsets.size() > 0) {
+      DCHECK_EQ(traf.auxiliary_offset.offsets.size(), 1u);
+      DCHECK(!traf.sample_encryption.sample_encryption_entries.empty());
+
+      next_traf_position += traf.box_size();
+      // SampleEncryption 'senc' box should be the last box in 'traf'.
+      // |auxiliary_offset| should point to the data of SampleEncryption.
+      traf.auxiliary_offset.offsets[0] =
+          next_traf_position - traf.sample_encryption.box_size() +
+          traf.sample_encryption.HeaderSize() +
+          sizeof(uint32_t);  // for sample count field in 'senc'
     }
-    traf.runs[0].data_offset += base;
-    base += fragmenter->data()->Size();
+    traf.runs[0].data_offset = data_offset + mdat.data_size;
+    mdat.data_size += fragmenters_[i]->data()->Size();
   }
 
   // Generate segment reference.
   sidx_->references.resize(sidx_->references.size() + 1);
   fragmenters_[GetReferenceStreamId()]->GenerateSegmentReference(
       &sidx_->references[sidx_->references.size() - 1]);
-  sidx_->references[sidx_->references.size() - 1].referenced_size = base;
+  sidx_->references[sidx_->references.size() - 1].referenced_size =
+      data_offset + mdat.data_size;
 
   // Write the fragment to buffer.
   moof_->Write(fragment_buffer_.get());
-
-  for (size_t i = 0; i < moof_->tracks.size(); ++i) {
-    Fragmenter* fragmenter = fragmenters_[i];
-    mdat.data_size =
-        fragmenter->aux_data()->Size() + fragmenter->data()->Size();
-    mdat.WriteHeader(fragment_buffer_.get());
-    if (fragmenter->aux_data()->Size()) {
-      fragment_buffer_->AppendBuffer(*fragmenter->aux_data());
-    }
+  mdat.WriteHeader(fragment_buffer_.get());
+  for (Fragmenter* fragmenter : fragmenters_)
     fragment_buffer_->AppendBuffer(*fragmenter->data());
-  }
 
   // Increase sequence_number for next fragment.
   ++moof_->header.sequence_number;

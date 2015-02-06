@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 bear-320x240.webm - WebM encode of bear.1280x720.mp4 resized to 320x240.
-no_streams.webm - Header, Info, & Tracks element from bear-320x240.webm slightly corrupted so it looks 
+no_streams.webm - Header, Info, & Tracks element from bear-320x240.webm slightly corrupted so it looks
                   like there are no tracks.
-nonzero-start-time.webm - Has the same headers as bear-320x240.webm but the first cluster of this file 
+nonzero-start-time.webm - Has the same headers as bear-320x240.webm but the first cluster of this file
                           is the second cluster of bear-320x240.webm. This creates the situation where
                           the media data doesn't start at time 0.
 bear-320x240-live.webm - bear-320x240.webm remuxed w/o a duration and using clusters with unknown sizes.
@@ -41,7 +41,11 @@ bear-640x360-non_square_pixel-with_pasp.mp4 - A non-square pixel version of the 
 bear-640x360-non_square_pixel-without_pasp.mp4 - A non-square pixel version of the video track of bear-640x360.mp4 without PixelAspectRatio box.
 
 // Encrypted Files.
-bear-640x360-v_frag-cenc.mp4 - A fragmented MP4 version of the video track of bear-640x360.mp4 encrypted (ISO CENC) using key ID [1] and key [2].
+bear-640x360-v_frag-cenc-aux.mp4 - A fragmented MP4 version of the video track of bear-640x360.mp4
+                                   encrypted (ISO CENC) using key ID [1] and key [2] and with sample
+                                   encryption auxiliary information in the beginning of mdat box.
+bear-640x360-v_frag-cenc-senc.mp4 - Same as above, but with sample encryption information stored in
+                                    senc box.
 
 [1] 30313233343536373839303132333435
 [2] ebdd62f16814d27b68ef122afce4ae3c

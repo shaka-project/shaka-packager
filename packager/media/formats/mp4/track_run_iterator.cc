@@ -40,6 +40,12 @@ struct TrackRunInfo {
   const AudioSampleEntry* audio_description;
   const VideoSampleEntry* video_description;
 
+  // Stores sample encryption entries, which is populated from 'senc' box if it
+  // is available, otherwise will try to load from cenc auxiliary information.
+  std::vector<SampleEncryptionEntry> sample_encryption_entries;
+
+  // These variables are useful to load |sample_encryption_entries| from cenc
+  // auxiliary information when 'senc' box is not available.
   int64_t aux_info_start_offset;  // Only valid if aux_info_total_size > 0.
   int aux_info_default_size;
   std::vector<uint8_t> aux_info_sizes;  // Populated if default_size == 0.
@@ -300,6 +306,40 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
     RCHECK(desc_idx > 0);  // Descriptions are one-indexed in the file
     desc_idx -= 1;
 
+    const AudioSampleEntry* audio_sample_entry = NULL;
+    const VideoSampleEntry* video_sample_entry = NULL;
+    switch (stsd.type) {
+      case kAudio:
+        RCHECK(!stsd.audio_entries.empty());
+        if (desc_idx > stsd.audio_entries.size())
+          desc_idx = 0;
+        audio_sample_entry = &stsd.audio_entries[desc_idx];
+        break;
+      case kVideo:
+        RCHECK(!stsd.video_entries.empty());
+        if (desc_idx > stsd.video_entries.size())
+          desc_idx = 0;
+        video_sample_entry = &stsd.video_entries[desc_idx];
+        break;
+      default:
+        NOTREACHED();
+        break;
+    }
+
+    // SampleEncryptionEntries should not have been parsed, without having
+    // iv_size. Parse the box now.
+    DCHECK(traf.sample_encryption.sample_encryption_entries.empty());
+    std::vector<SampleEncryptionEntry> sample_encryption_entries;
+    if (!traf.sample_encryption.sample_encryption_data.empty()) {
+      RCHECK(audio_sample_entry || video_sample_entry);
+      const uint8_t default_iv_size =
+          audio_sample_entry
+              ? audio_sample_entry->sinf.info.track_encryption.default_iv_size
+              : video_sample_entry->sinf.info.track_encryption.default_iv_size;
+      RCHECK(traf.sample_encryption.ParseFromSampleEncryptionData(
+          default_iv_size, &sample_encryption_entries));
+    }
+
     int64_t run_start_dts = traf.decode_time_absent
                                 ? next_fragment_start_dts_[i]
                                 : traf.decode_time.decode_time;
@@ -314,27 +354,30 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
       tri.sample_start_offset = trun.data_offset;
 
       tri.track_type = stsd.type;
-      if (tri.track_type == kAudio) {
-        RCHECK(!stsd.audio_entries.empty());
-        if (desc_idx > stsd.audio_entries.size())
-          desc_idx = 0;
-        tri.audio_description = &stsd.audio_entries[desc_idx];
-      } else if (tri.track_type == kVideo) {
-        RCHECK(!stsd.video_entries.empty());
-        if (desc_idx > stsd.video_entries.size())
-          desc_idx = 0;
-        tri.video_description = &stsd.video_entries[desc_idx];
-      }
+      tri.audio_description = audio_sample_entry;
+      tri.video_description = video_sample_entry;
 
-      // Collect information from the auxiliary_offset entry with the same index
-      // in the 'saiz' container as the current run's index in the 'trun'
-      // container, if it is present.
-      if (traf.auxiliary_offset.offsets.size() > j) {
+      tri.aux_info_start_offset = -1;
+      tri.aux_info_total_size = 0;
+      // Populate sample encryption entries from SampleEncryption 'senc' box if
+      // it is available; otherwise initialize aux_info variables, which will
+      // be used to populate sample encryption entries later in CacheAuxInfo.
+      if (!sample_encryption_entries.empty()) {
+        RCHECK(sample_encryption_entries.size() >=
+               sample_count_sum + trun.sample_count);
+        for (size_t k = 0; k < trun.sample_count; ++k) {
+          tri.sample_encryption_entries.push_back(
+              sample_encryption_entries[sample_count_sum + k]);
+        }
+      } else if (traf.auxiliary_offset.offsets.size() > j) {
+        // Collect information from the auxiliary_offset entry with the same
+        // index in the 'saiz' container as the current run's index in the
+        // 'trun' container, if it is present.
+        tri.aux_info_start_offset = traf.auxiliary_offset.offsets[j];
         // There should be an auxiliary info entry corresponding to each sample
         // in the auxiliary offset entry's corresponding track run.
         RCHECK(traf.auxiliary_size.sample_count >=
                sample_count_sum + trun.sample_count);
-        tri.aux_info_start_offset = traf.auxiliary_offset.offsets[j];
         tri.aux_info_default_size =
             traf.auxiliary_size.default_sample_info_size;
         if (tri.aux_info_default_size == 0) {
@@ -358,9 +401,6 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
             tri.aux_info_total_size += tri.aux_info_sizes[k];
           }
         }
-      } else {
-        tri.aux_info_start_offset = -1;
-        tri.aux_info_total_size = 0;
       }
 
       tri.samples.resize(trun.sample_count);
@@ -391,7 +431,6 @@ void TrackRunIterator::ResetRun() {
   sample_dts_ = run_itr_->start_dts;
   sample_offset_ = run_itr_->sample_start_offset;
   sample_itr_ = run_itr_->samples.begin();
-  cenc_info_.clear();
 }
 
 void TrackRunIterator::AdvanceSample() {
@@ -405,14 +444,17 @@ void TrackRunIterator::AdvanceSample() {
 // info is available in the stream.
 bool TrackRunIterator::AuxInfoNeedsToBeCached() {
   DCHECK(IsRunValid());
-  return is_encrypted() && aux_info_size() > 0 && cenc_info_.size() == 0;
+  return is_encrypted() && aux_info_size() > 0 &&
+         run_itr_->sample_encryption_entries.size() == 0;
 }
 
 // This implementation currently only caches CENC auxiliary info.
 bool TrackRunIterator::CacheAuxInfo(const uint8_t* buf, int buf_size) {
   RCHECK(AuxInfoNeedsToBeCached() && buf_size >= aux_info_size());
 
-  cenc_info_.resize(run_itr_->samples.size());
+  std::vector<SampleEncryptionEntry>& sample_encryption_entries =
+      runs_[run_itr_ - runs_.begin()].sample_encryption_entries;
+  sample_encryption_entries.resize(run_itr_->samples.size());
   int64_t pos = 0;
   for (size_t i = 0; i < run_itr_->samples.size(); i++) {
     int info_size = run_itr_->aux_info_default_size;
@@ -420,7 +462,9 @@ bool TrackRunIterator::CacheAuxInfo(const uint8_t* buf, int buf_size) {
       info_size = run_itr_->aux_info_sizes[i];
 
     BufferReader reader(buf + pos, info_size);
-    RCHECK(cenc_info_[i].Parse(track_encryption().default_iv_size, &reader));
+    const bool has_subsamples = info_size > track_encryption().default_iv_size;
+    RCHECK(sample_encryption_entries[i].ParseFromBuffer(
+        track_encryption().default_iv_size, has_subsamples, &reader));
     pos += info_size;
   }
 
@@ -539,12 +583,14 @@ const TrackEncryption& TrackRunIterator::track_encryption() const {
 
 scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
   size_t sample_idx = sample_itr_ - run_itr_->samples.begin();
-  DCHECK_LT(sample_idx, cenc_info_.size());
-  const FrameCENCInfo& cenc_info = cenc_info_[sample_idx];
+  DCHECK_LT(sample_idx, run_itr_->sample_encryption_entries.size());
+  const SampleEncryptionEntry& sample_encryption_entry =
+      run_itr_->sample_encryption_entries[sample_idx];
   DCHECK(is_encrypted());
   DCHECK(!AuxInfoNeedsToBeCached());
 
-  const size_t total_size_of_subsamples = cenc_info.GetTotalSizeOfSubsamples();
+  const size_t total_size_of_subsamples =
+      sample_encryption_entry.GetTotalSizeOfSubsamples();
   if (total_size_of_subsamples != 0 &&
       total_size_of_subsamples != static_cast<size_t>(sample_size())) {
     LOG(ERROR) << "Incorrect CENC subsample size.";
@@ -553,9 +599,9 @@ scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
 
   return scoped_ptr<DecryptConfig>(new DecryptConfig(
       track_encryption().default_kid,
-      cenc_info.iv(),
+      sample_encryption_entry.initialization_vector,
       0,  // No offset to start of media data in MP4 using CENC.
-      cenc_info.subsamples()));
+      sample_encryption_entry.subsamples));
 }
 
 }  // namespace mp4

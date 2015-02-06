@@ -11,14 +11,16 @@
 #include "packager/media/formats/mp4/rcheck.h"
 #include "packager/media/formats/mp4/track_run_iterator.h"
 
+namespace {
+
 // The sum of the elements in a vector initialized with SumAscending,
 // less the value of the last element.
-static const int kSumAscending1 = 45;
+const int kSumAscending1 = 45;
 
-static const int kAudioScale = 48000;
-static const int kVideoScale = 25;
+const int kAudioScale = 48000;
+const int kVideoScale = 25;
 
-static const uint8_t kAuxInfo[] = {
+const uint8_t kAuxInfo[] = {
     // Sample 1: IV (no subsumples).
     0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x31,
     // Sample 2: IV.
@@ -30,11 +32,39 @@ static const uint8_t kAuxInfo[] = {
     // Sample 2: Subsample 2.
     0x00, 0x03, 0x00, 0x00, 0x00, 0x04};
 
-static const char kIv1[] = {0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x31, };
+const uint8_t kSampleEncryptionDataWithSubsamples[] = {
+    // Sample count.
+    0x00, 0x00, 0x00, 0x02,
+    // Sample 1: IV.
+    0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x31,
+    // Sample 1: Subsample count.
+    0x00, 0x01,
+    // Sample 1: Subsample 1.
+    0x00, 0x01, 0x00, 0x00, 0x00, 0x02,
+    // Sample 2: IV.
+    0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x32,
+    // Sample 2: Subsample count.
+    0x00, 0x02,
+    // Sample 2: Subsample 1.
+    0x00, 0x01, 0x00, 0x00, 0x00, 0x02,
+    // Sample 2: Subsample 2.
+    0x00, 0x03, 0x00, 0x00, 0x00, 0x04};
 
-static const uint8_t kKeyId[] = {0x41, 0x47, 0x6f, 0x6f, 0x67, 0x6c,
-                                 0x65, 0x54, 0x65, 0x73, 0x74, 0x4b,
-                                 0x65, 0x79, 0x49, 0x44};
+const uint8_t kSampleEncryptionDataWithoutSubsamples[] = {
+    // Sample count.
+    0x00, 0x00, 0x00, 0x02,
+    // Sample 1: IV.
+    0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x31,
+    // Sample 2: IV.
+    0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x32};
+
+const char kIv1[] = {0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x31};
+const char kIv2[] = {0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x32};
+
+const uint8_t kKeyId[] = {0x41, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x54,
+                          0x65, 0x73, 0x74, 0x4b, 0x65, 0x79, 0x49, 0x44};
+
+}  // namespace
 
 namespace edash_packager {
 namespace media {
@@ -141,6 +171,38 @@ class TrackRunIteratorTest : public testing::Test {
     frag->auxiliary_size.sample_info_sizes.push_back(22);
     frag->runs[0].sample_count = 2;
     frag->runs[0].sample_sizes[1] = 10;
+  }
+
+  void AddSampleEncryption(uint8_t use_subsample_flag, TrackFragment* frag) {
+    frag->sample_encryption.iv_size = 8;
+    frag->sample_encryption.flags = use_subsample_flag;
+    if (use_subsample_flag) {
+      frag->sample_encryption.sample_encryption_data.assign(
+          kSampleEncryptionDataWithSubsamples,
+          kSampleEncryptionDataWithSubsamples +
+              arraysize(kSampleEncryptionDataWithSubsamples));
+    } else {
+      frag->sample_encryption.sample_encryption_data.assign(
+          kSampleEncryptionDataWithoutSubsamples,
+          kSampleEncryptionDataWithoutSubsamples +
+              arraysize(kSampleEncryptionDataWithoutSubsamples));
+    }
+
+    // Update sample sizes and aux info header.
+    frag->runs.resize(1);
+    frag->runs[0].sample_count = 2;
+    frag->auxiliary_offset.offsets.push_back(0);
+    frag->auxiliary_size.sample_count = 2;
+    if (use_subsample_flag) {
+      // Update sample sizes to match with subsample entries above.
+      frag->runs[0].sample_sizes[0] = 3;
+      frag->runs[0].sample_sizes[1] = 10;
+      // Set aux info header.
+      frag->auxiliary_size.sample_info_sizes.push_back(16);
+      frag->auxiliary_size.sample_info_sizes.push_back(22);
+    } else {
+      frag->auxiliary_size.default_sample_info_size = 8;
+    }
   }
 
   void SetAscending(std::vector<uint32_t>* vec) {
@@ -303,7 +365,77 @@ TEST_F(TrackRunIteratorTest, IgnoreUnknownAuxInfoTest) {
   EXPECT_FALSE(iter_->AuxInfoNeedsToBeCached());
 }
 
-TEST_F(TrackRunIteratorTest, DecryptConfigTest) {
+TEST_F(TrackRunIteratorTest,
+       DecryptConfigTestWithSampleEncryptionAndSubsample) {
+  AddEncryption(&moov_.tracks[1]);
+  iter_.reset(new TrackRunIterator(&moov_));
+
+  MovieFragment moof = CreateFragment();
+  AddSampleEncryption(SampleEncryption::kUseSubsampleEncryption,
+                      &moof.tracks[1]);
+
+  ASSERT_TRUE(iter_->Init(moof));
+  // The run for track 2 will be the second, which is parsed according to
+  // data_offset.
+  iter_->AdvanceRun();
+  EXPECT_EQ(iter_->track_id(), 2u);
+
+  EXPECT_TRUE(iter_->is_encrypted());
+  // No need to cache aux info as it is already available in SampleEncryption.
+  EXPECT_FALSE(iter_->AuxInfoNeedsToBeCached());
+  EXPECT_EQ(iter_->aux_info_size(), 0);
+  EXPECT_EQ(iter_->sample_offset(), 200);
+  EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[1].runs[0].data_offset);
+  scoped_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
+  EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId)),
+            config->key_id());
+  EXPECT_EQ(std::vector<uint8_t>(kIv1, kIv1 + arraysize(kIv1)), config->iv());
+  EXPECT_EQ(config->subsamples().size(), 1u);
+  EXPECT_EQ(config->subsamples()[0].clear_bytes, 1u);
+  EXPECT_EQ(config->subsamples()[0].cipher_bytes, 2u);
+  iter_->AdvanceSample();
+  config = iter_->GetDecryptConfig();
+  EXPECT_EQ(std::vector<uint8_t>(kIv2, kIv2 + arraysize(kIv2)), config->iv());
+  EXPECT_EQ(config->subsamples().size(), 2u);
+  EXPECT_EQ(config->subsamples()[0].clear_bytes, 1u);
+  EXPECT_EQ(config->subsamples()[0].cipher_bytes, 2u);
+  EXPECT_EQ(config->subsamples()[1].clear_bytes, 3u);
+  EXPECT_EQ(config->subsamples()[1].cipher_bytes, 4u);
+}
+
+TEST_F(TrackRunIteratorTest,
+       DecryptConfigTestWithSampleEncryptionAndNoSubsample) {
+  AddEncryption(&moov_.tracks[1]);
+  iter_.reset(new TrackRunIterator(&moov_));
+
+  MovieFragment moof = CreateFragment();
+  AddSampleEncryption(!SampleEncryption::kUseSubsampleEncryption,
+                      &moof.tracks[1]);
+
+  ASSERT_TRUE(iter_->Init(moof));
+  // The run for track 2 will be the second, which is parsed according to
+  // data_offset.
+  iter_->AdvanceRun();
+  EXPECT_EQ(iter_->track_id(), 2u);
+
+  EXPECT_TRUE(iter_->is_encrypted());
+  // No need to cache aux info as it is already available in SampleEncryption.
+  EXPECT_FALSE(iter_->AuxInfoNeedsToBeCached());
+  EXPECT_EQ(iter_->aux_info_size(), 0);
+  EXPECT_EQ(iter_->sample_offset(), 200);
+  EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[1].runs[0].data_offset);
+  scoped_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
+  EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId)),
+            config->key_id());
+  EXPECT_EQ(std::vector<uint8_t>(kIv1, kIv1 + arraysize(kIv1)), config->iv());
+  EXPECT_EQ(config->subsamples().size(), 0u);
+  iter_->AdvanceSample();
+  config = iter_->GetDecryptConfig();
+  EXPECT_EQ(std::vector<uint8_t>(kIv2, kIv2 + arraysize(kIv2)), config->iv());
+  EXPECT_EQ(config->subsamples().size(), 0u);
+}
+
+TEST_F(TrackRunIteratorTest, DecryptConfigTestWithAuxInfo) {
   AddEncryption(&moov_.tracks[1]);
   iter_.reset(new TrackRunIterator(&moov_));
 
@@ -316,7 +448,7 @@ TEST_F(TrackRunIteratorTest, DecryptConfigTest) {
   // element in the file.
   EXPECT_EQ(iter_->track_id(), 2u);
   EXPECT_TRUE(iter_->is_encrypted());
-  EXPECT_TRUE(iter_->AuxInfoNeedsToBeCached());
+  ASSERT_TRUE(iter_->AuxInfoNeedsToBeCached());
   EXPECT_EQ(static_cast<uint32_t>(iter_->aux_info_size()), arraysize(kAuxInfo));
   EXPECT_EQ(iter_->aux_info_offset(), 50);
   EXPECT_EQ(iter_->GetMaxClearOffset(), 50);
@@ -328,11 +460,9 @@ TEST_F(TrackRunIteratorTest, DecryptConfigTest) {
   EXPECT_EQ(iter_->sample_offset(), 200);
   EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[0].runs[0].data_offset);
   scoped_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
-  ASSERT_EQ(arraysize(kKeyId), config->key_id().size());
-  EXPECT_TRUE(
-      !memcmp(kKeyId, config->key_id().data(), config->key_id().size()));
-  ASSERT_EQ(arraysize(kIv1), config->iv().size());
-  EXPECT_TRUE(!memcmp(kIv1, config->iv().data(), config->iv().size()));
+  EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId)),
+            config->key_id());
+  EXPECT_EQ(std::vector<uint8_t>(kIv1, kIv1 + arraysize(kIv1)), config->iv());
   EXPECT_TRUE(config->subsamples().empty());
   iter_->AdvanceSample();
   config = iter_->GetDecryptConfig();

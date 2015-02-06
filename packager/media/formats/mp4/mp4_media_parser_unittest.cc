@@ -25,6 +25,10 @@ namespace edash_packager {
 namespace media {
 
 namespace {
+const char kKey[] =
+    "\xeb\xdd\x62\xf1\x68\x14\xd2\x7b\x68\xef\x12\x2a\xfc\xe4\xae\x3c";
+const char kKeyId[] = "0123456789012345";
+
 class MockKeySource : public KeySource {
  public:
   MOCK_METHOD1(FetchKeys, Status(const std::vector<uint8_t>& pssh_data));
@@ -225,7 +229,7 @@ TEST_F(MP4MediaParserTest, NON_FRAGMENTED_MP4) {
 
 TEST_F(MP4MediaParserTest, CencWithoutDecryptionSource) {
   // Parsing should fail but it will get the streams successfully.
-  EXPECT_FALSE(ParseMP4File("bear-640x360-v_frag-cenc.mp4", 512));
+  EXPECT_FALSE(ParseMP4File("bear-640x360-v_frag-cenc-aux.mp4", 512));
   EXPECT_EQ(1u, num_streams_);
 }
 
@@ -233,19 +237,15 @@ TEST_F(MP4MediaParserTest, CencInitWithoutDecryptionSource) {
   InitializeParser(NULL);
 
   std::vector<uint8_t> buffer =
-      ReadTestDataFile("bear-640x360-v_frag-cenc.mp4");
+      ReadTestDataFile("bear-640x360-v_frag-cenc-aux.mp4");
   const int kFirstMoofOffset = 1646;
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), kFirstMoofOffset, 512));
   EXPECT_EQ(1u, num_streams_);
 }
 
-TEST_F(MP4MediaParserTest, CencWithDecryptionSource) {
+TEST_F(MP4MediaParserTest, CencWithDecryptionSourceAndAuxInMdat) {
   MockKeySource mock_key_source;
   EXPECT_CALL(mock_key_source, FetchKeys(_)).WillOnce(Return(Status::OK));
-
-  const char kKey[] =
-      "\xeb\xdd\x62\xf1\x68\x14\xd2\x7b\x68\xef\x12\x2a\xfc\xe4\xae\x3c";
-  const char kKeyId[] = "0123456789012345";
 
   EncryptionKey encryption_key;
   encryption_key.key.assign(kKey, kKey + strlen(kKey));
@@ -256,7 +256,26 @@ TEST_F(MP4MediaParserTest, CencWithDecryptionSource) {
   InitializeParser(&mock_key_source);
 
   std::vector<uint8_t> buffer =
-      ReadTestDataFile("bear-640x360-v_frag-cenc.mp4");
+      ReadTestDataFile("bear-640x360-v_frag-cenc-aux.mp4");
+  EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
+  EXPECT_EQ(1u, num_streams_);
+  EXPECT_EQ(82u, num_samples_);
+}
+
+TEST_F(MP4MediaParserTest, CencWithDecryptionSourceAndSenc) {
+  MockKeySource mock_key_source;
+  EXPECT_CALL(mock_key_source, FetchKeys(_)).WillOnce(Return(Status::OK));
+
+  EncryptionKey encryption_key;
+  encryption_key.key.assign(kKey, kKey + strlen(kKey));
+  EXPECT_CALL(mock_key_source,
+              GetKey(std::vector<uint8_t>(kKeyId, kKeyId + strlen(kKeyId)), _))
+      .WillOnce(DoAll(SetArgPointee<1>(encryption_key), Return(Status::OK)));
+
+  InitializeParser(&mock_key_source);
+
+  std::vector<uint8_t> buffer =
+      ReadTestDataFile("bear-640x360-v_frag-cenc-senc.mp4");
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
   EXPECT_EQ(1u, num_streams_);
   EXPECT_EQ(82u, num_samples_);

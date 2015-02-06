@@ -13,7 +13,6 @@
 #include "packager/media/filters/vp8_parser.h"
 #include "packager/media/filters/vp9_parser.h"
 #include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/media/formats/mp4/cenc.h"
 
 namespace {
 // Generate 64bit IV by default.
@@ -67,6 +66,11 @@ Status EncryptingFragmenter::InitializeFragment(int64_t first_sample_dts) {
 
   traf()->auxiliary_size.sample_info_sizes.clear();
   traf()->auxiliary_offset.offsets.clear();
+  if (IsSubsampleEncryptionRequired()) {
+    traf()->sample_encryption.flags |=
+        SampleEncryption::kUseSubsampleEncryption;
+  }
+  traf()->sample_encryption.sample_encryption_entries.clear();
 
   const bool enable_encryption = clear_time_ <= 0;
   if (!enable_encryption) {
@@ -116,6 +120,7 @@ void EncryptingFragmenter::FinalizeFragmentForEncryption() {
     DCHECK(!IsSubsampleEncryptionRequired());
     saiz.default_sample_info_size = encryptor_->iv().size();
   }
+  traf()->sample_encryption.iv_size = encryptor_->iv().size();
 }
 
 Status EncryptingFragmenter::CreateEncryptor() {
@@ -141,7 +146,8 @@ void EncryptingFragmenter::EncryptBytes(uint8_t* data, uint32_t size) {
 Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
   DCHECK(encryptor_);
 
-  FrameCENCInfo cenc_info(encryptor_->iv());
+  SampleEncryptionEntry sample_encryption_entry;
+  sample_encryption_entry.initialization_vector = encryptor_->iv();
   uint8_t* data = sample->writable_data();
   if (IsSubsampleEncryptionRequired()) {
     if (vpx_parser_) {
@@ -155,7 +161,7 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
         subsample.clear_bytes = frame.uncompressed_header_size;
         subsample.cipher_bytes =
             frame.frame_size - frame.uncompressed_header_size;
-        cenc_info.AddSubsample(subsample);
+        sample_encryption_entry.subsamples.push_back(subsample);
         if (subsample.cipher_bytes > 0)
           EncryptBytes(data + subsample.clear_bytes, subsample.cipher_bytes);
         data += frame.frame_size;
@@ -167,27 +173,30 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
         if (!reader.ReadNBytesInto8(&nalu_length, nalu_length_size_))
           return Status(error::MUXER_FAILURE, "Fail to read nalu_length.");
 
-        SubsampleEntry subsample;
-        subsample.clear_bytes = nalu_length_size_ + 1;
-        subsample.cipher_bytes = nalu_length - 1;
         if (!reader.SkipBytes(nalu_length)) {
           return Status(error::MUXER_FAILURE,
                         "Sample size does not match nalu_length.");
         }
 
+        SubsampleEntry subsample;
+        subsample.clear_bytes = nalu_length_size_ + 1;
+        subsample.cipher_bytes = nalu_length - 1;
+        sample_encryption_entry.subsamples.push_back(subsample);
+
         EncryptBytes(data + subsample.clear_bytes, subsample.cipher_bytes);
-        cenc_info.AddSubsample(subsample);
         data += nalu_length_size_ + nalu_length;
       }
     }
 
     // The length of per-sample auxiliary datum, defined in CENC ch. 7.
-    traf()->auxiliary_size.sample_info_sizes.push_back(cenc_info.ComputeSize());
+    traf()->auxiliary_size.sample_info_sizes.push_back(
+        sample_encryption_entry.ComputeSize());
   } else {
     EncryptBytes(data, sample->data_size());
   }
 
-  cenc_info.Write(aux_data());
+  traf()->sample_encryption.sample_encryption_entries.push_back(
+      sample_encryption_entry);
   encryptor_->UpdateIv();
   return Status::OK;
 }

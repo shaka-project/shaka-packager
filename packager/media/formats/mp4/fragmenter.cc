@@ -84,7 +84,6 @@ Status Fragmenter::InitializeFragment(int64_t first_sample_dts) {
   earliest_presentation_time_ = kInvalidTime;
   first_sap_time_ = kInvalidTime;
   data_.reset(new BufferWriter());
-  aux_data_.reset(new BufferWriter());
   return Status::OK;
 }
 
