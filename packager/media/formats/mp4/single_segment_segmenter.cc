@@ -107,7 +107,7 @@ Status SingleSegmentSegmenter::DoFinalize() {
                   "Cannot open file to read " + temp_file_name_);
   }
 
-  const int kBufSize = 0x40000;  // 256KB.
+  const int kBufSize = 0x200000;  // 2MB.
   scoped_ptr<uint8_t[]> buf(new uint8_t[kBufSize]);
   while (!temp_file->Eof()) {
     int64_t size = temp_file->Read(buf.get(), kBufSize);

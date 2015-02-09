@@ -23,7 +23,7 @@
 namespace {
 const size_t kInitBufSize = 0x4000;  // 16KB, sufficient to determine the
                                      // container and likely all init data.
-const size_t kBufSize = 0x40000;  // 256KB.
+const size_t kBufSize = 0x200000;  // 2MB
 }
 
 namespace edash_packager {
