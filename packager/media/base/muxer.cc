@@ -19,6 +19,7 @@ Muxer::Muxer(const MuxerOptions& options)
       max_sd_pixels_(0),
       clear_lead_in_seconds_(0),
       crypto_period_duration_in_seconds_(0),
+      cancelled_(false),
       muxer_listener_(NULL),
       clock_(NULL) {}
 
@@ -56,6 +57,9 @@ Status Muxer::Run() {
 
   uint32_t current_stream_id = 0;
   while (status.ok()) {
+    if (cancelled_)
+      return Status(error::CANCELLED, "muxer run cancelled");
+
     scoped_refptr<MediaSample> sample;
     status = streams_[current_stream_id]->PullSample(&sample);
     if (!status.ok())
@@ -70,6 +74,10 @@ Status Muxer::Run() {
   }
   // Finalize the muxer after reaching end of stream.
   return status.error_code() == error::END_OF_STREAM ? Finalize() : status;
+}
+
+void Muxer::Cancel() {
+  cancelled_ = true;
 }
 
 void Muxer::SetMuxerListener(media::event::MuxerListener* muxer_listener) {

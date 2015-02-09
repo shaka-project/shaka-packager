@@ -33,7 +33,8 @@ Demuxer::Demuxer(const std::string& file_name)
     : file_name_(file_name),
       media_file_(NULL),
       init_event_received_(false),
-      buffer_(new uint8_t[kBufSize]) {
+      buffer_(new uint8_t[kBufSize]),
+      cancelled_(false) {
 }
 
 Demuxer::~Demuxer() {
@@ -127,8 +128,11 @@ Status Demuxer::Run() {
       return status;
   }
 
-  while ((status = Parse()).ok())
+  while (!cancelled_ && (status = Parse()).ok())
     continue;
+
+  if (cancelled_ && status.ok())
+    return Status(error::CANCELLED, "Demuxer run cancelled");
 
   if (status.error_code() == error::END_OF_STREAM) {
     // Push EOS sample to muxer to indicate end of stream.
@@ -167,6 +171,10 @@ Status Demuxer::Parse() {
              ? Status::OK
              : Status(error::PARSER_FAILURE,
                       "Cannot parse media file " + file_name_);
+}
+
+void Demuxer::Cancel() {
+  cancelled_ = true;
 }
 
 }  // namespace media

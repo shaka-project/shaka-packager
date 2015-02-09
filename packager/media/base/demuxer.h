@@ -55,6 +55,10 @@ class Demuxer {
   /// Read from the source and send it to the parser.
   Status Parse();
 
+  /// Cancel a demuxing job in progress. Will cause @a Run to exit with an error
+  /// status of type CANCELLED.
+  void Cancel();
+
   /// @return Streams in the media container being demuxed. The caller cannot
   ///         add or remove streams from the returned vector, but the caller is
   ///         allowed to change the internal state of the streams in the vector
@@ -75,6 +79,7 @@ class Demuxer {
   std::vector<MediaStream*> streams_;
   scoped_ptr<uint8_t[]> buffer_;
   scoped_ptr<KeySource> key_source_;
+  bool cancelled_;
 
   DISALLOW_COPY_AND_ASSIGN(Demuxer);
 };

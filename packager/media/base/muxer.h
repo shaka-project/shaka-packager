@@ -57,6 +57,10 @@ class Muxer {
   /// Drive the remuxing from muxer side (pull).
   Status Run();
 
+  /// Cancel a muxing job in progress. Will cause @a Run to exit with an error
+  /// status of type CANCELLED.
+  void Cancel();
+
   /// Set a MuxerListener event handler for this object.
   /// @param muxer_listener should not be NULL.
   void SetMuxerListener(event::MuxerListener* muxer_listener);
@@ -110,6 +114,7 @@ class Muxer {
   uint32_t max_sd_pixels_;
   double clear_lead_in_seconds_;
   double crypto_period_duration_in_seconds_;
+  bool cancelled_;
 
   event::MuxerListener* muxer_listener_;
   // An external injected clock, can be NULL.
