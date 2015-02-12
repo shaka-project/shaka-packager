@@ -58,14 +58,15 @@ if __name__ == '__main__':
   args.extend(['-I' + os.path.join(src_dir, 'build', 'common.gypi')])
 
   # Set these default GYP_DEFINES if user does not set the value explicitly.
-  _DEFAULT_DEFINES = {"test_isolation_mode" : "noop", "use_glib" : 0,
-                      "use_openssl" : 1, "use_x11" : 0}
+  _DEFAULT_DEFINES = {'test_isolation_mode': 'noop', 'use_glib': 0,
+                      'use_openssl': 1, 'use_x11': 0,
+                      'linux_use_gold_binary': 0, 'linux_use_gold_flags': 0}
 
   gyp_defines = (os.environ['GYP_DEFINES'] if os.environ.get('GYP_DEFINES')
-                 else "")
+                 else '')
   for key in _DEFAULT_DEFINES:
     if key not in gyp_defines:
-      gyp_defines += " {0}={1}".format(key, _DEFAULT_DEFINES[key])
+      gyp_defines += ' {0}={1}'.format(key, _DEFAULT_DEFINES[key])
   os.environ['GYP_DEFINES'] = gyp_defines.strip()
 
   # There shouldn't be a circular dependency relationship between .gyp files,
@@ -88,7 +89,7 @@ if __name__ == '__main__':
   output_dir = os.path.join(checkout_dir, 'out')
   gyp_generator_flags = 'output_dir="' + output_dir + '"'
   if os.environ.get('GYP_GENERATOR_FLAGS'):
-    os.environ['GYP_GENERATOR_FLAGS'] += " " + gyp_generator_flags
+    os.environ['GYP_GENERATOR_FLAGS'] += ' ' + gyp_generator_flags
   else:
     os.environ['GYP_GENERATOR_FLAGS'] = gyp_generator_flags
 
