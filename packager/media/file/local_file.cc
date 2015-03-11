@@ -72,5 +72,9 @@ bool LocalFile::Open() {
   return (internal_file_ != NULL);
 }
 
+bool LocalFile::Delete(const char* file_name) {
+  return base::DeleteFile(base::FilePath(file_name), false);
+}
+
 }  // namespace media
 }  // namespace edash_packager

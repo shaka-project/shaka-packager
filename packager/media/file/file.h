@@ -29,6 +29,11 @@ class File {
   /// @return A File pointer on success, false otherwise.
   static File* Open(const char* file_name, const char* mode);
 
+  /// Delete the specified file.
+  /// @param file_name contains the path of the file to be deleted.
+  /// @return true if successful, false otherwise.
+  static bool Delete(const char* file_name);
+
   /// Flush() and de-allocate resources associated with this file, and
   /// delete this File object.  THIS IS THE ONE TRUE WAY TO DEALLOCATE
   /// THIS OBJECT.

@@ -35,7 +35,15 @@ SingleSegmentSegmenter::SingleSegmentSegmenter(const MuxerOptions& options,
                                                scoped_ptr<FileType> ftyp,
                                                scoped_ptr<Movie> moov)
     : Segmenter(options, ftyp.Pass(), moov.Pass()) {}
-SingleSegmentSegmenter::~SingleSegmentSegmenter() {}
+
+SingleSegmentSegmenter::~SingleSegmentSegmenter() {
+  if (temp_file_)
+    temp_file_.release()->Close();
+  if (!temp_file_name_.empty()) {
+    if (!File::Delete(temp_file_name_.c_str()))
+      LOG(ERROR) << "Unable to delete temporary file " << temp_file_name_;
+  }
+}
 
 bool SingleSegmentSegmenter::GetInitRange(size_t* offset, size_t* size) {
   // In Finalize, ftyp and moov gets written first so offset must be 0.

@@ -18,19 +18,27 @@ namespace media {
 const char* kLocalFilePrefix = "file://";
 const char* kUdpFilePrefix = "udp://";
 
+namespace {
+
 typedef File* (*FileFactoryFunction)(const char* file_name, const char* mode);
+typedef bool (*FileDeleteFunction)(const char* file_name);
 
 struct SupportedTypeInfo {
   const char* type;
   size_t type_length;
   const FileFactoryFunction factory_function;
+  const FileDeleteFunction delete_function;
 };
 
-static File* CreateLocalFile(const char* file_name, const char* mode) {
+File* CreateLocalFile(const char* file_name, const char* mode) {
   return new LocalFile(file_name, mode);
 }
 
-static File* CreateUdpFile(const char* file_name, const char* mode) {
+bool DeleteLocalFile(const char* file_name) {
+  return LocalFile::Delete(file_name);
+}
+
+File* CreateUdpFile(const char* file_name, const char* mode) {
   if (base::strcasecmp(mode, "r")) {
     NOTIMPLEMENTED() << "UdpFile only supports read (receive) mode.";
     return NULL;
@@ -39,9 +47,21 @@ static File* CreateUdpFile(const char* file_name, const char* mode) {
 }
 
 static const SupportedTypeInfo kSupportedTypeInfo[] = {
-    { kLocalFilePrefix, strlen(kLocalFilePrefix), &CreateLocalFile },
-    { kUdpFilePrefix, strlen(kUdpFilePrefix), &CreateUdpFile },
+  {
+    kLocalFilePrefix,
+    strlen(kLocalFilePrefix),
+    &CreateLocalFile,
+    &DeleteLocalFile
+  },
+  {
+    kUdpFilePrefix,
+    strlen(kUdpFilePrefix),
+    &CreateUdpFile,
+    NULL
+  },
 };
+
+}  // namespace
 
 File* File::Create(const char* file_name, const char* mode) {
   for (size_t i = 0; i < arraysize(kSupportedTypeInfo); ++i) {
@@ -64,6 +84,19 @@ File* File::Open(const char* file_name, const char* mode) {
     return NULL;
   }
   return file;
+}
+
+bool File::Delete(const char* file_name) {
+  for (size_t i = 0; i < arraysize(kSupportedTypeInfo); ++i) {
+    const SupportedTypeInfo& type_info = kSupportedTypeInfo[i];
+    if (strncmp(type_info.type, file_name, type_info.type_length) == 0) {
+      return type_info.delete_function ?
+          type_info.delete_function(file_name + type_info.type_length) :
+          false;
+    }
+  }
+  // Otherwise we assume it is a local file
+  return DeleteLocalFile(file_name);
 }
 
 int64_t File::GetFileSize(const char* file_name) {

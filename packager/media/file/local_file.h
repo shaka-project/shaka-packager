@@ -35,6 +35,11 @@ class LocalFile : public File {
   virtual bool Eof() OVERRIDE;
   /// @}
 
+  /// Delete a local file.
+  /// @param file_name is the path of the file to be deleted.
+  /// @return true if successful, or false otherwise.
+  static bool Delete(const char* file_name);
+
  protected:
   virtual ~LocalFile();
 
@@ -51,4 +56,3 @@ class LocalFile : public File {
 }  // namespace edash_packager
 
 #endif  // PACKAGER_FILE_LOCAL_FILE_H_
-
