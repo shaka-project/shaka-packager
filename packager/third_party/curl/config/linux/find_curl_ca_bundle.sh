@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash -e
 
 # Copyright 2015 Google Inc. All rights reserved.
 #
@@ -14,10 +14,8 @@ paths=('/etc/pki/tls/certs/ca-bundle.crt'
        '/usr/local/share/certs/ca-root.crt'
        '/usr/share/ssl/certs/ca-bundle.crt')
 
-for path in "${paths[@]}"
-do
-  if test -f "$path"
-  then
+for path in "${paths[@]}"; do
+  if test -f "$path"; then
     echo "$path"
     exit 0
   fi
