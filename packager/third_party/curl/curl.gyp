@@ -5,23 +5,6 @@
 # https://developers.google.com/open-source/licenses/bsd
 
 {
-  'variables': {
-    # Scan ca bundle in its common appearing locations.
-    'curl_ca_bundle%':
-      '<!(for path in /etc/pki/tls/certs/ca-bundle.crt       \
-                      /etc/ssl/cert.pem                      \
-                      /etc/ssl/certs/ca-bundle.crt           \
-                      /etc/ssl/certs/ca-certificates.crt     \
-                      /usr/local/share/certs/ca-root.crt     \
-                      /usr/share/ssl/certs/ca-bundle.crt; do \
-            if test -f "$path"; then ca="$path"; break; fi;  \
-          done;                                              \
-          if [ -z "$ca" ]; then                              \
-            echo "Failed to locate SSL CA cert."; exit 1;    \
-          else                                               \
-            echo "$ca";                                      \
-          fi)',
-  },
   'targets': [
     {
       'target_name': 'curl_config',
@@ -35,7 +18,6 @@
           'USE_IPV6',
           'USE_OPENSSL'
           'USE_SSLEAY',
-          'CURL_CA_BUNDLE="<(curl_ca_bundle)"',
         ],
         'include_dirs': [
           'config',
@@ -55,6 +37,7 @@
           'direct_dependent_settings': {
             'defines': [
               'HAVE_CONFIG_H',
+              'CURL_CA_BUNDLE="<!(config/linux/find_curl_ca_bundle.sh)"',
             ],
             'include_dirs': [
               'config/linux',

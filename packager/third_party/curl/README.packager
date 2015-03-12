@@ -30,6 +30,9 @@ Description of source tree.
         linux platform, with a few features disabled to build correctly on a
         fresh linux box.
 
+    config/linux/find_curl_ca_bundle.sh
+        A script used to find the path to curl_ca_bundle in the target system.
+
 2) curl.gyp
     A gyp build file for the library. Manually maintained.
 

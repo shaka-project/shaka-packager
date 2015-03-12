@@ -82,6 +82,10 @@ deps = {
   "src/packager/third_party/protobuf":
     Var("chromium_svn") + "/src/third_party/protobuf@" + Var("chromium_rev"),
 
+  # Required by build/linux/system.gyp and third_party/curl/curl.gyp.
+  "src/packager/third_party/zlib":
+    Var("chromium_svn") + "/src/third_party/zlib@" + Var("chromium_rev"),
+
   "src/packager/tools/clang":
     Var("chromium_svn") + "/src/tools/clang@" + Var("chromium_rev"),
 
@@ -100,10 +104,6 @@ deps_os = {
     # Linux gold build to build faster.
     "src/packager/third_party/gold":
       Var("chromium_svn") + "/deps/third_party/gold@" + Var("chromium_rev"),
-
-    # Required by /src/build/linux/system.gyp.
-    "src/packager/third_party/zlib":
-      Var("chromium_svn") + "/src/third_party/zlib@" + Var("chromium_rev"),
   },
 }
 
