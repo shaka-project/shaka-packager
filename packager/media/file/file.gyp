@@ -16,6 +16,8 @@
         'file.cc',
         'file.h',
         'file_closer.h',
+        'io_cache.cc',
+        'io_cache.h',
         'local_file.cc',
         'local_file.h',
         'udp_file.cc',
@@ -35,6 +37,19 @@
       'dependencies': [
         '../../testing/gtest.gyp:gtest',
         '../../testing/gtest.gyp:gtest_main',
+        'file',
+      ],
+    },
+    {
+      'target_name': 'io_cache_unittest',
+      'type': '<(gtest_target_type)',
+      'sources': [
+        'io_cache_unittest.cc',
+      ],
+      'dependencies': [
+        '../../testing/gtest.gyp:gtest',
+        '../../testing/gtest.gyp:gtest_main',
+        '../base/media_base.gyp:base',
         'file',
       ],
     },
