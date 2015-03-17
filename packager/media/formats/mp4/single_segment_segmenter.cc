@@ -117,9 +117,11 @@ Status SingleSegmentSegmenter::DoFinalize() {
 
   const int kBufSize = 0x200000;  // 2MB.
   scoped_ptr<uint8_t[]> buf(new uint8_t[kBufSize]);
-  while (!temp_file->Eof()) {
+  while (true) {
     int64_t size = temp_file->Read(buf.get(), kBufSize);
-    if (size <= 0) {
+    if (size == 0) {
+      break;
+    } else if (size < 0) {
       return Status(error::FILE_FAILURE,
                     "Failed to read file " + temp_file_name_);
     }
