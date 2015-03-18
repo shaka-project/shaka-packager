@@ -147,7 +147,7 @@ TEST_F(IoCacheTest, LotsOfUnalignedBlocks) {
   while (verify_index < verify_buffer.size()) {
     std::vector<uint8_t> read_buffer2(kBlockSize);
     uint64_t bytes_read = cache_->Read(&read_buffer2[0], kBlockSize);
-    EXPECT_NE(0, bytes_read);
+    EXPECT_NE(0U, bytes_read);
     EXPECT_FALSE(memcmp(&verify_buffer[verify_index],
                         &read_buffer2[0],
                         bytes_read));
@@ -204,7 +204,7 @@ TEST_F(IoCacheTest, CloseByWriter) {
   uint8_t test_buffer[kBlockSize];
   std::vector<uint8_t> write_buffer;
   WriteToCacheThreaded(write_buffer, 0, 0, true);
-  EXPECT_EQ(0, cache_->Read(test_buffer, kBlockSize));
+  EXPECT_EQ(0U, cache_->Read(test_buffer, kBlockSize));
   WaitForWriterThread();
 }
 

@@ -28,7 +28,7 @@ class IoCache {
   /// @param size is the size of @a buffer.
   /// @return the number of bytes read into @a buffer, or 0 if the call
   ///         unblocked because the cache has been closed.
-  int64_t Read(void* buffer, uint64_t size);
+  uint64_t Read(void* buffer, uint64_t size);
 
   /// Write data to the cache. This function may block until there is enough
   /// room in the cache.
@@ -37,7 +37,7 @@ class IoCache {
   /// @return the amount of data written to the buffer (which will equal
   ///         @a data), or 0 if the call unblocked because the cache has been
   ///         closed.
-  int64_t Write(const void* buffer, uint64_t size);
+  uint64_t Write(const void* buffer, uint64_t size);
 
   /// Empties the cache.
   void Clear();

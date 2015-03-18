@@ -35,7 +35,7 @@ IoCache::~IoCache() {
   Close();
 }
 
-int64_t IoCache::Read(void* buffer, uint64_t size) {
+uint64_t IoCache::Read(void* buffer, uint64_t size) {
   DCHECK(buffer);
 
   AutoLock lock(lock_);
@@ -65,7 +65,7 @@ int64_t IoCache::Read(void* buffer, uint64_t size) {
   return size;
 }
 
-int64_t IoCache::Write(const void* buffer, uint64_t size) {
+uint64_t IoCache::Write(const void* buffer, uint64_t size) {
   DCHECK(buffer);
 
   const uint8_t* r_ptr(static_cast<const uint8_t*>(buffer));
