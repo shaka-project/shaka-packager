@@ -27,7 +27,7 @@ class IoCache {
   /// @param buffer is a buffer into which to read the data from the cache.
   /// @param size is the size of @a buffer.
   /// @return the number of bytes read into @a buffer, or 0 if the call
-  ///         unblocked because the cache has been closed.
+  ///         unblocked because the cache has been closed and is empty.
   uint64_t Read(void* buffer, uint64_t size);
 
   /// Write data to the cache. This function may block until there is enough
@@ -53,6 +53,9 @@ class IoCache {
   /// Returns the number of free bytes in the cache.
   /// @return the number of free bytes in the cache.
   uint64_t BytesFree();
+
+  /// Waits until the cache is empty or has been closed.
+  void WaitUntilEmptyOrClosed();
 
  private:
   uint64_t BytesCachedInternal();

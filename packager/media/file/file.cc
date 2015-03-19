@@ -6,11 +6,21 @@
 
 #include "packager/media/file/file.h"
 
+#include <gflags/gflags.h>
 #include "packager/base/logging.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/file/local_file.h"
+#include "packager/media/file/threaded_io_file.h"
 #include "packager/media/file/udp_file.h"
 #include "packager/base/strings/string_util.h"
+
+DEFINE_uint64(io_cache_size,
+              32ULL << 20,
+              "Size of the threaded I/O cache, in bytes. Specify 0 to disable "
+              "threaded I/O.");
+DEFINE_uint64(io_block_size,
+              2ULL << 20,
+              "Size of the block size used for threaded I/O, in bytes.");
 
 namespace edash_packager {
 namespace media {
@@ -64,15 +74,36 @@ static const SupportedTypeInfo kSupportedTypeInfo[] = {
 }  // namespace
 
 File* File::Create(const char* file_name, const char* mode) {
+  scoped_ptr<File, FileCloser> internal_file;
   for (size_t i = 0; i < arraysize(kSupportedTypeInfo); ++i) {
     const SupportedTypeInfo& type_info = kSupportedTypeInfo[i];
     if (strncmp(type_info.type, file_name, type_info.type_length) == 0) {
-      return type_info.factory_function(file_name + type_info.type_length,
-                                        mode);
+      internal_file.reset(type_info.factory_function(
+          file_name + type_info.type_length, mode));
     }
   }
   // Otherwise we assume it is a local file
-  return CreateLocalFile(file_name, mode);
+  if (!internal_file)
+    internal_file.reset(CreateLocalFile(file_name, mode));
+
+  if (FLAGS_io_cache_size) {
+    // Enable threaded I/O for "r", "w", and "a" modes only.
+    if (!strcmp(mode, "r")) {
+      return new ThreadedIoFile(internal_file.Pass(),
+                                ThreadedIoFile::kInputMode,
+                                FLAGS_io_cache_size,
+                                FLAGS_io_block_size);
+    } else if (!strcmp(mode, "w") || !strcmp(mode, "a")) {
+      return new ThreadedIoFile(internal_file.Pass(),
+                                ThreadedIoFile::kOutputMode,
+                                FLAGS_io_cache_size,
+                                FLAGS_io_block_size);
+    }
+  }
+
+  // Threaded I/O is disabled.
+  DLOG(WARNING) << "Threaded I/O is disabled. Performance may be decreased.";
+  return internal_file.release();
 }
 
 File* File::Open(const char* file_name, const char* mode) {

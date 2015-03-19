@@ -43,8 +43,6 @@ uint64_t IoCache::Read(void* buffer, uint64_t size) {
     AutoUnlock unlock(lock_);
     write_event_.Wait();
   }
-  if (closed_)
-    return 0;
 
   size = std::min(size, BytesCachedInternal());
   uint64_t first_chunk_size(std::min(size, static_cast<uint64_t>(
@@ -133,6 +131,14 @@ uint64 IoCache::BytesCachedInternal() {
 
 uint64 IoCache::BytesFreeInternal() {
   return cache_size_ - BytesCachedInternal();
+}
+
+void IoCache::WaitUntilEmptyOrClosed() {
+  AutoLock lock(lock_);
+  while (!closed_ && BytesCachedInternal()) {
+    AutoUnlock unlock(lock_);
+    read_event_.Wait();
+  }
 }
 
 }  // namespace media

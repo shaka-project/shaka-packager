@@ -20,12 +20,15 @@
         'io_cache.h',
         'local_file.cc',
         'local_file.h',
+        'threaded_io_file.cc',
+        'threaded_io_file.h',
         'udp_file.cc',
         'udp_file.h',
       ],
       'dependencies': [
         '../../base/base.gyp:base',
         '../../third_party/gflags/gflags.gyp:gflags',
+        '../base/media_base.gyp:base',
       ],
     },
     {
@@ -33,23 +36,11 @@
       'type': '<(gtest_target_type)',
       'sources': [
         'file_unittest.cc',
-      ],
-      'dependencies': [
-        '../../testing/gtest.gyp:gtest',
-        '../../testing/gtest.gyp:gtest_main',
-        'file',
-      ],
-    },
-    {
-      'target_name': 'io_cache_unittest',
-      'type': '<(gtest_target_type)',
-      'sources': [
         'io_cache_unittest.cc',
       ],
       'dependencies': [
         '../../testing/gtest.gyp:gtest',
         '../../testing/gtest.gyp:gtest_main',
-        '../base/media_base.gyp:base',
         'file',
       ],
     },

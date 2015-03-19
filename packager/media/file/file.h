@@ -96,6 +96,8 @@ class File {
   virtual bool Open() = 0;
 
  private:
+  friend class ThreadedIoFile;
+
   // This is a file factory method, it creates a proper file, e.g.
   // LocalFile, MemFile based on prefix.
   static File* Create(const char* file_name, const char* mode);

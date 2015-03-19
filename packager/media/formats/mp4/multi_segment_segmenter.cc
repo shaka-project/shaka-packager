@@ -140,7 +140,7 @@ Status MultiSegmentSegmenter::WriteSegment() {
   if (options().segment_template.empty()) {
     // Append the segment to output file if segment template is not specified.
     file_name = options().output_file_name.c_str();
-    file = File::Open(file_name.c_str(), "a+");
+    file = File::Open(file_name.c_str(), "a");
     if (file == NULL) {
       return Status(
           error::FILE_FAILURE,
