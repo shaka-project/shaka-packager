@@ -109,14 +109,6 @@ bool ThreadedIoFile::Flush() {
   return internal_file_->Flush();
 }
 
-bool ThreadedIoFile::Eof() {
-  DCHECK(internal_file_);
-  DCHECK(thread_);
-  DCHECK_EQ(kInputMode, mode_);
-
-  return eof_ && !cache_.BytesCached();
-}
-
 void ThreadedIoFile::RunInInputMode() {
   DCHECK(internal_file_);
   DCHECK(thread_);

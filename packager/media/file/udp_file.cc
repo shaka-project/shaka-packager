@@ -129,10 +129,6 @@ bool UdpFile::Flush() {
   return false;
 }
 
-bool UdpFile::Eof() {
-  return socket_ == kInvalidSocket;
-}
-
 class ScopedSocket {
  public:
   explicit ScopedSocket(int sock_fd)

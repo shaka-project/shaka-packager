@@ -31,7 +31,6 @@ class UdpFile : public File {
   virtual int64_t Write(const void* buffer, uint64_t length) OVERRIDE;
   virtual int64_t Size() OVERRIDE;
   virtual bool Flush() OVERRIDE;
-  virtual bool Eof() OVERRIDE;
   /// @}
 
  protected:

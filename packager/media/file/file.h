@@ -66,9 +66,6 @@ class File {
   /// @return true on success, false otherwise.
   virtual bool Flush() = 0;
 
-  /// @return true if the file reaches eof, false otherwise.
-  virtual bool Eof() = 0;
-
   /// @return The file name.
   const std::string& file_name() const { return file_name_; }
 

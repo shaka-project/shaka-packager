@@ -80,16 +80,16 @@ TEST_F(LocalFileTest, Read_And_Eof) {
   File* file = File::Open(local_file_name_.c_str(), "r");
   ASSERT_TRUE(file != NULL);
 
-  // Read half of the file and verify that Eof is not true.
+  // Read half of the file.
   const int kFirstReadBytes = kDataSize / 2;
   std::string read_data(kFirstReadBytes + kDataSize, 0);
   EXPECT_EQ(kFirstReadBytes, file->Read(&read_data[0], kFirstReadBytes));
-  EXPECT_FALSE(file->Eof());
 
-  // Read the remaining half of the file and verify Eof is true.
+  // Read the remaining half of the file and verify EOF.
   EXPECT_EQ(kDataSize - kFirstReadBytes,
             file->Read(&read_data[kFirstReadBytes], kDataSize));
-  EXPECT_TRUE(file->Eof());
+  uint8_t single_byte;
+  EXPECT_EQ(0, file->Read(&single_byte, sizeof(single_byte)));
   EXPECT_TRUE(file->Close());
 
   // Compare data written and read.

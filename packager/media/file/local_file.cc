@@ -59,11 +59,6 @@ bool LocalFile::Flush() {
   return ((fflush(internal_file_) == 0) && !ferror(internal_file_));
 }
 
-bool LocalFile::Eof() {
-  DCHECK(internal_file_ != NULL);
-  return static_cast<bool>(feof(internal_file_));
-}
-
 LocalFile::~LocalFile() {}
 
 bool LocalFile::Open() {
