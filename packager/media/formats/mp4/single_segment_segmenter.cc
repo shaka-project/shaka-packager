@@ -7,9 +7,12 @@
 #include "packager/media/formats/mp4/single_segment_segmenter.h"
 
 #include <inttypes.h>
+#include <openssl/err.h>
+#include <openssl/rand.h>
 
 #include "packager/base/file_util.h"
 #include "packager/base/strings/stringprintf.h"
+#include "packager/base/threading/platform_thread.h"
 #include "packager/base/time/time.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/media_stream.h"
@@ -24,10 +27,14 @@ namespace mp4 {
 namespace {
 // Create a temp file name using process/thread id and current time.
 std::string TempFileName() {
-  int32_t tid = static_cast<int32_t>(pthread_self());
-  int32_t pid = static_cast<int32_t>(getpid());
-  int64_t now = base::Time::Now().ToInternalValue();
-  return base::StringPrintf("packager-tempfile-%x-%d-%" PRIx64, tid, pid, now);
+  int32_t tid = static_cast<int32_t>(base::PlatformThread::CurrentId());
+  int64_t rand = 0;
+  if (RAND_bytes(reinterpret_cast<uint8_t*>(&rand), sizeof(rand)) != 1) {
+    LOG(WARNING) << "RAND_bytes failed with error: "
+                 << ERR_error_string(ERR_get_error(), NULL);
+    rand = base::Time::Now().ToInternalValue();
+  }
+  return base::StringPrintf("packager-tempfile-%x-%" PRIx64, tid, rand);
 }
 }  // namespace
 

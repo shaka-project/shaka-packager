@@ -4,6 +4,8 @@
 
 #include "packager/media/base/bit_reader.h"
 
+#include <algorithm>
+
 namespace edash_packager {
 namespace media {
 

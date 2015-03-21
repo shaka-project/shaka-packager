@@ -336,7 +336,7 @@ Status Segmenter::FinalizeFragment(Fragmenter* fragmenter) {
   // Fill in data offsets. Data offset base is moof size + mdat box size.
   // (mdat is still empty, mdat size is the same as mdat box size).
   uint64_t base = moof_->ComputeSize() + mdat.ComputeSize();
-  for (uint i = 0; i < moof_->tracks.size(); ++i) {
+  for (size_t i = 0; i < moof_->tracks.size(); ++i) {
     TrackFragment& traf = moof_->tracks[i];
     Fragmenter* fragmenter = fragmenters_[i];
     if (fragmenter->aux_data()->Size() > 0) {
@@ -356,7 +356,7 @@ Status Segmenter::FinalizeFragment(Fragmenter* fragmenter) {
   // Write the fragment to buffer.
   moof_->Write(fragment_buffer_.get());
 
-  for (uint i = 0; i < moof_->tracks.size(); ++i) {
+  for (size_t i = 0; i < moof_->tracks.size(); ++i) {
     Fragmenter* fragmenter = fragmenters_[i];
     mdat.data_size =
         fragmenter->aux_data()->Size() + fragmenter->data()->Size();

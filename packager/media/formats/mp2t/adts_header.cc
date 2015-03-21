@@ -49,7 +49,7 @@ bool AdtsHeader::Parse(const uint8_t* adts_frame, size_t adts_frame_size) {
   // Skip MPEG version and layer.
   RCHECK(frame.SkipBits(3));
   // Get "protection absent" flag.
-  bool protection_absent;
+  uint8_t protection_absent;
   RCHECK(frame.ReadBits(1, &protection_absent));
   // Get profile.
   RCHECK(frame.ReadBits(2, &profile_));
