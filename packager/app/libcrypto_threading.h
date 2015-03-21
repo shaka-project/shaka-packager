@@ -12,23 +12,11 @@
 namespace edash_packager {
 namespace media {
 
-/// Enable thread safety for OpenSSL libcrypto.
-/// @return true if successful, false otherwise.
-bool InitLibcryptoThreading();
-
-/// Terminate thread safety for OpenSSL libcrypto.
-/// @return true if successful, false otherwise.
-bool TerminateLibcryptoThreading();
-
 /// Convenience class which initializes and terminates libcrypto threading.
 class LibcryptoThreading {
  public:
   LibcryptoThreading();
   ~LibcryptoThreading();
-
-  /// Enables thread safety for OpenSSL libcrypto.
-  /// @return true if successful, false otherwise.
-  bool Initialize();
 
  private:
   DISALLOW_COPY_AND_ASSIGN(LibcryptoThreading);

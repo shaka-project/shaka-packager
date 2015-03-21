@@ -43,13 +43,6 @@
         'third_party/gflags/gflags.gyp:gflags',
         'third_party/openssl/openssl.gyp:openssl',
       ],
-      'conditions': [
-        [ 'os_posix == 1', {
-          'sources': [
-            'app/libcrypto_threading_posix.cc',
-          ]
-        }],
-      ],
     },
     {
       'target_name': 'mpd_generator',

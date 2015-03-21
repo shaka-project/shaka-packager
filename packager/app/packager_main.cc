@@ -311,10 +311,6 @@ int PackagerMain(int argc, char** argv) {
     return kArgumentValidationFailed;
 
   edash_packager::media::LibcryptoThreading libcrypto_threading;
-  if (!libcrypto_threading.Initialize()) {
-    LOG(ERROR) << "Could not initialize libcrypto threading.";
-    return kInternalError;
-  }
   // TODO(tinskip): Make InsertStreamDescriptor a member of
   // StreamDescriptorList.
   StreamDescriptorList stream_descriptors;

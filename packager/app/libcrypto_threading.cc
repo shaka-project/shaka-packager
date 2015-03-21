@@ -6,17 +6,47 @@
 
 #include "packager/app/libcrypto_threading.h"
 
+#include <openssl/crypto.h>
+
+#include <vector>
+
+#include "packager/base/logging.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/synchronization/lock.h"
+#include "packager/base/threading/platform_thread.h"
+
 namespace edash_packager {
 namespace media {
 
-LibcryptoThreading::LibcryptoThreading() {}
+namespace {
 
-LibcryptoThreading::~LibcryptoThreading() {
-  TerminateLibcryptoThreading();
+scoped_ptr<base::Lock[]> global_locks;
+
+void LockFunction(int mode, int n, const char* file, int line) {
+  VLOG(2) << "CryptoLock @ " << file << ":" << line;
+  if (mode & CRYPTO_LOCK)
+    global_locks[n].Acquire();
+  else
+    global_locks[n].Release();
 }
 
-bool LibcryptoThreading::Initialize() {
-  return InitLibcryptoThreading();
+void ThreadIdFunction(CRYPTO_THREADID* id) {
+  CRYPTO_THREADID_set_numeric(
+      id, static_cast<unsigned long>(base::PlatformThread::CurrentId()));
+}
+
+}  // namespace
+
+LibcryptoThreading::LibcryptoThreading() {
+  global_locks.reset(new base::Lock[CRYPTO_num_locks()]);
+  CRYPTO_THREADID_set_callback(ThreadIdFunction);
+  CRYPTO_set_locking_callback(LockFunction);
+}
+
+LibcryptoThreading::~LibcryptoThreading() {
+  CRYPTO_THREADID_set_callback(NULL);
+  CRYPTO_set_locking_callback(NULL);
+  global_locks.reset();
 }
 
 }  // namespace media
