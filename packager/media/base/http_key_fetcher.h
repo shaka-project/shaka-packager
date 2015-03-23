@@ -3,6 +3,10 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
+//
+/// NOTE: Inclusion of this module will cause curl_global_init and
+///       curl_global_cleanup to be called at static initialization /
+///       deinitialization time.
 
 #ifndef MEDIA_BASE_HTTP_KEY_FETCHER_H_
 #define MEDIA_BASE_HTTP_KEY_FETCHER_H_
@@ -69,4 +73,3 @@ class HttpKeyFetcher : public KeyFetcher {
 }  // namespace edash_packager
 
 #endif  // MEDIA_BASE_HTTP_KEY_FETCHER_H_
-

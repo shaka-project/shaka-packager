@@ -18,6 +18,7 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
+#include "packager/base/synchronization/lock.h"
 #include "packager/base/time/time.h"
 #include "packager/media/file/file.h"
 #include "packager/mpd/base/content_protection_element.h"
@@ -188,6 +189,32 @@ std::string MakePathRelative(const std::string& path, const std::string& mpd_dir
   return (path.find(mpd_dir) == 0) ? path.substr(mpd_dir.size()) : path;
 }
 
+// Spooky static initialization/cleanup of libxml.
+class LibXmlInitializer {
+ public:
+  LibXmlInitializer() : initialized_(false) {
+    base::AutoLock lock(lock_);
+    if (!initialized_) {
+      xmlInitParser();
+      initialized_ = true;
+    }
+  }
+
+  ~LibXmlInitializer() {
+    base::AutoLock lock(lock_);
+    if (initialized_) {
+      xmlCleanupParser();
+      initialized_ = false;
+    }
+  }
+
+ private:
+  base::Lock lock_;
+  bool initialized_;
+
+  DISALLOW_COPY_AND_ASSIGN(LibXmlInitializer);
+};
+
 }  // namespace
 
 MpdBuilder::MpdBuilder(MpdType type, const MpdOptions& mpd_options)
@@ -227,7 +254,8 @@ bool MpdBuilder::ToString(std::string* output) {
 
 template <typename OutputType>
 bool MpdBuilder::WriteMpdToOutput(OutputType* output) {
-  xmlInitParser();
+  static LibXmlInitializer lib_xml_initializer;
+
   xml::ScopedXmlPtr<xmlDoc>::type doc(GenerateMpd());
   if (!doc.get())
     return false;
@@ -241,9 +269,8 @@ bool MpdBuilder::WriteMpdToOutput(OutputType* output) {
   bool result = WriteXmlCharArrayToOutput(doc_str, doc_str_size, output);
   xmlFree(doc_str);
 
-  // Cleanup, free the doc then cleanup parser.
+  // Cleanup, free the doc.
   doc.reset();
-  xmlCleanupParser();
   return result;
 }
 

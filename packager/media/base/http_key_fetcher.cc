@@ -8,6 +8,7 @@
 
 #include <curl/curl.h>
 #include "packager/base/strings/stringprintf.h"
+#include "packager/base/synchronization/lock.h"
 
 namespace {
 const char kUserAgentString[] = "edash-packager-http_fetcher/1.0";
@@ -35,23 +36,43 @@ size_t AppendToString(char* ptr, size_t size, size_t nmemb, std::string* respons
   response->append(ptr, total_size);
   return total_size;
 }
+
+class LibCurlInitializer {
+ public:
+  LibCurlInitializer() : initialized_(false) {
+    base::AutoLock lock(lock_);
+    if (!initialized_) {
+      curl_global_init(CURL_GLOBAL_DEFAULT);
+      initialized_ = true;
+    }
+  }
+
+  ~LibCurlInitializer() {
+    base::AutoLock lock(lock_);
+    if (initialized_) {
+      curl_global_cleanup();
+      initialized_ = false;
+    }
+  }
+
+ private:
+  base::Lock lock_;
+  bool initialized_;
+
+  DISALLOW_COPY_AND_ASSIGN(LibCurlInitializer);
+};
+
 }  // namespace
 
 namespace edash_packager {
 namespace media {
 
-HttpKeyFetcher::HttpKeyFetcher() : timeout_in_seconds_(0) {
-  curl_global_init(CURL_GLOBAL_DEFAULT);
-}
+HttpKeyFetcher::HttpKeyFetcher() : timeout_in_seconds_(0) {}
 
 HttpKeyFetcher::HttpKeyFetcher(uint32_t timeout_in_seconds)
-    : timeout_in_seconds_(timeout_in_seconds) {
-  curl_global_init(CURL_GLOBAL_DEFAULT);
-}
+    : timeout_in_seconds_(timeout_in_seconds) {}
 
-HttpKeyFetcher::~HttpKeyFetcher() {
-  curl_global_cleanup();
-}
+HttpKeyFetcher::~HttpKeyFetcher() {}
 
 Status HttpKeyFetcher::FetchKeys(const std::string& url,
                                  const std::string& request,
@@ -74,6 +95,8 @@ Status HttpKeyFetcher::FetchInternal(HttpMethod method,
                                      const std::string& data,
                                      std::string* response) {
   DCHECK(method == GET || method == POST);
+
+  static LibCurlInitializer lib_curl_initializer;
 
   ScopedCurl scoped_curl;
   CURL* curl = scoped_curl.get();

@@ -14,10 +14,6 @@
 namespace edash_packager {
 namespace media {
 
-namespace {
-const int kWaitDelayMs = 10;
-}
-
 ThreadedIoFile::ThreadedIoFile(scoped_ptr<File, FileCloser> internal_file,
                                Mode mode,
                                uint64_t io_cache_size,

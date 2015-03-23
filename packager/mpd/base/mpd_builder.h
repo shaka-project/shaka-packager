@@ -7,6 +7,10 @@
 // This file contains the MpdBuilder, AdaptationSet, and Representation class
 // declarations.
 // http://goo.gl/UrsSlF
+//
+/// NOTE: Inclusion of this module will cause xmlInitParser and xmlCleanupParser
+///       to be called at static initialization / deinitialization time.
+
 #ifndef MPD_BASE_MPD_BUILDER_H_
 #define MPD_BASE_MPD_BUILDER_H_
 
