@@ -2,6 +2,10 @@ Media packaging SDK intended for C++ programmers writing DASH packager applicati
 
 This document provides the information needed to create a DASH packager that is able to remux and encrypt a video into fragmented ISO BMFF format with common encryption (CENC) support. The DASH packaging API is also designed in such a way for easy extension to more source and destination formats.
 
+# Mailing list #
+
+We have a [public mailing list](https://groups.google.com/forum/#!forum/edash-users) for discussion and announcements. To receive notifications about new versions, please join the list. You can also use the list to ask questions or discuss eDash Packager developments.
+
 # Setting up for development #
 
 1. Packager source is managed by Git at https://www.github.com/google/edash-packager. We use gclient tool from Chromium to manage third party libraries. You will need Git (v1.7.5 or above) and Subversion (for third party libraries) installed on your machine to access the source code.
