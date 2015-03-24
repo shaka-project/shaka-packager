@@ -10,6 +10,8 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/synchronization/lock.h"
 
+namespace edash_packager {
+
 namespace {
 const char kUserAgentString[] = "edash-packager-http_fetcher/1.0";
 
@@ -64,7 +66,6 @@ class LibCurlInitializer {
 
 }  // namespace
 
-namespace edash_packager {
 namespace media {
 
 HttpKeyFetcher::HttpKeyFetcher() : timeout_in_seconds_(0) {}

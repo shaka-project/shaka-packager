@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "media/file/io_cache.h"
+#include "packager/media/file/io_cache.h"
 
 #include <string.h>
 
@@ -123,13 +123,13 @@ uint64_t IoCache::BytesFree() {
   return BytesFreeInternal();
 }
 
-uint64 IoCache::BytesCachedInternal() {
+uint64_t IoCache::BytesCachedInternal() {
   return (r_ptr_ <= w_ptr_) ?
       w_ptr_ - r_ptr_ :
       (end_ptr_ - r_ptr_) + (w_ptr_ - &circular_buffer_[0]);
 }
 
-uint64 IoCache::BytesFreeInternal() {
+uint64_t IoCache::BytesFreeInternal() {
   return cache_size_ - BytesCachedInternal();
 }
 
