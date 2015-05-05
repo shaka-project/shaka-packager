@@ -20,7 +20,6 @@ Muxer::Muxer(const MuxerOptions& options)
       clear_lead_in_seconds_(0),
       crypto_period_duration_in_seconds_(0),
       cancelled_(false),
-      muxer_listener_(NULL),
       clock_(NULL) {}
 
 Muxer::~Muxer() {}
@@ -80,8 +79,8 @@ void Muxer::Cancel() {
   cancelled_ = true;
 }
 
-void Muxer::SetMuxerListener(media::event::MuxerListener* muxer_listener) {
-  muxer_listener_ = muxer_listener;
+void Muxer::SetMuxerListener(scoped_ptr<event::MuxerListener> muxer_listener) {
+  muxer_listener_ = muxer_listener.Pass();
 }
 
 Status Muxer::AddSample(const MediaStream* stream,

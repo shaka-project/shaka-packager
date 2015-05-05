@@ -104,9 +104,7 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                      const MuxerOptions& muxer_options,
                      KeySource* key_source,
                      MpdNotifier* mpd_notifier,
-                     std::vector<MuxerListener*>* muxer_listeners,
                      std::vector<RemuxJob*>* remux_jobs) {
-  DCHECK(muxer_listeners);
   DCHECK(remux_jobs);
 
   std::string previous_input;
@@ -181,10 +179,8 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       muxer_listener = mpd_notify_muxer_listener.Pass();
     }
 
-    if (muxer_listener) {
-      muxer_listeners->push_back(muxer_listener.release());
-      muxer->SetMuxerListener(muxer_listeners->back());
-    }
+    if (muxer_listener)
+      muxer->SetMuxerListener(muxer_listener.Pass());
 
     if (!AddStreamToMuxer(remux_jobs->back()->demuxer()->streams(),
                           stream_iter->stream_selector,
@@ -274,17 +270,12 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
     }
   }
 
-  // TODO(kqyang): Should Muxer::SetMuxerListener take owership of the
-  // muxer_listeners object? Then we can get rid of |muxer_listeners|.
-  std::vector<MuxerListener*> muxer_listeners;
-  STLElementDeleter<std::vector<MuxerListener*> > deleter(&muxer_listeners);
   std::vector<RemuxJob*> remux_jobs;
   STLElementDeleter<std::vector<RemuxJob*> > scoped_jobs_deleter(&remux_jobs);
   if (!CreateRemuxJobs(stream_descriptors,
                        muxer_options,
                        encryption_key_source.get(),
                        mpd_notifier.get(),
-                       &muxer_listeners,
                        &remux_jobs)) {
     return false;
   }
