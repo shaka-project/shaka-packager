@@ -65,10 +65,6 @@ enum ExitStatus {
 namespace edash_packager {
 namespace media {
 
-using event::MpdNotifyMuxerListener;
-using event::MuxerListener;
-using event::VodMediaInfoDumpMuxerListener;
-
 // Demux, Mux(es) and worker thread used to remux a source file/stream.
 class RemuxJob : public base::SimpleThread {
  public:

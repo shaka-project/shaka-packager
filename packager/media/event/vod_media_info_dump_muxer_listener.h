@@ -24,7 +24,6 @@ namespace edash_packager {
 class MediaInfo;
 
 namespace media {
-namespace event {
 
 class VodMediaInfoDumpMuxerListener : public MuxerListener {
  public:
@@ -68,7 +67,6 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
   DISALLOW_COPY_AND_ASSIGN(VodMediaInfoDumpMuxerListener);
 };
 
-}  // namespace event
 }  // namespace media
 }  // namespace edash_packager
 

@@ -79,7 +79,7 @@ void Muxer::Cancel() {
   cancelled_ = true;
 }
 
-void Muxer::SetMuxerListener(scoped_ptr<event::MuxerListener> muxer_listener) {
+void Muxer::SetMuxerListener(scoped_ptr<MuxerListener> muxer_listener) {
   muxer_listener_ = muxer_listener.Pass();
 }
 

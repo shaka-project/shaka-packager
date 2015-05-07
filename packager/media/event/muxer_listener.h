@@ -19,8 +19,6 @@ namespace media {
 class StreamInfo;
 struct MuxerOptions;
 
-namespace event {
-
 class MuxerListener {
  public:
   enum ContainerType {
@@ -75,7 +73,6 @@ class MuxerListener {
   MuxerListener() {};
 };
 
-}  // namespace event
 }  // namespace media
 }  // namespace edash_packager
 

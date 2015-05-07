@@ -24,7 +24,6 @@ const bool kEnableEncryption = true;
 
 namespace edash_packager {
 namespace media {
-namespace event {
 
 namespace {
 struct VideoStreamInfoParameters {
@@ -285,6 +284,5 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
   ASSERT_NO_FATAL_FAILURE(ExpectTempFileToEqual(kExpectedProtobufOutput));
 }
 
-}  // namespace event
 }  // namespace media
 }  // namespace edash_packager

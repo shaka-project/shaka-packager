@@ -16,7 +16,6 @@
 
 namespace edash_packager {
 namespace media {
-namespace event {
 namespace internal {
 
 namespace {
@@ -242,6 +241,5 @@ bool AddContentProtectionElements(MuxerListener::ContainerType container_type,
 }
 
 }  // namespace internal
-}  // namespace event
 }  // namespace media
 }  // namespace edash_packager

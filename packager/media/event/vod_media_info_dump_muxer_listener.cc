@@ -17,7 +17,6 @@
 
 namespace edash_packager {
 namespace media {
-namespace event {
 
 VodMediaInfoDumpMuxerListener::VodMediaInfoDumpMuxerListener(
     const std::string& output_file_name)
@@ -110,6 +109,5 @@ bool VodMediaInfoDumpMuxerListener::SerializeMediaInfoToFile() {
   return true;
 }
 
-}  // namespace event
 }  // namespace media
 }  // namespace edash_packager

@@ -128,7 +128,7 @@ Segmenter::Segmenter(const MuxerOptions& options,
 Segmenter::~Segmenter() { STLDeleteElements(&fragmenters_); }
 
 Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
-                             event::MuxerListener* muxer_listener,
+                             MuxerListener* muxer_listener,
                              KeySource* encryption_key_source,
                              uint32_t max_sd_pixels,
                              double clear_lead_in_seconds,

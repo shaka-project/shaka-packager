@@ -23,7 +23,6 @@ namespace media {
 class StreamInfo;
 struct MuxerOptions;
 
-namespace event {
 namespace internal {
 
 /// @param[out] media_info points to the MediaInfo object to be filled.
@@ -56,7 +55,6 @@ bool AddContentProtectionElements(MuxerListener::ContainerType container_type,
                                   MediaInfo* media_info);
 
 }  // namespace internal
-}  // namespace event
 }  // namespace media
 }  // namespace edash_packager
 #endif  // MEDIA_EVENT_MUXER_LISTENER_INTERNAL_H_

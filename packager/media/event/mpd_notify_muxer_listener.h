@@ -22,7 +22,6 @@ class MediaInfo;
 class MpdNotifier;
 
 namespace media {
-namespace event {
 
 class MpdNotifyMuxerListener : public MuxerListener {
  public:
@@ -66,7 +65,6 @@ class MpdNotifyMuxerListener : public MuxerListener {
   DISALLOW_COPY_AND_ASSIGN(MpdNotifyMuxerListener);
 };
 
-}  // namespace event
 }  // namespace media
 }  // namespace edash_packager
 

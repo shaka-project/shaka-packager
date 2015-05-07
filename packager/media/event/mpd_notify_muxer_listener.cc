@@ -17,7 +17,6 @@
 
 namespace edash_packager {
 namespace media {
-namespace event {
 
 MpdNotifyMuxerListener::MpdNotifyMuxerListener(MpdNotifier* mpd_notifier)
     : mpd_notifier_(mpd_notifier), notification_id_(0) {
@@ -103,6 +102,5 @@ void MpdNotifyMuxerListener::OnNewSegment(uint64_t start_time,
       notification_id_, start_time, duration, segment_file_size);
 }
 
-}  // namespace event
 }  // namespace media
 }  // namespace edash_packager

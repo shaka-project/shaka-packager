@@ -247,7 +247,7 @@ void MP4Muxer::FireOnMediaStartEvent() {
   muxer_listener()->OnMediaStart(options(),
                                  stream_info_vec,
                                  timescale,
-                                 event::MuxerListener::kContainerMp4,
+                                 MuxerListener::kContainerMp4,
                                  encryption_key_source() != NULL);
 }
 

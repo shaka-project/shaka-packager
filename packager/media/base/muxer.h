@@ -60,7 +60,7 @@ class Muxer {
 
   /// Set a MuxerListener event handler for this object.
   /// @param muxer_listener should not be NULL.
-  void SetMuxerListener(scoped_ptr<event::MuxerListener> muxer_listener);
+  void SetMuxerListener(scoped_ptr<MuxerListener> muxer_listener);
 
   const std::vector<MediaStream*>& streams() const { return streams_; }
 
@@ -84,7 +84,7 @@ class Muxer {
   double crypto_period_duration_in_seconds() const {
     return crypto_period_duration_in_seconds_;
   }
-  event::MuxerListener* muxer_listener() { return muxer_listener_.get(); }
+  MuxerListener* muxer_listener() { return muxer_listener_.get(); }
   base::Clock* clock() { return clock_; }
 
  private:
@@ -113,7 +113,7 @@ class Muxer {
   double crypto_period_duration_in_seconds_;
   bool cancelled_;
 
-  scoped_ptr<event::MuxerListener> muxer_listener_;
+  scoped_ptr<MuxerListener> muxer_listener_;
   // An external injected clock, can be NULL.
   base::Clock* clock_;
 
