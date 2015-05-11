@@ -18,6 +18,7 @@
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/event/muxer_listener.h"
+#include "packager/media/event/progress_listener.h"
 #include "packager/media/file/file.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 
@@ -68,6 +69,14 @@ bool SingleSegmentSegmenter::GetIndexRange(size_t* offset, size_t* size) {
 }
 
 Status SingleSegmentSegmenter::DoInitialize() {
+  // Single segment segmentation involves two stages:
+  //   Stage 1: Create media subsegments from media samples
+  //   Stage 2: Update media header (moov) which involves copying of media
+  //            subsegments
+  // Assumes stage 2 takes similar amount of time as stage 1. The previous
+  // progress_target was set for stage 1. Times two to account for stage 2.
+  set_progress_target(progress_target() * 2);
+
   if (options().temp_dir.empty()) {
     base::FilePath temp_file_path;
     if (!base::CreateTemporaryFile(&temp_file_path)) {
@@ -122,6 +131,9 @@ Status SingleSegmentSegmenter::DoFinalize() {
                   "Cannot open file to read " + temp_file_name_);
   }
 
+  // The target of 2nd stage of single segment segmentation.
+  const uint64_t re_segment_progress_target = progress_target() * 0.5;
+
   const int kBufSize = 0x200000;  // 2MB.
   scoped_ptr<uint8_t[]> buf(new uint8_t[kBufSize]);
   while (true) {
@@ -137,7 +149,10 @@ Status SingleSegmentSegmenter::DoFinalize() {
       return Status(error::FILE_FAILURE,
                     "Failed to write file " + options().output_file_name);
     }
+    UpdateProgress(static_cast<double>(size) / temp_file->Size() *
+                   re_segment_progress_target);
   }
+  SetComplete();
   return Status::OK;
 }
 
@@ -204,6 +219,8 @@ Status SingleSegmentSegmenter::DoFinalizeSegment() {
   size_t segment_size = fragment_buffer()->Size();
   Status status = fragment_buffer()->WriteToFile(temp_file_.get());
   if (!status.ok()) return status;
+
+  UpdateProgress(vod_ref.subsegment_duration);
   if (muxer_listener()) {
     muxer_listener()->OnNewSegment(vod_ref.earliest_presentation_time,
                                    vod_ref.subsegment_duration, segment_size);

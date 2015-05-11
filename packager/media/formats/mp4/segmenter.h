@@ -24,6 +24,7 @@ class KeySource;
 class MediaSample;
 class MediaStream;
 class MuxerListener;
+class ProgressListener;
 
 namespace mp4 {
 
@@ -51,6 +52,8 @@ class Segmenter {
   /// Calling other public methods of this class without this method returning
   /// Status::OK results in an undefined behavior.
   /// @param streams contains the vector of MediaStreams to be segmented.
+  /// @param muxer_listener receives muxer events. Can be NULL.
+  /// @param progress_listener receives progress updates. Can be NULL.
   /// @param encryption_key_source points to the key source which contains
   ///        the encryption keys. It can be NULL to indicate that no encryption
   ///        is required.
@@ -62,6 +65,7 @@ class Segmenter {
   /// @return OK on success, an error status otherwise.
   Status Initialize(const std::vector<MediaStream*>& streams,
                     MuxerListener* muxer_listener,
+                    ProgressListener* progress_listener,
                     KeySource* encryption_key_source,
                     uint32_t max_sd_pixels,
                     double clear_lead_in_seconds,
@@ -93,12 +97,22 @@ class Segmenter {
   double GetDuration() const;
 
  protected:
+  /// Update segmentation progress using ProgressListener.
+  void UpdateProgress(uint64_t progress);
+  /// Set progress to 100%.
+  void SetComplete();
+
   const MuxerOptions& options() const { return options_; }
   FileType* ftyp() { return ftyp_.get(); }
   Movie* moov() { return moov_.get(); }
   BufferWriter* fragment_buffer() { return fragment_buffer_.get(); }
   SegmentIndex* sidx() { return sidx_.get(); }
   MuxerListener* muxer_listener() { return muxer_listener_; }
+  uint64_t progress_target() { return progress_target_; }
+
+  void set_progress_target(uint64_t progress_target) {
+    progress_target_ = progress_target;
+  }
 
  private:
   virtual Status DoInitialize() = 0;
@@ -123,6 +137,9 @@ class Segmenter {
   bool segment_initialized_;
   bool end_of_segment_;
   MuxerListener* muxer_listener_;
+  ProgressListener* progress_listener_;
+  uint64_t progress_target_;
+  uint64_t accumulated_progress_;
 
   DISALLOW_COPY_AND_ASSIGN(Segmenter);
 };

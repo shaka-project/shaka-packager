@@ -17,6 +17,7 @@
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/status.h"
 #include "packager/media/event/muxer_listener.h"
+#include "packager/media/event/progress_listener.h"
 
 namespace edash_packager {
 namespace media {
@@ -62,6 +63,10 @@ class Muxer {
   /// @param muxer_listener should not be NULL.
   void SetMuxerListener(scoped_ptr<MuxerListener> muxer_listener);
 
+  /// Set a ProgressListener event handler for this object.
+  /// @param progress_listener should not be NULL.
+  void SetProgressListener(scoped_ptr<ProgressListener> progress_listener);
+
   const std::vector<MediaStream*>& streams() const { return streams_; }
 
   /// Inject clock, mainly used for testing.
@@ -85,6 +90,7 @@ class Muxer {
     return crypto_period_duration_in_seconds_;
   }
   MuxerListener* muxer_listener() { return muxer_listener_.get(); }
+  ProgressListener* progress_listener() { return progress_listener_.get(); }
   base::Clock* clock() { return clock_; }
 
  private:
@@ -114,6 +120,7 @@ class Muxer {
   bool cancelled_;
 
   scoped_ptr<MuxerListener> muxer_listener_;
+  scoped_ptr<ProgressListener> progress_listener_;
   // An external injected clock, can be NULL.
   base::Clock* clock_;
 

@@ -15,6 +15,7 @@
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/event/progress_listener.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/key_rotation_fragmenter.h"
 
@@ -123,18 +124,24 @@ Segmenter::Segmenter(const MuxerOptions& options,
       sidx_(new SegmentIndex()),
       segment_initialized_(false),
       end_of_segment_(false),
-      muxer_listener_(NULL) {}
+      muxer_listener_(NULL),
+      progress_listener_(NULL),
+      progress_target_(0),
+      accumulated_progress_(0) {
+}
 
 Segmenter::~Segmenter() { STLDeleteElements(&fragmenters_); }
 
 Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
                              MuxerListener* muxer_listener,
+                             ProgressListener* progress_listener,
                              KeySource* encryption_key_source,
                              uint32_t max_sd_pixels,
                              double clear_lead_in_seconds,
                              double crypto_period_duration_in_seconds) {
   DCHECK_LT(0u, streams.size());
   muxer_listener_ = muxer_listener;
+  progress_listener_ = progress_listener;
   moof_->header.sequence_number = 0;
 
   moof_->tracks.resize(streams.size());
@@ -201,6 +208,9 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
   if (sidx_->reference_id == 0)
     sidx_->reference_id = 1;
   sidx_->timescale = streams[GetReferenceStreamId()]->info()->time_scale();
+
+  // Use media duration as progress target.
+  progress_target_ = streams[GetReferenceStreamId()]->info()->duration();
 
   // Use the reference stream's time scale as movie time scale.
   moov_->header.timescale = sidx_->timescale;
@@ -301,6 +311,27 @@ double Segmenter::GetDuration() const {
   }
 
   return static_cast<double>(moov_->header.duration) / moov_->header.timescale;
+}
+
+void Segmenter::UpdateProgress(uint64_t progress) {
+  accumulated_progress_ += progress;
+
+  if (!progress_listener_) return;
+  if (progress_target_ == 0) return;
+  // It might happen that accumulated progress exceeds progress_target due to
+  // computation errors, e.g. rounding error. Cap it so it never reports > 100%
+  // progress.
+  if (accumulated_progress_ >= progress_target_) {
+    progress_listener_->OnProgress(1.0);
+  } else {
+    progress_listener_->OnProgress(static_cast<double>(accumulated_progress_) /
+                                   progress_target_);
+  }
+}
+
+void Segmenter::SetComplete() {
+  if (!progress_listener_) return;
+  progress_listener_->OnProgress(1.0);
 }
 
 void Segmenter::InitializeSegment() {

@@ -65,6 +65,7 @@ Status MultiSegmentSegmenter::DoInitialize() {
 }
 
 Status MultiSegmentSegmenter::DoFinalize() {
+  SetComplete();
   return Status::OK;
 }
 
@@ -173,17 +174,22 @@ Status MultiSegmentSegmenter::WriteSegment() {
   if (!file->Close())
     LOG(WARNING) << "Failed to close the file properly: " << file_name;
 
-  if (status.ok() && muxer_listener()) {
-    uint64_t segment_duration = 0;
-    // ISO/IEC 23009-1:2012: the value shall be identical to sum of the the
-    // values of all Subsegment_duration fields in the first ‘sidx’ box.
-    for (size_t i = 0; i < sidx()->references.size(); ++i)
-      segment_duration += sidx()->references[i].subsegment_duration;
+  if (!status.ok())
+    return status;
+
+  uint64_t segment_duration = 0;
+  // ISO/IEC 23009-1:2012: the value shall be identical to sum of the the
+  // values of all Subsegment_duration fields in the first ‘sidx’ box.
+  for (size_t i = 0; i < sidx()->references.size(); ++i)
+    segment_duration += sidx()->references[i].subsegment_duration;
+
+  UpdateProgress(segment_duration);
+  if (muxer_listener()) {
     muxer_listener()->OnNewSegment(
         sidx()->earliest_presentation_time, segment_duration, segment_size);
   }
 
-  return status;
+  return Status::OK;
 }
 
 }  // namespace mp4

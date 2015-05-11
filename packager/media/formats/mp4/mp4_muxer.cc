@@ -102,6 +102,7 @@ Status MP4Muxer::Initialize() {
   Status segmenter_initialized =
       segmenter_->Initialize(streams(),
                              muxer_listener(),
+                             progress_listener(),
                              encryption_key_source(),
                              max_sd_pixels(),
                              clear_lead_in_seconds(),

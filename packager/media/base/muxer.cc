@@ -83,6 +83,11 @@ void Muxer::SetMuxerListener(scoped_ptr<MuxerListener> muxer_listener) {
   muxer_listener_ = muxer_listener.Pass();
 }
 
+void Muxer::SetProgressListener(
+    scoped_ptr<ProgressListener> progress_listener) {
+  progress_listener_ = progress_listener.Pass();
+}
+
 Status Muxer::AddSample(const MediaStream* stream,
                         scoped_refptr<MediaSample> sample) {
   DCHECK(std::find(streams_.begin(), streams_.end(), stream) != streams_.end());
