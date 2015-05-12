@@ -51,6 +51,8 @@ Status Demuxer::Initialize() {
   DCHECK(!media_file_);
   DCHECK(!init_event_received_);
 
+  LOG(INFO) << "Initialize Demuxer for file '" << file_name_ << "'.";
+
   media_file_ = File::Open(file_name_.c_str(), "r");
   if (!media_file_) {
     return Status(error::FILE_FAILURE,
@@ -125,6 +127,8 @@ bool Demuxer::NewSampleEvent(uint32_t track_id,
 
 Status Demuxer::Run() {
   Status status;
+
+  LOG(INFO) << "Demuxer::Run() on file '" << file_name_ << "'.";
 
   // Start the streams.
   for (std::vector<MediaStream*>::iterator it = streams_.begin();

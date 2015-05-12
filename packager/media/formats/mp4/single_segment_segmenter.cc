@@ -114,6 +114,9 @@ Status SingleSegmentSegmenter::DoFinalize() {
                   "Cannot open file to write " + options().output_file_name);
   }
 
+  LOG(INFO) << "Update media header (moov) and rewrite the file to '"
+            << options().output_file_name << "'.";
+
   // Write ftyp, moov and sidx to output file.
   scoped_ptr<BufferWriter> buffer(new BufferWriter());
   ftyp()->Write(buffer.get());
