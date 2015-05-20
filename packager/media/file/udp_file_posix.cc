@@ -129,6 +129,16 @@ bool UdpFile::Flush() {
   return false;
 }
 
+bool UdpFile::Seek(uint64_t position) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool UdpFile::Tell(uint64_t* position) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 class ScopedSocket {
  public:
   explicit ScopedSocket(int sock_fd)

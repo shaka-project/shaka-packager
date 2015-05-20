@@ -74,17 +74,8 @@ static const SupportedTypeInfo kSupportedTypeInfo[] = {
 }  // namespace
 
 File* File::Create(const char* file_name, const char* mode) {
-  scoped_ptr<File, FileCloser> internal_file;
-  for (size_t i = 0; i < arraysize(kSupportedTypeInfo); ++i) {
-    const SupportedTypeInfo& type_info = kSupportedTypeInfo[i];
-    if (strncmp(type_info.type, file_name, type_info.type_length) == 0) {
-      internal_file.reset(type_info.factory_function(
-          file_name + type_info.type_length, mode));
-    }
-  }
-  // Otherwise we assume it is a local file
-  if (!internal_file)
-    internal_file.reset(CreateLocalFile(file_name, mode));
+  scoped_ptr<File, FileCloser> internal_file(
+      CreateInternalFile(file_name, mode));
 
   if (FLAGS_io_cache_size) {
     // Enable threaded I/O for "r", "w", and "a" modes only.
@@ -106,8 +97,35 @@ File* File::Create(const char* file_name, const char* mode) {
   return internal_file.release();
 }
 
+File* File::CreateInternalFile(const char* file_name, const char* mode) {
+  scoped_ptr<File, FileCloser> internal_file;
+  for (size_t i = 0; i < arraysize(kSupportedTypeInfo); ++i) {
+    const SupportedTypeInfo& type_info = kSupportedTypeInfo[i];
+    if (strncmp(type_info.type, file_name, type_info.type_length) == 0) {
+      internal_file.reset(type_info.factory_function(
+          file_name + type_info.type_length, mode));
+    }
+  }
+  // Otherwise we assume it is a local file
+  if (!internal_file)
+    internal_file.reset(CreateLocalFile(file_name, mode));
+
+  return internal_file.release();
+}
+
 File* File::Open(const char* file_name, const char* mode) {
   File* file = File::Create(file_name, mode);
+  if (!file)
+    return NULL;
+  if (!file->Open()) {
+    delete file;
+    return NULL;
+  }
+  return file;
+}
+
+File* File::OpenWithNoBuffering(const char* file_name, const char* mode) {
+  File* file = File::CreateInternalFile(file_name, mode);
   if (!file)
     return NULL;
   if (!file->Open()) {

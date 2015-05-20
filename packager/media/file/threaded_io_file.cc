@@ -123,6 +123,16 @@ void ThreadedIoFile::RunInInputMode() {
   }
 }
 
+bool ThreadedIoFile::Seek(uint64_t position) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+bool ThreadedIoFile::Tell(uint64_t* position) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void ThreadedIoFile::RunInOutputMode() {
   DCHECK(internal_file_);
   DCHECK(thread_);

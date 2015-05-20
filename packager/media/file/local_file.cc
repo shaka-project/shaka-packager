@@ -6,6 +6,8 @@
 
 #include "packager/media/file/local_file.h"
 
+#include <stdio.h>
+
 #include "packager/base/file_util.h"
 #include "packager/base/logging.h"
 
@@ -57,6 +59,18 @@ int64_t LocalFile::Size() {
 bool LocalFile::Flush() {
   DCHECK(internal_file_ != NULL);
   return ((fflush(internal_file_) == 0) && !ferror(internal_file_));
+}
+
+bool LocalFile::Seek(uint64_t position) {
+  return fseeko(internal_file_, position, SEEK_SET) >= 0;
+}
+
+bool LocalFile::Tell(uint64_t* position) {
+  off_t offset = ftello(internal_file_);
+  if (offset < 0)
+    return false;
+  *position = offset;
+  return true;
 }
 
 LocalFile::~LocalFile() {}

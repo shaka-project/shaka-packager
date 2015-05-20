@@ -29,6 +29,14 @@ class File {
   /// @return A File pointer on success, false otherwise.
   static File* Open(const char* file_name, const char* mode);
 
+  /// Open the specified file in direct-access mode (no buffering).
+  /// This is a file factory method, it opens a proper file automatically
+  /// based on prefix, e.g. "file://" for LocalFile.
+  /// @param file_name contains the name of the file to be accessed.
+  /// @param mode contains file access mode. Implementation dependent.
+  /// @return A File pointer on success, false otherwise.
+  static File* OpenWithNoBuffering(const char* file_name, const char* mode);
+
   /// Delete the specified file.
   /// @param file_name contains the path of the file to be deleted.
   /// @return true if successful, false otherwise.
@@ -66,6 +74,17 @@ class File {
   /// @return true on success, false otherwise.
   virtual bool Flush() = 0;
 
+  /// Seek to the specifield position in the file.
+  /// @param position is the position to seek to.
+  /// @return true on success, false otherwise.
+  virtual bool Seek(uint64_t position) = 0;
+
+  /// Get the current file position.
+  /// @param position is a pointer to contain the current file position upon
+  ///        successful return.
+  /// @return true on succcess, false otherwise.
+  virtual bool Tell(uint64_t* position) = 0;
+
   /// @return The file name.
   const std::string& file_name() const { return file_name_; }
 
@@ -98,6 +117,8 @@ class File {
   // This is a file factory method, it creates a proper file, e.g.
   // LocalFile, MemFile based on prefix.
   static File* Create(const char* file_name, const char* mode);
+
+  static File* CreateInternalFile(const char* file_name, const char* mode);
 
   std::string file_name_;
   DISALLOW_COPY_AND_ASSIGN(File);
