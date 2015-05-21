@@ -92,6 +92,10 @@ Status Demuxer::Initialize() {
                 base::Bind(&Demuxer::NewSampleEvent, base::Unretained(this)),
                 key_source_.get());
 
+  // Handle trailing 'moov'.
+  if (container == CONTAINER_MOV)
+    static_cast<mp4::MP4MediaParser*>(parser_.get())->LoadMoov(file_name_);
+
   if (!parser_->Parse(buffer_.get(), bytes_read)) {
     init_parsing_status_ =
         Status(error::PARSER_FAILURE, "Cannot parse media file " + file_name_);

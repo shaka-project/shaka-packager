@@ -78,6 +78,7 @@
       'dependencies': [
         '../../../testing/gtest.gyp:gtest',
         '../../../testing/gmock.gyp:gmock',
+        '../../file/file.gyp:file',
         '../../test/media_test.gyp:media_test_support',
         'mp4',
       ]

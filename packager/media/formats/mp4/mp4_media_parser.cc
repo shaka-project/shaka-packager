@@ -13,10 +13,13 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/aes_encryptor.h"
 #include "packager/media/base/audio_stream_info.h"
+#include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/decrypt_config.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/file/file.h"
+#include "packager/media/file/file_closer.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/box_reader.h"
 #include "packager/media/formats/mp4/es_descriptor.h"
@@ -108,6 +111,82 @@ bool MP4MediaParser::Parse(const uint8_t* buf, int size) {
   return true;
 }
 
+bool MP4MediaParser::LoadMoov(const std::string& file_path) {
+  scoped_ptr<File, FileCloser> file(
+      File::OpenWithNoBuffering(file_path.c_str(), "r"));
+  if (!file) {
+    LOG(ERROR) << "Unable to open media file '" << file_path << "'";
+    return false;
+  }
+  if (file->Seek(0) < 0) {
+    LOG(WARNING) << "Filesystem does not support seeking on file '" << file_path
+               << "'";
+    return false;
+  }
+
+  uint64_t file_position(0);
+  bool mdat_seen(false);
+  while (true) {
+    const uint32_t kBoxHeaderReadSize(16);
+    std::vector<uint8_t> buffer(kBoxHeaderReadSize);
+    int64_t bytes_read = file->Read(&buffer[0], kBoxHeaderReadSize);
+    if (bytes_read == 0) {
+      LOG(ERROR) << "Could not find 'moov' box in file '" << file_path << "'";
+      return false;
+    }
+    if (bytes_read < kBoxHeaderReadSize) {
+      LOG(ERROR) << "Error reading media file '" << file_path << "'";
+      return false;
+    }
+    uint64_t box_size;
+    FourCC box_type;
+    bool err;
+    if (!BoxReader::StartTopLevelBox(&buffer[0], kBoxHeaderReadSize, &box_type,
+                                     &box_size, &err)) {
+      LOG(ERROR) << "Could not start top level box from file '" << file_path
+                 << "'";
+      return false;
+    }
+    if (box_type == FOURCC_MDAT) {
+      mdat_seen = true;
+    } else if (box_type == FOURCC_MOOV) {
+      if (!mdat_seen) {
+        // 'moov' is before 'mdat'. Nothing to do.
+        break;
+      }
+      // 'mdat' before 'moov'. Read and parse 'moov'.
+      if (!Parse(&buffer[0], bytes_read)) {
+        LOG(ERROR) << "Error parsing mp4 file '" << file_path << "'";
+        return false;
+      }
+      uint64_t bytes_to_read = box_size - bytes_read;
+      buffer.resize(bytes_to_read);
+      while (bytes_to_read > 0) {
+        bytes_read = file->Read(&buffer[0], bytes_to_read);
+        if (bytes_read <= 0) {
+          LOG(ERROR) << "Error reading 'moov' contents from file '" << file_path
+                     << "'";
+          return false;
+        }
+        if (!Parse(&buffer[0], bytes_read)) {
+          LOG(ERROR) << "Error parsing mp4 file '" << file_path << "'";
+          return false;
+        }
+        bytes_to_read -= bytes_read;
+      }
+      queue_.Reset();  // So that we don't need to adjust data offsets.
+      mdat_tail_ = 0;  // So it will skip boxes until mdat.
+      break;  // Done.
+    }
+    file_position += box_size;
+    if (!file->Seek(file_position)) {
+      LOG(ERROR) << "Error skipping box in mp4 file '" << file_path << "'";
+      return false;
+    }
+  }
+  return true;
+}
+
 bool MP4MediaParser::ParseBox(bool* err) {
   const uint8_t* buf;
   int size;
@@ -151,6 +230,9 @@ bool MP4MediaParser::ParseBox(bool* err) {
 }
 
 bool MP4MediaParser::ParseMoov(BoxReader* reader) {
+  if (moov_)
+    return true;  // Already parsed the 'moov' box.
+
   moov_.reset(new Movie);
   RCHECK(moov_->Parse(reader));
   runs_.reset();
@@ -530,10 +612,6 @@ bool MP4MediaParser::ReadAndDiscardMDATsUntil(const int64_t offset) {
     if (!BoxReader::StartTopLevelBox(buf, size, &type, &box_sz, &err))
       break;
 
-    if (type != FOURCC_MDAT) {
-      LOG(ERROR) << "Unexpected box type while parsing MDATs: "
-                 << FourCCToString(type);
-    }
     mdat_tail_ += box_sz;
   }
   queue_.Trim(std::min(mdat_tail_, offset));

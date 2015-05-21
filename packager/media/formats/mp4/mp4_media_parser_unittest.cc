@@ -91,7 +91,8 @@ class MP4MediaParserTest : public testing::Test {
 
   bool ParseMP4File(const std::string& filename, int append_bytes) {
     InitializeParser(NULL);
-
+    if (!parser_->LoadMoov(GetTestDataFilePath(filename).value()))
+      return false;
     std::vector<uint8_t> buffer = ReadTestDataFile(filename);
     return AppendDataInPieces(buffer.data(), buffer.size(), append_bytes);
   }
@@ -120,6 +121,12 @@ TEST_F(MP4MediaParserTest, MultiFragmentAppend) {
   EXPECT_EQ(201u, num_samples_);
 }
 
+TEST_F(MP4MediaParserTest, TrailingMoov) {
+  EXPECT_TRUE(ParseMP4File("bear-1280x720-trailing-moov.mp4", 1024));
+  EXPECT_EQ(2u, num_streams_);
+  EXPECT_EQ(201u, num_samples_);
+}
+
 TEST_F(MP4MediaParserTest, Flush) {
   // Flush while reading sample data, then start a new stream.
   InitializeParser(NULL);
@@ -127,18 +134,10 @@ TEST_F(MP4MediaParserTest, Flush) {
   std::vector<uint8_t> buffer = ReadTestDataFile("bear-1280x720-av_frag.mp4");
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), 65536, 512));
   parser_->Flush();
-  EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
   EXPECT_EQ(2u, num_streams_);
-  EXPECT_EQ(201u, num_samples_);
-}
-
-TEST_F(MP4MediaParserTest, Reinitialization) {
-  InitializeParser(NULL);
-
-  std::vector<uint8_t> buffer = ReadTestDataFile("bear-1280x720-av_frag.mp4");
+  EXPECT_NE(0u, num_samples_);
+  num_samples_ = 0;
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
-  EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
-  EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
 

@@ -47,6 +47,14 @@ class MP4MediaParser : public MediaParser {
   virtual bool Parse(const uint8_t* buf, int size) OVERRIDE;
   /// @}
 
+  /// Handles ISO-BMFF containers which have the 'moov' box trailing the
+  /// movie data ('mdat'). It does this by doing a sparse parse of the file
+  /// to locate the 'moov' box, and parsing its contents if it is found to be
+  /// located after the 'mdat' box(es).
+  /// @param file_path is the path to the media file to be parsed.
+  /// @return true if successful, false otherwise.
+  bool LoadMoov(const std::string& file_path);
+
  private:
   enum State {
     kWaitingForInit,
