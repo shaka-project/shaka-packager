@@ -118,7 +118,7 @@ bool MP4MediaParser::LoadMoov(const std::string& file_path) {
     LOG(ERROR) << "Unable to open media file '" << file_path << "'";
     return false;
   }
-  if (file->Seek(0) < 0) {
+  if (!file->Seek(0)) {
     LOG(WARNING) << "Filesystem does not support seeking on file '" << file_path
                << "'";
     return false;
