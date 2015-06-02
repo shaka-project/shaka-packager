@@ -77,7 +77,9 @@ Status Fragmenter::InitializeFragment(int64_t first_sample_dts) {
   traf_->runs.clear();
   traf_->runs.resize(1);
   traf_->runs[0].flags = TrackFragmentRun::kDataOffsetPresentMask;
-  traf_->header.flags = TrackFragmentHeader::kDefaultBaseIsMoofMask;
+  traf_->header.sample_description_index = 1;  // 1-based.
+  traf_->header.flags = TrackFragmentHeader::kDefaultBaseIsMoofMask |
+                        TrackFragmentHeader::kSampleDescriptionIndexPresentMask;
   fragment_duration_ = 0;
   earliest_presentation_time_ = kInvalidTime;
   first_sap_time_ = kInvalidTime;
