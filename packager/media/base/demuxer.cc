@@ -9,7 +9,6 @@
 #include "packager/base/bind.h"
 #include "packager/base/logging.h"
 #include "packager/base/stl_util.h"
-#include "packager/media/base/container_names.h"
 #include "packager/media/base/decryptor_source.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
@@ -33,6 +32,7 @@ Demuxer::Demuxer(const std::string& file_name)
     : file_name_(file_name),
       media_file_(NULL),
       init_event_received_(false),
+      container_name_(CONTAINER_UNKNOWN),
       buffer_(new uint8_t[kBufSize]),
       cancelled_(false) {
 }
@@ -70,10 +70,10 @@ Status Demuxer::Initialize() {
       break;
     bytes_read += read_result;
   }
-  MediaContainerName container = DetermineContainer(buffer_.get(), bytes_read);
+  container_name_ = DetermineContainer(buffer_.get(), bytes_read);
 
   // Initialize media parser.
-  switch (container) {
+  switch (container_name_) {
     case CONTAINER_MOV:
       parser_.reset(new mp4::MP4MediaParser());
       break;
@@ -93,7 +93,7 @@ Status Demuxer::Initialize() {
                 key_source_.get());
 
   // Handle trailing 'moov'.
-  if (container == CONTAINER_MOV)
+  if (container_name_ == CONTAINER_MOV)
     static_cast<mp4::MP4MediaParser*>(parser_.get())->LoadMoov(file_name_);
 
   if (!parser_->Parse(buffer_.get(), bytes_read)) {

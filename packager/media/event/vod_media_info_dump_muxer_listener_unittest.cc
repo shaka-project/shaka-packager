@@ -63,6 +63,7 @@ scoped_refptr<StreamInfo> CreateVideoStreamInfo(
                           param.language,
                           param.width,
                           param.height,
+                          0,  // trick_play_rate
                           param.nalu_length_size,
                           vector_as_array(&param.extra_data),
                           param.extra_data.size(),

@@ -65,6 +65,10 @@ class Demuxer {
   ///         through MediaStream APIs.
   const std::vector<MediaStream*>& streams() { return streams_; }
 
+  /// @return Container name (type). Value is CONTAINER_UNKNOWN if the demuxer
+  ///         is not initialized.
+  MediaContainerName container_name() { return container_name_; }
+
  private:
   // Parser event handlers.
   void ParserInitEvent(const std::vector<scoped_refptr<StreamInfo> >& streams);
@@ -77,6 +81,7 @@ class Demuxer {
   Status init_parsing_status_;
   scoped_ptr<MediaParser> parser_;
   std::vector<MediaStream*> streams_;
+  MediaContainerName container_name_;
   scoped_ptr<uint8_t[]> buffer_;
   scoped_ptr<KeySource> key_source_;
   bool cancelled_;

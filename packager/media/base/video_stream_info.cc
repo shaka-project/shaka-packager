@@ -46,6 +46,7 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
                                  const std::string& language,
                                  uint16_t width,
                                  uint16_t height,
+                                 int16_t trick_play_rate,
                                  uint8_t nalu_length_size,
                                  const uint8_t* extra_data,
                                  size_t extra_data_size,
@@ -62,6 +63,7 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
       codec_(codec),
       width_(width),
       height_(height),
+      trick_play_rate_(trick_play_rate),
       nalu_length_size_(nalu_length_size) {
 }
 
@@ -76,11 +78,13 @@ bool VideoStreamInfo::IsValidConfig() const {
 
 std::string VideoStreamInfo::ToString() const {
   return base::StringPrintf(
-      "%s codec: %s\n width: %d\n height: %d\n nalu_length_size: %d\n",
+      "%s codec: %s\n width: %d\n height: %d\n trick_play_rate: %d\n"
+      " nalu_length_size: %d\n",
       StreamInfo::ToString().c_str(),
       VideoCodecToString(codec_).c_str(),
       width_,
       height_,
+      trick_play_rate_,
       nalu_length_size_);
 }
 

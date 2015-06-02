@@ -36,6 +36,7 @@ class VideoStreamInfo : public StreamInfo {
                   const std::string& language,
                   uint16_t width,
                   uint16_t height,
+                  int16_t trick_play_rate,
                   uint8_t nalu_length_size,
                   const uint8_t* extra_data,
                   size_t extra_data_size,
@@ -65,6 +66,7 @@ class VideoStreamInfo : public StreamInfo {
   VideoCodec codec_;
   uint16_t width_;
   uint16_t height_;
+  int16_t trick_play_rate_;  // Non-zero for trick-play streams.
 
   // Specifies the normalized size of the NAL unit length field. Can be 1, 2 or
   // 4 bytes, or 0 if the size if unknown or the stream is not a AVC stream

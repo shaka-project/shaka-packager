@@ -378,6 +378,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                                             track->media.header.language,
                                             entry.width,
                                             entry.height,
+                                            0,  // trick_play_rate
                                             entry.avcc.length_size,
                                             &entry.avcc.data[0],
                                             entry.avcc.data.size(),
