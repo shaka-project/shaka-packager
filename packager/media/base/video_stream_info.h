@@ -52,6 +52,7 @@ class VideoStreamInfo : public StreamInfo {
   uint16_t width() const { return width_; }
   uint16_t height() const { return height_; }
   uint8_t nalu_length_size() const { return nalu_length_size_; }
+  int16_t trick_play_rate() const { return trick_play_rate_; }
 
   /// @param profile,compatible_profiles,level are only used by H.264 codec.
   /// @return The codec string.
