@@ -20,13 +20,25 @@ message MediaInfo {
 
   message VideoInfo {
     optional string codec = 1;
+
+    // The width and height of the actual number of pixels. This will not be the
+    // same as the visual width and height if the sample aspect ratio (sar)
+    // is not 1:1.
     optional uint32 width = 2;
     optional uint32 height = 3;
+
     optional uint32 time_scale = 4;
     // Relative to |time_scale|. IOW |time_scale| / |frame_duration| is the
     // framerate.
     optional uint64 frame_duration = 5;
     optional bytes decoder_config = 6;
+
+    // pixel_width:pixel_height is the the sample aspect ratio (sar) of the
+    // video.
+    // Note that (pixel_width * width):(pixel_height * height) is the picture
+    // aspect ratio, or the @par attribute set on AdaptationSet element.
+    optional uint32 pixel_width = 7;
+    optional uint32 pixel_height = 8;
   }
 
   message AudioInfo {

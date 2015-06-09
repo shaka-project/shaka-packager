@@ -4,6 +4,9 @@ video_info {
   width: 720
   height: 480
   time_scale: 10
+  frame_duration: 1
+  pixel_width: 1
+  pixel_height: 1
 }
 init_range {
   begin: 0

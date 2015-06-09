@@ -35,9 +35,8 @@ using xml::AdaptationSetXmlNode;
 
 namespace {
 
-std::string GetMimeType(
-    const std::string& prefix,
-    MediaInfo::ContainerType container_type) {
+std::string GetMimeType(const std::string& prefix,
+                        MediaInfo::ContainerType container_type) {
   switch (container_type) {
     case MediaInfo::CONTAINER_MP4:
       return prefix + "/mp4";
@@ -60,7 +59,8 @@ void AddMpdNameSpaceInfo(XmlNode* mpd) {
 
   static const char kXmlNamespace[] = "urn:mpeg:DASH:schema:MPD:2011";
   mpd->SetStringAttribute("xmlns", kXmlNamespace);
-  static const char kXmlNamespaceXsi[] = "http://www.w3.org/2001/XMLSchema-instance";
+  static const char kXmlNamespaceXsi[] =
+      "http://www.w3.org/2001/XMLSchema-instance";
   mpd->SetStringAttribute("xmlns:xsi", kXmlNamespaceXsi);
   static const char kXmlNamespaceXlink[] = "http://www.w3.org/1999/xlink";
   mpd->SetStringAttribute("xmlns:xlink", kXmlNamespaceXlink);
@@ -82,8 +82,7 @@ bool IsPeriodNode(xmlNodePtr node) {
 // As noted here, we must traverse.
 // http://www.xmlsoft.org/tutorial/ar01s04.html
 xmlNodePtr FindPeriodNode(XmlNode* xml_node) {
-  for (xmlNodePtr node = xml_node->GetRawPtr()->xmlChildrenNode;
-       node != NULL;
+  for (xmlNodePtr node = xml_node->GetRawPtr()->xmlChildrenNode; node != NULL;
        node = node->next) {
     if (IsPeriodNode(node))
       return node;
@@ -103,12 +102,9 @@ std::string XmlDateTimeNowWithOffset(int32_t offset_seconds) {
   base::Time::Exploded time_exploded;
   time.UTCExplode(&time_exploded);
 
-  return base::StringPrintf("%4d-%02d-%02dT%02d:%02d:%02d",
-                            time_exploded.year,
-                            time_exploded.month,
-                            time_exploded.day_of_month,
-                            time_exploded.hour,
-                            time_exploded.minute,
+  return base::StringPrintf("%4d-%02d-%02dT%02d:%02d:%02d", time_exploded.year,
+                            time_exploded.month, time_exploded.day_of_month,
+                            time_exploded.hour, time_exploded.minute,
                             time_exploded.second);
 }
 
@@ -185,8 +181,40 @@ bool WriteXmlCharArrayToOutput(xmlChar* doc,
   return output->Flush();
 }
 
-std::string MakePathRelative(const std::string& path, const std::string& mpd_dir) {
+std::string MakePathRelative(const std::string& path,
+                             const std::string& mpd_dir) {
   return (path.find(mpd_dir) == 0) ? path.substr(mpd_dir.size()) : path;
+}
+
+// Check whether all the video infos have width and height.
+// DASH IOP defines required fields for video representations, namely
+// width, height, framerate, and sar.
+bool HasRequiredVideoFields(
+    ::google::protobuf::RepeatedPtrField<MediaInfo_VideoInfo> video_infos) {
+  CHECK_GT(video_infos.size(), 0);
+  for (int i = 0; i < video_infos.size(); ++i) {
+    const MediaInfo::VideoInfo& info = video_infos.Get(i);
+    if (!info.has_height() || !info.has_width()) {
+      LOG(ERROR)
+          << "Width and height are required fields for generating a valid MPD.";
+      return false;
+    }
+    // These fields are not required for a valid MPD, but required for DASH IOP
+    // compliant MPD. MpdBuilder can keep generating MPDs without these fields.
+    LOG_IF(WARNING, !info.has_time_scale())
+        << "Video info does not contain timescale required for "
+           "calculating framerate. @frameRate is required for DASH IOP.";
+    LOG_IF(WARNING, !info.has_frame_duration())
+        << "Video info does not contain frame duration required "
+           "for calculating framerate. @frameRate is required for DASH IOP.";
+    LOG_IF(WARNING, !info.has_pixel_width())
+        << "Video info does not contain pixel_width to calculate the sample "
+           "aspect ratio required for DASH IOP.";
+    LOG_IF(WARNING, !info.has_pixel_height())
+        << "Video info does not contain pixel_height to calculate the sample "
+           "aspect ratio required for DASH IOP.";
+  }
+  return true;
 }
 
 // Spooky static initialization/cleanup of libxml.
@@ -220,9 +248,11 @@ class LibXmlInitializer {
 MpdBuilder::MpdBuilder(MpdType type, const MpdOptions& mpd_options)
     : type_(type),
       mpd_options_(mpd_options),
-      adaptation_sets_deleter_(&adaptation_sets_) {}
+      adaptation_sets_deleter_(&adaptation_sets_) {
+}
 
-MpdBuilder::~MpdBuilder() {}
+MpdBuilder::~MpdBuilder() {
+}
 
 void MpdBuilder::AddBaseUrl(const std::string& base_url) {
   base::AutoLock scoped_lock(lock_);
@@ -231,9 +261,9 @@ void MpdBuilder::AddBaseUrl(const std::string& base_url) {
 
 AdaptationSet* MpdBuilder::AddAdaptationSet(const std::string& lang) {
   base::AutoLock scoped_lock(lock_);
-  scoped_ptr<AdaptationSet> adaptation_set(new AdaptationSet(
-      adaptation_set_counter_.GetNext(), lang, mpd_options_,
-      &representation_counter_));
+  scoped_ptr<AdaptationSet> adaptation_set(
+      new AdaptationSet(adaptation_set_counter_.GetNext(), lang, mpd_options_,
+                        &representation_counter_));
 
   DCHECK(adaptation_set);
   adaptation_sets_.push_back(adaptation_set.get());
@@ -263,8 +293,8 @@ bool MpdBuilder::WriteMpdToOutput(OutputType* output) {
   static const int kNiceFormat = 1;
   int doc_str_size = 0;
   xmlChar* doc_str = NULL;
-  xmlDocDumpFormatMemoryEnc(
-      doc.get(), &doc_str, &doc_str_size, "UTF-8", kNiceFormat);
+  xmlDocDumpFormatMemoryEnc(doc.get(), &doc_str, &doc_str_size, "UTF-8",
+                            kNiceFormat);
 
   bool result = WriteXmlCharArrayToOutput(doc_str, doc_str_size, output);
   xmlFree(doc_str);
@@ -330,8 +360,7 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
 void MpdBuilder::AddCommonMpdInfo(XmlNode* mpd_node) {
   if (Positive(mpd_options_.min_buffer_time)) {
     mpd_node->SetStringAttribute(
-        "minBufferTime",
-        SecondsToXmlDuration(mpd_options_.min_buffer_time));
+        "minBufferTime", SecondsToXmlDuration(mpd_options_.min_buffer_time));
   } else {
     LOG(ERROR) << "minBufferTime value not specified.";
     // TODO(tinskip): Propagate error.
@@ -368,8 +397,8 @@ void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
     double earliest_presentation_time;
     if (GetEarliestTimestamp(&earliest_presentation_time)) {
       availability_start_time_ =
-          XmlDateTimeNowWithOffset(mpd_options_.availability_time_offset
-                                   - std::ceil(earliest_presentation_time));
+          XmlDateTimeNowWithOffset(mpd_options_.availability_time_offset -
+                                   std::ceil(earliest_presentation_time));
     } else {
       LOG(ERROR) << "Could not determine the earliest segment presentation "
                     "time for availabilityStartTime calculation.";
@@ -377,7 +406,8 @@ void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
     }
   }
   if (!availability_start_time_.empty())
-    mpd_node->SetStringAttribute("availabilityStartTime", availability_start_time_);
+    mpd_node->SetStringAttribute("availabilityStartTime",
+                                 availability_start_time_);
 
   if (Positive(mpd_options_.minimum_update_period)) {
     mpd_node->SetStringAttribute(
@@ -385,14 +415,13 @@ void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
         SecondsToXmlDuration(mpd_options_.minimum_update_period));
   } else {
     LOG(WARNING) << "The profile is dynamic but no minimumUpdatePeriod "
-                  "specified.";
+                    "specified.";
   }
 
-  SetIfPositive(
-      "timeShiftBufferDepth", mpd_options_.time_shift_buffer_depth, mpd_node);
-  SetIfPositive("suggestedPresentationDelay",
-                mpd_options_.suggested_presentation_delay,
+  SetIfPositive("timeShiftBufferDepth", mpd_options_.time_shift_buffer_depth,
                 mpd_node);
+  SetIfPositive("suggestedPresentationDelay",
+                mpd_options_.suggested_presentation_delay, mpd_node);
 }
 
 float MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
@@ -408,8 +437,7 @@ float MpdBuilder::GetStaticMpdDuration(XmlNode* mpd_node) {
   // attribute.
   float max_duration = 0.0f;
   for (xmlNodePtr adaptation_set = xmlFirstElementChild(period_node);
-       adaptation_set;
-       adaptation_set = xmlNextElementSibling(adaptation_set)) {
+       adaptation_set; adaptation_set = xmlNextElementSibling(adaptation_set)) {
     for (xmlNodePtr representation = xmlFirstElementChild(adaptation_set);
          representation;
          representation = xmlNextElementSibling(representation)) {
@@ -433,8 +461,7 @@ bool MpdBuilder::GetEarliestTimestamp(double* timestamp_seconds) {
   double earliest_timestamp(-1);
   for (std::list<AdaptationSet*>::const_iterator iter =
            adaptation_sets_.begin();
-       iter != adaptation_sets_.end();
-       ++iter) {
+       iter != adaptation_sets_.end(); ++iter) {
     double timestamp;
     if ((*iter)->GetEarliestTimestamp(&timestamp) &&
         ((earliest_timestamp < 0) || (timestamp < earliest_timestamp))) {
@@ -452,8 +479,9 @@ void MpdBuilder::MakePathsRelativeToMpd(const std::string& mpd_path,
                                         MediaInfo* media_info) {
   DCHECK(media_info);
   const std::string kFileProtocol("file://");
-  std::string mpd_file_path = (mpd_path.find(kFileProtocol) == 0) ?
-      mpd_path.substr(kFileProtocol.size()) : mpd_path;
+  std::string mpd_file_path = (mpd_path.find(kFileProtocol) == 0)
+                                  ? mpd_path.substr(kFileProtocol.size())
+                                  : mpd_path;
 
   if (!mpd_file_path.empty()) {
     std::string mpd_dir(
@@ -487,7 +515,8 @@ AdaptationSet::AdaptationSet(uint32_t adaptation_set_id,
   DCHECK(counter);
 }
 
-AdaptationSet::~AdaptationSet() {}
+AdaptationSet::~AdaptationSet() {
+}
 
 Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
   base::AutoLock scoped_lock(lock_);
@@ -515,7 +544,7 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
   AdaptationSetXmlNode adaptation_set;
 
   if (!adaptation_set.AddContentProtectionElements(
-           content_protection_elements_)) {
+          content_protection_elements_)) {
     return xml::ScopedXmlPtr<xmlNode>::type();
   }
 
@@ -542,8 +571,7 @@ bool AdaptationSet::GetEarliestTimestamp(double* timestamp_seconds) {
   double earliest_timestamp(-1);
   for (std::list<Representation*>::const_iterator iter =
            representations_.begin();
-       iter != representations_.end();
-       ++iter) {
+       iter != representations_.end(); ++iter) {
     double timestamp;
     if ((*iter)->GetEarliestTimestamp(&timestamp) &&
         ((earliest_timestamp < 0) || (timestamp < earliest_timestamp))) {
@@ -567,7 +595,8 @@ Representation::Representation(const MediaInfo& media_info,
       start_number_(1) {
 }
 
-Representation::~Representation() {}
+Representation::~Representation() {
+}
 
 bool Representation::Init() {
   codecs_ = GetCodecs(media_info_);
@@ -592,10 +621,14 @@ bool Representation::Init() {
     return false;
   }
 
-  // Check video and then audio. Usually when there is audio + video, we take
-  // video/<type>.
+  // For mimetypes, this checks the video and then audio. Usually when there is
+  // audio + video, we take video/<type>.
   if (has_video_info) {
     mime_type_ = GetVideoMimeType();
+    if (!HasRequiredVideoFields(media_info_.video_info())) {
+      LOG(ERROR) << "Missing required fields to create a video Representation.";
+      return false;
+    }
   } else if (has_audio_info) {
     mime_type_ = GetAudioMimeType();
   }
@@ -676,7 +709,7 @@ xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
   }
 
   if (!representation.AddContentProtectionElements(
-           content_protection_elements_)) {
+          content_protection_elements_)) {
     return xml::ScopedXmlPtr<xmlNode>::type();
   }
   if (!representation.AddContentProtectionElementsFromMediaInfo(media_info_))
@@ -689,8 +722,8 @@ xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
   }
 
   if (HasLiveOnlyFields(media_info_) &&
-      !representation.AddLiveOnlyInfo(
-          media_info_, segment_infos_, start_number_)) {
+      !representation.AddLiveOnlyInfo(media_info_, segment_infos_,
+                                      start_number_)) {
     LOG(ERROR) << "Failed to add Live info.";
     return xml::ScopedXmlPtr<xmlNode>::type();
   }
@@ -744,9 +777,9 @@ bool Representation::IsContiguous(uint64_t start_time,
       previous.start_time + previous.duration * previous.repeat;
   if (previous_segment_start_time >= start_time) {
     LOG(ERROR) << "Segments should not be out of order segment. Adding segment "
-                  "with start_time == " << start_time
-               << " but the previous segment starts at " << previous.start_time
-               << ".";
+                  "with start_time == "
+               << start_time << " but the previous segment starts at "
+               << previous.start_time << ".";
     return false;
   }
 
@@ -841,9 +874,8 @@ bool Representation::GetEarliestTimestamp(double* timestamp_seconds) {
   if (segment_infos_.empty())
     return false;
 
-  *timestamp_seconds =
-      static_cast<double>(segment_infos_.begin()->start_time) /
-      GetTimeScale(media_info_);
+  *timestamp_seconds = static_cast<double>(segment_infos_.begin()->start_time) /
+                       GetTimeScale(media_info_);
   return true;
 }
 

@@ -178,7 +178,7 @@ class AdaptationSet {
 
  private:
   friend class MpdBuilder;
-  FRIEND_TEST_ALL_PREFIXES(StaticMpdBuilderTest, CheckAdaptationSetId);
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckAdaptationSetId);
 
   /// @param adaptation_set_id is an ID number for this AdaptationSet.
   /// @param representation_counter is a Counter for assigning ID numbers to
@@ -241,7 +241,12 @@ class Representation {
 
  private:
   friend class AdaptationSet;
-  FRIEND_TEST_ALL_PREFIXES(StaticMpdBuilderTest, CheckRepresentationId);
+  // TODO(rkuroiwa): Consider defining a public factory method that constructs
+  // and Init()s, at least for testing.
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, ValidMediaInfo);
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, InvalidMediaInfo);
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckVideoInfoReflectedInXml);
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckRepresentationId);
 
   /// @param media_info is a MediaInfo containing information on the media.
   ///        @a media_info.bandwidth is required for 'static' profile. If @a

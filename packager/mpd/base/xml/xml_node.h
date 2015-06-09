@@ -147,8 +147,8 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
   ///         applicable), false otherwise.
   bool AddAudioInfo(const RepeatedAudioInfo& repeated_audio_info);
 
-  /// Adds fields that are specific to VOD. This ignores @a media_info fields for
-  /// Live.
+  /// Adds fields that are specific to VOD. This ignores @a media_info fields
+  /// for Live.
   /// @param media_info is a MediaInfo with VOD information.
   /// @return true on success, false otherwise.
   bool AddVODOnlyInfo(const MediaInfo& media_info);

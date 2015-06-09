@@ -16,6 +16,9 @@ namespace edash_packager {
 class MediaInfo;
 
 // File names that could be used to call GetTestDataFilePath().
+// TODO(rkuroiwa): Seems like too may indirection. Maybe put the definition
+// of the proto instance in this file. Or just remove this and put it in the
+// test.
 const char kFileNameVideoMediaInfo1[] = "video_media_info1.txt";
 const char kFileNameVideoMediaInfo2[] = "video_media_info2.txt";
 const char kFileNameAudioMediaInfo1[] = "audio_media_info1.txt";

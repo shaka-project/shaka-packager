@@ -330,7 +330,7 @@ bool RepresentationXmlNode::AddVideoInfo(
   // Make sure that all the widths and heights match.
   for (int i = 0; i < repeated_video_info.size(); ++i) {
     const MediaInfo_VideoInfo& video_info = repeated_video_info.Get(i);
-    if (video_info.width() <= 0 || video_info.height() <= 0)
+    if (video_info.width() == 0 || video_info.height() == 0)
       return false;
 
     if (width == 0) {
@@ -352,6 +352,15 @@ bool RepresentationXmlNode::AddVideoInfo(
   if (height != 0)
     SetIntegerAttribute("height", height);
 
+  // TODO(rkuroiwa): Because we are going ot make video_info optional instead
+  // of repeated, just using the first video_info.
+  const MediaInfo_VideoInfo& video_info = repeated_video_info.Get(0);
+  SetStringAttribute("frameRate",
+                     base::IntToString(video_info.time_scale()) + "/" +
+                         base::IntToString(video_info.frame_duration()));
+
+  SetStringAttribute("sar", base::IntToString(video_info.pixel_width()) + ":" +
+                                base::IntToString(video_info.pixel_height()));
   return true;
 }
 
