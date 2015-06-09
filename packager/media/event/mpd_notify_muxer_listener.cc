@@ -34,13 +34,13 @@ void MpdNotifyMuxerListener::SetContentProtectionSchemeIdUri(
 
 void MpdNotifyMuxerListener::OnMediaStart(
     const MuxerOptions& muxer_options,
-    const std::vector<StreamInfo*>& stream_infos,
+    const StreamInfo& stream_info,
     uint32_t time_scale,
     ContainerType container_type,
     bool is_encrypted) {
   scoped_ptr<MediaInfo> media_info(new MediaInfo());
   if (!internal::GenerateMediaInfo(muxer_options,
-                                   stream_infos,
+                                   stream_info,
                                    time_scale,
                                    container_type,
                                    media_info.get())) {

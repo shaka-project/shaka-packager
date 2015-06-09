@@ -119,12 +119,12 @@ uint32_t GetTimeScale(const MediaInfo& media_info) {
     return media_info.reference_time_scale();
   }
 
-  if (media_info.video_info_size() > 0) {
-    return media_info.video_info(0).time_scale();
+  if (media_info.has_video_info()) {
+    return media_info.video_info().time_scale();
   }
 
-  if (media_info.audio_info_size() > 0) {
-    return media_info.audio_info(0).time_scale();
+  if (media_info.has_audio_info()) {
+    return media_info.audio_info().time_scale();
   }
 
   LOG(WARNING) << "No timescale specified, using 1 as timescale.";
@@ -186,34 +186,29 @@ std::string MakePathRelative(const std::string& path,
   return (path.find(mpd_dir) == 0) ? path.substr(mpd_dir.size()) : path;
 }
 
-// Check whether all the video infos have width and height.
-// DASH IOP defines required fields for video representations, namely
+// Check whether the video info has width and height.
+// DASH IOP also requires several other fields for video representations, namely
 // width, height, framerate, and sar.
-bool HasRequiredVideoFields(
-    ::google::protobuf::RepeatedPtrField<MediaInfo_VideoInfo> video_infos) {
-  CHECK_GT(video_infos.size(), 0);
-  for (int i = 0; i < video_infos.size(); ++i) {
-    const MediaInfo::VideoInfo& info = video_infos.Get(i);
-    if (!info.has_height() || !info.has_width()) {
-      LOG(ERROR)
-          << "Width and height are required fields for generating a valid MPD.";
-      return false;
-    }
-    // These fields are not required for a valid MPD, but required for DASH IOP
-    // compliant MPD. MpdBuilder can keep generating MPDs without these fields.
-    LOG_IF(WARNING, !info.has_time_scale())
-        << "Video info does not contain timescale required for "
-           "calculating framerate. @frameRate is required for DASH IOP.";
-    LOG_IF(WARNING, !info.has_frame_duration())
-        << "Video info does not contain frame duration required "
-           "for calculating framerate. @frameRate is required for DASH IOP.";
-    LOG_IF(WARNING, !info.has_pixel_width())
-        << "Video info does not contain pixel_width to calculate the sample "
-           "aspect ratio required for DASH IOP.";
-    LOG_IF(WARNING, !info.has_pixel_height())
-        << "Video info does not contain pixel_height to calculate the sample "
-           "aspect ratio required for DASH IOP.";
+bool HasRequiredVideoFields(const MediaInfo_VideoInfo& video_info) {
+  if (!video_info.has_height() || !video_info.has_width()) {
+    LOG(ERROR)
+        << "Width and height are required fields for generating a valid MPD.";
+    return false;
   }
+  // These fields are not required for a valid MPD, but required for DASH IOP
+  // compliant MPD. MpdBuilder can keep generating MPDs without these fields.
+  LOG_IF(WARNING, !video_info.has_time_scale())
+      << "Video info does not contain timescale required for "
+         "calculating framerate. @frameRate is required for DASH IOP.";
+  LOG_IF(WARNING, !video_info.has_frame_duration())
+      << "Video info does not contain frame duration required "
+         "for calculating framerate. @frameRate is required for DASH IOP.";
+  LOG_IF(WARNING, !video_info.has_pixel_width())
+      << "Video info does not contain pixel_width to calculate the sample "
+         "aspect ratio required for DASH IOP.";
+  LOG_IF(WARNING, !video_info.has_pixel_height())
+      << "Video info does not contain pixel_height to calculate the sample "
+         "aspect ratio required for DASH IOP.";
   return true;
 }
 
@@ -528,8 +523,8 @@ Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
 
   // For videos, record the width, height, and the frame rate to calculate the
   // max {width,height,framerate} required for DASH IOP.
-  if(media_info.video_info_size() > 0) {
-    const MediaInfo::VideoInfo& video_info = media_info.video_info(0);
+  if(media_info.has_video_info()) {
+    const MediaInfo::VideoInfo& video_info = media_info.video_info();
     DCHECK(video_info.has_width());
     DCHECK(video_info.has_height());
     video_widths_.insert(video_info.width());
@@ -642,8 +637,8 @@ bool Representation::Init() {
     return false;
   }
 
-  const bool has_video_info = media_info_.video_info_size() > 0;
-  const bool has_audio_info = media_info_.audio_info_size() > 0;
+  const bool has_video_info = media_info_.has_video_info();
+  const bool has_audio_info = media_info_.has_audio_info();
 
   if (!has_video_info && !has_audio_info) {
     // This is an error. Segment information can be in AdaptationSet, Period, or
@@ -705,8 +700,8 @@ void Representation::AddNewSegment(uint64_t start_time,
 
 void Representation::SetSampleDuration(uint32_t sample_duration) {
   // Assume single video info.
-  if (media_info_.video_info_size() > 0)
-    media_info_.mutable_video_info(0)->set_frame_duration(sample_duration);
+  if (media_info_.has_video_info())
+    media_info_.mutable_video_info()->set_frame_duration(sample_duration);
 }
 
 // Uses info in |media_info_| and |content_protection_elements_| to create a
@@ -736,8 +731,8 @@ xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
   representation.SetStringAttribute("codecs", codecs_);
   representation.SetStringAttribute("mimeType", mime_type_);
 
-  const bool has_video_info = media_info_.video_info_size() > 0;
-  const bool has_audio_info = media_info_.audio_info_size() > 0;
+  const bool has_video_info = media_info_.has_video_info();
+  const bool has_audio_info = media_info_.has_audio_info();
 
   if (has_video_info &&
       !representation.AddVideoInfo(media_info_.video_info())) {

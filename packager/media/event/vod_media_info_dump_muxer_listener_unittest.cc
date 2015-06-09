@@ -167,13 +167,13 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
   }
 
   void FireOnMediaStartWithDefaultMuxerOptions(
-      const std::vector<StreamInfo*> stream_infos,
+      const StreamInfo& stream_info,
       bool enable_encryption) {
     MuxerOptions muxer_options;
     SetDefaultMuxerOptionsValues(&muxer_options);
     const uint32_t kReferenceTimeScale = 1000;
     listener_->OnMediaStart(muxer_options,
-                            stream_infos,
+                            stream_info,
                             kReferenceTimeScale,
                             MuxerListener::kContainerMp4,
                             enable_encryption);
@@ -212,10 +212,8 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
 TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal) {
   scoped_refptr<StreamInfo> stream_info =
       CreateVideoStreamInfo(GetDefaultVideoStreamInfoParams());
-  std::vector<StreamInfo*> stream_infos;
-  stream_infos.push_back(stream_info.get());
 
-  FireOnMediaStartWithDefaultMuxerOptions(stream_infos, !kEnableEncryption);
+  FireOnMediaStartWithDefaultMuxerOptions(*stream_info, !kEnableEncryption);
   OnMediaEndParameters media_end_param = GetDefaultOnMediaEndParams();
   FireOnMediaEndWithParams(media_end_param);
 
@@ -247,10 +245,8 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
 
   scoped_refptr<StreamInfo> stream_info =
       CreateVideoStreamInfo(GetDefaultVideoStreamInfoParams());
-  std::vector<StreamInfo*> stream_infos;
-  stream_infos.push_back(stream_info.get());
 
-  FireOnMediaStartWithDefaultMuxerOptions(stream_infos, kEnableEncryption);
+  FireOnMediaStartWithDefaultMuxerOptions(*stream_info, kEnableEncryption);
 
   OnMediaEndParameters media_end_param = GetDefaultOnMediaEndParams();
   FireOnMediaEndWithParams(media_end_param);

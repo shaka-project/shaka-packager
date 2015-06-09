@@ -19,6 +19,8 @@
 using edash_packager::xml::XmlNode;
 
 using edash_packager::MediaInfo;
+typedef edash_packager::MediaInfo::AudioInfo AudioInfo;
+typedef edash_packager::MediaInfo::VideoInfo VideoInfo;
 typedef MediaInfo::ContentProtectionXml ContentProtectionXml;
 typedef ContentProtectionXml::AttributeNameValuePair AttributeNameValuePair;
 
@@ -322,55 +324,27 @@ RepresentationXmlNode::RepresentationXmlNode()
     : RepresentationBaseXmlNode("Representation") {}
 RepresentationXmlNode::~RepresentationXmlNode() {}
 
-bool RepresentationXmlNode::AddVideoInfo(
-    const RepeatedVideoInfo& repeated_video_info) {
-  uint32_t width = 0;
-  uint32_t height = 0;
-
-  // Make sure that all the widths and heights match.
-  for (int i = 0; i < repeated_video_info.size(); ++i) {
-    const MediaInfo_VideoInfo& video_info = repeated_video_info.Get(i);
-    if (video_info.width() == 0 || video_info.height() == 0)
-      return false;
-
-    if (width == 0) {
-      width = video_info.width();
-    } else if (width != video_info.width()) {
-      return false;
-    }
-
-    if (height == 0) {
-      height = video_info.height();
-    } else  if (height != video_info.height()) {
-      return false;
-    }
+bool RepresentationXmlNode::AddVideoInfo(const VideoInfo& video_info) {
+  if (!video_info.has_width() || !video_info.has_height()) {
+    LOG(ERROR) << "Missing width or height for adding a video info.";
+    return false;
   }
 
-  if (width != 0)
-    SetIntegerAttribute("width", width);
-
-  if (height != 0)
-    SetIntegerAttribute("height", height);
-
-  // TODO(rkuroiwa): Because we are going ot make video_info optional instead
-  // of repeated, just using the first video_info.
-  const MediaInfo_VideoInfo& video_info = repeated_video_info.Get(0);
+  SetIntegerAttribute("width", video_info.width());
+  SetIntegerAttribute("height", video_info.height());
   SetStringAttribute("frameRate",
                      base::IntToString(video_info.time_scale()) + "/" +
                          base::IntToString(video_info.frame_duration()));
-
   SetStringAttribute("sar", base::IntToString(video_info.pixel_width()) + ":" +
                                 base::IntToString(video_info.pixel_height()));
   return true;
 }
 
-bool RepresentationXmlNode::AddAudioInfo(
-    const RepeatedAudioInfo& repeated_audio_info) {
-  if (!AddAudioChannelInfo(repeated_audio_info))
+bool RepresentationXmlNode::AddAudioInfo(const AudioInfo& audio_info) {
+  if (!AddAudioChannelInfo(audio_info))
     return false;
 
-  AddAudioSamplingRateInfo(repeated_audio_info);
-
+  AddAudioSamplingRateInfo(audio_info);
   return true;
 }
 
@@ -466,64 +440,24 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
          AddChild(segment_template.PassScopedPtr());
 }
 
-// Find all the unique number-of-channels in |repeated_audio_info|, and make
-// AudioChannelConfiguration for each number-of-channels.
-bool RepresentationXmlNode::AddAudioChannelInfo(
-    const RepeatedAudioInfo& repeated_audio_info) {
-  std::set<uint32_t> num_channels;
-  for (int i = 0; i < repeated_audio_info.size(); ++i) {
-    if (repeated_audio_info.Get(i).has_num_channels())
-      num_channels.insert(repeated_audio_info.Get(i).num_channels());
-  }
+bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
+  const uint32_t num_channels = audio_info.num_channels();
+  XmlNode audio_channel_config("AudioChannelConfiguration");
+  const char kAudioChannelConfigScheme[] =
+      "urn:mpeg:dash:23003:3:audio_channel_configuration:2011";
+  audio_channel_config.SetStringAttribute("schemeIdUri",
+                                          kAudioChannelConfigScheme);
+  audio_channel_config.SetIntegerAttribute("value", num_channels);
 
-  std::set<uint32_t>::const_iterator num_channels_it = num_channels.begin();
-  for (; num_channels_it != num_channels.end(); ++num_channels_it) {
-    XmlNode audio_channel_config("AudioChannelConfiguration");
-
-    const char kAudioChannelConfigScheme[] =
-        "urn:mpeg:dash:23003:3:audio_channel_configuration:2011";
-    audio_channel_config.SetStringAttribute("schemeIdUri",
-                                            kAudioChannelConfigScheme);
-    audio_channel_config.SetIntegerAttribute("value", *num_channels_it);
-
-    if (!AddChild(audio_channel_config.PassScopedPtr()))
-      return false;
-  }
-
-  return true;
+  return AddChild(audio_channel_config.PassScopedPtr());
 }
 
 // MPD expects one number for sampling frequency, or if it is a range it should
 // be space separated.
 void RepresentationXmlNode::AddAudioSamplingRateInfo(
-    const RepeatedAudioInfo& repeated_audio_info) {
-  bool has_sampling_frequency = false;
-  uint32_t min_sampling_frequency = std::numeric_limits<uint32_t>::max();
-  uint32_t max_sampling_frequency = 0;
-
-  for (int i = 0; i < repeated_audio_info.size(); ++i) {
-    const MediaInfo_AudioInfo &audio_info = repeated_audio_info.Get(i);
-    if (audio_info.has_sampling_frequency()) {
-      has_sampling_frequency = true;
-      const uint32_t sampling_frequency = audio_info.sampling_frequency();
-      if (sampling_frequency < min_sampling_frequency)
-        min_sampling_frequency = sampling_frequency;
-
-      if (sampling_frequency > max_sampling_frequency)
-        max_sampling_frequency = sampling_frequency;
-    }
-  }
-
-  if (has_sampling_frequency) {
-    if (min_sampling_frequency == max_sampling_frequency) {
-      SetIntegerAttribute("audioSamplingRate", min_sampling_frequency);
-    } else {
-      std::string sample_rate_string =
-          base::UintToString(min_sampling_frequency) + " " +
-          base::UintToString(max_sampling_frequency);
-      SetStringAttribute("audioSamplingRate", sample_rate_string);
-    }
-  }
+    const AudioInfo& audio_info) {
+  if (audio_info.has_sampling_frequency())
+    SetIntegerAttribute("audioSamplingRate", audio_info.sampling_frequency());
 }
 
 }  // namespace xml

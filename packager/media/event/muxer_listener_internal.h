@@ -28,7 +28,7 @@ namespace internal {
 /// @param[out] media_info points to the MediaInfo object to be filled.
 /// @return true on success, false otherwise.
 bool GenerateMediaInfo(const MuxerOptions& muxer_options,
-                       const std::vector<StreamInfo*>& stream_infos,
+                       const StreamInfo& stream_info,
                        uint32_t reference_time_scale_,
                        MuxerListener::ContainerType container_type,
                        MediaInfo* media_info);

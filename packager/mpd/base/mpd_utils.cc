@@ -14,27 +14,6 @@
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
-namespace {
-
-// Concatenate all the codecs in |repeated_stream_info|.
-template <typename RepeatedStreamInfoType>
-std::string CodecsString(const RepeatedStreamInfoType& repeated_stream_info) {
-  std::string codecs;
-  for (int i = 0; i < repeated_stream_info.size(); ++i) {
-    codecs.append(repeated_stream_info.Get(i).codec());
-    codecs.append(",");
-  }
-
-  if (!codecs.empty()) {
-    DCHECK_EQ(codecs[codecs.size() - 1], ',');
-    codecs.resize(codecs.size() - 1);  // Cut off ',' at the end.
-  }
-
-  return codecs;
-}
-
-}  // namespace
-
 namespace edash_packager {
 
 bool HasVODOnlyFields(const MediaInfo& media_info) {
@@ -63,20 +42,20 @@ void RemoveDuplicateAttributes(
 }
 
 std::string GetCodecs(const MediaInfo& media_info) {
-  std::string video_codecs;
-  if (media_info.video_info_size() > 0)
-    video_codecs = CodecsString(media_info.video_info());
+  std::string video_codec;
+  if (media_info.has_video_info())
+    video_codec = media_info.video_info().codec();
 
-  std::string audio_codecs;
-  if (media_info.audio_info_size() > 0)
-    audio_codecs = CodecsString(media_info.audio_info());
+  std::string audio_codec;
+  if (media_info.has_audio_info())
+    audio_codec = media_info.audio_info().codec();
 
-  if (!video_codecs.empty() && !audio_codecs.empty()) {
-    return video_codecs + "," + audio_codecs;
-  } else if (!video_codecs.empty()) {
-    return video_codecs;
-  } else if (!audio_codecs.empty()) {
-    return audio_codecs;
+  if (!video_codec.empty() && !audio_codec.empty()) {
+    return video_codec + "," + audio_codec;
+  } else if (!video_codec.empty()) {
+    return video_codec;
+  } else if (!audio_codec.empty()) {
+    return audio_codec;
   }
 
   return "";

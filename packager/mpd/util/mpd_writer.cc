@@ -17,17 +17,6 @@ using edash_packager::media::File;
 namespace edash_packager {
 
 namespace {
-bool HasVideo(const MediaInfo& media_info) {
-  return media_info.video_info().size() > 0;
-}
-
-bool HasAudio(const MediaInfo& media_info) {
-  return media_info.audio_info().size() > 0;
-}
-
-bool HasText(const MediaInfo& media_info) {
-  return media_info.text_info().size() > 0;
-}
 
 // On entry set |has_video|, |has_audio|, and |has_text| to false.
 // On success, return true and set appropriate |has_*| variables. Otherwise
@@ -48,9 +37,9 @@ bool HasVideoAudioText(const std::list<MediaInfo>& media_infos,
        it != media_infos.end();
        ++it) {
     const MediaInfo& media_info = *it;
-    const bool media_info_has_video = HasVideo(media_info);
-    const bool media_info_has_audio = HasAudio(media_info);
-    const bool media_info_has_text = HasText(media_info);
+    const bool media_info_has_video = media_info.has_video_info();
+    const bool media_info_has_audio = media_info.has_audio_info();
+    const bool media_info_has_text = media_info.has_text_info();
 
     if (MoreThanOneTrue(
             media_info_has_video, media_info_has_audio, media_info_has_text)) {
@@ -101,17 +90,18 @@ bool SetMediaInfosToMpdBuilder(const std::list<MediaInfo>& media_infos,
        it != media_infos.end();
        ++it) {
     const MediaInfo& media_info = *it;
-    DCHECK(OnlyOneTrue(
-        HasVideo(media_info), HasAudio(media_info), HasText(media_info)));
+    DCHECK(OnlyOneTrue(media_info.has_video_info(),
+                       media_info.has_audio_info(),
+                       media_info.has_text_info()));
 
     std::string lang;
     AdaptationSet** adaptation_set = NULL;
-    if (HasVideo(media_info)) {
+    if (media_info.has_video_info()) {
       adaptation_set = &map["video"][lang];
-    } else if (HasAudio(media_info)) {
-      lang = media_info.audio_info(0).language();
+    } else if (media_info.has_audio_info()) {
+      lang = media_info.audio_info().language();
       adaptation_set = &map["audio"][lang];
-    } else if (HasText(media_info)) {
+    } else if (media_info.has_text_info()) {
       adaptation_set = &map["text"][lang];
     }
     if (!*adaptation_set) {

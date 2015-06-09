@@ -49,8 +49,8 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   // TODO(kqyang): Consider adding a new method MpdBuilder::AddRepresentation.
   // Most of the codes here can be moved inside.
   std::string lang;
-  if (media_info.audio_info().size() > 0) {
-    lang = media_info.audio_info(0).language();
+  if (media_info.has_audio_info()) {
+    lang = media_info.audio_info().language();
   }
   AdaptationSet** adaptation_set = &adaptation_set_map_[content_type][lang];
   if (*adaptation_set == NULL)
@@ -110,9 +110,9 @@ bool SimpleMpdNotifier::AddContentProtectionElement(
 
 SimpleMpdNotifier::ContentType SimpleMpdNotifier::GetContentType(
     const MediaInfo& media_info) {
-  const bool has_video = media_info.video_info().size() > 0;
-  const bool has_audio = media_info.audio_info().size() > 0;
-  const bool has_text = media_info.text_info().size() > 0;
+  const bool has_video = media_info.has_video_info();
+  const bool has_audio = media_info.has_audio_info();
+  const bool has_text = media_info.has_text_info();
 
   if (MoreThanOneTrue(has_video, has_audio, has_text)) {
     NOTIMPLEMENTED() << "MediaInfo with more than one stream is not supported.";

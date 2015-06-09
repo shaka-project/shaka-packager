@@ -51,9 +51,6 @@ class MP4Muxer : public Muxer {
                          Track* trak,
                          uint32_t track_id);
 
-  // Helper functions for events.
-  void GetStreamInfo(std::vector<StreamInfo*>* stream_infos);
-
   // Gets |start| and |end| initialization range. Returns true if there is an
   // init range and sets start-end byte-range-spec specified in RFC2616.
   bool GetInitRangeStartAndEnd(uint32_t* start, uint32_t* end);

@@ -204,15 +204,6 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
   sample_description.audio_entries.push_back(audio);
 }
 
-void MP4Muxer::GetStreamInfo(std::vector<StreamInfo*>* stream_infos) {
-  DCHECK(stream_infos);
-  const std::vector<MediaStream*>& media_stream_vec = streams();
-  stream_infos->reserve(media_stream_vec.size());
-  for (size_t i = 0; i < media_stream_vec.size(); ++i) {
-    stream_infos->push_back(media_stream_vec[i]->info().get());
-  }
-}
-
 bool MP4Muxer::GetInitRangeStartAndEnd(uint32_t* start, uint32_t* end) {
   DCHECK(start && end);
   size_t range_offset = 0;
@@ -243,11 +234,15 @@ void MP4Muxer::FireOnMediaStartEvent() {
   if (!muxer_listener())
     return;
 
-  std::vector<StreamInfo*> stream_info_vec;
-  GetStreamInfo(&stream_info_vec);
+  if (streams().size() > 1) {
+    LOG(ERROR) << "MuxerListener cannot take more than 1 stream.";
+    return;
+  }
+  DCHECK(!streams().empty()) << "Media started without a stream.";
+
   const uint32_t timescale = segmenter_->GetReferenceTimeScale();
   muxer_listener()->OnMediaStart(options(),
-                                 stream_info_vec,
+                                 *streams().front()->info(),
                                  timescale,
                                  MuxerListener::kContainerMp4,
                                  encryption_key_source() != NULL);

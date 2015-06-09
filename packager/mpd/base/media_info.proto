@@ -77,9 +77,12 @@ message MediaInfo {
   }
 
   optional uint32 bandwidth = 1;
-  repeated VideoInfo video_info = 2;
-  repeated AudioInfo audio_info = 3;
-  repeated TextInfo text_info = 4;
+
+  // Note that DASH IOP v3.0 explicitly mentions that a segment should only
+  // have one {video, audio, text} track.
+  optional VideoInfo video_info = 2;
+  optional AudioInfo audio_info = 3;
+  optional TextInfo text_info = 4;
   repeated ContentProtectionXml content_protections = 5;
 
   // This is the reference time scale if there are multiple VideoInfo and/or

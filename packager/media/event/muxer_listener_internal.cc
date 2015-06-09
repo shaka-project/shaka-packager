@@ -80,7 +80,7 @@ void AddVideoInfo(const VideoStreamInfo* video_stream_info,
                   MediaInfo* media_info) {
   DCHECK(video_stream_info);
   DCHECK(media_info);
-  MediaInfo_VideoInfo* video_info = media_info->add_video_info();
+  MediaInfo_VideoInfo* video_info = media_info->mutable_video_info();
   video_info->set_codec(video_stream_info->codec_string());
   video_info->set_width(video_stream_info->width());
   video_info->set_height(video_stream_info->height());
@@ -96,7 +96,7 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
                   MediaInfo* media_info) {
   DCHECK(audio_stream_info);
   DCHECK(media_info);
-  MediaInfo_AudioInfo* audio_info = media_info->add_audio_info();
+  MediaInfo_AudioInfo* audio_info = media_info->mutable_audio_info();
   audio_info->set_codec(audio_stream_info->codec_string());
   audio_info->set_sampling_frequency(audio_stream_info->sampling_frequency());
   audio_info->set_time_scale(audio_stream_info->time_scale());
@@ -114,24 +114,15 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
   }
 }
 
-void SetMediaInfoStreamInfo(const std::vector<StreamInfo*>& stream_infos,
+void SetMediaInfoStreamInfo(const StreamInfo& stream_info,
                             MediaInfo* media_info) {
-  typedef std::vector<StreamInfo*>::const_iterator StreamInfoIterator;
-  for (StreamInfoIterator it = stream_infos.begin();
-       it != stream_infos.end();
-       ++it) {
-    const StreamInfo* stream_info = *it;
-    if (!stream_info)
-      continue;
-
-    if (stream_info->stream_type() == kStreamAudio) {
-      AddAudioInfo(static_cast<const AudioStreamInfo*>(stream_info),
-                   media_info);
-    } else {
-      DCHECK_EQ(stream_info->stream_type(), kStreamVideo);
-      AddVideoInfo(static_cast<const VideoStreamInfo*>(stream_info),
-                   media_info);
-    }
+  if (stream_info.stream_type() == kStreamAudio) {
+    AddAudioInfo(static_cast<const AudioStreamInfo*>(&stream_info),
+                 media_info);
+  } else {
+    DCHECK_EQ(stream_info.stream_type(), kStreamVideo);
+    AddVideoInfo(static_cast<const VideoStreamInfo*>(&stream_info),
+                 media_info);
   }
 }
 
@@ -150,14 +141,14 @@ void SetMediaInfoMuxerOptions(const MuxerOptions& muxer_options,
 }  // namespace
 
 bool GenerateMediaInfo(const MuxerOptions& muxer_options,
-                       const std::vector<StreamInfo*>& stream_infos,
+                       const StreamInfo& stream_info,
                        uint32_t reference_time_scale,
                        MuxerListener::ContainerType container_type,
                        MediaInfo* media_info) {
   DCHECK(media_info);
 
   SetMediaInfoMuxerOptions(muxer_options, media_info);
-  SetMediaInfoStreamInfo(stream_infos, media_info);
+  SetMediaInfoStreamInfo(stream_info, media_info);
   media_info->set_reference_time_scale(reference_time_scale);
   SetMediaInfoContainerType(container_type, media_info);
   if (muxer_options.bandwidth > 0)

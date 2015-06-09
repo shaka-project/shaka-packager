@@ -613,7 +613,7 @@ TEST_F(CommonMpdBuilderTest, SetSampleDuration) {
   EXPECT_TRUE(representation.Init());
   representation.SetSampleDuration(2u);
   EXPECT_EQ(2u,
-            representation.media_info_.video_info(0).frame_duration());
+            representation.media_info_.video_info().frame_duration());
 }
 
 // Add one video check the output.

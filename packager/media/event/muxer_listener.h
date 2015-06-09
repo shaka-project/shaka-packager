@@ -37,10 +37,10 @@ class MuxerListener {
   // Called when muxing starts. This event happens before any other events.
   // For MPEG DASH Live profile, the initialization segment information is
   // available from StreamInfo.
-  // |time_scale| is a reference time scale regardless of the time scale(s)
-  // specified in |stream_infos|.
+  // |time_scale| is a reference time scale that overrides the time scale
+  // specified in |stream_info|.
   virtual void OnMediaStart(const MuxerOptions& muxer_options,
-                            const std::vector<StreamInfo*>& stream_infos,
+                            const StreamInfo& stream_info,
                             uint32_t time_scale,
                             ContainerType container_type,
                             bool is_encrypted) = 0;

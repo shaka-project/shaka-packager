@@ -31,14 +31,14 @@ void VodMediaInfoDumpMuxerListener::SetContentProtectionSchemeIdUri(
 
 void VodMediaInfoDumpMuxerListener::OnMediaStart(
     const MuxerOptions& muxer_options,
-    const std::vector<StreamInfo*>& stream_infos,
+    const StreamInfo& stream_info,
     uint32_t time_scale,
     ContainerType container_type,
     bool is_encrypted) {
   DCHECK(muxer_options.single_segment);
   media_info_.reset(new MediaInfo());
   if (!internal::GenerateMediaInfo(muxer_options,
-                                   stream_infos,
+                                   stream_info,
                                    time_scale,
                                    container_type,
                                    media_info_.get())) {
@@ -58,8 +58,8 @@ void VodMediaInfoDumpMuxerListener::OnMediaStart(
 void VodMediaInfoDumpMuxerListener::OnSampleDurationReady(
     uint32_t sample_duration) {
   // Assume one VideoInfo.
-  if (media_info_->video_info_size() > 0) {
-    media_info_->mutable_video_info(0)->set_frame_duration(sample_duration);
+  if (media_info_->has_video_info()) {
+    media_info_->mutable_video_info()->set_frame_duration(sample_duration);
   }
 }
 

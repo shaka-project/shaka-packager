@@ -124,28 +124,20 @@ class AdaptationSetXmlNode : public RepresentationBaseXmlNode {
 /// RepresentationType in MPD.
 class RepresentationXmlNode : public RepresentationBaseXmlNode {
  public:
-  typedef ::google::protobuf::RepeatedPtrField<MediaInfo_VideoInfo>
-      RepeatedVideoInfo;
-
-  typedef ::google::protobuf::RepeatedPtrField<MediaInfo_AudioInfo>
-      RepeatedAudioInfo;
-
   RepresentationXmlNode();
   virtual ~RepresentationXmlNode();
 
   /// Adds video metadata to the MPD.
-  /// @param repeated_video_info constains the VideoInfos for Representation.
-  ///        Input of size 0 is valid.
+  /// @param video_info constains the VideoInfo for a Representation.
   /// @return true if successfully set attributes and children elements (if
   ///         applicable), false otherwise.
-  bool AddVideoInfo(const RepeatedVideoInfo& repeated_video_info);
+  bool AddVideoInfo(const MediaInfo::VideoInfo& video_info);
 
   /// Adds audio metadata to the MPD.
-  /// @param repeated_audio_info constains the AudioInfos for Representation.
-  ///        Input of size 0 is valid.
+  /// @param audio_info constains the AudioInfos for a Representation.
   /// @return true if successfully set attributes and children elements (if
   ///         applicable), false otherwise.
-  bool AddAudioInfo(const RepeatedAudioInfo& repeated_audio_info);
+  bool AddAudioInfo(const MediaInfo::AudioInfo& audio_info);
 
   /// Adds fields that are specific to VOD. This ignores @a media_info fields
   /// for Live.
@@ -160,13 +152,12 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
                        uint32_t start_number);
 
  private:
-  // Add AudioChannelConfiguration elements. This will add multiple
-  // AudioChannelConfiguration if @a repeated_audio_info contains multiple
-  // distinct channel configs (e.g. 2 channels and 6 channels adds 2 elements).
-  bool AddAudioChannelInfo(const RepeatedAudioInfo& repeated_audio_info);
+  // Add AudioChannelConfiguration element. Note that it is a required element
+  // for audio Representations.
+  bool AddAudioChannelInfo(const MediaInfo::AudioInfo& audio_info);
 
-  // Add audioSamplingRate attribute to this element.
-  void AddAudioSamplingRateInfo(const RepeatedAudioInfo& repeated_audio_info);
+  // Add audioSamplingRate attribute to this element, if present.
+  void AddAudioSamplingRateInfo(const MediaInfo::AudioInfo& audio_info);
 
   DISALLOW_COPY_AND_ASSIGN(RepresentationXmlNode);
 };
