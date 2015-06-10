@@ -140,10 +140,11 @@ bool RsaPrivateKey::GenerateSignature(const std::string& message,
   // Add PSS padding.
   size_t rsa_size = RSA_size(rsa_key_);
   std::vector<uint8_t> padded_digest(rsa_size);
-  if (!RSA_padding_add_PKCS1_PSS(
+  if (!RSA_padding_add_PKCS1_PSS_mgf1(
           rsa_key_,
           &padded_digest[0],
           reinterpret_cast<uint8_t*>(string_as_array(&message_digest)),
+          EVP_sha1(),
           EVP_sha1(),
           kPssSaltLength)) {
     LOG(ERROR) << "RSA padding failure: " << ERR_error_string(ERR_get_error(),
@@ -238,9 +239,10 @@ bool RsaPublicKey::VerifySignature(const std::string& message,
   std::string message_digest = base::SHA1HashString(message);
 
   // Verify PSS padding.
-  return RSA_verify_PKCS1_PSS(
+  return RSA_verify_PKCS1_PSS_mgf1(
              rsa_key_,
              reinterpret_cast<const uint8_t*>(message_digest.data()),
+             EVP_sha1(),
              EVP_sha1(),
              &padded_digest[0],
              kPssSaltLength) != 0;
