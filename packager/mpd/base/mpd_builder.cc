@@ -666,6 +666,12 @@ void Representation::AddNewSegment(uint64_t start_time,
   DCHECK_GE(segment_infos_.size(), 1u);
 }
 
+void Representation::SetSampleDuration(uint32_t sample_duration) {
+  // Assume single video info.
+  if (media_info_.video_info_size() > 0)
+    media_info_.mutable_video_info(0)->set_frame_duration(sample_duration);
+}
+
 // Uses info in |media_info_| and |content_protection_elements_| to create a
 // "Representation" node.
 // MPD schema has strict ordering. The following must be done in order.

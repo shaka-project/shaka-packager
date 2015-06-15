@@ -55,6 +55,14 @@ void VodMediaInfoDumpMuxerListener::OnMediaStart(
   }
 }
 
+void VodMediaInfoDumpMuxerListener::OnSampleDurationReady(
+    uint32_t sample_duration) {
+  // Assume one VideoInfo.
+  if (media_info_->video_info_size() > 0) {
+    media_info_->mutable_video_info(0)->set_frame_duration(sample_duration);
+  }
+}
+
 void VodMediaInfoDumpMuxerListener::OnMediaEnd(bool has_init_range,
                                                uint64_t init_range_start,
                                                uint64_t init_range_end,

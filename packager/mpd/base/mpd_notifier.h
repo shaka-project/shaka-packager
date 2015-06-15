@@ -46,6 +46,16 @@ class MpdNotifier {
   virtual bool NotifyNewContainer(const MediaInfo& media_info,
                                   uint32_t* container_id) = 0;
 
+  /// Change the sample duration of container with @a container_id.
+  /// @param container_id Container ID obtained from calling
+  ///        NotifyNewContainer().
+  /// @param sample_duration is the duration of a sample in timescale of the
+  ///        media.
+  /// @return true on success, false otherwise. This may fail if the container
+  ///         specified by @a container_id does not exist.
+  virtual bool NotifySampleDuration(uint32_t container_id,
+                                    uint32_t sample_duration) = 0;
+
   /// Notifies MpdBuilder that there is a new segment ready. Used only for live
   /// profile.
   /// @param container_id Container ID obtained from calling

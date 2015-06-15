@@ -399,6 +399,22 @@ TEST_F(CommonMpdBuilderTest, CheckRepresentationId) {
   ASSERT_NO_FATAL_FAILURE(CheckIdEqual(kRepresentationId, &representation));
 }
 
+// TODO(rkuroiwa): Better way to test this is to use GetXml(). Check that
+// frameRate is set once the patch that adds frameRate attribute lands.
+// For now, check that media_info_ owned by Representation has
+// frame_duration = sample_duration.
+TEST_F(CommonMpdBuilderTest, SetSampleDuration) {
+  const MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
+  const uint32_t kRepresentationId = 1;
+
+  Representation representation(
+      video_media_info, MpdOptions(), kRepresentationId);
+  EXPECT_TRUE(representation.Init());
+  representation.SetSampleDuration(2u);
+  EXPECT_EQ(2u,
+            representation.media_info_.video_info(0).frame_duration());
+}
+
 // Add one video check the output.
 TEST_F(StaticMpdBuilderTest, Video) {
   MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);

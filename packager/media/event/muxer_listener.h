@@ -19,6 +19,10 @@ namespace media {
 class StreamInfo;
 struct MuxerOptions;
 
+/// MuxerListener is an event handler that can be registered to a muxer.
+/// A MuxerListener cannot be shared amongst muxer instances, in other words,
+/// every muxer instance either owns a unique MuxerListener instance.
+/// This also assumes that there is one media stream per muxer.
 class MuxerListener {
  public:
   enum ContainerType {
@@ -40,6 +44,10 @@ class MuxerListener {
                             uint32_t time_scale,
                             ContainerType container_type,
                             bool is_encrypted) = 0;
+
+  /// Called when the average sample duration of the media is determined.
+  /// @param sample_duration in timescale of the media.
+  virtual void OnSampleDurationReady(uint32_t sample_duration) = 0;
 
   // Called when all files are written out and the muxer object does not output
   // any more files.

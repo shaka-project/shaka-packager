@@ -127,7 +127,8 @@ Segmenter::Segmenter(const MuxerOptions& options,
       muxer_listener_(NULL),
       progress_listener_(NULL),
       progress_target_(0),
-      accumulated_progress_(0) {
+      accumulated_progress_(0),
+      sample_duration_(0u) {
 }
 
 Segmenter::~Segmenter() { STLDeleteElements(&fragmenters_); }
@@ -295,6 +296,8 @@ Status Segmenter::AddSample(const MediaStream* stream,
   if (!status.ok())
     return status;
 
+  if (sample_duration_ == 0)
+    sample_duration_ = sample->duration();
   moov_->tracks[stream_id].media.header.duration += sample->duration();
   segment_durations_[stream_id] += sample->duration();
   return Status::OK;

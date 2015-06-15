@@ -233,6 +233,13 @@ class Representation {
   /// @param size of the segment in bytes.
   void AddNewSegment(uint64_t start_time, uint64_t duration, uint64_t size);
 
+  /// Set the sample duration of this Representation.
+  /// In most cases, the sample duration is not available right away. This
+  /// allows setting the sample duration after the Representation has been
+  /// initialized.
+  /// @param sample_duration is the duration of a sample.
+  void SetSampleDuration(uint32_t sample_duration);
+
   /// @return Copy of <Representation>.
   xml::ScopedXmlPtr<xmlNode>::type GetXml();
 
@@ -247,6 +254,7 @@ class Representation {
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, InvalidMediaInfo);
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckVideoInfoReflectedInXml);
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckRepresentationId);
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, SetSampleDuration);
 
   /// @param media_info is a MediaInfo containing information on the media.
   ///        @a media_info.bandwidth is required for 'static' profile. If @a

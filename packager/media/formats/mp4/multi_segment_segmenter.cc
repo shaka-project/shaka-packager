@@ -185,6 +185,7 @@ Status MultiSegmentSegmenter::WriteSegment() {
 
   UpdateProgress(segment_duration);
   if (muxer_listener()) {
+    muxer_listener()->OnSampleDurationReady(sample_duration());
     muxer_listener()->OnNewSegment(
         sidx()->earliest_presentation_time, segment_duration, segment_size);
   }

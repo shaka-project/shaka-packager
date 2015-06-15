@@ -38,6 +38,8 @@ class SimpleMpdNotifier : public MpdNotifier {
   virtual bool Init() OVERRIDE;
   virtual bool NotifyNewContainer(const MediaInfo& media_info,
                                   uint32_t* id) OVERRIDE;
+  virtual bool NotifySampleDuration(uint32_t container_id,
+                                    uint32_t sample_duration) OVERRIDE;
   virtual bool NotifyNewSegment(uint32_t id,
                                 uint64_t start_time,
                                 uint64_t duration,

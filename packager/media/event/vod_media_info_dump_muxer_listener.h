@@ -41,7 +41,7 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
                             uint32_t time_scale,
                             ContainerType container_type,
                             bool is_encrypted) OVERRIDE;
-
+  virtual void OnSampleDurationReady(uint32_t sample_duration) OVERRIDE;
   virtual void OnMediaEnd(bool has_init_range,
                           uint64_t init_range_start,
                           uint64_t init_range_end,
@@ -50,7 +50,6 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
                           uint64_t index_range_end,
                           float duration_seconds,
                           uint64_t file_size) OVERRIDE;
-
   virtual void OnNewSegment(uint64_t start_time,
                             uint64_t duration,
                             uint64_t segment_file_size) OVERRIDE;

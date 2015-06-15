@@ -74,6 +74,18 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   return true;
 }
 
+bool SimpleMpdNotifier::NotifySampleDuration(uint32_t container_id,
+                                             uint32_t sample_duration) {
+  base::AutoLock auto_lock(lock_);
+  RepresentationMap::iterator it = representation_map_.find(container_id);
+  if (it == representation_map_.end()) {
+    LOG(ERROR) << "Unexpected container_id: " << container_id;
+    return false;
+  }
+  it->second->SetSampleDuration(sample_duration);
+  return true;
+}
+
 bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
                                          uint64_t start_time,
                                          uint64_t duration,

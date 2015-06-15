@@ -96,6 +96,10 @@ class Segmenter {
   /// @return The total length, in seconds, of segmented media files.
   double GetDuration() const;
 
+  /// @return The sample duration in the timescale of the media.
+  ///         Returns 0 if no samples are added yet.
+  uint32_t sample_duration() const { return sample_duration_; }
+
  protected:
   /// Update segmentation progress using ProgressListener.
   void UpdateProgress(uint64_t progress);
@@ -140,6 +144,7 @@ class Segmenter {
   ProgressListener* progress_listener_;
   uint64_t progress_target_;
   uint64_t accumulated_progress_;
+  uint32_t sample_duration_;
 
   DISALLOW_COPY_AND_ASSIGN(Segmenter);
 };

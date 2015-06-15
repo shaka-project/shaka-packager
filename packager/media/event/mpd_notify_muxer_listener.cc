@@ -64,6 +64,11 @@ void MpdNotifyMuxerListener::OnMediaStart(
   }
 }
 
+void MpdNotifyMuxerListener::OnSampleDurationReady(
+    uint32_t sample_duration) {
+  mpd_notifier_->NotifySampleDuration(notification_id_, sample_duration);
+}
+
 void MpdNotifyMuxerListener::OnMediaEnd(bool has_init_range,
                                         uint64_t init_range_start,
                                         uint64_t init_range_end,
