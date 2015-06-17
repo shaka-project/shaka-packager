@@ -569,6 +569,8 @@ bool WvmMediaParser::ParseIndexEntry() {
     uint32_t time_scale = kMpeg2ClockRate;
     uint16_t video_width = 0;
     uint16_t video_height = 0;
+    uint32_t pixel_width = 0;
+    uint32_t pixel_height = 0;
     uint8_t nalu_length_size = kNaluLengthSize;
     uint8_t num_channels = 0;
     int audio_pes_stream_id = 0;
@@ -584,147 +586,154 @@ bool WvmMediaParser::ParseIndexEntry() {
 
     for (uint8_t idx = 0; idx < num_index_entries; ++idx) {
       if (index_metadata_max_size < (2 * sizeof(uint8_t)) + sizeof(uint32_t)) {
-       return false;
-     }
-     uint8_t tag = *read_ptr_index;
-     ++read_ptr_index;
-     uint8_t type = *read_ptr_index;
-     ++read_ptr_index;
-     uint32_t length = ntohlFromBuffer(read_ptr_index);
-     read_ptr_index += sizeof(uint32_t);
-     index_metadata_max_size -= (2 * sizeof(uint8_t)) + sizeof(uint32_t);
-     if (index_metadata_max_size < length) {
         return false;
-     }
-     int value = 0;
-     Tag tagtype = Unset;
-     std::vector<uint8_t> binary_data(length);
-     switch (Type(type)) {
-       case Type_uint8:
-         if (length == sizeof(uint8_t)) {
-          tagtype = GetTag(tag, length, read_ptr_index, &value);
-        } else {
-          return false;
-        }
-      break;
-       case Type_int8:
-         if (length == sizeof(int8_t)) {
-           tagtype = GetTag(tag, length, read_ptr_index, &value);
-         } else {
-           return false;
-         }
-         break;
-       case Type_uint16:
-         if (length == sizeof(uint16_t)) {
-           tagtype = GetTag(tag, length, read_ptr_index, &value);
-         } else {
-           return false;
-         }
-         break;
-       case Type_int16:
-         if (length == sizeof(int16_t)) {
-           tagtype = GetTag(tag, length, read_ptr_index, &value);
-         } else {
-           return false;
-         }
-         break;
-       case Type_uint32:
-         if (length == sizeof(uint32_t)) {
-           tagtype = GetTag(tag, length, read_ptr_index, &value);
-         } else {
-           return false;
-         }
-         break;
-       case Type_int32:
-         if (length == sizeof(int32_t)) {
-           tagtype = GetTag(tag, length, read_ptr_index, &value);
-         } else {
-           return false;
-         }
-         break;
-       case Type_uint64:
-         if (length == sizeof(uint64_t)) {
-           tagtype = GetTag(tag, length, read_ptr_index, &value);
-         } else {
-           return false;
-         }
-         break;
-       case Type_int64:
-         if (length == sizeof(int64_t)) {
-           tagtype = GetTag(tag, length, read_ptr_index, &value);
-         } else {
-           return false;
-         }
-         break;
-       case Type_string:
-       case Type_BinaryData:
-         memcpy(&binary_data[0], read_ptr_index, length);
-         tagtype = Tag(tag);
-         break;
-       default:
-         break;
-     }
+      }
+      uint8_t tag = *read_ptr_index;
+      ++read_ptr_index;
+      uint8_t type = *read_ptr_index;
+      ++read_ptr_index;
+      uint32_t length = ntohlFromBuffer(read_ptr_index);
+      read_ptr_index += sizeof(uint32_t);
+      index_metadata_max_size -= (2 * sizeof(uint8_t)) + sizeof(uint32_t);
+      if (index_metadata_max_size < length) {
+        return false;
+      }
+      int64_t value = 0;
+      Tag tagtype = Unset;
+      std::vector<uint8_t> binary_data(length);
+      switch (Type(type)) {
+        case Type_uint8:
+          if (length == sizeof(uint8_t)) {
+            tagtype = GetTag(tag, length, read_ptr_index, &value);
+          } else {
+            return false;
+          }
+          break;
+        case Type_int8:
+          if (length == sizeof(int8_t)) {
+            tagtype = GetTag(tag, length, read_ptr_index, &value);
+          } else {
+            return false;
+          }
+          break;
+        case Type_uint16:
+          if (length == sizeof(uint16_t)) {
+            tagtype = GetTag(tag, length, read_ptr_index, &value);
+          } else {
+            return false;
+          }
+          break;
+        case Type_int16:
+          if (length == sizeof(int16_t)) {
+            tagtype = GetTag(tag, length, read_ptr_index, &value);
+          } else {
+            return false;
+          }
+          break;
+        case Type_uint32:
+          if (length == sizeof(uint32_t)) {
+            tagtype = GetTag(tag, length, read_ptr_index, &value);
+          } else {
+            return false;
+          }
+          break;
+        case Type_int32:
+          if (length == sizeof(int32_t)) {
+            tagtype = GetTag(tag, length, read_ptr_index, &value);
+          } else {
+            return false;
+          }
+          break;
+        case Type_uint64:
+          if (length == sizeof(uint64_t)) {
+            tagtype = GetTag(tag, length, read_ptr_index, &value);
+          } else {
+            return false;
+          }
+          break;
+        case Type_int64:
+          if (length == sizeof(int64_t)) {
+            tagtype = GetTag(tag, length, read_ptr_index, &value);
+          } else {
+            return false;
+          }
+          break;
+        case Type_string:
+        case Type_BinaryData:
+          memcpy(&binary_data[0], read_ptr_index, length);
+          tagtype = Tag(tag);
+          break;
+        default:
+          break;
+    }
 
-     switch (tagtype) {
-       case TrackDuration:
-         track_duration = value;
-         break;
-       case TrackTrickPlayRate:
-         trick_play_rate = value;
-         break;
-       case VideoStreamId:
-         video_pes_stream_id = value;
-         break;
-       case AudioStreamId:
-         audio_pes_stream_id = value;
-         break;
-       case VideoWidth:
-         video_width = (uint16_t)value;
-         break;
-       case VideoHeight:
-         video_height = (uint16_t)value;
-         break;
-       case AudioNumChannels:
-         num_channels = (uint8_t)value;
-         break;
-       case VideoType:
-         has_video = true;
-         break;
-       case AudioType:
-         has_audio = true;
-         break;
-       default:
-         break;
-     }
+      switch (tagtype) {
+        case TrackDuration:
+          track_duration = value;
+          break;
+        case TrackTrickPlayRate:
+          trick_play_rate = value;
+          break;
+        case VideoStreamId:
+          video_pes_stream_id = value;
+          break;
+        case AudioStreamId:
+          audio_pes_stream_id = value;
+          break;
+        case VideoWidth:
+          video_width = (uint16_t)value;
+          break;
+        case VideoHeight:
+          video_height = (uint16_t)value;
+          break;
+        case AudioNumChannels:
+          num_channels = (uint8_t)value;
+          break;
+        case VideoType:
+          has_video = true;
+          break;
+        case AudioType:
+          has_audio = true;
+          break;
+        case VideoPixelWidth:
+          pixel_width = static_cast<uint32_t>(value);
+          break;
+        case VideoPixelHeight:
+          pixel_height = static_cast<uint32_t>(value);
+          break;
+        default:
+          break;
+      }
 
-     read_ptr_index += length;
-     index_metadata_max_size -= length;
-   }
-   // End Index metadata
-   index_size = read_ptr_index - &index_data_[0];
+      read_ptr_index += length;
+      index_metadata_max_size -= length;
+    }
+    // End Index metadata
+    index_size = read_ptr_index - &index_data_[0];
 
-   // Extra data for both audio and video streams not set here, but in
-   // Output().
-   if (has_video) {
-     VideoCodec video_codec = kCodecH264;
-     stream_infos_.push_back(new VideoStreamInfo(
-         stream_id_count_, time_scale, track_duration, video_codec,
-         video_codec_string, std::string(), video_width, video_height,
-         trick_play_rate, nalu_length_size, NULL, 0, true));
-     program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
-                               base::UintToString(video_pes_stream_id)] =
-         stream_id_count_++;
-   }
-   if (has_audio) {
-     AudioCodec audio_codec = kCodecAAC;
-     stream_infos_.push_back(new AudioStreamInfo(
-         stream_id_count_, time_scale, track_duration, audio_codec,
-         audio_codec_string, std::string(), kAacSampleSizeBits, num_channels,
-         sampling_frequency, NULL, 0, true));
-     program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
-                               base::UintToString(audio_pes_stream_id)] =
-         stream_id_count_++;
-   }
+    // Extra data for both audio and video streams not set here, but in
+    // Output().
+    if (has_video) {
+      VideoCodec video_codec = kCodecH264;
+      stream_infos_.push_back(new VideoStreamInfo(
+          stream_id_count_, time_scale, track_duration, video_codec,
+          video_codec_string, std::string(), video_width, video_height,
+          pixel_width, pixel_height, trick_play_rate, nalu_length_size, NULL, 0,
+          true));
+      program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
+                                base::UintToString(video_pes_stream_id)] =
+          stream_id_count_++;
+    }
+    if (has_audio) {
+      AudioCodec audio_codec = kCodecAAC;
+      stream_infos_.push_back(new AudioStreamInfo(
+          stream_id_count_, time_scale, track_duration, audio_codec,
+          audio_codec_string, std::string(), kAacSampleSizeBits, num_channels,
+          sampling_frequency, NULL, 0, true));
+      program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
+                                base::UintToString(audio_pes_stream_id)] =
+          stream_id_count_++;
+    }
   }
 
   index_program_id_++;

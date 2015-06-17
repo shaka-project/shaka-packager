@@ -17,6 +17,16 @@
 namespace edash_packager {
 namespace media {
 
+// |avc_decoder_config_data| must be AVCDecoderConfigurationRecord specified
+// in ISO/IEC 14496-15.
+// On success, |sar_width| and |sar_height| are set to the data specified in
+// |avc_decoder_config_data|.
+// If the value is 0 or ommited in |avc_decoder_config_data|, then 1 is
+// assigned.
+void ExtractSarFromDecoderConfig(
+    const uint8_t* avc_decoder_config_data, size_t avc_decoder_config_data_size,
+    uint32_t* sar_width, uint32_t* sar_height);
+
 // For explanations of each struct and its members, see H.264 specification
 // at http://www.itu.int/rec/T-REC-H.264.
 struct H264NALU {
@@ -313,6 +323,11 @@ class H264Parser {
   // if Parse*() return NULL.
   Result ParseSPS(int* sps_id);
   Result ParsePPS(int* pps_id);
+
+  // Samme as ParseSPS but instead uses |sps_data|.
+  Result ParseSPSFromArray(const uint8_t* sps_data,
+                           size_t sps_data_size,
+                           int* sps_id);
 
   // Return a pointer to SPS/PPS with given |sps_id|/|pps_id| or NULL if not
   // present.

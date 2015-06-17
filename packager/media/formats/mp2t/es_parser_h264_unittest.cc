@@ -12,6 +12,7 @@
 #include "packager/base/stl_util.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/timestamp.h"
+#include "packager/media/base/video_stream_info.h"
 #include "packager/media/filters/h264_parser.h"
 #include "packager/media/formats/mp2t/es_parser_h264.h"
 #include "packager/media/test/test_data_util.h"
@@ -131,6 +132,8 @@ class EsParserH264Test : public testing::Test {
   }
 
   void NewVideoConfig(scoped_refptr<StreamInfo>& config) {
+    DVLOG(1) << config->ToString();
+    stream_map_[config->track_id()] = config;
   }
 
   size_t sample_count() const { return sample_count_; }
@@ -143,6 +146,8 @@ class EsParserH264Test : public testing::Test {
   std::vector<Packet> access_units_;
 
  protected:
+  typedef std::map<int, scoped_refptr<StreamInfo> > StreamMap;
+  StreamMap stream_map_;
   size_t sample_count_;
   bool first_frame_is_key_frame_;
 };
@@ -197,7 +202,6 @@ void EsParserH264Test::ProcessPesPackets(
   }
   es_parser.Flush();
 }
-
 
 TEST_F(EsParserH264Test, OneAccessUnitPerPes) {
   LoadStream("bear.h264");
@@ -278,6 +282,21 @@ TEST_F(EsParserH264Test, NonIFrameStart) {
   // Ensure samples were emitted, but fewer than number of AUDs.
   EXPECT_LT(sample_count(), access_units_.size());
   EXPECT_TRUE(first_frame_is_key_frame());
+}
+
+// Verify that the parser can get the the sar width and height.
+TEST_F(EsParserH264Test, PixelWidthPixelHeight) {
+  LoadStream("bear.h264");
+  std::vector<Packet> pes_packets(access_units_);
+  ProcessPesPackets(pes_packets);
+
+  const int kVideoTrackId = 0;
+  EXPECT_EQ(1u,
+            reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get())
+                ->pixel_width());
+  EXPECT_EQ(1u,
+            reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get())
+                ->pixel_height());
 }
 
 }  // namespace mp2t

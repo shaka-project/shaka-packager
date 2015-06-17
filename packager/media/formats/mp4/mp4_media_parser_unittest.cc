@@ -12,6 +12,7 @@
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/stream_info.h"
+#include "packager/media/base/video_stream_info.h"
 #include "packager/media/formats/mp4/mp4_media_parser.h"
 #include "packager/media/test/test_data_util.h"
 
@@ -41,6 +42,8 @@ class MP4MediaParserTest : public testing::Test {
   }
 
  protected:
+  typedef std::map<int, scoped_refptr<StreamInfo> > StreamMap;
+  StreamMap stream_map_;
   scoped_ptr<MP4MediaParser> parser_;
   size_t num_streams_;
   size_t num_samples_;
@@ -70,6 +73,7 @@ class MP4MediaParserTest : public testing::Test {
          iter != streams.end();
          ++iter) {
       DVLOG(2) << (*iter)->ToString();
+      stream_map_[(*iter)->track_id()] = *iter;
     }
     num_streams_ = streams.size();
     num_samples_ = 0;
@@ -104,6 +108,65 @@ TEST_F(MP4MediaParserTest, UnalignedAppend) {
   EXPECT_TRUE(ParseMP4File("bear-1280x720-av_frag.mp4", 512));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
+}
+
+// Verify that the pixel width and pixel height are extracted correctly if
+// the container has a 'pasp' box.
+TEST_F(MP4MediaParserTest, PixelWidthPixelHeightFromPaspBox) {
+  // This content has a 'pasp' box that has the aspect ratio.
+  EXPECT_TRUE(ParseMP4File("bear-1280x720.mp4", 512));
+
+  // Track ID 2 has the video stream which should have pixel width and height
+  // both 1.
+  const int kVideoTrackId = 2;
+  EXPECT_EQ(1u,
+            reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get())
+                ->pixel_width());
+  EXPECT_EQ(1u,
+            reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get())
+                ->pixel_height());
+}
+
+// Verify that pixel width and height can be extracted from the
+// extra data (AVCDecoderConfigurationRecord) for H264.
+// No 'pasp' box.
+TEST_F(MP4MediaParserTest,
+       PixelWidthPixelHeightFromAVCDecoderConfigurationRecord) {
+  // This file doesn't have pasp. SPS for the video has
+  // sar_width = sar_height = 0. So the stream info should return 1 for both
+  // pixel_width and pixel_height.
+  EXPECT_TRUE(ParseMP4File("hb2_v_frag.mp4", 512));
+
+  // Track ID 1 has the video stream which should have pixel width and height
+  // both 1.
+  const int kVideoTrackId = 1;
+  EXPECT_EQ(8u,
+            reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get())
+                ->pixel_width());
+  EXPECT_EQ(9u,
+            reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get())
+                ->pixel_height());
+}
+
+// Verify that pixel width and height can be extracted from the
+// extra data (AVCDecoderConfigurationRecord) for H264.
+// If sar_width and sar_height are not set, then they should both be 1.
+TEST_F(MP4MediaParserTest,
+       PixelWidthPixelHeightFromAVCDecoderConfigurationRecordNotSet) {
+  // This file doesn't have pasp. SPS for the video has
+  // sar_width = sar_height = 0. So the stream info should return 1 for both
+  // pixel_width and pixel_height.
+  EXPECT_TRUE(ParseMP4File("bear-1280x720-av_frag.mp4", 512));
+
+  // Track ID 1 has the video stream which should have pixel width and height
+  // both 1.
+  const int kVideoTrackId = 1;
+  EXPECT_EQ(1u,
+            reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get())
+                ->pixel_width());
+  EXPECT_EQ(1u,
+            reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get())
+                ->pixel_height());
 }
 
 TEST_F(MP4MediaParserTest, BytewiseAppend) {

@@ -6,10 +6,13 @@
 
 #include "packager/media/base/video_stream_info.h"
 
+#include "base/logging.h"
+#include "base/stl_util.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/base/limits.h"
+#include "packager/media/filters/h264_parser.h"
 
 namespace edash_packager {
 namespace media {
@@ -36,6 +39,7 @@ std::string VideoCodecToString(VideoCodec video_codec) {
       return "UnknownVideoCodec";
   }
 }
+
 }  // namespace
 
 VideoStreamInfo::VideoStreamInfo(int track_id,
@@ -46,6 +50,8 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
                                  const std::string& language,
                                  uint16_t width,
                                  uint16_t height,
+                                 uint32_t pixel_width,
+                                 uint32_t pixel_height,
                                  int16_t trick_play_rate,
                                  uint8_t nalu_length_size,
                                  const uint8_t* extra_data,
@@ -63,8 +69,20 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
       codec_(codec),
       width_(width),
       height_(height),
+      pixel_width_(pixel_width),
+      pixel_height_(pixel_height),
       trick_play_rate_(trick_play_rate),
       nalu_length_size_(nalu_length_size) {
+  // If H264 and the pixel width and height were not passed in, parse the extra
+  // data to get the sar width and height.
+  if ((pixel_width_ == 0 || pixel_height_ == 0) &&
+      codec == kCodecH264 &&
+      extra_data && extra_data_size > 0) {
+    ExtractSarFromDecoderConfig(extra_data, extra_data_size, &pixel_width_,
+                                &pixel_height_);
+    DVLOG_IF(2, pixel_width_ == 0 || pixel_height_ == 0)
+        << "Failed to extract sar_width and sar_height.";
+  }
 }
 
 VideoStreamInfo::~VideoStreamInfo() {}
@@ -78,14 +96,13 @@ bool VideoStreamInfo::IsValidConfig() const {
 
 std::string VideoStreamInfo::ToString() const {
   return base::StringPrintf(
-      "%s codec: %s\n width: %d\n height: %d\n trick_play_rate: %d\n"
-      " nalu_length_size: %d\n",
+      "%s codec: %s\n width: %d\n height: %d\n pixel_width: %d\n pixel_height: "
+      "%d\n trick_play_rate: %d\n nalu_length_size: %d\n",
       StreamInfo::ToString().c_str(),
       VideoCodecToString(codec_).c_str(),
-      width_,
-      height_,
-      trick_play_rate_,
-      nalu_length_size_);
+      width_, height_,
+      pixel_width_, pixel_height_,
+      trick_play_rate_, nalu_length_size_);
 }
 
 std::string VideoStreamInfo::GetCodecString(VideoCodec codec,

@@ -28,6 +28,11 @@ enum VideoCodec {
 class VideoStreamInfo : public StreamInfo {
  public:
   /// Construct an initialized video stream info object.
+  /// If @a codec is @a kCodecH264 and either @pixel_width and @pixel_height is
+  /// 0 (unknown), then this tries to parse @extra_data to extract the pixel
+  /// width and height from it.
+  /// @param pixel_width is the width of the pixel. 0 if unknown.
+  /// @param pixel_height is the height of the pixels. 0 if unknown.
   VideoStreamInfo(int track_id,
                   uint32_t time_scale,
                   uint64_t duration,
@@ -36,6 +41,8 @@ class VideoStreamInfo : public StreamInfo {
                   const std::string& language,
                   uint16_t width,
                   uint16_t height,
+                  uint32_t pixel_width,
+                  uint32_t pixel_height,
                   int16_t trick_play_rate,
                   uint8_t nalu_length_size,
                   const uint8_t* extra_data,
@@ -51,6 +58,12 @@ class VideoStreamInfo : public StreamInfo {
   VideoCodec codec() const { return codec_; }
   uint16_t width() const { return width_; }
   uint16_t height() const { return height_; }
+  /// Returns the pixel width.
+  /// @return 0 if unknown.
+  uint32_t pixel_width() const { return pixel_width_; }
+  /// Returns the pixel height.
+  /// @return 0 if unknown.
+  uint32_t pixel_height() const { return pixel_height_; }
   uint8_t nalu_length_size() const { return nalu_length_size_; }
   int16_t trick_play_rate() const { return trick_play_rate_; }
 
@@ -67,6 +80,11 @@ class VideoStreamInfo : public StreamInfo {
   VideoCodec codec_;
   uint16_t width_;
   uint16_t height_;
+
+  // pixel_width_:pixel_height_ is the sample aspect ratio.
+  // 0 means unknown.
+  uint32_t pixel_width_;
+  uint32_t pixel_height_;
   int16_t trick_play_rate_;  // Non-zero for trick-play streams.
 
   // Specifies the normalized size of the NAL unit length field. Can be 1, 2 or

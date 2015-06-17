@@ -163,6 +163,18 @@ TEST_F(WvmMediaParserTest, ParseWvmWithoutKeySource) {
   EXPECT_EQ(kExpectedVideoFrameCount, video_frame_count_);
   EXPECT_EQ(kExpectedAudioFrameCount, audio_frame_count_);
   EXPECT_EQ(kExpectedEncryptedSampleCount, encrypted_sample_count_);
+
+  // Also verify that the pixel width and height have the right values.
+  // Track 0 and 2 are videos and they both have pixel_width = 8 and
+  // pixel_height = 9.
+  EXPECT_EQ(8u, reinterpret_cast<VideoStreamInfo*>(stream_map_[0].get())
+                   ->pixel_width());
+  EXPECT_EQ(8u, reinterpret_cast<VideoStreamInfo*>(stream_map_[2].get())
+                   ->pixel_width());
+  EXPECT_EQ(9u, reinterpret_cast<VideoStreamInfo*>(stream_map_[0].get())
+                   ->pixel_height());
+  EXPECT_EQ(9u, reinterpret_cast<VideoStreamInfo*>(stream_map_[2].get())
+                   ->pixel_height());
 }
 
 TEST_F(WvmMediaParserTest, ParseWvmInitWithoutKeySource) {

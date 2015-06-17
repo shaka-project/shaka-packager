@@ -7,9 +7,72 @@
 #include "packager/base/logging.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/stl_util.h"
+#include "packager/media/base/buffer_reader.h"
 
 namespace edash_packager {
 namespace media {
+
+#define RCHECK(x)                                                     \
+  do {                                                                \
+    if (!(x)) {                                                       \
+      LOG(ERROR) << "Failure while parsing AVCDecoderConfig: " << #x; \
+      return;                                                         \
+    }                                                                 \
+  } while (0)
+
+void ExtractSarFromDecoderConfig(
+    const uint8_t* avc_decoder_config_data, size_t avc_decoder_config_data_size,
+    uint32_t* sar_width, uint32_t* sar_height) {
+  BufferReader reader(avc_decoder_config_data, avc_decoder_config_data_size);
+  uint8_t value = 0;
+  // version check, must be 1.
+  RCHECK(reader.Read1(&value));
+  RCHECK(value == 1);
+
+  // avc profile. No value check.
+  RCHECK(reader.Read1(&value));
+
+  // profile compatibility. No value check.
+  RCHECK(reader.Read1(&value));
+
+  // avc level indication. No value check.
+  RCHECK(reader.Read1(&value));
+
+  // reserved and length sized minus one.
+  RCHECK(reader.Read1(&value));
+  // upper 6 bits are reserved and must be 111111.
+  RCHECK((value & 0xFC) == 0xFC);
+
+  // reserved and num sps.
+  RCHECK(reader.Read1(&value));
+  // upper 3 bits are reserved for 0b111.
+  RCHECK((value & 0xE0) == 0xE0);
+
+  const uint8_t num_sps = value & 0x1F;
+  if (num_sps < 1) {
+    LOG(ERROR) << "No SPS found.";
+    return;
+  }
+  uint16_t sps_length = 0;
+  RCHECK(reader.Read2(&sps_length));
+
+  H264Parser parser;
+  int sps_id;
+  RCHECK(parser.ParseSPSFromArray(reader.data() + reader.pos(), sps_length,
+                                  &sps_id) == H264Parser::kOk);
+  const H264SPS& sps = *parser.GetSPS(sps_id);
+  // 0 means it wasn't in the SPS and therefore assume 1.
+  *sar_width = sps.sar_width == 0 ? 1 : sps.sar_width;
+  *sar_height = sps.sar_height == 0 ? 1 : sps.sar_height;
+  DVLOG(2) << "Found sar_width: " << *sar_width
+           << " sar_height: " << *sar_height;
+
+  // It is unlikely to have more than one SPS in practice. Also there's
+  // no way to change the sar_{width,height} dynamically from VideoStreamInfo.
+  // So skip the rest (if there are any).
+}
+
+#undef RCHECK
 
 bool H264SliceHeader::IsPSlice() const {
   return (slice_type % 5 == kPSlice);
@@ -886,6 +949,28 @@ H264Parser::Result H264Parser::ParsePPS(int* pps_id) {
   active_PPSes_[*pps_id] = pps.release();
 
   return kOk;
+}
+
+H264Parser::Result H264Parser::ParseSPSFromArray(
+    const uint8_t* sps_data,
+    size_t sps_data_length,
+    int* sps_id) {
+  br_.Initialize(sps_data, sps_data_length);
+
+  int data;
+  READ_BITS_OR_RETURN(1, &data);
+  // First bit must be 0.
+  TRUE_OR_RETURN(data == 0);
+  int nal_ref_idc;
+  READ_BITS_OR_RETURN(2, &nal_ref_idc);
+  // From the spec "nal_ref_idc shall not be equal to 0 for sequence parameter
+  // set".
+  TRUE_OR_RETURN(nal_ref_idc != 0);
+  int nal_unit_type;
+  READ_BITS_OR_RETURN(5, &nal_unit_type);
+  TRUE_OR_RETURN(nal_unit_type == H264NALU::kSPS);
+
+  return ParseSPS(sps_id);
 }
 
 H264Parser::Result H264Parser::ParseRefPicListModification(

@@ -63,6 +63,10 @@ scoped_refptr<StreamInfo> CreateVideoStreamInfo(
                           param.language,
                           param.width,
                           param.height,
+                          // TODO(rkuroiwa): Once MedianInfo proto change that
+                          // adds pizel_{width,height} lands, add tests.
+                          0,  // No pixel width.
+                          0,  // No pixel height.
                           0,  // trick_play_rate
                           param.nalu_length_size,
                           vector_as_array(&param.extra_data),

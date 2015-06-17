@@ -363,6 +363,8 @@ bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
           std::string(),
           width,
           height,
+          sps->sar_width == 0 ? 1 : sps->sar_width,
+          sps->sar_height == 0 ? 1 : sps->sar_height,
           0,
           H264ByteToUnitStreamConverter::kUnitStreamNaluLengthSize,
           decoder_config_record.data(),

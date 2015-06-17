@@ -78,6 +78,7 @@
         '../../base/base.gyp:base',
         '../../third_party/curl/curl.gyp:libcurl',
         '../../third_party/openssl/openssl.gyp:openssl',
+        '../filters/filters.gyp:filters',
       ],
     },
     {
