@@ -60,14 +60,21 @@ void CheckIdEqual(uint32_t expected_id, T* node) {
   ASSERT_NO_FATAL_FAILURE(ExpectXmlElementIdEqual(node_xml.get(), expected_id));
 }
 
-void ExpectAttributeHasString(base::StringPiece attribute,
-                              base::StringPiece expected_value,
-                              xmlNodePtr node) {
+void ExpectAttributeEqString(base::StringPiece attribute,
+                             base::StringPiece expected_value,
+                             xmlNodePtr node) {
   xml::ScopedXmlPtr<xmlChar>::type attribute_xml_str(
       xmlGetProp(node, BAD_CAST attribute.data()));
   ASSERT_TRUE(attribute_xml_str);
   EXPECT_STREQ(expected_value.data(),
                reinterpret_cast<const char*>(attribute_xml_str.get()));
+}
+
+// |attribute| should not be set in |node|.
+void ExpectAttributeNotSet(base::StringPiece attribute, xmlNodePtr node) {
+  xml::ScopedXmlPtr<xmlChar>::type attribute_xml_str(
+      xmlGetProp(node, BAD_CAST attribute.data()));
+  ASSERT_FALSE(attribute_xml_str);
 }
 }  // namespace
 
@@ -200,7 +207,8 @@ class SegmentTemplateTest : public DynamicMpdBuilderTest {
         "availabilityStartTime=\"2011-12-25T12:30:00\" minBufferTime=\"PT2S\" "
         "type=\"dynamic\" profiles=\"urn:mpeg:dash:profile:isoff-live:2011\">\n"
         "  <Period start=\"PT0S\">\n"
-        "    <AdaptationSet id=\"0\">\n"
+        "    <AdaptationSet id=\"0\" width=\"720\" height=\"480\""
+        "                   frameRate=\"10/5\">\n"
         "      <Representation id=\"0\" bandwidth=\"%" PRIu64 "\" "
         "codecs=\"avc1.010101\" mimeType=\"video/mp4\" width=\"720\" "
         "height=\"480\" frameRate=\"10/5\" sar=\"1:1\">\n"
@@ -282,7 +290,8 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
         "type=\"dynamic\" profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
         "timeShiftBufferDepth=\"PT%dS\">\n"
         "  <Period start=\"PT0S\">\n"
-        "    <AdaptationSet id=\"0\">\n"
+        "    <AdaptationSet id=\"0\" width=\"720\" height=\"480\""
+        "                   frameRate=\"10/2\">\n"
         "      <Representation id=\"0\" bandwidth=\"%" PRIu64 "\" "
         "codecs=\"avc1.010101\" mimeType=\"video/mp4\" width=\"720\" "
         "height=\"480\" frameRate=\"10/2\" sar=\"1:1\">\n"
@@ -366,27 +375,219 @@ TEST_F(CommonMpdBuilderTest, CheckVideoInfoReflectedInXml) {
   Representation representation(
       ConvertToMediaInfo(kTestMediaInfo), MpdOptions(), kAnyRepresentationId);
   EXPECT_TRUE(representation.Init());
-
   xml::ScopedXmlPtr<xmlNode>::type node_xml(representation.GetXml());
   EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeHasString("codecs", "avc1", node_xml.get()));
+      ExpectAttributeEqString("codecs", "avc1", node_xml.get()));
   EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeHasString("width", "1280", node_xml.get()));
+      ExpectAttributeEqString("width", "1280", node_xml.get()));
   EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeHasString("height", "720", node_xml.get()));
+      ExpectAttributeEqString("height", "720", node_xml.get()));
   EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeHasString("sar", "1:1", node_xml.get()));
+      ExpectAttributeEqString("sar", "1:1", node_xml.get()));
   EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeHasString("frameRate", "10/10", node_xml.get()));
+      ExpectAttributeEqString("frameRate", "10/10", node_xml.get()));
 }
 
 TEST_F(CommonMpdBuilderTest, CheckAdaptationSetId) {
   base::AtomicSequenceNumber sequence_counter;
   const uint32_t kAdaptationSetId = 42;
-
   AdaptationSet adaptation_set(
       kAdaptationSetId, "", MpdOptions(), &sequence_counter);
   ASSERT_NO_FATAL_FAILURE(CheckIdEqual(kAdaptationSetId, &adaptation_set));
+}
+
+// Verify that if all video Representations in an AdaptationSet have the same
+// frame rate, AdaptationSet also has a frameRate attribute.
+TEST_F(CommonMpdBuilderTest, AdapatationSetFrameRate) {
+  const char kVideoMediaInfo1[] =
+      "video_info {\n"
+      "  codec: \"avc1\"\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 3\n"
+      "}\n"
+      "container_type: 1\n";
+  const char kVideoMediaInfo2[] =
+      "video_info {\n"
+      "  codec: \"avc1\"\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 3\n"
+      "}\n"
+      "container_type: 1\n";
+  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet("");
+  ASSERT_TRUE(video_adaptation_set);
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(kVideoMediaInfo1)));
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(kVideoMediaInfo2)));
+
+  xml::ScopedXmlPtr<xmlNode>::type adaptation_set_xml(
+      video_adaptation_set->GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("frameRate", "10/3", adaptation_set_xml.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("maxFrameRate", adaptation_set_xml.get()));
+}
+
+// Verify that if there are videos with different frame rates, the maxFrameRate
+// is set.
+TEST_F(CommonMpdBuilderTest, AdapatationSetMaxFrameRate) {
+  // 30fps video.
+  const char kVideoMediaInfo30fps[] =
+      "video_info {\n"
+      "  codec: \"avc1\"\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 3000\n"
+      "  frame_duration: 100\n"
+      "}\n"
+      "container_type: 1\n";
+  const char kVideoMediaInfo15fps[] =
+      "video_info {\n"
+      "  codec: \"avc1\"\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 3000\n"
+      "  frame_duration: 200\n"
+      "}\n"
+      "container_type: 1\n";
+  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet("");
+  ASSERT_TRUE(video_adaptation_set);
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(kVideoMediaInfo30fps)));
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(kVideoMediaInfo15fps)));
+
+  xml::ScopedXmlPtr<xmlNode>::type adaptation_set_xml(
+      video_adaptation_set->GetXml());
+  EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString("maxFrameRate", "3000/100",
+                                                  adaptation_set_xml.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("frameRate", adaptation_set_xml.get()));
+}
+
+// Catch the case where it ends up wrong if integer division is used to check
+// the frame rate.
+// IOW, A/B != C/D but when using integer division A/B == C/D.
+// SO, maxFrameRate should be set instead of frameRate.
+TEST_F(CommonMpdBuilderTest,
+       AdapatationSetMaxFrameRateIntegerDivisionEdgeCase) {
+  // 11/3 != 10/3 but IntegerDiv(11,3) == IntegerDiv(10,3).
+  const char kVideoMediaInfo1[] =
+      "video_info {\n"
+      "  codec: \"avc1\"\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 11\n"
+      "  frame_duration: 3\n"
+      "}\n"
+      "container_type: 1\n";
+  const char kVideoMediaInfo2[] =
+      "video_info {\n"
+      "  codec: \"avc1\"\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 3\n"
+      "}\n"
+      "container_type: 1\n";
+  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet("");
+  ASSERT_TRUE(video_adaptation_set);
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(kVideoMediaInfo1)));
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(kVideoMediaInfo2)));
+
+  xml::ScopedXmlPtr<xmlNode>::type adaptation_set_xml(
+      video_adaptation_set->GetXml());
+  EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString("maxFrameRate", "11/3",
+                                                  adaptation_set_xml.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("frameRate", adaptation_set_xml.get()));
+}
+
+// Verify that the width and height attribute are set if all the video
+// representations have the same width and height.
+TEST_F(StaticMpdBuilderTest, AdapatationSetWidthAndHeight) {
+  // Both 720p.
+  const char kVideoMediaInfo1[] =
+      "video_info {\n"
+      "  codec: \"avc1\"\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 3000\n"
+      "  frame_duration: 100\n"
+      "}\n"
+      "container_type: 1\n";
+  const char kVideoMediaInfo2[] =
+      "video_info {\n"
+      "  codec: \"avc1\"\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 3000\n"
+      "  frame_duration: 200\n"
+      "}\n"
+      "container_type: 1\n";
+  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet("");
+  ASSERT_TRUE(video_adaptation_set);
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(kVideoMediaInfo1)));
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(kVideoMediaInfo2)));
+
+  xml::ScopedXmlPtr<xmlNode>::type adaptation_set_xml(
+      video_adaptation_set->GetXml());
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("width", "1280", adaptation_set_xml.get()));
+  ASSERT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("height", "720", adaptation_set_xml.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("maxWidth", adaptation_set_xml.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("maxHeight", adaptation_set_xml.get()));
+}
+
+// Verify that the maxWidth and maxHeight attribute are set if there are
+// multiple video resolutions.
+TEST_F(StaticMpdBuilderTest, AdapatationSetMaxWidthAndMaxHeight) {
+  const char kVideoMediaInfo1080p[] =
+      "video_info {\n"
+      "  codec: \"avc1\"\n"
+      "  width: 1920\n"
+      "  height: 1080\n"
+      "  time_scale: 3000\n"
+      "  frame_duration: 100\n"
+      "}\n"
+      "container_type: 1\n";
+  const char kVideoMediaInfo720p[] =
+      "video_info {\n"
+      "  codec: \"avc1\"\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 3000\n"
+      "  frame_duration: 100\n"
+      "}\n"
+      "container_type: 1\n";
+  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet("");
+  ASSERT_TRUE(video_adaptation_set);
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(kVideoMediaInfo1080p)));
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(kVideoMediaInfo720p)));
+
+  xml::ScopedXmlPtr<xmlNode>::type adaptation_set_xml(
+      video_adaptation_set->GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("maxWidth", "1920", adaptation_set_xml.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("maxHeight", "1080", adaptation_set_xml.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("width", adaptation_set_xml.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("height", adaptation_set_xml.get()));
 }
 
 TEST_F(CommonMpdBuilderTest, CheckRepresentationId) {

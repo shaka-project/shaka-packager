@@ -47,7 +47,7 @@ class XmlNode {
   void SetStringAttribute(const char* attribute_name,
                           const std::string& attribute);
 
-  /// Sets an interger attribute.
+  /// Sets an integer attribute.
   /// @param attribute_name The name (lhs) of the attribute.
   /// @param number The value (rhs) of the attribute.
   void SetIntegerAttribute(const char* attribute_name, uint64_t number);

@@ -526,6 +526,23 @@ Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
   if (!representation->Init())
     return NULL;
 
+  // For videos, record the width, height, and the frame rate to calculate the
+  // max {width,height,framerate} required for DASH IOP.
+  if(media_info.video_info_size() > 0) {
+    const MediaInfo::VideoInfo& video_info = media_info.video_info(0);
+    DCHECK(video_info.has_width());
+    DCHECK(video_info.has_height());
+    video_widths_.insert(video_info.width());
+    video_heights_.insert(video_info.height());
+
+    if (video_info.has_time_scale() && video_info.has_frame_duration()) {
+      video_frame_rates_[static_cast<double>(video_info.time_scale()) /
+                         video_info.frame_duration()] =
+          base::IntToString(video_info.time_scale()) + "/" +
+          base::IntToString(video_info.frame_duration());
+    }
+  }
+
   representations_.push_back(representation.get());
   return representation.release();
 }
@@ -553,13 +570,33 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
 
   for (; representation_it != representations_.end(); ++representation_it) {
     xml::ScopedXmlPtr<xmlNode>::type child((*representation_it)->GetXml());
-    if (!child.get() || !adaptation_set.AddChild(child.Pass()))
+    if (!child || !adaptation_set.AddChild(child.Pass()))
       return xml::ScopedXmlPtr<xmlNode>::type();
   }
 
   adaptation_set.SetId(id_);
   if (!lang_.empty() && lang_ != "und") {
     adaptation_set.SetStringAttribute("lang", LanguageToShortestForm(lang_));
+  }
+
+  // Note that std::{set,map} are ordered, so the last element is the max value.
+  if (video_widths_.size() == 1) {
+    adaptation_set.SetIntegerAttribute("width", *video_widths_.begin());
+  } else if (video_widths_.size() > 1) {
+    adaptation_set.SetIntegerAttribute("maxWidth", *video_widths_.rbegin());
+  }
+  if (video_heights_.size() == 1) {
+    adaptation_set.SetIntegerAttribute("height", *video_heights_.begin());
+  } else if (video_heights_.size() > 1) {
+    adaptation_set.SetIntegerAttribute("maxHeight", *video_heights_.rbegin());
+  }
+
+  if (video_frame_rates_.size() == 1) {
+    adaptation_set.SetStringAttribute("frameRate",
+                                      video_frame_rates_.begin()->second);
+  } else if (video_frame_rates_.size() > 1) {
+    adaptation_set.SetStringAttribute("maxFrameRate",
+                                      video_frame_rates_.rbegin()->second);
   }
   return adaptation_set.PassScopedPtr();
 }

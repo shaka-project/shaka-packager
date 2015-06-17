@@ -17,6 +17,8 @@
 #include <stdint.h>
 
 #include <list>
+#include <map>
+#include <set>
 #include <string>
 
 #include "packager/base/atomic_sequence_num.h"
@@ -203,6 +205,20 @@ class AdaptationSet {
   const uint32_t id_;
   const std::string lang_;
   const MpdOptions& mpd_options_;
+
+  // Video widths and heights of Representations. Note that this is a set; if
+  // there is only 1 resolution, then @width & @height should be set, otherwise
+  // @maxWidth & @maxHeight should be set for DASH IOP.
+  std::set<uint32_t> video_widths_;
+  std::set<uint32_t> video_heights_;
+
+  // Video representations' frame rates.
+  // The frame rate notation for MPD is <integer>/<integer> (where the
+  // denominator is optional). This means the frame rate could be non-whole
+  // rational value, therefore the key is of type double.
+  // Value is <integer>/<integer> in string form.
+  // So, key == CalculatedValue(value)
+  std::map<double, std::string> video_frame_rates_;
 
   DISALLOW_COPY_AND_ASSIGN(AdaptationSet);
 };
