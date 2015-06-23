@@ -181,6 +181,12 @@ class AdaptationSet {
  private:
   friend class MpdBuilder;
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckAdaptationSetId);
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest,
+                           CheckAdaptationSetVideoContentType);
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest,
+                           CheckAdaptationSetAudioContentType);
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest,
+                           CheckAdaptationSetTextContentType);
 
   /// @param adaptation_set_id is an ID number for this AdaptationSet.
   /// @param representation_counter is a Counter for assigning ID numbers to
@@ -219,6 +225,10 @@ class AdaptationSet {
   // Value is <integer>/<integer> in string form.
   // So, key == CalculatedValue(value)
   std::map<double, std::string> video_frame_rates_;
+
+  // contentType attribute of AdaptationSet.
+  // Determined by examining the MediaInfo passed to AddRepresentation().
+  std::string content_type_;
 
   DISALLOW_COPY_AND_ASSIGN(AdaptationSet);
 };

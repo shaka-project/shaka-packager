@@ -538,6 +538,12 @@ Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
     }
   }
 
+  if (media_info.has_video_info()) {
+    content_type_ = "video";
+  } else if (media_info.has_audio_info()) {
+    content_type_ = "audio";
+  }
+
   representations_.push_back(representation.get());
   return representation.release();
 }
@@ -570,6 +576,7 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
   }
 
   adaptation_set.SetId(id_);
+  adaptation_set.SetStringAttribute("contentType", content_type_);
   if (!lang_.empty() && lang_ != "und") {
     adaptation_set.SetStringAttribute("lang", LanguageToShortestForm(lang_));
   }

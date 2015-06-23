@@ -25,9 +25,10 @@ namespace edash_packager {
 using base::FilePath;
 
 namespace {
-// Any number for RepresentationId. Required to create a Representation but
-// not checked in test.
+// Any number for {AdaptationSet,Representation} ID. Required to create
+// either objects. Not checked in test.
 const uint32_t kAnyRepresentationId = 1;
+const uint32_t kAnyAdaptationSetId = 1;
 const char kSElementTemplate[] =
     "<S t=\"%" PRIu64 "\" d=\"%" PRIu64 "\" r=\"%" PRIu64 "\"/>\n";
 const char kSElementTemplateWithoutR[] =
@@ -135,7 +136,7 @@ class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
   std::string GetDefaultMediaInfo() {
     const char kMediaInfo[] =
         "video_info {\n"
-        "  codec: \"avc1.010101\"\n"
+        "  codec: 'avc1.010101'\n"
         "  width: 720\n"
         "  height: 480\n"
         "  time_scale: 10\n"
@@ -145,8 +146,8 @@ class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
         "}\n"
         "reference_time_scale: %u\n"
         "container_type: 1\n"
-        "init_segment_name: \"init.mp4\"\n"
-        "segment_template: \"$Time$.mp4\"\n";
+        "init_segment_name: 'init.mp4'\n"
+        "segment_template: '$Time$.mp4'\n";
 
     return base::StringPrintf(kMediaInfo, DefaultTimeScale());
   }
@@ -208,7 +209,7 @@ class SegmentTemplateTest : public DynamicMpdBuilderTest {
         "type=\"dynamic\" profiles=\"urn:mpeg:dash:profile:isoff-live:2011\">\n"
         "  <Period start=\"PT0S\">\n"
         "    <AdaptationSet id=\"0\" width=\"720\" height=\"480\""
-        "                   frameRate=\"10/5\">\n"
+        "                   frameRate=\"10/5\" contentType=\"video\">\n"
         "      <Representation id=\"0\" bandwidth=\"%" PRIu64 "\" "
         "codecs=\"avc1.010101\" mimeType=\"video/mp4\" width=\"720\" "
         "height=\"480\" frameRate=\"10/5\" sar=\"1:1\">\n"
@@ -258,7 +259,7 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
     // $Number$ for segment template.
     const char kMediaInfo[] =
         "video_info {\n"
-        "  codec: \"avc1.010101\"\n"
+        "  codec: 'avc1.010101'\n"
         "  width: 720\n"
         "  height: 480\n"
         "  time_scale: 10\n"
@@ -268,8 +269,8 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
         "}\n"
         "reference_time_scale: %u\n"
         "container_type: 1\n"
-        "init_segment_name: \"init.mp4\"\n"
-        "segment_template: \"$Number$.mp4\"\n";
+        "init_segment_name: 'init.mp4'\n"
+        "segment_template: '$Number$.mp4'\n";
 
     const std::string& number_template_media_info =
         base::StringPrintf(kMediaInfo, DefaultTimeScale());
@@ -291,7 +292,7 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
         "timeShiftBufferDepth=\"PT%dS\">\n"
         "  <Period start=\"PT0S\">\n"
         "    <AdaptationSet id=\"0\" width=\"720\" height=\"480\""
-        "                   frameRate=\"10/2\">\n"
+        "                   frameRate=\"10/2\" contentType=\"video\">\n"
         "      <Representation id=\"0\" bandwidth=\"%" PRIu64 "\" "
         "codecs=\"avc1.010101\" mimeType=\"video/mp4\" width=\"720\" "
         "height=\"480\" frameRate=\"10/2\" sar=\"1:1\">\n"
@@ -327,7 +328,7 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
 TEST_F(CommonMpdBuilderTest, ValidMediaInfo) {
   const char kTestMediaInfo[] =
       "video_info {\n"
-      "  codec: \"avc1\"\n"
+      "  codec: 'avc1'\n"
       "  width: 720\n"
       "  height: 480\n"
       "  time_scale: 10\n"
@@ -346,7 +347,7 @@ TEST_F(CommonMpdBuilderTest, InvalidMediaInfo) {
   // Missing width.
   const char kTestMediaInfo[] =
       "video_info {\n"
-      "  codec: \"avc1\"\n"
+      "  codec: 'avc1'\n"
       "  height: 480\n"
       "  time_scale: 10\n"
       "  frame_duration: 10\n"
@@ -363,7 +364,7 @@ TEST_F(CommonMpdBuilderTest, InvalidMediaInfo) {
 TEST_F(CommonMpdBuilderTest, CheckVideoInfoReflectedInXml) {
   const char kTestMediaInfo[] =
       "video_info {\n"
-      "  codec: \"avc1\"\n"
+      "  codec: 'avc1'\n"
       "  width: 1280\n"
       "  height: 720\n"
       "  time_scale: 10\n"
@@ -386,6 +387,76 @@ TEST_F(CommonMpdBuilderTest, CheckVideoInfoReflectedInXml) {
       ExpectAttributeEqString("sar", "1:1", node_xml.get()));
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeEqString("frameRate", "10/10", node_xml.get()));
+}
+
+// Verify that content type is set correctly if video info is present in
+// MediaInfo.
+TEST_F(CommonMpdBuilderTest, CheckAdaptationSetVideoContentType) {
+  base::AtomicSequenceNumber sequence_counter;
+  const char kVideoMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+
+  AdaptationSet adaptation_set(
+      kAnyAdaptationSetId, "", MpdOptions(), &sequence_counter);
+  adaptation_set.AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo));
+
+  xml::ScopedXmlPtr<xmlNode>::type node_xml(adaptation_set.GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("contentType", "video", node_xml.get()));
+}
+
+// Verify that content type is set correctly if audio info is present in
+// MediaInfo.
+TEST_F(CommonMpdBuilderTest, CheckAdaptationSetAudioContentType) {
+  base::AtomicSequenceNumber sequence_counter;
+  const char kAudioMediaInfo[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "}\n"
+      "container_type: 1\n";
+
+  AdaptationSet adaptation_set(
+      kAnyAdaptationSetId, "", MpdOptions(), &sequence_counter);
+  adaptation_set.AddRepresentation(ConvertToMediaInfo(kAudioMediaInfo));
+
+  xml::ScopedXmlPtr<xmlNode>::type node_xml(adaptation_set.GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("contentType", "audio", node_xml.get()));
+}
+
+// Verify that content type is set correctly if text info is present in
+// MediaInfo.
+// TODO(rkuroiwa): Enable this once text support is implemented.
+// This fails because it fails to get the codec, therefore Representation
+// creation fails.
+TEST_F(CommonMpdBuilderTest, DISABLED_CheckAdaptationSetTextContentType) {
+  base::AtomicSequenceNumber sequence_counter;
+  const char kTextMediaInfo[] =
+      "text_info {\n"
+      "  format: 'ttml'\n"
+      "  language: 'en'\n"
+      "}\n"
+      "container_type: 1\n";
+
+  AdaptationSet adaptation_set(
+      kAnyAdaptationSetId, "", MpdOptions(), &sequence_counter);
+  adaptation_set.AddRepresentation(ConvertToMediaInfo(kTextMediaInfo));
+
+  xml::ScopedXmlPtr<xmlNode>::type node_xml(adaptation_set.GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("contentType", "text", node_xml.get()));
 }
 
 TEST_F(CommonMpdBuilderTest, CheckAdaptationSetId) {
