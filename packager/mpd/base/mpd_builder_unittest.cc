@@ -487,6 +487,36 @@ TEST_F(CommonMpdBuilderTest, CheckAdaptationSetId) {
   ASSERT_NO_FATAL_FAILURE(CheckIdEqual(kAdaptationSetId, &adaptation_set));
 }
 
+// Verify AdaptationSet::AddRole() works for "main" role.
+TEST_F(CommonMpdBuilderTest, AdaptationAddRoleElementMain) {
+  MpdBuilder mpd_builder(MpdBuilder::kStatic, MpdOptions());
+  AdaptationSet* adaptation_set = mpd_builder.AddAdaptationSet("");
+
+  adaptation_set->AddRole(AdaptationSet::kRoleMain);
+  xml::ScopedXmlPtr<xmlNode>::type adaptation_set_xml(adaptation_set->GetXml());
+  // The empty contentType is sort of a side effect of being able to generate an
+  // MPD without adding any Representations.
+  const char kExpectedOutput[] =
+     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+     "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\"\n"
+     "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+     "    xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
+     "    xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\"\n"
+     "    minBufferTime=\"PT2S\" type=\"static\"\n"
+     "    profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\"\n"
+     "    mediaPresentationDuration=\"PT0S\">\n"
+     "  <Period>\n"
+     "    <AdaptationSet id=\"0\" contentType=\"\">\n"
+     "      <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>\n"
+     "    </AdaptationSet>\n"
+     "  </Period>\n"
+     "</MPD>";
+  std::string mpd_output;
+  EXPECT_TRUE(mpd_builder.ToString(&mpd_output));
+  EXPECT_TRUE(XmlEqual(kExpectedOutput, mpd_output))
+      << "Expected " << kExpectedOutput << std::endl << "Actual: " << mpd_output;
+}
+
 // Verify that if all video Representations in an AdaptationSet have the same
 // frame rate, AdaptationSet also has a frameRate attribute.
 TEST_F(CommonMpdBuilderTest, AdapatationSetFrameRate) {

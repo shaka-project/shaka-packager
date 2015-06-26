@@ -71,6 +71,8 @@ class MpdBuilder {
   void AddBaseUrl(const std::string& base_url);
 
   /// Adds <AdaptationSet> to the MPD.
+  /// @param lang is the language of the AdaptationSet. This can be empty for
+  ///        videos, for example.
   /// @return The new adaptation set, which is owned by this instance.
   AdaptationSet* AddAdaptationSet(const std::string& lang);
 
@@ -153,6 +155,19 @@ class MpdBuilder {
 /// <ContentProtection> elements to the AdaptationSet element.
 class AdaptationSet {
  public:
+  // The role for this AdaptationSet. These values are used to add a Role
+  // element to the AdaptationSet with schemeIdUri=urn:mpeg:dash:role:2011.
+  // See ISO/IEC 23009-1:2012 section 5.8.5.5.
+  enum Role {
+    kRoleCaption,
+    kRoleSubtitle,
+    kRoleMain,
+    kRoleAlternate,
+    kRoleSupplementary,
+    kRoleCommentary,
+    kRoleDub
+  };
+
   ~AdaptationSet();
 
   /// Create a Representation instance using @a media_info.
@@ -168,6 +183,12 @@ class AdaptationSet {
   ///        {“value”, “schemeIdUri”} as key for @a additional_attributes,
   ///        then the former is used.
   void AddContentProtectionElement(const ContentProtectionElement& element);
+
+  /// Set the Role element for this AdaptationSet.
+  /// The Role element's is schemeIdUri='urn:mpeg:dash:role:2011'.
+  /// See ISO/IEC 23009-1:2012 section 5.8.5.5.
+  /// @param role of this AdaptationSet.
+  void AddRole(Role role);
 
   /// Makes a copy of AdaptationSet xml element with its child Representation
   /// and ContentProtection elements.
@@ -254,6 +275,9 @@ class AdaptationSet {
   // The @par attribute should only be set if there is exactly one entry
   // in this set.
   std::set<std::string> picture_aspect_ratio_;
+
+  // The roles of this AdaptationSet.
+  std::set<Role> roles_;
 
   DISALLOW_COPY_AND_ASSIGN(AdaptationSet);
 };

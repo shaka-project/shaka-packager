@@ -320,6 +320,14 @@ AdaptationSetXmlNode::AdaptationSetXmlNode()
     : RepresentationBaseXmlNode("AdaptationSet") {}
 AdaptationSetXmlNode::~AdaptationSetXmlNode() {}
 
+void AdaptationSetXmlNode::AddRoleElement(const std::string& scheme_id_uri,
+                                          const std::string& value) {
+  XmlNode role("Role");
+  role.SetStringAttribute("schemeIdUri", scheme_id_uri);
+  role.SetStringAttribute("value", value);
+  AddChild(role.PassScopedPtr());
+}
+
 RepresentationXmlNode::RepresentationXmlNode()
     : RepresentationBaseXmlNode("Representation") {}
 RepresentationXmlNode::~RepresentationXmlNode() {}

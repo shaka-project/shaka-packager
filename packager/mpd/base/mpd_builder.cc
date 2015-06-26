@@ -273,6 +273,33 @@ void AddPictureAspectRatio(
   picture_aspect_ratio->insert(par);
 }
 
+std::string RoleToText(AdaptationSet::Role role) {
+  // Using switch so that the compiler can detect whether there is a case that's
+  // not being handled.
+  switch (role) {
+    case AdaptationSet::kRoleCaption:
+      return "caption";
+    case AdaptationSet::kRoleSubtitle:
+      return "subtitle";
+    case AdaptationSet::kRoleMain:
+      return "main";
+    case AdaptationSet::kRoleAlternate:
+      return "alternate";
+    case AdaptationSet::kRoleSupplementary:
+      return "supplementary";
+    case AdaptationSet::kRoleCommentary:
+      return "commentary";
+    case AdaptationSet::kRoleDub:
+      return "dub";
+    default:
+      NOTREACHED();
+      return "";
+  }
+
+  NOTREACHED();
+  return "";
+}
+
 // Spooky static initialization/cleanup of libxml.
 class LibXmlInitializer {
  public:
@@ -619,6 +646,10 @@ void AdaptationSet::AddContentProtectionElement(
   RemoveDuplicateAttributes(&content_protection_elements_.back());
 }
 
+void AdaptationSet::AddRole(Role role) {
+  roles_.insert(role);
+}
+
 // Creates a copy of <AdaptationSet> xml element, iterate thru all the
 // <Representation> (child) elements and add them to the copy.
 xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
@@ -670,6 +701,12 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
 
   if (group_ >= 0)
     adaptation_set.SetIntegerAttribute("group", group_);
+
+  for (std::set<Role>::const_iterator role_it = roles_.begin();
+       role_it != roles_.end(); ++role_it) {
+    adaptation_set.AddRoleElement("urn:mpeg:dash:role:2011",
+                                  RoleToText(*role_it));
+  }
   return adaptation_set.PassScopedPtr();
 }
 
