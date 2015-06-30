@@ -86,6 +86,12 @@ void AddVideoInfo(const VideoStreamInfo* video_stream_info,
   video_info->set_height(video_stream_info->height());
   video_info->set_time_scale(video_stream_info->time_scale());
 
+  if (video_stream_info->pixel_width() > 0)
+    video_info->set_pixel_width(video_stream_info->pixel_width());
+
+  if (video_stream_info->pixel_height() > 0)
+    video_info->set_pixel_height(video_stream_info->pixel_height());
+
   const std::vector<uint8_t>& extra_data = video_stream_info->extra_data();
   if (!extra_data.empty()) {
     video_info->set_decoder_config(&extra_data[0], extra_data.size());

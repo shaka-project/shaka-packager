@@ -230,6 +230,16 @@ class AdaptationSet {
   // Determined by examining the MediaInfo passed to AddRepresentation().
   std::string content_type_;
 
+  // This does not have to be a set, it could be a list or vector because all we
+  // really care is whether there is more than one entry.
+  // Contains one entry if all the Representations have the same picture aspect
+  // ratio (@par attribute for AdaptationSet).
+  // There will be more than one entry if there are multiple picture aspect
+  // ratios.
+  // The @par attribute should only be set if there is exactly one entry
+  // in this set.
+  std::set<std::string> picture_aspect_ratio_;
+
   DISALLOW_COPY_AND_ASSIGN(AdaptationSet);
 };
 

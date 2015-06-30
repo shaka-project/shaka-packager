@@ -212,6 +212,65 @@ bool HasRequiredVideoFields(const MediaInfo_VideoInfo& video_info) {
   return true;
 }
 
+// Euclidean algorithm.
+// gcd(a,0) = a
+// gcd(a,b) = gcd(b, a % b)
+uint32_t GreatestCommonDivisor(uint32_t a, uint32_t b) {
+  while (b != 0) {
+    const uint32_t new_b = a % b;
+    a = b;
+    b = new_b;
+  }
+  return a;
+}
+
+// Returns the picture aspect ratio string e.g. "16:9", "4:3".
+std::string GetPictureAspectRatio(uint32_t width, uint32_t height,
+                                  uint32_t pixel_width, uint32_t pixel_height) {
+  const uint32_t scaled_width = pixel_width * width;
+  const uint32_t scaled_height = pixel_height * height;
+  const uint32_t gcd = GreatestCommonDivisor(scaled_width, scaled_height);
+  DCHECK_NE(gcd, 0u) << "GCD of width*pix_width (" << scaled_width
+                     << ") and height*pix_height (" << scaled_height
+                     << ") is 0.";
+
+  const uint32_t par_x = scaled_width / gcd;
+  const uint32_t par_y = scaled_height / gcd;
+  return base::IntToString(par_x) + ":" + base::IntToString(par_y);
+}
+
+// Adds an entry to picture_aspect_ratio if the size of picture_aspect_ratio is
+// less than 2 and video_info has both pixel width and pixel height.
+void AddPictureAspectRatio(
+  const MediaInfo::VideoInfo& video_info,
+  std::set<std::string>* picture_aspect_ratio) {
+  // If there are more than one entries in picture_aspect_ratio, the @par
+  // attribute cannot be set, so skip.
+  if (picture_aspect_ratio->size() > 1)
+    return;
+
+  if (video_info.width() == 0 || video_info.height() == 0 ||
+      video_info.pixel_width() == 0 || video_info.pixel_height() == 0) {
+    // If there is even one Representation without a @sar attribute, @par cannot
+    // be calculated.
+    // Just populate the set with at least 2 bogus strings so that further call
+    // to this function will bail out immediately.
+    picture_aspect_ratio->insert("bogus");
+    picture_aspect_ratio->insert("entries");
+    return;
+  }
+
+  const std::string par = GetPictureAspectRatio(
+      video_info.width(), video_info.height(),
+      video_info.pixel_width(), video_info.pixel_height());
+  DVLOG(1) << "Setting par as: " << par
+           << " for video with width: " << video_info.width()
+           << " height: " << video_info.height()
+           << " pixel_width: " << video_info.pixel_width() << " pixel_height; "
+           << video_info.pixel_height();
+  picture_aspect_ratio->insert(par);
+}
+
 // Spooky static initialization/cleanup of libxml.
 class LibXmlInitializer {
  public:
@@ -536,6 +595,8 @@ Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
           base::IntToString(video_info.time_scale()) + "/" +
           base::IntToString(video_info.frame_duration());
     }
+
+    AddPictureAspectRatio(video_info, &picture_aspect_ratio_);
   }
 
   if (media_info.has_video_info()) {
@@ -600,6 +661,9 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
     adaptation_set.SetStringAttribute("maxFrameRate",
                                       video_frame_rates_.rbegin()->second);
   }
+
+  if (picture_aspect_ratio_.size() == 1)
+    adaptation_set.SetStringAttribute("par", *picture_aspect_ratio_.begin());
   return adaptation_set.PassScopedPtr();
 }
 

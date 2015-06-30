@@ -35,6 +35,8 @@ struct VideoStreamInfoParameters {
   std::string language;
   uint16_t width;
   uint16_t height;
+  uint32_t pixel_width;
+  uint32_t pixel_height;
   uint8_t nalu_length_size;
   std::vector<uint8_t> extra_data;
   bool is_encrypted;
@@ -63,10 +65,8 @@ scoped_refptr<StreamInfo> CreateVideoStreamInfo(
                           param.language,
                           param.width,
                           param.height,
-                          // TODO(rkuroiwa): Once MedianInfo proto change that
-                          // adds pizel_{width,height} lands, add tests.
-                          0,  // No pixel width.
-                          0,  // No pixel height.
+                          param.pixel_width,
+                          param.pixel_height,
                           0,  // trick_play_rate
                           param.nalu_length_size,
                           vector_as_array(&param.extra_data),
@@ -85,16 +85,18 @@ VideoStreamInfoParameters GetDefaultVideoStreamInfoParams() {
   const char* kLanuageUndefined = "und";
   const uint16_t kWidth = 720;
   const uint16_t kHeight = 480;
+  const uint32_t kPixelWidth = 1;
+  const uint32_t kPixelHeight = 1;
   const uint8_t kNaluLengthSize = 1;
   const std::vector<uint8_t> kExtraData;
   const bool kEncryptedFlag = false;
 
   VideoStreamInfoParameters param = {
       kTrackId, kTimeScale, kVideoStreamDuration, kH264Codec,
-      VideoStreamInfo::GetCodecString(
-          kCodecH264, kH264Profile, kH264CompatibleProfile, kH264Level),
-      kLanuageUndefined, kWidth, kHeight, kNaluLengthSize, kExtraData,
-      kEncryptedFlag};
+      VideoStreamInfo::GetCodecString(kCodecH264, kH264Profile,
+                                      kH264CompatibleProfile, kH264Level),
+      kLanuageUndefined, kWidth, kHeight, kPixelWidth, kPixelHeight,
+      kNaluLengthSize, kExtraData, kEncryptedFlag};
   return param;
 }
 
@@ -224,10 +226,12 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal) {
   const char kExpectedProtobufOutput[] =
       "bandwidth: 7620\n"
       "video_info {\n"
-      "  codec: \"avc1.010101\"\n"
+      "  codec: 'avc1.010101'\n"
       "  width: 720\n"
       "  height: 480\n"
       "  time_scale: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
       "}\n"
       "init_range {\n"
       "  begin: 0\n"
@@ -239,7 +243,7 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal) {
       "}\n"
       "reference_time_scale: 1000\n"
       "container_type: 1\n"
-      "media_file_name: \"test_output_file_name.mp4\"\n"
+      "media_file_name: 'test_output_file_name.mp4'\n"
       "media_duration_seconds: 10.5\n";
   ASSERT_NO_FATAL_FAILURE(ExpectTempFileToEqual(kExpectedProtobufOutput));
 }
@@ -249,26 +253,26 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
 
   scoped_refptr<StreamInfo> stream_info =
       CreateVideoStreamInfo(GetDefaultVideoStreamInfoParams());
-
   FireOnMediaStartWithDefaultMuxerOptions(*stream_info, kEnableEncryption);
-
   OnMediaEndParameters media_end_param = GetDefaultOnMediaEndParams();
   FireOnMediaEndWithParams(media_end_param);
 
   const char kExpectedProtobufOutput[] =
       "bandwidth: 7620\n"
       "video_info {\n"
-      "  codec: \"avc1.010101\"\n"
+      "  codec: 'avc1.010101'\n"
       "  width: 720\n"
       "  height: 480\n"
       "  time_scale: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
       "}\n"
       "content_protections {\n"
-      "  scheme_id_uri: \"urn:mpeg:dash:mp4protection:2011\"\n"
-      "  value: \"cenc\"\n"
+      "  scheme_id_uri: 'urn:mpeg:dash:mp4protection:2011'\n"
+      "  value: 'cenc'\n"
       "}\n"
       "content_protections {\n"
-      "  scheme_id_uri: \"http://foo.com/bar\"\n"
+      "  scheme_id_uri: 'http://foo.com/bar'\n"
       "}\n"
       "init_range {\n"
       "  begin: 0\n"
@@ -280,7 +284,44 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
       "}\n"
       "reference_time_scale: 1000\n"
       "container_type: 1\n"
-      "media_file_name: \"test_output_file_name.mp4\"\n"
+      "media_file_name: 'test_output_file_name.mp4'\n"
+      "media_duration_seconds: 10.5\n";
+  ASSERT_NO_FATAL_FAILURE(ExpectTempFileToEqual(kExpectedProtobufOutput));
+}
+
+// Verify that VideoStreamInfo with non-0 pixel_{width,height} is set in the
+// generated MediaInfo.
+TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckPixelWidthAndHeightSet) {
+  VideoStreamInfoParameters params = GetDefaultVideoStreamInfoParams();
+  params.pixel_width = 8;
+  params.pixel_height = 9;
+
+  scoped_refptr<StreamInfo> stream_info = CreateVideoStreamInfo(params);
+  FireOnMediaStartWithDefaultMuxerOptions(*stream_info, !kEnableEncryption);
+  OnMediaEndParameters media_end_param = GetDefaultOnMediaEndParams();
+  FireOnMediaEndWithParams(media_end_param);
+
+  const char kExpectedProtobufOutput[] =
+      "bandwidth: 7620\n"
+      "video_info {\n"
+      "  codec: 'avc1.010101'\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "  pixel_width: 8\n"
+      "  pixel_height: 9\n"
+      "}\n"
+      "init_range {\n"
+      "  begin: 0\n"
+      "  end: 120\n"
+      "}\n"
+      "index_range {\n"
+      "  begin: 121\n"
+      "  end: 221\n"
+      "}\n"
+      "reference_time_scale: 1000\n"
+      "container_type: 1\n"
+      "media_file_name: 'test_output_file_name.mp4'\n"
       "media_duration_seconds: 10.5\n";
   ASSERT_NO_FATAL_FAILURE(ExpectTempFileToEqual(kExpectedProtobufOutput));
 }

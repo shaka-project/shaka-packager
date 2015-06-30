@@ -330,13 +330,17 @@ bool RepresentationXmlNode::AddVideoInfo(const VideoInfo& video_info) {
     return false;
   }
 
+  if (video_info.has_pixel_width() && video_info.has_pixel_height()) {
+    SetStringAttribute("sar", base::IntToString(video_info.pixel_width()) +
+                                  ":" +
+                                  base::IntToString(video_info.pixel_height()));
+  }
+
   SetIntegerAttribute("width", video_info.width());
   SetIntegerAttribute("height", video_info.height());
   SetStringAttribute("frameRate",
                      base::IntToString(video_info.time_scale()) + "/" +
                          base::IntToString(video_info.frame_duration()));
-  SetStringAttribute("sar", base::IntToString(video_info.pixel_width()) + ":" +
-                                base::IntToString(video_info.pixel_height()));
   return true;
 }
 

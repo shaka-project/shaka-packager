@@ -209,7 +209,8 @@ class SegmentTemplateTest : public DynamicMpdBuilderTest {
         "type=\"dynamic\" profiles=\"urn:mpeg:dash:profile:isoff-live:2011\">\n"
         "  <Period start=\"PT0S\">\n"
         "    <AdaptationSet id=\"0\" width=\"720\" height=\"480\""
-        "                   frameRate=\"10/5\" contentType=\"video\">\n"
+        "                   frameRate=\"10/5\" contentType=\"video\""
+        "                   par=\"3:2\">\n"
         "      <Representation id=\"0\" bandwidth=\"%" PRIu64 "\" "
         "codecs=\"avc1.010101\" mimeType=\"video/mp4\" width=\"720\" "
         "height=\"480\" frameRate=\"10/5\" sar=\"1:1\">\n"
@@ -292,7 +293,8 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
         "timeShiftBufferDepth=\"PT%dS\">\n"
         "  <Period start=\"PT0S\">\n"
         "    <AdaptationSet id=\"0\" width=\"720\" height=\"480\""
-        "                   frameRate=\"10/2\" contentType=\"video\">\n"
+        "                   frameRate=\"10/2\" contentType=\"video\""
+        "                   par=\"3:2\">\n"
         "      <Representation id=\"0\" bandwidth=\"%" PRIu64 "\" "
         "codecs=\"avc1.010101\" mimeType=\"video/mp4\" width=\"720\" "
         "height=\"480\" frameRate=\"10/2\" sar=\"1:1\">\n"
@@ -538,6 +540,125 @@ TEST_F(CommonMpdBuilderTest, AdapatationSetMaxFrameRate) {
                                                   adaptation_set_xml.get()));
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeNotSet("frameRate", adaptation_set_xml.get()));
+}
+
+// Verify that if the picture aspect ratio of all the Representations are the
+// same, @par attribute is present.
+TEST_F(CommonMpdBuilderTest, AdaptationSetParAllSame) {
+  const char k720pVideoInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 3000\n"
+      "  frame_duration: 100\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+  const char k1080pVideoInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1920\n"
+      "  height: 1080\n"
+      "  time_scale: 3000\n"
+      "  frame_duration: 100\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+
+  // Note that this has non-1 pixel width and height.
+  // Which makes the par 16:9.
+  const char k360pVideoInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 720\n"
+      "  height: 360\n"
+      "  time_scale: 3000\n"
+      "  frame_duration: 100\n"
+      "  pixel_width: 8\n"
+      "  pixel_height: 9\n"
+      "}\n"
+      "container_type: 1\n";
+
+  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet("");
+  ASSERT_TRUE(video_adaptation_set);
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(k720pVideoInfo)));
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(k1080pVideoInfo)));
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(k360pVideoInfo)));
+
+  xml::ScopedXmlPtr<xmlNode>::type adaptation_set_xml(
+      video_adaptation_set->GetXml());
+  EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString("par", "16:9",
+                                                  adaptation_set_xml.get()));
+}
+
+// Verify that adding Representations with different par will generate
+// AdaptationSet without @par.
+TEST_F(CommonMpdBuilderTest, AdaptationSetParDifferent) {
+  const char k16by9VideoInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 3000\n"
+      "  frame_duration: 100\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+  // Note that 720:360 is 2:1 where as 720p (above) is 16:9.
+  const char k2by1VideoInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 720\n"
+      "  height: 360\n"
+      "  time_scale: 3000\n"
+      "  frame_duration: 100\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+
+  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet("");
+  ASSERT_TRUE(video_adaptation_set);
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(k16by9VideoInfo)));
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(k2by1VideoInfo)));
+
+  xml::ScopedXmlPtr<xmlNode>::type adaptation_set_xml(
+      video_adaptation_set->GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("par", adaptation_set_xml.get()));
+}
+
+// Verify that adding Representation without pixel_width and pixel_height will
+// not set @par.
+TEST_F(CommonMpdBuilderTest, AdaptationSetParUnknown) {
+  const char kUknownPixelWidthAndHeight[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 3000\n"
+      "  frame_duration: 100\n"
+      "}\n"
+      "container_type: 1\n";
+
+  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet("");
+  ASSERT_TRUE(video_adaptation_set);
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(kUknownPixelWidthAndHeight)));
+
+  xml::ScopedXmlPtr<xmlNode>::type adaptation_set_xml(
+      video_adaptation_set->GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("par", adaptation_set_xml.get()));
 }
 
 // Catch the case where it ends up wrong if integer division is used to check
