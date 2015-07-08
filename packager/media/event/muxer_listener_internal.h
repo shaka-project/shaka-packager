@@ -54,6 +54,22 @@ bool AddContentProtectionElements(MuxerListener::ContainerType container_type,
                                   const std::string& user_scheme_id_uri,
                                   MediaInfo* media_info);
 
+/// @param content_protection_uuid is the UUID of the content protection
+///        in human readable form.
+/// @param content_protection_name_version is the DRM name and verion.
+/// @param default_key_id is the key ID for this media in hex (i.e. non-human
+///        readable, typically 16 bytes.)
+/// @param pssh is the pssh for the media in hex (i.e. non-human readable, raw
+///        'pssh' box.)
+/// @param media_info is where the content protection information is stored and
+///        cannot be null.
+void SetContentProtectionFields(
+    const std::string& content_protection_uuid,
+    const std::string& content_protection_name_version,
+    const std::string& default_key_id,
+    const std::string& pssh,
+    MediaInfo* media_info);
+
 }  // namespace internal
 }  // namespace media
 }  // namespace edash_packager

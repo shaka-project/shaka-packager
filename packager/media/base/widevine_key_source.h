@@ -43,6 +43,7 @@ class WidevineKeySource : public KeySource {
   virtual Status GetCryptoPeriodKey(uint32_t crypto_period_index,
                                     TrackType track_type,
                                     EncryptionKey* key) OVERRIDE;
+  virtual std::string UUID() OVERRIDE;
   /// @}
 
   /// Set signer for the key source.

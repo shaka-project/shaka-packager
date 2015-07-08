@@ -15,6 +15,7 @@
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/event/muxer_listener.h"
 #include "packager/media/event/progress_listener.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/key_rotation_fragmenter.h"
@@ -196,6 +197,13 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
     if (moov_->pssh.empty()) {
       moov_->pssh.resize(1);
       moov_->pssh[0].raw_box = encryption_key->pssh;
+
+      // Also only one default key id.
+      if (muxer_listener_) {
+        muxer_listener_->OnEncryptionInfoReady(
+            encryption_key_source->UUID(), encryption_key_source->SystemName(),
+            encryption_key->key_id, encryption_key->pssh);
+      }
     }
 
     fragmenters_[i] = new EncryptingFragmenter(

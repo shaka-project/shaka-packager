@@ -236,6 +236,10 @@ Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
   return GetKeyInternal(crypto_period_index, track_type, key);
 }
 
+std::string WidevineKeySource::UUID() {
+  return "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed";
+}
+
 void WidevineKeySource::set_signer(scoped_ptr<RequestSigner> signer) {
   signer_ = signer.Pass();
 }

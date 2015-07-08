@@ -83,6 +83,19 @@ class KeySource {
                                     TrackType track_type,
                                     EncryptionKey* key);
 
+  /// Returns the UUID of the key source in human readable form.
+  /// UUIDs are listed here:
+  /// http://dashif.org/identifiers/protection/
+  /// @return UUID of the key source, empty string if not specified.
+  virtual std::string UUID();
+
+  /// Returns the name, and possibly with a version number, of the key source.
+  /// (This would be the ContentProtection@value attribute in the MPD. DASH-IF-
+  /// IOP v3.0 recommends this to be the DRM system and version name in human
+  /// readable from.)
+  /// @return the name of the key source, empty string if not specified.
+  virtual std::string SystemName();
+
   /// Create KeySource object from hex strings.
   /// @param key_id_hex is the key id in hex string.
   /// @param key_hex is the key in hex string.

@@ -36,11 +36,16 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
 
   /// @name MuxerListener implementation overrides.
   /// @{
-  virtual void OnMediaStart(const MuxerOptions& muxer_options,
-                            const StreamInfo& stream_info,
-                            uint32_t time_scale,
-                            ContainerType container_type,
-                            bool is_encrypted) OVERRIDE;
+  virtual void OnEncryptionInfoReady(
+      const std::string& content_protection_uuid,
+      const std::string& content_protection_name_version,
+      const std::vector<uint8_t>& default_key_id,
+      const std::vector<uint8_t>& pssh) OVERRIDE;
+  virtual void OnMediaStart(
+      const MuxerOptions& muxer_options,
+      const StreamInfo& stream_info,
+      uint32_t time_scale,
+      ContainerType container_type) OVERRIDE;
   virtual void OnSampleDurationReady(uint32_t sample_duration) OVERRIDE;
   virtual void OnMediaEnd(bool has_init_range,
                           uint64_t init_range_start,
@@ -62,6 +67,13 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
   std::string output_file_name_;
   std::string scheme_id_uri_;
   scoped_ptr<MediaInfo> media_info_;
+
+  bool is_encrypted_;
+  // Storage for values passed to OnEncryptionInfoReady().
+  std::string content_protection_uuid_;
+  std::string content_protection_name_version_;
+  std::string default_key_id_;
+  std::string pssh_;
 
   DISALLOW_COPY_AND_ASSIGN(VodMediaInfoDumpMuxerListener);
 };

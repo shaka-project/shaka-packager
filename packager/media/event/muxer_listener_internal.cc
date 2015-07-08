@@ -201,6 +201,8 @@ bool SetVodInformation(bool has_init_range,
   return true;
 }
 
+// TODO(rkuroiwa): Move this logic to MpdBuilder? MuxerListener probably doesn't
+// need to know this.
 bool AddContentProtectionElements(MuxerListener::ContainerType container_type,
                                   const std::string& user_scheme_id_uri,
                                   MediaInfo* media_info) {
@@ -235,6 +237,36 @@ bool AddContentProtectionElements(MuxerListener::ContainerType container_type,
   }
 
   return true;
+}
+
+void SetContentProtectionFields(
+    const std::string& content_protection_uuid,
+    const std::string& content_protection_name_version,
+    const std::string& default_key_id,
+    const std::string& pssh,
+    MediaInfo* media_info) {
+  DCHECK(media_info);
+  MediaInfo::ProtectedContent* protected_content =
+      media_info->mutable_protected_content();
+
+  if (!default_key_id.empty())
+    protected_content->set_default_key_id(default_key_id);
+
+  if (content_protection_uuid.empty() &&
+      content_protection_name_version.empty() && pssh.empty()) {
+    return;
+  }
+
+  MediaInfo::ProtectedContent::ContentProtectionEntry* entry =
+      protected_content->add_content_protection_entry();
+  if (!content_protection_uuid.empty())
+    entry->set_uuid(content_protection_uuid);
+
+  if (!content_protection_name_version.empty())
+    entry->set_name_version(content_protection_name_version);
+
+  if (!pssh.empty())
+    entry->set_pssh(pssh);
 }
 
 }  // namespace internal

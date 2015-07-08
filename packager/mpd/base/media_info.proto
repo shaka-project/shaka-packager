@@ -55,6 +55,26 @@ message MediaInfo {
     optional string language = 2;
   }
 
+  message ProtectedContent {
+    message ContentProtectionEntry {
+      // Human readable UUID of the DRM.
+      optional string uuid = 1;
+      // Human readable DRM name and version string.
+      // e.g. "My Content Protection v1.0"
+      optional string name_version = 2;
+      // The raw 'pssh' box for the media.
+      optional bytes pssh = 3;
+    }
+
+    // The default key ID for the encrypted media.
+    optional bytes default_key_id = 1;
+    repeated ContentProtectionEntry content_protection_entry = 2;
+  }
+
+  // TODO(rkuroiwa): Remove this. <ContentProtection> element that must be added
+  // should be done by directly using the MpdBuilder interface.
+  // Use this to specify ContentProtection elements that should be set in
+  // the MPD, if ContentProtectionEntry is not sufficient.
   message ContentProtectionXml {
     message AttributeNameValuePair {
       optional string name = 1;
@@ -84,6 +104,10 @@ message MediaInfo {
   optional AudioInfo audio_info = 3;
   optional TextInfo text_info = 4;
   repeated ContentProtectionXml content_protections = 5;
+
+  // This is set if the content is protected with a content protection,
+  // i.e. encrypted.
+  optional ProtectedContent protected_content = 15;
 
   // This is the reference time scale if there are multiple VideoInfo and/or
   // AudioInfo.

@@ -20,6 +20,19 @@
 
 namespace {
 const bool kEnableEncryption = true;
+// '_default_key_id_' (length 16).
+const uint8_t kBogusDefaultKeyId[] = {0x5f, 0x64, 0x65, 0x66, 0x61, 0x75,
+                                      0x6c, 0x74, 0x5f, 0x6b, 0x65, 0x79,
+                                      0x5f, 0x69, 0x64, 0x5f};
+// 'pssh'. Not a valid pssh box.
+const uint8_t kInvalidPssh[] = {
+  0x70, 0x73, 0x73, 0x68
+};
+
+// This should be in the uuid field of the protobuf. This is not a valid UUID
+// format but the protobof generation shouldn't care.
+const char kTestUUID[] = "myuuid";
+const char kTestContentProtectionName[] = "MyContentProtection version 1";
 }  // namespace
 
 namespace edash_packager {
@@ -178,11 +191,21 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
     MuxerOptions muxer_options;
     SetDefaultMuxerOptionsValues(&muxer_options);
     const uint32_t kReferenceTimeScale = 1000;
-    listener_->OnMediaStart(muxer_options,
-                            stream_info,
-                            kReferenceTimeScale,
-                            MuxerListener::kContainerMp4,
-                            enable_encryption);
+    if (enable_encryption) {
+      std::vector<uint8_t> bogus_default_key_id(
+          kBogusDefaultKeyId,
+          kBogusDefaultKeyId + arraysize(kBogusDefaultKeyId));
+
+      // This isn't a valid pssh box but the MediaInfo protobuf creator
+      // shouldn't worry about it.
+      std::vector<uint8_t> invalid_pssh(kInvalidPssh,
+                                        kInvalidPssh + arraysize(kInvalidPssh));
+
+      listener_->OnEncryptionInfoReady(kTestUUID, kTestContentProtectionName,
+                                       bogus_default_key_id, invalid_pssh);
+    }
+    listener_->OnMediaStart(muxer_options, stream_info, kReferenceTimeScale,
+                            MuxerListener::kContainerMp4);
   }
 
   void FireOnMediaEndWithParams(const OnMediaEndParameters& params) {
@@ -285,7 +308,16 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
       "reference_time_scale: 1000\n"
       "container_type: 1\n"
       "media_file_name: 'test_output_file_name.mp4'\n"
-      "media_duration_seconds: 10.5\n";
+      "media_duration_seconds: 10.5\n"
+      "protected_content {\n"
+      "  content_protection_entry {\n"
+      "    uuid: 'myuuid'\n"
+      "    name_version: 'MyContentProtection version 1'\n"
+      "    pssh: 'pssh'\n"
+      "  }\n"
+      "  default_key_id: '_default_key_id_'\n"
+      "}\n";
+
   ASSERT_NO_FATAL_FAILURE(ExpectTempFileToEqual(kExpectedProtobufOutput));
 }
 

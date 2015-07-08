@@ -6,6 +6,8 @@
 //
 // Event handler for events fired by Muxer.
 
+// TODO(rkuroiwa): Document using doxygen style comments.
+
 #ifndef MEDIA_EVENT_MUXER_LISTENER_H_
 #define MEDIA_EVENT_MUXER_LISTENER_H_
 
@@ -34,7 +36,24 @@ class MuxerListener {
 
   virtual ~MuxerListener() {};
 
-  // Called when muxing starts. This event happens before any other events.
+  // Called when the media's encryption information is ready. This should be
+  // called before OnMediaStart(), if the media is encrypted.
+  // All the parameters may be empty just to notify that the media is encrypted.
+  // |content_protection_uuid| is one of the UUIDs listed here
+  // http://dashif.org/identifiers/protection/. This should be in human
+  // readable form.
+  // |content_protection_name_version| is the DRM system and version name.
+  // For ISO BMFF (MP4) media:
+  // |default_key_id| is the default_KID in 'tenc' box. The format should
+  // be a vector of uint8_t, i.e. not (necessarily) human readable hex string.
+  // |pssh| is the whole 'pssh' box.
+  virtual void OnEncryptionInfoReady(
+      const std::string& content_protection_uuid,
+      const std::string& content_protection_name_version,
+      const std::vector<uint8_t>& default_key_id,
+      const std::vector<uint8_t>& pssh) = 0;
+
+  // Called when muxing starts.
   // For MPEG DASH Live profile, the initialization segment information is
   // available from StreamInfo.
   // |time_scale| is a reference time scale that overrides the time scale
@@ -42,8 +61,7 @@ class MuxerListener {
   virtual void OnMediaStart(const MuxerOptions& muxer_options,
                             const StreamInfo& stream_info,
                             uint32_t time_scale,
-                            ContainerType container_type,
-                            bool is_encrypted) = 0;
+                            ContainerType container_type) = 0;
 
   /// Called when the average sample duration of the media is determined.
   /// @param sample_duration in timescale of the media.

@@ -14,6 +14,8 @@ namespace {
 const uint8_t kWidevineSystemId[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,
                                      0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc,
                                      0xd5, 0x1d, 0x21, 0xed};
+const char kDefaultUUID[] = "";
+const char kDefaultSystemName[] = "";
 }  // namespace
 
 namespace edash_packager {
@@ -65,6 +67,14 @@ Status KeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
                                      EncryptionKey* key) {
   NOTIMPLEMENTED();
   return Status(error::UNIMPLEMENTED, "");
+}
+
+std::string KeySource::UUID() {
+  return kDefaultUUID;
+}
+
+std::string KeySource::SystemName() {
+  return kDefaultSystemName;
 }
 
 scoped_ptr<KeySource> KeySource::CreateFromHexStrings(

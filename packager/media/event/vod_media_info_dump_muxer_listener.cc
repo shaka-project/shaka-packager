@@ -20,7 +20,7 @@ namespace media {
 
 VodMediaInfoDumpMuxerListener::VodMediaInfoDumpMuxerListener(
     const std::string& output_file_name)
-    : output_file_name_(output_file_name) {}
+    : output_file_name_(output_file_name), is_encrypted_(false) {}
 
 VodMediaInfoDumpMuxerListener::~VodMediaInfoDumpMuxerListener() {}
 
@@ -29,12 +29,23 @@ void VodMediaInfoDumpMuxerListener::SetContentProtectionSchemeIdUri(
   scheme_id_uri_ = scheme_id_uri;
 }
 
+void VodMediaInfoDumpMuxerListener::OnEncryptionInfoReady(
+    const std::string& content_protection_uuid,
+    const std::string& content_protection_name_version,
+    const std::vector<uint8_t>& default_key_id,
+    const std::vector<uint8_t>& pssh) {
+  content_protection_uuid_ = content_protection_uuid;
+  content_protection_name_version_ = content_protection_name_version;
+  default_key_id_.assign(default_key_id.begin(), default_key_id.end());
+  pssh_.assign(pssh.begin(), pssh.end());
+  is_encrypted_ = true;
+}
+
 void VodMediaInfoDumpMuxerListener::OnMediaStart(
     const MuxerOptions& muxer_options,
     const StreamInfo& stream_info,
     uint32_t time_scale,
-    ContainerType container_type,
-    bool is_encrypted) {
+    ContainerType container_type) {
   DCHECK(muxer_options.single_segment);
   media_info_.reset(new MediaInfo());
   if (!internal::GenerateMediaInfo(muxer_options,
@@ -46,7 +57,13 @@ void VodMediaInfoDumpMuxerListener::OnMediaStart(
     return;
   }
 
-  if (is_encrypted) {
+  if (is_encrypted_) {
+    internal::SetContentProtectionFields(
+        content_protection_uuid_, content_protection_name_version_,
+        default_key_id_, pssh_, media_info_.get());
+  }
+
+  if (is_encrypted_) {
     if (!internal::AddContentProtectionElements(
             container_type, scheme_id_uri_, media_info_.get())) {
       LOG(ERROR) << "Failed to add content protection elements.";
