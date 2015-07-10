@@ -35,6 +35,8 @@ using xml::AdaptationSetXmlNode;
 
 namespace {
 
+const int kAdaptationSetGroupNotSet = -1;
+
 std::string GetMimeType(const std::string& prefix,
                         MediaInfo::ContainerType container_type) {
   switch (container_type) {
@@ -565,7 +567,8 @@ AdaptationSet::AdaptationSet(uint32_t adaptation_set_id,
       representation_counter_(counter),
       id_(adaptation_set_id),
       lang_(lang),
-      mpd_options_(mpd_options) {
+      mpd_options_(mpd_options),
+      group_(kAdaptationSetGroupNotSet) {
   DCHECK(counter);
 }
 
@@ -664,6 +667,9 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
 
   if (picture_aspect_ratio_.size() == 1)
     adaptation_set.SetStringAttribute("par", *picture_aspect_ratio_.begin());
+
+  if (group_ >= 0)
+    adaptation_set.SetIntegerAttribute("group", group_);
   return adaptation_set.PassScopedPtr();
 }
 

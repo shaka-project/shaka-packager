@@ -175,6 +175,15 @@ class AdaptationSet {
   ///         NULL ScopedXmlPtr.
   xml::ScopedXmlPtr<xmlNode>::type GetXml();
 
+  /// Sets the AdaptationSet@group attribute.
+  /// Passing a negative value to this method will unset the attribute.
+  /// Note that group=0 is a special group, as mentioned in the DASH MPD
+  /// specification.
+  /// @param group_number is the value of AdaptatoinSet@group.
+  void set_group(int group_number) {
+    group_ = group_number;
+  }
+
   // Must be unique in the Period.
   uint32_t id() const { return id_; }
 
@@ -187,6 +196,7 @@ class AdaptationSet {
                            CheckAdaptationSetAudioContentType);
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest,
                            CheckAdaptationSetTextContentType);
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, SetAdaptationSetGroup);
 
   /// @param adaptation_set_id is an ID number for this AdaptationSet.
   /// @param representation_counter is a Counter for assigning ID numbers to
@@ -211,6 +221,11 @@ class AdaptationSet {
   const uint32_t id_;
   const std::string lang_;
   const MpdOptions& mpd_options_;
+
+  // The group attribute for the AdaptationSet. If the value is negative,
+  // no group number is specified.
+  // Note that group 0 is a special group number.
+  int group_;
 
   // Video widths and heights of Representations. Note that this is a set; if
   // there is only 1 resolution, then @width & @height should be set, otherwise

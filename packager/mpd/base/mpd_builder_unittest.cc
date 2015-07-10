@@ -325,6 +325,24 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
   }
 };
 
+// Verify that AdaptationSet@group can be set and unset.
+TEST_F(CommonMpdBuilderTest, SetAdaptationSetGroup) {
+  base::AtomicSequenceNumber sequence_counter;
+  AdaptationSet adaptation_set(
+      kAnyAdaptationSetId, "", MpdOptions(), &sequence_counter);
+  adaptation_set.set_group(1);
+
+  xml::ScopedXmlPtr<xmlNode>::type xml_with_group(adaptation_set.GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("group", "1", xml_with_group.get()));
+
+  // Unset by passing a negative value.
+  adaptation_set.set_group(-1);
+  xml::ScopedXmlPtr<xmlNode>::type xml_without_group(adaptation_set.GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("group", xml_without_group.get()));
+}
+
 // Verify that Representation::Init() works with all "required" fields of
 // MedieInfo proto.
 TEST_F(CommonMpdBuilderTest, ValidMediaInfo) {
