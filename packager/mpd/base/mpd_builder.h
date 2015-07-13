@@ -200,6 +200,13 @@ class AdaptationSet {
   ///         NULL ScopedXmlPtr.
   xml::ScopedXmlPtr<xmlNode>::type GetXml();
 
+  /// Forces the (sub)segmentAlignment field to be set to @a segment_alignment.
+  /// Use this if you are certain that the (sub)segments are alinged/unaligned
+  /// for the AdaptationSet.
+  /// @param segment_alignment is the value used for (sub)segmentAlignment
+  ///        attribute.
+  void ForceSetSegmentAlignment(bool segment_alignment);
+
   /// Sets the AdaptationSet@group attribute.
   /// Passing a negative value to this method will unset the attribute.
   /// Note that group=0 is a special group, as mentioned in the DASH MPD
@@ -212,7 +219,43 @@ class AdaptationSet {
   // Must be unique in the Period.
   uint32_t id() const { return id_; }
 
+  /// Notifies the AdaptationSet instance that a new (sub)segment was added to
+  /// the Representation with @a representation_id.
+  /// This must be called every time a (sub)segment is added to a
+  /// Representation in this AdaptationSet.
+  /// If a Representation is constructed using AddRepresentation() this
+  /// is called automatically whenever Representation::AddNewSegment() is
+  /// is called.
+  /// @param representation_id is the id of the Representation with a new
+  ///        segment.
+  /// @param start_time is the start time of the new segment.
+  /// @param duration is the duration of the new segment.
+  void OnNewSegmentForRepresentation(uint32_t representation_id,
+                                     uint64_t start_time,
+                                     uint64_t duration);
+
  private:
+  // kSegmentAlignmentUnknown means that it is uncertain if the
+  // (sub)segments are aligned or not.
+  // kSegmentAlignmentTrue means that it is certain that the all the (current)
+  // segments added to the adaptation set are aligned.
+  // kSegmentAlignmentFalse means that it is it is certain that some segments
+  // are not aligned. This is useful to disable the computation for
+  // segment alignment, once it is certain that some segments are not aligned.
+  enum SegmentAligmentStatus {
+    kSegmentAlignmentUnknown,
+    kSegmentAlignmentTrue,
+    kSegmentAlignmentFalse
+  };
+
+  // This maps Representations (IDs) to a list of start times of the segments.
+  // e.g.
+  // If Representation 1 has start time 0, 100, 200 and Representation 2 has
+  // start times 0, 200, 400, then the map contains:
+  // 1 -> [0, 100, 200]
+  // 2 -> [0, 200, 400]
+  typedef std::map<uint32_t, std::list<uint64_t> > RepresentationTimeline;
+
   friend class MpdBuilder;
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckAdaptationSetId);
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest,
@@ -222,18 +265,36 @@ class AdaptationSet {
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest,
                            CheckAdaptationSetTextContentType);
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, SetAdaptationSetGroup);
+  FRIEND_TEST_ALL_PREFIXES(StaticMpdBuilderTest, SubSegmentAlignment);
+  FRIEND_TEST_ALL_PREFIXES(StaticMpdBuilderTest, ForceSetSubSegmentAlignment);
+  FRIEND_TEST_ALL_PREFIXES(DynamicMpdBuilderTest, SegmentAlignment);
 
   /// @param adaptation_set_id is an ID number for this AdaptationSet.
+  /// @param lang is the language of this AdaptationSet. Mainly relevant for
+  ///        audio.
+  /// @param mpd_options is the options for this MPD.
+  /// @param mpd_type is the type of this MPD.
   /// @param representation_counter is a Counter for assigning ID numbers to
   ///        Representation. It can not be NULL.
   AdaptationSet(uint32_t adaptation_set_id,
                 const std::string& lang,
                 const MpdOptions& mpd_options,
+                MpdBuilder::MpdType mpd_type,
                 base::AtomicSequenceNumber* representation_counter);
 
   // Gets the earliest, normalized segment timestamp. Returns true if
   // successful, false otherwise.
   bool GetEarliestTimestamp(double* timestamp_seconds);
+
+  /// Called from OnNewSegmentForRepresentation(). Checks whether the segments
+  /// are aligned. Sets segments_aligned_.
+  /// @param representation_id is the id of the Representation with a new
+  ///        segment.
+  /// @param start_time is the start time of the new segment.
+  /// @param duration is the duration of the new segment.
+  void CheckSegmentAlignment(uint32_t representation_id,
+                             uint64_t start_time,
+                             uint64_t duration);
 
   std::list<ContentProtectionElement> content_protection_elements_;
   std::list<Representation*> representations_;
@@ -246,6 +307,7 @@ class AdaptationSet {
   const uint32_t id_;
   const std::string lang_;
   const MpdOptions& mpd_options_;
+  const MpdBuilder::MpdType mpd_type_;
 
   // The group attribute for the AdaptationSet. If the value is negative,
   // no group number is specified.
@@ -283,7 +345,29 @@ class AdaptationSet {
   // The roles of this AdaptationSet.
   std::set<Role> roles_;
 
+  // True iff all the segments are aligned.
+  SegmentAligmentStatus segments_aligned_;
+  bool force_set_segment_alignment_;
+
+  // Keeps track of segment start times of Representations.
+  RepresentationTimeline representation_segment_start_times_;
+
   DISALLOW_COPY_AND_ASSIGN(AdaptationSet);
+};
+
+// TODO(rkuroiwa): OnSetSampleDuration() must also be added to this to notify
+// sample duration change to AdaptationSet, to set the right frame rate.
+class RepresentationStateChangeListener {
+ public:
+  RepresentationStateChangeListener() {}
+  virtual ~RepresentationStateChangeListener() {}
+
+  /// Notifies the instance that a new (sub)segment was added to
+  /// the Representation.
+  /// @param start_time is the start time of the new segment.
+  /// @param duration is the duration of the new segment.
+  virtual void OnNewSegmentForRepresentation(uint64_t start_time,
+                                             uint64_t duration) = 0;
 };
 
 /// Representation class contains references to a single media stream, as
@@ -309,8 +393,10 @@ class Representation {
   ///        then the former is used.
   void AddContentProtectionElement(const ContentProtectionElement& element);
 
-  /// Add a media segment to the representation.
-  /// @param start_time is the start time for the segment, in units of the
+  /// Add a media (sub)segment to the representation.
+  /// AdaptationSet@{subSegmentAlignment,segmentAlignment} cannot be set
+  /// if this is not called for all Representations.
+  /// @param start_time is the start time for the (sub)segment, in units of the
   ///        stream's time scale.
   /// @param duration is the duration of the segment, in units of the stream's
   ///        time scale.
@@ -339,15 +425,22 @@ class Representation {
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckVideoInfoReflectedInXml);
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckRepresentationId);
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, SetSampleDuration);
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest,
+                           RepresentationStateChangeListener);
 
   /// @param media_info is a MediaInfo containing information on the media.
   ///        @a media_info.bandwidth is required for 'static' profile. If @a
   ///        media_info.bandwidth is not present in 'dynamic' profile, this
   ///        tries to estimate it using the info passed to AddNewSegment().
+  /// @param mpd_options is options for the entire MPD.
   /// @param representation_id is the numeric ID for the <Representation>.
-  Representation(const MediaInfo& media_info,
-                 const MpdOptions& mpd_options,
-                 uint32_t representation_id);
+  /// @param state_change_listener is an event handler for state changes to
+  ///        the representation. If null, no event handler registered.
+  Representation(
+      const MediaInfo& media_info,
+      const MpdOptions& mpd_options,
+      uint32_t representation_id,
+      scoped_ptr<RepresentationStateChangeListener> state_change_listener);
 
   bool AddLiveInfo(xml::RepresentationXmlNode* representation);
 
@@ -390,6 +483,10 @@ class Representation {
   // startNumber attribute for SegmentTemplate.
   // Starts from 1.
   uint32_t start_number_;
+
+  // If this is not null, then Representation is responsible for calling the
+  // right methods at right timings.
+  scoped_ptr<RepresentationStateChangeListener> state_change_listener_;
 
   DISALLOW_COPY_AND_ASSIGN(Representation);
 };

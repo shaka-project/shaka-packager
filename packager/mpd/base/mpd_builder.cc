@@ -329,16 +329,39 @@ class LibXmlInitializer {
   DISALLOW_COPY_AND_ASSIGN(LibXmlInitializer);
 };
 
+class RepresentationStateChangeListenerImpl
+    : public RepresentationStateChangeListener {
+ public:
+  // |adaptation_set| is not owned by this class.
+  RepresentationStateChangeListenerImpl(uint32_t representation_id,
+                                        AdaptationSet* adaptation_set)
+      : representation_id_(representation_id), adaptation_set_(adaptation_set) {
+    DCHECK(adaptation_set_);
+  }
+  virtual ~RepresentationStateChangeListenerImpl() OVERRIDE {}
+
+  // RepresentationStateChangeListener implementation.
+  virtual void OnNewSegmentForRepresentation(uint64_t start_time,
+                                             uint64_t duration) OVERRIDE {
+    adaptation_set_->OnNewSegmentForRepresentation(representation_id_,
+                                                   start_time, duration);
+  }
+
+ private:
+  const uint32_t representation_id_;
+  AdaptationSet* const adaptation_set_;
+
+  DISALLOW_COPY_AND_ASSIGN(RepresentationStateChangeListenerImpl);
+};
+
 }  // namespace
 
 MpdBuilder::MpdBuilder(MpdType type, const MpdOptions& mpd_options)
     : type_(type),
       mpd_options_(mpd_options),
-      adaptation_sets_deleter_(&adaptation_sets_) {
-}
+      adaptation_sets_deleter_(&adaptation_sets_) {}
 
-MpdBuilder::~MpdBuilder() {
-}
+MpdBuilder::~MpdBuilder() {}
 
 void MpdBuilder::AddBaseUrl(const std::string& base_url) {
   base::AutoLock scoped_lock(lock_);
@@ -349,6 +372,7 @@ AdaptationSet* MpdBuilder::AddAdaptationSet(const std::string& lang) {
   base::AutoLock scoped_lock(lock_);
   scoped_ptr<AdaptationSet> adaptation_set(
       new AdaptationSet(adaptation_set_counter_.GetNext(), lang, mpd_options_,
+                        type_,
                         &representation_counter_));
 
   DCHECK(adaptation_set);
@@ -592,30 +616,38 @@ void MpdBuilder::MakePathsRelativeToMpd(const std::string& mpd_path,
 AdaptationSet::AdaptationSet(uint32_t adaptation_set_id,
                              const std::string& lang,
                              const MpdOptions& mpd_options,
+                             MpdBuilder::MpdType mpd_type,
                              base::AtomicSequenceNumber* counter)
     : representations_deleter_(&representations_),
       representation_counter_(counter),
       id_(adaptation_set_id),
       lang_(lang),
       mpd_options_(mpd_options),
-      group_(kAdaptationSetGroupNotSet) {
+      mpd_type_(mpd_type),
+      group_(kAdaptationSetGroupNotSet),
+      segments_aligned_(kSegmentAlignmentUnknown),
+      force_set_segment_alignment_(false) {
   DCHECK(counter);
 }
 
-AdaptationSet::~AdaptationSet() {
-}
+AdaptationSet::~AdaptationSet() {}
 
 Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
   base::AutoLock scoped_lock(lock_);
+  const uint32_t representation_id = representation_counter_->GetNext();
+  // Note that AdaptationSet outlive Representation, so this object
+  // will die before AdaptationSet.
+  scoped_ptr<RepresentationStateChangeListener> listener(
+      new RepresentationStateChangeListenerImpl(representation_id, this));
   scoped_ptr<Representation> representation(new Representation(
-      media_info, mpd_options_, representation_counter_->GetNext()));
+      media_info, mpd_options_, representation_id, listener.Pass()));
 
   if (!representation->Init())
     return NULL;
 
   // For videos, record the width, height, and the frame rate to calculate the
   // max {width,height,framerate} required for DASH IOP.
-  if(media_info.has_video_info()) {
+  if (media_info.has_video_info()) {
     const MediaInfo::VideoInfo& video_info = media_info.video_info();
     DCHECK(video_info.has_width());
     DCHECK(video_info.has_height());
@@ -699,6 +731,13 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
                                       video_frame_rates_.rbegin()->second);
   }
 
+  if (segments_aligned_ == kSegmentAlignmentTrue) {
+    adaptation_set.SetStringAttribute(mpd_type_ == MpdBuilder::kStatic
+                                          ? "subSegmentAlignment"
+                                          : "segmentAlignment",
+                                      "true");
+  }
+
   if (picture_aspect_ratio_.size() == 1)
     adaptation_set.SetStringAttribute("par", *picture_aspect_ratio_.begin());
 
@@ -711,6 +750,19 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
                                   RoleToText(*role_it));
   }
   return adaptation_set.PassScopedPtr();
+}
+
+void AdaptationSet::ForceSetSegmentAlignment(bool segment_alignment) {
+  segments_aligned_ =
+      segment_alignment ? kSegmentAlignmentTrue : kSegmentAlignmentFalse;
+  force_set_segment_alignment_ = true;
+}
+
+void AdaptationSet::OnNewSegmentForRepresentation(uint32_t representation_id,
+                                                  uint64_t start_time,
+                                                  uint64_t duration) {
+  base::AutoLock scoped_lock(lock_);
+  CheckSegmentAlignment(representation_id, start_time, duration);
 }
 
 bool AdaptationSet::GetEarliestTimestamp(double* timestamp_seconds) {
@@ -734,18 +786,90 @@ bool AdaptationSet::GetEarliestTimestamp(double* timestamp_seconds) {
   return true;
 }
 
-Representation::Representation(const MediaInfo& media_info,
-                               const MpdOptions& mpd_options,
-                               uint32_t id)
+// This implementation assumes that each representations' segments' are
+// contiguous.
+// Also assumes that all Representations are added before this is called.
+// This checks whether the first elements of the lists in
+// representation_segment_start_times_ are aligned.
+// For example, suppose this method was just called with args rep_id=2
+// start_time=1.
+// 1 -> [1, 100, 200]
+// 2 -> [1]
+// The timestamps of the first elements match, so this flags
+// segments_aligned_=true.
+// Also since the first segment start times match, the first element of all the
+// lists are removed, so the map of lists becomes:
+// 1 -> [100, 200]
+// 2 -> []
+// Note that there could be false positives.
+// e.g. just got rep_id=3 start_time=1 duration=300, and the duration of the
+// whole AdaptationSet is 300.
+// 1 -> [1, 100, 200]
+// 2 -> [1, 90, 100]
+// 3 -> [1]
+// They are not aligned but this will be marked as aligned.
+// But since this is unlikely to happen in the packager (and to save
+// computation), this isn't handled at the moment.
+// TODO(rkuroiwa): For VOD, not all Representations get added to an
+// AdaptationSet before this is called. Add a similar but separate method that
+// keeps the timestamps around. It shouldn't out-of-memory for VOD.
+void AdaptationSet::CheckSegmentAlignment(uint32_t representation_id,
+                                          uint64_t start_time,
+                                          uint64_t /* duration */) {
+  if (segments_aligned_ == kSegmentAlignmentFalse ||
+      force_set_segment_alignment_) {
+    return;
+  }
+
+  std::list<uint64_t>& representation_start_times =
+      representation_segment_start_times_[representation_id];
+  representation_start_times.push_back(start_time);
+  // There's no way to detemine whether the segments are aligned if some
+  // representations do not have any segments.
+  if (representation_segment_start_times_.size() != representations_.size())
+    return;
+
+  DCHECK(!representation_start_times.empty());
+  const uint64_t expected_start_time = representation_start_times.front();
+  for (RepresentationTimeline::const_iterator it =
+           representation_segment_start_times_.begin();
+       it != representation_segment_start_times_.end(); ++it) {
+    // If there are no entries in a list, then there is no way for the
+    // segment alignment status to change.
+    // Note that it can be empty because entries get deleted below.
+    if (it->second.empty())
+      return;
+
+    if (expected_start_time != it->second.front()) {
+      // Flag as false and clear the start times data, no need to keep it
+      // around.
+      segments_aligned_ = kSegmentAlignmentFalse;
+      representation_segment_start_times_.clear();
+      return;
+    }
+  }
+  segments_aligned_ = kSegmentAlignmentTrue;
+
+  for (RepresentationTimeline::iterator it =
+           representation_segment_start_times_.begin();
+       it != representation_segment_start_times_.end(); ++it) {
+    it->second.pop_front();
+  }
+}
+
+Representation::Representation(
+    const MediaInfo& media_info,
+    const MpdOptions& mpd_options,
+    uint32_t id,
+    scoped_ptr<RepresentationStateChangeListener> state_change_listener)
     : media_info_(media_info),
       id_(id),
       bandwidth_estimator_(BandwidthEstimator::kUseAllBlocks),
       mpd_options_(mpd_options),
-      start_number_(1) {
-}
+      start_number_(1),
+      state_change_listener_(state_change_listener.Pass()) {}
 
-Representation::~Representation() {
-}
+Representation::~Representation() {}
 
 bool Representation::Init() {
   codecs_ = GetCodecs(media_info_);
@@ -801,6 +925,8 @@ void Representation::AddNewSegment(uint64_t start_time,
   }
 
   base::AutoLock scoped_lock(lock_);
+  if (state_change_listener_)
+    state_change_listener_->OnNewSegmentForRepresentation(start_time, duration);
   if (IsContiguous(start_time, duration, size)) {
     ++segment_infos_.back().repeat;
   } else {

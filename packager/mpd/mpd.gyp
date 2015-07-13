@@ -80,6 +80,7 @@
         '../base/base.gyp:base',
         '../media/file/file.gyp:file',
         '../media/test/media_test.gyp:run_all_unittests',
+        '../testing/gmock.gyp:gmock',
         '../testing/gtest.gyp:gtest',
         'mpd_builder',
         'mpd_util',
