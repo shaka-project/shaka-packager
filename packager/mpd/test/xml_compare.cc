@@ -8,15 +8,16 @@
 #include <utility>
 
 #include "packager/base/logging.h"
+#include "packager/base/strings/string_util.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
+#include "packager/third_party/libxml/src/include/libxml/parser.h"
 
 namespace edash_packager {
 
 namespace {
 xml::ScopedXmlPtr<xmlDoc>::type GetDocFromString(const std::string& xml_str) {
-  xml::ScopedXmlPtr<xmlDoc>::type schema_as_doc(
-      xmlReadMemory(xml_str.data(), xml_str.size(), NULL, NULL, 0));
-
+  xml::ScopedXmlPtr<xmlDoc>::type schema_as_doc(xmlReadMemory(
+      xml_str.data(), xml_str.size(), NULL, NULL, 0));
   return schema_as_doc.Pass();
 }
 
@@ -74,12 +75,33 @@ bool CompareNames(xmlNodePtr node1, xmlNodePtr node2) {
   return xmlStrcmp(node1->name, node2->name) == 0;
 }
 
+bool CompareContents(xmlNodePtr node1, xmlNodePtr node2) {
+  std::string node1_content =
+      reinterpret_cast<const char*>(xmlNodeGetContent(node1));
+  std::string node2_content =
+      reinterpret_cast<const char*>(xmlNodeGetContent(node2));
+  base::ReplaceChars(node1_content, "\n", "", &node1_content);
+  base::TrimString(node1_content, " ", &node1_content);
+  base::ReplaceChars(node2_content, "\n", "", &node2_content);
+  base::TrimString(node2_content, " ", &node2_content);
+  DVLOG(2) << "Comparing contents of "
+           << reinterpret_cast<const char*>(node1->name) << "\n"
+           << "First node's content:\n" << node1_content << "\n"
+           << "Second node's content:\n" << node2_content;
+  const bool same_content = node1_content == node2_content;
+  LOG_IF(ERROR, !same_content)
+      << "Contents of " << reinterpret_cast<const char*>(node1->name)
+      << " do not match.\n"
+      << "First node's content:\n" << node1_content << "\n"
+      << "Second node's content:\n" << node2_content;
+  return same_content;
+}
+
 // Recursively check the elements.
 // Note that the terminating condition of the recursion is when the children do
 // not match (inside the loop).
 bool CompareNodes(xmlNodePtr node1, xmlNodePtr node2) {
   DCHECK(node1 && node2);
-
   if (!CompareNames(node1, node2)) {
     LOG(ERROR) << "Names of the nodes do not match: "
                << reinterpret_cast<const char*>(node1->name) << " "
@@ -96,6 +118,12 @@ bool CompareNodes(xmlNodePtr node1, xmlNodePtr node2) {
 
   xmlNodePtr node1_child = xmlFirstElementChild(node1);
   xmlNodePtr node2_child = xmlFirstElementChild(node2);
+  if (!node1_child && !node2_child) {
+    // Note that xmlFirstElementChild() returns NULL if there are only
+    // text type children.
+    return CompareContents(node1, node2);
+  }
+
   do {
     if (!node1_child || !node2_child)
       return node1_child == node2_child;

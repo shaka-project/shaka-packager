@@ -4,7 +4,6 @@
     <AdaptationSet id="0" contentType="audio">
       <Representation id="0" bandwidth="195857" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
-        <ContentProtection schemeIdUri="http://foo.com/"/>
         <BaseURL>encrypted_audio.mp4</BaseURL>
         <SegmentBase indexRange="864-931" timescale="44100">
           <Initialization range="0-863"/>

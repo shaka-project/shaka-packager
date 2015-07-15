@@ -62,14 +62,6 @@ void VodMediaInfoDumpMuxerListener::OnMediaStart(
         content_protection_uuid_, content_protection_name_version_,
         default_key_id_, pssh_, media_info_.get());
   }
-
-  if (is_encrypted_) {
-    if (!internal::AddContentProtectionElements(
-            container_type, scheme_id_uri_, media_info_.get())) {
-      LOG(ERROR) << "Failed to add content protection elements.";
-      return;
-    }
-  }
 }
 
 void VodMediaInfoDumpMuxerListener::OnSampleDurationReady(

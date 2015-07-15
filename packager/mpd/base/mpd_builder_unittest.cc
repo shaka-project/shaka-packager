@@ -856,6 +856,58 @@ TEST_F(CommonMpdBuilderTest, SetSampleDuration) {
             representation.media_info_.video_info().frame_duration());
 }
 
+// Verify that AdaptationSet::AddContentProtection() works.
+TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtection) {
+  const char kVideoMediaInfo1080p[] =
+      "video_info {\n"
+      "  codec: \"avc1\"\n"
+      "  width: 1920\n"
+      "  height: 1080\n"
+      "  time_scale: 3000\n"
+      "  frame_duration: 100\n"
+      "}\n"
+      "container_type: 1\n";
+  ContentProtectionElement content_protection;
+  content_protection.scheme_id_uri = "someuri";
+  content_protection.value = "some value";
+  Element pssh;
+  pssh.name = "cenc:pssh";
+  pssh.content = "any value";
+  content_protection.subelements.push_back(pssh);
+
+  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet("");
+  ASSERT_TRUE(video_adaptation_set);
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(kVideoMediaInfo1080p)));
+  video_adaptation_set->AddContentProtectionElement(content_protection);
+
+  const char kExpectedOutput[] =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\""
+      " xmlns:cenc=\"urn:mpeg:cenc:2013\""
+      " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+      " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+      " xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\""
+      " minBufferTime=\"PT2S\" type=\"static\""
+      " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
+      " mediaPresentationDuration=\"PT0S\">"
+      "  <Period>"
+      "    <AdaptationSet id=\"0\" contentType=\"video\" width=\"1920\""
+      "     height=\"1080\" frameRate=\"3000/100\">"
+      "      <ContentProtection schemeIdUri=\"someuri\" value=\"some value\">"
+      "        <cenc:pssh>any value</cenc:pssh>"
+      "      </ContentProtection>"
+      "      <Representation id=\"0\" bandwidth=\"0\" codecs=\"avc1\""
+      "       mimeType=\"video/mp4\" width=\"1920\" height=\"1080\""
+      "       frameRate=\"3000/100\"/>"
+      "    </AdaptationSet>"
+      "  </Period>"
+      "</MPD>";
+  std::string mpd_output;
+  ASSERT_TRUE(mpd_.ToString(&mpd_output));
+  EXPECT_TRUE(XmlEqual(kExpectedOutput, mpd_output));
+}
+
 // Add one video check the output.
 TEST_F(StaticMpdBuilderTest, Video) {
   MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
@@ -888,18 +940,78 @@ TEST_F(StaticMpdBuilderTest, VideoAndAudio) {
 
 // MPD schema has strict ordering. AudioChannelConfiguration must appear before
 // ContentProtection.
+// Also test that Representation::AddContentProtection() works.
 TEST_F(StaticMpdBuilderTest, AudioChannelConfigurationWithContentProtection) {
-  MediaInfo encrypted_audio_media_info =
-      GetTestMediaInfo(kFileNameEncytpedAudioMediaInfo);
+  const char kTestMediaInfo[] =
+      "bandwidth: 195857\n"
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 44100\n"
+      "  num_channels: 2\n"
+      "}\n"
+      "init_range {\n"
+      "  begin: 0\n"
+      "  end: 863\n"
+      "}\n"
+      "index_range {\n"
+      "  begin: 864\n"
+      "  end: 931\n"
+      "}\n"
+      "media_file_name: 'encrypted_audio.mp4'\n"
+      "media_duration_seconds: 24.009434\n"
+      "reference_time_scale: 44100\n"
+      "container_type: CONTAINER_MP4\n";
 
+  const char kExpectedOutput[] =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\""
+      " xmlns:cenc=\"urn:mpeg:cenc:2013\""
+      " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+      " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+      " xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\""
+      " minBufferTime=\"PT2S\" type=\"static\""
+      " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
+      " mediaPresentationDuration=\"PT24.00943374633789S\">"
+      "  <Period>"
+      "    <AdaptationSet id=\"0\" contentType=\"audio\">"
+      "      <Representation id=\"0\" bandwidth=\"195857\" codecs=\"mp4a.40.2\""
+      "       mimeType=\"audio/mp4\" audioSamplingRate=\"44100\">"
+      "        <AudioChannelConfiguration"
+      "         schemeIdUri="
+      "          \"urn:mpeg:dash:23003:3:audio_channel_configuration:2011\""
+      "         value=\"2\"/>"
+      "        <ContentProtection schemeIdUri=\"http://foo.com/\">"
+      "          <cenc:pssh>anything</cenc:pssh>"
+      "        </ContentProtection>"
+      "        <BaseURL>encrypted_audio.mp4</BaseURL>"
+      "        <SegmentBase indexRange=\"864-931\" timescale=\"44100\">"
+      "          <Initialization range=\"0-863\"/>"
+      "        </SegmentBase>"
+      "      </Representation>"
+      "    </AdaptationSet>"
+      "  </Period>"
+      "</MPD>";
+
+  ContentProtectionElement content_protection;
+  content_protection.scheme_id_uri = "http://foo.com/";
+  Element pssh;
+  pssh.name = "cenc:pssh";
+  pssh.content = "anything";
+  content_protection.subelements.push_back(pssh);
+
+  MediaInfo audio_media_info = ConvertToMediaInfo(kTestMediaInfo);
   AdaptationSet* audio_adaptation_set = mpd_.AddAdaptationSet("");
   ASSERT_TRUE(audio_adaptation_set);
 
   Representation* audio_representation =
-      audio_adaptation_set->AddRepresentation(encrypted_audio_media_info);
+      audio_adaptation_set->AddRepresentation(audio_media_info);
   ASSERT_TRUE(audio_representation);
+  audio_representation->AddContentProtectionElement(content_protection);
 
-  EXPECT_NO_FATAL_FAILURE(CheckMpd(kFileNameExpectedMpdOutputEncryptedAudio));
+  std::string mpd_output;
+  ASSERT_TRUE(mpd_.ToString(&mpd_output));
+  EXPECT_TRUE(XmlEqual(kExpectedOutput, mpd_output));
 }
 
 // Static profile requires bandwidth to be set because it has no other way to
@@ -939,14 +1051,19 @@ TEST_F(StaticMpdBuilderTest, WriteToFile) {
 }
 
 // Check whether the attributes are set correctly for dynamic <MPD> element.
+// This test must use ASSERT_EQ for comparison because XmlEqual() cannot
+// handle namespaces correctly yet.
 TEST_F(DynamicMpdBuilderTest, CheckMpdAttributes) {
   static const char kExpectedOutput[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
       "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\" "
       "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
       "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
-      "xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 "
-      "DASH-MPD.xsd\" minBufferTime=\"PT2S\" type=\"dynamic\" "
+      "xsi:schemaLocation="
+      "\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\" "
+      "xmlns:cenc=\"urn:mpeg:cenc:2013\" "
+      "minBufferTime=\"PT2S\" "
+      "type=\"dynamic\" "
       "profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
       "availabilityStartTime=\"2011-12-25T12:30:00\">\n"
       "  <Period start=\"PT0S\"/>\n"

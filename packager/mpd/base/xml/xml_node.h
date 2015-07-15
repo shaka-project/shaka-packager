@@ -41,6 +41,9 @@ class XmlNode {
   /// @return true on success, false otherwise.
   bool AddChild(ScopedXmlPtr<xmlNode>::type child);
 
+  /// Adds Elements to this node using the Element struct.
+  bool AddElements(const std::vector<Element>& elements);
+
   /// Set a string attribute.
   /// @param attribute_name The name (lhs) of the attribute.
   /// @param attribute The value (rhs) of the attribute.
@@ -62,8 +65,9 @@ class XmlNode {
   void SetId(uint32_t id);
 
   /// Set the contents of an XML element using a string.
-  /// Note: This function does not work well with AddChild(). Use either
-  /// AddChild() or SetContent() when setting the content of this node.
+  /// This cannot set child elements because <> will become &lt; and &rt;
+  /// This should be used to set the text for the element, e.g. setting
+  /// a URL for <BaseURL> element.
   /// @param content is a string containing the text-encoded child elements to
   ///        be added to the element.
   void SetContent(const std::string& content);
@@ -94,12 +98,6 @@ class RepresentationBaseXmlNode : public XmlNode {
   virtual ~RepresentationBaseXmlNode();
   bool AddContentProtectionElements(
       const std::list<ContentProtectionElement>& content_protection_elements);
-
-  /// Add a ContentProtection elements to this element.
-  /// @param media_info is a MediaInfo containing the ContentProtection
-  ///        elements to add.
-  /// @return true on success, false otherwise.
-  bool AddContentProtectionElementsFromMediaInfo(const MediaInfo& media_info);
 
  protected:
   explicit RepresentationBaseXmlNode(const char* name);

@@ -14,8 +14,22 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 namespace edash_packager {
+
+// This is any (XML) element.
+struct Element {
+  Element();
+  ~Element();
+  // Name of this element.
+  std::string name;
+  // attributes for this element.
+  std::map<std::string, std::string> attributes;
+  // Content of this element.
+  std::string content;
+  std::vector<Element> subelements;
+};
 
 /// Structure to represent <ContentProtection> element in DASH MPD spec (ISO
 /// 23009-1:2012 MPD and Segment Formats).
@@ -29,8 +43,8 @@ struct ContentProtectionElement {
   // Other attributes for this element.
   std::map<std::string, std::string> additional_attributes;
 
-  // The elements that will be in this element.
-  std::string subelements;
+  // The subelements that will be in this element.
+  std::vector<Element> subelements;
 };
 
 }  // namespace edash_packager

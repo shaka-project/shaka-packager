@@ -84,7 +84,7 @@ class RepresentationTest : public ::testing::Test {
 // Make sure XmlEqual() is functioning correctly.
 // TODO(rkuroiwa): Move this to a separate file. This requires it to be TEST_F
 // due to gtest /test
-TEST_F(RepresentationTest, MetaTest_XmlEqual) {
+TEST_F(RepresentationTest, MetaTestXmlElementsEqual) {
   static const char kXml1[] =
       "<A>\n"
       "  <B\n"
@@ -167,37 +167,54 @@ TEST_F(RepresentationTest, MetaTest_XmlEqual) {
   ASSERT_FALSE(XmlEqual(kXml1AttributeReorder, kXml1ChildrenReordered));
 }
 
-TEST_F(RepresentationTest, AddContentProtectionXml) {
-  static const char kExpectedRepresentaionString[] =
+// Verify that if contents are different, XmlEqual returns false.
+// This is to catch the case where just using xmlNodeGetContent() on elements
+// that have subelements don't quite work well.
+// xmlNodeGetContent(<A>) (for both <A>s) will return "content1content2".
+// But if it is run on <B> for the first XML, it will return "content1", but
+// for second XML will return "c".
+TEST_F(RepresentationTest, MetaTestXmlEqualDifferentContent) {
+  ASSERT_FALSE(XmlEqual(
+      "<A><B>content1</B><B>content2</B></A>",
+      "<A><B>c</B><B>ontent1content2</B></A>"));
+}
+
+// Verify that AddContentProtectionElements work.
+// xmlReadMemory() (used in XmlEqual()) doesn't like XML fragments that have
+// namespaces without context, e.g. <cenc:pssh> element.
+// The MpdBuilderTests work because the MPD element has xmlns:cenc attribute.
+// Tests that have <cenc:pssh> is in mpd_builder_unittest.
+TEST_F(RepresentationTest, AddContentProtectionElements) {
+  std::list<ContentProtectionElement> content_protections;
+  ContentProtectionElement content_protection_widevine;
+  content_protection_widevine.scheme_id_uri =
+      "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed";
+  content_protection_widevine.value = "SOME bogus Widevine DRM version";
+  Element any_element;
+  any_element.name = "AnyElement";
+  any_element.content = "any content";
+  content_protection_widevine.subelements.push_back(any_element);
+  content_protections.push_back(content_protection_widevine);
+
+  ContentProtectionElement content_protection_clearkey;
+  content_protection_clearkey.scheme_id_uri =
+      "urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b";
+  content_protections.push_back(content_protection_clearkey);
+
+  representation_.AddContentProtectionElements(content_protections);
+  ScopedXmlPtr<xmlDoc>::type doc(MakeDoc(representation_.PassScopedPtr()));
+  ASSERT_TRUE(XmlEqual(
       "<Representation>\n"
       " <ContentProtection\n"
-      "   a=\"1\"\n"
-      "   b=\"2\"\n"
-      "   schemeIdUri=\"http://www.foo.com/drm\"\n"
-      "   value=\"somevalue\">\n"
-      "     <TestSubElement c=\"3\" d=\"4\"/>\n"
+      "   schemeIdUri=\"urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed\"\n"
+      "   value=\"SOME bogus Widevine DRM version\">\n"
+      "     <AnyElement>any content</AnyElement>\n"
       " </ContentProtection>\n"
-      "</Representation>";
-
-  MediaInfo media_info;
-  MediaInfo::ContentProtectionXml* content_protection_xml =
-      media_info.add_content_protections();
-  content_protection_xml->set_scheme_id_uri("http://www.foo.com/drm");
-  content_protection_xml->set_value("somevalue");
-  AddAttribute("a", "1", content_protection_xml);
-  AddAttribute("b", "2", content_protection_xml);
-
-  MediaInfo::ContentProtectionXml::Element* subelement =
-      content_protection_xml->add_subelements();
-  subelement->set_name("TestSubElement");
-  AddAttribute("c", "3", subelement);
-  AddAttribute("d", "4", subelement);
-
-  ASSERT_TRUE(
-      representation_.AddContentProtectionElementsFromMediaInfo(media_info));
-  ScopedXmlPtr<xmlDoc>::type doc(MakeDoc(representation_.PassScopedPtr()));
-  ASSERT_TRUE(
-      XmlEqual(kExpectedRepresentaionString, doc.get()));
+      " <ContentProtection\n"
+      "   schemeIdUri=\"urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b\">"
+      " </ContentProtection>\n"
+      "</Representation>",
+      doc.get()));
 }
 
 // Some template names cannot be used for init segment name.

@@ -178,6 +178,10 @@ class AdaptationSet {
   Representation* AddRepresentation(const MediaInfo& media_info);
 
   /// Add a ContenProtection element to the adaptation set.
+  /// AdaptationSet does not add <ContentProtection> elements
+  /// automatically to itself even if @a media_info.protected_content is
+  /// populated. This is because some MPDs should have the elements at
+  /// AdaptationSet level and some at Representation level.
   /// @param element contains the ContentProtection element contents.
   ///        If @a element has {value, schemeIdUri} set and has
   ///        {“value”, “schemeIdUri”} as key for @a additional_attributes,
@@ -294,6 +298,11 @@ class Representation {
   bool Init();
 
   /// Add a ContenProtection element to the representation.
+  /// Representation does not add <ContentProtection> elements
+  /// automatically to itself even if @a media_info passed to
+  /// AdaptationSet::AddRepresentation() has @a media_info.protected_content
+  /// populated. This is because some MPDs should have the elements at
+  /// AdaptationSet level and some at Representation level.
   /// @param element contains the ContentProtection element contents.
   ///        If @a element has {value, schemeIdUri} set and has
   ///        {“value”, “schemeIdUri”} as key for @a additional_attributes,

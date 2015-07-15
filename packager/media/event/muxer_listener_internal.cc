@@ -201,44 +201,6 @@ bool SetVodInformation(bool has_init_range,
   return true;
 }
 
-// TODO(rkuroiwa): Move this logic to MpdBuilder? MuxerListener probably doesn't
-// need to know this.
-bool AddContentProtectionElements(MuxerListener::ContainerType container_type,
-                                  const std::string& user_scheme_id_uri,
-                                  MediaInfo* media_info) {
-  DCHECK(media_info);
-
-  const char kEncryptedMp4Uri[] = "urn:mpeg:dash:mp4protection:2011";
-  const char kEncryptedMp4Value[] = "cenc";
-
-  // DASH MPD spec specifies a default ContentProtection element for ISO BMFF
-  // (MP4) files.
-  const bool is_mp4_container = container_type == MuxerListener::kContainerMp4;
-  if (is_mp4_container) {
-    MediaInfo::ContentProtectionXml* mp4_protection =
-        media_info->add_content_protections();
-    mp4_protection->set_scheme_id_uri(kEncryptedMp4Uri);
-    mp4_protection->set_value(kEncryptedMp4Value);
-  }
-
-  if (!user_scheme_id_uri.empty()) {
-    MediaInfo::ContentProtectionXml* content_protection =
-        media_info->add_content_protections();
-    content_protection->set_scheme_id_uri(user_scheme_id_uri);
-  } else if (is_mp4_container) {
-    LOG(WARNING) << "schemeIdUri is not specified. Added default "
-                    "ContentProtection only.";
-  }
-
-  if (media_info->content_protections_size() == 0) {
-    LOG(ERROR) << "The stream is encrypted but no schemeIdUri specified for "
-                  "ContentProtection.";
-    return false;
-  }
-
-  return true;
-}
-
 void SetContentProtectionFields(
     const std::string& content_protection_uuid,
     const std::string& content_protection_name_version,

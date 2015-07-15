@@ -60,15 +60,18 @@ void AddMpdNameSpaceInfo(XmlNode* mpd) {
   DCHECK(mpd);
 
   static const char kXmlNamespace[] = "urn:mpeg:DASH:schema:MPD:2011";
-  mpd->SetStringAttribute("xmlns", kXmlNamespace);
   static const char kXmlNamespaceXsi[] =
       "http://www.w3.org/2001/XMLSchema-instance";
-  mpd->SetStringAttribute("xmlns:xsi", kXmlNamespaceXsi);
   static const char kXmlNamespaceXlink[] = "http://www.w3.org/1999/xlink";
-  mpd->SetStringAttribute("xmlns:xlink", kXmlNamespaceXlink);
   static const char kDashSchemaMpd2011[] =
       "urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd";
+  static const char kCencNamespace[] = "urn:mpeg:cenc:2013";
+
+  mpd->SetStringAttribute("xmlns", kXmlNamespace);
+  mpd->SetStringAttribute("xmlns:xsi", kXmlNamespaceXsi);
+  mpd->SetStringAttribute("xmlns:xlink", kXmlNamespaceXlink);
   mpd->SetStringAttribute("xsi:schemaLocation", kDashSchemaMpd2011);
+  mpd->SetStringAttribute("xmlns:cenc", kCencNamespace);
 }
 
 bool IsPeriodNode(xmlNodePtr node) {
@@ -864,8 +867,6 @@ xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
           content_protection_elements_)) {
     return xml::ScopedXmlPtr<xmlNode>::type();
   }
-  if (!representation.AddContentProtectionElementsFromMediaInfo(media_info_))
-    return xml::ScopedXmlPtr<xmlNode>::type();
 
   if (HasVODOnlyFields(media_info_) &&
       !representation.AddVODOnlyInfo(media_info_)) {

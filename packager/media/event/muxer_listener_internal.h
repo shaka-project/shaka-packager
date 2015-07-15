@@ -45,15 +45,6 @@ bool SetVodInformation(bool has_init_range,
                        uint64_t file_size,
                        MediaInfo* media_info);
 
-/// @param container_type specifies container type. A default ContentProtection
-///        element will be added if the container is MP4.
-/// @param user_scheme_id_uri is the user specified schemeIdUri for
-///        ContentProtection.
-/// @return true if a ContentProtectionXml is added, false otherwise.
-bool AddContentProtectionElements(MuxerListener::ContainerType container_type,
-                                  const std::string& user_scheme_id_uri,
-                                  MediaInfo* media_info);
-
 /// @param content_protection_uuid is the UUID of the content protection
 ///        in human readable form.
 /// @param content_protection_name_version is the DRM name and verion.

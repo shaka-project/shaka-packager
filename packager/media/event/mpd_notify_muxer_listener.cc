@@ -65,18 +65,6 @@ void MpdNotifyMuxerListener::OnMediaStart(
         default_key_id_, pssh_, media_info.get());
   }
 
-  if (is_encrypted_) {
-    // TODO(rkuroiwa): When MediaInfo's content protection fields are processed
-    // in MpdBuilder (e.g. content_protection_uuid, default_key_id) then skip
-    // this step if scheme_id_uri_'s UUID == content_protection_uuid_.
-    // Also consider removing SetContentProtectionSchemeIdUri().
-    if (!internal::AddContentProtectionElements(
-            container_type, scheme_id_uri_, media_info.get())) {
-      LOG(ERROR) << "Failed to add content protection elements.";
-      return;
-    }
-  }
-
   if (mpd_notifier_->dash_profile() == kLiveProfile) {
     // TODO(kqyang): Check return result.
     mpd_notifier_->NotifyNewContainer(*media_info, &notification_id_);
