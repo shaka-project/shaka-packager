@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "packager/base/gtest_prod_util.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/synchronization/lock.h"
 #include "packager/mpd/base/mpd_notifier.h"
@@ -20,6 +21,7 @@ namespace edash_packager {
 class AdaptationSet;
 class MpdBuilder;
 class Representation;
+class SimpleMpdNotifierTest;
 
 struct MpdOptions;
 
@@ -50,6 +52,18 @@ class SimpleMpdNotifier : public MpdNotifier {
   /// @}
 
  private:
+  friend SimpleMpdNotifierTest;
+
+  // Testing only method. Returns a pointer to MpdBuilder.
+  MpdBuilder* MpdBuilderForTesting() const {
+    return mpd_builder_.get();
+  }
+
+  // Testing only method. Sets mpd_builder_.
+  void SetMpdBuilderForTesting(scoped_ptr<MpdBuilder> mpd_builder) {
+    mpd_builder_ = mpd_builder.Pass();
+  }
+
   enum ContentType {
     kUnknown,
     kVideo,

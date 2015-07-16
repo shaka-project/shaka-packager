@@ -68,7 +68,10 @@
       'type': '<(gtest_target_type)',
       'sources': [
         'base/bandwidth_estimator_unittest.cc',
+        'base/mock_mpd_builder.h',
+        'base/mock_mpd_builder.cc',
         'base/mpd_builder_unittest.cc',
+        'base/simple_mpd_notifier_unittest.cc',
         'base/xml/xml_node_unittest.cc',
         'test/mpd_builder_test_helper.cc',
         'test/mpd_builder_test_helper.h',

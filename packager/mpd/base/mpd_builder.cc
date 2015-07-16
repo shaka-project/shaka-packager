@@ -391,7 +391,6 @@ bool MpdBuilder::ToString(std::string* output) {
   DCHECK(output);
   return WriteMpdToOutput(output);
 }
-
 template <typename OutputType>
 bool MpdBuilder::WriteMpdToOutput(OutputType* output) {
   static LibXmlInitializer lib_xml_initializer;

@@ -8,6 +8,7 @@
 // declarations.
 // http://goo.gl/UrsSlF
 //
+/// All the methods that are virtual are virtual for mocking.
 /// NOTE: Inclusion of this module will cause xmlInitParser and xmlCleanupParser
 ///       to be called at static initialization / deinitialization time.
 
@@ -64,7 +65,7 @@ class MpdBuilder {
   /// @param type indicates whether the MPD should be for VOD or live content
   ///        (kStatic for VOD profile, or kDynamic for live profile).
   MpdBuilder(MpdType type, const MpdOptions& mpd_options);
-  ~MpdBuilder();
+  virtual ~MpdBuilder();
 
   /// Add <BaseURL> entry to the MPD.
   /// @param base_url URL for <BaseURL> entry.
@@ -74,7 +75,7 @@ class MpdBuilder {
   /// @param lang is the language of the AdaptationSet. This can be empty for
   ///        videos, for example.
   /// @return The new adaptation set, which is owned by this instance.
-  AdaptationSet* AddAdaptationSet(const std::string& lang);
+  virtual AdaptationSet* AddAdaptationSet(const std::string& lang);
 
   /// Write the MPD to specified file.
   /// @param[out] output_file is MPD destination. output_file will be
@@ -85,10 +86,10 @@ class MpdBuilder {
   /// Writes the MPD to the given string.
   /// @param[out] output is an output string where the MPD gets written.
   /// @return true on success, false otherwise.
-  bool ToString(std::string* output);
+  virtual bool ToString(std::string* output);
 
   /// @return The mpd type.
-  MpdType type() { return type_; }
+  MpdType type() const { return type_; }
 
   /// Adjusts the fields of MediaInfo so that paths are relative to the
   /// specified MPD path.
@@ -168,14 +169,14 @@ class AdaptationSet {
     kRoleDub
   };
 
-  ~AdaptationSet();
+  virtual ~AdaptationSet();
 
   /// Create a Representation instance using @a media_info.
   /// @param media_info is a MediaInfo object used to initialize the returned
   ///        Representation instance.
   /// @return On success, returns a pointer to Representation. Otherwise returns
   ///         NULL. The returned pointer is owned by the AdaptationSet instance.
-  Representation* AddRepresentation(const MediaInfo& media_info);
+  virtual Representation* AddRepresentation(const MediaInfo& media_info);
 
   /// Add a ContenProtection element to the adaptation set.
   /// AdaptationSet does not add <ContentProtection> elements
@@ -234,6 +235,20 @@ class AdaptationSet {
                                      uint64_t start_time,
                                      uint64_t duration);
 
+ protected:
+  /// @param adaptation_set_id is an ID number for this AdaptationSet.
+  /// @param lang is the language of this AdaptationSet. Mainly relevant for
+  ///        audio.
+  /// @param mpd_options is the options for this MPD.
+  /// @param mpd_type is the type of this MPD.
+  /// @param representation_counter is a Counter for assigning ID numbers to
+  ///        Representation. It can not be NULL.
+  AdaptationSet(uint32_t adaptation_set_id,
+                const std::string& lang,
+                const MpdOptions& mpd_options,
+                MpdBuilder::MpdType mpd_type,
+                base::AtomicSequenceNumber* representation_counter);
+
  private:
   // kSegmentAlignmentUnknown means that it is uncertain if the
   // (sub)segments are aligned or not.
@@ -257,6 +272,7 @@ class AdaptationSet {
   typedef std::map<uint32_t, std::list<uint64_t> > RepresentationTimeline;
 
   friend class MpdBuilder;
+
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckAdaptationSetId);
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest,
                            CheckAdaptationSetVideoContentType);
@@ -268,19 +284,6 @@ class AdaptationSet {
   FRIEND_TEST_ALL_PREFIXES(StaticMpdBuilderTest, SubSegmentAlignment);
   FRIEND_TEST_ALL_PREFIXES(StaticMpdBuilderTest, ForceSetSubSegmentAlignment);
   FRIEND_TEST_ALL_PREFIXES(DynamicMpdBuilderTest, SegmentAlignment);
-
-  /// @param adaptation_set_id is an ID number for this AdaptationSet.
-  /// @param lang is the language of this AdaptationSet. Mainly relevant for
-  ///        audio.
-  /// @param mpd_options is the options for this MPD.
-  /// @param mpd_type is the type of this MPD.
-  /// @param representation_counter is a Counter for assigning ID numbers to
-  ///        Representation. It can not be NULL.
-  AdaptationSet(uint32_t adaptation_set_id,
-                const std::string& lang,
-                const MpdOptions& mpd_options,
-                MpdBuilder::MpdType mpd_type,
-                base::AtomicSequenceNumber* representation_counter);
 
   // Gets the earliest, normalized segment timestamp. Returns true if
   // successful, false otherwise.
@@ -374,7 +377,7 @@ class RepresentationStateChangeListener {
 /// well as optional ContentProtection elements for that stream.
 class Representation {
  public:
-  ~Representation();
+  virtual ~Representation();
 
   /// Tries to initialize the instance. If this does not succeed, the instance
   /// should not be used.
@@ -391,7 +394,8 @@ class Representation {
   ///        If @a element has {value, schemeIdUri} set and has
   ///        {“value”, “schemeIdUri”} as key for @a additional_attributes,
   ///        then the former is used.
-  void AddContentProtectionElement(const ContentProtectionElement& element);
+  virtual void AddContentProtectionElement(
+      const ContentProtectionElement& element);
 
   /// Add a media (sub)segment to the representation.
   /// AdaptationSet@{subSegmentAlignment,segmentAlignment} cannot be set
@@ -401,14 +405,16 @@ class Representation {
   /// @param duration is the duration of the segment, in units of the stream's
   ///        time scale.
   /// @param size of the segment in bytes.
-  void AddNewSegment(uint64_t start_time, uint64_t duration, uint64_t size);
+  virtual void AddNewSegment(uint64_t start_time,
+                             uint64_t duration,
+                             uint64_t size);
 
   /// Set the sample duration of this Representation.
   /// In most cases, the sample duration is not available right away. This
   /// allows setting the sample duration after the Representation has been
   /// initialized.
   /// @param sample_duration is the duration of a sample.
-  void SetSampleDuration(uint32_t sample_duration);
+  virtual void SetSampleDuration(uint32_t sample_duration);
 
   /// @return Copy of <Representation>.
   xml::ScopedXmlPtr<xmlNode>::type GetXml();
@@ -416,18 +422,7 @@ class Representation {
   /// @return ID number for <Representation>.
   uint32_t id() const { return id_; }
 
- private:
-  friend class AdaptationSet;
-  // TODO(rkuroiwa): Consider defining a public factory method that constructs
-  // and Init()s, at least for testing.
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, ValidMediaInfo);
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, InvalidMediaInfo);
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckVideoInfoReflectedInXml);
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckRepresentationId);
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, SetSampleDuration);
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest,
-                           RepresentationStateChangeListener);
-
+ protected:
   /// @param media_info is a MediaInfo containing information on the media.
   ///        @a media_info.bandwidth is required for 'static' profile. If @a
   ///        media_info.bandwidth is not present in 'dynamic' profile, this
@@ -441,6 +436,19 @@ class Representation {
       const MpdOptions& mpd_options,
       uint32_t representation_id,
       scoped_ptr<RepresentationStateChangeListener> state_change_listener);
+
+ private:
+  friend class AdaptationSet;
+
+  // TODO(rkuroiwa): Consider defining a public factory method that constructs
+  // and Init()s, at least for testing.
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, ValidMediaInfo);
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, InvalidMediaInfo);
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckVideoInfoReflectedInXml);
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckRepresentationId);
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, SetSampleDuration);
+  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest,
+                           RepresentationStateChangeListener);
 
   bool AddLiveInfo(xml::RepresentationXmlNode* representation);
 
