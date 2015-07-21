@@ -133,6 +133,7 @@ TEST_F(SimpleMpdNotifierTest, LiveNotifySampleDuration) {
       .WillOnce(Return(default_mock_adaptation_set_.get()));
   EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
       .WillOnce(Return(mock_representation.get()));
+  EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   uint32_t container_id;
   SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
@@ -214,8 +215,7 @@ TEST_F(SimpleMpdNotifierTest, LiveNotifyNewSegment) {
 }
 
 // Verify AddContentProtectionElement() works. Profile doesn't matter.
-// TODO(rkuroiwa): Not implemented yet, enable once it is implemented.
-TEST_F(SimpleMpdNotifierTest, DISABLED_AddContentProtectionElement) {
+TEST_F(SimpleMpdNotifierTest, AddContentProtectionElement) {
   SimpleMpdNotifier notifier(kOnDemandProfile, empty_mpd_option_,
                              empty_base_urls_, output_path_);
 
@@ -228,7 +228,9 @@ TEST_F(SimpleMpdNotifierTest, DISABLED_AddContentProtectionElement) {
       .WillOnce(Return(default_mock_adaptation_set_.get()));
   EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
       .WillOnce(Return(mock_representation.get()));
-  EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_mpd_builder, ToString(_))
+      .Times(2)
+      .WillRepeatedly(Return(true));
 
   uint32_t container_id;
   SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());

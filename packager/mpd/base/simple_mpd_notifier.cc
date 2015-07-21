@@ -66,12 +66,11 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   // generate a valid MPD.
   AddContentProtectionElements(media_info, representation);
   *container_id = representation->id();
+  DCHECK(!ContainsKey(representation_map_, representation->id()));
+  representation_map_[representation->id()] = representation;
 
   if (mpd_builder_->type() == MpdBuilder::kStatic)
     return WriteMpdToFile(output_path_, mpd_builder_.get());
-
-  DCHECK(!ContainsKey(representation_map_, representation->id()));
-  representation_map_[representation->id()] = representation;
   return true;
 }
 
@@ -83,8 +82,10 @@ bool SimpleMpdNotifier::NotifySampleDuration(uint32_t container_id,
     LOG(ERROR) << "Unexpected container_id: " << container_id;
     return false;
   }
+  // This sets the right frameRate for Representation or AdaptationSet, so
+  // write out the new MPD.
   it->second->SetSampleDuration(sample_duration);
-  return true;
+  return WriteMpdToFile(output_path_, mpd_builder_.get());
 }
 
 bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
@@ -92,12 +93,13 @@ bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
                                          uint64_t duration,
                                          uint64_t size) {
   base::AutoLock auto_lock(lock_);
-
   RepresentationMap::iterator it = representation_map_.find(container_id);
   if (it == representation_map_.end()) {
     LOG(ERROR) << "Unexpected container_id: " << container_id;
     return false;
   }
+  // For live, the timeline and segmentAlignment gets updated. For VOD,
+  // subsegmentAlignment gets updated. So write out the MPD.
   it->second->AddNewSegment(start_time, duration, size);
   return WriteMpdToFile(output_path_, mpd_builder_.get());
 }
@@ -105,8 +107,14 @@ bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
 bool SimpleMpdNotifier::AddContentProtectionElement(
     uint32_t container_id,
     const ContentProtectionElement& content_protection_element) {
-  NOTIMPLEMENTED();
-  return false;
+  base::AutoLock auto_lock(lock_);
+  RepresentationMap::iterator it = representation_map_.find(container_id);
+  if (it == representation_map_.end()) {
+    LOG(ERROR) << "Unexpected container_id: " << container_id;
+    return false;
+  }
+  it->second->AddContentProtectionElement(content_protection_element);
+  return WriteMpdToFile(output_path_, mpd_builder_.get());
 }
 
 }  // namespace edash_packager

@@ -58,8 +58,8 @@ class MpdNotifier {
   virtual bool NotifySampleDuration(uint32_t container_id,
                                     uint32_t sample_duration) = 0;
 
-  /// Notifies MpdBuilder that there is a new segment ready. Used only for live
-  /// profile.
+  /// Notifies MpdBuilder that there is a new segment ready. For live, this
+  /// is usually a new segment, for VOD this is usually a subsegment.
   /// @param container_id Container ID obtained from calling
   ///        NotifyNewContainer().
   /// @param start_time is the start time of the new segment, in units of the
