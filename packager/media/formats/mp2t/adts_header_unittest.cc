@@ -41,7 +41,7 @@ namespace mp2t {
 
 class AdtsHeaderTest : public testing::Test {
  public:
-  virtual void SetUp() OVERRIDE {
+  void SetUp() override {
     ASSERT_TRUE(base::HexStringToBytes(kValidAdtsFrame, &adts_frame_));
   }
 

@@ -40,7 +40,7 @@ class ClosureThreadTest : public ::testing::Test {
                                          base::Unretained(this)))),
         val_(0) {}
 
-  virtual ~ClosureThreadTest() {}
+  ~ClosureThreadTest() override {}
 
   void ClosureCallback() {
     // Exit the loop if DoSomething return false.

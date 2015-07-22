@@ -125,13 +125,13 @@ class EsParserH264Test : public testing::Test {
   void LoadStream(const char* filename);
   void ProcessPesPackets(const std::vector<Packet>& pes_packets);
 
-  void EmitSample(uint32_t pid, scoped_refptr<MediaSample>& sample) {
+  void EmitSample(uint32_t pid, const scoped_refptr<MediaSample>& sample) {
     sample_count_++;
     if (sample_count_ == 1)
       first_frame_is_key_frame_ = sample->is_key_frame();
   }
 
-  void NewVideoConfig(scoped_refptr<StreamInfo>& config) {
+  void NewVideoConfig(const scoped_refptr<StreamInfo>& config) {
     DVLOG(1) << config->ToString();
     stream_map_[config->track_id()] = config;
   }

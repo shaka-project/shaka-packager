@@ -386,7 +386,7 @@ void WidevineKeySource::FillRequest(bool enable_key_rotation,
     request_dict_.SetInteger("crypto_period_count", crypto_period_count_);
   }
 
-  base::JSONWriter::Write(&request_dict_, request);
+  base::JSONWriter::Write(request_dict_, request);
 }
 
 Status WidevineKeySource::GenerateKeyMessage(const std::string& request,
@@ -412,7 +412,7 @@ Status WidevineKeySource::GenerateKeyMessage(const std::string& request,
     request_dict.SetString("signer", signer_->signer_name());
   }
 
-  base::JSONWriter::Write(&request_dict, message);
+  base::JSONWriter::Write(request_dict, message);
   return Status::OK;
 }
 

@@ -36,15 +36,15 @@ struct ProtectionSystemSpecificHeader;
 class MP4MediaParser : public MediaParser {
  public:
   MP4MediaParser();
-  virtual ~MP4MediaParser();
+  ~MP4MediaParser() override;
 
   /// @name MediaParser implementation overrides.
   /// @{
-  virtual void Init(const InitCB& init_cb,
-                    const NewSampleCB& new_sample_cb,
-                    KeySource* decryption_key_source) OVERRIDE;
-  virtual void Flush() OVERRIDE;
-  virtual bool Parse(const uint8_t* buf, int size) OVERRIDE;
+  void Init(const InitCB& init_cb,
+            const NewSampleCB& new_sample_cb,
+            KeySource* decryption_key_source) override;
+  void Flush() override;
+  bool Parse(const uint8_t* buf, int size) override;
   /// @}
 
   /// Handles ISO-BMFF containers which have the 'moov' box trailing the

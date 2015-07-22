@@ -104,7 +104,7 @@ std::string VideoStreamInfo::GetCodecString(VideoCodec codec,
     case kCodecH264: {
       const uint8_t bytes[] = {profile, compatible_profiles, level};
       return "avc1." +
-             StringToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));
+             base::StringToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));
     }
     default:
       NOTIMPLEMENTED() << "Unknown Codec: " << codec;

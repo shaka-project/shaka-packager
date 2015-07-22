@@ -25,7 +25,7 @@ enum TextKind {
 
 class TextTrack {
  public:
-  virtual ~TextTrack() {}
+  ~TextTrack() override {}
   virtual void addWebVTTCue(const base::TimeDelta& start,
                             const base::TimeDelta& end,
                             const std::string& id,

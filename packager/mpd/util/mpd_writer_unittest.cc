@@ -7,7 +7,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/file_util.h"
+#include "packager/base/files/file_util.h"
 #include "packager/base/path_service.h"
 #include "packager/mpd/base/dash_iop_mpd_notifier.h"
 #include "packager/mpd/base/mock_mpd_notifier.h"
@@ -26,18 +26,17 @@ namespace {
 class TestMpdNotifierFactory : public MpdNotifierFactory {
  public:
   TestMpdNotifierFactory() {}
-  virtual ~TestMpdNotifierFactory() OVERRIDE {}
+  ~TestMpdNotifierFactory() override {}
 
   // So sad that this method cannot be mocked (gmock errors at compile time).
   // Also (probably) this version of gmock does not support returning
   // scoped_ptr.
   // For now we only need to return MockMpdNotifier() with these set of
   // expectations for all the tests.
-  virtual scoped_ptr<MpdNotifier> Create(
-      DashProfile dash_profile,
-      const MpdOptions& mpd_options,
-      const std::vector<std::string>& base_urls,
-      const std::string& output_path) OVERRIDE {
+  scoped_ptr<MpdNotifier> Create(DashProfile dash_profile,
+                                 const MpdOptions& mpd_options,
+                                 const std::vector<std::string>& base_urls,
+                                 const std::string& output_path) override {
     EXPECT_EQ(expected_base_urls_, base_urls);
 
     scoped_ptr<MockMpdNotifier> mock_notifier(
@@ -48,7 +47,7 @@ class TestMpdNotifierFactory : public MpdNotifierFactory {
         .Times(2)
         .WillRepeatedly(Return(true));
     EXPECT_CALL(*mock_notifier, Flush()).WillOnce(Return(true));
-    return mock_notifier.PassAs<MpdNotifier>();
+    return mock_notifier.Pass();
   }
 
   void SetExpectedBaseUrls(const std::vector<std::string>& base_urls) {
@@ -64,13 +63,12 @@ class MpdWriterTest : public ::testing::Test {
  protected:
   // Note that MpdWriter::SetMpdNotifierFactoryForTest() is not called in SetUp.
   // Set expectations in the test and call it.
-  virtual void SetUp() OVERRIDE {
+  void SetUp() override {
     notifier_factory_.reset(new TestMpdNotifierFactory());
   }
 
   void SetMpdNotifierFactoryForTest() {
-    mpd_writer_.SetMpdNotifierFactoryForTest(
-        notifier_factory_.PassAs<MpdNotifierFactory>());
+    mpd_writer_.SetMpdNotifierFactoryForTest(notifier_factory_.Pass());
   }
 
   scoped_ptr<TestMpdNotifierFactory> notifier_factory_;

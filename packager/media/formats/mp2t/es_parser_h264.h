@@ -35,15 +35,12 @@ class EsParserH264 : public EsParser {
   EsParserH264(uint32_t pid,
                const NewStreamInfoCB& new_stream_info_cb,
                const EmitSampleCB& emit_sample_cb);
-  virtual ~EsParserH264();
+  ~EsParserH264() override;
 
   // EsParser implementation overrides.
-  virtual bool Parse(const uint8_t* buf,
-                     int size,
-                     int64_t pts,
-                     int64_t dts) OVERRIDE;
-  virtual void Flush() OVERRIDE;
-  virtual void Reset() OVERRIDE;
+  bool Parse(const uint8_t* buf, int size, int64_t pts, int64_t dts) override;
+  void Flush() override;
+  void Reset() override;
 
  private:
   struct TimingDesc {

@@ -50,16 +50,16 @@ struct PrevSampleData {
 class WvmMediaParser : public MediaParser {
  public:
   WvmMediaParser();
-  virtual ~WvmMediaParser();
+  ~WvmMediaParser() override;
 
   // MediaParser implementation overrides.
-  virtual void Init(const InitCB& init_cb,
-                    const NewSampleCB& new_sample_cb,
-                    KeySource* decryption_key_source) OVERRIDE;
+  void Init(const InitCB& init_cb,
+            const NewSampleCB& new_sample_cb,
+            KeySource* decryption_key_source) override;
 
-  virtual void Flush() OVERRIDE;
+  void Flush() override;
 
-  virtual bool Parse(const uint8_t* buf, int size) OVERRIDE;
+  bool Parse(const uint8_t* buf, int size) override;
 
  private:
   enum Tag {

@@ -19,11 +19,11 @@ class TsSectionPat : public TsSectionPsi {
   typedef base::Callback<void(int, int)> RegisterPmtCb;
 
   explicit TsSectionPat(const RegisterPmtCb& register_pmt_cb);
-  virtual ~TsSectionPat();
+  ~TsSectionPat() override;
 
   // TsSectionPsi implementation.
-  virtual bool ParsePsiSection(BitReader* bit_reader) OVERRIDE;
-  virtual void ResetPsiSection() OVERRIDE;
+  bool ParsePsiSection(BitReader* bit_reader) override;
+  void ResetPsiSection() override;
 
  private:
   RegisterPmtCb register_pmt_cb_;

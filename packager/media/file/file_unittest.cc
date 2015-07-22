@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/base/file_util.h"
+#include "packager/base/files/file_util.h"
 #include "packager/media/file/file.h"
 
 namespace {
@@ -18,7 +18,7 @@ namespace media {
 
 class LocalFileTest : public testing::Test {
  protected:
-  virtual void SetUp() {
+  void SetUp() override {
     data_.resize(kDataSize);
     for (int i = 0; i < kDataSize; ++i)
       data_[i] = i % 256;
@@ -32,7 +32,7 @@ class LocalFileTest : public testing::Test {
     local_file_name_ += local_file_name_no_prefix_;
   }
 
-  virtual void TearDown() {
+  void TearDown() override {
     // Remove test file if created.
     base::DeleteFile(base::FilePath(local_file_name_no_prefix_), false);
   }
@@ -56,7 +56,7 @@ TEST_F(LocalFileTest, ReadNotExist) {
 
 TEST_F(LocalFileTest, Size) {
   ASSERT_EQ(kDataSize,
-            file_util::WriteFile(test_file_path_, data_.data(), kDataSize));
+            base::WriteFile(test_file_path_, data_.data(), kDataSize));
   ASSERT_EQ(kDataSize, File::GetFileSize(local_file_name_.c_str()));
 }
 
@@ -80,7 +80,7 @@ TEST_F(LocalFileTest, Write) {
 TEST_F(LocalFileTest, Read_And_Eof) {
   // Write file using file_util API.
   ASSERT_EQ(kDataSize,
-            file_util::WriteFile(test_file_path_, data_.data(), kDataSize));
+            base::WriteFile(test_file_path_, data_.data(), kDataSize));
 
   // Read file using File API.
   File* file = File::Open(local_file_name_.c_str(), "r");

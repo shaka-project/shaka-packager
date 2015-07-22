@@ -31,10 +31,10 @@ class BoxBuffer;
 
 #define DECLARE_BOX_METHODS(T)                        \
   T();                                                \
-  virtual ~T();                                       \
-  virtual bool ReadWrite(BoxBuffer* buffer) OVERRIDE; \
-  virtual FourCC BoxType() const OVERRIDE;            \
-  virtual uint32_t ComputeSize() OVERRIDE;
+  ~T() override;                                       \
+  bool ReadWrite(BoxBuffer* buffer) override; \
+  FourCC BoxType() const override;            \
+  uint32_t ComputeSize() override;
 
 struct FileType : Box {
   DECLARE_BOX_METHODS(FileType);

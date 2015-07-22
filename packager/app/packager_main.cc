@@ -78,7 +78,7 @@ namespace media {
 // testing.
 class FakeClock : public base::Clock {
  public:
-  virtual base::Time Now() OVERRIDE { return base::Time(); }
+  base::Time Now() override { return base::Time(); }
 };
 
 // Demux, Mux(es) and worker thread used to remux a source file/stream.
@@ -88,7 +88,7 @@ class RemuxJob : public base::SimpleThread {
       : SimpleThread("RemuxJob"),
         demuxer_(demuxer.Pass()) {}
 
-  virtual ~RemuxJob() {
+  ~RemuxJob() override {
     STLDeleteElements(&muxers_);
   }
 
@@ -100,7 +100,7 @@ class RemuxJob : public base::SimpleThread {
   Status status() { return status_; }
 
  private:
-  virtual void Run() OVERRIDE {
+  void Run() override {
     DCHECK(demuxer_);
     status_ = demuxer_->Run();
   }

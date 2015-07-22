@@ -20,7 +20,7 @@ class RsaKeyTest : public ::testing::TestWithParam<RsaTestSet> {
  public:
   RsaKeyTest() : test_set_(GetParam()) {}
 
-  virtual void SetUp() {
+  void SetUp() override {
     // Make OpenSSL RSA deterministic.
     ASSERT_TRUE(fake_prng::StartFakePrng());
 
@@ -29,7 +29,7 @@ class RsaKeyTest : public ::testing::TestWithParam<RsaTestSet> {
     public_key_.reset(RsaPublicKey::Create(test_set_.public_key));
     ASSERT_TRUE(public_key_ != NULL);
   }
-  virtual void TearDown() { fake_prng::StopFakePrng(); }
+  void TearDown() override { fake_prng::StopFakePrng(); }
 
  protected:
   const RsaTestSet& test_set_;

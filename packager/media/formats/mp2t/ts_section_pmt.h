@@ -21,11 +21,11 @@ class TsSectionPmt : public TsSectionPsi {
   typedef base::Callback<void(int, int)> RegisterPesCb;
 
   explicit TsSectionPmt(const RegisterPesCb& register_pes_cb);
-  virtual ~TsSectionPmt();
+  ~TsSectionPmt() override;
 
   // Mpeg2TsPsiParser implementation.
-  virtual bool ParsePsiSection(BitReader* bit_reader) OVERRIDE;
-  virtual void ResetPsiSection() OVERRIDE;
+  bool ParsePsiSection(BitReader* bit_reader) override;
+  void ResetPsiSection() override;
 
  private:
   RegisterPesCb register_pes_cb_;

@@ -31,13 +31,13 @@ class EncryptingFragmenter : public Fragmenter {
                        int64_t clear_time,
                        uint8_t nalu_length_size);
 
-  virtual ~EncryptingFragmenter();
+  ~EncryptingFragmenter() override;
 
   /// @name Fragmenter implementation overrides.
   /// @{
-  virtual Status AddSample(scoped_refptr<MediaSample> sample) OVERRIDE;
-  virtual Status InitializeFragment(int64_t first_sample_dts) OVERRIDE;
-  virtual void FinalizeFragment() OVERRIDE;
+  Status AddSample(scoped_refptr<MediaSample> sample) override;
+  Status InitializeFragment(int64_t first_sample_dts) override;
+  void FinalizeFragment() override;
   /// @}
 
  protected:

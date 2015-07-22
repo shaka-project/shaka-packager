@@ -28,22 +28,22 @@ class WidevineKeySource : public KeySource {
   /// @param server_url is the Widevine common encryption server url.
   explicit WidevineKeySource(const std::string& server_url);
 
-  virtual ~WidevineKeySource();
+  ~WidevineKeySource() override;
 
   /// @name KeySource implementation overrides.
   /// @{
-  virtual Status FetchKeys(const std::vector<uint8_t>& content_id,
-                           const std::string& policy) OVERRIDE;
-  virtual Status FetchKeys(const std::vector<uint8_t>& pssh_data) OVERRIDE;
-  virtual Status FetchKeys(uint32_t asset_id) OVERRIDE;
+  Status FetchKeys(const std::vector<uint8_t>& content_id,
+                   const std::string& policy) override;
+  Status FetchKeys(const std::vector<uint8_t>& pssh_data) override;
+  Status FetchKeys(uint32_t asset_id) override;
 
-  virtual Status GetKey(TrackType track_type, EncryptionKey* key) OVERRIDE;
-  virtual Status GetKey(const std::vector<uint8_t>& key_id,
-                        EncryptionKey* key) OVERRIDE;
-  virtual Status GetCryptoPeriodKey(uint32_t crypto_period_index,
-                                    TrackType track_type,
-                                    EncryptionKey* key) OVERRIDE;
-  virtual std::string UUID() OVERRIDE;
+  Status GetKey(TrackType track_type, EncryptionKey* key) override;
+  Status GetKey(const std::vector<uint8_t>& key_id,
+                EncryptionKey* key) override;
+  Status GetCryptoPeriodKey(uint32_t crypto_period_index,
+                            TrackType track_type,
+                            EncryptionKey* key) override;
+  std::string UUID() override;
   /// @}
 
   /// Set signer for the key source.

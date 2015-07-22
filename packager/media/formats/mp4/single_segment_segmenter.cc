@@ -10,7 +10,7 @@
 #include <openssl/err.h>
 #include <openssl/rand.h>
 
-#include "packager/base/file_util.h"
+#include "packager/base/files/file_util.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/threading/platform_thread.h"
 #include "packager/base/time/time.h"

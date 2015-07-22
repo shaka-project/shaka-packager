@@ -353,17 +353,17 @@ class RepresentationStateChangeListenerImpl
       : representation_id_(representation_id), adaptation_set_(adaptation_set) {
     DCHECK(adaptation_set_);
   }
-  virtual ~RepresentationStateChangeListenerImpl() OVERRIDE {}
+  ~RepresentationStateChangeListenerImpl() override {}
 
   // RepresentationStateChangeListener implementation.
-  virtual void OnNewSegmentForRepresentation(uint64_t start_time,
-                                             uint64_t duration) OVERRIDE {
+  void OnNewSegmentForRepresentation(uint64_t start_time,
+                                     uint64_t duration) override {
     adaptation_set_->OnNewSegmentForRepresentation(representation_id_,
                                                    start_time, duration);
   }
 
-  virtual void OnSetFrameRateForRepresentation(uint32_t frame_duration,
-                                               uint32_t timescale) OVERRIDE {
+  void OnSetFrameRateForRepresentation(uint32_t frame_duration,
+                                       uint32_t timescale) override {
     adaptation_set_->OnSetFrameRateForRepresentation(representation_id_,
                                                      frame_duration, timescale);
   }

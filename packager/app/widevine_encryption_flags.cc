@@ -76,7 +76,8 @@ bool ValidateWidevineCryptoFlags() {
     success = false;
   }
   if (widevine_crypto && FLAGS_signer.empty() &&
-      StartsWithASCII(FLAGS_key_server_url, "http", false)) {
+      base::StartsWith(FLAGS_key_server_url, "http",
+                       base::CompareCase::INSENSITIVE_ASCII)) {
     LOG(WARNING) << "--signer is likely required with "
                     "--enable_widevine_encryption/decryption.";
   }

@@ -52,8 +52,8 @@ class AudioStreamInfo : public StreamInfo {
 
   /// @name StreamInfo implementation overrides.
   /// @{
-  virtual bool IsValidConfig() const OVERRIDE;
-  virtual std::string ToString() const OVERRIDE;
+  bool IsValidConfig() const override;
+  std::string ToString() const override;
   /// @}
 
   AudioCodec codec() const { return codec_; }
@@ -76,7 +76,7 @@ class AudioStreamInfo : public StreamInfo {
                                     uint8_t audio_object_type);
 
  private:
-  virtual ~AudioStreamInfo();
+  ~AudioStreamInfo() override;
 
   AudioCodec codec_;
   uint8_t sample_bits_;

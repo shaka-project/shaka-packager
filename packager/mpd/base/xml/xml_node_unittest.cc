@@ -55,7 +55,7 @@ ScopedXmlPtr<xmlDoc>::type MakeDoc(ScopedXmlPtr<xmlNode>::type node) {
 class RepresentationTest : public ::testing::Test {
  public:
   RepresentationTest() {}
-  virtual ~RepresentationTest() {}
+  ~RepresentationTest() override {}
 
   // Ownership transfers, IOW this function will release the resource for
   // |node|. Returns |node| in string format.

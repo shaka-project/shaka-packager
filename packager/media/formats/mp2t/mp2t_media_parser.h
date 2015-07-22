@@ -30,16 +30,16 @@ typedef std::deque<scoped_refptr<MediaSample> > SampleQueue;
 class Mp2tMediaParser : public MediaParser {
  public:
   Mp2tMediaParser();
-  virtual ~Mp2tMediaParser();
+  ~Mp2tMediaParser() override;
 
   // MediaParser implementation overrides.
-  virtual void Init(const InitCB& init_cb,
-                    const NewSampleCB& new_sample_cb,
-                    KeySource* decryption_key_source) OVERRIDE;
+  void Init(const InitCB& init_cb,
+            const NewSampleCB& new_sample_cb,
+            KeySource* decryption_key_source) override;
 
-  virtual void Flush() OVERRIDE;
+  void Flush() override;
 
-  virtual bool Parse(const uint8_t* buf, int size) OVERRIDE;
+  bool Parse(const uint8_t* buf, int size) override;
 
  private:
   typedef std::map<int, PidState*> PidMap;
@@ -56,11 +56,12 @@ class Mp2tMediaParser : public MediaParser {
 
   // Callback invoked each time the audio/video decoder configuration is
   // changed.
-  void OnNewStreamInfo(scoped_refptr<StreamInfo>& new_stream_info);
+  void OnNewStreamInfo(const scoped_refptr<StreamInfo>& new_stream_info);
 
   // Callback invoked by the ES media parser
   // to emit a new audio/video access unit.
-  void OnEmitSample(uint32_t pes_pid, scoped_refptr<MediaSample>& new_sample);
+  void OnEmitSample(uint32_t pes_pid,
+                    const scoped_refptr<MediaSample>& new_sample);
 
   // Invoke the initialization callback if needed.
   bool FinishInitializationIfNeeded();

@@ -120,7 +120,7 @@ class MockRequestSigner : public RequestSigner {
  public:
   explicit MockRequestSigner(const std::string& signer_name)
       : RequestSigner(signer_name) {}
-  virtual ~MockRequestSigner() {}
+  ~MockRequestSigner() override {}
 
   MOCK_METHOD2(GenerateSignature,
                bool(const std::string& message, std::string* signature));
@@ -132,7 +132,7 @@ class MockRequestSigner : public RequestSigner {
 class MockKeyFetcher : public KeyFetcher {
  public:
   MockKeyFetcher() : KeyFetcher() {}
-  virtual ~MockKeyFetcher() {}
+  ~MockKeyFetcher() override {}
 
   MOCK_METHOD3(FetchKeys,
                Status(const std::string& service_address,
@@ -149,7 +149,7 @@ class WidevineKeySourceTest : public ::testing::Test {
       : mock_request_signer_(new MockRequestSigner(kSignerName)),
         mock_key_fetcher_(new MockKeyFetcher()) {}
 
-  virtual void SetUp() OVERRIDE {
+  void SetUp() override {
     content_id_.assign(
         reinterpret_cast<const uint8_t*>(kContentId),
         reinterpret_cast<const uint8_t*>(kContentId) + strlen(kContentId));
@@ -158,8 +158,7 @@ class WidevineKeySourceTest : public ::testing::Test {
  protected:
   void CreateWidevineKeySource() {
     widevine_key_source_.reset(new WidevineKeySource(kServerUrl));
-    widevine_key_source_->set_key_fetcher(
-        mock_key_fetcher_.PassAs<KeyFetcher>());
+    widevine_key_source_->set_key_fetcher(mock_key_fetcher_.Pass());
   }
 
   void VerifyKeys(bool classic) {
@@ -203,8 +202,7 @@ TEST_F(WidevineKeySourceTest, GenerateSignatureFailure) {
       .WillOnce(Return(false));
 
   CreateWidevineKeySource();
-  widevine_key_source_->set_signer(
-      mock_request_signer_.PassAs<RequestSigner>());
+  widevine_key_source_->set_signer(mock_request_signer_.Pass());
   ASSERT_EQ(Status(error::INTERNAL_ERROR, "Signature generation failed."),
             widevine_key_source_->FetchKeys(content_id_, kPolicy));
 }
@@ -228,8 +226,7 @@ TEST_F(WidevineKeySourceTest, HttpFetchFailure) {
       .WillOnce(Return(kMockStatus));
 
   CreateWidevineKeySource();
-  widevine_key_source_->set_signer(
-      mock_request_signer_.PassAs<RequestSigner>());
+  widevine_key_source_->set_signer(mock_request_signer_.Pass());
   ASSERT_EQ(kMockStatus,
             widevine_key_source_->FetchKeys(content_id_, kPolicy));
 }
@@ -417,8 +414,7 @@ TEST_F(WidevineKeySourceTest, KeyRotationTest) {
   }
 
   CreateWidevineKeySource();
-  widevine_key_source_->set_signer(
-      mock_request_signer_.PassAs<RequestSigner>());
+  widevine_key_source_->set_signer(mock_request_signer_.Pass());
   ASSERT_OK(widevine_key_source_->FetchKeys(content_id_, kPolicy));
 
   EncryptionKey encryption_key;

@@ -6,7 +6,7 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/base/file_util.h"
+#include "packager/base/files/file_util.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/time/clock.h"
@@ -80,14 +80,14 @@ MediaStream* FindFirstAudioStream(const std::vector<MediaStream*>& streams) {
 class FakeClock : public base::Clock {
  public:
   // Fake the clock to return NULL time.
-  virtual base::Time Now() OVERRIDE { return base::Time(); }
+  base::Time Now() override { return base::Time(); }
 };
 
 class PackagerTestBasic : public ::testing::TestWithParam<const char*> {
  public:
   PackagerTestBasic() {}
 
-  virtual void SetUp() OVERRIDE {
+  void SetUp() override {
     // Create a test directory for testing, will be deleted after test.
     ASSERT_TRUE(base::CreateNewTempDirectory("packager_", &test_directory_));
 
@@ -96,7 +96,7 @@ class PackagerTestBasic : public ::testing::TestWithParam<const char*> {
                                test_directory_.AppendASCII(GetParam())));
   }
 
-  virtual void TearDown() OVERRIDE { base::DeleteFile(test_directory_, true); }
+  void TearDown() override { base::DeleteFile(test_directory_, true); }
 
   std::string GetFullPath(const std::string& file_name);
   // Check if |file1| and |file2| are the same.
@@ -271,7 +271,7 @@ TEST_P(PackagerTestBasic, MP4MuxerSingleSegmentEncryptedAudio) {
 
 class PackagerTest : public PackagerTestBasic {
  public:
-  virtual void SetUp() OVERRIDE {
+  void SetUp() override {
     PackagerTestBasic::SetUp();
 
     ASSERT_NO_FATAL_FAILURE(Remux(GetParam(),
@@ -347,9 +347,8 @@ TEST_P(PackagerTest, MP4MuxerMultiSegmentsUnencryptedVideo) {
 
     std::string segment_content;
     ASSERT_TRUE(base::ReadFileToString(segment_path, &segment_content));
-    int bytes_written = file_util::AppendToFile(
-        output_path, segment_content.data(), segment_content.size());
-    ASSERT_EQ(segment_content.size(), static_cast<size_t>(bytes_written));
+    EXPECT_TRUE(base::AppendToFile(output_path, segment_content.data(),
+                                   segment_content.size()));
 
     ++segment_index;
   }

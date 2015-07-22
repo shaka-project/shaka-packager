@@ -33,19 +33,19 @@ class ThreadedIoFile : public File {
 
   /// @name File implementation overrides.
   /// @{
-  virtual bool Close() OVERRIDE;
-  virtual int64_t Read(void* buffer, uint64_t length) OVERRIDE;
-  virtual int64_t Write(const void* buffer, uint64_t length) OVERRIDE;
-  virtual int64_t Size() OVERRIDE;
-  virtual bool Flush() OVERRIDE;
-  virtual bool Seek(uint64_t position) OVERRIDE;
-  virtual bool Tell(uint64_t* position) OVERRIDE;
+  bool Close() override;
+  int64_t Read(void* buffer, uint64_t length) override;
+  int64_t Write(const void* buffer, uint64_t length) override;
+  int64_t Size() override;
+  bool Flush() override;
+  bool Seek(uint64_t position) override;
+  bool Tell(uint64_t* position) override;
   /// @}
 
  protected:
-  virtual ~ThreadedIoFile();
+  ~ThreadedIoFile() override;
 
-  virtual bool Open() OVERRIDE;
+  bool Open() override;
 
   void RunInInputMode();
   void RunInOutputMode();

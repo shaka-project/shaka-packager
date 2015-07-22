@@ -135,7 +135,7 @@ namespace media {
 
 class AesCtrEncryptorTest : public testing::Test {
  public:
-  virtual void SetUp() {
+  void SetUp() override {
     key_.assign(kAesKey, kAesKey + arraysize(kAesKey));
     iv_.assign(kAesIv, kAesIv + arraysize(kAesIv));
     plaintext_.assign(kAesCtrPlaintext,
@@ -400,7 +400,7 @@ TEST_F(AesCbcPkcs5EncryptorTestEncryptionDecryption, EncryptAES192CBCRegression)
 
 class AesCbcPkcs5EncryptorTest : public testing::Test {
  public:
-  virtual void SetUp() {
+  void SetUp() override {
     const std::string kKey = "128=SixteenBytes";
     const std::string kIv = "Sweet Sixteen IV";
     key_.assign(kKey.begin(), kKey.end());
@@ -443,7 +443,7 @@ TEST_F(AesCbcPkcs5EncryptorTest, CipherTextNotMultipleOfBlockSize) {
 
 class AesCbcCtsEncryptorDecryptorTest : public testing::Test {
  public:
-  virtual void SetUp() {
+  void SetUp() override {
     key_.assign(kAesKey, kAesKey + arraysize(kAesKey));
     iv_.assign(kAesIv, kAesIv + arraysize(kAesIv));
   }

@@ -42,7 +42,7 @@ class RequestSigner {
 /// AesRequestSigner uses AES-CBC signing.
 class AesRequestSigner : public RequestSigner {
  public:
-  virtual ~AesRequestSigner();
+  ~AesRequestSigner() override;
 
   /// Create an AesSigner object from key and iv in hex.
   /// @return The created AesRequestSigner object on success, NULL otherwise.
@@ -51,8 +51,8 @@ class AesRequestSigner : public RequestSigner {
                                         const std::string& iv_hex);
 
   /// RequestSigner implementation override.
-  virtual bool GenerateSignature(const std::string& message,
-                                 std::string* signature) OVERRIDE;
+  bool GenerateSignature(const std::string& message,
+                         std::string* signature) override;
 
  private:
   AesRequestSigner(const std::string& signer_name,
@@ -66,7 +66,7 @@ class AesRequestSigner : public RequestSigner {
 /// RsaRequestSigner uses RSA-PSS signing.
 class RsaRequestSigner : public RequestSigner {
  public:
-  virtual ~RsaRequestSigner();
+  ~RsaRequestSigner() override;
 
   /// Create an RsaSigner object using a DER encoded PKCS#1 RSAPrivateKey.
   /// @return The created RsaRequestSigner object on success, NULL otherwise.
@@ -74,8 +74,8 @@ class RsaRequestSigner : public RequestSigner {
                                         const std::string& pkcs1_rsa_key);
 
   /// RequestSigner implementation override.
-  virtual bool GenerateSignature(const std::string& message,
-                                 std::string* signature) OVERRIDE;
+  bool GenerateSignature(const std::string& message,
+                         std::string* signature) override;
 
  private:
   RsaRequestSigner(const std::string& signer_name,

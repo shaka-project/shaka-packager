@@ -20,7 +20,7 @@ class MockMpdBuilder : public MpdBuilder {
   // |type| indicates whether the MPD should be for VOD or live content (kStatic
   // for VOD profile, or kDynamic for live profile).
   explicit MockMpdBuilder(MpdType type);
-  virtual ~MockMpdBuilder() OVERRIDE;
+  ~MockMpdBuilder() override;
 
   MOCK_METHOD1(AddAdaptationSet, AdaptationSet*(const std::string& lang));
   MOCK_METHOD1(ToString, bool(std::string* output));
@@ -30,7 +30,7 @@ class MockAdaptationSet : public AdaptationSet {
  public:
   // |adaptation_set_id| is the id for the AdaptationSet.
   explicit MockAdaptationSet(uint32_t adaptation_set_id);
-  virtual ~MockAdaptationSet() OVERRIDE;
+  ~MockAdaptationSet() override;
 
   MOCK_METHOD1(AddRepresentation, Representation*(const MediaInfo& media_info));
   MOCK_METHOD1(AddContentProtectionElement,
@@ -51,7 +51,7 @@ class MockRepresentation : public Representation {
  public:
   // |representation_id| is the numeric ID for the <Representation>.
   explicit MockRepresentation(uint32_t representation_id);
-  virtual ~MockRepresentation() OVERRIDE;
+  ~MockRepresentation() override;
 
   MOCK_METHOD1(AddContentProtectionElement,
                void(const ContentProtectionElement& element));

@@ -33,11 +33,11 @@ class ClosureThread : public base::SimpleThread {
                          const base::Closure& task);
 
   /// The destructor calls Join automatically if it is not yet joined.
-  virtual ~ClosureThread();
+  ~ClosureThread() override;
 
  protected:
   /// SimpleThread implementation overrides.
-  virtual void Run() OVERRIDE;
+  void Run() override;
 
  private:
   const base::Closure task_;

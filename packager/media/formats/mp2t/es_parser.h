@@ -20,8 +20,9 @@ namespace mp2t {
 
 class EsParser {
  public:
-  typedef base::Callback<void(scoped_refptr<StreamInfo>&)> NewStreamInfoCB;
-  typedef base::Callback<void(uint32_t, scoped_refptr<MediaSample>&)>
+  typedef base::Callback<void(const scoped_refptr<StreamInfo>&)>
+      NewStreamInfoCB;
+  typedef base::Callback<void(uint32_t, const scoped_refptr<MediaSample>&)>
       EmitSampleCB;
 
   EsParser(uint32_t pid) : pid_(pid) {}

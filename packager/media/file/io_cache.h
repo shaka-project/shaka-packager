@@ -20,7 +20,7 @@ namespace media {
 class IoCache {
  public:
   explicit IoCache(uint64_t cache_size);
-  virtual ~IoCache();
+  ~IoCache();
 
   /// Read data from the cache. This function may block until there is data in
   /// the cache.

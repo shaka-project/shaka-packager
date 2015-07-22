@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 
-#include "packager/base/file_util.h"
+#include "packager/base/files/file_util.h"
 #include "packager/base/logging.h"
 
 namespace edash_packager {

@@ -9,7 +9,7 @@
 #include <google/protobuf/text_format.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/file_util.h"
+#include "packager/base/files/file_util.h"
 #include "packager/base/path_service.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_builder.h"

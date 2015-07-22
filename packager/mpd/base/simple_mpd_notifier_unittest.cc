@@ -6,8 +6,8 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/base/file_util.h"
 #include "packager/base/files/file_path.h"
+#include "packager/base/files/file_util.h"
 #include "packager/mpd/base/mock_mpd_builder.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/mpd_options.h"
@@ -42,12 +42,12 @@ class SimpleMpdNotifierTest
       : default_mock_adaptation_set_(
             new MockAdaptationSet(kDefaultAdaptationSetId)) {}
 
-  virtual void SetUp() OVERRIDE {
+  void SetUp() override {
     ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
     output_path_ = temp_file_path_.value();
   }
 
-  virtual void TearDown() OVERRIDE {
+  void TearDown() override {
     base::DeleteFile(temp_file_path_, false /* non recursive, just 1 file */);
   }
 
@@ -116,7 +116,7 @@ TEST_P(SimpleMpdNotifierTest, NotifyNewContainer) {
   EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   uint32_t unused_container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
+  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &unused_container_id));
   EXPECT_TRUE(notifier.Flush());
@@ -138,7 +138,7 @@ TEST_F(SimpleMpdNotifierTest, LiveNotifySampleDuration) {
       .WillOnce(Return(mock_representation.get()));
 
   uint32_t container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
+  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &container_id));
   EXPECT_EQ(kRepresentationId, container_id);
@@ -169,7 +169,7 @@ TEST_F(SimpleMpdNotifierTest, OnDemandNotifySampleDuration) {
       .WillOnce(Return(mock_representation.get()));
 
   uint32_t container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
+  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &container_id));
   EXPECT_EQ(kRepresentationId, container_id);
@@ -196,7 +196,7 @@ TEST_F(SimpleMpdNotifierTest, LiveNotifyNewSegment) {
       .WillOnce(Return(mock_representation.get()));
 
   uint32_t container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
+  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &container_id));
   EXPECT_EQ(kRepresentationId, container_id);
@@ -227,7 +227,7 @@ TEST_F(SimpleMpdNotifierTest, AddContentProtectionElement) {
       .WillOnce(Return(mock_representation.get()));
 
   uint32_t container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
+  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &container_id));
   EXPECT_EQ(kRepresentationId, container_id);
@@ -270,7 +270,7 @@ TEST_P(SimpleMpdNotifierTest, UpdateEncryption) {
       .WillOnce(Return(mock_representation.get()));
 
   uint32_t container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
+  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kProtectedContent),
                                           &container_id));
 

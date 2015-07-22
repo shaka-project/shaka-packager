@@ -33,19 +33,19 @@ class MultiSegmentSegmenter : public Segmenter {
   MultiSegmentSegmenter(const MuxerOptions& options,
                         scoped_ptr<FileType> ftyp,
                         scoped_ptr<Movie> moov);
-  virtual ~MultiSegmentSegmenter();
+  ~MultiSegmentSegmenter() override;
 
   /// @name Segmenter implementation overrides.
   /// @{
-  virtual bool GetInitRange(size_t* offset, size_t* size) OVERRIDE;
-  virtual bool GetIndexRange(size_t* offset, size_t* size) OVERRIDE;
+  bool GetInitRange(size_t* offset, size_t* size) override;
+  bool GetIndexRange(size_t* offset, size_t* size) override;
   /// @}
 
  private:
   // Segmenter implementation overrides.
-  virtual Status DoInitialize() OVERRIDE;
-  virtual Status DoFinalize() OVERRIDE;
-  virtual Status DoFinalizeSegment() OVERRIDE;
+  Status DoInitialize() override;
+  Status DoFinalize() override;
+  Status DoFinalizeSegment() override;
 
   // Write segment to file.
   Status WriteSegment();

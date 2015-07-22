@@ -43,13 +43,13 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
                         int64_t clear_time,
                         uint8_t nalu_length_size,
                         MuxerListener* muxer_listener);
-  virtual ~KeyRotationFragmenter();
+  ~KeyRotationFragmenter() override;
 
  protected:
   /// @name Fragmenter implementation overrides.
   /// @{
-  virtual Status PrepareFragmentForEncryption(bool enable_encryption) OVERRIDE;
-  virtual void FinalizeFragmentForEncryption() OVERRIDE;
+  Status PrepareFragmentForEncryption(bool enable_encryption) override;
+  void FinalizeFragmentForEncryption() override;
   /// @}
 
  private:

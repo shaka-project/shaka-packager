@@ -60,7 +60,7 @@ class PidState {
   PidType pid_type() const { return pid_type_; }
 
   scoped_refptr<StreamInfo>& config() { return config_; }
-  void set_config(scoped_refptr<StreamInfo>& config) { config_ = config; }
+  void set_config(const scoped_refptr<StreamInfo>& config) { config_ = config; }
 
   SampleQueue& sample_queue() { return sample_queue_; }
 
@@ -326,7 +326,7 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
 }
 
 void Mp2tMediaParser::OnNewStreamInfo(
-    scoped_refptr<StreamInfo>& new_stream_info) {
+    const scoped_refptr<StreamInfo>& new_stream_info) {
   DCHECK(new_stream_info);
   DVLOG(1) << "OnVideoConfigChanged for pid=" << new_stream_info->track_id();
 
@@ -374,8 +374,9 @@ bool Mp2tMediaParser::FinishInitializationIfNeeded() {
   return true;
 }
 
-void Mp2tMediaParser::OnEmitSample(uint32_t pes_pid,
-                                   scoped_refptr<MediaSample>& new_sample) {
+void Mp2tMediaParser::OnEmitSample(
+    uint32_t pes_pid,
+    const scoped_refptr<MediaSample>& new_sample) {
   DCHECK(new_sample);
   DVLOG(LOG_LEVEL_ES)
       << "OnEmitSample: "

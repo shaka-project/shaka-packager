@@ -34,28 +34,26 @@ class SimpleMpdNotifier : public MpdNotifier {
                     const MpdOptions& mpd_options,
                     const std::vector<std::string>& base_urls,
                     const std::string& output_path);
-  virtual ~SimpleMpdNotifier();
+  ~SimpleMpdNotifier() override;
 
   /// @name MpdNotifier implemetation overrides.
   /// @{
-  virtual bool Init() OVERRIDE;
-  virtual bool NotifyNewContainer(const MediaInfo& media_info,
-                                  uint32_t* id) OVERRIDE;
-  virtual bool NotifySampleDuration(uint32_t container_id,
-                                    uint32_t sample_duration) OVERRIDE;
-  virtual bool NotifyNewSegment(uint32_t id,
-                                uint64_t start_time,
-                                uint64_t duration,
-                                uint64_t size) OVERRIDE;
-  virtual bool NotifyEncryptionUpdate(
-      uint32_t container_id,
-      const std::string& drm_uuid,
-      const std::vector<uint8_t>& new_key_id,
-      const std::vector<uint8_t>& new_pssh) OVERRIDE;
-  virtual bool AddContentProtectionElement(
+  bool Init() override;
+  bool NotifyNewContainer(const MediaInfo& media_info, uint32_t* id) override;
+  bool NotifySampleDuration(uint32_t container_id,
+                            uint32_t sample_duration) override;
+  bool NotifyNewSegment(uint32_t id,
+                        uint64_t start_time,
+                        uint64_t duration,
+                        uint64_t size) override;
+  bool NotifyEncryptionUpdate(uint32_t container_id,
+                              const std::string& drm_uuid,
+                              const std::vector<uint8_t>& new_key_id,
+                              const std::vector<uint8_t>& new_pssh) override;
+  bool AddContentProtectionElement(
       uint32_t id,
-      const ContentProtectionElement& content_protection_element) OVERRIDE;
-  virtual bool Flush() OVERRIDE;
+      const ContentProtectionElement& content_protection_element) override;
+  bool Flush() override;
   /// @}
 
  private:

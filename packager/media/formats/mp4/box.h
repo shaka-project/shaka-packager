@@ -58,13 +58,13 @@ struct Box {
 struct FullBox : Box {
  public:
   FullBox();
-  virtual ~FullBox();
+  ~FullBox() override;
 
   uint8_t version;
   uint32_t flags;
 
  protected:
-  virtual bool ReadWrite(BoxBuffer* buffer) OVERRIDE;
+  bool ReadWrite(BoxBuffer* buffer) override;
 };
 
 }  // namespace mp4

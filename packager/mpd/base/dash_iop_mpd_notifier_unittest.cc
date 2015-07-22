@@ -7,8 +7,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "packager/base/file_util.h"
 #include "packager/base/files/file_path.h"
+#include "packager/base/files/file_util.h"
 #include "packager/mpd/base/dash_iop_mpd_notifier.h"
 #include "packager/mpd/base/mock_mpd_builder.h"
 #include "packager/mpd/base/mpd_builder.h"
@@ -101,14 +101,14 @@ class DashIopMpdNotifierTest
         default_mock_representation_(
             new MockRepresentation(kDefaultRepresentationId)) {}
 
-  virtual void SetUp() OVERRIDE {
+  void SetUp() override {
     ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
     output_path_ = temp_file_path_.value();
     ON_CALL(*default_mock_adaptation_set_, Group())
         .WillByDefault(Return(kDefaultGroupId));
   }
 
-  virtual void TearDown() OVERRIDE {
+  void TearDown() override {
     base::DeleteFile(temp_file_path_, false /* non recursive, just 1 file */);
   }
 
@@ -175,7 +175,7 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainer) {
   EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   uint32_t unused_container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
+  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &unused_container_id));
   EXPECT_TRUE(notifier.Flush());
@@ -296,7 +296,7 @@ TEST_P(DashIopMpdNotifierTest,
       .WillOnce(Return(hd_representation.get()));
 
   uint32_t unused_container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
+  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kSdProtectedContent), &unused_container_id));
   EXPECT_TRUE(notifier.NotifyNewContainer(
@@ -399,7 +399,7 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainersWithSameProtectedContent) {
       .WillOnce(Return(hd_representation.get()));
 
   uint32_t unused_container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
+  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kSdProtectedContent), &unused_container_id));
   EXPECT_TRUE(notifier.NotifyNewContainer(
@@ -419,7 +419,7 @@ TEST_P(DashIopMpdNotifierTest, AddContentProtection) {
       .WillOnce(Return(default_mock_representation_.get()));
 
   uint32_t container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
+  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &container_id));
 
@@ -523,7 +523,7 @@ TEST_P(DashIopMpdNotifierTest, SetGroup) {
   // This is not very nice but we need it for settings expectations later.
   MockMpdBuilder* mock_mpd_builder_raw = mock_mpd_builder.get();
   uint32_t unused_container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
+  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kSdProtectedContent), &unused_container_id));
   EXPECT_TRUE(notifier.NotifyNewContainer(
@@ -664,7 +664,7 @@ TEST_P(DashIopMpdNotifierTest, DoNotSetGroupIfContentTypesDifferent) {
       .WillOnce(Return(audio_representation.get()));
 
   uint32_t unused_container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
+  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kVideoContent), &unused_container_id));
   EXPECT_TRUE(notifier.NotifyNewContainer(
@@ -704,7 +704,7 @@ TEST_P(DashIopMpdNotifierTest, UpdateEncryption) {
       .WillOnce(Return(default_mock_representation_.get()));
 
   uint32_t container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
+  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kProtectedContent),
                                           &container_id));
 

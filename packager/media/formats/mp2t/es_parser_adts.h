@@ -28,15 +28,12 @@ class EsParserAdts : public EsParser {
                const NewStreamInfoCB& new_stream_info_cb,
                const EmitSampleCB& emit_sample_cb,
                bool sbr_in_mimetype);
-  virtual ~EsParserAdts();
+  ~EsParserAdts() override;
 
   // EsParser implementation.
-  virtual bool Parse(const uint8_t* buf,
-                     int size,
-                     int64_t pts,
-                     int64_t dts) OVERRIDE;
-  virtual void Flush() OVERRIDE;
-  virtual void Reset() OVERRIDE;
+  bool Parse(const uint8_t* buf, int size, int64_t pts, int64_t dts) override;
+  void Flush() override;
+  void Reset() override;
 
  private:
   // Used to link a PTS with a byte position in the ES stream.

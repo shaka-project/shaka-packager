@@ -9,7 +9,8 @@
 #include <inttypes.h>
 #include <libxml/xmlstring.h>
 
-#include "packager/base/file_util.h"
+#include "packager/base/strings/string_piece.h"
+#include "packager/base/files/file_util.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_piece.h"
@@ -97,7 +98,7 @@ template <MpdBuilder::MpdType type>
 class MpdBuilderTest: public ::testing::Test {
  public:
   MpdBuilderTest() : mpd_(type, MpdOptions()), representation_() {}
-  virtual ~MpdBuilderTest() {}
+  ~MpdBuilderTest() override {}
 
   void CheckMpd(const std::string& expected_output_file) {
     std::string mpd_doc;
@@ -143,11 +144,11 @@ typedef StaticMpdBuilderTest CommonMpdBuilderTest;
 
 class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
  public:
-  virtual ~DynamicMpdBuilderTest() {}
+  ~DynamicMpdBuilderTest() override {}
 
   // Anchors availabilityStartTime so that the test result doesn't depend on the
   // current time.
-  virtual void SetUp() {
+  void SetUp() override {
     mpd_.availability_start_time_ = "2011-12-25T12:30:00";
   }
 
@@ -180,9 +181,9 @@ class SegmentTemplateTest : public DynamicMpdBuilderTest {
  public:
   SegmentTemplateTest()
       : bandwidth_estimator_(BandwidthEstimator::kUseAllBlocks) {}
-  virtual ~SegmentTemplateTest() {}
+  ~SegmentTemplateTest() override {}
 
-  virtual void SetUp() {
+  void SetUp() override {
     DynamicMpdBuilderTest::SetUp();
     ASSERT_NO_FATAL_FAILURE(AddRepresentationWithDefaultMediaInfo());
   }
@@ -270,12 +271,12 @@ class SegmentTemplateTest : public DynamicMpdBuilderTest {
 class TimeShiftBufferDepthTest : public SegmentTemplateTest {
  public:
   TimeShiftBufferDepthTest() {}
-  virtual ~TimeShiftBufferDepthTest() {}
+  ~TimeShiftBufferDepthTest() override {}
 
   // This function is tricky. It does not call SegmentTemplateTest::Setup() so
   // that it does not automatically add a representation, that has $Time$
   // template.
-  virtual void SetUp() {
+  void SetUp() override {
     DynamicMpdBuilderTest::SetUp();
 
     // The only diff with current GetDefaultMediaInfo() is that this uses
@@ -458,9 +459,9 @@ TEST_F(CommonMpdBuilderTest,
       new MockRepresentationStateChangeListener());
   EXPECT_CALL(*listener,
               OnNewSegmentForRepresentation(kStartTime, kDuration));
-  Representation representation(
-      ConvertToMediaInfo(kTestMediaInfo), MpdOptions(), kAnyRepresentationId,
-      listener.PassAs<RepresentationStateChangeListener>());
+  Representation representation(ConvertToMediaInfo(kTestMediaInfo),
+                                MpdOptions(), kAnyRepresentationId,
+                                listener.Pass());
   EXPECT_TRUE(representation.Init());
 
   representation.AddNewSegment(kStartTime, kDuration, 10 /* any size */);
@@ -489,9 +490,9 @@ TEST_F(CommonMpdBuilderTest,
       new MockRepresentationStateChangeListener());
   EXPECT_CALL(*listener,
               OnSetFrameRateForRepresentation(kFrameDuration, kTimeScale));
-  Representation representation(
-      ConvertToMediaInfo(kTestMediaInfo), MpdOptions(), kAnyRepresentationId,
-      listener.PassAs<RepresentationStateChangeListener>());
+  Representation representation(ConvertToMediaInfo(kTestMediaInfo),
+                                MpdOptions(), kAnyRepresentationId,
+                                listener.Pass());
   EXPECT_TRUE(representation.Init());
 
   representation.SetSampleDuration(kFrameDuration);

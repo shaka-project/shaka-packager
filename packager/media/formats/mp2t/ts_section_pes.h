@@ -21,14 +21,14 @@ class EsParser;
 class TsSectionPes : public TsSection {
  public:
   explicit TsSectionPes(scoped_ptr<EsParser> es_parser);
-  virtual ~TsSectionPes();
+  ~TsSectionPes() override;
 
   // TsSection implementation.
-  virtual bool Parse(bool payload_unit_start_indicator,
-                     const uint8_t* buf,
-                     int size) OVERRIDE;
-  virtual void Flush() OVERRIDE;
-  virtual void Reset() OVERRIDE;
+  bool Parse(bool payload_unit_start_indicator,
+             const uint8_t* buf,
+             int size) override;
+  void Flush() override;
+  void Reset() override;
 
  private:
   // Emit a reassembled PES packet.

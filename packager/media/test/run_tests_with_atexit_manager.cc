@@ -14,7 +14,7 @@ int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
 
   // Needed to enable VLOG/DVLOG through --vmodule or --v.
-  CommandLine::Init(argc, argv);
+  base::CommandLine::Init(argc, argv);
   CHECK(logging::InitLogging(logging::LoggingSettings()));
 
   base::AtExitManager exit;

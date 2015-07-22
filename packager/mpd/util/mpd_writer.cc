@@ -10,8 +10,8 @@
 #include <google/protobuf/text_format.h>
 #include <stdint.h>
 
-#include "packager/base/file_util.h"
 #include "packager/base/files/file_path.h"
+#include "packager/base/files/file_util.h"
 #include "packager/media/file/file.h"
 #include "packager/mpd/base/dash_iop_mpd_notifier.h"
 #include "packager/mpd/base/mpd_builder.h"
@@ -35,13 +35,12 @@ namespace {
 class DashIopMpdNotifierFactory : public MpdNotifierFactory {
  public:
   DashIopMpdNotifierFactory() {}
-  virtual ~DashIopMpdNotifierFactory() OVERRIDE {}
+  ~DashIopMpdNotifierFactory() override {}
 
-  virtual scoped_ptr<MpdNotifier> Create(
-      DashProfile dash_profile,
-      const MpdOptions& mpd_options,
-      const std::vector<std::string>& base_urls,
-      const std::string& output_path) OVERRIDE {
+  scoped_ptr<MpdNotifier> Create(DashProfile dash_profile,
+                                 const MpdOptions& mpd_options,
+                                 const std::vector<std::string>& base_urls,
+                                 const std::string& output_path) override {
     return scoped_ptr<MpdNotifier>(new DashIopMpdNotifier(
         dash_profile, mpd_options, base_urls, output_path));
   }
@@ -51,13 +50,12 @@ class DashIopMpdNotifierFactory : public MpdNotifierFactory {
 class SimpleMpdNotifierFactory : public MpdNotifierFactory {
  public:
   SimpleMpdNotifierFactory() {}
-  virtual ~SimpleMpdNotifierFactory() OVERRIDE {}
+  ~SimpleMpdNotifierFactory() override {}
 
-  virtual scoped_ptr<MpdNotifier> Create(
-      DashProfile dash_profile,
-      const MpdOptions& mpd_options,
-      const std::vector<std::string>& base_urls,
-      const std::string& output_path) OVERRIDE {
+  scoped_ptr<MpdNotifier> Create(DashProfile dash_profile,
+                                 const MpdOptions& mpd_options,
+                                 const std::vector<std::string>& base_urls,
+                                 const std::string& output_path) override {
     return scoped_ptr<MpdNotifier>(new SimpleMpdNotifier(
         dash_profile, mpd_options, base_urls, output_path));
   }

@@ -51,8 +51,8 @@ class VideoStreamInfo : public StreamInfo {
 
   /// @name StreamInfo implementation overrides.
   /// @{
-  virtual bool IsValidConfig() const OVERRIDE;
-  virtual std::string ToString() const OVERRIDE;
+  bool IsValidConfig() const override;
+  std::string ToString() const override;
   /// @}
 
   VideoCodec codec() const { return codec_; }
@@ -80,7 +80,7 @@ class VideoStreamInfo : public StreamInfo {
                                     uint8_t level);
 
  private:
-  virtual ~VideoStreamInfo();
+  ~VideoStreamInfo() override;
 
   VideoCodec codec_;
   uint16_t width_;

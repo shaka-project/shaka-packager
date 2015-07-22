@@ -4,7 +4,7 @@
 
 #include "packager/media/test/test_data_util.h"
 
-#include "packager/base/file_util.h"
+#include "packager/base/files/file_util.h"
 #include "packager/base/logging.h"
 #include "packager/base/path_service.h"
 

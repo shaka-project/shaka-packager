@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "packager/base/file_util.h"
+#include "packager/base/files/file_util.h"
 #include "packager/base/files/file_path.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/video_stream_info.h"
@@ -61,16 +61,16 @@ void ExpectTextFormatMediaInfoEqual(const std::string& expect,
 class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
  public:
   VodMediaInfoDumpMuxerListenerTest() {}
-  virtual ~VodMediaInfoDumpMuxerListenerTest() {}
+  ~VodMediaInfoDumpMuxerListenerTest() override {}
 
-  virtual void SetUp() OVERRIDE {
+  void SetUp() override {
     ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
     DLOG(INFO) << "Created temp file: " << temp_file_path_.value();
 
     listener_.reset(new VodMediaInfoDumpMuxerListener(temp_file_path_.value()));
   }
 
-  virtual void TearDown() OVERRIDE {
+  void TearDown() override {
     base::DeleteFile(temp_file_path_, false);
   }
 

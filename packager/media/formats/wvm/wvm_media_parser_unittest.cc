@@ -52,7 +52,7 @@ namespace media {
 class MockKeySource : public KeySource {
  public:
   MockKeySource() {}
-  virtual ~MockKeySource() {}
+  ~MockKeySource() override {}
 
   MOCK_METHOD1(FetchKeys, Status(uint32_t asset_id));
   MOCK_METHOD2(GetKey, Status(TrackType track_type,

@@ -105,7 +105,7 @@ bool HexToUUID(const std::string& data, std::string* uuid_format) {
   }
 
   const std::string hex_encoded =
-      StringToLowerASCII(base::HexEncode(data.data(), data.size()));
+      base::StringToLowerASCII(base::HexEncode(data.data(), data.size()));
   DCHECK_EQ(hex_encoded.size(), kExpectedUUIDSize * 2);
   base::StringPiece all(hex_encoded);
   // Note UUID has 5 parts separated with dashes.

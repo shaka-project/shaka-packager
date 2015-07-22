@@ -185,11 +185,11 @@ class MultiThreadProducerConsumerQueueTest : public ::testing::Test {
                 base::Bind(&MultiThreadProducerConsumerQueueTest::PushTask,
                            base::Unretained(this))),
         queue_(kCapacity) {}
-  virtual ~MultiThreadProducerConsumerQueueTest() {}
+  ~MultiThreadProducerConsumerQueueTest() override {}
 
  protected:
-  virtual void SetUp() OVERRIDE { thread_.Start(); }
-  virtual void TearDown() OVERRIDE { thread_.Join(); }
+  void SetUp() override { thread_.Start(); }
+  void TearDown() override { thread_.Join(); }
 
   void PushTask() {
     int val = 0;
@@ -302,7 +302,7 @@ class MultiThreadProducerConsumerQueueStopTest
     : public ::testing::TestWithParam<Operation> {
  public:
   MultiThreadProducerConsumerQueueStopTest() : queue_(1), event_(true, false) {}
-  virtual ~MultiThreadProducerConsumerQueueStopTest() {}
+  ~MultiThreadProducerConsumerQueueStopTest() override {}
 
  public:
   void ClosureTask(Operation op) {

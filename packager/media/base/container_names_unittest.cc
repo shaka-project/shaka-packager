@@ -4,7 +4,7 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/base/file_util.h"
+#include "packager/base/files/file_util.h"
 #include "packager/media/base/container_names.h"
 #include "packager/media/test/test_data_util.h"
 

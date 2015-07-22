@@ -29,7 +29,7 @@ class MpdNotifyMuxerListener : public MuxerListener {
   /// @param mpd_notifier must be initialized, i.e mpd_notifier->Init() must be
   ///        called.
   explicit MpdNotifyMuxerListener(MpdNotifier* mpd_notifier);
-  virtual ~MpdNotifyMuxerListener();
+  ~MpdNotifyMuxerListener() override;
 
   /// If the stream is encrypted use this as 'schemeIdUri' attribute for
   /// ContentProtection element.
@@ -37,28 +37,27 @@ class MpdNotifyMuxerListener : public MuxerListener {
 
   /// @name MuxerListener implementation overrides.
   /// @{
-  virtual void OnEncryptionInfoReady(
-      bool is_initial_encryption_info,
-      const std::string& content_protection_uuid,
-      const std::string& content_protection_name_version,
-      const std::vector<uint8_t>& key_id,
-      const std::vector<uint8_t>& pssh) OVERRIDE;
-  virtual void OnMediaStart(const MuxerOptions& muxer_options,
-                            const StreamInfo& stream_info,
-                            uint32_t time_scale,
-                            ContainerType container_type) OVERRIDE;
-  virtual void OnSampleDurationReady(uint32_t sample_duration) OVERRIDE;
-  virtual void OnMediaEnd(bool has_init_range,
-                          uint64_t init_range_start,
-                          uint64_t init_range_end,
-                          bool has_index_range,
-                          uint64_t index_range_start,
-                          uint64_t index_range_end,
-                          float duration_seconds,
-                          uint64_t file_size) OVERRIDE;
-  virtual void OnNewSegment(uint64_t start_time,
-                            uint64_t duration,
-                            uint64_t segment_file_size) OVERRIDE;
+  void OnEncryptionInfoReady(bool is_initial_encryption_info,
+                             const std::string& content_protection_uuid,
+                             const std::string& content_protection_name_version,
+                             const std::vector<uint8_t>& key_id,
+                             const std::vector<uint8_t>& pssh) override;
+  void OnMediaStart(const MuxerOptions& muxer_options,
+                    const StreamInfo& stream_info,
+                    uint32_t time_scale,
+                    ContainerType container_type) override;
+  void OnSampleDurationReady(uint32_t sample_duration) override;
+  void OnMediaEnd(bool has_init_range,
+                  uint64_t init_range_start,
+                  uint64_t init_range_end,
+                  bool has_index_range,
+                  uint64_t index_range_start,
+                  uint64_t index_range_end,
+                  float duration_seconds,
+                  uint64_t file_size) override;
+  void OnNewSegment(uint64_t start_time,
+                    uint64_t duration,
+                    uint64_t segment_file_size) override;
   /// @}
 
  private:

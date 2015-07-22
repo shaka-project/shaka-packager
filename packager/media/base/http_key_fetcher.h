@@ -30,12 +30,12 @@ class HttpKeyFetcher : public KeyFetcher {
   /// Create a fetcher with timeout.
   /// @param timeout_in_seconds specifies the timeout in seconds.
   HttpKeyFetcher(uint32_t timeout_in_seconds);
-  virtual ~HttpKeyFetcher();
+  ~HttpKeyFetcher() override;
 
   /// @name KeyFetcher implementation overrides.
-  virtual Status FetchKeys(const std::string& url,
-                           const std::string& request,
-                           std::string* response) OVERRIDE;
+  Status FetchKeys(const std::string& url,
+                   const std::string& request,
+                   std::string* response) override;
 
   /// Fetch content using HTTP GET.
   /// @param url specifies the content URL.

@@ -95,7 +95,7 @@ class XmlNode {
 /// AdaptationSet and Representation are subtypes of this.
 class RepresentationBaseXmlNode : public XmlNode {
  public:
-  virtual ~RepresentationBaseXmlNode();
+  ~RepresentationBaseXmlNode() override;
   bool AddContentProtectionElements(
       const std::list<ContentProtectionElement>& content_protection_elements);
 
@@ -113,7 +113,7 @@ class RepresentationBaseXmlNode : public XmlNode {
 class AdaptationSetXmlNode : public RepresentationBaseXmlNode {
  public:
   AdaptationSetXmlNode();
-  virtual ~AdaptationSetXmlNode();
+  ~AdaptationSetXmlNode() override;
 
   /// @param scheme_id_uri is content of the schemeIdUri attribute.
   /// @param value is the content of value attribute.
@@ -128,7 +128,7 @@ class AdaptationSetXmlNode : public RepresentationBaseXmlNode {
 class RepresentationXmlNode : public RepresentationBaseXmlNode {
  public:
   RepresentationXmlNode();
-  virtual ~RepresentationXmlNode();
+  ~RepresentationXmlNode() override;
 
   /// Adds video metadata to the MPD.
   /// @param video_info constains the VideoInfo for a Representation.
