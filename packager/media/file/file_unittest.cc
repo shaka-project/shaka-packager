@@ -11,7 +11,6 @@
 
 namespace {
 const int kDataSize = 1024;
-const char* kTestLocalFileName = "/tmp/local_file_test";
 }
 
 namespace edash_packager {
@@ -25,26 +24,33 @@ class LocalFileTest : public testing::Test {
       data_[i] = i % 256;
 
     // Test file path for file_util API.
-    test_file_path_ = base::FilePath(kTestLocalFileName);
+    ASSERT_TRUE(base::CreateTemporaryFile(&test_file_path_));
+    local_file_name_no_prefix_ = test_file_path_.value();
 
     // Local file name with prefix for File API.
     local_file_name_ = kLocalFilePrefix;
-    local_file_name_ += kTestLocalFileName;
+    local_file_name_ += local_file_name_no_prefix_;
   }
 
   virtual void TearDown() {
     // Remove test file if created.
-    base::DeleteFile(base::FilePath(kTestLocalFileName), false);
+    base::DeleteFile(base::FilePath(local_file_name_no_prefix_), false);
   }
 
   std::string data_;
+
+  // Path to the temporary file for this test.
   base::FilePath test_file_path_;
+  // Same as |test_file_path_| but in string form.
+  std::string local_file_name_no_prefix_;
+
+  // Same as |local_file_name_no_prefix_| but with the file prefix.
   std::string local_file_name_;
 };
 
 TEST_F(LocalFileTest, ReadNotExist) {
   // Remove test file if it exists.
-  base::DeleteFile(base::FilePath(kTestLocalFileName), false);
+  base::DeleteFile(base::FilePath(local_file_name_no_prefix_), false);
   ASSERT_TRUE(File::Open(local_file_name_.c_str(), "r") == NULL);
 }
 
@@ -99,7 +105,7 @@ TEST_F(LocalFileTest, Read_And_Eof) {
 
 TEST_F(LocalFileTest, WriteRead) {
   // Write file using File API, using file name directly (without prefix).
-  File* file = File::Open(kTestLocalFileName, "w");
+  File* file = File::Open(local_file_name_no_prefix_.c_str(), "w");
   ASSERT_TRUE(file != NULL);
   EXPECT_EQ(kDataSize, file->Write(&data_[0], kDataSize));
   EXPECT_EQ(kDataSize, file->Size());
