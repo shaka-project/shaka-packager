@@ -7,14 +7,12 @@
 # Packager dependencies.
 
 vars = {
+  "chromium_git": "https://chromium.googlesource.com",
   "chromium_svn": "http://src.chromium.org/chrome/trunk",
-  "chromium_rev": "253526",
+  "chromium_rev": "275581",
 
   "googlecode_url": "http://%s.googlecode.com/svn",
   "gflags_rev": "84",
-  "gmock_rev": "470",
-  "gtest_rev": "680",
-  "gyp_rev": "1876",
   "webrtc_rev": "5718",  # For gflags.
 
   "curl_url": "https://github.com/bagder/curl.git",
@@ -23,35 +21,22 @@ vars = {
 
 deps = {
   "src/packager/base":
-    Var("chromium_svn") + "/src/base@" + Var("chromium_rev"),
+    Var("chromium_git") + "/chromium/src/base@d24f251a44cd0304e56406d843644b79138c584b",  #339798
 
   "src/packager/build":
-    Var("chromium_svn") + "/src/build@" + Var("chromium_rev"),
+    Var("chromium_git") + "/chromium/src/build@8316b2d4d47438a9eed3e89d2ba5dd625e8c8aef",  #339877
 
-  # Required by base/metrics/stats_table.cc.
-  "src/packager/ipc":
-    File(Var("chromium_svn") + "/src/ipc/ipc_descriptors.h@" + Var("chromium_rev")),
-
-  # Required by base isolate dependencies, although it is compiled off.
-  # Dependency chain:
-  # base/base.gyp <= base/base_unittests.isolate
-  #               <= base/base.isolate
-  #               <= build/linux/system.isolate
-  #               <= net/third_party/nss/ssl.isolate
-  #               <= net/third_party/nss/ssl_base.isolate
-  # We don't need to pull in the whole directory, but it doesn't seem possible
-  # to just pull in the two *.isolate files (ssl.isolate and ssl_base.isolate).
-  "src/packager/net/third_party/nss":
-    Var("chromium_svn") + "/src/net/third_party/nss@" + Var("chromium_rev"),
+  'src/packager/buildtools':
+    Var("chromium_git") + '/chromium/buildtools.git@5fc8d3943e163ee627c8af50366c700c0325bba2',
 
   "src/packager/testing":
     Var("chromium_svn") + "/src/testing@" + Var("chromium_rev"),
 
   "src/packager/testing/gmock":
-    (Var("googlecode_url") % "googlemock") + "/trunk@" + Var("gmock_rev"),
+    Var("chromium_git") + "/external/googlemock@29763965ab52f24565299976b936d1265cb6a271",  #501
 
   "src/packager/testing/gtest":
-    (Var("googlecode_url") % "googletest") + "/trunk@" + Var("gtest_rev"),
+    Var("chromium_git") + "/external/googletest@00a70a9667d92a4695d84e4fa36b64f611f147da",  #725
 
   "src/packager/third_party/curl/source":
     Var("curl_url") + "@" + Var("curl_rev"),
@@ -64,7 +49,7 @@ deps = {
 
   # Required by libxml.
   "src/packager/third_party/icu":
-    Var("chromium_svn") + "/deps/third_party/icu46@" + Var("chromium_rev"),
+    Var("chromium_git") + "/chromium/third_party/icu46@78597121d71a5922f5726e715c6ad06c50ae6cdc",
 
   # Required by base/message_pump_libevent.cc.
   "src/packager/third_party/libevent":
@@ -74,7 +59,7 @@ deps = {
     Var("chromium_svn") + "/src/third_party/libxml@" + Var("chromium_rev"),
 
   "src/packager/third_party/modp_b64":
-    Var("chromium_svn") + "/src/third_party/modp_b64@" + Var("chromium_rev"),
+    Var("chromium_git") + "/chromium/src/third_party/modp_b64@3a0e3b4ef6c54678a2d14522533df56b33b56119",
 
   "src/packager/third_party/openssl":
     Var("chromium_svn") + "/deps/third_party/openssl@" + Var("chromium_rev"),
@@ -84,37 +69,36 @@ deps = {
 
   # Required by build/linux/system.gyp and third_party/curl/curl.gyp.
   "src/packager/third_party/zlib":
-    Var("chromium_svn") + "/src/third_party/zlib@" + Var("chromium_rev"),
+    Var("chromium_git") + "/chromium/src/third_party/zlib@bcf81d2e5f3a62b698d179c1fadba94604c5dad3",
 
   "src/packager/tools/clang":
-    Var("chromium_svn") + "/src/tools/clang@" + Var("chromium_rev"),
+    Var("chromium_git") + "/chromium/src/tools/clang@0de8f3bb6af64e13876273c601704795d5e00faf",
 
   "src/packager/tools/gyp":
-    (Var("googlecode_url") % "gyp") + "/trunk@" + Var("gyp_rev"),
+    Var("chromium_git") + "/external/gyp@5122240c5e5c4d8da12c543d82b03d6089eb77c5",
 
   "src/packager/tools/protoc_wrapper":
     Var("chromium_svn") + "/src/tools/protoc_wrapper@" + Var("chromium_rev"),
 
   "src/packager/tools/valgrind":
-    Var("chromium_svn") + "/src/tools/valgrind@" + Var("chromium_rev"),
+    Var("chromium_git") + "/chromium/deps/valgrind@3a97aa8142b6e63f16789b22daafb42d202f91dc",
 }
 
 deps_os = {
   "unix": {  # Linux, actually.
     # Linux gold build to build faster.
     "src/packager/third_party/gold":
-      Var("chromium_svn") + "/deps/third_party/gold@" + Var("chromium_rev"),
+      Var("chromium_git") + "/chromium/deps/gold@29ae7431b4688df544ea840b0b66784e5dd298fe",
   },
 }
 
 hooks = [
   {
-    # This snippet is from chromium src/DEPS. Run gclient with
-    # GYP_DEFINES="clang=1" to automatically pull in clang at sync.
-    # Pull clang if on Mac or clang is requested via GYP_DEFINES.
+    # Pull clang if needed or requested via GYP_DEFINES (GYP_DEFINES="clang=1").
+    # Note: On Win, this should run after win_toolchain, as it may use it.
     "name": "clang",
     "pattern": ".",
-    "action": ["python", "src/packager/tools/clang/scripts/update.py", "--mac-only"],
+    "action": ["python", "src/packager/tools/clang/scripts/update.py", "--if-needed"],
   },
   {
     # A change to a .gyp, .gypi, or to GYP itself should run the generator.
