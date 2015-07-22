@@ -4,7 +4,6 @@
 
 namespace edash_packager {
 namespace {
-const uint32_t kAnyAdaptationSetId = 1;
 const char kEmptyLang[] = "";
 const MpdOptions kDefaultMpdOptions;
 const MpdBuilder::MpdType kDefaultMpdType = MpdBuilder::kStatic;
@@ -16,8 +15,8 @@ MockMpdBuilder::MockMpdBuilder(MpdType type)
     : MpdBuilder(type, kDefaultMpdOptions) {}
 MockMpdBuilder::~MockMpdBuilder() {}
 
-MockAdaptationSet::MockAdaptationSet()
-    : AdaptationSet(kAnyAdaptationSetId,
+MockAdaptationSet::MockAdaptationSet(uint32_t adaptation_set_id)
+    : AdaptationSet(adaptation_set_id,
                     kEmptyLang,
                     kDefaultMpdOptions,
                     kDefaultMpdType,

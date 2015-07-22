@@ -31,13 +31,15 @@ const char kValidMediaInfo[] =
     "  pixel_height: 1\n"
     "}\n"
     "container_type: 1\n";
+const uint32_t kDefaultAdaptationSetId = 0u;
 }  // namespace
 
 class SimpleMpdNotifierTest
     : public ::testing::TestWithParam<MpdBuilder::MpdType> {
  protected:
   SimpleMpdNotifierTest()
-      : default_mock_adaptation_set_(new MockAdaptationSet()) {}
+      : default_mock_adaptation_set_(
+            new MockAdaptationSet(kDefaultAdaptationSetId)) {}
 
   virtual void SetUp() OVERRIDE {
     ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
@@ -66,7 +68,7 @@ class SimpleMpdNotifierTest
   }
 
   // Use output_path_ for specifying the MPD output path so that
-  // SimpleMpdNotifier::WriteMpdToFile() doesn't crash.
+  // WriteMpdToFile() doesn't crash.
   std::string output_path_;
   const MpdOptions empty_mpd_option_;
   const std::vector<std::string> empty_base_urls_;

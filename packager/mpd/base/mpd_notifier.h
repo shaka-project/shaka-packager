@@ -12,6 +12,8 @@
 
 #include <stdint.h>
 
+#include "packager/base/macros.h"
+
 namespace edash_packager {
 
 class MediaInfo;

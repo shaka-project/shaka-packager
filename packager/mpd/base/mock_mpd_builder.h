@@ -17,7 +17,7 @@ namespace edash_packager {
 
 class MockMpdBuilder : public MpdBuilder {
  public:
-  // type indicates whether the MPD should be for VOD or live content (kStatic
+  // |type| indicates whether the MPD should be for VOD or live content (kStatic
   // for VOD profile, or kDynamic for live profile).
   explicit MockMpdBuilder(MpdType type);
   virtual ~MockMpdBuilder() OVERRIDE;
@@ -28,10 +28,16 @@ class MockMpdBuilder : public MpdBuilder {
 
 class MockAdaptationSet : public AdaptationSet {
  public:
-  MockAdaptationSet();
+  // |adaptation_set_id| is the id for the AdaptationSet.
+  explicit MockAdaptationSet(uint32_t adaptation_set_id);
   virtual ~MockAdaptationSet() OVERRIDE;
 
   MOCK_METHOD1(AddRepresentation, Representation*(const MediaInfo& media_info));
+  MOCK_METHOD1(AddContentProtectionElement,
+               void(const ContentProtectionElement& element));
+
+  MOCK_METHOD1(SetGroup, void(int group_number));
+  MOCK_CONST_METHOD0(Group, int());
 
  private:
   // Only for constructing the super class. Not used for testing.

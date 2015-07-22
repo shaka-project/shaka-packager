@@ -15,6 +15,7 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/synchronization/lock.h"
 #include "packager/mpd/base/mpd_notifier.h"
+#include "packager/mpd/base/mpd_notifier_util.h"
 
 namespace edash_packager {
 
@@ -64,19 +65,9 @@ class SimpleMpdNotifier : public MpdNotifier {
     mpd_builder_ = mpd_builder.Pass();
   }
 
-  enum ContentType {
-    kUnknown,
-    kVideo,
-    kAudio,
-    kText
-  };
-  ContentType GetContentType(const MediaInfo& media_info);
-  bool WriteMpdToFile();
-
+  // MPD output path.
   std::string output_path_;
-
   scoped_ptr<MpdBuilder> mpd_builder_;
-
   base::Lock lock_;
 
   // [type][lang] = AdaptationSet

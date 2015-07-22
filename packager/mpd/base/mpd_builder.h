@@ -187,7 +187,8 @@ class AdaptationSet {
   ///        If @a element has {value, schemeIdUri} set and has
   ///        {“value”, “schemeIdUri”} as key for @a additional_attributes,
   ///        then the former is used.
-  void AddContentProtectionElement(const ContentProtectionElement& element);
+  virtual void AddContentProtectionElement(
+      const ContentProtectionElement& element);
 
   /// Set the Role element for this AdaptationSet.
   /// The Role element's is schemeIdUri='urn:mpeg:dash:role:2011'.
@@ -213,9 +214,10 @@ class AdaptationSet {
   /// Note that group=0 is a special group, as mentioned in the DASH MPD
   /// specification.
   /// @param group_number is the value of AdaptatoinSet@group.
-  void set_group(int group_number) {
-    group_ = group_number;
-  }
+  virtual void SetGroup(int group_number);
+
+  /// @return Returns the value for group. If not set, returns a negative value.
+  virtual int Group() const;
 
   // Must be unique in the Period.
   uint32_t id() const { return id_; }

@@ -757,6 +757,14 @@ void AdaptationSet::ForceSetSegmentAlignment(bool segment_alignment) {
   force_set_segment_alignment_ = true;
 }
 
+void AdaptationSet::SetGroup(int group_number) {
+  group_ = group_number;
+}
+
+int AdaptationSet::Group() const {
+  return group_;
+}
+
 void AdaptationSet::OnNewSegmentForRepresentation(uint32_t representation_id,
                                                   uint64_t start_time,
                                                   uint64_t duration) {
