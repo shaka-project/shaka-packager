@@ -51,6 +51,42 @@ This document provides the information needed to create a DASH packager that is 
 
   See https://github.com/google/edash-packager/blob/master/CONTRIBUTING.md for details.
 
+# Using docker for testing/development #
+
+[Docker](https://www.docker.com/whatisdocker) is a tool that can package an application and its dependencies in a virtual container that can run on different host operating systems.
+
+1. [Install Docker.](https://docs.docker.com/installation/)
+
+2. Build the image
+
+  ```Shell
+  docker build -t edash github.com/google/edash-packager.git
+  ```
+
+3. Run the container (`your_media_path` should be your media folder)
+
+  ```Shell
+  docker run -v /your_media_path/:/medias -it --rm edash
+  ```
+
+4. Make tests/experimentations
+
+  ```Shell
+  # make sure you run step 3 and you're inside the container
+
+  # go to /medias folder
+  cd /medias
+
+  # VOD: mp4 --> dash
+  packager input=/medias/example.mp4,stream=audio,output=audio.mp4 \
+          input=/medias/example.mp4,stream=video,output=video.mp4 \
+          --profile on-demand --mpd_output example.mpd
+
+  # then you can leave the container
+  exit
+
+  # now you can access the mpd at `your_media_path`
+  ```
 
 #Design overview#
 
