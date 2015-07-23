@@ -52,7 +52,7 @@ class SimpleMpdNotifier : public MpdNotifier {
   /// @}
 
  private:
-  friend SimpleMpdNotifierTest;
+  friend class SimpleMpdNotifierTest;
 
   // Testing only method. Returns a pointer to MpdBuilder.
   MpdBuilder* MpdBuilderForTesting() const {
