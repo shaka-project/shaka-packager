@@ -76,8 +76,8 @@
       ],
       'dependencies': [
         '../../base/base.gyp:base',
+        '../../third_party/boringssl/boringssl.gyp:boringssl',
         '../../third_party/curl/curl.gyp:libcurl',
-        '../../third_party/openssl/openssl.gyp:openssl',
       ],
     },
     {
@@ -107,7 +107,7 @@
       'dependencies': [
         '../../testing/gtest.gyp:gtest',
         '../../testing/gmock.gyp:gmock',
-        '../../third_party/openssl/openssl.gyp:openssl',
+        '../../third_party/boringssl/boringssl.gyp:boringssl',
         '../file/file.gyp:file',
         '../test/media_test.gyp:media_test_support',
         'base',

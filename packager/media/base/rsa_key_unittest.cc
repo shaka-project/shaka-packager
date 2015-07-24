@@ -13,6 +13,12 @@
 #include "packager/media/base/test/fake_prng.h"
 #include "packager/media/base/test/rsa_test_data.h"
 
+namespace {
+// BoringSSL does not support RAND_set_rand_method yet, so we cannot use fake
+// prng with boringssl.
+const bool kIsFakePrngSupported = false;
+}  // namespace
+
 namespace edash_packager {
 namespace media {
 
@@ -21,15 +27,20 @@ class RsaKeyTest : public ::testing::TestWithParam<RsaTestSet> {
   RsaKeyTest() : test_set_(GetParam()) {}
 
   void SetUp() override {
-    // Make OpenSSL RSA deterministic.
-    ASSERT_TRUE(fake_prng::StartFakePrng());
+    if (kIsFakePrngSupported) {
+      // Make OpenSSL RSA deterministic.
+      ASSERT_TRUE(fake_prng::StartFakePrng());
+    }
 
     private_key_.reset(RsaPrivateKey::Create(test_set_.private_key));
     ASSERT_TRUE(private_key_ != NULL);
     public_key_.reset(RsaPublicKey::Create(test_set_.public_key));
     ASSERT_TRUE(public_key_ != NULL);
   }
-  void TearDown() override { fake_prng::StopFakePrng(); }
+  void TearDown() override {
+    if (kIsFakePrngSupported)
+      fake_prng::StopFakePrng();
+  }
 
  protected:
   const RsaTestSet& test_set_;
@@ -75,7 +86,8 @@ TEST_P(RsaKeyTest, LoadPrivateKeyInPublicKey) {
 TEST_P(RsaKeyTest, EncryptAndDecrypt) {
   std::string encrypted_message;
   EXPECT_TRUE(public_key_->Encrypt(test_set_.test_message, &encrypted_message));
-  EXPECT_EQ(test_set_.encrypted_message, encrypted_message);
+  if (kIsFakePrngSupported)
+    EXPECT_EQ(test_set_.encrypted_message, encrypted_message);
 
   std::string decrypted_message;
   EXPECT_TRUE(private_key_->Decrypt(encrypted_message, &decrypted_message));
@@ -112,7 +124,8 @@ TEST_P(RsaKeyTest, SignAndVerify) {
   std::string signature;
   EXPECT_TRUE(
       private_key_->GenerateSignature(test_set_.test_message, &signature));
-  EXPECT_EQ(test_set_.signature, signature);
+  if (kIsFakePrngSupported)
+    EXPECT_EQ(test_set_.signature, signature);
   EXPECT_TRUE(public_key_->VerifySignature(test_set_.test_message, signature));
 }
 

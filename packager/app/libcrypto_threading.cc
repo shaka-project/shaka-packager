@@ -6,7 +6,7 @@
 
 #include "packager/app/libcrypto_threading.h"
 
-#include <openssl/crypto.h>
+#include <openssl/thread.h>
 
 #include <vector>
 

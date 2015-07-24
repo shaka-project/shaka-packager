@@ -9,9 +9,8 @@
 /packager/base/
 /packager/build/
 /packager/docs/
-/packager/ipc/
-/packager/net/
 /packager/testing/
+/packager/third_party/boringssl/src/
 /packager/third_party/curl/source/
 /packager/third_party/gflags/
 /packager/third_party/gold/
@@ -22,6 +21,7 @@
 /packager/third_party/modp_b64/
 /packager/third_party/openssl/
 /packager/third_party/protobuf/
+/packager/third_party/yasm/source/patched-yasm/
 /packager/third_party/zlib/
 /packager/tools/clang/
 /packager/tools/gyp/

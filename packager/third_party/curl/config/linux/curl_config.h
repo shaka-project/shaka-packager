@@ -2,7 +2,7 @@
 /* lib/curl_config.h.in.  Generated from configure.ac by autoheader.  */
 
 /* Location of default ca bundle */
-/* CURL_CA_BUNDLE is defined by GYP */
+/* #undef CURL_CA_BUNDLE */
 
 /* Location of default ca path */
 /* #undef CURL_CA_PATH */
@@ -49,6 +49,9 @@
 /* to disable RTSP */
 /* #undef CURL_DISABLE_RTSP */
 
+/* to disable SMB/CIFS */
+/* #undef CURL_DISABLE_SMB */
+
 /* to disable SMTP */
 /* #undef CURL_DISABLE_SMTP */
 
@@ -66,9 +69,6 @@
 
 /* Definition to make a library symbol externally visible. */
 #define CURL_EXTERN_SYMBOL __attribute__ ((__visibility__ ("default")))
-
-/* Use Windows LDAP implementation */
-/* #undef CURL_LDAP_WIN */
 
 /* your Entropy Gathering Daemon socket pathname */
 /* #undef EGD_SOCKET */
@@ -121,7 +121,12 @@
 /* Define to 1 if bool is an available type. */
 #define HAVE_BOOL_T 1
 
+/* Define to 1 if using BoringSSL. */
+/* packager uses BORINGSSL. */
+#define HAVE_BORINGSSL 1
+
 /* Define to 1 if you have the clock_gettime function and monotonic timer. */
+/* Disabled for packager. */
 /* #undef HAVE_CLOCK_GETTIME_MONOTONIC */
 
 /* Define to 1 if you have the closesocket function. */
@@ -142,14 +147,24 @@
 /* Define to 1 if you have the <cyassl/error-ssl.h> header file. */
 /* #undef HAVE_CYASSL_ERROR_SSL_H */
 
+/* Define to 1 if you have the <cyassl/options.h> header file. */
+/* #undef HAVE_CYASSL_OPTIONS_H */
+
+/* Define to 1 if you have the `DES_set_odd_parity' function. */
+#define HAVE_DES_SET_ODD_PARITY 1
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
 
 /* Define to 1 if you have the `ENGINE_cleanup' function. */
+#ifndef HAVE_BORINGSSL
 #define HAVE_ENGINE_CLEANUP 1
+#endif
 
 /* Define to 1 if you have the `ENGINE_load_builtin_engines' function. */
+#ifndef HAVE_BORINGSSL
 #define HAVE_ENGINE_LOAD_BUILTIN_ENGINES 1
+#endif
 
 /* Define to 1 if you have the <errno.h> header file. */
 #define HAVE_ERRNO_H 1
@@ -253,6 +268,10 @@
 /* Define to 1 if you have the `getpwuid' function. */
 #define HAVE_GETPWUID 1
 
+/* Define to 1 if you have the `getpwuid_r' function. */
+/* Disabled for packager. Not verified yet. */
+/* #undef HAVE_GETPWUID_R */
+
 /* Define to 1 if you have the `getrlimit' function. */
 #define HAVE_GETRLIMIT 1
 
@@ -293,16 +312,20 @@
 /* #undef HAVE_GSSMIT */
 
 /* Define to 1 if you have the `idna_strerror' function. */
-#define HAVE_IDNA_STRERROR 1
+/* #undef HAVE_IDNA_STRERROR */
 
 /* Define to 1 if you have the `idn_free' function. */
-#define HAVE_IDN_FREE 1
+/* #undef HAVE_IDN_FREE */
 
 /* Define to 1 if you have the <idn-free.h> header file. */
-#define HAVE_IDN_FREE_H 1
+/* #undef HAVE_IDN_FREE_H */
 
 /* Define to 1 if you have the <ifaddrs.h> header file. */
 #define HAVE_IFADDRS_H 1
+
+/* Define to 1 if you have the `if_nametoindex' function. */
+/* Disabled for packager. Not verified yet. */
+/* #undef HAVE_IF_NAMETOINDEX */
 
 /* Define to 1 if you have the `inet_addr' function. */
 #define HAVE_INET_ADDR 1
@@ -380,35 +403,23 @@
 /* Define to 1 if you have the `resolve' library (-lresolve). */
 /* #undef HAVE_LIBRESOLVE */
 
+/* Define to 1 if using libressl. */
+/* #undef HAVE_LIBRESSL */
+
 /* Define to 1 if you have the <librtmp/rtmp.h> header file. */
-#define HAVE_LIBRTMP_RTMP_H 1
+/* #undef HAVE_LIBRTMP_RTMP_H */
 
 /* Define to 1 if you have the `ssh2' library (-lssh2). */
 /* #undef HAVE_LIBSSH2 */
 
-/* Define to 1 if you have the `libssh2_exit' function. */
-/* #undef HAVE_LIBSSH2_EXIT */
-
 /* Define to 1 if you have the <libssh2.h> header file. */
 /* #undef HAVE_LIBSSH2_H */
-
-/* Define to 1 if you have the `libssh2_init' function. */
-/* #undef HAVE_LIBSSH2_INIT */
-
-/* Define to 1 if you have the `libssh2_scp_send64' function. */
-/* #undef HAVE_LIBSSH2_SCP_SEND64 */
-
-/* Define to 1 if you have the `libssh2_session_handshake' function. */
-/* #undef HAVE_LIBSSH2_SESSION_HANDSHAKE */
-
-/* Define to 1 if you have the `libssh2_version' function. */
-/* #undef HAVE_LIBSSH2_VERSION */
 
 /* Define to 1 if you have the `ssl' library (-lssl). */
 #define HAVE_LIBSSL 1
 
 /* if zlib is available */
-#define HAVE_LIBZ 1
+/* #undef HAVE_LIBZ */
 
 /* Define to 1 if you have the <limits.h> header file. */
 #define HAVE_LIMITS_H 1
@@ -463,7 +474,9 @@
 #define HAVE_OPENSSL_CRYPTO_H 1
 
 /* Define to 1 if you have the <openssl/engine.h> header file. */
+#ifndef HAVE_BORINGSSL
 #define HAVE_OPENSSL_ENGINE_H 1
+#endif
 
 /* Define to 1 if you have the <openssl/err.h> header file. */
 #define HAVE_OPENSSL_ERR_H 1
@@ -476,6 +489,9 @@
 
 /* Define to 1 if you have the <openssl/rsa.h> header file. */
 #define HAVE_OPENSSL_RSA_H 1
+
+/* if you have the function SRP_Calc_client_key */
+#define HAVE_OPENSSL_SRP 1
 
 /* Define to 1 if you have the <openssl/ssl.h> header file. */
 #define HAVE_OPENSSL_SSL_H 1
@@ -585,23 +601,8 @@
 /* Define to 1 if you have the <socket.h> header file. */
 /* #undef HAVE_SOCKET_H */
 
-/* Define this if you have the SPNEGO library fbopenssl */
-/* #undef HAVE_SPNEGO */
-
-/* if you have the function SRP_Calc_client_key */
-#define HAVE_SSLEAY_SRP 1
-
 /* Define to 1 if you have the `SSLv2_client_method' function. */
 /* #undef HAVE_SSLV2_CLIENT_METHOD */
-
-/* Define to 1 if you have the `SSL_CTX_set_alpn_protos' function. */
-/* #undef HAVE_SSL_CTX_SET_ALPN_PROTOS */
-
-/* Define to 1 if you have the `SSL_CTX_set_alpn_select_cb' function. */
-/* #undef HAVE_SSL_CTX_SET_ALPN_SELECT_CB */
-
-/* Define to 1 if you have the `SSL_CTX_set_next_proto_select_cb' function. */
-#define HAVE_SSL_CTX_SET_NEXT_PROTO_SELECT_CB 1
 
 /* Define to 1 if you have the `SSL_get_shutdown' function. */
 #define HAVE_SSL_GET_SHUTDOWN 1
@@ -730,7 +731,7 @@
 /* #undef HAVE_TLD_H */
 
 /* Define to 1 if you have the `tld_strerror' function. */
-#define HAVE_TLD_STRERROR 1
+/* #undef HAVE_TLD_STRERROR */
 
 /* Define to 1 if you have the `uname' function. */
 #define HAVE_UNAME 1
@@ -778,7 +779,7 @@
 /* #undef HAVE_X509_H */
 
 /* if you have the zlib.h header file */
-#define HAVE_ZLIB_H 1
+/* #undef HAVE_ZLIB_H */
 
 /* Define to the sub-directory in which libtool stores uninstalled libraries.
    */
@@ -798,9 +799,6 @@
 
 /* Define to 1 if _THREAD_SAFE preprocessor symbol must be defined. */
 /* #undef NEED_THREAD_SAFE */
-
-/* Define to 1 if your C compiler doesn't accept -c and -o together. */
-/* #undef NO_MINUS_C_MINUS_O */
 
 /* Define to enable NTLM delegation to winbind's ntlm_auth helper. */
 #define NTLM_WB_ENABLED 1
@@ -967,14 +965,16 @@
 /* to enable Windows native SSL/TLS support */
 /* #undef USE_SCHANNEL */
 
-/* if SSL is enabled */
-#define USE_SSLEAY 1
-
 /* if you want POSIX threaded DNS lookup */
 /* #undef USE_THREADS_POSIX */
 
 /* Use TLS-SRP authentication */
+#ifndef HAVE_BORINGSSL
 #define USE_TLS_SRP 1
+#endif
+
+/* Use Unix domain sockets */
+#define USE_UNIX_SOCKETS 1
 
 /* Define to 1 if you have the `normaliz' (WinIDN) library (-lnormaliz). */
 /* #undef USE_WIN32_IDN */
@@ -983,15 +983,15 @@
    */
 /* #undef USE_WIN32_LARGE_FILES */
 
+/* Use Windows LDAP implementation */
+/* #undef USE_WIN32_LDAP */
+
 /* Define to 1 if you are building a Windows target without large file
    support. */
 /* #undef USE_WIN32_SMALL_FILES */
 
 /* to enable SSPI support */
 /* #undef USE_WINDOWS_SSPI */
-
-/* Define to 1 if using yaSSL in OpenSSL compatibility mode. */
-/* #undef USE_YASSLEMUL */
 
 /* Version number of package */
 #define VERSION "-"
@@ -1005,6 +1005,11 @@
 /* Define to 1 if OS is AIX. */
 #ifndef _ALL_SOURCE
 /* #  undef _ALL_SOURCE */
+#endif
+
+/* Enable large inode numbers on Mac OS X 10.5.  */
+#ifndef _DARWIN_USE_64_BIT_INODE
+# define _DARWIN_USE_64_BIT_INODE 1
 #endif
 
 /* Number of bits in a file offset, on hosts where this is settable. */

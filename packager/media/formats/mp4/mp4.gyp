@@ -56,7 +56,7 @@
         'track_run_iterator.h',
       ],
       'dependencies': [
-        '../../../third_party/openssl/openssl.gyp:openssl',
+        '../../../third_party/boringssl/boringssl.gyp:boringssl',
         '../../base/media_base.gyp:base',
         '../../event/media_event.gyp:media_event',
         '../../filters/filters.gyp:filters',

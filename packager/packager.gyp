@@ -40,8 +40,8 @@
         'media/formats/mpeg/mpeg.gyp:mpeg',
         'media/formats/wvm/wvm.gyp:wvm',
         'mpd/mpd.gyp:mpd_builder',
+        'third_party/boringssl/boringssl.gyp:boringssl',
         'third_party/gflags/gflags.gyp:gflags',
-        'third_party/openssl/openssl.gyp:openssl',
       ],
     },
     {

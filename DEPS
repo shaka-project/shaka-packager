@@ -9,10 +9,13 @@
 vars = {
   "chromium_git": "https://chromium.googlesource.com",
   "chromium_svn": "http://src.chromium.org/chrome/trunk",
-  "chromium_rev": "275581",
+  "chromium_rev": "296101",
+
+  "googlesource_git": "https://%s.googlesource.com",
 
   "curl_url": "https://github.com/bagder/curl.git",
-  "curl_rev": "curl-7_37_0",
+  # TODO(kqyang): Replace with an official release.
+  "curl_rev": "26ddc536b0ab5fc62d6503c82c34dd3dbf112dc3",
 }
 
 deps = {
@@ -33,6 +36,11 @@ deps = {
 
   "src/packager/testing/gtest":
     Var("chromium_git") + "/external/googletest@00a70a9667d92a4695d84e4fa36b64f611f147da",  #725
+
+   # Make sure the version matches the one in
+   # src/packager/third_party/boringssl, which contains perl generated files.
+  "src/packager/third_party/boringssl/src":
+    (Var("googlesource_git") % "boringssl") + "/boringssl@209b2562235f7dab66b8260624e7b3c5b00d14a6",
 
   "src/packager/third_party/curl/source":
     Var("curl_url") + "@" + Var("curl_rev"),
@@ -57,15 +65,8 @@ deps = {
   "src/packager/third_party/modp_b64":
     Var("chromium_git") + "/chromium/src/third_party/modp_b64@3a0e3b4ef6c54678a2d14522533df56b33b56119",
 
-  "src/packager/third_party/openssl":
-    Var("chromium_svn") + "/deps/third_party/openssl@" + Var("chromium_rev"),
-
   "src/packager/third_party/protobuf":
     Var("chromium_svn") + "/src/third_party/protobuf@" + Var("chromium_rev"),
-
-  # Required by build/linux/system.gyp and third_party/curl/curl.gyp.
-  "src/packager/third_party/zlib":
-    Var("chromium_git") + "/chromium/src/third_party/zlib@bcf81d2e5f3a62b698d179c1fadba94604c5dad3",
 
   "src/packager/tools/clang":
     Var("chromium_git") + "/chromium/src/tools/clang@0de8f3bb6af64e13876273c601704795d5e00faf",
@@ -82,9 +83,18 @@ deps = {
 
 deps_os = {
   "unix": {  # Linux, actually.
+    # Required by build/linux/system.gyp.
+    "src/packager/third_party/zlib":
+      Var("chromium_git") + "/chromium/src/third_party/zlib@bcf81d2e5f3a62b698d179c1fadba94604c5dad3",
+
     # Linux gold build to build faster.
     "src/packager/third_party/gold":
       Var("chromium_git") + "/chromium/deps/gold@29ae7431b4688df544ea840b0b66784e5dd298fe",
+  },
+  "win": {
+    # Required by boringssl.
+    "src/packager/third_party/yasm/source/patched-yasm":
+      Var("chromium_git") + "/chromium/deps/yasm/patched-yasm.git@4671120cd8558ce62ee8672ebf3eb6f5216f909b",
   },
 }
 
