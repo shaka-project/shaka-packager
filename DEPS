@@ -11,10 +11,6 @@ vars = {
   "chromium_svn": "http://src.chromium.org/chrome/trunk",
   "chromium_rev": "275581",
 
-  "googlecode_url": "http://%s.googlecode.com/svn",
-  "gflags_rev": "84",
-  "webrtc_rev": "5718",  # For gflags.
-
   "curl_url": "https://github.com/bagder/curl.git",
   "curl_rev": "curl-7_37_0",
 }
@@ -42,10 +38,10 @@ deps = {
     Var("curl_url") + "@" + Var("curl_rev"),
 
   "src/packager/third_party/gflags":
-    (Var("googlecode_url") % "webrtc")+ "/trunk/third_party/gflags@" + Var("webrtc_rev"),
+    Var("chromium_git") + "/external/webrtc/trunk/third_party/gflags@cc7e9a4b374ff7b6a1cae4d76161113ea985b624",
 
   "src/packager/third_party/gflags/src":
-    (Var("googlecode_url") % "gflags") + "/trunk/src@" + Var("gflags_rev"),
+    Var("chromium_git") + "/external/gflags/src@e7390f9185c75f8d902c05ed7d20bb94eb914d0c",  #82
 
   # Required by libxml.
   "src/packager/third_party/icu":
