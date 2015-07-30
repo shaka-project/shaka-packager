@@ -33,11 +33,15 @@
       'target_name': 'media_event_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
+        'mpd_notify_muxer_listener_unittest.cc',
+        'muxer_listener_test_helper.cc',
+        'muxer_listener_test_helper.h',
         'vod_media_info_dump_muxer_listener_unittest.cc',
       ],
       'dependencies': [
         '../../base/base.gyp:base',
         '../../mpd/mpd.gyp:media_info_proto',
+        '../../testing/gmock.gyp:gmock',
         '../../testing/gtest.gyp:gtest',
         '../../testing/gtest.gyp:gtest_main',
         # Depends on full protobuf to read/write with TextFormat.

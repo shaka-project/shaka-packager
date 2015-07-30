@@ -11,11 +11,11 @@
 
 #include "packager/base/file_util.h"
 #include "packager/base/files/file_path.h"
-#include "packager/base/stl_util.h"
-#include "packager/media/event/vod_media_info_dump_muxer_listener.h"
-#include "packager/media/file/file.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/event/muxer_listener_test_helper.h"
+#include "packager/media/event/vod_media_info_dump_muxer_listener.h"
+#include "packager/media/file/file.h"
 #include "packager/mpd/base/media_info.pb.h"
 
 namespace {
@@ -39,119 +39,6 @@ namespace edash_packager {
 namespace media {
 
 namespace {
-struct VideoStreamInfoParameters {
-  int track_id;
-  uint32_t time_scale;
-  uint64_t duration;
-  VideoCodec codec;
-  std::string codec_string;
-  std::string language;
-  uint16_t width;
-  uint16_t height;
-  uint32_t pixel_width;
-  uint32_t pixel_height;
-  uint8_t nalu_length_size;
-  std::vector<uint8_t> extra_data;
-  bool is_encrypted;
-};
-
-// Note that this does not have vector of StreamInfo pointer.
-struct OnMediaEndParameters {
-  bool has_init_range;
-  uint64_t init_range_start;
-  uint64_t init_range_end;
-  bool has_index_range;
-  uint64_t index_range_start;
-  uint64_t index_range_end;
-  float duration_seconds;
-  uint64_t file_size;
-};
-
-scoped_refptr<StreamInfo> CreateVideoStreamInfo(
-    const VideoStreamInfoParameters& param) {
-  return scoped_refptr<StreamInfo>(
-      new VideoStreamInfo(param.track_id,
-                          param.time_scale,
-                          param.duration,
-                          param.codec,
-                          param.codec_string,
-                          param.language,
-                          param.width,
-                          param.height,
-                          param.pixel_width,
-                          param.pixel_height,
-                          0,  // trick_play_rate
-                          param.nalu_length_size,
-                          vector_as_array(&param.extra_data),
-                          param.extra_data.size(),
-                          param.is_encrypted));
-}
-
-VideoStreamInfoParameters GetDefaultVideoStreamInfoParams() {
-  const int kTrackId = 0;
-  const uint32_t kTimeScale = 10;
-  const uint64_t kVideoStreamDuration = 200;
-  const VideoCodec kH264Codec = kCodecH264;
-  const uint8_t kH264Profile = 1;
-  const uint8_t kH264CompatibleProfile = 1;
-  const uint8_t kH264Level = 1;
-  const char* kLanuageUndefined = "und";
-  const uint16_t kWidth = 720;
-  const uint16_t kHeight = 480;
-  const uint32_t kPixelWidth = 1;
-  const uint32_t kPixelHeight = 1;
-  const uint8_t kNaluLengthSize = 1;
-  const std::vector<uint8_t> kExtraData;
-  const bool kEncryptedFlag = false;
-
-  VideoStreamInfoParameters param = {
-      kTrackId, kTimeScale, kVideoStreamDuration, kH264Codec,
-      VideoStreamInfo::GetCodecString(kCodecH264, kH264Profile,
-                                      kH264CompatibleProfile, kH264Level),
-      kLanuageUndefined, kWidth, kHeight, kPixelWidth, kPixelHeight,
-      kNaluLengthSize, kExtraData, kEncryptedFlag};
-  return param;
-}
-
-OnMediaEndParameters GetDefaultOnMediaEndParams() {
-  // Values for {init, index} range {start, end} are arbitrary, but makes sure
-  // that it is monotonically increasing and contiguous.
-  const bool kHasInitRange = true;
-  const uint64_t kInitRangeStart = 0;
-  const uint64_t kInitRangeEnd = kInitRangeStart + 120;
-  const uint64_t kHasIndexRange = true;
-  const uint64_t kIndexRangeStart = kInitRangeEnd + 1;
-  const uint64_t kIndexRangeEnd = kIndexRangeStart + 100;
-  const float kMediaDuration = 10.5f;
-  const uint64_t kFileSize = 10000;
-  OnMediaEndParameters param = {
-      kHasInitRange,    kInitRangeStart, kInitRangeEnd,  kHasIndexRange,
-      kIndexRangeStart, kIndexRangeEnd,  kMediaDuration, kFileSize};
-  return param;
-}
-
-void SetDefaultMuxerOptionsValues(MuxerOptions* muxer_options) {
-  muxer_options->single_segment = true;
-  muxer_options->segment_duration = 10.0;
-  muxer_options->fragment_duration = 10.0;
-  muxer_options->segment_sap_aligned = true;
-  muxer_options->fragment_sap_aligned = true;
-  muxer_options->num_subsegments_per_sidx = 0;
-  muxer_options->output_file_name = "test_output_file_name.mp4";
-  muxer_options->segment_template.clear();
-  muxer_options->temp_dir.clear();
-}
-
-void ExpectMediaInfoEqual(const MediaInfo& expect, const MediaInfo& actual) {
-  // I found out here
-  // https://groups.google.com/forum/#!msg/protobuf/5sOExQkB2eQ/ZSBNZI0K54YJ
-  // that the best way to check equality is to serialize and check equality.
-  std::string expect_serialized;
-  std::string actual_serialized;
-  ASSERT_TRUE(expect.SerializeToString(&expect_serialized));
-  ASSERT_TRUE(actual.SerializeToString(&actual_serialized));
-  ASSERT_EQ(expect_serialized, actual_serialized);
-}
 
 void ExpectTextFormatMediaInfoEqual(const std::string& expect,
                                     const std::string& actual) {
@@ -167,6 +54,7 @@ void ExpectTextFormatMediaInfoEqual(const std::string& expect,
       << "Expect:" << std::endl << expect << std::endl
       << "Actual:" << std::endl << actual;
 }
+
 }  // namespace
 
 class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {

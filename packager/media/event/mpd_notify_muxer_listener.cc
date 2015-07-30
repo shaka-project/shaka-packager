@@ -73,9 +73,29 @@ void MpdNotifyMuxerListener::OnMediaStart(
   }
 }
 
+// Record the sample duration in the media info for VOD so that OnMediaEnd, all
+// the information is in the media info.
 void MpdNotifyMuxerListener::OnSampleDurationReady(
     uint32_t sample_duration) {
-  mpd_notifier_->NotifySampleDuration(notification_id_, sample_duration);
+  if (mpd_notifier_->dash_profile() == kLiveProfile) {
+    mpd_notifier_->NotifySampleDuration(notification_id_, sample_duration);
+    return;
+  }
+
+  if (!media_info_) {
+    LOG(WARNING) << "Got sample duration " << sample_duration
+                 << " but no media was specified.";
+    return;
+  }
+  if (!media_info_->has_video_info()) {
+    // If non video, don't worry about it (at the moment).
+    return;
+  }
+  if (media_info_->video_info().has_frame_duration()) {
+    return;
+  }
+
+  media_info_->mutable_video_info()->set_frame_duration(sample_duration);
 }
 
 void MpdNotifyMuxerListener::OnMediaEnd(bool has_init_range,
@@ -110,6 +130,9 @@ void MpdNotifyMuxerListener::OnMediaEnd(bool has_init_range,
 void MpdNotifyMuxerListener::OnNewSegment(uint64_t start_time,
                                           uint64_t duration,
                                           uint64_t segment_file_size) {
+  // TODO(rkuriowa): MpdNotifier::NotifyNewSegment() should be called for VOD as
+  // well. The easiest way to do this is to save all the values and call it
+  // after NotifyNewContainer() in OnMediaEnd().
   if (mpd_notifier_->dash_profile() != kLiveProfile) return;
   // TODO(kqyang): Check return result.
   mpd_notifier_->NotifyNewSegment(
