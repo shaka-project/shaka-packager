@@ -237,6 +237,22 @@ class AdaptationSet {
                                      uint64_t start_time,
                                      uint64_t duration);
 
+  /// Notifies the AdaptationSet instance that the sample duration for the
+  /// Representation was set.
+  /// The frame duration for a video Representation might not be specified when
+  /// a Representation is created (by calling AddRepresentation()).
+  /// This should be used to notify this instance that the frame rate for a
+  /// Represenatation has been set.
+  /// This method is called automatically when
+  /// Represenatation::SetSampleDuration() is called if the Represenatation
+  /// instance was created using AddRepresentation().
+  /// @param representation_id is the id of the Representation.
+  /// @frame_duration is the duration of a frame in the Representation.
+  /// @param timescale is the timescale of the Representation.
+  void OnSetFrameRateForRepresentation(uint32_t representation_id,
+                                       uint32_t frame_duration,
+                                       uint32_t timescale);
+
  protected:
   /// @param adaptation_set_id is an ID number for this AdaptationSet.
   /// @param lang is the language of this AdaptationSet. Mainly relevant for
@@ -286,6 +302,9 @@ class AdaptationSet {
   FRIEND_TEST_ALL_PREFIXES(StaticMpdBuilderTest, SubSegmentAlignment);
   FRIEND_TEST_ALL_PREFIXES(StaticMpdBuilderTest, ForceSetSubSegmentAlignment);
   FRIEND_TEST_ALL_PREFIXES(DynamicMpdBuilderTest, SegmentAlignment);
+  FRIEND_TEST_ALL_PREFIXES(
+      CommonMpdBuilderTest,
+      SetAdaptationFrameRateUsingRepresentationSetSampleDuration);
 
   // Gets the earliest, normalized segment timestamp. Returns true if
   // successful, false otherwise.
@@ -300,6 +319,9 @@ class AdaptationSet {
   void CheckSegmentAlignment(uint32_t representation_id,
                              uint64_t start_time,
                              uint64_t duration);
+
+  // Records the framerate of a Representation.
+  void RecordFrameRate(uint32_t frame_duration, uint32_t timescale);
 
   std::list<ContentProtectionElement> content_protection_elements_;
   std::list<Representation*> representations_;
@@ -360,8 +382,6 @@ class AdaptationSet {
   DISALLOW_COPY_AND_ASSIGN(AdaptationSet);
 };
 
-// TODO(rkuroiwa): OnSetSampleDuration() must also be added to this to notify
-// sample duration change to AdaptationSet, to set the right frame rate.
 class RepresentationStateChangeListener {
  public:
   RepresentationStateChangeListener() {}
@@ -373,6 +393,13 @@ class RepresentationStateChangeListener {
   /// @param duration is the duration of the new segment.
   virtual void OnNewSegmentForRepresentation(uint64_t start_time,
                                              uint64_t duration) = 0;
+
+  /// Notifies the instance that the frame rate was set for the
+  /// Representation.
+  /// @param frame_duration is the duration of a frame.
+  /// @param timescale is the timescale of the Representation.
+  virtual void OnSetFrameRateForRepresentation(uint32_t frame_duration,
+                                               uint32_t timescale) = 0;
 };
 
 /// Representation class contains references to a single media stream, as
@@ -412,7 +439,7 @@ class Representation {
                              uint64_t size);
 
   /// Set the sample duration of this Representation.
-  /// In most cases, the sample duration is not available right away. This
+  /// Sample duration is not available right away especially for live. This
   /// allows setting the sample duration after the Representation has been
   /// initialized.
   /// @param sample_duration is the duration of a sample.
@@ -449,8 +476,12 @@ class Representation {
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckVideoInfoReflectedInXml);
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckRepresentationId);
   FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, SetSampleDuration);
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest,
-                           RepresentationStateChangeListener);
+  FRIEND_TEST_ALL_PREFIXES(
+      CommonMpdBuilderTest,
+      RepresentationStateChangeListenerOnNewSegmentForRepresentation);
+  FRIEND_TEST_ALL_PREFIXES(
+      CommonMpdBuilderTest,
+      RepresentationStateChangeListenerOnSetFrameRateForRepresentation);
 
   bool AddLiveInfo(xml::RepresentationXmlNode* representation);
 

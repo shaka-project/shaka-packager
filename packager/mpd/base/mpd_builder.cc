@@ -347,6 +347,12 @@ class RepresentationStateChangeListenerImpl
                                                    start_time, duration);
   }
 
+  virtual void OnSetFrameRateForRepresentation(uint32_t frame_duration,
+                                               uint32_t timescale) OVERRIDE {
+    adaptation_set_->OnSetFrameRateForRepresentation(representation_id_,
+                                                     frame_duration, timescale);
+  }
+
  private:
   const uint32_t representation_id_;
   AdaptationSet* const adaptation_set_;
@@ -653,12 +659,8 @@ Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
     video_widths_.insert(video_info.width());
     video_heights_.insert(video_info.height());
 
-    if (video_info.has_time_scale() && video_info.has_frame_duration()) {
-      video_frame_rates_[static_cast<double>(video_info.time_scale()) /
-                         video_info.frame_duration()] =
-          base::IntToString(video_info.time_scale()) + "/" +
-          base::IntToString(video_info.frame_duration());
-    }
+    if (video_info.has_time_scale() && video_info.has_frame_duration())
+      RecordFrameRate(video_info.frame_duration(), video_info.time_scale());
 
     AddPictureAspectRatio(video_info, &picture_aspect_ratio_);
   }
@@ -772,6 +774,14 @@ void AdaptationSet::OnNewSegmentForRepresentation(uint32_t representation_id,
   CheckSegmentAlignment(representation_id, start_time, duration);
 }
 
+void AdaptationSet::OnSetFrameRateForRepresentation(
+    uint32_t /* representation_id */,
+    uint32_t frame_duration,
+    uint32_t timescale) {
+  base::AutoLock scoped_lock(lock_);
+  RecordFrameRate(frame_duration, timescale);
+}
+
 bool AdaptationSet::GetEarliestTimestamp(double* timestamp_seconds) {
   DCHECK(timestamp_seconds);
 
@@ -864,6 +874,18 @@ void AdaptationSet::CheckSegmentAlignment(uint32_t representation_id,
   }
 }
 
+// Since all AdaptationSet cares about is the maxFrameRate, representation_id
+// is not passed to this method.
+void AdaptationSet::RecordFrameRate(uint32_t frame_duration,
+                                    uint32_t timescale) {
+  if (frame_duration == 0) {
+    LOG(ERROR) << "Frame duration is 0 and cannot be set.";
+    return;
+  }
+  video_frame_rates_[static_cast<double>(timescale) / frame_duration] =
+      base::IntToString(timescale) + "/" + base::IntToString(frame_duration);
+}
+
 Representation::Representation(
     const MediaInfo& media_info,
     const MpdOptions& mpd_options,
@@ -949,9 +971,15 @@ void Representation::AddNewSegment(uint64_t start_time,
 }
 
 void Representation::SetSampleDuration(uint32_t sample_duration) {
-  // Assume single video info.
-  if (media_info_.has_video_info())
+  base::AutoLock scoped_lock(lock_);
+
+  if (media_info_.has_video_info()) {
     media_info_.mutable_video_info()->set_frame_duration(sample_duration);
+    if (state_change_listener_) {
+      state_change_listener_->OnSetFrameRateForRepresentation(
+          sample_duration, media_info_.video_info().time_scale());
+    }
+  }
 }
 
 // Uses info in |media_info_| and |content_protection_elements_| to create a

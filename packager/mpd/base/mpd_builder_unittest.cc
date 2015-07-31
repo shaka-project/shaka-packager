@@ -87,6 +87,9 @@ class MockRepresentationStateChangeListener
 
   MOCK_METHOD2(OnNewSegmentForRepresentation,
                void(uint64_t start_time, uint64_t duration));
+
+  MOCK_METHOD2(OnSetFrameRateForRepresentation,
+               void(uint32_t frame_duration, uint32_t timescale));
 };
 }  // namespace
 
@@ -435,7 +438,8 @@ TEST_F(CommonMpdBuilderTest, CheckVideoInfoReflectedInXml) {
 
 // Make sure RepresentationStateChangeListener::OnNewSegmentForRepresentation()
 // is called.
-TEST_F(CommonMpdBuilderTest, RepresentationStateChangeListener) {
+TEST_F(CommonMpdBuilderTest,
+       RepresentationStateChangeListenerOnNewSegmentForRepresentation) {
   const char kTestMediaInfo[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -460,6 +464,37 @@ TEST_F(CommonMpdBuilderTest, RepresentationStateChangeListener) {
   EXPECT_TRUE(representation.Init());
 
   representation.AddNewSegment(kStartTime, kDuration, 10 /* any size */);
+}
+
+// Make sure
+// RepresentationStateChangeListener::OnSetFrameRateForRepresentation()
+// is called.
+TEST_F(CommonMpdBuilderTest,
+       RepresentationStateChangeListenerOnSetFrameRateForRepresentation) {
+  const char kTestMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 1000\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+
+  const uint64_t kTimeScale = 1000u;
+  const uint64_t kFrameDuration = 33u;
+  scoped_ptr<MockRepresentationStateChangeListener> listener(
+      new MockRepresentationStateChangeListener());
+  EXPECT_CALL(*listener,
+              OnSetFrameRateForRepresentation(kFrameDuration, kTimeScale));
+  Representation representation(
+      ConvertToMediaInfo(kTestMediaInfo), MpdOptions(), kAnyRepresentationId,
+      listener.PassAs<RepresentationStateChangeListener>());
+  EXPECT_TRUE(representation.Init());
+
+  representation.SetSampleDuration(kFrameDuration);
 }
 
 // Verify that content type is set correctly if video info is present in
@@ -641,6 +676,77 @@ TEST_F(CommonMpdBuilderTest, AdapatationSetMaxFrameRate) {
                                                   adaptation_set_xml.get()));
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeNotSet("frameRate", adaptation_set_xml.get()));
+}
+
+// Verify that (max)FrameRate can be set by calling
+// Representation::SetSampleDuration().
+TEST_F(CommonMpdBuilderTest,
+       SetAdaptationFrameRateUsingRepresentationSetSampleDuration) {
+  base::AtomicSequenceNumber sequence_counter;
+  // Note that frame duration is not set in the MediaInfos. It could be there
+  // and should not affect the behavior of the program.
+  // But to make it closer to a real live-profile use case,
+  // the frame duration is not set in the MediaInfo, instead it is set using
+  // SetSampleDuration().
+  const char k480pMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "  pixel_width: 8\n"
+      "  pixel_height: 9\n"
+      "}\n"
+      "container_type: 1\n";
+  const char k360pMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 640\n"
+      "  height: 360\n"
+      "  time_scale: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+
+  AdaptationSet adaptation_set(kAnyAdaptationSetId, "", MpdOptions(),
+                               MpdBuilder::kStatic, &sequence_counter);
+  Representation* representation_480p =
+      adaptation_set.AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
+  Representation* representation_360p =
+      adaptation_set.AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
+
+  // First, make sure that maxFrameRate nor frameRate are set because
+  // frame durations were not provided in the MediaInfo.
+  xml::ScopedXmlPtr<xmlNode>::type no_frame_rate(adaptation_set.GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("maxFrameRate", no_frame_rate.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("frameRate", no_frame_rate.get()));
+
+  // Then set same frame duration for the representations. (Given that the
+  // time scales match).
+  const uint32_t kSameFrameDuration = 3u;
+  representation_480p->SetSampleDuration(kSameFrameDuration);
+  representation_360p->SetSampleDuration(kSameFrameDuration);
+
+  xml::ScopedXmlPtr<xmlNode>::type same_frame_rate(adaptation_set.GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("maxFrameRate", same_frame_rate.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("frameRate", "10/3", same_frame_rate.get()));
+
+  // Then set 480p to be 5fps (10/2) so that maxFrameRate is set.
+  const uint32_t k5FPSFrameDuration = 2;
+  COMPILE_ASSERT(k5FPSFrameDuration < kSameFrameDuration,
+                 frame_duration_must_be_shorter_for_max_frame_rate);
+  representation_480p->SetSampleDuration(k5FPSFrameDuration);
+
+  xml::ScopedXmlPtr<xmlNode>::type max_frame_rate(adaptation_set.GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("maxFrameRate", "10/2", max_frame_rate.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("frameRate", max_frame_rate.get()));
 }
 
 // Verify that if the picture aspect ratio of all the Representations are the
