@@ -169,7 +169,7 @@ Status SingleSegmentSegmenter::DoFinalizeSegment() {
   SegmentReference& vod_ref = refs[0];
   uint64_t first_sap_time =
       refs[0].sap_delta_time + refs[0].earliest_presentation_time;
-  for (uint32_t i = 1; i < sidx()->references.size(); ++i) {
+  for (uint32_t i = 1; i < refs.size(); ++i) {
     vod_ref.referenced_size += refs[i].referenced_size;
     // NOTE: We calculate subsegment duration based on the total duration of
     // this subsegment instead of subtracting earliest_presentation_time as

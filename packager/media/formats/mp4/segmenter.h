@@ -123,11 +123,10 @@ class Segmenter {
   virtual Status DoFinalize() = 0;
   virtual Status DoFinalizeSegment() = 0;
 
-  void InitializeSegment();
   Status FinalizeSegment();
   uint32_t GetReferenceStreamId();
 
-  Status FinalizeFragment(Fragmenter* fragment);
+  Status FinalizeFragment(bool finalize_segment, Fragmenter* fragment);
 
   const MuxerOptions& options_;
   scoped_ptr<FileType> ftyp_;
@@ -138,7 +137,6 @@ class Segmenter {
   std::vector<Fragmenter*> fragmenters_;
   std::vector<uint64_t> segment_durations_;
   std::map<const MediaStream*, uint32_t> stream_map_;
-  bool segment_initialized_;
   bool end_of_segment_;
   MuxerListener* muxer_listener_;
   ProgressListener* progress_listener_;

@@ -123,8 +123,6 @@ Segmenter::Segmenter(const MuxerOptions& options,
       moof_(new MovieFragment()),
       fragment_buffer_(new BufferWriter()),
       sidx_(new SegmentIndex()),
-      segment_initialized_(false),
-      end_of_segment_(false),
       muxer_listener_(NULL),
       progress_listener_(NULL),
       progress_target_(0),
@@ -228,11 +226,10 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
 }
 
 Status Segmenter::Finalize() {
-  end_of_segment_ = true;
   for (std::vector<Fragmenter*>::iterator it = fragmenters_.begin();
        it != fragmenters_.end();
        ++it) {
-    Status status = FinalizeFragment(*it);
+    Status status = FinalizeFragment(true, *it);
     if (!status.ok())
       return status;
   }
@@ -268,11 +265,6 @@ Status Segmenter::AddSample(const MediaStream* stream,
         sample->duration();
   }
 
-  if (!segment_initialized_) {
-    InitializeSegment();
-    segment_initialized_ = true;
-  }
-
   if (fragmenter->fragment_finalized()) {
     return Status(error::FRAGMENT_FINALIZED,
                   "Current fragment is finalized already.");
@@ -285,17 +277,18 @@ Status Segmenter::AddSample(const MediaStream* stream,
       finalize_fragment = true;
     }
   }
+  bool finalize_segment = false;
   if (segment_durations_[stream_id] >=
       options_.segment_duration * stream->info()->time_scale()) {
     if (sample->is_key_frame() || !options_.segment_sap_aligned) {
-      end_of_segment_ = true;
+      finalize_segment = true;
       finalize_fragment = true;
     }
   }
 
   Status status;
   if (finalize_fragment) {
-    status = FinalizeFragment(fragmenter);
+    status = FinalizeFragment(finalize_segment, fragmenter);
     if (!status.ok())
       return status;
   }
@@ -308,6 +301,7 @@ Status Segmenter::AddSample(const MediaStream* stream,
     sample_duration_ = sample->duration();
   moov_->tracks[stream_id].media.header.duration += sample->duration();
   segment_durations_[stream_id] += sample->duration();
+  DCHECK_GE(segment_durations_[stream_id], fragmenter->fragment_duration());
   return Status::OK;
 }
 
@@ -345,17 +339,16 @@ void Segmenter::SetComplete() {
   progress_listener_->OnProgress(1.0);
 }
 
-void Segmenter::InitializeSegment() {
+Status Segmenter::FinalizeSegment() {
+  Status status = DoFinalizeSegment();
+
+  // Reset segment information to initial state.
   sidx_->references.clear();
-  end_of_segment_ = false;
   std::vector<uint64_t>::iterator it = segment_durations_.begin();
   for (; it != segment_durations_.end(); ++it)
     *it = 0;
-}
 
-Status Segmenter::FinalizeSegment() {
-  segment_initialized_ = false;
-  return DoFinalizeSegment();
+  return status;
 }
 
 uint32_t Segmenter::GetReferenceStreamId() {
@@ -363,7 +356,8 @@ uint32_t Segmenter::GetReferenceStreamId() {
   return sidx_->reference_id - 1;
 }
 
-Status Segmenter::FinalizeFragment(Fragmenter* fragmenter) {
+Status Segmenter::FinalizeFragment(bool finalize_segment,
+                                   Fragmenter* fragmenter) {
   fragmenter->FinalizeFragment();
 
   // Check if all tracks are ready for fragmentation.
@@ -412,7 +406,7 @@ Status Segmenter::FinalizeFragment(Fragmenter* fragmenter) {
   // Increase sequence_number for next fragment.
   ++moof_->header.sequence_number;
 
-  if (end_of_segment_)
+  if (finalize_segment)
     return FinalizeSegment();
 
   return Status::OK;
