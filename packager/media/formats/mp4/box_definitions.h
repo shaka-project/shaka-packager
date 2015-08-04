@@ -252,9 +252,8 @@ struct CompositionOffset {
   uint32_t sample_count;
   // If version == 0, sample_offset is uint32_t;
   // If version == 1, sample_offset is int32_t.
-  // Always use signed version, which should work unless the offset
-  // exceeds 31 bits, which shouldn't happen.
-  int32_t sample_offset;
+  // Use int64_t so both can be supported properly.
+  int64_t sample_offset;
 };
 
 // ctts. Optional.
@@ -490,7 +489,7 @@ struct TrackFragmentRun : FullBox {
   std::vector<uint32_t> sample_flags;
   std::vector<uint32_t> sample_sizes;
   std::vector<uint32_t> sample_durations;
-  std::vector<int32_t> sample_composition_time_offsets;
+  std::vector<int64_t> sample_composition_time_offsets;
 };
 
 struct SampleToGroupEntry {

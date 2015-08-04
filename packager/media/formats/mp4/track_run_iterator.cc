@@ -23,9 +23,9 @@ namespace media {
 namespace mp4 {
 
 struct SampleInfo {
-  int size;
-  int duration;
-  int cts_offset;
+  int64_t size;
+  int64_t duration;
+  int64_t cts_offset;
   bool is_keyframe;
 };
 

@@ -268,7 +268,7 @@ TEST_F(TrackRunIteratorTest, ReorderingTest) {
   // would simply be [0, 3, -2]. Since CTS offsets should be non-negative for
   // maximum compatibility, these values are biased up to [2, 5, 0].
   MovieFragment moof = CreateFragment();
-  std::vector<int32_t>& cts_offsets =
+  std::vector<int64_t>& cts_offsets =
       moof.tracks[1].runs[0].sample_composition_time_offsets;
   cts_offsets.resize(10);
   cts_offsets[0] = 2;

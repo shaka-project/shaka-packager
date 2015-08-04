@@ -35,7 +35,7 @@ bool CompositionOffsetIterator::IsValid() const {
          sample_index_ < iterator_->sample_count;
 }
 
-int32_t CompositionOffsetIterator::SampleOffset(uint32_t sample) const {
+int64_t CompositionOffsetIterator::SampleOffset(uint32_t sample) const {
   uint32_t current_sample = 0;
   std::vector<CompositionOffset>::const_iterator it =
       composition_offset_table_.begin();

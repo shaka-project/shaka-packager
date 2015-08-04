@@ -363,13 +363,13 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     ctts->composition_offset[0].sample_offset = 5;
     ctts->composition_offset[1].sample_count = 2;
     ctts->composition_offset[1].sample_offset = 9;
-    ctts->version = 1;
+    ctts->version = 0;
   }
 
   void Modify(CompositionTimeToSample* ctts) {
     ctts->composition_offset.resize(1);
     ctts->composition_offset[0].sample_count = 6;
-    ctts->composition_offset[0].sample_offset = 1;
+    ctts->composition_offset[0].sample_offset = -9;
     ctts->version = 1;
   }
 
@@ -617,7 +617,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     trun->sample_durations[1] += 2343;
     trun->sample_composition_time_offsets.assign(kData32,
                                                  kData32 + arraysize(kData32));
-    trun->sample_composition_time_offsets[2] -= 89782;
+    trun->sample_composition_time_offsets[2] = -89782;
     trun->version = 1;
   }
 
@@ -625,7 +625,8 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     trun->flags |= TrackFragmentRun::kFirstSampleFlagsPresentMask;
     trun->flags &= ~TrackFragmentRun::kSampleFlagsPresentMask;
     trun->sample_flags.resize(1);
-    trun->version = 1;
+    trun->sample_composition_time_offsets[2] = 9;
+    trun->version = 0;
   }
 
   void Fill(SampleToGroup* sbgp) {

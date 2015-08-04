@@ -35,7 +35,7 @@ class CompositionOffsetIteratorTest : public testing::Test {
   }
 
  protected:
-  std::vector<int32_t> composition_offset_table_;
+  std::vector<int64_t> composition_offset_table_;
   CompositionTimeToSample composition_time_to_sample_;
   scoped_ptr<CompositionOffsetIterator> composition_offset_iterator_;
 

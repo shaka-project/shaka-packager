@@ -484,25 +484,49 @@ FourCC CompositionTimeToSample::BoxType() const { return FOURCC_CTTS; }
 
 bool CompositionTimeToSample::ReadWrite(BoxBuffer* buffer) {
   uint32_t count = composition_offset.size();
+  if (!buffer->Reading()) {
+    // Determine whether version 0 or version 1 should be used.
+    // Use version 0 if possible, use version 1 if there is a negative
+    // sample_offset value.
+    version = 0;
+    for (uint32_t i = 0; i < count; ++i) {
+      if (composition_offset[i].sample_offset < 0) {
+        version = 1;
+        break;
+      }
+    }
+  }
+
   RCHECK(FullBox::ReadWrite(buffer) &&
          buffer->ReadWriteUInt32(&count));
 
   composition_offset.resize(count);
   for (uint32_t i = 0; i < count; ++i) {
-    RCHECK(buffer->ReadWriteUInt32(&composition_offset[i].sample_count) &&
-           buffer->ReadWriteInt32(&composition_offset[i].sample_offset));
+    RCHECK(buffer->ReadWriteUInt32(&composition_offset[i].sample_count));
+
+    if (version == 0) {
+      uint32_t sample_offset = composition_offset[i].sample_offset;
+      RCHECK(buffer->ReadWriteUInt32(&sample_offset));
+      composition_offset[i].sample_offset = sample_offset;
+    } else {
+      int32_t sample_offset = composition_offset[i].sample_offset;
+      RCHECK(buffer->ReadWriteInt32(&sample_offset));
+      composition_offset[i].sample_offset = sample_offset;
+    }
   }
   return true;
 }
 
 uint32_t CompositionTimeToSample::ComputeSize() {
-  // Version 1 to support signed offset.
-  version = 1;
   // This box is optional. Skip it if it is empty.
   atom_size = 0;
   if (!composition_offset.empty()) {
+    // Structure CompositionOffset contains |sample_offset| (uint32_t) and
+    // |sample_offset| (int64_t). The actual size of |sample_offset| is
+    // 4 bytes (uint32_t for version 0 and int32_t for version 1).
+    const uint32_t kCompositionOffsetSize = sizeof(uint32_t) * 2;
     atom_size = kFullBoxSize + sizeof(uint32_t) +
-                sizeof(CompositionOffset) * composition_offset.size();
+                kCompositionOffsetSize * composition_offset.size();
   }
   return atom_size;
 }
@@ -1537,6 +1561,21 @@ TrackFragmentRun::~TrackFragmentRun() {}
 FourCC TrackFragmentRun::BoxType() const { return FOURCC_TRUN; }
 
 bool TrackFragmentRun::ReadWrite(BoxBuffer* buffer) {
+  if (!buffer->Reading()) {
+    // Determine whether version 0 or version 1 should be used.
+    // Use version 0 if possible, use version 1 if there is a negative
+    // sample_offset value.
+    version = 0;
+    if (flags & kSampleCompTimeOffsetsPresentMask) {
+      for (uint32_t i = 0; i < sample_count; ++i) {
+        if (sample_composition_time_offsets[i] < 0) {
+          version = 1;
+          break;
+        }
+      }
+    }
+  }
+
   RCHECK(FullBox::ReadWrite(buffer) &&
          buffer->ReadWriteUInt32(&sample_count));
 
@@ -1598,8 +1637,18 @@ bool TrackFragmentRun::ReadWrite(BoxBuffer* buffer) {
       RCHECK(buffer->ReadWriteUInt32(&sample_sizes[i]));
     if (sample_flags_present)
       RCHECK(buffer->ReadWriteUInt32(&sample_flags[i]));
-    if (sample_composition_time_offsets_present)
-      RCHECK(buffer->ReadWriteInt32(&sample_composition_time_offsets[i]));
+
+    if (sample_composition_time_offsets_present) {
+      if (version == 0) {
+        uint32_t sample_offset = sample_composition_time_offsets[i];
+        RCHECK(buffer->ReadWriteUInt32(&sample_offset));
+        sample_composition_time_offsets[i] = sample_offset;
+      } else {
+        int32_t sample_offset = sample_composition_time_offsets[i];
+        RCHECK(buffer->ReadWriteInt32(&sample_offset));
+        sample_composition_time_offsets[i] = sample_offset;
+      }
+    }
   }
 
   if (buffer->Reading()) {
@@ -1615,7 +1664,6 @@ bool TrackFragmentRun::ReadWrite(BoxBuffer* buffer) {
 }
 
 uint32_t TrackFragmentRun::ComputeSize() {
-  version = 1;  // Version 1 to support signed offset.
   atom_size = kFullBoxSize + sizeof(sample_count);
   if (flags & kDataOffsetPresentMask)
     atom_size += sizeof(data_offset);
