@@ -20,6 +20,7 @@
 #include "packager/mpd/base/mpd_notifier.h"
 
 using ::testing::_;
+using ::testing::InSequence;
 
 namespace edash_packager {
 
@@ -220,6 +221,42 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReady) {
 
   EXPECT_CALL(*notifier_,
               NotifyNewContainer(ExpectMediaInfoEq(kExpectedMediaInfo), _));
+  FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
+}
+
+// Verify that MpdNotifier::NotifyNewSegment() is called after
+// NotifyNewContainer(), if OnNewSegment() is called.
+TEST_F(MpdNotifyMuxerListenerTest, VodOnNewSegment) {
+  SetupForVod();
+  MuxerOptions muxer_options;
+  SetDefaultMuxerOptionsValues(&muxer_options);
+  VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
+  scoped_refptr<StreamInfo> video_stream_info =
+      CreateVideoStreamInfo(video_params);
+
+  const uint64_t kStartTime1 = 0u;
+  const uint64_t kDuration1 = 1000u;
+  const uint64_t kSegmentFileSize1 = 29812u;
+  const uint64_t kStartTime2 = 1001u;
+  const uint64_t kDuration2 = 3787u;
+  const uint64_t kSegmentFileSize2 = 83743u;
+
+  EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
+  EXPECT_CALL(*notifier_, NotifyNewSegment(_, _, _, _)).Times(0);
+  listener_->OnMediaStart(muxer_options, *video_stream_info,
+                          kDefaultReferenceTimeScale,
+                          MuxerListener::kContainerMp4);
+  listener_->OnNewSegment(kStartTime1, kDuration1, kSegmentFileSize1);
+  listener_->OnNewSegment(kStartTime2, kDuration2, kSegmentFileSize2);
+  ::testing::Mock::VerifyAndClearExpectations(notifier_.get());
+
+  InSequence s;
+  EXPECT_CALL(*notifier_, NotifyNewContainer(
+                              ExpectMediaInfoEq(kExpectedDefaultMediaInfo), _));
+  EXPECT_CALL(*notifier_,
+              NotifyNewSegment(_, kStartTime1, kDuration1, kSegmentFileSize1));
+  EXPECT_CALL(*notifier_,
+              NotifyNewSegment(_, kStartTime2, kDuration2, kSegmentFileSize2));
   FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
 }
 

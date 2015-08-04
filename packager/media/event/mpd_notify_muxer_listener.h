@@ -9,6 +9,7 @@
 #ifndef MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_
 #define MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_
 
+#include <list>
 #include <vector>
 
 #include "packager/base/compiler_specific.h"
@@ -60,6 +61,13 @@ class MpdNotifyMuxerListener : public MuxerListener {
   /// @}
 
  private:
+  // This stores data passed into OnNewSegment() for VOD.
+  struct SubsegmentInfo {
+    uint64_t start_time;
+    uint64_t duration;
+    uint64_t segment_file_size;
+  };
+
   MpdNotifier* const mpd_notifier_;
   uint32_t notification_id_;
   scoped_ptr<MediaInfo> media_info_;
@@ -71,6 +79,12 @@ class MpdNotifyMuxerListener : public MuxerListener {
   std::string content_protection_name_version_;
   std::string default_key_id_;
   std::string pssh_;
+
+  // Saves all the subsegment information for VOD. This should be used to call
+  // MpdNotifier::NotifyNewSegment() after NotifyNewSegment() is called
+  // (in OnMediaEnd). This is not used for live because NotifyNewSegment() is
+  // called immediately in OnNewSegment().
+  std::list<SubsegmentInfo> subsegments_;
 
   DISALLOW_COPY_AND_ASSIGN(MpdNotifyMuxerListener);
 };

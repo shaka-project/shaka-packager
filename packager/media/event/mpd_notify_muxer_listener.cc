@@ -106,7 +106,10 @@ void MpdNotifyMuxerListener::OnMediaEnd(bool has_init_range,
                                         uint64_t index_range_end,
                                         float duration_seconds,
                                         uint64_t file_size) {
-  if (mpd_notifier_->dash_profile() == kLiveProfile) return;
+  if (mpd_notifier_->dash_profile() == kLiveProfile) {
+    DCHECK(subsegments_.empty());
+    return;
+  }
 
   DCHECK(media_info_);
   if (!internal::SetVodInformation(has_init_range,
@@ -122,21 +125,28 @@ void MpdNotifyMuxerListener::OnMediaEnd(bool has_init_range,
     return;
   }
 
-  uint32_t id;  // Result unused.
+  uint32_t id;
   // TODO(kqyang): Check return result.
   mpd_notifier_->NotifyNewContainer(*media_info_, &id);
+  for (std::list<SubsegmentInfo>::const_iterator it = subsegments_.begin();
+       it != subsegments_.end(); ++it) {
+    mpd_notifier_->NotifyNewSegment(id, it->start_time, it->duration,
+                                    it->segment_file_size);
+  }
+  subsegments_.clear();
 }
 
 void MpdNotifyMuxerListener::OnNewSegment(uint64_t start_time,
                                           uint64_t duration,
                                           uint64_t segment_file_size) {
-  // TODO(rkuriowa): MpdNotifier::NotifyNewSegment() should be called for VOD as
-  // well. The easiest way to do this is to save all the values and call it
-  // after NotifyNewContainer() in OnMediaEnd().
-  if (mpd_notifier_->dash_profile() != kLiveProfile) return;
-  // TODO(kqyang): Check return result.
-  mpd_notifier_->NotifyNewSegment(
-      notification_id_, start_time, duration, segment_file_size);
+  if (mpd_notifier_->dash_profile() == kLiveProfile) {
+    // TODO(kqyang): Check return result.
+    mpd_notifier_->NotifyNewSegment(
+        notification_id_, start_time, duration, segment_file_size);
+  } else {
+    SubsegmentInfo subsegment = {start_time, duration, segment_file_size};
+    subsegments_.push_back(subsegment);
+  }
 }
 
 }  // namespace media
