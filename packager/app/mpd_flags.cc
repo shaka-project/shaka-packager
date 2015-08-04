@@ -51,3 +51,8 @@ DEFINE_double(suggested_presentation_delay,
               0.0,
               "Specifies a delay, in seconds, to be added to the media "
               "presentation time. This value is used for live profile only.");
+DEFINE_bool(generate_dash_if_iop_compliant_mpd,
+            false,
+            "Try to generate DASH-IF IOPv3 compliant MPD. This is best effort "
+            "and does not guarantee compliance. Off by default until players "
+            "support IOP MPDs.");

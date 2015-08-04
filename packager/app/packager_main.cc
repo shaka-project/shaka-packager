@@ -25,6 +25,7 @@
 #include "packager/media/event/mpd_notify_muxer_listener.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
+#include "packager/mpd/base/dash_iop_mpd_notifier.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/simple_mpd_notifier.h"
 
@@ -258,8 +259,13 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
         FLAGS_single_segment ? kOnDemandProfile : kLiveProfile;
     std::vector<std::string> base_urls;
     base::SplitString(FLAGS_base_urls, ',', &base_urls);
-    mpd_notifier.reset(new SimpleMpdNotifier(profile, mpd_options, base_urls,
-                                             FLAGS_mpd_output));
+    if (FLAGS_generate_dash_if_iop_compliant_mpd) {
+      mpd_notifier.reset(new DashIopMpdNotifier(profile, mpd_options, base_urls,
+                                                FLAGS_mpd_output));
+    } else {
+      mpd_notifier.reset(new SimpleMpdNotifier(profile, mpd_options, base_urls,
+                                               FLAGS_mpd_output));
+    }
     if (!mpd_notifier->Init()) {
       LOG(ERROR) << "MpdNotifier failed to initialize.";
       return false;
