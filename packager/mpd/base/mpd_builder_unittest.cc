@@ -601,8 +601,45 @@ TEST_F(CommonMpdBuilderTest, AdaptationAddRoleElementMain) {
      "</MPD>";
   std::string mpd_output;
   EXPECT_TRUE(mpd_builder.ToString(&mpd_output));
+  ASSERT_TRUE(ValidateMpdSchema(mpd_output));
   EXPECT_TRUE(XmlEqual(kExpectedOutput, mpd_output))
-      << "Expected " << kExpectedOutput << std::endl << "Actual: " << mpd_output;
+      << "Expected " << kExpectedOutput << std::endl
+      << "Actual: " << mpd_output;
+}
+
+// Add Role and ContentProtection elements. Verify that ContentProtection appear
+// before Role.
+TEST_F(CommonMpdBuilderTest, AddContentProtectionAndRole) {
+  MpdBuilder mpd_builder(MpdBuilder::kStatic, MpdOptions());
+  AdaptationSet* adaptation_set = mpd_builder.AddAdaptationSet("");
+  adaptation_set->AddRole(AdaptationSet::kRoleMain);
+  ContentProtectionElement any_content_protection;
+  any_content_protection.scheme_id_uri = "any_scheme";
+  adaptation_set->AddContentProtectionElement(any_content_protection);
+
+  xml::ScopedXmlPtr<xmlNode>::type adaptation_set_xml(adaptation_set->GetXml());
+  const char kExpectedOutput[] =
+     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+     "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\"\n"
+     "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
+     "    xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
+     "    xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\"\n"
+     "    minBufferTime=\"PT2S\" type=\"static\"\n"
+     "    profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\"\n"
+     "    mediaPresentationDuration=\"PT0S\">\n"
+     "  <Period>\n"
+     "    <AdaptationSet id=\"0\" contentType=\"\">\n"
+     "      <ContentProtection schemeIdUri=\"any_scheme\"/>\n"
+     "      <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>\n"
+     "    </AdaptationSet>\n"
+     "  </Period>\n"
+     "</MPD>";
+  std::string mpd_output;
+  EXPECT_TRUE(mpd_builder.ToString(&mpd_output));
+  ASSERT_TRUE(ValidateMpdSchema(mpd_output));
+  EXPECT_TRUE(XmlEqual(kExpectedOutput, mpd_output))
+      << "Expected " << kExpectedOutput << std::endl
+      << "Actual: " << mpd_output;
 }
 
 // Verify that if all video Representations in an AdaptationSet have the same
