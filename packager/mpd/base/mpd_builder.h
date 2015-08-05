@@ -312,13 +312,18 @@ class AdaptationSet {
 
   /// Called from OnNewSegmentForRepresentation(). Checks whether the segments
   /// are aligned. Sets segments_aligned_.
+  /// This is only for Live. For VOD, CheckVodSegmentAlignment() should be used.
   /// @param representation_id is the id of the Representation with a new
   ///        segment.
   /// @param start_time is the start time of the new segment.
   /// @param duration is the duration of the new segment.
-  void CheckSegmentAlignment(uint32_t representation_id,
-                             uint64_t start_time,
-                             uint64_t duration);
+  void CheckLiveSegmentAlignment(uint32_t representation_id,
+                                 uint64_t start_time,
+                                 uint64_t duration);
+
+  // Checks representation_segment_start_times_ and sets segments_aligned_.
+  // Use this for VOD, do not use for Live.
+  void CheckVodSegmentAlignment();
 
   // Records the framerate of a Representation.
   void RecordFrameRate(uint32_t frame_duration, uint32_t timescale);
@@ -377,6 +382,12 @@ class AdaptationSet {
   bool force_set_segment_alignment_;
 
   // Keeps track of segment start times of Representations.
+  // For VOD, this will not be cleared, all the segment start times are
+  // stored in this. This should not out-of-memory for a reasonable length
+  // video and reasonable subsegment length.
+  // For Live, the entries are deleted (see CheckLiveSegmentAlignment()
+  // implementation comment) because storing the entire timeline is not
+  // reasonable and may cause an out-of-memory problem.
   RepresentationTimeline representation_segment_start_times_;
 
   DISALLOW_COPY_AND_ASSIGN(AdaptationSet);

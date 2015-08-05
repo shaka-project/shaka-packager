@@ -947,6 +947,8 @@ TEST_F(CommonMpdBuilderTest,
 
 // Verify that subSegmentAlignment is set to true if all the Representations'
 // segments are aligned and the MPD type is static.
+// Also checking that not all Representations have to be added before calling
+// AddNewSegment() on a Representation.
 TEST_F(StaticMpdBuilderTest, SubSegmentAlignment) {
   base::AtomicSequenceNumber sequence_counter;
   const char k480pMediaInfo[] =
@@ -971,37 +973,36 @@ TEST_F(StaticMpdBuilderTest, SubSegmentAlignment) {
       "  pixel_height: 1\n"
       "}\n"
       "container_type: 1\n";
+
+  // First use same start time and duration, and verify that subSegmentAlignment
+  // is set to true.
+  const uint64_t kStartTime = 0u;
+  const uint64_t kDuration = 10u;
+  const uint64_t kAnySize = 19834u;
+
   AdaptationSet adaptation_set(kAnyAdaptationSetId, "", MpdOptions(),
                                MpdBuilder::kStatic, &sequence_counter);
   Representation* representation_480p =
       adaptation_set.AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
+  // Add a subsegment immediately before adding the 360p Representation.
+  // This should still work for VOD.
+  representation_480p->AddNewSegment(kStartTime, kDuration, kAnySize);
+
   Representation* representation_360p =
       adaptation_set.AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
-
-  // First use same start time and duration, and verify that that
-  // segmentAlignment is set.
-  const uint64_t kStartTime = 0u;
-  const uint64_t kDuration = 10u;
-  const uint64_t kAnySize = 19834u;
-  representation_480p->AddNewSegment(kStartTime, kDuration, kAnySize);
   representation_360p->AddNewSegment(kStartTime, kDuration, kAnySize);
+
   xml::ScopedXmlPtr<xmlNode>::type aligned(adaptation_set.GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeEqString("subSegmentAlignment", "true", aligned.get()));
-  EXPECT_EQ(2u, adaptation_set.representation_segment_start_times_.size());
 
-  // Also check that the start times are removed from the vector.
-  EXPECT_EQ(0u,
-            adaptation_set
-                .representation_segment_start_times_[representation_480p->id()]
-                .size());
-  EXPECT_EQ(0u,
-            adaptation_set
-                .representation_segment_start_times_[representation_360p->id()]
-                .size());
+  // Unknown because 480p has an extra subsegments.
+  representation_480p->AddNewSegment(11, 20, kAnySize);
+  xml::ScopedXmlPtr<xmlNode>::type alignment_unknown(adaptation_set.GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("subSegmentAlignment", alignment_unknown.get()));
 
   // Add segments that make them not aligned.
-  representation_480p->AddNewSegment(11, 20, kAnySize);
   representation_360p->AddNewSegment(10, 1, kAnySize);
   representation_360p->AddNewSegment(11, 19, kAnySize);
 

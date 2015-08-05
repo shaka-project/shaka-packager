@@ -10,6 +10,7 @@
 #include <libxml/xmlstring.h>
 
 #include <cmath>
+#include <iterator>
 #include <list>
 #include <string>
 
@@ -732,6 +733,11 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
                                       video_frame_rates_.rbegin()->second);
   }
 
+  // Note: must be checked before checking segments_aligned_ (below).
+  if (mpd_type_ == MpdBuilder::kStatic) {
+    CheckVodSegmentAlignment();
+  }
+
   if (segments_aligned_ == kSegmentAlignmentTrue) {
     adaptation_set.SetStringAttribute(mpd_type_ == MpdBuilder::kStatic
                                           ? "subSegmentAlignment"
@@ -767,11 +773,24 @@ int AdaptationSet::Group() const {
   return group_;
 }
 
+// Check segmentAlignment for Live here. Storing all start_time and duration
+// will out-of-memory because there's no way of knowing when it will end.
+// VOD subSegmentAlignment check is *not* done here because it is possible
+// that some Representations might not have been added yet (e.g. a thread is
+// assigned per muxer so one might run faster than others).
+// To be clear, for Live, all Representations should be added before a
+// segment is added.
 void AdaptationSet::OnNewSegmentForRepresentation(uint32_t representation_id,
                                                   uint64_t start_time,
                                                   uint64_t duration) {
   base::AutoLock scoped_lock(lock_);
-  CheckSegmentAlignment(representation_id, start_time, duration);
+
+  if (mpd_type_ == MpdBuilder::kDynamic) {
+    CheckLiveSegmentAlignment(representation_id, start_time, duration);
+  } else {
+    representation_segment_start_times_[representation_id].push_back(
+        start_time);
+  }
 }
 
 void AdaptationSet::OnSetFrameRateForRepresentation(
@@ -827,12 +846,9 @@ bool AdaptationSet::GetEarliestTimestamp(double* timestamp_seconds) {
 // They are not aligned but this will be marked as aligned.
 // But since this is unlikely to happen in the packager (and to save
 // computation), this isn't handled at the moment.
-// TODO(rkuroiwa): For VOD, not all Representations get added to an
-// AdaptationSet before this is called. Add a similar but separate method that
-// keeps the timestamps around. It shouldn't out-of-memory for VOD.
-void AdaptationSet::CheckSegmentAlignment(uint32_t representation_id,
-                                          uint64_t start_time,
-                                          uint64_t /* duration */) {
+void AdaptationSet::CheckLiveSegmentAlignment(uint32_t representation_id,
+                                              uint64_t start_time,
+                                              uint64_t /* duration */) {
   if (segments_aligned_ == kSegmentAlignmentFalse ||
       force_set_segment_alignment_) {
     return;
@@ -872,6 +888,66 @@ void AdaptationSet::CheckSegmentAlignment(uint32_t representation_id,
        it != representation_segment_start_times_.end(); ++it) {
     it->second.pop_front();
   }
+}
+
+// Make sure all segements start times match for all Representations.
+// This assumes that the segments are contiguous.
+void AdaptationSet::CheckVodSegmentAlignment() {
+  if (segments_aligned_ == kSegmentAlignmentFalse ||
+      force_set_segment_alignment_) {
+    return;
+  }
+  if (representation_segment_start_times_.empty())
+    return;
+  if (representation_segment_start_times_.size() == 1) {
+    segments_aligned_ = kSegmentAlignmentTrue;
+    return;
+  }
+
+  // This is not the most efficient implementation to compare the values
+  // because expected_time_line is compared against all other time lines, but
+  // probably the most readable.
+  const std::list<uint64_t>& expected_time_line =
+      representation_segment_start_times_.begin()->second;
+
+  bool all_segment_time_line_same_length = true;
+  // Note that the first entry is skipped because it is expected_time_line.
+  RepresentationTimeline::const_iterator it =
+      representation_segment_start_times_.begin();
+  for (++it; it != representation_segment_start_times_.end(); ++it) {
+    const std::list<uint64_t>& other_time_line = it->second;
+    if (expected_time_line.size() != other_time_line.size()) {
+      all_segment_time_line_same_length = false;
+    }
+
+    const std::list<uint64_t>* longer_list = &other_time_line;
+    const std::list<uint64_t>* shorter_list = &expected_time_line;
+    if (expected_time_line.size() > other_time_line.size()) {
+      shorter_list = &other_time_line;
+      longer_list = &expected_time_line;
+    }
+
+    if (!std::equal(shorter_list->begin(), shorter_list->end(),
+                    longer_list->begin())) {
+      // Some segments are definitely unaligned.
+      segments_aligned_ = kSegmentAlignmentFalse;
+      representation_segment_start_times_.clear();
+      return;
+    }
+  }
+
+  // TODO(rkuroiwa): The right way to do this is to also check the durations.
+  // For example:
+  // (a)  3 4 5
+  // (b)  3 4 5 6
+  // could be true or false depending on the length of the third segment of (a).
+  // i.e. if length of the third segment is 2, then this is not aligned.
+  if (!all_segment_time_line_same_length) {
+    segments_aligned_ = kSegmentAlignmentUnknown;
+    return;
+  }
+
+  segments_aligned_ = kSegmentAlignmentTrue;
 }
 
 // Since all AdaptationSet cares about is the maxFrameRate, representation_id
