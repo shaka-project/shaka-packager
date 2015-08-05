@@ -248,6 +248,18 @@ AdaptationSet* DashIopMpdNotifier::NewAdaptationSet(
     AddContentProtectionElements(media_info, new_adaptation_set);
   }
   adaptation_sets->push_back(new_adaptation_set);
+
+  if (media_info.has_video_info()) {
+    // Because 'lang' is ignored for videos, |adaptation_sets| must have
+    // all the video AdaptationSets.
+    if (adaptation_sets->size() > 2) {
+      new_adaptation_set->AddRole(AdaptationSet::kRoleMain);
+    } else if (adaptation_sets->size() == 2) {
+      // Set "main" Role for both AdaptatoinSets.
+      (*adaptation_sets->begin())->AddRole(AdaptationSet::kRoleMain);
+      new_adaptation_set->AddRole(AdaptationSet::kRoleMain);
+    }
+  }
   return new_adaptation_set;
 }
 

@@ -194,7 +194,7 @@ class AdaptationSet {
   /// The Role element's is schemeIdUri='urn:mpeg:dash:role:2011'.
   /// See ISO/IEC 23009-1:2012 section 5.8.5.5.
   /// @param role of this AdaptationSet.
-  void AddRole(Role role);
+  virtual void AddRole(Role role);
 
   /// Makes a copy of AdaptationSet xml element with its child Representation
   /// and ContentProtection elements.

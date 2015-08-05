@@ -22,8 +22,10 @@ namespace edash_packager {
 
 /// This class is an MpdNotifier which will try its best to generate a
 /// DASH IF IOPv3 compliant MPD.
-/// For example, all <ContentProtection> elements must be right under
+/// e.g.
+/// All <ContentProtection> elements must be right under
 /// <AdaptationSet> and cannot be under <Representation>.
+/// All video Adaptation Sets have Role set to "main".
 class DashIopMpdNotifier : public MpdNotifier {
  public:
   DashIopMpdNotifier(DashProfile dash_profile,

@@ -165,6 +165,7 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainer) {
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
       .WillOnce(Return(default_mock_adaptation_set_.get()));
+  EXPECT_CALL(*default_mock_adaptation_set_, AddRole(_)).Times(0);
   EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
       .WillOnce(Return(default_mock_representation_.get()));
 
@@ -286,6 +287,11 @@ TEST_P(DashIopMpdNotifierTest,
       .WillOnce(Return(hd_adaptation_set.get()));
   // Called twice for the same reason as above.
   EXPECT_CALL(*hd_adaptation_set, AddContentProtectionElement(_)).Times(2);
+
+  // Add main Role here for both.
+  EXPECT_CALL(*sd_adaptation_set, AddRole(AdaptationSet::kRoleMain));
+  EXPECT_CALL(*hd_adaptation_set, AddRole(AdaptationSet::kRoleMain));
+
   EXPECT_CALL(*hd_adaptation_set, AddRepresentation(_))
       .WillOnce(Return(hd_representation.get()));
 
@@ -382,6 +388,7 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainersWithSameProtectedContent) {
       AddContentProtectionElement(ContentProtectionElementEq(mp4_protection)));
   EXPECT_CALL(*default_mock_adaptation_set_,
               AddContentProtectionElement(ContentProtectionElementEq(my_drm)));
+  EXPECT_CALL(*default_mock_adaptation_set_, AddRole(_)).Times(0);
   EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
       .WillOnce(Return(sd_representation.get()));
   if (mpd_type() == MpdBuilder::kStatic)
@@ -392,6 +399,7 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainersWithSameProtectedContent) {
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_)).Times(0);
   EXPECT_CALL(*default_mock_adaptation_set_, AddContentProtectionElement(_))
       .Times(0);
+  EXPECT_CALL(*default_mock_adaptation_set_, AddRole(_)).Times(0);
   EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
       .WillOnce(Return(hd_representation.get()));
   if (mpd_type() == MpdBuilder::kStatic)
@@ -635,12 +643,12 @@ TEST_P(DashIopMpdNotifierTest, DoNotSetGroupIfContentTypesDifferent) {
       "container_type: 1\n"
       "media_duration_seconds: 10.5\n";
 
-  const uint32_t kSdAdaptationSetId = 6u;
-  const uint32_t kHdAdaptationSetId = 7u;
+  const uint32_t kVideoAdaptationSetId = 6u;
+  const uint32_t kAudioAdaptationSetId = 7u;
   scoped_ptr<MockAdaptationSet> video_adaptation_set(
-      new MockAdaptationSet(kSdAdaptationSetId));
+      new MockAdaptationSet(kVideoAdaptationSetId));
   scoped_ptr<MockAdaptationSet> audio_adaptation_set(
-      new MockAdaptationSet(kHdAdaptationSetId));
+      new MockAdaptationSet(kAudioAdaptationSetId));
 
   ON_CALL(*video_adaptation_set, Group())
       .WillByDefault(Return(kDefaultGroupId));
@@ -651,27 +659,29 @@ TEST_P(DashIopMpdNotifierTest, DoNotSetGroupIfContentTypesDifferent) {
   EXPECT_CALL(*video_adaptation_set, SetGroup(_)).Times(0);
   EXPECT_CALL(*audio_adaptation_set, SetGroup(_)).Times(0);
 
-  const uint32_t kSdRepresentation = 8u;
-  const uint32_t kHdRepresentation = 9u;
-  scoped_ptr<MockRepresentation> sd_representation(
-      new MockRepresentation(kSdRepresentation));
-  scoped_ptr<MockRepresentation> hd_representation(
-      new MockRepresentation(kHdRepresentation));
+  const uint32_t kVideoRepresentation = 8u;
+  const uint32_t kAudioRepresentation = 9u;
+  scoped_ptr<MockRepresentation> video_representation(
+      new MockRepresentation(kVideoRepresentation));
+  scoped_ptr<MockRepresentation> audio_representation(
+      new MockRepresentation(kAudioRepresentation));
 
   InSequence in_sequence;
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
       .WillOnce(Return(video_adaptation_set.get()));
   EXPECT_CALL(*video_adaptation_set, AddContentProtectionElement(_)).Times(2);
+  EXPECT_CALL(*video_adaptation_set, AddRole(_)).Times(0);
   EXPECT_CALL(*video_adaptation_set, AddRepresentation(_))
-      .WillOnce(Return(sd_representation.get()));
+      .WillOnce(Return(video_representation.get()));
   if (mpd_type() == MpdBuilder::kStatic)
     EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
       .WillOnce(Return(audio_adaptation_set.get()));
   EXPECT_CALL(*audio_adaptation_set, AddContentProtectionElement(_)).Times(2);
+  EXPECT_CALL(*audio_adaptation_set, AddRole(_)).Times(0);
   EXPECT_CALL(*audio_adaptation_set, AddRepresentation(_))
-      .WillOnce(Return(hd_representation.get()));
+      .WillOnce(Return(audio_representation.get()));
 
   if (mpd_type() == MpdBuilder::kStatic)
     EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));

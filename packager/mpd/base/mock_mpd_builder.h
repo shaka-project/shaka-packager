@@ -35,6 +35,7 @@ class MockAdaptationSet : public AdaptationSet {
   MOCK_METHOD1(AddRepresentation, Representation*(const MediaInfo& media_info));
   MOCK_METHOD1(AddContentProtectionElement,
                void(const ContentProtectionElement& element));
+  MOCK_METHOD1(AddRole, void(AdaptationSet::Role role));
 
   MOCK_METHOD1(SetGroup, void(int group_number));
   MOCK_CONST_METHOD0(Group, int());
