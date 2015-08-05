@@ -44,6 +44,10 @@ bear-640x360-v_frag-cenc.mp4 - A fragmented MP4 version of the video track of be
 [1] 30313233343536373839303132333435
 [2] ebdd62f16814d27b68ef122afce4ae3c
 
+// Non square pixels.
+bear-640x360-non_square_pixel-with_pasp.mp4 - A non-square pixel version of the video track of bear-640x360.mp4 with PixelAspectRatio box.
+bear-640x360-non_square_pixel-without_pasp.mp4 - A non-square pixel version of the video track of bear-640x360.mp4 without PixelAspectRatio box.
+
 // Container Tests (additional containers derived from bear.ogv)
 bear.ac3    -- created using "avconv -i bear.ogv -f ac3 -b 192k bear.ac3".
 bear.adts   -- created using "avconv -i bear.ogv -f adts -strict experimental bear.adts".

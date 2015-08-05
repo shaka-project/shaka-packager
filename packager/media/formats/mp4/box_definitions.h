@@ -134,6 +134,8 @@ struct TrackHeader : FullBox {
   int16_t layer;
   int16_t alternate_group;
   int16_t volume;
+  // width and height specify the track's visual presentation size as
+  // fixed-point 16.16 values.
   uint32_t width;
   uint32_t height;
 };

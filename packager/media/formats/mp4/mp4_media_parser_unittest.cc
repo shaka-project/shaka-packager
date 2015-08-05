@@ -114,15 +114,13 @@ TEST_F(MP4MediaParserTest, UnalignedAppend) {
 // the container has a 'pasp' box.
 TEST_F(MP4MediaParserTest, PixelWidthPixelHeightFromPaspBox) {
   // This content has a 'pasp' box that has the aspect ratio.
-  EXPECT_TRUE(ParseMP4File("bear-1280x720.mp4", 512));
+  EXPECT_TRUE(ParseMP4File("bear-640x360-non_square_pixel-with_pasp.mp4", 512));
 
-  // Track ID 2 has the video stream which should have pixel width and height
-  // both 1.
-  const int kVideoTrackId = 2;
-  EXPECT_EQ(1u,
+  const int kVideoTrackId = 1;
+  EXPECT_EQ(8u,
             reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get())
                 ->pixel_width());
-  EXPECT_EQ(1u,
+  EXPECT_EQ(9u,
             reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get())
                 ->pixel_height());
 }
@@ -132,13 +130,11 @@ TEST_F(MP4MediaParserTest, PixelWidthPixelHeightFromPaspBox) {
 // No 'pasp' box.
 TEST_F(MP4MediaParserTest,
        PixelWidthPixelHeightFromAVCDecoderConfigurationRecord) {
-  // This file doesn't have pasp. SPS for the video has
-  // sar_width = sar_height = 0. So the stream info should return 1 for both
-  // pixel_width and pixel_height.
-  EXPECT_TRUE(ParseMP4File("hb2_v_frag.mp4", 512));
+  // This file doesn't have pasp. The stream should extract pixel width and
+  // height from SPS.
+  EXPECT_TRUE(
+      ParseMP4File("bear-640x360-non_square_pixel-without_pasp.mp4", 512));
 
-  // Track ID 1 has the video stream which should have pixel width and height
-  // both 1.
   const int kVideoTrackId = 1;
   EXPECT_EQ(8u,
             reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get())
@@ -156,10 +152,8 @@ TEST_F(MP4MediaParserTest,
   // This file doesn't have pasp. SPS for the video has
   // sar_width = sar_height = 0. So the stream info should return 1 for both
   // pixel_width and pixel_height.
-  EXPECT_TRUE(ParseMP4File("bear-1280x720-av_frag.mp4", 512));
+  EXPECT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 512));
 
-  // Track ID 1 has the video stream which should have pixel width and height
-  // both 1.
   const int kVideoTrackId = 1;
   EXPECT_EQ(1u,
             reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get())

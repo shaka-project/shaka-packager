@@ -372,9 +372,6 @@ bool TrackHeader::ReadWrite(BoxBuffer* buffer) {
     // Set default value for volume, if track is audio, 0x100 else 0.
     if (volume == -1)
       volume = (width != 0 && height != 0) ? 0 : 0x100;
-    // Convert integer to 16.16 fix point.
-    width <<= 16;
-    height <<= 16;
   }
   std::vector<uint8_t> matrix(kUnityMatrix,
                               kUnityMatrix + arraysize(kUnityMatrix));
@@ -386,9 +383,6 @@ bool TrackHeader::ReadWrite(BoxBuffer* buffer) {
          buffer->ReadWriteVector(&matrix, matrix.size()) &&
          buffer->ReadWriteUInt32(&width) &&
          buffer->ReadWriteUInt32(&height));
-  // Convert 16.16 fixed point to integer.
-  width >>= 16;
-  height >>= 16;
   return true;
 }
 
@@ -1001,8 +995,7 @@ bool VideoSampleEntry::ReadWrite(BoxBuffer* buffer) {
          buffer->ReadWriteUInt16(&video_depth) &&
          buffer->ReadWriteInt16(&predefined));
 
-  RCHECK(buffer->PrepareChildren() &&
-         buffer->TryReadWriteChild(&pixel_aspect));
+  RCHECK(buffer->PrepareChildren());
 
   if (format == FOURCC_ENCV) {
     if (buffer->Reading()) {
@@ -1021,6 +1014,7 @@ bool VideoSampleEntry::ReadWrite(BoxBuffer* buffer) {
       (format == FOURCC_ENCV && sinf.format.format == FOURCC_AVC1)) {
     RCHECK(buffer->ReadWriteChild(&avcc));
   }
+  RCHECK(buffer->TryReadWriteChild(&pixel_aspect));
   return true;
 }
 

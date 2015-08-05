@@ -97,7 +97,7 @@
         'media/filters/filters.gyp:filters_unittest',
         'media/formats/mp2t/mp2t.gyp:mp2t_unittest',
         'media/formats/mp4/mp4.gyp:mp4_unittest',
-#        'media/formats/wvm/wvm.gyp:wvm_unittest',
+        'media/formats/wvm/wvm.gyp:wvm_unittest',
         'mpd/mpd.gyp:mpd_unittest',
         'packager_test',
       ],

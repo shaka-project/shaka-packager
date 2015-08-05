@@ -159,8 +159,14 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
                                  uint32_t track_id) {
   InitializeTrak(video_info, trak);
 
-  trak->header.width = video_info->width();
-  trak->header.height = video_info->height();
+  // width and height specify the track's visual presentation size as
+  // fixed-point 16.16 values.
+  const double sample_aspect_ratio =
+      static_cast<double>(video_info->pixel_width()) /
+      video_info->pixel_height();
+  trak->header.width = video_info->width() * sample_aspect_ratio * 0x10000;
+  trak->header.height = video_info->height() * 0x10000;
+
   trak->media.handler.type = kVideo;
 
   VideoSampleEntry video;
@@ -168,6 +174,10 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   video.width = video_info->width();
   video.height = video_info->height();
   video.avcc.data = video_info->extra_data();
+  if (video_info->pixel_width() != 1 || video_info->pixel_height() != 1) {
+    video.pixel_aspect.h_spacing = video_info->pixel_width();
+    video.pixel_aspect.v_spacing = video_info->pixel_height();
+  }
 
   SampleDescription& sample_description =
       trak->media.information.sample_table.description;

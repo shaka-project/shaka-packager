@@ -83,6 +83,11 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
     DVLOG_IF(2, pixel_width_ == 0 || pixel_height_ == 0)
         << "Failed to extract sar_width and sar_height.";
   }
+  if (pixel_width_ == 0 || pixel_height_ == 0) {
+    LOG(WARNING) << "SAR is not extracted successfully. Assuming 1:1.";
+    pixel_width_ = 1;
+    pixel_height_ = 1;
+  }
 }
 
 VideoStreamInfo::~VideoStreamInfo() {}
