@@ -9,10 +9,10 @@
 #include <inttypes.h>
 #include <libxml/xmlstring.h>
 
-#include "base/strings/string_piece.h"
 #include "packager/base/file_util.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/strings/string_piece.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/file/file.h"

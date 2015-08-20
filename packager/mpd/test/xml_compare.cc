@@ -76,10 +76,12 @@ bool CompareNames(xmlNodePtr node1, xmlNodePtr node2) {
 }
 
 bool CompareContents(xmlNodePtr node1, xmlNodePtr node2) {
+  xml::ScopedXmlPtr<xmlChar>::type node1_content_ptr(xmlNodeGetContent(node1));
+  xml::ScopedXmlPtr<xmlChar>::type node2_content_ptr(xmlNodeGetContent(node2));
   std::string node1_content =
-      reinterpret_cast<const char*>(xmlNodeGetContent(node1));
+      reinterpret_cast<const char*>(node1_content_ptr.get());
   std::string node2_content =
-      reinterpret_cast<const char*>(xmlNodeGetContent(node2));
+      reinterpret_cast<const char*>(node2_content_ptr.get());
   base::ReplaceChars(node1_content, "\n", "", &node1_content);
   base::TrimString(node1_content, " ", &node1_content);
   base::ReplaceChars(node2_content, "\n", "", &node2_content);
