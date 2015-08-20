@@ -161,9 +161,15 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
 
   // width and height specify the track's visual presentation size as
   // fixed-point 16.16 values.
+  uint32_t pixel_width = video_info->pixel_width();
+  uint32_t pixel_height = video_info->pixel_height();
+  if (pixel_width == 0 || pixel_height == 0) {
+    LOG(WARNING) << "pixel width/height are not set. Assuming 1:1.";
+    pixel_width = 1;
+    pixel_height = 1;
+  }
   const double sample_aspect_ratio =
-      static_cast<double>(video_info->pixel_width()) /
-      video_info->pixel_height();
+      static_cast<double>(pixel_width) / pixel_height;
   trak->header.width = video_info->width() * sample_aspect_ratio * 0x10000;
   trak->header.height = video_info->height() * 0x10000;
 
@@ -174,9 +180,9 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   video.width = video_info->width();
   video.height = video_info->height();
   video.avcc.data = video_info->extra_data();
-  if (video_info->pixel_width() != 1 || video_info->pixel_height() != 1) {
-    video.pixel_aspect.h_spacing = video_info->pixel_width();
-    video.pixel_aspect.v_spacing = video_info->pixel_height();
+  if (pixel_width != 1 || pixel_height != 1) {
+    video.pixel_aspect.h_spacing = pixel_width;
+    video.pixel_aspect.v_spacing = pixel_height;
   }
 
   SampleDescription& sample_description =

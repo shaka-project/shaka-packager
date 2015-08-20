@@ -10,7 +10,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "packager/base/logging.h"
 
 namespace edash_packager {
 

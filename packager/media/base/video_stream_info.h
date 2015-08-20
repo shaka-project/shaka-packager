@@ -67,6 +67,9 @@ class VideoStreamInfo : public StreamInfo {
   uint8_t nalu_length_size() const { return nalu_length_size_; }
   int16_t trick_play_rate() const { return trick_play_rate_; }
 
+  void set_pixel_width(uint32_t pixel_width) { pixel_width_ = pixel_width; }
+  void set_pixel_height(uint32_t pixel_height) { pixel_height_ = pixel_height; }
+
   /// @param profile,compatible_profiles,level are only used by H.264 codec.
   /// @return The codec string.
   static std::string GetCodecString(VideoCodec codec,

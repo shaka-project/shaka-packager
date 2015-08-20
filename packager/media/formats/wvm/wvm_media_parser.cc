@@ -15,6 +15,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/status.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/filters/h264_parser.h"
 #include "packager/media/formats/mp2t/adts_header.h"
 
 #define HAS_HEADER_EXTENSION(x) ((x != 0xBC) && (x != 0xBE) && (x != 0xBF) \
@@ -805,6 +806,18 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
             stream_infos_[i]->set_codec_string(VideoStreamInfo::GetCodecString(
                 kCodecH264, decoder_config_record[1], decoder_config_record[2],
                 decoder_config_record[3]));
+
+            VideoStreamInfo* video_stream_info =
+                reinterpret_cast<VideoStreamInfo*>(stream_infos_[i].get());
+            uint32_t pixel_width = video_stream_info->pixel_width();
+            uint32_t pixel_height = video_stream_info->pixel_height();
+            if (pixel_width == 0 || pixel_height == 0) {
+              ExtractSarFromDecoderConfig(&decoder_config_record[0],
+                                          decoder_config_record.size(),
+                                          &pixel_width, &pixel_height);
+              video_stream_info->set_pixel_width(pixel_width);
+              video_stream_info->set_pixel_height(pixel_height);
+            }
           }
         }
       }

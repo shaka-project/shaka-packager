@@ -6,7 +6,6 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/stl_util.h"
-#include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/test/test_data_util.h"
 #include "packager/media/filters/h264_parser.h"
 
@@ -64,6 +63,34 @@ TEST(H264ParserTest, StreamFileParsing) {
         break;
     }
   }
+}
+
+TEST(H264ParserTest, ExtractSarFromDecoderConfig) {
+  const uint8_t kDecoderConfig[] = {
+      0x01, 0x64, 0x00, 0x1E, 0xFF, 0xE1, 0x00, 0x1D, 0x67, 0x64, 0x00, 0x1E,
+      0xAC, 0xD9, 0x40, 0xB4, 0x2F, 0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91,
+      0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA, 0x60, 0x0F, 0x16, 0x2D,
+      0x96, 0x01, 0x00, 0x06, 0x68, 0xEB, 0xE3, 0xCB, 0x22, 0xC0};
+
+  uint32_t pixel_width = 0;
+  uint32_t pixel_height = 0;
+  ExtractSarFromDecoderConfig(kDecoderConfig, arraysize(kDecoderConfig),
+                              &pixel_width, &pixel_height);
+  EXPECT_EQ(8u, pixel_width);
+  EXPECT_EQ(9u, pixel_height);
+}
+
+TEST(H264ParserTest, ExtractSarFromSps) {
+  const uint8_t kSps[] = {0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4,
+                          0x2F, 0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91,
+                          0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA,
+                          0x60, 0x0F, 0x16, 0x2D, 0x96};
+
+  uint32_t pixel_width = 0;
+  uint32_t pixel_height = 0;
+  ExtractSarFromSps(kSps, arraysize(kSps), &pixel_width, &pixel_height);
+  EXPECT_EQ(8u, pixel_width);
+  EXPECT_EQ(9u, pixel_height);
 }
 
 }  // namespace media

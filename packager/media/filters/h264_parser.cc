@@ -20,9 +20,10 @@ namespace media {
     }                                                                 \
   } while (0)
 
-void ExtractSarFromDecoderConfig(
-    const uint8_t* avc_decoder_config_data, size_t avc_decoder_config_data_size,
-    uint32_t* sar_width, uint32_t* sar_height) {
+void ExtractSarFromDecoderConfig(const uint8_t* avc_decoder_config_data,
+                                 size_t avc_decoder_config_data_size,
+                                 uint32_t* sar_width,
+                                 uint32_t* sar_height) {
   BufferReader reader(avc_decoder_config_data, avc_decoder_config_data_size);
   uint8_t value = 0;
   // version check, must be 1.
@@ -56,20 +57,28 @@ void ExtractSarFromDecoderConfig(
   uint16_t sps_length = 0;
   RCHECK(reader.Read2(&sps_length));
 
+  ExtractSarFromSps(reader.data() + reader.pos(), sps_length, sar_width,
+                    sar_height);
+
+  // It is unlikely to have more than one SPS in practice. Also there's
+  // no way to change the sar_{width,height} dynamically from VideoStreamInfo.
+  // So skip the rest (if there are any).
+}
+
+void ExtractSarFromSps(const uint8_t* sps_data,
+                       size_t sps_data_size,
+                       uint32_t* sar_width,
+                       uint32_t* sar_height) {
   H264Parser parser;
   int sps_id;
-  RCHECK(parser.ParseSPSFromArray(reader.data() + reader.pos(), sps_length,
-                                  &sps_id) == H264Parser::kOk);
+  RCHECK(parser.ParseSPSFromArray(sps_data, sps_data_size, &sps_id) ==
+         H264Parser::kOk);
   const H264SPS& sps = *parser.GetSPS(sps_id);
   // 0 means it wasn't in the SPS and therefore assume 1.
   *sar_width = sps.sar_width == 0 ? 1 : sps.sar_width;
   *sar_height = sps.sar_height == 0 ? 1 : sps.sar_height;
   DVLOG(2) << "Found sar_width: " << *sar_width
            << " sar_height: " << *sar_height;
-
-  // It is unlikely to have more than one SPS in practice. Also there's
-  // no way to change the sar_{width,height} dynamically from VideoStreamInfo.
-  // So skip the rest (if there are any).
 }
 
 #undef RCHECK

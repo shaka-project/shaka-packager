@@ -6,13 +6,12 @@
 
 #include "packager/media/base/video_stream_info.h"
 
-#include "base/logging.h"
+#include "packager/base/logging.h"
 #include "packager/base/stl_util.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/base/limits.h"
-#include "packager/media/filters/h264_parser.h"
 
 namespace edash_packager {
 namespace media {
@@ -73,21 +72,6 @@ VideoStreamInfo::VideoStreamInfo(int track_id,
       pixel_height_(pixel_height),
       trick_play_rate_(trick_play_rate),
       nalu_length_size_(nalu_length_size) {
-  // If H264 and the pixel width and height were not passed in, parse the extra
-  // data to get the sar width and height.
-  if ((pixel_width_ == 0 || pixel_height_ == 0) &&
-      codec == kCodecH264 &&
-      extra_data && extra_data_size > 0) {
-    ExtractSarFromDecoderConfig(extra_data, extra_data_size, &pixel_width_,
-                                &pixel_height_);
-    DVLOG_IF(2, pixel_width_ == 0 || pixel_height_ == 0)
-        << "Failed to extract sar_width and sar_height.";
-  }
-  if (pixel_width_ == 0 || pixel_height_ == 0) {
-    LOG(WARNING) << "SAR is not extracted successfully. Assuming 1:1.";
-    pixel_width_ = 1;
-    pixel_height_ = 1;
-  }
 }
 
 VideoStreamInfo::~VideoStreamInfo() {}

@@ -20,6 +20,7 @@
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
+#include "packager/media/filters/h264_parser.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/box_reader.h"
 #include "packager/media/formats/mp4/es_descriptor.h"
@@ -368,6 +369,15 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                                           entry.avcc.profile_compatibility,
                                           entry.avcc.avc_level);
 
+      uint32_t pixel_width = entry.pixel_aspect.h_spacing;
+      uint32_t pixel_height = entry.pixel_aspect.v_spacing;
+      if (pixel_width == 0 || pixel_height == 0) {
+        if (!entry.avcc.sps_list.empty()) {
+          const std::vector<uint8_t>& sps = entry.avcc.sps_list[0];
+          ExtractSarFromSps(&sps[0], sps.size(), &pixel_width, &pixel_height);
+        }
+      }
+
       bool is_encrypted = entry.sinf.info.track_encryption.is_encrypted;
       DVLOG(1) << "is_video_track_encrypted_: " << is_encrypted;
       streams.push_back(new VideoStreamInfo(track->header.track_id,
@@ -378,8 +388,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                                             track->media.header.language,
                                             entry.width,
                                             entry.height,
-                                            entry.pixel_aspect.h_spacing,
-                                            entry.pixel_aspect.v_spacing,
+                                            pixel_width,
+                                            pixel_height,
                                             0,  // trick_play_rate
                                             entry.avcc.length_size,
                                             &entry.avcc.data[0],
