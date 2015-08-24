@@ -607,15 +607,24 @@ TEST_F(CommonMpdBuilderTest, AdaptationAddRoleElementMain) {
       << "Actual: " << mpd_output;
 }
 
-// Add Role and ContentProtection elements. Verify that ContentProtection appear
-// before Role.
-TEST_F(CommonMpdBuilderTest, AddContentProtectionAndRole) {
+// Add Role, ContentProtection, and Representation elements. Verify that
+// ContentProtection -> Role -> Representation are in order.
+TEST_F(CommonMpdBuilderTest, CheckContentProtectionRoleRepresentationOrder) {
   MpdBuilder mpd_builder(MpdBuilder::kStatic, MpdOptions());
   AdaptationSet* adaptation_set = mpd_builder.AddAdaptationSet("");
   adaptation_set->AddRole(AdaptationSet::kRoleMain);
   ContentProtectionElement any_content_protection;
   any_content_protection.scheme_id_uri = "any_scheme";
   adaptation_set->AddContentProtectionElement(any_content_protection);
+  const char kAudioMediaInfo[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "}\n"
+      "container_type: 1\n";
+  adaptation_set->AddRepresentation(ConvertToMediaInfo(kAudioMediaInfo));
 
   xml::ScopedXmlPtr<xmlNode>::type adaptation_set_xml(adaptation_set->GetXml());
   const char kExpectedOutput[] =
@@ -628,9 +637,16 @@ TEST_F(CommonMpdBuilderTest, AddContentProtectionAndRole) {
      "    profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\"\n"
      "    mediaPresentationDuration=\"PT0S\">\n"
      "  <Period>\n"
-     "    <AdaptationSet id=\"0\" contentType=\"\">\n"
+     "    <AdaptationSet id=\"0\" contentType=\"audio\">\n"
      "      <ContentProtection schemeIdUri=\"any_scheme\"/>\n"
      "      <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>\n"
+     "      <Representation id=\"0\" bandwidth=\"0\" codecs=\"mp4a.40.2\"\n"
+     "       mimeType=\"audio/mp4\" audioSamplingRate=\"44100\">\n"
+     "        <AudioChannelConfiguration\n"
+     "         schemeIdUri=\n"
+     "          \"urn:mpeg:dash:23003:3:audio_channel_configuration:2011\"\n"
+     "         value=\"2\"/>\n"
+     "      </Representation>\n"
      "    </AdaptationSet>\n"
      "  </Period>\n"
      "</MPD>";

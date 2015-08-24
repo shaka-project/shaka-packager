@@ -697,6 +697,11 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
           content_protection_elements_)) {
     return xml::ScopedXmlPtr<xmlNode>::type();
   }
+  for (std::set<Role>::const_iterator role_it = roles_.begin();
+       role_it != roles_.end(); ++role_it) {
+    adaptation_set.AddRoleElement("urn:mpeg:dash:role:2011",
+                                  RoleToText(*role_it));
+  }
 
   std::list<Representation*>::iterator representation_it =
       representations_.begin();
@@ -751,11 +756,6 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
   if (group_ >= 0)
     adaptation_set.SetIntegerAttribute("group", group_);
 
-  for (std::set<Role>::const_iterator role_it = roles_.begin();
-       role_it != roles_.end(); ++role_it) {
-    adaptation_set.AddRoleElement("urn:mpeg:dash:role:2011",
-                                  RoleToText(*role_it));
-  }
   return adaptation_set.PassScopedPtr();
 }
 
