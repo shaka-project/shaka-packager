@@ -218,31 +218,43 @@ bool HasRequiredVideoFields(const MediaInfo_VideoInfo& video_info) {
   return true;
 }
 
-// Euclidean algorithm.
-// gcd(a,0) = a
-// gcd(a,b) = gcd(b, a % b)
-uint32_t GreatestCommonDivisor(uint32_t a, uint32_t b) {
-  while (b != 0) {
-    const uint32_t new_b = a % b;
-    a = b;
-    b = new_b;
-  }
-  return a;
-}
-
 // Returns the picture aspect ratio string e.g. "16:9", "4:3".
-std::string GetPictureAspectRatio(uint32_t width, uint32_t height,
-                                  uint32_t pixel_width, uint32_t pixel_height) {
+// "Reducing the quotient to minimal form" does not work well in practice as
+// there may be some rounding performed in the input, e.g. the resolution of
+// 480p is 854:480 for 16:9 aspect ratio, can only be reduced to 427:240.
+// The algorithm finds out the pair of integers, num and den, where num / den is
+// the closest ratio to scaled_width / scaled_height, by looping den through
+// common values.
+std::string GetPictureAspectRatio(uint32_t width,
+                                  uint32_t height,
+                                  uint32_t pixel_width,
+                                  uint32_t pixel_height) {
   const uint32_t scaled_width = pixel_width * width;
   const uint32_t scaled_height = pixel_height * height;
-  const uint32_t gcd = GreatestCommonDivisor(scaled_width, scaled_height);
-  DCHECK_NE(gcd, 0u) << "GCD of width*pix_width (" << scaled_width
-                     << ") and height*pix_height (" << scaled_height
-                     << ") is 0.";
+  const double par = static_cast<double>(scaled_width) / scaled_height;
 
-  const uint32_t par_x = scaled_width / gcd;
-  const uint32_t par_y = scaled_height / gcd;
-  return base::IntToString(par_x) + ":" + base::IntToString(par_y);
+  // Typical aspect ratios have par_y less than or equal to 19:
+  // https://en.wikipedia.org/wiki/List_of_common_resolutions
+  const uint32_t kLargestPossibleParY = 19;
+
+  uint32_t par_num;
+  uint32_t par_den;
+  double min_error = 1.0;
+  for (uint32_t den = 1; den <= kLargestPossibleParY; ++den) {
+    uint32_t num = par * den + 0.5;
+    double error = fabs(par - static_cast<double>(num) / den);
+    if (error < min_error) {
+      min_error = error;
+      par_num = num;
+      par_den = den;
+      if (error == 0) break;
+    }
+  }
+  VLOG(2) << "width*pix_width : height*pixel_height (" << scaled_width << ":"
+          << scaled_height << ") reduced to " << par_num << ":" << par_den
+          << " with error " << min_error << ".";
+
+  return base::IntToString(par_num) + ":" + base::IntToString(par_den);
 }
 
 // Adds an entry to picture_aspect_ratio if the size of picture_aspect_ratio is

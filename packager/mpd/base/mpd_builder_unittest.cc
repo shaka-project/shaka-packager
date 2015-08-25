@@ -805,6 +805,17 @@ TEST_F(CommonMpdBuilderTest,
 // Verify that if the picture aspect ratio of all the Representations are the
 // same, @par attribute is present.
 TEST_F(CommonMpdBuilderTest, AdaptationSetParAllSame) {
+  const char k480pVideoInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width:  854\n"
+      "  height: 480\n"
+      "  time_scale: 3000\n"
+      "  frame_duration: 100\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
   const char k720pVideoInfo[] =
       "video_info {\n"
       "  codec: 'avc1'\n"
@@ -844,6 +855,8 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetParAllSame) {
 
   AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet("");
   ASSERT_TRUE(video_adaptation_set);
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(k480pVideoInfo)));
   ASSERT_TRUE(video_adaptation_set->AddRepresentation(
       ConvertToMediaInfo(k720pVideoInfo)));
   ASSERT_TRUE(video_adaptation_set->AddRepresentation(
