@@ -237,8 +237,8 @@ std::string GetPictureAspectRatio(uint32_t width,
   // https://en.wikipedia.org/wiki/List_of_common_resolutions
   const uint32_t kLargestPossibleParY = 19;
 
-  uint32_t par_num;
-  uint32_t par_den;
+  uint32_t par_num = 0;
+  uint32_t par_den = 0;
   double min_error = 1.0;
   for (uint32_t den = 1; den <= kLargestPossibleParY; ++den) {
     uint32_t num = par * den + 0.5;
