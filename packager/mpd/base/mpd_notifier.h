@@ -11,6 +11,7 @@
 #define MPD_BASE_MPD_NOTIFIER_H_
 
 #include <stdint.h>
+#include <vector>
 
 #include "packager/base/macros.h"
 
@@ -72,6 +73,18 @@ class MpdNotifier {
                                 uint64_t start_time,
                                 uint64_t duration,
                                 uint64_t size) = 0;
+
+  /// Notifiers MpdBuilder that there is a new PSSH for the container.
+  /// This may be called whenever the key has to change, e.g. key rotation.
+  /// @param container_id Container ID obtained from calling
+  ///        NotifyNewContainer().
+  /// @param new_key_id is the new key ID for the key.
+  /// @param new_pssh is the new pssh box (including the header).
+  /// @attention This might change or get removed once DASH IF IOP specification
+  ///            writes a clear guideline on how to handle key rotation.
+  virtual bool NotifyEncryptionUpdate(uint32_t container_id,
+                                      const std::vector<uint8_t>& new_key_id,
+                                      const std::vector<uint8_t>& new_pssh) = 0;
 
   /// Adds content protection information to the MPD.
   /// @param container_id is the nummeric container ID obtained from calling

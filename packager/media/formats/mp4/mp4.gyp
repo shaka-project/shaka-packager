@@ -58,6 +58,7 @@
       'dependencies': [
         '../../../third_party/openssl/openssl.gyp:openssl',
         '../../base/media_base.gyp:base',
+        '../../event/media_event.gyp:media_event',
         '../../filters/filters.gyp:filters',
       ],
     },

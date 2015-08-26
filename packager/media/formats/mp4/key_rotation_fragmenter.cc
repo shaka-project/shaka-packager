@@ -19,7 +19,8 @@ KeyRotationFragmenter::KeyRotationFragmenter(MovieFragment* moof,
                                              KeySource::TrackType track_type,
                                              int64_t crypto_period_duration,
                                              int64_t clear_time,
-                                             uint8_t nalu_length_size)
+                                             uint8_t nalu_length_size,
+                                             MuxerListener* muxer_listener)
     : EncryptingFragmenter(traf,
                            scoped_ptr<EncryptionKey>(new EncryptionKey()),
                            clear_time,
@@ -28,7 +29,8 @@ KeyRotationFragmenter::KeyRotationFragmenter(MovieFragment* moof,
       encryption_key_source_(encryption_key_source),
       track_type_(track_type),
       crypto_period_duration_(crypto_period_duration),
-      prev_crypto_period_index_(-1) {
+      prev_crypto_period_index_(-1),
+      muxer_listener_(muxer_listener) {
   DCHECK(moof);
   DCHECK(encryption_key_source);
 }
@@ -57,6 +59,12 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption(
     moof_->pssh.resize(1);
   DCHECK(encryption_key());
   moof_->pssh[0].raw_box = encryption_key()->pssh;
+
+  if (muxer_listener_) {
+    muxer_listener_->OnEncryptionInfoReady(
+        encryption_key_source_->UUID(), encryption_key_source_->SystemName(),
+        encryption_key()->key_id, encryption_key()->pssh);
+  }
 
   // Skip the following steps if the current fragment is not going to be
   // encrypted. 'pssh' box needs to be included in the fragment, which is

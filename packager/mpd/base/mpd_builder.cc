@@ -14,6 +14,7 @@
 #include <list>
 #include <string>
 
+#include "packager/base/base64.h"
 #include "packager/base/files/file_path.h"
 #include "packager/base/logging.h"
 #include "packager/base/memory/scoped_ptr.h"
@@ -696,6 +697,12 @@ void AdaptationSet::AddContentProtectionElement(
   RemoveDuplicateAttributes(&content_protection_elements_.back());
 }
 
+void AdaptationSet::UpdateContentProtectionPssh(
+    const std::string& pssh) {
+  base::AutoLock scoped_lock(lock_);
+  UpdateContentProtectionPsshHelper(pssh, &content_protection_elements_);
+}
+
 void AdaptationSet::AddRole(Role role) {
   roles_.insert(role);
 }
@@ -1032,6 +1039,12 @@ void Representation::AddContentProtectionElement(
   base::AutoLock scoped_lock(lock_);
   content_protection_elements_.push_back(content_protection_element);
   RemoveDuplicateAttributes(&content_protection_elements_.back());
+}
+
+void Representation::UpdateContentProtectionPssh(
+    const std::string& pssh) {
+  base::AutoLock scoped_lock(lock_);
+  UpdateContentProtectionPsshHelper(pssh, &content_protection_elements_);
 }
 
 void Representation::AddNewSegment(uint64_t start_time,

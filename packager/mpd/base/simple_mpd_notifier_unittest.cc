@@ -236,6 +236,60 @@ TEST_F(SimpleMpdNotifierTest, AddContentProtectionElement) {
   EXPECT_TRUE(notifier.AddContentProtectionElement(kRepresentationId, element));
 }
 
+TEST_P(SimpleMpdNotifierTest, UpdateEncryption) {
+  const char kProtectedContent[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 640\n"
+      "  height: 360\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "protected_content {\n"
+      "  content_protection_entry {\n"
+      "    uuid: 'myuuid'\n"
+      "    name_version: 'MyContentProtection version 1'\n"
+      "    pssh: 'pssh1'\n"
+      "  }\n"
+      "  default_key_id: '_default_key_id_'\n"
+      "}\n"
+      "container_type: 1\n";
+  SimpleMpdNotifier notifier(kLiveProfile, empty_mpd_option_, empty_base_urls_,
+                             output_path_);
+  const uint32_t kRepresentationId = 447834u;
+  scoped_ptr<MockMpdBuilder> mock_mpd_builder(DynamicMpdBuilderMock());
+  scoped_ptr<MockRepresentation> mock_representation(
+      new MockRepresentation(kRepresentationId));
+
+  EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
+      .WillOnce(Return(default_mock_adaptation_set_.get()));
+  EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
+      .WillOnce(Return(mock_representation.get()));
+
+  uint32_t container_id;
+  SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
+  EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kProtectedContent),
+                                          &container_id));
+
+  ::testing::Mock::VerifyAndClearExpectations(
+      default_mock_adaptation_set_.get());
+
+  // "psshsomethingelse" as uint8 array.
+  const uint8_t kBogusNewPssh[] = {0x70, 0x73, 0x73, 0x68, 0x73, 0x6f,
+                                   0x6d, 0x65, 0x74, 0x68, 0x69, 0x6e,
+                                   0x67, 0x65, 0x6c, 0x73, 0x65};
+  const std::vector<uint8_t> kBogusNewPsshVector(
+      kBogusNewPssh, kBogusNewPssh + arraysize(kBogusNewPssh));
+  const char kBogusNewPsshInBase64[] = "cHNzaHNvbWV0aGluZ2Vsc2U=";
+
+  EXPECT_CALL(*mock_representation,
+              UpdateContentProtectionPssh(kBogusNewPsshInBase64));
+  EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
+      container_id, std::vector<uint8_t>(), kBogusNewPsshVector));
+}
+
 INSTANTIATE_TEST_CASE_P(StaticAndDynamic,
                         SimpleMpdNotifierTest,
                         ::testing::Values(MpdBuilder::kStatic,

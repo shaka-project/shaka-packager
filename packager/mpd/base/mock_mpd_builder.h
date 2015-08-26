@@ -35,6 +35,7 @@ class MockAdaptationSet : public AdaptationSet {
   MOCK_METHOD1(AddRepresentation, Representation*(const MediaInfo& media_info));
   MOCK_METHOD1(AddContentProtectionElement,
                void(const ContentProtectionElement& element));
+  MOCK_METHOD1(UpdateContentProtectionPssh, void(const std::string& pssh));
   MOCK_METHOD1(AddRole, void(AdaptationSet::Role role));
 
   MOCK_METHOD1(SetGroup, void(int group_number));
@@ -53,6 +54,7 @@ class MockRepresentation : public Representation {
 
   MOCK_METHOD1(AddContentProtectionElement,
                void(const ContentProtectionElement& element));
+  MOCK_METHOD1(UpdateContentProtectionPssh, void(const std::string& pssh));
   MOCK_METHOD3(AddNewSegment,
                void(uint64_t start_time, uint64_t duration, uint64_t size));
   MOCK_METHOD1(SetSampleDuration, void(uint32_t sample_duration));

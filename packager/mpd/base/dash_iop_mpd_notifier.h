@@ -46,6 +46,10 @@ class DashIopMpdNotifier : public MpdNotifier {
                                 uint64_t start_time,
                                 uint64_t duration,
                                 uint64_t size) OVERRIDE;
+  virtual bool NotifyEncryptionUpdate(
+      uint32_t container_id,
+      const std::vector<uint8_t>& new_key_id,
+      const std::vector<uint8_t>& new_pssh) OVERRIDE;
   virtual bool AddContentProtectionElement(
       uint32_t id,
       const ContentProtectionElement& content_protection_element) OVERRIDE;
@@ -110,6 +114,9 @@ class DashIopMpdNotifier : public MpdNotifier {
 
   // Next group ID to use for AdapationSets that can be grouped.
   int next_group_id_;
+
+  // Maps Representation ID to AdaptationSet. This is for updating the PSSH.
+  std::map<uint32_t, AdaptationSet*> representation_id_to_adaptation_set_;
 };
 
 }  // namespace edash_packager

@@ -47,6 +47,10 @@ class SimpleMpdNotifier : public MpdNotifier {
                                 uint64_t start_time,
                                 uint64_t duration,
                                 uint64_t size) OVERRIDE;
+  virtual bool NotifyEncryptionUpdate(
+      uint32_t container_id,
+      const std::vector<uint8_t>& new_key_id,
+      const std::vector<uint8_t>& new_pssh) OVERRIDE;
   virtual bool AddContentProtectionElement(
       uint32_t id,
       const ContentProtectionElement& content_protection_element) OVERRIDE;

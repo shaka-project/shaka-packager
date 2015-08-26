@@ -8,6 +8,7 @@
 #define MEDIA_FORMATS_MP4_KEY_ROTATION_FRAGMENTER_H_
 
 #include "packager/media/base/key_source.h"
+#include "packager/media/event/muxer_listener.h"
 #include "packager/media/formats/mp4/encrypting_fragmenter.h"
 
 namespace edash_packager {
@@ -32,13 +33,16 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
   ///        track's timescale.
   /// @param nalu_length_size NAL unit length size, in bytes, for subsample
   ///        encryption.
+  /// @param muxer_listener is a pointer to MuxerListener for notifying
+  ///        muxer related events. This may be null.
   KeyRotationFragmenter(MovieFragment* moof,
                         TrackFragment* traf,
                         KeySource* encryption_key_source,
                         KeySource::TrackType track_type,
                         int64_t crypto_period_duration,
                         int64_t clear_time,
-                        uint8_t nalu_length_size);
+                        uint8_t nalu_length_size,
+                        MuxerListener* muxer_listener);
   virtual ~KeyRotationFragmenter();
 
  protected:
@@ -55,6 +59,9 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
   KeySource::TrackType track_type_;
   const int64_t crypto_period_duration_;
   size_t prev_crypto_period_index_;
+
+  // For notifying new pssh boxes to the event handler.
+  MuxerListener* const muxer_listener_;
 
   DISALLOW_COPY_AND_ASSIGN(KeyRotationFragmenter);
 };

@@ -178,7 +178,8 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
           track_type,
           crypto_period_duration_in_seconds * streams[i]->info()->time_scale(),
           clear_lead_in_seconds * streams[i]->info()->time_scale(),
-          nalu_length_size);
+          nalu_length_size,
+          muxer_listener_);
       continue;
     }
 

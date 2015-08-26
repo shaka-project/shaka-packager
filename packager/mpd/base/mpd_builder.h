@@ -30,7 +30,6 @@
 #include "packager/mpd/base/content_protection_element.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_options.h"
-#include "packager/mpd/base/mpd_utils.h"
 #include "packager/mpd/base/segment_info.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
@@ -189,6 +188,15 @@ class AdaptationSet {
   ///        then the former is used.
   virtual void AddContentProtectionElement(
       const ContentProtectionElement& element);
+
+  /// Update the <cenc:pssh> element for MP4 specific ContentProtection element.
+  /// If the element does not exist, this will add one.
+  /// @param pssh is the content of <cenc:pssh> element.
+  ///        Note that DASH IF IOP mentions that this should be base64 encoded
+  ///        string of the whole pssh box.
+  /// @attention This might get removed once DASH IF IOP specification writes
+  ///            a clear guideline on how to handle key rotation.
+  virtual void UpdateContentProtectionPssh(const std::string& pssh);
 
   /// Set the Role element for this AdaptationSet.
   /// The Role element's is schemeIdUri='urn:mpeg:dash:role:2011'.
@@ -436,6 +444,15 @@ class Representation {
   ///        then the former is used.
   virtual void AddContentProtectionElement(
       const ContentProtectionElement& element);
+
+  /// Update the 'cenc:pssh' element for mp4 specific ContentProtection element.
+  /// If the element does not exist, this will add one.
+  /// @param pssh is the content of <cenc:pssh> element.
+  ///        Note that DASH IF IOP mentions that this should be base64 encoded
+  ///        string of the whole pssh box.
+  /// @attention This might get removed once DASH IF IOP specification makes a
+  ///            a clear guideline on how to handle key rotation.
+  virtual void UpdateContentProtectionPssh(const std::string& pssh);
 
   /// Add a media (sub)segment to the representation.
   /// AdaptationSet@{subSegmentAlignment,segmentAlignment} cannot be set

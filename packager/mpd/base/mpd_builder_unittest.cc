@@ -1252,8 +1252,9 @@ TEST_F(CommonMpdBuilderTest, SetSampleDuration) {
             representation.media_info_.video_info().frame_duration());
 }
 
-// Verify that AdaptationSet::AddContentProtection() works.
-TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtection) {
+// Verify that AdaptationSet::AddContentProtection() and
+// UpdateContentProtectionPssh() works.
+TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtectionAndUpdate) {
   const char kVideoMediaInfo1080p[] =
       "video_info {\n"
       "  codec: \"avc1\"\n"
@@ -1264,7 +1265,7 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtection) {
       "}\n"
       "container_type: 1\n";
   ContentProtectionElement content_protection;
-  content_protection.scheme_id_uri = "someuri";
+  content_protection.scheme_id_uri = "urn:mpeg:dash:mp4protection:2011";
   content_protection.value = "some value";
   Element pssh;
   pssh.name = "cenc:pssh";
@@ -1277,7 +1278,7 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtection) {
       ConvertToMediaInfo(kVideoMediaInfo1080p)));
   video_adaptation_set->AddContentProtectionElement(content_protection);
 
-  const char kExpectedOutput[] =
+  const char kExpectedOutput1[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
       "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\""
       " xmlns:cenc=\"urn:mpeg:cenc:2013\""
@@ -1290,7 +1291,9 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtection) {
       "  <Period>"
       "    <AdaptationSet id=\"0\" contentType=\"video\" width=\"1920\""
       "     height=\"1080\" frameRate=\"3000/100\">"
-      "      <ContentProtection schemeIdUri=\"someuri\" value=\"some value\">"
+      "      <ContentProtection"
+      "       schemeIdUri=\"urn:mpeg:dash:mp4protection:2011\""
+      "       value=\"some value\">"
       "        <cenc:pssh>any value</cenc:pssh>"
       "      </ContentProtection>"
       "      <Representation id=\"0\" bandwidth=\"0\" codecs=\"avc1\""
@@ -1301,7 +1304,35 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtection) {
       "</MPD>";
   std::string mpd_output;
   ASSERT_TRUE(mpd_.ToString(&mpd_output));
-  EXPECT_TRUE(XmlEqual(kExpectedOutput, mpd_output));
+  EXPECT_TRUE(XmlEqual(kExpectedOutput1, mpd_output));
+
+  video_adaptation_set->UpdateContentProtectionPssh("new pssh value");
+  const char kExpectedOutput2[] =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\""
+      " xmlns:cenc=\"urn:mpeg:cenc:2013\""
+      " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+      " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+      " xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\""
+      " minBufferTime=\"PT2S\" type=\"static\""
+      " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
+      " mediaPresentationDuration=\"PT0S\">"
+      "  <Period>"
+      "    <AdaptationSet id=\"0\" contentType=\"video\" width=\"1920\""
+      "     height=\"1080\" frameRate=\"3000/100\">"
+      "      <ContentProtection"
+      "       schemeIdUri=\"urn:mpeg:dash:mp4protection:2011\""
+      "       value=\"some value\">"
+      "        <cenc:pssh>new pssh value</cenc:pssh>"
+      "      </ContentProtection>"
+      "      <Representation id=\"0\" bandwidth=\"0\" codecs=\"avc1\""
+      "       mimeType=\"video/mp4\" width=\"1920\" height=\"1080\""
+      "       frameRate=\"3000/100\"/>"
+      "    </AdaptationSet>"
+      "  </Period>"
+      "</MPD>";
+  ASSERT_TRUE(mpd_.ToString(&mpd_output));
+  EXPECT_TRUE(XmlEqual(kExpectedOutput2, mpd_output));
 }
 
 // Add one video check the output.

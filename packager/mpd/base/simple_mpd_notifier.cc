@@ -97,6 +97,20 @@ bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
   return true;
 }
 
+bool SimpleMpdNotifier::NotifyEncryptionUpdate(
+    uint32_t container_id,
+    const std::vector<uint8_t>& new_key_id,
+    const std::vector<uint8_t>& new_pssh) {
+  base::AutoLock auto_lock(lock_);
+  RepresentationMap::iterator it = representation_map_.find(container_id);
+  if (it == representation_map_.end()) {
+    LOG(ERROR) << "Unexpected container_id: " << container_id;
+    return false;
+  }
+  it->second->UpdateContentProtectionPssh(Uint8VectorToBase64(new_pssh));
+  return true;
+}
+
 bool SimpleMpdNotifier::AddContentProtectionElement(
     uint32_t container_id,
     const ContentProtectionElement& content_protection_element) {

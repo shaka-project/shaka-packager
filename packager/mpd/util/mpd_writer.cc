@@ -11,6 +11,7 @@
 
 #include "packager/media/file/file.h"
 #include "packager/mpd/base/mpd_builder.h"
+#include "packager/mpd/base/mpd_utils.h"
 
 using edash_packager::media::File;
 

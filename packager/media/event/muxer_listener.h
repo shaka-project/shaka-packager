@@ -47,6 +47,8 @@ class MuxerListener {
   // |default_key_id| is the default_KID in 'tenc' box. The format should
   // be a vector of uint8_t, i.e. not (necessarily) human readable hex string.
   // |pssh| is the whole 'pssh' box.
+  // This method may be called multiple times to notify the event handler that
+  // the encryption info has changed.
   virtual void OnEncryptionInfoReady(
       const std::string& content_protection_uuid,
       const std::string& content_protection_name_version,

@@ -8,6 +8,7 @@
 
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_notifier_util.h"
+#include "packager/mpd/base/mpd_utils.h"
 
 namespace edash_packager {
 
@@ -89,6 +90,8 @@ bool DashIopMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   if (!representation)
     return false;
 
+  representation_id_to_adaptation_set_[representation->id()] = adaptation_set;
+
   SetGroupId(content_type, lang, adaptation_set);
 
   *container_id = representation->id();
@@ -120,6 +123,24 @@ bool DashIopMpdNotifier::NotifyNewSegment(uint32_t container_id,
     return false;
   }
   it->second->AddNewSegment(start_time, duration, size);
+  return true;
+}
+
+bool DashIopMpdNotifier::NotifyEncryptionUpdate(
+    uint32_t container_id,
+    const std::vector<uint8_t>& new_key_id,
+    const std::vector<uint8_t>& new_pssh) {
+  base::AutoLock auto_lock(lock_);
+  RepresentationMap::iterator it = representation_map_.find(container_id);
+  if (it == representation_map_.end()) {
+    LOG(ERROR) << "Unexpected container_id: " << container_id;
+    return false;
+  }
+
+  AdaptationSet* adaptation_set_for_representation =
+      representation_id_to_adaptation_set_[it->second->id()];
+  adaptation_set_for_representation->UpdateContentProtectionPssh(
+      Uint8VectorToBase64(new_pssh));
   return true;
 }
 
