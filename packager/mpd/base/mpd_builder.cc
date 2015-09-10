@@ -101,14 +101,15 @@ bool Positive(double d) {
   return d > 0.0;
 }
 
-// Return current time in XML DateTime format.
+// Return current time in XML DateTime format. The value is in UTC, so the
+// string ends with a 'Z'.
 std::string XmlDateTimeNowWithOffset(int32_t offset_seconds) {
   base::Time time = base::Time::Now();
   time += base::TimeDelta::FromSeconds(offset_seconds);
   base::Time::Exploded time_exploded;
   time.UTCExplode(&time_exploded);
 
-  return base::StringPrintf("%4d-%02d-%02dT%02d:%02d:%02d", time_exploded.year,
+  return base::StringPrintf("%4d-%02d-%02dT%02d:%02d:%02dZ", time_exploded.year,
                             time_exploded.month, time_exploded.day_of_month,
                             time_exploded.hour, time_exploded.minute,
                             time_exploded.second);
