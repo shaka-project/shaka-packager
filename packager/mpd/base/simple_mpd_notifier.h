@@ -50,6 +50,7 @@ class SimpleMpdNotifier : public MpdNotifier {
   virtual bool AddContentProtectionElement(
       uint32_t id,
       const ContentProtectionElement& content_protection_element) OVERRIDE;
+  virtual bool Flush() OVERRIDE;
   /// @}
 
  private:

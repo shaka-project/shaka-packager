@@ -110,13 +110,15 @@ TEST_P(SimpleMpdNotifierTest, NotifyNewContainer) {
   EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
       .WillOnce(Return(mock_representation.get()));
 
-  if (mpd_type == MpdBuilder::kStatic)
-    EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
+  // This is for the Flush() below but adding expectation here because the next
+  // lines Pass() the pointer.
+  EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   uint32_t unused_container_id;
   SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &unused_container_id));
+  EXPECT_TRUE(notifier.Flush());
 }
 
 // Verify NotifySampleDuration() works as expected for Live.
@@ -133,7 +135,6 @@ TEST_F(SimpleMpdNotifierTest, LiveNotifySampleDuration) {
       .WillOnce(Return(default_mock_adaptation_set_.get()));
   EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
       .WillOnce(Return(mock_representation.get()));
-  EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   uint32_t container_id;
   SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
@@ -152,7 +153,7 @@ TEST_F(SimpleMpdNotifierTest, LiveNotifySampleDuration) {
 // register it to its map for VOD. Must fix and enable this test.
 // This test can be also parmeterized just like NotifyNewContainer() test, once
 // it is fixed.
-TEST_F(SimpleMpdNotifierTest, DISABLED_OnDemandNotifySampleDuration) {
+TEST_F(SimpleMpdNotifierTest, OnDemandNotifySampleDuration) {
   SimpleMpdNotifier notifier(kOnDemandProfile, empty_mpd_option_,
                              empty_base_urls_, output_path_);
 
@@ -165,7 +166,6 @@ TEST_F(SimpleMpdNotifierTest, DISABLED_OnDemandNotifySampleDuration) {
       .WillOnce(Return(default_mock_adaptation_set_.get()));
   EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
       .WillOnce(Return(mock_representation.get()));
-  EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   uint32_t container_id;
   SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
@@ -193,10 +193,6 @@ TEST_F(SimpleMpdNotifierTest, LiveNotifyNewSegment) {
       .WillOnce(Return(default_mock_adaptation_set_.get()));
   EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
       .WillOnce(Return(mock_representation.get()));
-
-  // Expect call at NotifyNewSegment(). But putting expect call here because the
-  // next line passes the value to the notifier.
-  EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   uint32_t container_id;
   SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
@@ -228,9 +224,6 @@ TEST_F(SimpleMpdNotifierTest, AddContentProtectionElement) {
       .WillOnce(Return(default_mock_adaptation_set_.get()));
   EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
       .WillOnce(Return(mock_representation.get()));
-  EXPECT_CALL(*mock_mpd_builder, ToString(_))
-      .Times(2)
-      .WillRepeatedly(Return(true));
 
   uint32_t container_id;
   SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());

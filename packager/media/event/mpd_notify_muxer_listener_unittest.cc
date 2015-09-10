@@ -55,6 +55,7 @@ class MockMpdNotifier : public MpdNotifier {
       AddContentProtectionElement,
       bool(uint32_t container_id,
            const ContentProtectionElement& content_protection_element));
+  MOCK_METHOD0(Flush, bool());
 };
 
 }  // namespace
@@ -107,6 +108,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodClearContent) {
 
   EXPECT_CALL(*notifier_, NotifyNewContainer(
                               ExpectMediaInfoEq(kExpectedDefaultMediaInfo), _));
+  EXPECT_CALL(*notifier_, Flush());
   FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
 }
 
@@ -174,6 +176,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
 
   EXPECT_CALL(*notifier_,
               NotifyNewContainer(ExpectMediaInfoEq(kExpectedMediaInfo), _));
+  EXPECT_CALL(*notifier_, Flush());
   FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
 }
 
@@ -221,6 +224,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnSampleDurationReady) {
 
   EXPECT_CALL(*notifier_,
               NotifyNewContainer(ExpectMediaInfoEq(kExpectedMediaInfo), _));
+  EXPECT_CALL(*notifier_, Flush());
   FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
 }
 
@@ -257,6 +261,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnNewSegment) {
               NotifyNewSegment(_, kStartTime1, kDuration1, kSegmentFileSize1));
   EXPECT_CALL(*notifier_,
               NotifyNewSegment(_, kStartTime2, kDuration2, kSegmentFileSize2));
+  EXPECT_CALL(*notifier_, Flush());
   FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
 }
 

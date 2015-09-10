@@ -34,6 +34,7 @@ class DashIopMpdNotifier : public MpdNotifier {
                      const std::string& output_path);
   virtual ~DashIopMpdNotifier() OVERRIDE;
 
+  /// None of the methods write out the MPD file until Flush() is called.
   /// @name MpdNotifier implemetation overrides.
   /// @{
   virtual bool Init() OVERRIDE;
@@ -48,6 +49,7 @@ class DashIopMpdNotifier : public MpdNotifier {
   virtual bool AddContentProtectionElement(
       uint32_t id,
       const ContentProtectionElement& content_protection_element) OVERRIDE;
+  virtual bool Flush() OVERRIDE;
   /// @}
 
  private:

@@ -83,6 +83,11 @@ class MpdNotifier {
       uint32_t container_id,
       const ContentProtectionElement& content_protection_element) = 0;
 
+  /// Call this method to force a flush. Implementations might not write out
+  /// the MPD to a stream (file, stdout, etc.) when the MPD is updated, this
+  /// forces a flush.
+  virtual bool Flush() = 0;
+
   /// @return The dash profile for this object.
   DashProfile dash_profile() const { return dash_profile_; }
 

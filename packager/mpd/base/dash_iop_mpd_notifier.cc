@@ -94,9 +94,6 @@ bool DashIopMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   *container_id = representation->id();
   DCHECK(!ContainsKey(representation_map_, representation->id()));
   representation_map_[representation->id()] = representation;
-
-  if (mpd_builder_->type() == MpdBuilder::kStatic)
-    return WriteMpdToFile(output_path_, mpd_builder_.get());
   return true;
 }
 
@@ -109,7 +106,7 @@ bool DashIopMpdNotifier::NotifySampleDuration(uint32_t container_id,
     return false;
   }
   it->second->SetSampleDuration(sample_duration);
-  return WriteMpdToFile(output_path_, mpd_builder_.get());
+  return true;
 }
 
 bool DashIopMpdNotifier::NotifyNewSegment(uint32_t container_id,
@@ -123,7 +120,7 @@ bool DashIopMpdNotifier::NotifyNewSegment(uint32_t container_id,
     return false;
   }
   it->second->AddNewSegment(start_time, duration, size);
-  return WriteMpdToFile(output_path_, mpd_builder_.get());
+  return true;
 }
 
 bool DashIopMpdNotifier::AddContentProtectionElement(
@@ -134,6 +131,10 @@ bool DashIopMpdNotifier::AddContentProtectionElement(
   // Representation out of the AdaptationSet. There's no logic to do that
   // yet.
   return false;
+}
+
+bool DashIopMpdNotifier::Flush() {
+  return WriteMpdToFile(output_path_, mpd_builder_.get());
 }
 
 AdaptationSet* DashIopMpdNotifier::GetAdaptationSetForMediaInfo(

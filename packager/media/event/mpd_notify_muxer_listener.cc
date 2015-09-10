@@ -134,6 +134,7 @@ void MpdNotifyMuxerListener::OnMediaEnd(bool has_init_range,
                                     it->segment_file_size);
   }
   subsegments_.clear();
+  mpd_notifier_->Flush();
 }
 
 void MpdNotifyMuxerListener::OnNewSegment(uint64_t start_time,
@@ -143,6 +144,7 @@ void MpdNotifyMuxerListener::OnNewSegment(uint64_t start_time,
     // TODO(kqyang): Check return result.
     mpd_notifier_->NotifyNewSegment(
         notification_id_, start_time, duration, segment_file_size);
+    mpd_notifier_->Flush();
   } else {
     SubsegmentInfo subsegment = {start_time, duration, segment_file_size};
     subsegments_.push_back(subsegment);

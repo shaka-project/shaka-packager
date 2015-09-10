@@ -68,9 +68,6 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   *container_id = representation->id();
   DCHECK(!ContainsKey(representation_map_, representation->id()));
   representation_map_[representation->id()] = representation;
-
-  if (mpd_builder_->type() == MpdBuilder::kStatic)
-    return WriteMpdToFile(output_path_, mpd_builder_.get());
   return true;
 }
 
@@ -82,10 +79,8 @@ bool SimpleMpdNotifier::NotifySampleDuration(uint32_t container_id,
     LOG(ERROR) << "Unexpected container_id: " << container_id;
     return false;
   }
-  // This sets the right frameRate for Representation or AdaptationSet, so
-  // write out the new MPD.
   it->second->SetSampleDuration(sample_duration);
-  return WriteMpdToFile(output_path_, mpd_builder_.get());
+  return true;
 }
 
 bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
@@ -98,10 +93,8 @@ bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
     LOG(ERROR) << "Unexpected container_id: " << container_id;
     return false;
   }
-  // For live, the timeline and segmentAlignment gets updated. For VOD,
-  // subsegmentAlignment gets updated. So write out the MPD.
   it->second->AddNewSegment(start_time, duration, size);
-  return WriteMpdToFile(output_path_, mpd_builder_.get());
+  return true;
 }
 
 bool SimpleMpdNotifier::AddContentProtectionElement(
@@ -114,6 +107,10 @@ bool SimpleMpdNotifier::AddContentProtectionElement(
     return false;
   }
   it->second->AddContentProtectionElement(content_protection_element);
+  return true;
+}
+
+bool SimpleMpdNotifier::Flush() {
   return WriteMpdToFile(output_path_, mpd_builder_.get());
 }
 

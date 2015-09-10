@@ -169,13 +169,15 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainer) {
   EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
       .WillOnce(Return(default_mock_representation_.get()));
 
-  if (mpd_type() == MpdBuilder::kStatic)
-    EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
+  // This is for the Flush() below but adding expectation here because the next
+  // lines Pass() the pointer.
+  EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   uint32_t unused_container_id;
   SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &unused_container_id));
+  EXPECT_TRUE(notifier.Flush());
 }
 
 // Verify VOD NotifyNewContainer() operation works with different
@@ -280,9 +282,6 @@ TEST_P(DashIopMpdNotifierTest,
   EXPECT_CALL(*sd_adaptation_set, AddRepresentation(_))
       .WillOnce(Return(sd_representation.get()));
 
-  if (mpd_type() == MpdBuilder::kStatic)
-    EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
-
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
       .WillOnce(Return(hd_adaptation_set.get()));
   // Called twice for the same reason as above.
@@ -294,9 +293,6 @@ TEST_P(DashIopMpdNotifierTest,
 
   EXPECT_CALL(*hd_adaptation_set, AddRepresentation(_))
       .WillOnce(Return(hd_representation.get()));
-
-  if (mpd_type() == MpdBuilder::kStatic)
-    EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   uint32_t unused_container_id;
   SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
@@ -391,8 +387,6 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainersWithSameProtectedContent) {
   EXPECT_CALL(*default_mock_adaptation_set_, AddRole(_)).Times(0);
   EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
       .WillOnce(Return(sd_representation.get()));
-  if (mpd_type() == MpdBuilder::kStatic)
-    EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   // For second representation, no new AddAdaptationSet().
   // And make sure that AddContentProtection() is not called.
@@ -402,8 +396,6 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainersWithSameProtectedContent) {
   EXPECT_CALL(*default_mock_adaptation_set_, AddRole(_)).Times(0);
   EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
       .WillOnce(Return(hd_representation.get()));
-  if (mpd_type() == MpdBuilder::kStatic)
-    EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   uint32_t unused_container_id;
   SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
@@ -424,9 +416,6 @@ TEST_P(DashIopMpdNotifierTest, AddContentProtection) {
       .WillOnce(Return(default_mock_adaptation_set_.get()));
   EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
       .WillOnce(Return(default_mock_representation_.get()));
-
-  if (mpd_type() == MpdBuilder::kStatic)
-    EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   uint32_t container_id;
   SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
@@ -518,8 +507,6 @@ TEST_P(DashIopMpdNotifierTest, SetGroup) {
   EXPECT_CALL(*sd_adaptation_set, AddContentProtectionElement(_)).Times(2);
   EXPECT_CALL(*sd_adaptation_set, AddRepresentation(_))
       .WillOnce(Return(sd_representation.get()));
-  if (mpd_type() == MpdBuilder::kStatic)
-    EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
       .WillOnce(Return(hd_adaptation_set.get()));
@@ -531,9 +518,6 @@ TEST_P(DashIopMpdNotifierTest, SetGroup) {
   const int kExpectedGroupId = 1;
   EXPECT_CALL(*sd_adaptation_set, SetGroup(kExpectedGroupId));
   EXPECT_CALL(*hd_adaptation_set, SetGroup(kExpectedGroupId));
-
-  if (mpd_type() == MpdBuilder::kStatic)
-    EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   // This is not very nice but we need it for settings expectations later.
   MockMpdBuilder* mock_mpd_builder_raw = mock_mpd_builder.get();
@@ -588,9 +572,6 @@ TEST_P(DashIopMpdNotifierTest, SetGroup) {
 
   // Same group ID should be set.
   EXPECT_CALL(*fourk_adaptation_set, SetGroup(kExpectedGroupId));
-
-  if (mpd_type() == MpdBuilder::kStatic)
-    EXPECT_CALL(*mock_mpd_builder_raw, ToString(_)).WillOnce(Return(true));
 
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(k4kProtectedContent), &unused_container_id));
@@ -673,8 +654,6 @@ TEST_P(DashIopMpdNotifierTest, DoNotSetGroupIfContentTypesDifferent) {
   EXPECT_CALL(*video_adaptation_set, AddRole(_)).Times(0);
   EXPECT_CALL(*video_adaptation_set, AddRepresentation(_))
       .WillOnce(Return(video_representation.get()));
-  if (mpd_type() == MpdBuilder::kStatic)
-    EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
       .WillOnce(Return(audio_adaptation_set.get()));
@@ -682,9 +661,6 @@ TEST_P(DashIopMpdNotifierTest, DoNotSetGroupIfContentTypesDifferent) {
   EXPECT_CALL(*audio_adaptation_set, AddRole(_)).Times(0);
   EXPECT_CALL(*audio_adaptation_set, AddRepresentation(_))
       .WillOnce(Return(audio_representation.get()));
-
-  if (mpd_type() == MpdBuilder::kStatic)
-    EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   uint32_t unused_container_id;
   SetMpdBuilder(&notifier, mock_mpd_builder.PassAs<MpdBuilder>());
