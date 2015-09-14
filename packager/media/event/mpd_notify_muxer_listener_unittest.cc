@@ -17,6 +17,7 @@
 #include "packager/media/event/muxer_listener_test_helper.h"
 #include "packager/mpd/base/content_protection_element.h"
 #include "packager/mpd/base/media_info.pb.h"
+#include "packager/mpd/base/mock_mpd_notifier.h"
 #include "packager/mpd/base/mpd_notifier.h"
 
 using ::testing::_;
@@ -35,32 +36,6 @@ MediaInfo ConvertToMediaInfo(const std::string& media_info_string) {
                                                         &media_info));
   return media_info;
 }
-
-class MockMpdNotifier : public MpdNotifier {
- public:
-  MockMpdNotifier(DashProfile profile) : MpdNotifier(profile) {}
-  virtual ~MockMpdNotifier() OVERRIDE {}
-
-  MOCK_METHOD0(Init, bool());
-  MOCK_METHOD2(NotifyNewContainer,
-               bool(const MediaInfo& media_info, uint32_t* container_id));
-  MOCK_METHOD2(NotifySampleDuration,
-               bool(uint32_t container_id, uint32_t sample_duration));
-  MOCK_METHOD4(NotifyNewSegment,
-               bool(uint32_t container_id,
-                    uint64_t start_time,
-                    uint64_t duration,
-                    uint64_t size));
-  MOCK_METHOD3(NotifyEncryptionUpdate,
-               bool(uint32_t container_id,
-                    const std::vector<uint8_t>& new_key_id,
-                    const std::vector<uint8_t>& new_pssh));
-  MOCK_METHOD2(
-      AddContentProtectionElement,
-      bool(uint32_t container_id,
-           const ContentProtectionElement& content_protection_element));
-  MOCK_METHOD0(Flush, bool());
-};
 
 }  // namespace
 

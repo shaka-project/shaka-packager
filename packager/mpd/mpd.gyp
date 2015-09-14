@@ -68,13 +68,25 @@
       ],
     },
     {
+      'target_name': 'mpd_mocks',
+      'type': '<(component)',
+      'sources': [
+        'base/mock_mpd_builder.cc',
+        'base/mock_mpd_builder.h',
+        'base/mock_mpd_notifier.cc',
+        'base/mock_mpd_notifier.h',
+      ],
+      'dependencies': [
+        '../testing/gmock.gyp:gmock',
+        'mpd_builder',
+      ],
+    },
+    {
       'target_name': 'mpd_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
         'base/bandwidth_estimator_unittest.cc',
         'base/dash_iop_mpd_notifier_unittest.cc',
-        'base/mock_mpd_builder.cc',
-        'base/mock_mpd_builder.h',
         'base/mpd_builder_unittest.cc',
         'base/simple_mpd_notifier_unittest.cc',
         'base/xml/xml_node_unittest.cc',
@@ -91,6 +103,7 @@
         '../testing/gmock.gyp:gmock',
         '../testing/gtest.gyp:gtest',
         'mpd_builder',
+        'mpd_mocks',
         'mpd_util',
       ],
     },
@@ -103,7 +116,9 @@
       ],
       'dependencies': [
         '../media/file/file.gyp:file',
+        '../third_party/gflags/gflags.gyp:gflags',
         'mpd_builder',
+        'mpd_mocks',
       ],
     },
   ],

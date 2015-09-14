@@ -11,8 +11,12 @@
 
 #include <list>
 #include <string>
+#include <vector>
 
 #include "packager/base/macros.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/mpd/base/mpd_notifier.h"
+#include "packager/mpd/base/mpd_options.h"
 
 namespace edash_packager {
 namespace media {
@@ -23,6 +27,21 @@ class File;
 namespace edash_packager {
 
 class MediaInfo;
+
+/// This is mainly for testing, and is implementation detail. No need to worry
+/// about this class if you are just using the API.
+/// Inject a factory and mock MpdNotifier to test the MpdWriter implementation.
+class MpdNotifierFactory {
+ public:
+  MpdNotifierFactory() {}
+  virtual ~MpdNotifierFactory() {}
+
+  virtual scoped_ptr<MpdNotifier> Create(
+      DashProfile dash_profile,
+      const MpdOptions& mpd_options,
+      const std::vector<std::string>& base_urls,
+      const std::string& output_path) = 0;
+};
 
 // An instance of this class takes a set of MediaInfo files and generates an
 // MPD when one of WriteMpd* methods are called. This generates an MPD with one
@@ -48,13 +67,6 @@ class MpdWriter {
   // element will be a direct child element of the <MPD> element.
   void AddBaseUrl(const std::string& base_url);
 
-  // Write the MPD to |output|. |output| should not be NULL.
-  // AddFile() should be called before calling this function to generate an MPD.
-  // On success, MPD is set to |output| and returns true, otherwise returns
-  // false.
-  // This method can be called multiple times, if necessary.
-  bool WriteMpdToString(std::string* output);
-
   // Write the MPD to |file_name|. |file_name| should not be NULL.
   // This opens the file in write mode, IOW if the
   // file exists this will over write whatever is in the file.
@@ -65,8 +77,14 @@ class MpdWriter {
   bool WriteMpdToFile(const char* file_name);
 
  private:
+  friend class MpdWriterTest;
+
+  void SetMpdNotifierFactoryForTest(scoped_ptr<MpdNotifierFactory> factory);
+
   std::list<MediaInfo> media_infos_;
-  std::list<std::string> base_urls_;
+  std::vector<std::string> base_urls_;
+
+  scoped_ptr<MpdNotifierFactory> notifier_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(MpdWriter);
 };
