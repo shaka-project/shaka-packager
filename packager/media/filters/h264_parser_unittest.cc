@@ -65,32 +65,62 @@ TEST(H264ParserTest, StreamFileParsing) {
   }
 }
 
-TEST(H264ParserTest, ExtractSarFromDecoderConfig) {
+TEST(H264ParserTest, ExtractResolutionFromDecoderConfig) {
   const uint8_t kDecoderConfig[] = {
       0x01, 0x64, 0x00, 0x1E, 0xFF, 0xE1, 0x00, 0x1D, 0x67, 0x64, 0x00, 0x1E,
       0xAC, 0xD9, 0x40, 0xB4, 0x2F, 0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91,
       0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA, 0x60, 0x0F, 0x16, 0x2D,
       0x96, 0x01, 0x00, 0x06, 0x68, 0xEB, 0xE3, 0xCB, 0x22, 0xC0};
 
+  uint32_t coded_width = 0;
+  uint32_t coded_height = 0;
   uint32_t pixel_width = 0;
   uint32_t pixel_height = 0;
-  ExtractSarFromDecoderConfig(kDecoderConfig, arraysize(kDecoderConfig),
-                              &pixel_width, &pixel_height);
+  ASSERT_TRUE(ExtractResolutionFromDecoderConfig(
+      kDecoderConfig, arraysize(kDecoderConfig), &coded_width, &coded_height,
+      &pixel_width, &pixel_height));
+  EXPECT_EQ(720u, coded_width);
+  EXPECT_EQ(360u, coded_height);
   EXPECT_EQ(8u, pixel_width);
   EXPECT_EQ(9u, pixel_height);
 }
 
-TEST(H264ParserTest, ExtractSarFromSps) {
+TEST(H264ParserTest, ExtractResolutionFromSpsData) {
   const uint8_t kSps[] = {0x67, 0x64, 0x00, 0x1E, 0xAC, 0xD9, 0x40, 0xB4,
                           0x2F, 0xF9, 0x7F, 0xF0, 0x00, 0x80, 0x00, 0x91,
                           0x00, 0x00, 0x03, 0x03, 0xE9, 0x00, 0x00, 0xEA,
                           0x60, 0x0F, 0x16, 0x2D, 0x96};
 
+  uint32_t coded_width = 0;
+  uint32_t coded_height = 0;
   uint32_t pixel_width = 0;
   uint32_t pixel_height = 0;
-  ExtractSarFromSps(kSps, arraysize(kSps), &pixel_width, &pixel_height);
+  ASSERT_TRUE(ExtractResolutionFromSpsData(kSps, arraysize(kSps), &coded_width,
+                                           &coded_height, &pixel_width,
+                                           &pixel_height));
+  EXPECT_EQ(720u, coded_width);
+  EXPECT_EQ(360u, coded_height);
   EXPECT_EQ(8u, pixel_width);
   EXPECT_EQ(9u, pixel_height);
+}
+
+TEST(H264ParserTest, ExtractResolutionFromSpsDataWithCropping) {
+  // 320x192 with frame_crop_bottom_offset of 6.
+  const uint8_t kSps[] = {0x67, 0x64, 0x00, 0x0C, 0xAC, 0xD9, 0x41, 0x41, 0x9F,
+                          0x9F, 0x01, 0x10, 0x00, 0x00, 0x03, 0x00, 0x10, 0x00,
+                          0x00, 0x03, 0x03, 0x00, 0xF1, 0x42, 0x99, 0x60};
+
+  uint32_t coded_width = 0;
+  uint32_t coded_height = 0;
+  uint32_t pixel_width = 0;
+  uint32_t pixel_height = 0;
+  ASSERT_TRUE(ExtractResolutionFromSpsData(kSps, arraysize(kSps), &coded_width,
+                                           &coded_height, &pixel_width,
+                                           &pixel_height));
+  EXPECT_EQ(320u, coded_width);
+  EXPECT_EQ(180u, coded_height);
+  EXPECT_EQ(1u, pixel_width);
+  EXPECT_EQ(1u, pixel_height);
 }
 
 }  // namespace media

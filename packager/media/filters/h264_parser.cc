@@ -16,14 +16,16 @@ namespace media {
   do {                                                                \
     if (!(x)) {                                                       \
       LOG(ERROR) << "Failure while parsing AVCDecoderConfig: " << #x; \
-      return;                                                         \
+      return false;                                                   \
     }                                                                 \
   } while (0)
 
-void ExtractSarFromDecoderConfig(const uint8_t* avc_decoder_config_data,
-                                 size_t avc_decoder_config_data_size,
-                                 uint32_t* sar_width,
-                                 uint32_t* sar_height) {
+bool ExtractResolutionFromDecoderConfig(const uint8_t* avc_decoder_config_data,
+                                        size_t avc_decoder_config_data_size,
+                                        uint32_t* coded_width,
+                                        uint32_t* coded_height,
+                                        uint32_t* pixel_width,
+                                        uint32_t* pixel_height) {
   BufferReader reader(avc_decoder_config_data, avc_decoder_config_data_size);
   uint8_t value = 0;
   // version check, must be 1.
@@ -52,33 +54,96 @@ void ExtractSarFromDecoderConfig(const uint8_t* avc_decoder_config_data,
   const uint8_t num_sps = value & 0x1F;
   if (num_sps < 1) {
     LOG(ERROR) << "No SPS found.";
-    return;
+    return false;
   }
   uint16_t sps_length = 0;
   RCHECK(reader.Read2(&sps_length));
 
-  ExtractSarFromSps(reader.data() + reader.pos(), sps_length, sar_width,
-                    sar_height);
-
+  return ExtractResolutionFromSpsData(reader.data() + reader.pos(), sps_length,
+                                      coded_width, coded_height, pixel_width,
+                                      pixel_height);
   // It is unlikely to have more than one SPS in practice. Also there's
-  // no way to change the sar_{width,height} dynamically from VideoStreamInfo.
-  // So skip the rest (if there are any).
+  // no way to change the {coded,pixel}_{width,height} dynamically from
+  // VideoStreamInfo. So skip the rest (if there are any).
 }
 
-void ExtractSarFromSps(const uint8_t* sps_data,
-                       size_t sps_data_size,
-                       uint32_t* sar_width,
-                       uint32_t* sar_height) {
+bool ExtractResolutionFromSpsData(const uint8_t* sps_data,
+                                  size_t sps_data_size,
+                                  uint32_t* coded_width,
+                                  uint32_t* coded_height,
+                                  uint32_t* pixel_width,
+                                  uint32_t* pixel_height) {
   H264Parser parser;
   int sps_id;
   RCHECK(parser.ParseSPSFromArray(sps_data, sps_data_size, &sps_id) ==
          H264Parser::kOk);
-  const H264SPS& sps = *parser.GetSPS(sps_id);
+  return ExtractResolutionFromSps(*parser.GetSPS(sps_id), coded_width,
+                                  coded_height, pixel_width, pixel_height);
+}
+
+// Implemented according to ISO/IEC 14496-10:2005 7.4.2.1 Sequence parameter set
+// RBSP semantics.
+bool ExtractResolutionFromSps(const H264SPS& sps,
+                              uint32_t* coded_width,
+                              uint32_t* coded_height,
+                              uint32_t* pixel_width,
+                              uint32_t* pixel_height) {
+  int crop_x = 0;
+  int crop_y = 0;
+  if (sps.frame_cropping_flag) {
+    int sub_width_c = 0;
+    int sub_height_c = 0;
+    // Table 6-1.
+    switch (sps.chroma_format_idc) {
+      case 0:  // monochrome
+        // SubWidthC and SubHeightC are not defined for monochrome. For ease of
+        // computation afterwards, assign both to 1.
+        sub_width_c = 1;
+        sub_height_c = 1;
+        break;
+      case 1:  // 4:2:0
+        sub_width_c = 2;
+        sub_height_c = 2;
+        break;
+      case 2:  // 4:2:2
+        sub_width_c = 2;
+        sub_height_c = 1;
+        break;
+      case 3:  // 4:4:4
+        sub_width_c = 1;
+        sub_height_c = 1;
+        break;
+      default:
+        LOG(ERROR) << "Unexpected chroma_format_idc " << sps.chroma_format_idc;
+        return false;
+    }
+
+    // Formula 7-16, 7-17, 7-18, 7-19.
+    int crop_unit_x = sub_width_c;
+    int crop_unit_y = sub_height_c * (2 - (sps.frame_mbs_only_flag ? 1 : 0));
+    crop_x = crop_unit_x *
+             (sps.frame_crop_left_offset + sps.frame_crop_right_offset);
+    crop_y = crop_unit_y *
+             (sps.frame_crop_top_offset + sps.frame_crop_bottom_offset);
+  }
+
+  // Formula 7-10, 7-11.
+  int pic_width_in_mbs = sps.pic_width_in_mbs_minus1 + 1;
+  *coded_width = pic_width_in_mbs * 16 - crop_x;
+
+  // Formula 7-13, 7-15.
+  int pic_height_in_mbs = (2 - (sps.frame_mbs_only_flag ? 1 : 0)) *
+                          (sps.pic_height_in_map_units_minus1 + 1);
+  *coded_height = pic_height_in_mbs * 16 - crop_y;
+
   // 0 means it wasn't in the SPS and therefore assume 1.
-  *sar_width = sps.sar_width == 0 ? 1 : sps.sar_width;
-  *sar_height = sps.sar_height == 0 ? 1 : sps.sar_height;
-  DVLOG(2) << "Found sar_width: " << *sar_width
-           << " sar_height: " << *sar_height;
+  *pixel_width = sps.sar_width == 0 ? 1 : sps.sar_width;
+  *pixel_height = sps.sar_height == 0 ? 1 : sps.sar_height;
+  DVLOG(2) << "Found coded_width: " << *coded_width
+           << " coded_height: " << *coded_height
+           << " pixel_width: " << *pixel_width
+           << " pixel_height: " << *pixel_height;
+  return true;
 }
 
 #undef RCHECK

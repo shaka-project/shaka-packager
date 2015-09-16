@@ -345,10 +345,15 @@ bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
     return true;
   }
 
-  // TODO: a MAP unit can be either 16 or 32 pixels.
-  // although it's 16 pixels for progressive non MBAFF frames.
-  uint16_t width = (sps->pic_width_in_mbs_minus1 + 1) * 16;
-  uint16_t height = (sps->pic_height_in_map_units_minus1 + 1) * 16;
+  uint32_t coded_width = 0;
+  uint32_t coded_height = 0;
+  uint32_t pixel_width = 0;
+  uint32_t pixel_height = 0;
+  if (!ExtractResolutionFromSps(*sps, &coded_width, &coded_height, &pixel_width,
+                                &pixel_height)) {
+    LOG(ERROR) << "Failed to parse SPS.";
+    return false;
+  }
 
   last_video_decoder_config_ = scoped_refptr<StreamInfo>(
       new VideoStreamInfo(
@@ -361,10 +366,10 @@ bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
                                           decoder_config_record[2],
                                           decoder_config_record[3]),
           std::string(),
-          width,
-          height,
-          sps->sar_width == 0 ? 1 : sps->sar_width,
-          sps->sar_height == 0 ? 1 : sps->sar_height,
+          coded_width,
+          coded_height,
+          pixel_width,
+          pixel_height,
           0,
           H264ByteToUnitStreamConverter::kUnitStreamNaluLengthSize,
           decoder_config_record.data(),
@@ -372,12 +377,7 @@ bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
           false));
   DVLOG(1) << "Profile IDC: " << sps->profile_idc;
   DVLOG(1) << "Level IDC: " << sps->level_idc;
-  DVLOG(1) << "Pic width: " << width;
-  DVLOG(1) << "Pic height: " << height;
-  DVLOG(1) << "log2_max_frame_num_minus4: "
-           << sps->log2_max_frame_num_minus4;
-  DVLOG(1) << "SAR: width=" << sps->sar_width
-           << " height=" << sps->sar_height;
+  DVLOG(1) << "log2_max_frame_num_minus4: " << sps->log2_max_frame_num_minus4;
 
   // Video config notification.
   new_stream_info_cb_.Run(last_video_decoder_config_);

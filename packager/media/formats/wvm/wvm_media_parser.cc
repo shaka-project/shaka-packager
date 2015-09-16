@@ -809,14 +809,41 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
 
             VideoStreamInfo* video_stream_info =
                 reinterpret_cast<VideoStreamInfo*>(stream_infos_[i].get());
-            uint32_t pixel_width = video_stream_info->pixel_width();
-            uint32_t pixel_height = video_stream_info->pixel_height();
-            if (pixel_width == 0 || pixel_height == 0) {
-              ExtractSarFromDecoderConfig(&decoder_config_record[0],
-                                          decoder_config_record.size(),
-                                          &pixel_width, &pixel_height);
+            uint32_t coded_width = 0;
+            uint32_t coded_height = 0;
+            uint32_t pixel_width = 0;
+            uint32_t pixel_height = 0;
+            if (!ExtractResolutionFromDecoderConfig(
+                    &decoder_config_record[0], decoder_config_record.size(),
+                    &coded_width, &coded_height, &pixel_width, &pixel_height)) {
+              LOG(ERROR) << "Failed to parse AVCDecoderConfigurationRecord.";
+              return false;
+            }
+            if (pixel_width != video_stream_info->pixel_width() ||
+                pixel_height != video_stream_info->pixel_height()) {
+              LOG_IF(WARNING, video_stream_info->pixel_width() != 0 ||
+                                  video_stream_info->pixel_height() != 0)
+                  << "Pixel aspect ratio in WVM metadata ("
+                  << video_stream_info->pixel_width() << ","
+                  << video_stream_info->pixel_height()
+                  << ") does not match with SAR in "
+                     "AVCDecoderConfigurationRecord ("
+                  << pixel_width << "," << pixel_height
+                  << "). Use AVCDecoderConfigurationRecord.";
               video_stream_info->set_pixel_width(pixel_width);
               video_stream_info->set_pixel_height(pixel_height);
+            }
+            if (coded_width != video_stream_info->width() ||
+                coded_height != video_stream_info->height()) {
+              LOG(WARNING) << "Resolution in WVM metadata ("
+                           << video_stream_info->width() << ","
+                           << video_stream_info->height()
+                           << ") does not match with resolution in "
+                              "AVCDecoderConfigurationRecord ("
+                           << coded_width << "," << coded_height
+                           << "). Use AVCDecoderConfigurationRecord.";
+              video_stream_info->set_width(coded_width);
+              video_stream_info->set_height(coded_height);
             }
           }
         }

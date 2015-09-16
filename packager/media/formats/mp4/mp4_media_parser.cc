@@ -369,13 +369,40 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                                           entry.avcc.profile_compatibility,
                                           entry.avcc.avc_level);
 
-      uint32_t pixel_width = entry.pixel_aspect.h_spacing;
-      uint32_t pixel_height = entry.pixel_aspect.v_spacing;
-      if (pixel_width == 0 || pixel_height == 0) {
-        if (!entry.avcc.sps_list.empty()) {
-          const std::vector<uint8_t>& sps = entry.avcc.sps_list[0];
-          ExtractSarFromSps(&sps[0], sps.size(), &pixel_width, &pixel_height);
-        }
+      uint32_t coded_width = 0;
+      uint32_t coded_height = 0;
+      uint32_t pixel_width = 0;
+      uint32_t pixel_height = 0;
+
+      if (entry.avcc.sps_list.empty()) {
+        LOG(ERROR) << "Cannot find sps in avc decoder configuration record.";
+        return false;
+      }
+      const std::vector<uint8_t>& sps = entry.avcc.sps_list[0];
+      if (!ExtractResolutionFromSpsData(&sps[0], sps.size(), &coded_width,
+                                        &coded_height, &pixel_width,
+                                        &pixel_height)) {
+        LOG(ERROR) << "Failed to parse SPS.";
+        return false;
+      }
+
+      LOG_IF(WARNING,
+             entry.width != coded_width || entry.height != coded_height)
+          << "Resolution in VisualSampleEntry (" << entry.width << ","
+          << entry.height << ") does not match with resolution in "
+                             "AVCDecoderConfigurationRecord ("
+          << coded_width << "," << coded_height
+          << "). Use AVCDecoderConfigurationRecord.";
+
+      if (entry.pixel_aspect.h_spacing != 0 || entry.pixel_aspect.v_spacing != 0) {
+        LOG_IF(WARNING, entry.pixel_aspect.h_spacing != pixel_width ||
+                            entry.pixel_aspect.v_spacing != pixel_height)
+            << "Pixel aspect ratio in PASP box ("
+            << entry.pixel_aspect.h_spacing << ","
+            << entry.pixel_aspect.v_spacing
+            << ") does not match with SAR in AVCDecoderConfigurationRecord ("
+            << pixel_width << "," << pixel_height
+            << "). Use AVCDecoderConfigurationRecord.";
       }
 
       bool is_encrypted = entry.sinf.info.track_encryption.is_encrypted;
@@ -386,8 +413,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                                             kCodecH264,
                                             codec_string,
                                             track->media.header.language,
-                                            entry.width,
-                                            entry.height,
+                                            coded_width,
+                                            coded_height,
                                             pixel_width,
                                             pixel_height,
                                             0,  // trick_play_rate
