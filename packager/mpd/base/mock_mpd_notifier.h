@@ -19,7 +19,7 @@ namespace edash_packager {
 class MockMpdNotifier : public MpdNotifier {
  public:
   MockMpdNotifier(DashProfile profile);
-  virtual ~MockMpdNotifier() OVERRIDE;
+  virtual ~MockMpdNotifier();
 
   MOCK_METHOD0(Init, bool());
   MOCK_METHOD2(NotifyNewContainer,

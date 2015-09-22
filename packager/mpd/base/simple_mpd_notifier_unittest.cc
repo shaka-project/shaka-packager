@@ -18,6 +18,7 @@ namespace edash_packager {
 
 using ::testing::_;
 using ::testing::Return;
+using ::testing::StrEq;
 
 namespace {
 const char kValidMediaInfo[] =
@@ -285,7 +286,7 @@ TEST_P(SimpleMpdNotifierTest, UpdateEncryption) {
   const char kBogusNewPsshInBase64[] = "cHNzaHNvbWV0aGluZ2Vsc2U=";
 
   EXPECT_CALL(*mock_representation,
-              UpdateContentProtectionPssh(kBogusNewPsshInBase64));
+              UpdateContentProtectionPssh(StrEq(kBogusNewPsshInBase64)));
   EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
       container_id, std::vector<uint8_t>(), kBogusNewPsshVector));
 }

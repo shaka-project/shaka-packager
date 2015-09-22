@@ -20,6 +20,7 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Return;
+using ::testing::StrEq;
 
 namespace {
 
@@ -719,7 +720,7 @@ TEST_P(DashIopMpdNotifierTest, UpdateEncryption) {
   const char kBogusNewPsshInBase64[] = "cHNzaHNvbWV0aGluZ2Vsc2U=";
 
   EXPECT_CALL(*default_mock_adaptation_set_,
-              UpdateContentProtectionPssh(kBogusNewPsshInBase64));
+              UpdateContentProtectionPssh(StrEq(kBogusNewPsshInBase64)));
   EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
       container_id, std::vector<uint8_t>(), kBogusNewPsshVector));
 }
