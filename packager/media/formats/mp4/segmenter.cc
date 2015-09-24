@@ -33,6 +33,14 @@ const size_t kCencKeyIdSize = 16u;
 // The version of cenc implemented here. CENC 4.
 const int kCencSchemeVersion = 0x00010000;
 
+// The default KID for key rotation is all 0s.
+const uint8_t kKeyRotationDefaultKeyId[] = {
+  0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0
+};
+COMPILE_ASSERT(arraysize(kKeyRotationDefaultKeyId) == kCencKeyIdSize,
+               cenc_key_id_must_be_size_16);
+
 uint64_t Rescale(uint64_t time_in_old_scale,
                  uint32_t old_scale,
                  uint32_t new_scale) {
@@ -81,16 +89,6 @@ void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
   }
 }
 
-void GenerateEncryptedSampleEntryForKeyRotation(
-    double clear_lead_in_seconds,
-    SampleDescription* description) {
-  // Fill encrypted sample entry with default key.
-  EncryptionKey encryption_key;
-  encryption_key.key_id.assign(kCencKeyIdSize, 0);
-  GenerateEncryptedSampleEntry(
-      encryption_key, clear_lead_in_seconds, description);
-}
-
 uint8_t GetNaluLengthSize(const StreamInfo& stream_info) {
   if (stream_info.stream_type() != kStreamVideo)
     return 0;
@@ -127,8 +125,7 @@ Segmenter::Segmenter(const MuxerOptions& options,
       progress_listener_(NULL),
       progress_target_(0),
       accumulated_progress_(0),
-      sample_duration_(0u) {
-}
+      sample_duration_(0u) {}
 
 Segmenter::~Segmenter() { STLDeleteElements(&fragmenters_); }
 
@@ -147,6 +144,9 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
   moof_->tracks.resize(streams.size());
   segment_durations_.resize(streams.size());
   fragmenters_.resize(streams.size());
+  const bool key_rotation_enabled = crypto_period_duration_in_seconds != 0;
+  const bool kInitialEncryptionInfo = true;
+
   for (uint32_t i = 0; i < streams.size(); ++i) {
     stream_map_[streams[i]] = i;
     moof_->tracks[i].header.track_id = i + 1;
@@ -166,10 +166,20 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
     SampleDescription& description =
         moov_->tracks[i].media.information.sample_table.description;
 
-    const bool key_rotation_enabled = crypto_period_duration_in_seconds != 0;
     if (key_rotation_enabled) {
-      GenerateEncryptedSampleEntryForKeyRotation(clear_lead_in_seconds,
-                                                 &description);
+      // Fill encrypted sample entry with default key.
+      EncryptionKey encryption_key;
+      encryption_key.key_id.assign(
+          kKeyRotationDefaultKeyId,
+          kKeyRotationDefaultKeyId + arraysize(kKeyRotationDefaultKeyId));
+      GenerateEncryptedSampleEntry(encryption_key, clear_lead_in_seconds,
+                                   &description);
+      if (muxer_listener_) {
+        muxer_listener_->OnEncryptionInfoReady(
+            kInitialEncryptionInfo, encryption_key_source->UUID(),
+            encryption_key_source->SystemName(), encryption_key.key_id,
+            std::vector<uint8_t>());
+      }
 
       fragmenters_[i] = new KeyRotationFragmenter(
           moof_.get(),
@@ -189,8 +199,8 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
     if (!status.ok())
       return status;
 
-    GenerateEncryptedSampleEntry(
-        *encryption_key, clear_lead_in_seconds, &description);
+    GenerateEncryptedSampleEntry(*encryption_key, clear_lead_in_seconds,
+                                 &description);
 
     // One and only one pssh box is needed.
     if (moov_->pssh.empty()) {
@@ -200,6 +210,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
       // Also only one default key id.
       if (muxer_listener_) {
         muxer_listener_->OnEncryptionInfoReady(
+            kInitialEncryptionInfo,
             encryption_key_source->UUID(), encryption_key_source->SystemName(),
             encryption_key->key_id, encryption_key->pssh);
       }

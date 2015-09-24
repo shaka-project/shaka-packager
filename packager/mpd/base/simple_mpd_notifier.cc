@@ -99,6 +99,7 @@ bool SimpleMpdNotifier::NotifyNewSegment(uint32_t container_id,
 
 bool SimpleMpdNotifier::NotifyEncryptionUpdate(
     uint32_t container_id,
+    const std::string& drm_uuid,
     const std::vector<uint8_t>& new_key_id,
     const std::vector<uint8_t>& new_pssh) {
   base::AutoLock auto_lock(lock_);
@@ -107,7 +108,8 @@ bool SimpleMpdNotifier::NotifyEncryptionUpdate(
     LOG(ERROR) << "Unexpected container_id: " << container_id;
     return false;
   }
-  it->second->UpdateContentProtectionPssh(Uint8VectorToBase64(new_pssh));
+  it->second->UpdateContentProtectionPssh(drm_uuid,
+                                          Uint8VectorToBase64(new_pssh));
   return true;
 }
 

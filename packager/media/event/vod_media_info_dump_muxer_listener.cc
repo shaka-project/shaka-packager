@@ -30,10 +30,14 @@ void VodMediaInfoDumpMuxerListener::SetContentProtectionSchemeIdUri(
 }
 
 void VodMediaInfoDumpMuxerListener::OnEncryptionInfoReady(
+    bool is_initial_encryption_info,
     const std::string& content_protection_uuid,
     const std::string& content_protection_name_version,
     const std::vector<uint8_t>& default_key_id,
     const std::vector<uint8_t>& pssh) {
+  LOG_IF(WARNING, !is_initial_encryption_info)
+      << "Updating (non initial) encryption info is not supported by "
+         "this module.";
   content_protection_uuid_ = content_protection_uuid;
   content_protection_name_version_ = content_protection_name_version;
   default_key_id_.assign(default_key_id.begin(), default_key_id.end());

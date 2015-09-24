@@ -128,6 +128,7 @@ bool DashIopMpdNotifier::NotifyNewSegment(uint32_t container_id,
 
 bool DashIopMpdNotifier::NotifyEncryptionUpdate(
     uint32_t container_id,
+    const std::string& drm_uuid,
     const std::vector<uint8_t>& new_key_id,
     const std::vector<uint8_t>& new_pssh) {
   base::AutoLock auto_lock(lock_);
@@ -140,7 +141,7 @@ bool DashIopMpdNotifier::NotifyEncryptionUpdate(
   AdaptationSet* adaptation_set_for_representation =
       representation_id_to_adaptation_set_[it->second->id()];
   adaptation_set_for_representation->UpdateContentProtectionPssh(
-      Uint8VectorToBase64(new_pssh));
+      drm_uuid, Uint8VectorToBase64(new_pssh));
   return true;
 }
 

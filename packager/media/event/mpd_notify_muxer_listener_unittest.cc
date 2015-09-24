@@ -27,6 +27,15 @@ namespace edash_packager {
 
 namespace {
 
+// Can be any string, we just want to check that it is preserved in the
+// protobuf.
+const char kTestUUID[] = "somebogusuuid";
+const char kDrmName[] = "drmname";
+const char kDefaultKeyId[] = "defaultkeyid";
+const char kPssh[] = "pssh";
+const bool kInitialEncryptionInfo = true;
+const bool kNonInitialEncryptionInfo = false;
+
 // TODO(rkuroiwa): This is copied from mpd_builder_test_helper.cc. Make a
 // common target that only has mpd_builder_test_helper and its dependencies
 // so the two test targets can share this.
@@ -37,6 +46,18 @@ MediaInfo ConvertToMediaInfo(const std::string& media_info_string) {
   return media_info;
 }
 
+void SetDefaultLiveMuxerOptionsValues(media::MuxerOptions* muxer_options) {
+  muxer_options->single_segment = false;
+  muxer_options->segment_duration = 10.0;
+  muxer_options->fragment_duration = 10.0;
+  muxer_options->segment_sap_aligned = true;
+  muxer_options->fragment_sap_aligned = true;
+  muxer_options->num_subsegments_per_sidx = 0;
+  muxer_options->output_file_name = "liveinit.mp4";
+  muxer_options->segment_template = "live-$NUMBER$.mp4";
+  muxer_options->temp_dir.clear();
+}
+
 }  // namespace
 
 namespace media {
@@ -44,9 +65,14 @@ namespace media {
 class MpdNotifyMuxerListenerTest : public ::testing::Test {
  public:
 
-  // Set up objects for VOD profile.
   void SetupForVod() {
     notifier_.reset(new MockMpdNotifier(kOnDemandProfile));
+    listener_.reset(
+        new MpdNotifyMuxerListener(notifier_.get()));
+  }
+
+  void SetupForLive() {
+    notifier_.reset(new MockMpdNotifier(kLiveProfile));
     listener_.reset(new MpdNotifyMuxerListener(notifier_.get()));
   }
 
@@ -124,12 +150,6 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
   scoped_refptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
 
-  // Can be anystring, we just want to check that it is preserved in the
-  // protobuf.
-  const char kTestUUID[] = "somebogusuuid";
-  const char kDrmName[] = "drmname";
-  const char kDefaultKeyId[] = "defaultkeyid";
-  const char kPssh[] = "pssh";
   const std::vector<uint8_t> default_key_id(
       kDefaultKeyId, kDefaultKeyId + arraysize(kDefaultKeyId) - 1);
   const std::vector<uint8_t> pssh(kPssh, kPssh + arraysize(kPssh) - 1);
@@ -146,7 +166,8 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
       "}\n";
 
   EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
-  listener_->OnEncryptionInfoReady(kTestUUID, kDrmName, default_key_id, pssh);
+  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, kTestUUID, kDrmName,
+                                   default_key_id, pssh);
 
   listener_->OnMediaStart(muxer_options, *video_stream_info,
                           kDefaultReferenceTimeScale,
@@ -244,7 +265,137 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnNewSegment) {
   FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
 }
 
-// TODO(rkuroiwa): Add tests for live.
+// Live without key rotation. Note that OnEncryptionInfoReady() is called before
+// OnMediaStart() but no more calls.
+TEST_F(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
+  SetupForLive();
+  MuxerOptions muxer_options;
+  SetDefaultLiveMuxerOptionsValues(&muxer_options);
+  VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
+  scoped_refptr<StreamInfo> video_stream_info =
+      CreateVideoStreamInfo(video_params);
+
+  const char kExpectedMediaInfo[] =
+      "video_info {\n"
+      "  codec: \"avc1.010101\"\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "init_segment_name: \"liveinit.mp4\"\n"
+      "segment_template: \"live-$NUMBER$.mp4\"\n"
+      "reference_time_scale: 1000\n"
+      "container_type: CONTAINER_MP4\n"
+      "protected_content {\n"
+      "  default_key_id: \"defaultkeyid\"\n"
+      "  content_protection_entry {\n"
+      "    uuid: \"somebogusuuid\"\n"
+      "    name_version: \"drmname\"\n"
+      "    pssh: \"pssh\"\n"
+      "  }\n"
+      "}\n";
+
+  const uint64_t kStartTime1 = 0u;
+  const uint64_t kDuration1 = 1000u;
+  const uint64_t kSegmentFileSize1 = 29812u;
+  const uint64_t kStartTime2 = 1001u;
+  const uint64_t kDuration2 = 3787u;
+  const uint64_t kSegmentFileSize2 = 83743u;
+  const std::vector<uint8_t> default_key_id(
+      kDefaultKeyId, kDefaultKeyId + arraysize(kDefaultKeyId) - 1);
+  const std::vector<uint8_t> pssh(kPssh, kPssh + arraysize(kPssh) - 1);
+
+  InSequence s;
+  EXPECT_CALL(*notifier_, NotifyEncryptionUpdate(_, _, _, _)).Times(0);
+  EXPECT_CALL(*notifier_,
+              NotifyNewContainer(ExpectMediaInfoEq(kExpectedMediaInfo), _))
+      .Times(1);
+  EXPECT_CALL(*notifier_,
+              NotifyNewSegment(_, kStartTime1, kDuration1, kSegmentFileSize1));
+  EXPECT_CALL(*notifier_, Flush());
+  EXPECT_CALL(*notifier_,
+              NotifyNewSegment(_, kStartTime2, kDuration2, kSegmentFileSize2));
+  EXPECT_CALL(*notifier_, Flush());
+
+  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, kTestUUID, kDrmName,
+                                   default_key_id, pssh);
+  listener_->OnMediaStart(muxer_options, *video_stream_info,
+                          kDefaultReferenceTimeScale,
+                          MuxerListener::kContainerMp4);
+  listener_->OnNewSegment(kStartTime1, kDuration1, kSegmentFileSize1);
+  listener_->OnNewSegment(kStartTime2, kDuration2, kSegmentFileSize2);
+  ::testing::Mock::VerifyAndClearExpectations(notifier_.get());
+
+  EXPECT_CALL(*notifier_, Flush()).Times(0);
+  FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
+}
+
+// Live with key rotation. Note that OnEncryptionInfoReady() is called before
+// and after OnMediaStart().
+TEST_F(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
+  SetupForLive();
+  MuxerOptions muxer_options;
+  SetDefaultLiveMuxerOptionsValues(&muxer_options);
+  VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
+  scoped_refptr<StreamInfo> video_stream_info =
+      CreateVideoStreamInfo(video_params);
+
+  // Note that this media info has protected_content with default key id.
+  const char kExpectedMediaInfo[] =
+      "video_info {\n"
+      "  codec: \"avc1.010101\"\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "init_segment_name: \"liveinit.mp4\"\n"
+      "segment_template: \"live-$NUMBER$.mp4\"\n"
+      "reference_time_scale: 1000\n"
+      "container_type: CONTAINER_MP4\n"
+      "protected_content {\n"
+      "  default_key_id: \"defaultkeyid\"\n"
+      "}\n";
+
+  const uint64_t kStartTime1 = 0u;
+  const uint64_t kDuration1 = 1000u;
+  const uint64_t kSegmentFileSize1 = 29812u;
+  const uint64_t kStartTime2 = 1001u;
+  const uint64_t kDuration2 = 3787u;
+  const uint64_t kSegmentFileSize2 = 83743u;
+  const std::vector<uint8_t> default_key_id(
+      kDefaultKeyId, kDefaultKeyId + arraysize(kDefaultKeyId) - 1);
+  const std::vector<uint8_t> pssh(kPssh, kPssh + arraysize(kPssh) - 1);
+
+  InSequence s;
+  EXPECT_CALL(*notifier_,
+              NotifyNewContainer(ExpectMediaInfoEq(kExpectedMediaInfo), _))
+      .Times(1);
+  EXPECT_CALL(*notifier_, NotifyEncryptionUpdate(_, _, _, _)).Times(1);
+  EXPECT_CALL(*notifier_,
+              NotifyNewSegment(_, kStartTime1, kDuration1, kSegmentFileSize1));
+  EXPECT_CALL(*notifier_, Flush());
+  EXPECT_CALL(*notifier_,
+              NotifyNewSegment(_, kStartTime2, kDuration2, kSegmentFileSize2));
+  EXPECT_CALL(*notifier_, Flush());
+
+  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, "", "",
+                                   default_key_id, std::vector<uint8_t>());
+  listener_->OnMediaStart(muxer_options, *video_stream_info,
+                          kDefaultReferenceTimeScale,
+                          MuxerListener::kContainerMp4);
+  listener_->OnEncryptionInfoReady(kNonInitialEncryptionInfo, kTestUUID,
+                                   kDrmName, std::vector<uint8_t>(), pssh);
+  listener_->OnNewSegment(kStartTime1, kDuration1, kSegmentFileSize1);
+  listener_->OnNewSegment(kStartTime2, kDuration2, kSegmentFileSize2);
+  ::testing::Mock::VerifyAndClearExpectations(notifier_.get());
+
+  EXPECT_CALL(*notifier_, Flush()).Times(0);
+  FireOnMediaEndWithParams(GetDefaultOnMediaEndParams());
+}
 
 }  // namespace media
 }  // namespace edash_packager

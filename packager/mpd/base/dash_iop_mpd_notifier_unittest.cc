@@ -720,9 +720,10 @@ TEST_P(DashIopMpdNotifierTest, UpdateEncryption) {
   const char kBogusNewPsshInBase64[] = "cHNzaHNvbWV0aGluZ2Vsc2U=";
 
   EXPECT_CALL(*default_mock_adaptation_set_,
-              UpdateContentProtectionPssh(StrEq(kBogusNewPsshInBase64)));
+              UpdateContentProtectionPssh(StrEq("myuuid"),
+                                          StrEq(kBogusNewPsshInBase64)));
   EXPECT_TRUE(notifier.NotifyEncryptionUpdate(
-      container_id, std::vector<uint8_t>(), kBogusNewPsshVector));
+      container_id, "myuuid", std::vector<uint8_t>(), kBogusNewPsshVector));
 }
 
 INSTANTIATE_TEST_CASE_P(StaticAndDynamic,

@@ -28,7 +28,7 @@ class MpdNotifyMuxerListener : public MuxerListener {
  public:
   /// @param mpd_notifier must be initialized, i.e mpd_notifier->Init() must be
   ///        called.
-  MpdNotifyMuxerListener(MpdNotifier* mpd_notifier);
+  explicit MpdNotifyMuxerListener(MpdNotifier* mpd_notifier);
   virtual ~MpdNotifyMuxerListener();
 
   /// If the stream is encrypted use this as 'schemeIdUri' attribute for
@@ -38,9 +38,10 @@ class MpdNotifyMuxerListener : public MuxerListener {
   /// @name MuxerListener implementation overrides.
   /// @{
   virtual void OnEncryptionInfoReady(
+      bool is_initial_encryption_info,
       const std::string& content_protection_uuid,
       const std::string& content_protection_name_version,
-      const std::vector<uint8_t>& default_key_id,
+      const std::vector<uint8_t>& key_id,
       const std::vector<uint8_t>& pssh) OVERRIDE;
   virtual void OnMediaStart(const MuxerOptions& muxer_options,
                             const StreamInfo& stream_info,

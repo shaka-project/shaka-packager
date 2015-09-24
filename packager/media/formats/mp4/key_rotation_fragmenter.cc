@@ -13,6 +13,10 @@ namespace edash_packager {
 namespace media {
 namespace mp4 {
 
+namespace {
+const bool kInitialEncryptionInfo = false;
+}  // namespace
+
 KeyRotationFragmenter::KeyRotationFragmenter(MovieFragment* moof,
                                              TrackFragment* traf,
                                              KeySource* encryption_key_source,
@@ -62,6 +66,7 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption(
 
   if (muxer_listener_) {
     muxer_listener_->OnEncryptionInfoReady(
+        !kInitialEncryptionInfo,
         encryption_key_source_->UUID(), encryption_key_source_->SystemName(),
         encryption_key()->key_id, encryption_key()->pssh);
   }

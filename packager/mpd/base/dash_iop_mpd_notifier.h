@@ -48,6 +48,7 @@ class DashIopMpdNotifier : public MpdNotifier {
                                 uint64_t size) OVERRIDE;
   virtual bool NotifyEncryptionUpdate(
       uint32_t container_id,
+      const std::string& drm_uuid,
       const std::vector<uint8_t>& new_key_id,
       const std::vector<uint8_t>& new_pssh) OVERRIDE;
   virtual bool AddContentProtectionElement(

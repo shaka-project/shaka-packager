@@ -697,10 +697,11 @@ void AdaptationSet::AddContentProtectionElement(
   RemoveDuplicateAttributes(&content_protection_elements_.back());
 }
 
-void AdaptationSet::UpdateContentProtectionPssh(
-    const std::string& pssh) {
+void AdaptationSet::UpdateContentProtectionPssh(const std::string& drm_uuid,
+                                                const std::string& pssh) {
   base::AutoLock scoped_lock(lock_);
-  UpdateContentProtectionPsshHelper(pssh, &content_protection_elements_);
+  UpdateContentProtectionPsshHelper(drm_uuid, pssh,
+                                    &content_protection_elements_);
 }
 
 void AdaptationSet::AddRole(Role role) {
@@ -1041,10 +1042,11 @@ void Representation::AddContentProtectionElement(
   RemoveDuplicateAttributes(&content_protection_elements_.back());
 }
 
-void Representation::UpdateContentProtectionPssh(
-    const std::string& pssh) {
+void Representation::UpdateContentProtectionPssh(const std::string& drm_uuid,
+                                                 const std::string& pssh) {
   base::AutoLock scoped_lock(lock_);
-  UpdateContentProtectionPsshHelper(pssh, &content_protection_elements_);
+  UpdateContentProtectionPsshHelper(drm_uuid, pssh,
+                                    &content_protection_elements_);
 }
 
 void Representation::AddNewSegment(uint64_t start_time,

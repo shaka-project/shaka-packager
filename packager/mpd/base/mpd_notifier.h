@@ -11,6 +11,7 @@
 #define MPD_BASE_MPD_NOTIFIER_H_
 
 #include <stdint.h>
+#include <string>
 #include <vector>
 
 #include "packager/base/macros.h"
@@ -78,11 +79,13 @@ class MpdNotifier {
   /// This may be called whenever the key has to change, e.g. key rotation.
   /// @param container_id Container ID obtained from calling
   ///        NotifyNewContainer().
+  /// @param drm_uuid is the UUID of the DRM for encryption.
   /// @param new_key_id is the new key ID for the key.
   /// @param new_pssh is the new pssh box (including the header).
   /// @attention This might change or get removed once DASH IF IOP specification
   ///            writes a clear guideline on how to handle key rotation.
   virtual bool NotifyEncryptionUpdate(uint32_t container_id,
+                                      const std::string& drm_uuid,
                                       const std::vector<uint8_t>& new_key_id,
                                       const std::vector<uint8_t>& new_pssh) = 0;
 

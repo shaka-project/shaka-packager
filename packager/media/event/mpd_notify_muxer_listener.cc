@@ -33,24 +33,25 @@ void MpdNotifyMuxerListener::SetContentProtectionSchemeIdUri(
 }
 
 void MpdNotifyMuxerListener::OnEncryptionInfoReady(
+    bool is_initial_encryption_info,
     const std::string& content_protection_uuid,
     const std::string& content_protection_name_version,
-    const std::vector<uint8_t>& default_key_id,
+    const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& pssh) {
-  if (mpd_notifier_->dash_profile() == kLiveProfile) {
-    bool updated = mpd_notifier_->NotifyEncryptionUpdate(notification_id_,
-                                                         default_key_id, pssh);
-    LOG_IF(WARNING, !updated) << "Failed to update pssh.";
+  if (is_initial_encryption_info) {
+    LOG_IF(WARNING, is_encrypted_)
+        << "Updating initial encryption information.";
+    content_protection_uuid_ = content_protection_uuid;
+    content_protection_name_version_ = content_protection_name_version;
+    default_key_id_.assign(key_id.begin(), key_id.end());
+    pssh_.assign(pssh.begin(), pssh.end());
+    is_encrypted_ = true;
     return;
   }
 
-  LOG_IF(WARNING, is_encrypted_) << "Updating encryption information, but key "
-                                    "rotation for VOD is not supported.";
-  content_protection_uuid_ = content_protection_uuid;
-  content_protection_name_version_ = content_protection_name_version;
-  default_key_id_.assign(default_key_id.begin(), default_key_id.end());
-  pssh_.assign(pssh.begin(), pssh.end());
-  is_encrypted_ = true;
+  bool updated = mpd_notifier_->NotifyEncryptionUpdate(
+      notification_id_, content_protection_uuid, key_id, pssh);
+  LOG_IF(WARNING, !updated) << "Failed to update encryption info.";
 }
 
 void MpdNotifyMuxerListener::OnMediaStart(

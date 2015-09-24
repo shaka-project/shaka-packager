@@ -1265,7 +1265,8 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtectionAndUpdate) {
       "}\n"
       "container_type: 1\n";
   ContentProtectionElement content_protection;
-  content_protection.scheme_id_uri = "urn:mpeg:dash:mp4protection:2011";
+  content_protection.scheme_id_uri =
+      "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed";
   content_protection.value = "some value";
   Element pssh;
   pssh.name = "cenc:pssh";
@@ -1292,7 +1293,7 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtectionAndUpdate) {
       "    <AdaptationSet id=\"0\" contentType=\"video\" width=\"1920\""
       "     height=\"1080\" frameRate=\"3000/100\">"
       "      <ContentProtection"
-      "       schemeIdUri=\"urn:mpeg:dash:mp4protection:2011\""
+      "       schemeIdUri=\"urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed\""
       "       value=\"some value\">"
       "        <cenc:pssh>any value</cenc:pssh>"
       "      </ContentProtection>"
@@ -1306,7 +1307,8 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtectionAndUpdate) {
   ASSERT_TRUE(mpd_.ToString(&mpd_output));
   EXPECT_TRUE(XmlEqual(kExpectedOutput1, mpd_output));
 
-  video_adaptation_set->UpdateContentProtectionPssh("new pssh value");
+  video_adaptation_set->UpdateContentProtectionPssh(
+      "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed", "new pssh value");
   const char kExpectedOutput2[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
       "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\""
@@ -1321,9 +1323,98 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtectionAndUpdate) {
       "    <AdaptationSet id=\"0\" contentType=\"video\" width=\"1920\""
       "     height=\"1080\" frameRate=\"3000/100\">"
       "      <ContentProtection"
-      "       schemeIdUri=\"urn:mpeg:dash:mp4protection:2011\""
+      "       schemeIdUri=\"urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed\""
       "       value=\"some value\">"
-      "        <cenc:pssh>new pssh value</cenc:pssh>"
+      // TODO(rkuroiwa): Commenting this out for now because we want to remove
+      // the PSSH from the MPD. Uncomment this when the player supports updating
+      // pssh.
+      //"        <cenc:pssh>new pssh value</cenc:pssh>"
+      "      </ContentProtection>"
+      "      <Representation id=\"0\" bandwidth=\"0\" codecs=\"avc1\""
+      "       mimeType=\"video/mp4\" width=\"1920\" height=\"1080\""
+      "       frameRate=\"3000/100\"/>"
+      "    </AdaptationSet>"
+      "  </Period>"
+      "</MPD>";
+  ASSERT_TRUE(mpd_.ToString(&mpd_output));
+  EXPECT_TRUE(XmlEqual(kExpectedOutput2, mpd_output));
+}
+
+// Verify that if the ContentProtection element for the DRM without <cenc:pssh>
+// element is updated via UpdateContentProtectionPssh(), the element gets added.
+// TODO(rkuroiwa): Until the player supports PSSH update, we remove the pssh
+// element. Rename this test once it is supported.
+TEST_F(CommonMpdBuilderTest, UpdateToRemovePsshElement) {
+  const char kVideoMediaInfo1080p[] =
+      "video_info {\n"
+      "  codec: \"avc1\"\n"
+      "  width: 1920\n"
+      "  height: 1080\n"
+      "  time_scale: 3000\n"
+      "  frame_duration: 100\n"
+      "}\n"
+      "container_type: 1\n";
+  ContentProtectionElement content_protection;
+  content_protection.scheme_id_uri =
+      "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed";
+  content_protection.value = "some value";
+
+  AdaptationSet* video_adaptation_set = mpd_.AddAdaptationSet("");
+  ASSERT_TRUE(video_adaptation_set);
+  ASSERT_TRUE(video_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(kVideoMediaInfo1080p)));
+  video_adaptation_set->AddContentProtectionElement(content_protection);
+
+  const char kExpectedOutput1[] =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\""
+      " xmlns:cenc=\"urn:mpeg:cenc:2013\""
+      " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+      " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+      " xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\""
+      " minBufferTime=\"PT2S\" type=\"static\""
+      " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
+      " mediaPresentationDuration=\"PT0S\">"
+      "  <Period>"
+      "    <AdaptationSet id=\"0\" contentType=\"video\" width=\"1920\""
+      "     height=\"1080\" frameRate=\"3000/100\">"
+      "      <ContentProtection"
+      "       schemeIdUri=\"urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed\""
+      "       value=\"some value\">"
+      "      </ContentProtection>"
+      "      <Representation id=\"0\" bandwidth=\"0\" codecs=\"avc1\""
+      "       mimeType=\"video/mp4\" width=\"1920\" height=\"1080\""
+      "       frameRate=\"3000/100\"/>"
+      "    </AdaptationSet>"
+      "  </Period>"
+      "</MPD>";
+  std::string mpd_output;
+  ASSERT_TRUE(mpd_.ToString(&mpd_output));
+  EXPECT_TRUE(XmlEqual(kExpectedOutput1, mpd_output));
+
+  video_adaptation_set->UpdateContentProtectionPssh(
+      "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed",
+      "added pssh value");
+  const char kExpectedOutput2[] =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\""
+      " xmlns:cenc=\"urn:mpeg:cenc:2013\""
+      " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+      " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+      " xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\""
+      " minBufferTime=\"PT2S\" type=\"static\""
+      " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
+      " mediaPresentationDuration=\"PT0S\">"
+      "  <Period>"
+      "    <AdaptationSet id=\"0\" contentType=\"video\" width=\"1920\""
+      "     height=\"1080\" frameRate=\"3000/100\">"
+      "      <ContentProtection"
+      "       schemeIdUri=\"urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed\""
+      "       value=\"some value\">"
+      // TODO(rkuroiwa): Commenting this out for now because we want to remove
+      // teh PSSH from the MPD. Uncomment this when the player supports updating
+      // pssh.
+      //"        <cenc:pssh>added pssh value</cenc:pssh>"
       "      </ContentProtection>"
       "      <Representation id=\"0\" bandwidth=\"0\" codecs=\"avc1\""
       "       mimeType=\"video/mp4\" width=\"1920\" height=\"1080\""

@@ -37,6 +37,7 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
   /// @name MuxerListener implementation overrides.
   /// @{
   virtual void OnEncryptionInfoReady(
+      bool is_initial_encryption_info,
       const std::string& content_protection_uuid,
       const std::string& content_protection_name_version,
       const std::vector<uint8_t>& default_key_id,

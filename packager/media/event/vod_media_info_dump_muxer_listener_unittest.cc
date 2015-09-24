@@ -33,6 +33,7 @@ const uint8_t kInvalidPssh[] = {
 // format but the protobof generation shouldn't care.
 const char kTestUUID[] = "myuuid";
 const char kTestContentProtectionName[] = "MyContentProtection version 1";
+const bool kInitialEncryptionInfo = true;
 }  // namespace
 
 namespace edash_packager {
@@ -89,7 +90,8 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
       std::vector<uint8_t> invalid_pssh(kInvalidPssh,
                                         kInvalidPssh + arraysize(kInvalidPssh));
 
-      listener_->OnEncryptionInfoReady(kTestUUID, kTestContentProtectionName,
+      listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, kTestUUID,
+                                       kTestContentProtectionName,
                                        bogus_default_key_id, invalid_pssh);
     }
     listener_->OnMediaStart(muxer_options, stream_info, kReferenceTimeScale,

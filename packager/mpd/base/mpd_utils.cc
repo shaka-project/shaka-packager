@@ -133,40 +133,52 @@ bool HexToUUID(const std::string& data, std::string* uuid_format) {
 }
 
 void UpdateContentProtectionPsshHelper(
+    const std::string& drm_uuid,
     const std::string& pssh,
-    std::list<ContentProtectionElement>* conetent_protection_elements) {
+    std::list<ContentProtectionElement>* content_protection_elements) {
+  const std::string drm_uuid_schemd_id_uri_form = "urn:uuid:" + drm_uuid;
   for (std::list<ContentProtectionElement>::iterator protection =
-           conetent_protection_elements->begin();
-       protection != conetent_protection_elements->end(); ++protection) {
-    if (protection->scheme_id_uri != kEncryptedMp4Scheme)
+           content_protection_elements->begin();
+       protection != content_protection_elements->end(); ++protection) {
+    if (protection->scheme_id_uri != drm_uuid_schemd_id_uri_form) {
       continue;
+    }
 
     for (std::vector<Element>::iterator subelement =
              protection->subelements.begin();
          subelement != protection->subelements.end(); ++subelement) {
       if (subelement->name == kPsshElementName) {
-        subelement->content = pssh;
+        // For now, we want to remove the PSSH element because some players do
+        // not support updating pssh.
+        protection->subelements.erase(subelement);
+
+        // TODO(rkuroiwa): Uncomment this and remove the line above when
+        // shaka-player supports updating PSSH.
+        // subelement->content = pssh;
         return;
       }
     }
-    // Reaching here means <cenc:pssh> does not exist under the MP4 specific
-    // ContentProtection. Add it.
-    Element cenc_pssh;
-    cenc_pssh.name = kPsshElementName;
-    cenc_pssh.content = pssh;
+
+    // Reaching here means <cenc:pssh> does not exist under the
+    // ContentProtection element. Add it.
+    // TODO(rkuroiwa): Uncomment this when shaka-player supports updating PSSH.
+    // Element cenc_pssh;
+    // cenc_pssh.name = kPsshElementName;
+    // cenc_pssh.content = pssh;
+    // protection->subelements.push_back(cenc_pssh);
     return;
   }
 
-  // Reaching here means that MP4 specific ContentProtection does not exist.
+  // Reaching here means that ContentProtection for the DRM does not exist.
   // Add it.
   ContentProtectionElement content_protection;
-  content_protection.scheme_id_uri = kEncryptedMp4Scheme;
-  content_protection.value = kEncryptedMp4Value;
-  Element cenc_pssh;
-  cenc_pssh.name = kPsshElementName;
-  cenc_pssh.content = pssh;
-  content_protection.subelements.push_back(cenc_pssh);
-  conetent_protection_elements->push_back(content_protection);
+  content_protection.scheme_id_uri = drm_uuid_schemd_id_uri_form;
+  // TODO(rkuroiwa): Uncomment this when shaka-player supports updating PSSH.
+  // Element cenc_pssh;
+  // cenc_pssh.name = kPsshElementName;
+  // cenc_pssh.content = pssh;
+  // content_protection.subelements.push_back(cenc_pssh);
+  content_protection_elements->push_back(content_protection);
   return;
 }
 

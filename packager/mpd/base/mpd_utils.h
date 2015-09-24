@@ -58,11 +58,12 @@ bool OnlyOneTrue(bool b1, bool b2, bool b3);
 /// @param uuid_format is the UUID format of the input.
 bool HexToUUID(const std::string& data, std::string* uuid_format);
 
-// Update the <cenc:pssh> element for MP4 specific ContentProtection element.
+// Update the <cenc:pssh> element for |drm_uuid| ContentProtection element.
 // If the element does not exist, this will add one.
 void UpdateContentProtectionPsshHelper(
+    const std::string& drm_uuid,
     const std::string& pssh,
-    std::list<ContentProtectionElement>* conetent_protection_elements);
+    std::list<ContentProtectionElement>* content_protection_elements);
 
 /// Adds <ContentProtection> elements specified by @a media_info to
 /// @a adaptation_set.

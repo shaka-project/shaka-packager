@@ -13,6 +13,7 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
 namespace edash_packager {
@@ -42,17 +43,25 @@ class MuxerListener {
   // |content_protection_uuid| is one of the UUIDs listed here
   // http://dashif.org/identifiers/protection/. This should be in human
   // readable form.
+  // |is_initial_encryption_info| is true if this is the first encryption info
+  // for the media.
+  // In general, this flag should always be true for non-key-rotated media and
+  // should be called only once.
   // |content_protection_name_version| is the DRM system and version name.
+  // |key_id| is the key ID for the media.
+  // The format should be a vector of uint8_t, i.e. not (necessarily) human
+  // readable hex string.
   // For ISO BMFF (MP4) media:
-  // |default_key_id| is the default_KID in 'tenc' box. The format should
-  // be a vector of uint8_t, i.e. not (necessarily) human readable hex string.
+  // If |is_initial_encryption_info| is true then |key_id| is the default_KID in
+  // 'tenc' box.
+  // If |is_initial_encryption_info| is false then |key_id| is the new key ID
+  // for the for the next crypto period.
   // |pssh| is the whole 'pssh' box.
-  // This method may be called multiple times to notify the event handler that
-  // the encryption info has changed.
   virtual void OnEncryptionInfoReady(
+      bool is_initial_encryption_info,
       const std::string& content_protection_uuid,
       const std::string& content_protection_name_version,
-      const std::vector<uint8_t>& default_key_id,
+      const std::vector<uint8_t>& key_id,
       const std::vector<uint8_t>& pssh) = 0;
 
   // Called when muxing starts.
