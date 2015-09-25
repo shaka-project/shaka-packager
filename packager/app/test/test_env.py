@@ -25,12 +25,6 @@ SRC_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../..')
 
 # Parse arguments and calculate dynamic global objects and attributes.
 parser = argparse.ArgumentParser()
-common = parser.add_argument_group(
-    'encryption flags',
-    'These flags are required to enable AES and/or RSA encryption tests.')
-common.add_argument('--key_server_url')
-common.add_argument('--content_id')
-common.add_argument('--signer')
 aes = parser.add_argument_group(
     'aes flags',
     'These flags are required to enable AES signed encryption tests.')
@@ -40,14 +34,13 @@ rsa = parser.add_argument_group(
     'rsa flags',
     'These flags are required to enable RSA signed encryption tests.')
 rsa.add_argument('--rsa_signing_key_path')
+parser.add_argument('--test_update_golden_files', default=0, type=int)
 
 options, args = parser.parse_known_args()
 sys.argv[1:] = args
 has_aes_flags = False
-if (options.key_server_url and options.content_id and options.signer and
-    options.aes_signing_key and options.aes_signing_iv):
+if (options.aes_signing_key and options.aes_signing_iv):
   has_aes_flags = True
 has_rsa_flags = False
-if (options.key_server_url and options.content_id and options.signer and
-    options.rsa_signing_key_path):
+if options.rsa_signing_key_path:
   has_rsa_flags = True
