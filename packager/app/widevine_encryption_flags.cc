@@ -142,12 +142,6 @@ bool ValidateWidevineCryptoFlags() {
   if (FLAGS_crypto_period_duration < 0) {
     PrintError("--crypto_period_duration should not be negative.");
     success = false;
-  } else if (FLAGS_crypto_period_duration > 0 &&
-             !FLAGS_enable_widevine_encryption) {
-    PrintError(
-        "--crypto_period_duration should be specified only if "
-        "--enable_widevine_encryption.");
-    success = false;
   }
   return success;
 }

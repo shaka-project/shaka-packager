@@ -90,12 +90,9 @@ bool AudioStreamInfo::IsValidConfig() const {
 std::string AudioStreamInfo::ToString() const {
   return base::StringPrintf(
       "%s codec: %s\n sample_bits: %d\n num_channels: %d\n "
-      "sampling_frequency: %d\n",
-      StreamInfo::ToString().c_str(),
-      AudioCodecToString(codec_).c_str(),
-      sample_bits_,
-      num_channels_,
-      sampling_frequency_);
+      "sampling_frequency: %d\n language: %s\n",
+      StreamInfo::ToString().c_str(), AudioCodecToString(codec_).c_str(),
+      sample_bits_, num_channels_, sampling_frequency_, language().c_str());
 }
 
 std::string AudioStreamInfo::GetCodecString(AudioCodec codec,

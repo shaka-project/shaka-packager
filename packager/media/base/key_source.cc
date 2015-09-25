@@ -14,7 +14,8 @@ namespace {
 const uint8_t kWidevineSystemId[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,
                                      0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc,
                                      0xd5, 0x1d, 0x21, 0xed};
-const char kDefaultUUID[] = "";
+// TODO(kqyang): Consider making it configurable.
+const char kDefaultUUID[] = "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed";
 const char kDefaultSystemName[] = "";
 }  // namespace
 
@@ -65,8 +66,27 @@ Status KeySource::GetKey(const std::vector<uint8_t>& key_id,
 Status KeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
                                      TrackType track_type,
                                      EncryptionKey* key) {
-  NOTIMPLEMENTED();
-  return Status(error::UNIMPLEMENTED, "");
+  *key = *encryption_key_;
+  // A naive key rotation algorithm is implemented here by left rotating the
+  // key, key_id and pssh. Note that this implementation is only intended for
+  // testing purpose. The actual key rotation algorithm can be much more
+  // complicated.
+  LOG(WARNING)
+      << "This naive key rotation algorithm should not be used in production.";
+  std::rotate(key->key_id.begin(),
+              key->key_id.begin() + (crypto_period_index % key->key_id.size()),
+              key->key_id.end());
+  std::rotate(key->key.begin(),
+              key->key.begin() + (crypto_period_index % key->key.size()),
+              key->key.end());
+  const size_t kPsshHeaderSize = 32u;
+  std::vector<uint8_t> pssh_data(key->pssh.begin() + kPsshHeaderSize,
+                                 key->pssh.end());
+  std::rotate(pssh_data.begin(),
+              pssh_data.begin() + (crypto_period_index % pssh_data.size()),
+              pssh_data.end());
+  key->pssh = PsshBoxFromPsshData(pssh_data);
+  return Status::OK;
 }
 
 std::string KeySource::UUID() {

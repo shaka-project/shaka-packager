@@ -4,6 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
+#include <gflags/gflags.h>
 #include <iostream>
 
 #include "packager/app/fixed_key_encryption_flags.h"
@@ -18,6 +19,7 @@
 #include "packager/base/strings/string_split.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/threading/simple_thread.h"
+#include "packager/base/time/clock.h"
 #include "packager/media/base/demuxer.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/muxer_options.h"
@@ -28,6 +30,12 @@
 #include "packager/mpd/base/dash_iop_mpd_notifier.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/simple_mpd_notifier.h"
+
+DEFINE_bool(use_fake_clock_for_muxer,
+            false,
+            "Set to true to use a fake clock for muxer. With this flag set, "
+            "creation time and modification time in outputs are set to 0. "
+            "Should only be used for testing.");
 
 namespace {
 const char kUsage[] =
@@ -66,6 +74,13 @@ enum ExitStatus {
 namespace edash_packager {
 namespace media {
 
+// A fake clock that always return time 0 (epoch). Should only be used for
+// testing.
+class FakeClock : public base::Clock {
+ public:
+  virtual base::Time Now() OVERRIDE { return base::Time(); }
+};
+
 // Demux, Mux(es) and worker thread used to remux a source file/stream.
 class RemuxJob : public base::SimpleThread {
  public:
@@ -99,6 +114,7 @@ class RemuxJob : public base::SimpleThread {
 
 bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                      const MuxerOptions& muxer_options,
+                     FakeClock* fake_clock,
                      KeySource* key_source,
                      MpdNotifier* mpd_notifier,
                      std::vector<RemuxJob*>* remux_jobs) {
@@ -149,6 +165,8 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     DCHECK(!remux_jobs->empty());
 
     scoped_ptr<Muxer> muxer(new mp4::MP4Muxer(stream_muxer_options));
+    if (FLAGS_use_fake_clock_for_muxer) muxer->set_clock(fake_clock);
+
     if (key_source) {
       muxer->SetKeySource(key_source,
                           FLAGS_max_sd_pixels,
@@ -274,10 +292,9 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
 
   std::vector<RemuxJob*> remux_jobs;
   STLElementDeleter<std::vector<RemuxJob*> > scoped_jobs_deleter(&remux_jobs);
-  if (!CreateRemuxJobs(stream_descriptors,
-                       muxer_options,
-                       encryption_key_source.get(),
-                       mpd_notifier.get(),
+  FakeClock fake_clock;
+  if (!CreateRemuxJobs(stream_descriptors, muxer_options, &fake_clock,
+                       encryption_key_source.get(), mpd_notifier.get(),
                        &remux_jobs)) {
     return false;
   }

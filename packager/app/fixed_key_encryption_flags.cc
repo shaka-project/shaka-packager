@@ -18,6 +18,10 @@ DEFINE_bool(enable_fixed_key_decryption,
             "Enable decryption with fixed key.");
 DEFINE_string(key_id, "", "Key id in hex string format.");
 DEFINE_string(key, "", "Key in hex string format.");
+DEFINE_string(iv,
+              "",
+              "Iv in hex string format. If not specified, a random iv will be "
+              "generated. This flag should only be used for testing.");
 DEFINE_string(pssh, "", "PSSH in hex string format.");
 
 namespace edash_packager {
@@ -36,6 +40,10 @@ bool ValidateFixedCryptoFlags() {
   }
   if (!ValidateFlag(
           "key", FLAGS_key, fixed_crypto, false, fixed_crypto_label)) {
+    success = false;
+  }
+  if (!ValidateFlag("iv", FLAGS_iv, FLAGS_enable_fixed_key_encryption, true,
+                    "--enable_fixed_key_encryption")) {
     success = false;
   }
 

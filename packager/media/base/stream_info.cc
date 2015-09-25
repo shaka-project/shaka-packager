@@ -40,11 +40,11 @@ StreamInfo::~StreamInfo() {}
 std::string StreamInfo::ToString() const {
   return base::StringPrintf(
       "type: %s\n codec_string: %s\n time_scale: %d\n duration: "
-      "%" PRIu64 " (%.1f seconds)\n language: %s\n is_encrypted: %s\n",
+      "%" PRIu64 " (%.1f seconds)\n is_encrypted: %s\n",
       (stream_type_ == kStreamAudio ? "Audio" : "Video"),
       codec_string_.c_str(),
       time_scale_, duration_,
-      static_cast<double>(duration_) / time_scale_, language_.c_str(),
+      static_cast<double>(duration_) / time_scale_,
       is_encrypted_ ? "true" : "false");
 }
 

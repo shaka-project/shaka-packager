@@ -91,7 +91,7 @@ scoped_ptr<KeySource> CreateEncryptionKeySource() {
     encryption_key_source = widevine_key_source.Pass();
   } else if (FLAGS_enable_fixed_key_encryption) {
     encryption_key_source = KeySource::CreateFromHexStrings(
-        FLAGS_key_id, FLAGS_key, FLAGS_pssh, "");
+        FLAGS_key_id, FLAGS_key, FLAGS_pssh, FLAGS_iv);
   }
   return encryption_key_source.Pass();
 }
