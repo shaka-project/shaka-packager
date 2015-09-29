@@ -105,7 +105,7 @@ class MP4MediaParserTest : public testing::Test {
 TEST_F(MP4MediaParserTest, UnalignedAppend) {
   // Test small, non-segment-aligned appends (small enough to exercise
   // incremental append system)
-  EXPECT_TRUE(ParseMP4File("bear-1280x720-av_frag.mp4", 512));
+  EXPECT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 512));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
@@ -165,7 +165,7 @@ TEST_F(MP4MediaParserTest,
 
 TEST_F(MP4MediaParserTest, BytewiseAppend) {
   // Ensure no incremental errors occur when parsing
-  EXPECT_TRUE(ParseMP4File("bear-1280x720-av_frag.mp4", 1));
+  EXPECT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 1));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
@@ -173,13 +173,13 @@ TEST_F(MP4MediaParserTest, BytewiseAppend) {
 TEST_F(MP4MediaParserTest, MultiFragmentAppend) {
   // Large size ensures multiple fragments are appended in one call (size is
   // larger than this particular test file)
-  EXPECT_TRUE(ParseMP4File("bear-1280x720-av_frag.mp4", 768432));
+  EXPECT_TRUE(ParseMP4File("bear-640x360-av_frag.mp4", 300000));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
 
 TEST_F(MP4MediaParserTest, TrailingMoov) {
-  EXPECT_TRUE(ParseMP4File("bear-1280x720-trailing-moov.mp4", 1024));
+  EXPECT_TRUE(ParseMP4File("bear-640x360-trailing-moov.mp4", 1024));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
@@ -188,7 +188,7 @@ TEST_F(MP4MediaParserTest, Flush) {
   // Flush while reading sample data, then start a new stream.
   InitializeParser(NULL);
 
-  std::vector<uint8_t> buffer = ReadTestDataFile("bear-1280x720-av_frag.mp4");
+  std::vector<uint8_t> buffer = ReadTestDataFile("bear-640x360-av_frag.mp4");
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), 65536, 512));
   parser_->Flush();
   EXPECT_EQ(2u, num_streams_);
@@ -208,24 +208,24 @@ TEST_F(MP4MediaParserTest, MPEG2_AAC_LC) {
 TEST_F(MP4MediaParserTest, NoMoovAfterFlush) {
   InitializeParser(NULL);
 
-  std::vector<uint8_t> buffer = ReadTestDataFile("bear-1280x720-av_frag.mp4");
+  std::vector<uint8_t> buffer = ReadTestDataFile("bear-640x360-av_frag.mp4");
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
   parser_->Flush();
 
-  const int kFirstMoofOffset = 1307;
+  const int kFirstMoofOffset = 1308;
   EXPECT_TRUE(AppendDataInPieces(
       buffer.data() + kFirstMoofOffset, buffer.size() - kFirstMoofOffset, 512));
 }
 
 TEST_F(MP4MediaParserTest, NON_FRAGMENTED_MP4) {
-  EXPECT_TRUE(ParseMP4File("bear-1280x720.mp4", 512));
+  EXPECT_TRUE(ParseMP4File("bear-640x360.mp4", 512));
   EXPECT_EQ(2u, num_streams_);
   EXPECT_EQ(201u, num_samples_);
 }
 
 TEST_F(MP4MediaParserTest, CencWithoutDecryptionSource) {
   // Parsing should fail but it will get the streams successfully.
-  EXPECT_FALSE(ParseMP4File("bear-1280x720-v_frag-cenc.mp4", 512));
+  EXPECT_FALSE(ParseMP4File("bear-640x360-v_frag-cenc.mp4", 512));
   EXPECT_EQ(1u, num_streams_);
 }
 
@@ -233,7 +233,7 @@ TEST_F(MP4MediaParserTest, CencInitWithoutDecryptionSource) {
   InitializeParser(NULL);
 
   std::vector<uint8_t> buffer =
-      ReadTestDataFile("bear-1280x720-v_frag-cenc.mp4");
+      ReadTestDataFile("bear-640x360-v_frag-cenc.mp4");
   const int kFirstMoofOffset = 1646;
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), kFirstMoofOffset, 512));
   EXPECT_EQ(1u, num_streams_);
@@ -256,7 +256,7 @@ TEST_F(MP4MediaParserTest, CencWithDecryptionSource) {
   InitializeParser(&mock_key_source);
 
   std::vector<uint8_t> buffer =
-      ReadTestDataFile("bear-1280x720-v_frag-cenc.mp4");
+      ReadTestDataFile("bear-640x360-v_frag-cenc.mp4");
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
   EXPECT_EQ(1u, num_streams_);
   EXPECT_EQ(82u, num_samples_);

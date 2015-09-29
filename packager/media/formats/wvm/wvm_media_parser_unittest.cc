@@ -23,19 +23,19 @@
 
 namespace {
 const int64_t kNoTimestamp = std::numeric_limits<int64_t>::min();
-const char kWvmFile[] = "hb2_4stream_encrypted.wvm";
+const char kWvmFile[] = "bear-640x360.wvm";
 // Constants associated with kWvmFile follows.
 const uint32_t kExpectedStreams = 4;
-const int kExpectedVideoFrameCount = 6665;
-const int kExpectedAudioFrameCount = 11964;
-const int kExpectedEncryptedSampleCount = 17287;
+const int kExpectedVideoFrameCount = 826;
+const int kExpectedAudioFrameCount = 1184;
+const int kExpectedEncryptedSampleCount = 554;
 const uint8_t kExpectedAssetKey[] =
-    "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc";
+    "\x92\x48\xd2\x45\x39\x0e\x0a\x49\xd4\x83\xba\x9b\x43\xfc\x69\xc3";
 const uint8_t k64ByteAssetKey[] =
-    "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc"
-    "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc"
-    "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc"
-    "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc";
+    "\x92\x48\xd2\x45\x39\x0e\x0a\x49\xd4\x83\xba\x9b\x43\xfc\x69\xc3"
+    "\x92\x48\xd2\x45\x39\x0e\x0a\x49\xd4\x83\xba\x9b\x43\xfc\x69\xc3"
+    "\x92\x48\xd2\x45\x39\x0e\x0a\x49\xd4\x83\xba\x9b\x43\xfc\x69\xc3"
+    "\x92\x48\xd2\x45\x39\x0e\x0a\x49\xd4\x83\xba\x9b\x43\xfc\x69\xc3";
 const size_t kInitDataSize = 0x4000;
 }  // namespace
 
@@ -168,13 +168,13 @@ TEST_F(WvmMediaParserTest, ParseWvmWithoutKeySource) {
   // Track 0 and 2 are videos and they both have pixel_width = 8 and
   // pixel_height = 9.
   EXPECT_EQ(8u, reinterpret_cast<VideoStreamInfo*>(stream_map_[0].get())
-                   ->pixel_width());
+                    ->pixel_width());
   EXPECT_EQ(8u, reinterpret_cast<VideoStreamInfo*>(stream_map_[2].get())
-                   ->pixel_width());
+                    ->pixel_width());
   EXPECT_EQ(9u, reinterpret_cast<VideoStreamInfo*>(stream_map_[0].get())
-                   ->pixel_height());
+                    ->pixel_height());
   EXPECT_EQ(9u, reinterpret_cast<VideoStreamInfo*>(stream_map_[2].get())
-                   ->pixel_height());
+                    ->pixel_height());
 }
 
 TEST_F(WvmMediaParserTest, ParseWvmInitWithoutKeySource) {

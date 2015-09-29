@@ -127,24 +127,19 @@ TEST(ContainerNamesTest, FileCheckOGG) {
 
 TEST(ContainerNamesTest, FileCheckWAV) {
   TestFile(CONTAINER_WAV, GetTestDataFilePath("4ch.wav"));
-  TestFile(CONTAINER_WAV, GetTestDataFilePath("sfx_f32le.wav"));
-  TestFile(CONTAINER_WAV, GetTestDataFilePath("sfx_s16le.wav"));
 }
 
 TEST(ContainerNamesTest, FileCheckMOV) {
-  TestFile(CONTAINER_MOV, GetTestDataFilePath("bear-1280x720.mp4"));
-  TestFile(CONTAINER_MOV, GetTestDataFilePath("sfx.m4a"));
+  TestFile(CONTAINER_MOV, GetTestDataFilePath("bear-640x360.mp4"));
 }
 
 TEST(ContainerNamesTest, FileCheckWEBM) {
-  TestFile(CONTAINER_WEBM, GetTestDataFilePath("bear-320x240.webm"));
+  TestFile(CONTAINER_WEBM, GetTestDataFilePath("bear-640x360.webm"));
   TestFile(CONTAINER_WEBM, GetTestDataFilePath("no_streams.webm"));
-  TestFile(CONTAINER_WEBM, GetTestDataFilePath("webm_ebml_element"));
 }
 
 TEST(ContainerNamesTest, FileCheckMP3) {
   TestFile(CONTAINER_MP3, GetTestDataFilePath("id3_test.mp3"));
-  TestFile(CONTAINER_MP3, GetTestDataFilePath("sfx.mp3"));
 }
 
 TEST(ContainerNamesTest, FileCheckAC3) {
@@ -211,9 +206,6 @@ TEST(ContainerNamesTest, FileCheckSWF) {
 TEST(ContainerNamesTest, FileCheckUNKNOWN) {
   TestFile(CONTAINER_UNKNOWN, GetTestDataFilePath("ten_byte_file"));
   TestFile(CONTAINER_UNKNOWN, GetTestDataFilePath("README"));
-  TestFile(CONTAINER_UNKNOWN, GetTestDataFilePath("bali_640x360_P422.yuv"));
-  TestFile(CONTAINER_UNKNOWN, GetTestDataFilePath("bali_640x360_RGB24.rgb"));
-  TestFile(CONTAINER_UNKNOWN, GetTestDataFilePath("webm_vp8_track_entry"));
 }
 
 }  // namespace media

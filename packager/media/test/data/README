@@ -28,25 +28,22 @@ vorbis-packet-3  - timestamp: 2902ms, duration: 0ms
 bear-1280x720.ts - AVC + AAC encode, multiplexed into an MPEG2-TS container.
 bear-1280x720_ptswraparound.ts - Same as bear-1280x720.ts, with a timestamp wrap-around in the middle.
 
-// Encrypted Files.
-bear-1280x720-a_frag-cenc.mp4 - A fragmented MP4 version of the audio track of bear-1280x720.mp4 encrypted (ISO CENC) using key ID [1] and key [2].
-bear-1280x720-a_frag-cenc_clear-all.mp4 - Same as bear-1280x720-a_frag-cenc.mp4 but no fragments are encrypted.
-bear-1280x720-v_frag-cenc.mp4 - A fragmented MP4 version of the video track of bear-1280x720.mp4 encrypted (ISO CENC) using key ID [1] and key [2].
-bear-1280x720-v_frag-cenc_clear-all.mp4 - Same as bear-1280x720-v_frag-cenc.mp4 but no fragments are encrypted.
-bear-320x240-16x9-aspect-av_enc-av.webm - bear-320x240-16x9-aspect.webm with audio & video encrypted using key ID [1] and key [2]
-bear-320x240-av_enc-av.webm - bear-320x240.webm with audio & video encrypted using key ID [1] and key [2].
-bear-320x240-av_enc-av_clear-1s.webm - Same as bear-320x240-av_enc-av.webm but with no frames in the first second encrypted.
-bear-320x240-av_enc-av_clear-all.webm - Same as bear-320x240-av_enc-av.webm but with no frames encrypted.
-bear-640x360-av_enc-av.webm - bear-640x360.webm with audio & video encrypted using key ID [1] and key [2].
-bear-640x360-a_frag-cenc.mp4 - A fragmented MP4 version of the audio track of bear-640x360.mp4 encrypted (ISO CENC) using key ID [1] and key [2].
-bear-640x360-v_frag-cenc.mp4 - A fragmented MP4 version of the video track of bear-640x360.mp4 encrypted (ISO CENC) using key ID [1] and key [2].
-
-[1] 30313233343536373839303132333435
-[2] ebdd62f16814d27b68ef122afce4ae3c
+// ISO-BMFF streams.
+bear-1280x720.mp4 - AVC + AAC encode, mulitplexed into an ISOBMFF container.
+bear-640x360.mp4  - Same as above, but in a different resolution.
+bear-320x180.mp4  - Same as above, but in a different resolution.
+bear-640x360-trailing-moov.mp4  - Same content, but with moov box in the end.
+bear-640x360-av_frag.mp4  - Same content, but in fragmented mp4.
 
 // Non square pixels.
 bear-640x360-non_square_pixel-with_pasp.mp4 - A non-square pixel version of the video track of bear-640x360.mp4 with PixelAspectRatio box.
 bear-640x360-non_square_pixel-without_pasp.mp4 - A non-square pixel version of the video track of bear-640x360.mp4 without PixelAspectRatio box.
+
+// Encrypted Files.
+bear-640x360-v_frag-cenc.mp4 - A fragmented MP4 version of the video track of bear-640x360.mp4 encrypted (ISO CENC) using key ID [1] and key [2].
+
+[1] 30313233343536373839303132333435
+[2] ebdd62f16814d27b68ef122afce4ae3c
 
 // Container Tests (additional containers derived from bear.ogv)
 bear.ac3    -- created using "avconv -i bear.ogv -f ac3 -b 192k bear.ac3".
