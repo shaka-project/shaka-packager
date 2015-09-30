@@ -22,6 +22,13 @@ We have a [public mailing list](https://groups.google.com/forum/#!forum/edash-us
   gclient config https://www.github.com/google/edash-packager.git --name=src
   gclient sync
   ```
+  To sync to a particular commit or version, use 'gclient sync -r \<revision\>', e.g.
+  ```Shell
+  # Sync to commit 4cb5326355e1559d60b46167740e04624d0d2f51
+  gclient sync -r 4cb5326355e1559d60b46167740e04624d0d2f51
+  # Sync to version 1.2.0
+  gclient sync -r v1.2.0
+  ```
 
 4. Build
 
@@ -55,11 +62,12 @@ We have a [public mailing list](https://groups.google.com/forum/#!forum/edash-us
 
   See https://github.com/google/edash-packager/blob/master/CONTRIBUTING.md for details.
 
-# Using docker for testing/development #
 
-[Docker](https://www.docker.com/whatisdocker) is a tool that can package an application and its dependencies in a virtual container that can run on different host operating systems.
+# Using docker for testing / development #
 
-1. [Install Docker.](https://docs.docker.com/installation/)
+[Docker](https://www.docker.com/whatisdocker) is a tool that can package an application and its dependencies in a virtual container to run on different host operating systems.
+
+1. Install [Docker](https://docs.docker.com/installation/).
 
 2. Build the image
 
@@ -70,27 +78,25 @@ We have a [public mailing list](https://groups.google.com/forum/#!forum/edash-us
 3. Run the container (`your_media_path` should be your media folder)
 
   ```Shell
-  docker run -v /your_media_path/:/medias -it --rm edash
+  docker run -v /your_media_path/:/media -it --rm edash
   ```
 
-4. Make tests/experimentations
+4. Testing
 
   ```Shell
-  # make sure you run step 3 and you're inside the container
-
-  # go to /medias folder
-  cd /medias
+  # Make sure you run step 3 and you're inside the container.
+  cd /media
 
   # VOD: mp4 --> dash
-  packager input=/medias/example.mp4,stream=audio,output=audio.mp4 \
-          input=/medias/example.mp4,stream=video,output=video.mp4 \
-          --profile on-demand --mpd_output example.mpd
+  packager input=/media/example.mp4,stream=audio,output=audio.mp4 \
+           input=/media/example.mp4,stream=video,output=video.mp4 \
+           --profile on-demand --mpd_output example.mpd
 
-  # then you can leave the container
+  # Leave the container.
   exit
-
-  # now you can access the mpd at `your_media_path`
   ```
+  Outputs are available in your media folder `your_media_path`.
+
 
 #Design overview#
 
@@ -109,6 +115,23 @@ MpdBuilder is responsible for the creation of Media Presentation Description as 
 Supported source formats: ISO BMFF (both fragmented and non-fragmented), MPEG-2 TS, IPTV (MPEG-2 TS over UDP), and WVM (Widevine); the only output format supported currently is fragmented ISO BMFF with CENC. Support for more formats will be added soon.
 
 Refer to [Design](DESIGN.md) for details.
+
+
+#DASH-IF IOP Compliance#
+
+We try out best to be compliant to [Guidelines for Implementation: DASH-IF Interoperability Points](http://dashif.org/wp-content/uploads/2015/04/DASH-IF-IOP-v3.0.pdf).
+
+We are already compliant to most of the requirements specified by the document, with two exceptions:
+- ContentProtection elements are still put under Representation element instead of AdaptationSet element;
+- Representations encrypted with different keys are still put under the same AdaptationSet.
+
+We created a flag '--generate_dash_if_iop_compliant_mpd', if enabled,
+- ContentProtection elements will be moved under AdaptationSet;
+- Representations encrypted with different keys will be put under different AdaptationSets, grouped by `@group` attribute.
+
+Users can enable the flag '--generate_dash_if_iop_compliant_mpd' to have these features. This flag will be enabled by default in a future release.
+
+Please feel free to file a bug or feature request if there are any incompatibilities with DASH-IF IOP or other standards / specifications.
 
 
 #Driver Program Sample Usage#
