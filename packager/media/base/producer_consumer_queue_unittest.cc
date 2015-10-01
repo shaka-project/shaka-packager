@@ -17,12 +17,11 @@ namespace {
 const size_t kCapacity = 10u;
 const int64_t kTimeout = 100;  // 0.1s.
 
-// Check that the |delta| is approximately |time_in_milliseconds|.
-bool CheckTimeApproxEqual(int64_t time_in_milliseconds,
-                          const base::TimeDelta& delta) {
-  const int64_t kOverhead = 10;  // 0.01s.
-  return delta.InMilliseconds() >= time_in_milliseconds &&
-         delta.InMilliseconds() <= time_in_milliseconds + kOverhead;
+// Verify that the |delta| is approximately |expected_time_in_milliseconds|.
+void ExpectTimeApproxEqual(int64_t expected_time_in_milliseconds,
+                           const base::TimeDelta& delta) {
+  const int64_t kOverhead = 50;  // 0.05s.
+  EXPECT_NEAR(delta.InMilliseconds(), expected_time_in_milliseconds, kOverhead);
 }
 
 }  // namespace
@@ -96,13 +95,13 @@ TEST(ProducerConsumerQueueTest, PushWithTimeout) {
     timer.reset(new base::ElapsedTimer());
     ASSERT_OK(queue.Push(i, kTimeout));
     // Expect Push to return instantly without waiting.
-    EXPECT_TRUE(CheckTimeApproxEqual(0, timer->Elapsed()));
+    ExpectTimeApproxEqual(0, timer->Elapsed());
   }
 
   timer.reset(new base::ElapsedTimer());
   ASSERT_EQ(error::TIME_OUT, queue.Push(0, kTimeout).error_code());
   // Expect elapsed time exceeds defined timeout.
-  EXPECT_TRUE(CheckTimeApproxEqual(kTimeout, timer->Elapsed()));
+  ExpectTimeApproxEqual(kTimeout, timer->Elapsed());
 }
 
 TEST(ProducerConsumerQueueTest, PopWithTimeout) {
@@ -117,14 +116,14 @@ TEST(ProducerConsumerQueueTest, PopWithTimeout) {
     timer.reset(new base::ElapsedTimer());
     ASSERT_OK(queue.Pop(&val, kTimeout));
     // Expect Pop to return instantly without waiting.
-    EXPECT_TRUE(CheckTimeApproxEqual(0, timer->Elapsed()));
+    ExpectTimeApproxEqual(0, timer->Elapsed());
     EXPECT_EQ(i, val);
   }
 
   timer.reset(new base::ElapsedTimer());
   ASSERT_EQ(error::TIME_OUT, queue.Pop(&val, kTimeout).error_code());
   // Expect elapsed time exceeds defined timeout.
-  EXPECT_TRUE(CheckTimeApproxEqual(kTimeout, timer->Elapsed()));
+  ExpectTimeApproxEqual(kTimeout, timer->Elapsed());
 }
 
 TEST(ProducerConsumerQueueTest, PeekWithTimeout) {
@@ -139,13 +138,13 @@ TEST(ProducerConsumerQueueTest, PeekWithTimeout) {
   ASSERT_EQ(error::TIME_OUT,
             queue.Peek(kCapacity, &val, kTimeout).error_code());
   // Expect elapsed time exceeds defined timeout.
-  EXPECT_TRUE(CheckTimeApproxEqual(kTimeout, timer->Elapsed()));
+  ExpectTimeApproxEqual(kTimeout, timer->Elapsed());
 
   for (size_t i = kCapacity / 2; i < kCapacity; ++i) {
     timer.reset(new base::ElapsedTimer());
     ASSERT_OK(queue.Peek(i, &val, kTimeout));
     // Expect Peek to return instantly without waiting.
-    EXPECT_TRUE(CheckTimeApproxEqual(0, timer->Elapsed()));
+    ExpectTimeApproxEqual(0, timer->Elapsed());
     EXPECT_EQ(i, val);
   }
 }
@@ -163,20 +162,20 @@ TEST(ProducerConsumerQueueTest, CheckStop) {
   timer.reset(new base::ElapsedTimer());
   EXPECT_EQ(error::STOPPED, queue.Push(0, kTimeout).error_code());
   // Expect Push to return instantly without waiting.
-  EXPECT_TRUE(CheckTimeApproxEqual(0, timer->Elapsed()));
+  ExpectTimeApproxEqual(0, timer->Elapsed());
 
   int val;
   EXPECT_EQ(error::STOPPED, queue.Pop(&val, kInfiniteTimeout).error_code());
   timer.reset(new base::ElapsedTimer());
   EXPECT_EQ(error::STOPPED, queue.Pop(&val, kTimeout).error_code());
   // Expect Pop to return instantly without waiting.
-  EXPECT_TRUE(CheckTimeApproxEqual(0, timer->Elapsed()));
+  ExpectTimeApproxEqual(0, timer->Elapsed());
 
   EXPECT_EQ(error::STOPPED, queue.Peek(0, &val, kInfiniteTimeout).error_code());
   timer.reset(new base::ElapsedTimer());
   EXPECT_EQ(error::STOPPED, queue.Peek(0, &val, kTimeout).error_code());
   // Expect Pop to return instantly without waiting.
-  EXPECT_TRUE(CheckTimeApproxEqual(0, timer->Elapsed()));
+  ExpectTimeApproxEqual(0, timer->Elapsed());
 }
 
 class MultiThreadProducerConsumerQueueTest : public ::testing::Test {
@@ -282,11 +281,11 @@ TEST_F(MultiThreadProducerConsumerQueueTest, PeekOnLargePosition) {
   size_t val;
   ASSERT_EQ(error::TIME_OUT,
             queue_.Peek(kVeryLargePosition, &val, 0).error_code());
-  EXPECT_TRUE(CheckTimeApproxEqual(0, timer.Elapsed()));
+  ExpectTimeApproxEqual(0, timer.Elapsed());
 
   ASSERT_EQ(error::TIME_OUT,
             queue_.Peek(kVeryLargePosition, &val, kTimeout).error_code());
-  EXPECT_TRUE(CheckTimeApproxEqual(kTimeout, timer.Elapsed()));
+  ExpectTimeApproxEqual(kTimeout, timer.Elapsed());
 
   queue_.Stop();
 }
@@ -355,7 +354,7 @@ TEST_P(MultiThreadProducerConsumerQueueStopTest, StopTests) {
   queue_.Stop();
   event_.Wait();
   // Expect Stop to stop the operations immediately.
-  EXPECT_TRUE(CheckTimeApproxEqual(0, timer.Elapsed()));
+  ExpectTimeApproxEqual(0, timer.Elapsed());
 
   thread.Join();
 }
