@@ -1,5 +1,6 @@
 #include "packager/mpd/test/xml_compare.h"
 
+#include <libxml/parser.h>
 #include <libxml/tree.h>
 
 #include <algorithm>
@@ -10,7 +11,6 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
-#include "packager/third_party/libxml/src/include/libxml/parser.h"
 
 namespace edash_packager {
 
