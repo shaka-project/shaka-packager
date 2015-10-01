@@ -39,7 +39,7 @@ parser.add_argument('--test_update_golden_files', default=0, type=int)
 options, args = parser.parse_known_args()
 sys.argv[1:] = args
 has_aes_flags = False
-if (options.aes_signing_key and options.aes_signing_iv):
+if options.aes_signing_key and options.aes_signing_iv:
   has_aes_flags = True
 has_rsa_flags = False
 if options.rsa_signing_key_path:

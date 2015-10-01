@@ -6,7 +6,7 @@
       <ContentProtection schemeIdUri="urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed">
         <cenc:pssh>AAAAMHBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAABAxMjM0NTY3ODkwMTIzNDU2</cenc:pssh>
       </ContentProtection>
-      <Representation id="0" bandwidth="872999" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" width="640" height="360" frameRate="30000/1001">
+      <Representation id="0" bandwidth="875528" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" width="640" height="360" frameRate="30000/1001">
         <SegmentTemplate timescale="30000" initialization="output_video-init.mp4" media="output_video-$Number$.m4s" startNumber="1">
           <SegmentTimeline>
             <S t="2002" d="30030" r="1"/>
@@ -20,7 +20,7 @@
       <ContentProtection schemeIdUri="urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed">
         <cenc:pssh>AAAAMHBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAABAxMjM0NTY3ODkwMTIzNDU2</cenc:pssh>
       </ContentProtection>
-      <Representation id="1" bandwidth="121855" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
+      <Representation id="1" bandwidth="124085" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <SegmentTemplate timescale="44100" initialization="output_audio-init.mp4" media="output_audio-$Number$.m4s" startNumber="1">
           <SegmentTimeline>
