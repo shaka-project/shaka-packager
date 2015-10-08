@@ -1,0 +1,45 @@
+Name: Protocol Buffers
+Short Name: protobuf
+URL: http://protobuf.googlecode.com/svn/trunk
+License: BSD
+License File: COPYING.txt
+Version: unknown
+Revision: r476
+Security Critical: yes
+
+Local files (not taken from upstream):
+README.chromium
+config.h
+descriptor2_pb.py
+protobuf_lite_java_descriptor_proto.py
+protobuf_lite_java_parse_pom.py
+
+A protobuf.gyp file has been added for building with Chromium.
+
+This code has been patched to support unknown field retention in protobuf-lite.
+See r62331 for the patch.
+
+This code has been patched to ensure that files in the target protobuf_lite
+do not include headers from protobuf_full. See r173228 for the patch.
+
+This code has been patched to make the target protobuf_lite a component so that
+targets that depend on it can be componentized. See http://crbug.com/172800 for
+details, and r179806 for the patch.
+
+Revision 504 was cherry-picked from upstream.
+Revision 512 was cherry-picked from upstream.
+Revision 516 was cherry-picked from upstream.
+Revision 517 was cherry-picked from upstream.
+Revision 522 was cherry-picked from upstream.
+Revision 523 was cherry-picked from upstream.
+Revision 524 was cherry-picked from upstream.
+The `&file->options() != NULL &&` was removed from descriptor.cc
+
+Notes about Java:
+We have not forked the Java version of protobuf-lite, so the Java version does
+not support unknown field retention.
+
+The list of Java files included in the lite profile for Java is parsed from the
+maven java/pom.xml by the script protobuf_lite_java_parse_pom.py. See
+'javac_includes' variable in protobuf_lite_javalib GYP target.
+

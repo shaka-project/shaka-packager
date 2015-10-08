@@ -8,11 +8,7 @@
 
 vars = {
   "chromium_git": "https://chromium.googlesource.com",
-  "chromium_svn": "http://src.chromium.org/chrome/trunk",
-  "chromium_rev": "296101",
-
   "googlesource_git": "https://%s.googlesource.com",
-
   "curl_url": "https://github.com/bagder/curl.git",
   # TODO(kqyang): Replace with an official release.
   "curl_rev": "26ddc536b0ab5fc62d6503c82c34dd3dbf112dc3",
@@ -27,9 +23,6 @@ deps = {
 
   'src/packager/buildtools':
     Var("chromium_git") + '/chromium/buildtools.git@5fc8d3943e163ee627c8af50366c700c0325bba2',
-
-  "src/packager/testing":
-    Var("chromium_svn") + "/src/testing@" + Var("chromium_rev"),
 
   "src/packager/testing/gmock":
     Var("chromium_git") + "/external/googlemock@29763965ab52f24565299976b936d1265cb6a271",  #501
@@ -55,27 +48,14 @@ deps = {
   "src/packager/third_party/icu":
     Var("chromium_git") + "/chromium/third_party/icu46@78597121d71a5922f5726e715c6ad06c50ae6cdc",
 
-  # Required by base/message_pump_libevent.cc.
-  "src/packager/third_party/libevent":
-    Var("chromium_svn") + "/src/third_party/libevent@" + Var("chromium_rev"),
-
-  "src/packager/third_party/libxml":
-    Var("chromium_svn") + "/src/third_party/libxml@" + Var("chromium_rev"),
-
   "src/packager/third_party/modp_b64":
     Var("chromium_git") + "/chromium/src/third_party/modp_b64@3a0e3b4ef6c54678a2d14522533df56b33b56119",
-
-  "src/packager/third_party/protobuf":
-    Var("chromium_svn") + "/src/third_party/protobuf@" + Var("chromium_rev"),
 
   "src/packager/tools/clang":
     Var("chromium_git") + "/chromium/src/tools/clang@0de8f3bb6af64e13876273c601704795d5e00faf",
 
   "src/packager/tools/gyp":
     Var("chromium_git") + "/external/gyp@5122240c5e5c4d8da12c543d82b03d6089eb77c5",
-
-  "src/packager/tools/protoc_wrapper":
-    Var("chromium_svn") + "/src/tools/protoc_wrapper@" + Var("chromium_rev"),
 
   "src/packager/tools/valgrind":
     Var("chromium_git") + "/chromium/deps/valgrind@3a97aa8142b6e63f16789b22daafb42d202f91dc",
