@@ -23,60 +23,63 @@
          && (x != 0xFF))
 
 namespace {
-  const uint32_t kMpeg2ClockRate = 90000;
-  const uint32_t kPesOptPts = 0x80;
-  const uint32_t kPesOptDts = 0x40;
-  const uint32_t kPesOptAlign = 0x04;
-  const uint32_t kPsmStreamId = 0xBC;
-  const uint32_t kPaddingStreamId = 0xBE;
-  const uint32_t kIndexMagic = 0x49444d69;
-  const uint32_t kIndexStreamId = 0xBF;  // private_stream_2
-  const uint32_t kIndexVersion4HeaderSize = 12;
-  const uint32_t kEcmStreamId = 0xF0;
-  const uint32_t kV2MetadataStreamId = 0xF1;  // EMM_stream
-  const uint32_t kScramblingBitsMask = 0x30;
-  const uint32_t kStartCode1 = 0x00;
-  const uint32_t kStartCode2 = 0x00;
-  const uint32_t kStartCode3 = 0x01;
-  const uint32_t kStartCode4Pack = 0xBA;
-  const uint32_t kStartCode4System = 0xBB;
-  const uint32_t kStartCode4ProgramEnd = 0xB9;
-  const uint32_t kPesStreamIdVideoMask = 0xF0;
-  const uint32_t kPesStreamIdVideo = 0xE0;
-  const uint32_t kPesStreamIdAudioMask = 0xE0;
-  const uint32_t kPesStreamIdAudio = 0xC0;
-  const uint32_t kVersion4 = 4;
-  const int kAdtsHeaderMinSize = 7;
-  const uint8_t kAacSampleSizeBits = 16;
-  // Applies to all video streams.
-  const uint8_t kNaluLengthSize = 4; // unit is bytes.
-  // Placeholder sampling frequency for all audio streams, which
-  // will be overwritten after filter parsing.
-  const uint32_t kDefaultSamplingFrequency = 100;
-  const uint16_t kEcmSizeBytes = 80;
-  const uint32_t kInitializationVectorSizeBytes = 16;
-  // ECM fields for processing.
-  const uint32_t kEcmContentKeySizeBytes = 16;
-  const uint32_t kEcmDCPFlagsSizeBytes = 3;
-  const uint32_t kEcmCCIFlagsSizeBytes = 1;
-  const uint32_t kEcmFlagsSizeBytes =
-      kEcmCCIFlagsSizeBytes + kEcmDCPFlagsSizeBytes;
-  const uint32_t kEcmPaddingSizeBytes = 12;
-  const uint32_t kAssetKeySizeBytes = 16;
+const uint32_t kMpeg2ClockRate = 90000;
+const uint32_t kPesOptPts = 0x80;
+const uint32_t kPesOptDts = 0x40;
+const uint32_t kPesOptAlign = 0x04;
+const uint32_t kPsmStreamId = 0xBC;
+const uint32_t kPaddingStreamId = 0xBE;
+const uint32_t kIndexMagic = 0x49444d69;
+const uint32_t kIndexStreamId = 0xBF;  // private_stream_2
+const uint32_t kIndexVersion4HeaderSize = 12;
+const uint32_t kEcmStreamId = 0xF0;
+const uint32_t kV2MetadataStreamId = 0xF1;  // EMM_stream
+const uint32_t kScramblingBitsMask = 0x30;
+const uint32_t kStartCode1 = 0x00;
+const uint32_t kStartCode2 = 0x00;
+const uint32_t kStartCode3 = 0x01;
+const uint32_t kStartCode4Pack = 0xBA;
+const uint32_t kStartCode4System = 0xBB;
+const uint32_t kStartCode4ProgramEnd = 0xB9;
+const uint32_t kPesStreamIdVideoMask = 0xF0;
+const uint32_t kPesStreamIdVideo = 0xE0;
+const uint32_t kPesStreamIdAudioMask = 0xE0;
+const uint32_t kPesStreamIdAudio = 0xC0;
+const uint32_t kVersion4 = 4;
+const int kAdtsHeaderMinSize = 7;
+const uint8_t kAacSampleSizeBits = 16;
+// Applies to all video streams.
+const uint8_t kNaluLengthSize = 4; // unit is bytes.
+// Placeholder sampling frequency for all audio streams, which
+// will be overwritten after filter parsing.
+const uint32_t kDefaultSamplingFrequency = 100;
+const uint16_t kEcmSizeBytes = 80;
+const uint32_t kInitializationVectorSizeBytes = 16;
+// ECM fields for processing.
+const uint32_t kEcmContentKeySizeBytes = 16;
+const uint32_t kEcmDCPFlagsSizeBytes = 3;
+const uint32_t kEcmCCIFlagsSizeBytes = 1;
+const uint32_t kEcmFlagsSizeBytes =
+    kEcmCCIFlagsSizeBytes + kEcmDCPFlagsSizeBytes;
+const uint32_t kEcmPaddingSizeBytes = 12;
+const uint32_t kAssetKeySizeBytes = 16;
+// Default audio and video PES stream IDs.
+const uint8_t kDefaultAudioStreamId = kPesStreamIdAudio;
+const uint8_t kDefaultVideoStreamId = kPesStreamIdVideo;
 
-  enum Type {
-    Type_void = 0,
-    Type_uint8 = 1,
-    Type_int8 = 2,
-    Type_uint16 = 3,
-    Type_int16 = 4,
-    Type_uint32 = 5,
-    Type_int32 = 6,
-    Type_uint64 = 7,
-    Type_int64 = 8,
-    Type_string = 9,
-    Type_BinaryData = 10
-  };
+enum Type {
+  Type_void = 0,
+  Type_uint8 = 1,
+  Type_int8 = 2,
+  Type_uint16 = 3,
+  Type_int16 = 4,
+  Type_uint32 = 5,
+  Type_int32 = 6,
+  Type_uint64 = 7,
+  Type_int64 = 8,
+  Type_string = 9,
+  Type_BinaryData = 10
+};
 } // namespace
 
 namespace edash_packager {
@@ -666,7 +669,7 @@ bool WvmMediaParser::ParseIndexEntry() {
           break;
         default:
           break;
-    }
+      }
 
       switch (tagtype) {
         case TrackDuration:
@@ -722,7 +725,9 @@ bool WvmMediaParser::ParseIndexEntry() {
           pixel_width, pixel_height, trick_play_rate, nalu_length_size, NULL, 0,
           true));
       program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
-                                base::UintToString(video_pes_stream_id)] =
+                                base::UintToString(video_pes_stream_id ?
+                                                   video_pes_stream_id :
+                                                   kDefaultVideoStreamId)] =
           stream_id_count_++;
     }
     if (has_audio) {
@@ -732,7 +737,9 @@ bool WvmMediaParser::ParseIndexEntry() {
           audio_codec_string, std::string(), kAacSampleSizeBits, num_channels,
           sampling_frequency, NULL, 0, true));
       program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
-                                base::UintToString(audio_pes_stream_id)] =
+                                base::UintToString(audio_pes_stream_id ?
+                                                   audio_pes_stream_id :
+                                                   kDefaultAudioStreamId)] =
           stream_id_count_++;
     }
   }
