@@ -8,6 +8,7 @@
 #include <sstream>
 #include <vector>
 
+#include "packager/base/stl_util.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/aes_encryptor.h"
 #include "packager/media/base/audio_stream_info.h"
@@ -17,6 +18,8 @@
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/filters/h264_parser.h"
 #include "packager/media/formats/mp2t/adts_header.h"
+#include "packager/media/formats/mp4/aac_audio_specific_config.h"
+#include "packager/media/formats/mp4/es_descriptor.h"
 
 #define HAS_HEADER_EXTENSION(x) ((x != 0xBC) && (x != 0xBE) && (x != 0xBF) \
          && (x != 0xF0) && (x != 0xF2) && (x != 0xF8) \
@@ -543,22 +546,22 @@ bool WvmMediaParser::ParseIndexEntry() {
     return false;
   }
 
-  const uint8_t* read_ptr_index = &index_data_[0];
-  if (ntohlFromBuffer(read_ptr_index) != kIndexMagic) {
+  const uint8_t* read_ptr = vector_as_array(&index_data_);
+  if (ntohlFromBuffer(read_ptr) != kIndexMagic) {
     index_data_.clear();
     return false;
   }
-  read_ptr_index += 4;
+  read_ptr += 4;
 
-  uint32_t version = ntohlFromBuffer(read_ptr_index);
-  read_ptr_index += 4;
+  uint32_t version = ntohlFromBuffer(read_ptr);
+  read_ptr += 4;
   if (version == kVersion4) {
-    index_size = kIndexVersion4HeaderSize + ntohlFromBuffer(read_ptr_index);
+    index_size = kIndexVersion4HeaderSize + ntohlFromBuffer(read_ptr);
     if (index_data_.size() < index_size) {
       // We do not yet have the full index. Keep accumulating index data.
       return true;
     }
-    read_ptr_index += sizeof(uint32_t);
+    read_ptr += sizeof(uint32_t);
 
     // Index metadata
     uint32_t index_metadata_max_size = index_size - kIndexVersion4HeaderSize;
@@ -581,90 +584,89 @@ bool WvmMediaParser::ParseIndexEntry() {
     int video_pes_stream_id = 0;
     bool has_video = false;
     bool has_audio = false;
-    std::vector<uint8_t> decoder_config_record;
-    std::string video_codec_string;
-    std::string audio_codec_string;
-    uint8_t num_index_entries = *read_ptr_index;
-    ++read_ptr_index;
+    std::vector<uint8_t> audio_codec_config;
+    std::vector<uint8_t> video_codec_config;
+    uint8_t num_index_entries = *read_ptr;
+    ++read_ptr;
     --index_metadata_max_size;
 
     for (uint8_t idx = 0; idx < num_index_entries; ++idx) {
       if (index_metadata_max_size < (2 * sizeof(uint8_t)) + sizeof(uint32_t)) {
         return false;
       }
-      uint8_t tag = *read_ptr_index;
-      ++read_ptr_index;
-      uint8_t type = *read_ptr_index;
-      ++read_ptr_index;
-      uint32_t length = ntohlFromBuffer(read_ptr_index);
-      read_ptr_index += sizeof(uint32_t);
+      uint8_t tag = *read_ptr;
+      ++read_ptr;
+      uint8_t type = *read_ptr;
+      ++read_ptr;
+      uint32_t length = ntohlFromBuffer(read_ptr);
+      read_ptr += sizeof(uint32_t);
       index_metadata_max_size -= (2 * sizeof(uint8_t)) + sizeof(uint32_t);
       if (index_metadata_max_size < length) {
         return false;
       }
       int64_t value = 0;
       Tag tagtype = Unset;
-      std::vector<uint8_t> binary_data(length);
+      std::vector<uint8_t> binary_data;
       switch (Type(type)) {
         case Type_uint8:
           if (length == sizeof(uint8_t)) {
-            tagtype = GetTag(tag, length, read_ptr_index, &value);
+            tagtype = GetTag(tag, length, read_ptr, &value);
           } else {
             return false;
           }
           break;
         case Type_int8:
           if (length == sizeof(int8_t)) {
-            tagtype = GetTag(tag, length, read_ptr_index, &value);
+            tagtype = GetTag(tag, length, read_ptr, &value);
           } else {
             return false;
           }
           break;
         case Type_uint16:
           if (length == sizeof(uint16_t)) {
-            tagtype = GetTag(tag, length, read_ptr_index, &value);
+            tagtype = GetTag(tag, length, read_ptr, &value);
           } else {
             return false;
           }
           break;
         case Type_int16:
           if (length == sizeof(int16_t)) {
-            tagtype = GetTag(tag, length, read_ptr_index, &value);
+            tagtype = GetTag(tag, length, read_ptr, &value);
           } else {
             return false;
           }
           break;
         case Type_uint32:
           if (length == sizeof(uint32_t)) {
-            tagtype = GetTag(tag, length, read_ptr_index, &value);
+            tagtype = GetTag(tag, length, read_ptr, &value);
           } else {
             return false;
           }
           break;
         case Type_int32:
           if (length == sizeof(int32_t)) {
-            tagtype = GetTag(tag, length, read_ptr_index, &value);
+            tagtype = GetTag(tag, length, read_ptr, &value);
           } else {
             return false;
           }
           break;
         case Type_uint64:
           if (length == sizeof(uint64_t)) {
-            tagtype = GetTag(tag, length, read_ptr_index, &value);
+            tagtype = GetTag(tag, length, read_ptr, &value);
           } else {
             return false;
           }
           break;
         case Type_int64:
           if (length == sizeof(int64_t)) {
-            tagtype = GetTag(tag, length, read_ptr_index, &value);
+            tagtype = GetTag(tag, length, read_ptr, &value);
           } else {
             return false;
           }
           break;
         case Type_string:
         case Type_BinaryData:
-          memcpy(&binary_data[0], read_ptr_index, length);
+          binary_data.assign(read_ptr, read_ptr + length);
           tagtype = Tag(tag);
           break;
         default:
@@ -705,24 +707,41 @@ bool WvmMediaParser::ParseIndexEntry() {
         case VideoPixelHeight:
           pixel_height = static_cast<uint32_t>(value);
           break;
+        case Audio_EsDescriptor: {
+          mp4::ESDescriptor descriptor;
+          if (!descriptor.Parse(binary_data)) {
+            LOG(ERROR) <<
+                "Could not extract AudioSpecificConfig from ES_Descriptor";
+            return false;
+          }
+          audio_codec_config = descriptor.decoder_specific_info();
+          break;
+        }
+        case Audio_EC3SpecificData:
+        case Audio_DtsSpecificData:
+        case Audio_AC3SpecificData:
+          LOG(ERROR) << "Audio type not supported.";
+          return false;
+        case AVCDecoderConfigurationRecord:
+          video_codec_config = binary_data;
+          break;
         default:
           break;
       }
 
-      read_ptr_index += length;
+      read_ptr += length;
       index_metadata_max_size -= length;
     }
     // End Index metadata
-    index_size = read_ptr_index - &index_data_[0];
+    index_size = read_ptr - vector_as_array(&index_data_);
 
-    // Extra data for both audio and video streams not set here, but in
-    // Output().
     if (has_video) {
       VideoCodec video_codec = kCodecH264;
       stream_infos_.push_back(new VideoStreamInfo(
           stream_id_count_, time_scale, track_duration, video_codec,
-          video_codec_string, std::string(), video_width, video_height,
-          pixel_width, pixel_height, trick_play_rate, nalu_length_size, NULL, 0,
+          std::string(), std::string(), video_width, video_height,
+          pixel_width, pixel_height, trick_play_rate, nalu_length_size,
+          vector_as_array(&video_codec_config), video_codec_config.size(),
           true));
       program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
                                 base::UintToString(video_pes_stream_id ?
@@ -734,8 +753,9 @@ bool WvmMediaParser::ParseIndexEntry() {
       AudioCodec audio_codec = kCodecAAC;
       stream_infos_.push_back(new AudioStreamInfo(
           stream_id_count_, time_scale, track_duration, audio_codec,
-          audio_codec_string, std::string(), kAacSampleSizeBits, num_channels,
-          sampling_frequency, NULL, 0, true));
+          std::string(), std::string(), kAacSampleSizeBits, num_channels,
+          sampling_frequency, vector_as_array(&audio_codec_config),
+          audio_codec_config.size(), true));
       program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
                                 base::UintToString(audio_pes_stream_id ?
                                                    audio_pes_stream_id :
@@ -788,14 +808,16 @@ void WvmMediaParser::StartMediaSampleDemux() {
 
 bool WvmMediaParser::Output(bool output_encrypted_sample) {
   if (output_encrypted_sample) {
-    media_sample_->set_data(&sample_data_[0], sample_data_.size());
+    media_sample_->set_data(vector_as_array(&sample_data_),
+                            sample_data_.size());
     media_sample_->set_is_encrypted(true);
   } else {
     if ((prev_pes_stream_id_ & kPesStreamIdVideoMask) == kPesStreamIdVideo) {
-      // Set data on the video stream from the NalUnitStream.
+      // Convert video stream to unit stream and get config.
       std::vector<uint8_t> nal_unit_stream;
       if (!byte_to_unit_stream_converter_.ConvertByteStreamToNalUnitStream(
-              &sample_data_[0], sample_data_.size(), &nal_unit_stream)) {
+              vector_as_array(&sample_data_), sample_data_.size(),
+              &nal_unit_stream)) {
         LOG(ERROR) << "Could not convert h.264 byte stream sample";
         return false;
       }
@@ -808,11 +830,21 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
             &decoder_config_record);
         for (uint32_t i = 0; i < stream_infos_.size(); i++) {
           if (stream_infos_[i]->stream_type() == media::kStreamVideo &&
-              stream_infos_[i]->extra_data().empty()) {
-            stream_infos_[i]->set_extra_data(decoder_config_record);
+              stream_infos_[i]->codec_string().empty()) {
+            const std::vector<uint8_t>* stream_config;
+            if (stream_infos_[i]->extra_data().empty()) {
+              // Decoder config record not available for stream. Use the one
+              // computed from the first video stream.
+              stream_infos_[i]->set_extra_data(decoder_config_record);
+              stream_config = &decoder_config_record;
+            } else {
+              // Use stream-specific config record.
+              stream_config = &stream_infos_[i]->extra_data();
+            }
+            DCHECK(stream_config);
             stream_infos_[i]->set_codec_string(VideoStreamInfo::GetCodecString(
-                kCodecH264, decoder_config_record[1], decoder_config_record[2],
-                decoder_config_record[3]));
+                kCodecH264, (*stream_config)[1], (*stream_config)[2],
+                (*stream_config)[3]));
 
             VideoStreamInfo* video_stream_info =
                 reinterpret_cast<VideoStreamInfo*>(stream_infos_[i].get());
@@ -821,7 +853,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
             uint32_t pixel_width = 0;
             uint32_t pixel_height = 0;
             if (!ExtractResolutionFromDecoderConfig(
-                    &decoder_config_record[0], decoder_config_record.size(),
+                    vector_as_array(stream_config), stream_config->size(),
                     &coded_width, &coded_height, &pixel_width, &pixel_height)) {
               LOG(ERROR) << "Failed to parse AVCDecoderConfigurationRecord.";
               return false;
@@ -857,14 +889,12 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
       }
     } else if ((prev_pes_stream_id_ & kPesStreamIdAudioMask) ==
         kPesStreamIdAudio) {
-      // Set data on the audio stream from AdtsHeader.
+      // Set data on the audio stream.
       int frame_size = media::mp2t::AdtsHeader::GetAdtsFrameSize(
-          &sample_data_[0], kAdtsHeaderMinSize);
+          vector_as_array(&sample_data_), kAdtsHeaderMinSize);
       media::mp2t::AdtsHeader adts_header;
-      const uint8_t* frame_ptr = &sample_data_[0];
-      std::vector<uint8_t> extra_data;
-      if (!adts_header.Parse(frame_ptr, frame_size) ||
-          !adts_header.GetAudioSpecificConfig(&extra_data)) {
+      const uint8_t* frame_ptr = vector_as_array(&sample_data_);
+      if (!adts_header.Parse(frame_ptr, frame_size)) {
         LOG(ERROR) << "Could not parse ADTS header";
         return false;
       }
@@ -875,18 +905,36 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
       if (!is_initialized_) {
         for (uint32_t i = 0; i < stream_infos_.size(); i++) {
           if (stream_infos_[i]->stream_type() == media::kStreamAudio &&
-              stream_infos_[i]->extra_data().empty()) {
-            // Set AudioStreamInfo fields using information from the ADTS
-            // header.
+              stream_infos_[i]->codec_string().empty()) {
             AudioStreamInfo* audio_stream_info =
-                reinterpret_cast<AudioStreamInfo*>(
-                    stream_infos_[i].get());
-            audio_stream_info->set_sampling_frequency(
-                adts_header.GetSamplingFrequency());
-            audio_stream_info->set_extra_data(extra_data);
-            audio_stream_info->set_codec_string(
-                AudioStreamInfo::GetCodecString(
-                    kCodecAAC, adts_header.GetObjectType()));
+                reinterpret_cast<AudioStreamInfo*>(stream_infos_[i].get());
+            if (audio_stream_info->extra_data().empty()) {
+              // Set AudioStreamInfo fields using information from the ADTS
+              // header.
+              audio_stream_info->set_sampling_frequency(
+                  adts_header.GetSamplingFrequency());
+              std::vector<uint8_t> audio_specific_config;
+              if (!adts_header.GetAudioSpecificConfig(&audio_specific_config)) {
+                LOG(ERROR) << "Could not compute AACaudiospecificconfig";
+                return false;
+              }
+              audio_stream_info->set_extra_data(audio_specific_config);
+              audio_stream_info->set_codec_string(
+                  AudioStreamInfo::GetCodecString(
+                      kCodecAAC, adts_header.GetObjectType()));
+            } else {
+              // Set AudioStreamInfo fields using information from the
+              // AACAudioSpecificConfig record.
+              mp4::AACAudioSpecificConfig aac_config;
+              if (!aac_config.Parse(stream_infos_[i]->extra_data())) {
+                LOG(ERROR) << "Could not parse AACAudioSpecificconfig";
+                return false;
+              }
+              audio_stream_info->set_sampling_frequency(aac_config.frequency());
+              audio_stream_info->set_codec_string(
+                  AudioStreamInfo::GetCodecString(
+                      kCodecAAC, aac_config.audio_object_type()));
+            }
           }
         }
       }
@@ -894,15 +942,15 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
   }
 
   if (!is_initialized_) {
-    bool is_extra_data_in_stream_infos = true;
+    bool all_streams_have_config = true;
     // Check if all collected stream infos have extra_data set.
     for (uint32_t i = 0; i < stream_infos_.size(); i++) {
-      if (stream_infos_[i]->extra_data().empty()) {
-        is_extra_data_in_stream_infos = false;
+      if (stream_infos_[i]->codec_string().empty()) {
+        all_streams_have_config = false;
         break;
       }
     }
-    if (is_extra_data_in_stream_infos) {
+    if (all_streams_have_config) {
       init_cb_.Run(stream_infos_);
       is_initialized_ = true;
     }
@@ -1074,7 +1122,7 @@ bool WvmMediaParser::ProcessEcm() {
       kEcmPaddingSizeBytes;  // flags + contentKey + padding.
   std::vector<uint8_t> content_key_buffer(content_key_buffer_size);
   asset_decryptor.Decrypt(
-      ecm_data, content_key_buffer_size, &content_key_buffer[0]);
+      ecm_data, content_key_buffer_size, vector_as_array(&content_key_buffer));
 
   std::vector<uint8_t> decrypted_content_key_vec(
       content_key_buffer.begin() + 4,
