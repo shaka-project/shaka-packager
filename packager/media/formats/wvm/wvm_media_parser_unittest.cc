@@ -12,6 +12,7 @@
 #include "packager/base/bind_helpers.h"
 #include "packager/base/logging.h"
 #include "packager/base/memory/ref_counted.h"
+#include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/stream_info.h"
@@ -37,6 +38,7 @@ const uint8_t k64ByteAssetKey[] =
     "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc"
     "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc";
 const size_t kInitDataSize = 0x4000;
+const char kMultiConfigWvmFile[] = "bear-multi-configs.wvm";
 }  // namespace
 
 using ::testing::_;
@@ -207,6 +209,52 @@ TEST_F(WvmMediaParserTest, ParseWvmWith64ByteAssetKey) {
   EXPECT_EQ(kExpectedStreams, stream_map_.size());
   EXPECT_EQ(kExpectedVideoFrameCount, video_frame_count_);
   EXPECT_EQ(kExpectedAudioFrameCount, audio_frame_count_);
+}
+
+TEST_F(WvmMediaParserTest, ParseMultiConfigWvm) {
+  EXPECT_CALL(*key_source_, FetchKeys(_)).WillOnce(Return(Status::OK));
+  EXPECT_CALL(*key_source_, GetKey(_, _))
+      .WillOnce(DoAll(SetArgPointee<1>(encryption_key_), Return(Status::OK)));
+  Parse(kMultiConfigWvmFile);
+  EXPECT_EQ(6u, stream_map_.size());
+
+  ASSERT_EQ(kStreamVideo, stream_map_[0]->stream_type());
+  VideoStreamInfo* video_info = reinterpret_cast<VideoStreamInfo*>(
+      stream_map_[0].get());
+  EXPECT_EQ("avc1.64000d", video_info->codec_string());
+  EXPECT_EQ(320u, video_info->width());
+  EXPECT_EQ(180u, video_info->height());
+
+  ASSERT_EQ(kStreamAudio, stream_map_[1]->stream_type());
+  AudioStreamInfo* audio_info = reinterpret_cast<AudioStreamInfo*>(
+      stream_map_[1].get());
+  EXPECT_EQ("mp4a.40.2", audio_info->codec_string());
+  EXPECT_EQ(2u, audio_info->num_channels());
+  EXPECT_EQ(44100u, audio_info->sampling_frequency());
+
+  ASSERT_EQ(kStreamVideo, stream_map_[2]->stream_type());
+  video_info = reinterpret_cast<VideoStreamInfo*>(stream_map_[2].get());
+  EXPECT_EQ("avc1.64001e", video_info->codec_string());
+  EXPECT_EQ(640u, video_info->width());
+  EXPECT_EQ(360u, video_info->height());
+
+  ASSERT_EQ(kStreamAudio, stream_map_[3]->stream_type());
+  audio_info = reinterpret_cast<AudioStreamInfo*>(stream_map_[3].get());
+  EXPECT_EQ("mp4a.40.2", audio_info->codec_string());
+  EXPECT_EQ(2u, audio_info->num_channels());
+  EXPECT_EQ(44100u, audio_info->sampling_frequency());
+
+  ASSERT_EQ(kStreamVideo, stream_map_[4]->stream_type());
+  video_info = reinterpret_cast<VideoStreamInfo*>(stream_map_[4].get());
+  EXPECT_EQ("avc1.64001f", video_info->codec_string());
+  EXPECT_EQ(1280u, video_info->width());
+  EXPECT_EQ(720u, video_info->height());
+
+  ASSERT_EQ(kStreamAudio, stream_map_[5]->stream_type());
+  audio_info = reinterpret_cast<AudioStreamInfo*>(stream_map_[5].get());
+  EXPECT_EQ("mp4a.40.2", audio_info->codec_string());
+  EXPECT_EQ(2u, audio_info->num_channels());
+  EXPECT_EQ(48000u, audio_info->sampling_frequency());
 }
 
 }  // namespace wvm
