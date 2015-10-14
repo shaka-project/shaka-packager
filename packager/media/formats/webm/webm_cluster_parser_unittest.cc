@@ -15,9 +15,8 @@
 #include "packager/base/bind.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/base/audio_decoder_config.h"
 #include "packager/media/base/decrypt_config.h"
-#include "packager/media/base/timestamp_constants.h"
+#include "packager/media/base/timestamp.h"
 #include "packager/media/formats/webm/cluster_builder.h"
 #include "packager/media/formats/webm/opus_packet_builder.h"
 #include "packager/media/formats/webm/webm_constants.h"
@@ -29,10 +28,15 @@ using ::testing::StrictMock;
 using ::testing::Mock;
 using ::testing::_;
 
+namespace {
+const int64_t kMicrosecondsPerMillisecond = 1000;
+}  // namespace
+
 namespace edash_packager {
 namespace media {
 
 typedef WebMTracksParser::TextTracks TextTracks;
+typedef std::map<uint32_t, BufferQueue> TextBufferQueueMap;
 
 // Matchers for verifying common media log entry strings.
 MATCHER_P(OpusPacketDurationTooHigh, actual_duration_ms, "") {
@@ -115,9 +119,11 @@ const BlockInfo kDefaultBlockInfo[] = {
 const uint8_t kEncryptedFrame[] = {
     // Block is encrypted
     0x01,
-
     // IV
-    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08};
+    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+    // Some dummy encrypted data
+    0x01,
+};
 
 scoped_ptr<Cluster> CreateCluster(int timecode,
                                   const BlockInfo* block_info,
@@ -125,7 +131,8 @@ scoped_ptr<Cluster> CreateCluster(int timecode,
   ClusterBuilder cb;
   cb.SetClusterTimecode(0);
 
-  uint8_t kDefaultBlockData[] = { 0x00 };
+  // Default block data for audio, video and text.
+  uint8_t kDefaultBlockData[] = {0x00, 0x0A, 0x01, 0x0D, 0x02};
 
   for (int i = 0; i < block_count; i++) {
     const uint8_t* data;
@@ -171,16 +178,16 @@ scoped_ptr<Cluster> CreateEncryptedCluster(int bytes_to_write) {
   return cb.Finish();
 }
 
-bool VerifyBuffers(const WebMClusterParser::BufferQueue& audio_buffers,
-                   const WebMClusterParser::BufferQueue& video_buffers,
-                   const WebMClusterParser::BufferQueue& text_buffers,
-                   const BlockInfo* block_info,
-                   int block_count) {
+bool VerifyBuffersHelper(const BufferQueue& audio_buffers,
+                         const BufferQueue& video_buffers,
+                         const BufferQueue& text_buffers,
+                         const BlockInfo* block_info,
+                         int block_count) {
   int buffer_count = audio_buffers.size() + video_buffers.size() +
       text_buffers.size();
   if (block_count != buffer_count) {
-    DVLOG(1) << __FUNCTION__ << " : block_count (" << block_count
-             << ") mismatches buffer_count (" << buffer_count << ")";
+    LOG(ERROR) << __FUNCTION__ << " : block_count (" << block_count
+               << ") mismatches buffer_count (" << buffer_count << ")";
     return false;
   }
 
@@ -188,73 +195,48 @@ bool VerifyBuffers(const WebMClusterParser::BufferQueue& audio_buffers,
   size_t video_offset = 0;
   size_t text_offset = 0;
   for (int i = 0; i < block_count; i++) {
-    const WebMClusterParser::BufferQueue* buffers = NULL;
+    const BufferQueue* buffers = NULL;
     size_t* offset;
-    StreamParserBuffer::Type expected_type = DemuxerStream::UNKNOWN;
 
     if (block_info[i].track_num == kAudioTrackNum) {
       buffers = &audio_buffers;
       offset = &audio_offset;
-      expected_type = DemuxerStream::AUDIO;
     } else if (block_info[i].track_num == kVideoTrackNum) {
       buffers = &video_buffers;
       offset = &video_offset;
-      expected_type = DemuxerStream::VIDEO;
     } else if (block_info[i].track_num == kTextTrackNum) {
       buffers = &text_buffers;
       offset = &text_offset;
-      expected_type = DemuxerStream::TEXT;
     } else {
       LOG(ERROR) << "Unexpected track number " << block_info[i].track_num;
       return false;
     }
 
     if (*offset >= buffers->size()) {
-      DVLOG(1) << __FUNCTION__ << " : Too few buffers (" << buffers->size()
-               << ") for track_num (" << block_info[i].track_num
-               << "), expected at least " << *offset + 1 << " buffers";
+      LOG(ERROR) << __FUNCTION__ << " : Too few buffers (" << buffers->size()
+                 << ") for track_num (" << block_info[i].track_num
+                 << "), expected at least " << *offset + 1 << " buffers";
       return false;
     }
 
-    scoped_refptr<StreamParserBuffer> buffer = (*buffers)[(*offset)++];
+    scoped_refptr<MediaSample> buffer = (*buffers)[(*offset)++];
 
-    EXPECT_EQ(block_info[i].timestamp, buffer->timestamp().InMilliseconds());
-    EXPECT_EQ(std::abs(block_info[i].duration),
-              buffer->duration().InMillisecondsF());
-    EXPECT_EQ(expected_type, buffer->type());
-    EXPECT_EQ(block_info[i].track_num, buffer->track_id());
+    EXPECT_EQ(block_info[i].timestamp * kMicrosecondsPerMillisecond,
+              buffer->pts());
+    EXPECT_EQ(std::abs(block_info[i].duration) * kMicrosecondsPerMillisecond,
+              buffer->duration());
   }
 
   return true;
 }
 
-bool VerifyBuffers(const scoped_ptr<WebMClusterParser>& parser,
-                   const BlockInfo* block_info,
-                   int block_count) {
-  const WebMClusterParser::TextBufferQueueMap& text_map =
-      parser->GetTextBuffers();
-  const WebMClusterParser::BufferQueue* text_buffers;
-  const WebMClusterParser::BufferQueue no_text_buffers;
-  if (!text_map.empty())
-    text_buffers = &(text_map.rbegin()->second);
-  else
-    text_buffers = &no_text_buffers;
-
-  return VerifyBuffers(parser->GetAudioBuffers(),
-                       parser->GetVideoBuffers(),
-                       *text_buffers,
-                       block_info,
-                       block_count);
-}
-
-bool VerifyTextBuffers(const scoped_ptr<WebMClusterParser>& parser,
-                       const BlockInfo* block_info_ptr,
+bool VerifyTextBuffers(const BlockInfo* block_info_ptr,
                        int block_count,
                        int text_track_num,
-                       const WebMClusterParser::BufferQueue& text_buffers) {
+                       const BufferQueue& text_buffers) {
   const BlockInfo* const block_info_end = block_info_ptr + block_count;
 
-  typedef WebMClusterParser::BufferQueue::const_iterator TextBufferIter;
+  typedef BufferQueue::const_iterator TextBufferIter;
   TextBufferIter buffer_iter = text_buffers.begin();
   const TextBufferIter buffer_end = text_buffers.end();
 
@@ -267,30 +249,19 @@ bool VerifyTextBuffers(const scoped_ptr<WebMClusterParser>& parser,
     EXPECT_FALSE(block_info.use_simple_block);
     EXPECT_FALSE(buffer_iter == buffer_end);
 
-    const scoped_refptr<StreamParserBuffer> buffer = *buffer_iter++;
-    EXPECT_EQ(block_info.timestamp, buffer->timestamp().InMilliseconds());
-    EXPECT_EQ(std::abs(block_info.duration),
-              buffer->duration().InMillisecondsF());
-    EXPECT_EQ(DemuxerStream::TEXT, buffer->type());
-    EXPECT_EQ(text_track_num, buffer->track_id());
+    const scoped_refptr<MediaSample> buffer = *buffer_iter++;
+    EXPECT_EQ(block_info.timestamp * kMicrosecondsPerMillisecond,
+              buffer->pts());
+    EXPECT_EQ(std::abs(block_info.duration) * kMicrosecondsPerMillisecond,
+              buffer->duration());
   }
 
   EXPECT_TRUE(buffer_iter == buffer_end);
   return true;
 }
 
-void VerifyEncryptedBuffer(scoped_refptr<StreamParserBuffer> buffer) {
-  EXPECT_TRUE(buffer->decrypt_config());
-  EXPECT_EQ(static_cast<unsigned long>(DecryptConfig::kDecryptionKeySize),
-            buffer->decrypt_config()->iv().length());
-}
-
-void AppendToEnd(const WebMClusterParser::BufferQueue& src,
-                 WebMClusterParser::BufferQueue* dest) {
-  for (WebMClusterParser::BufferQueue::const_iterator itr = src.begin();
-       itr != src.end(); ++itr) {
-    dest->push_back(*itr);
-  }
+void VerifyEncryptedBuffer(scoped_refptr<MediaSample> buffer) {
+  EXPECT_TRUE(buffer->is_encrypted());
 }
 
 }  // namespace
@@ -301,23 +272,43 @@ class WebMClusterParserTest : public testing::Test {
 
  protected:
   void ResetParserToHaveDefaultDurations() {
-    base::TimeDelta default_audio_duration = base::TimeDelta::FromMilliseconds(
-        kTestAudioFrameDefaultDurationInMs);
-    base::TimeDelta default_video_duration = base::TimeDelta::FromMilliseconds(
-        kTestVideoFrameDefaultDurationInMs);
-    ASSERT_GE(default_audio_duration, base::TimeDelta());
-    ASSERT_GE(default_video_duration, base::TimeDelta());
-    ASSERT_NE(kNoTimestamp(), default_audio_duration);
-    ASSERT_NE(kNoTimestamp(), default_video_duration);
+    int64_t default_audio_duration =
+        kTestAudioFrameDefaultDurationInMs * kMicrosecondsPerMillisecond;
+    int64_t default_video_duration =
+        kTestVideoFrameDefaultDurationInMs * kMicrosecondsPerMillisecond;
+    ASSERT_GE(default_audio_duration, 0);
+    ASSERT_GE(default_video_duration, 0);
+    ASSERT_NE(kNoTimestamp, default_audio_duration);
+    ASSERT_NE(kNoTimestamp, default_video_duration);
 
     parser_.reset(CreateParserWithDefaultDurationsAndOptionalTextTracks(
         default_audio_duration, default_video_duration));
   }
 
+  bool NewSampleEvent(uint32_t track_id,
+                      const scoped_refptr<MediaSample>& sample) {
+    switch (track_id) {
+      case kAudioTrackNum:
+        audio_buffers_.push_back(sample);
+        break;
+      case kVideoTrackNum:
+        video_buffers_.push_back(sample);
+        break;
+      case kTextTrackNum:
+      case kTextTrackNum + 1:
+        text_buffers_map_[track_id].push_back(sample);
+        break;
+      default:
+        LOG(ERROR) << "Unexpected track number " << track_id;
+        return false;
+    }
+    return true;
+  }
+
   // Helper that hard-codes some non-varying constructor parameters.
   WebMClusterParser* CreateParserHelper(
-      base::TimeDelta audio_default_duration,
-      base::TimeDelta video_default_duration,
+      int64_t audio_default_duration,
+      int64_t video_default_duration,
       const WebMTracksParser::TextTracks& text_tracks,
       const std::set<int64_t>& ignored_tracks,
       const std::string& audio_encryption_key_id,
@@ -326,12 +317,14 @@ class WebMClusterParserTest : public testing::Test {
     return new WebMClusterParser(
         kTimecodeScale, kAudioTrackNum, audio_default_duration, kVideoTrackNum,
         video_default_duration, text_tracks, ignored_tracks,
-        audio_encryption_key_id, video_encryption_key_id, audio_codec);
+        audio_encryption_key_id, video_encryption_key_id, audio_codec,
+        base::Bind(&WebMClusterParserTest::NewSampleEvent,
+                   base::Unretained(this)));
   }
 
   // Create a default version of the parser for test.
   WebMClusterParser* CreateDefaultParser() {
-    return CreateParserHelper(kNoTimestamp(), kNoTimestamp(), TextTracks(),
+    return CreateParserHelper(kNoTimestamp, kNoTimestamp, TextTracks(),
                               std::set<int64_t>(), std::string(), std::string(),
                               kUnknownAudioCodec);
   }
@@ -339,8 +332,8 @@ class WebMClusterParserTest : public testing::Test {
   // Create a parser for test with custom audio and video default durations, and
   // optionally custom text tracks.
   WebMClusterParser* CreateParserWithDefaultDurationsAndOptionalTextTracks(
-      base::TimeDelta audio_default_duration,
-      base::TimeDelta video_default_duration,
+      int64_t audio_default_duration,
+      int64_t video_default_duration,
       const WebMTracksParser::TextTracks& text_tracks = TextTracks()) {
     return CreateParserHelper(audio_default_duration, video_default_duration,
                               text_tracks, std::set<int64_t>(), std::string(),
@@ -350,7 +343,7 @@ class WebMClusterParserTest : public testing::Test {
   // Create a parser for test with custom ignored tracks.
   WebMClusterParser* CreateParserWithIgnoredTracks(
       std::set<int64_t>& ignored_tracks) {
-    return CreateParserHelper(kNoTimestamp(), kNoTimestamp(), TextTracks(),
+    return CreateParserHelper(kNoTimestamp, kNoTimestamp, TextTracks(),
                               ignored_tracks, std::string(), std::string(),
                               kUnknownAudioCodec);
   }
@@ -360,22 +353,31 @@ class WebMClusterParserTest : public testing::Test {
       const std::string& audio_encryption_key_id,
       const std::string& video_encryption_key_id,
       const AudioCodec audio_codec) {
-    return CreateParserHelper(kNoTimestamp(), kNoTimestamp(), TextTracks(),
+    return CreateParserHelper(kNoTimestamp, kNoTimestamp, TextTracks(),
                               std::set<int64_t>(), audio_encryption_key_id,
                               video_encryption_key_id, audio_codec);
   }
 
+  bool VerifyBuffers(const BlockInfo* block_info, int block_count) {
+    bool result = VerifyBuffersHelper(audio_buffers_, video_buffers_,
+                                      text_buffers_map_[kTextTrackNum],
+                                      block_info, block_count);
+    audio_buffers_.clear();
+    video_buffers_.clear();
+    text_buffers_map_.clear();
+    return result;
+  }
+
   scoped_ptr<WebMClusterParser> parser_;
+  BufferQueue audio_buffers_;
+  BufferQueue video_buffers_;
+  TextBufferQueueMap text_buffers_map_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebMClusterParserTest);
 };
 
-TEST_F(WebMClusterParserTest, HeldBackBufferHoldsBackAllTracks) {
-  // If a buffer is missing duration and is being held back, then all other
-  // tracks' buffers that have same or higher (decode) timestamp should be held
-  // back too to keep the timestamps emitted for a cluster monotonically
-  // non-decreasing and in same order as parsed.
+TEST_F(WebMClusterParserTest, TracksWithSampleMissingDuration) {
   InSequence s;
 
   // Reset the parser to have 3 tracks: text, video (no default frame duration),
@@ -384,12 +386,12 @@ TEST_F(WebMClusterParserTest, HeldBackBufferHoldsBackAllTracks) {
   text_tracks.insert(std::make_pair(TextTracks::key_type(kTextTrackNum),
                                     TextTrackConfig(kTextSubtitles, "", "",
                                                     "")));
-  base::TimeDelta default_audio_duration =
-      base::TimeDelta::FromMilliseconds(kTestAudioFrameDefaultDurationInMs);
-  ASSERT_GE(default_audio_duration, base::TimeDelta());
-  ASSERT_NE(kNoTimestamp(), default_audio_duration);
+  int64_t default_audio_duration = kTestAudioFrameDefaultDurationInMs;
+  ASSERT_GE(default_audio_duration, 0);
+  ASSERT_NE(kNoTimestamp, default_audio_duration);
   parser_.reset(CreateParserWithDefaultDurationsAndOptionalTextTracks(
-      default_audio_duration, kNoTimestamp(), text_tracks));
+      default_audio_duration * kMicrosecondsPerMillisecond, kNoTimestamp,
+      text_tracks));
 
   const int kExpectedVideoEstimationInMs = 33;
 
@@ -405,15 +407,28 @@ TEST_F(WebMClusterParserTest, HeldBackBufferHoldsBackAllTracks) {
       {kAudioTrackNum, 83, kTestAudioFrameDefaultDurationInMs, true, NULL, 0},
   };
 
+  // Samples are not emitted in the same order as |kBlockInfo| due to missing of
+  // duration in some samples.
+  const BlockInfo kExpectedBlockInfo[] = {
+      {kAudioTrackNum, 0, 23, false, NULL, 0},
+      {kTextTrackNum, 10, 42, false, NULL, 0},
+      {kAudioTrackNum, 23, kTestAudioFrameDefaultDurationInMs, true, NULL, 0},
+      {kVideoTrackNum, 0, 33, true, NULL, 0},
+      {kAudioTrackNum, 36, kTestAudioFrameDefaultDurationInMs, true, NULL, 0},
+      {kVideoTrackNum, 33, 33, true, NULL, 0},
+      {kAudioTrackNum, 70, kTestAudioFrameDefaultDurationInMs, true, NULL, 0},
+      {kVideoTrackNum, 66, kExpectedVideoEstimationInMs, true, NULL, 0},
+      {kAudioTrackNum, 83, kTestAudioFrameDefaultDurationInMs, true, NULL, 0},
+  };
   const int kExpectedBuffersOnPartialCluster[] = {
     0,  // Video simple block without DefaultDuration should be held back
-    0,  // Audio buffer ready, but not emitted because its TS >= held back video
-    0,  // Text buffer ready, but not emitted because its TS >= held back video
-    0,  // 2nd audio buffer ready, also not emitted for same reason as first
-    4,  // All previous buffers emitted, 2nd video held back with no duration
-    4,  // 2nd video still has no duration, 3rd audio ready but not emitted
-    6,  // All previous buffers emitted, 3rd video held back with no duration
-    6,  // 3rd video still has no duration, 4th audio ready but not emitted
+    1,  // Audio buffer ready
+    2,  // Text buffer ready
+    3,  // 2nd audio buffer ready
+    4,  // 1st video emitted, 2nd video held back with no duration
+    5,  // 3rd audio ready
+    6,  // 2nd video emitted, 3rd video held back with no duration
+    7,  // 4th audio ready
     9,  // Cluster end emits all buffers and 3rd video's duration is estimated
   };
 
@@ -451,8 +466,8 @@ TEST_F(WebMClusterParserTest, HeldBackBufferHoldsBackAllTracks) {
       EXPECT_LT(0, result);
     }
 
-    EXPECT_TRUE(VerifyBuffers(parser_, kBlockInfo,
-                              kExpectedBuffersOnPartialCluster[i]));
+    EXPECT_TRUE(
+        VerifyBuffers(kExpectedBlockInfo, kExpectedBuffersOnPartialCluster[i]));
   }
 }
 
@@ -468,13 +483,13 @@ TEST_F(WebMClusterParserTest, Reset) {
   EXPECT_GT(result, 0);
   EXPECT_LT(result, cluster->size());
 
-  ASSERT_TRUE(VerifyBuffers(parser_, kDefaultBlockInfo, block_count - 1));
+  ASSERT_TRUE(VerifyBuffers(kDefaultBlockInfo, block_count - 1));
   parser_->Reset();
 
   // Now parse a whole cluster to verify that all the blocks will get parsed.
   result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  ASSERT_TRUE(VerifyBuffers(parser_, kDefaultBlockInfo, block_count));
+  ASSERT_TRUE(VerifyBuffers(kDefaultBlockInfo, block_count));
 }
 
 TEST_F(WebMClusterParserTest, ParseClusterWithSingleCall) {
@@ -483,16 +498,16 @@ TEST_F(WebMClusterParserTest, ParseClusterWithSingleCall) {
 
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  ASSERT_TRUE(VerifyBuffers(parser_, kDefaultBlockInfo, block_count));
+  ASSERT_TRUE(VerifyBuffers(kDefaultBlockInfo, block_count));
 }
 
 TEST_F(WebMClusterParserTest, ParseClusterWithMultipleCalls) {
   int block_count = arraysize(kDefaultBlockInfo);
   scoped_ptr<Cluster> cluster(CreateCluster(0, kDefaultBlockInfo, block_count));
 
-  WebMClusterParser::BufferQueue audio_buffers;
-  WebMClusterParser::BufferQueue video_buffers;
-  const WebMClusterParser::BufferQueue no_text_buffers;
+  BufferQueue audio_buffers;
+  BufferQueue video_buffers;
+  const BufferQueue no_text_buffers;
 
   const uint8_t* data = cluster->data();
   int size = cluster->size();
@@ -511,17 +526,12 @@ TEST_F(WebMClusterParserTest, ParseClusterWithMultipleCalls) {
       continue;
     }
 
-    AppendToEnd(parser_->GetAudioBuffers(), &audio_buffers);
-    AppendToEnd(parser_->GetVideoBuffers(), &video_buffers);
-
     parse_size = default_parse_size;
 
     data += result;
     size -= result;
   }
-  ASSERT_TRUE(VerifyBuffers(audio_buffers, video_buffers,
-                            no_text_buffers, kDefaultBlockInfo,
-                            block_count));
+  ASSERT_TRUE(VerifyBuffers(kDefaultBlockInfo, block_count));
 }
 
 // Verify that both BlockGroups with the BlockDuration before the Block
@@ -552,7 +562,7 @@ TEST_F(WebMClusterParserTest, ParseBlockGroup) {
 
   int result = parser_->Parse(kClusterData, kClusterSize);
   EXPECT_EQ(kClusterSize, result);
-  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo, block_count));
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count));
 }
 
 TEST_F(WebMClusterParserTest, ParseSimpleBlockAndBlockGroupMixture) {
@@ -568,7 +578,7 @@ TEST_F(WebMClusterParserTest, ParseSimpleBlockAndBlockGroupMixture) {
 
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo, block_count));
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count));
 }
 
 TEST_F(WebMClusterParserTest, IgnoredTracks) {
@@ -601,7 +611,7 @@ TEST_F(WebMClusterParserTest, IgnoredTracks) {
 
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  ASSERT_TRUE(VerifyBuffers(parser_, kOutputBlockInfo, output_block_count));
+  ASSERT_TRUE(VerifyBuffers(kOutputBlockInfo, output_block_count));
 }
 
 TEST_F(WebMClusterParserTest, ParseTextTracks) {
@@ -612,7 +622,7 @@ TEST_F(WebMClusterParserTest, ParseTextTracks) {
                                                     "")));
 
   parser_.reset(CreateParserWithDefaultDurationsAndOptionalTextTracks(
-      kNoTimestamp(), kNoTimestamp(), text_tracks));
+      kNoTimestamp, kNoTimestamp, text_tracks));
 
   const BlockInfo kInputBlockInfo[] = {
       {kAudioTrackNum, 0, 23, true, NULL, 0},
@@ -630,7 +640,7 @@ TEST_F(WebMClusterParserTest, ParseTextTracks) {
 
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  ASSERT_TRUE(VerifyBuffers(parser_, kInputBlockInfo, input_block_count));
+  ASSERT_TRUE(VerifyBuffers(kInputBlockInfo, input_block_count));
 }
 
 TEST_F(WebMClusterParserTest, TextTracksSimpleBlock) {
@@ -641,7 +651,7 @@ TEST_F(WebMClusterParserTest, TextTracksSimpleBlock) {
                                                     "")));
 
   parser_.reset(CreateParserWithDefaultDurationsAndOptionalTextTracks(
-      kNoTimestamp(), kNoTimestamp(), text_tracks));
+      kNoTimestamp, kNoTimestamp, text_tracks));
 
   const BlockInfo kInputBlockInfo[] = {
     { kTextTrackNum,  33, 42, true },
@@ -670,7 +680,7 @@ TEST_F(WebMClusterParserTest, ParseMultipleTextTracks) {
                                                     "")));
 
   parser_.reset(CreateParserWithDefaultDurationsAndOptionalTextTracks(
-      kNoTimestamp(), kNoTimestamp(), text_tracks));
+      kNoTimestamp, kNoTimestamp, text_tracks));
 
   const BlockInfo kInputBlockInfo[] = {
       {kAudioTrackNum, 0, 23, true, NULL, 0},
@@ -690,16 +700,12 @@ TEST_F(WebMClusterParserTest, ParseMultipleTextTracks) {
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
 
-  const WebMClusterParser::TextBufferQueueMap& text_map =
-      parser_->GetTextBuffers();
-  for (WebMClusterParser::TextBufferQueueMap::const_iterator itr =
-           text_map.begin();
-       itr != text_map.end();
-       ++itr) {
+  for (TextBufferQueueMap::const_iterator itr = text_buffers_map_.begin();
+       itr != text_buffers_map_.end(); ++itr) {
     const TextTracks::const_iterator find_result =
         text_tracks.find(itr->first);
     ASSERT_TRUE(find_result != text_tracks.end());
-    ASSERT_TRUE(VerifyTextBuffers(parser_, kInputBlockInfo, input_block_count,
+    ASSERT_TRUE(VerifyTextBuffers(kInputBlockInfo, input_block_count,
                                   itr->first, itr->second));
   }
 }
@@ -712,14 +718,14 @@ TEST_F(WebMClusterParserTest, ParseEncryptedBlock) {
 
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  ASSERT_EQ(1UL, parser_->GetVideoBuffers().size());
-  scoped_refptr<StreamParserBuffer> buffer = parser_->GetVideoBuffers()[0];
+  ASSERT_EQ(1UL, video_buffers_.size());
+  scoped_refptr<MediaSample> buffer = video_buffers_[0];
   VerifyEncryptedBuffer(buffer);
 }
 
 TEST_F(WebMClusterParserTest, ParseBadEncryptedBlock) {
   scoped_ptr<Cluster> cluster(
-      CreateEncryptedCluster(sizeof(kEncryptedFrame) - 1));
+      CreateEncryptedCluster(sizeof(kEncryptedFrame) - 2));
 
   parser_.reset(CreateParserWithKeyIdsAndAudioCodec(
       std::string(), "video_key_id", kUnknownAudioCodec));
@@ -753,7 +759,7 @@ TEST_F(WebMClusterParserTest, ParseInvalidTextBlockGroupWithoutDuration) {
                                                     "")));
 
   parser_.reset(CreateParserWithDefaultDurationsAndOptionalTextTracks(
-      kNoTimestamp(), kNoTimestamp(), text_tracks));
+      kNoTimestamp, kNoTimestamp, text_tracks));
 
   const BlockInfo kBlockInfo[] = {
     { kTextTrackNum,  33, -42, false },
@@ -791,14 +797,14 @@ TEST_F(WebMClusterParserTest, ParseWithDefaultDurationsSimpleBlocks) {
   int result = parser_->Parse(cluster->data(), cluster->size() - 1);
   EXPECT_GT(result, 0);
   EXPECT_LT(result, cluster->size());
-  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo, block_count - 1));
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count - 1));
 
   parser_->Reset();
 
   // Now parse a whole cluster to verify that all the blocks will get parsed.
   result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo, block_count));
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count));
 }
 
 TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsSimpleBlocks) {
@@ -809,7 +815,7 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsSimpleBlocks) {
   // last block in a cluster is estimated independently for each track in the
   // cluster. For video tracks we use the maximum seen so far. For audio we use
   // the the minimum.
-  // TODO(chcunningham): Move audio over to use the maximum.
+  // TODO: Move audio over to use the maximum.
 
   const int kExpectedAudioEstimationInMs = 22;
   const int kExpectedVideoEstimationInMs = 34;
@@ -834,16 +840,16 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsSimpleBlocks) {
   int result = parser_->Parse(cluster1->data(), cluster1->size() - 1);
   EXPECT_GT(result, 0);
   EXPECT_LT(result, cluster1->size());
-  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo1, block_count1 - 3));
-  EXPECT_EQ(3UL, parser_->GetAudioBuffers().size());
-  EXPECT_EQ(1UL, parser_->GetVideoBuffers().size());
+  EXPECT_EQ(3UL, audio_buffers_.size());
+  EXPECT_EQ(1UL, video_buffers_.size());
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo1, block_count1 - 3));
 
   parser_->Reset();
 
   // Now parse the full first cluster and verify all the blocks are parsed.
   result = parser_->Parse(cluster1->data(), cluster1->size());
   EXPECT_EQ(cluster1->size(), result);
-  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo1, block_count1));
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo1, block_count1));
 
   // Verify that the estimated frame duration is tracked across clusters for
   // each track.
@@ -858,7 +864,7 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsSimpleBlocks) {
   scoped_ptr<Cluster> cluster2(CreateCluster(0, kBlockInfo2, block_count2));
   result = parser_->Parse(cluster2->data(), cluster2->size());
   EXPECT_EQ(cluster2->size(), result);
-  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo2, block_count2));
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo2, block_count2));
 }
 
 TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsBlockGroups) {
@@ -894,16 +900,16 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsBlockGroups) {
   int result = parser_->Parse(cluster1->data(), cluster1->size() - 1);
   EXPECT_GT(result, 0);
   EXPECT_LT(result, cluster1->size());
-  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo1, block_count1 - 3));
-  EXPECT_EQ(3UL, parser_->GetAudioBuffers().size());
-  EXPECT_EQ(1UL, parser_->GetVideoBuffers().size());
+  EXPECT_EQ(3UL, audio_buffers_.size());
+  EXPECT_EQ(1UL, video_buffers_.size());
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo1, block_count1 - 3));
 
   parser_->Reset();
 
   // Now parse the full first cluster and verify all the blocks are parsed.
   result = parser_->Parse(cluster1->data(), cluster1->size());
   EXPECT_EQ(cluster1->size(), result);
-  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo1, block_count1));
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo1, block_count1));
 
   // Verify that the estimated frame duration is tracked across clusters for
   // each track.
@@ -916,7 +922,7 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsBlockGroups) {
   scoped_ptr<Cluster> cluster2(CreateCluster(0, kBlockInfo2, block_count2));
   result = parser_->Parse(cluster2->data(), cluster2->size());
   EXPECT_EQ(cluster2->size(), result);
-  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo2, block_count2));
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo2, block_count2));
 }
 
 // TODO(wolenetz): Is parser behavior correct? See http://crbug.com/363433.
@@ -952,14 +958,14 @@ TEST_F(WebMClusterParserTest,
   int result = parser_->Parse(cluster->data(), cluster->size() - 1);
   EXPECT_GT(result, 0);
   EXPECT_LT(result, cluster->size());
-  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo, block_count - 1));
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count - 1));
 
   parser_->Reset();
 
   // Now parse a whole cluster to verify that all the blocks will get parsed.
   result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo, block_count));
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count));
 }
 
 TEST_F(WebMClusterParserTest,
@@ -982,7 +988,7 @@ TEST_F(WebMClusterParserTest,
   scoped_ptr<Cluster> cluster(CreateCluster(0, kBlockInfo, block_count));
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo, block_count));
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count));
 }
 
 TEST_F(WebMClusterParserTest,
@@ -998,7 +1004,7 @@ TEST_F(WebMClusterParserTest,
   scoped_ptr<Cluster> cluster(CreateCluster(0, kBlockInfo, block_count));
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo, block_count));
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count));
 }
 
 TEST_F(WebMClusterParserTest, ReadOpusDurationsSimpleBlockAtEndOfCluster) {
@@ -1022,7 +1028,7 @@ TEST_F(WebMClusterParserTest, ReadOpusDurationsSimpleBlockAtEndOfCluster) {
 
     int result = parser_->Parse(cluster->data(), cluster->size());
     EXPECT_EQ(cluster->size(), result);
-    ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo, block_count));
+    ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count));
 
     loop_count++;
   }
@@ -1040,9 +1046,11 @@ TEST_F(WebMClusterParserTest, PreferOpusDurationsOverBlockDurations) {
     parser_.reset(CreateParserWithKeyIdsAndAudioCodec(
         std::string(), std::string(), kCodecOpus));
 
+    // Setting BlockDuration != Opus duration to see which one the parser uses.
+    int block_duration_ms = packet_ptr->duration_ms() + 10;
     BlockInfo block_infos[] = {{kAudioTrackNum,
                                 0,
-                                block_duration_ms,
+                                static_cast<double>(block_duration_ms),
                                 false,  // Not a SimpleBlock.
                                 packet_ptr->data(),
                                 packet_ptr->size()}};
@@ -1056,7 +1064,7 @@ TEST_F(WebMClusterParserTest, PreferOpusDurationsOverBlockDurations) {
     // duration to be that of the Opus packet to verify it was preferred.
     block_infos[0].duration = packet_ptr->duration_ms();
 
-    ASSERT_TRUE(VerifyBuffers(parser_, block_infos, block_count));
+    ASSERT_TRUE(VerifyBuffers(block_infos, block_count));
 
     loop_count++;
   }
@@ -1090,7 +1098,7 @@ TEST_F(WebMClusterParserTest, DontReadEncodedDurationWhenEncrypted) {
   EXPECT_EQ(cluster->size(), result);
 
   // Will verify that duration of buffer matches that of BlockDuration.
-  ASSERT_TRUE(VerifyBuffers(parser_, kBlockInfo, block_count));
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count));
 }
 
 }  // namespace media
