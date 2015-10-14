@@ -9,7 +9,7 @@
 
 #include "packager/base/macros.h"
 #include "packager/base/memory/scoped_ptr.h"
-#include "packager/media/base/decoder_buffer.h"
+#include "packager/media/base/decrypt_config.h"
 
 namespace edash_packager {
 namespace media {

@@ -8,8 +8,7 @@
 #include <gtest/gtest.h>
 
 #include "packager/base/logging.h"
-#include "packager/media/base/channel_layout.h"
-#include "packager/media/base/timestamp_constants.h"
+#include "packager/media/base/timestamp.h"
 #include "packager/media/formats/webm/tracks_builder.h"
 #include "packager/media/formats/webm/webm_constants.h"
 
@@ -140,20 +139,22 @@ TEST_F(WebMTracksParserTest, AudioVideoDefaultDurationUnset) {
   EXPECT_LE(0, result);
   EXPECT_EQ(static_cast<int>(buf.size()), result);
 
-  EXPECT_EQ(kNoTimestamp(),
+  EXPECT_EQ(kNoTimestamp,
             parser->GetAudioDefaultDuration(kDefaultTimecodeScaleInUs));
-  EXPECT_EQ(kNoTimestamp(),
+  EXPECT_EQ(kNoTimestamp,
             parser->GetVideoDefaultDuration(kDefaultTimecodeScaleInUs));
 
-  const VideoDecoderConfig& video_config = parser->video_decoder_config();
-  EXPECT_TRUE(video_config.IsValidConfig());
-  EXPECT_EQ(320, video_config.coded_size().width());
-  EXPECT_EQ(240, video_config.coded_size().height());
+  scoped_refptr<VideoStreamInfo> video_stream_info =
+      parser->video_stream_info();
+  EXPECT_TRUE(video_stream_info);
+  EXPECT_EQ(320u, video_stream_info->width());
+  EXPECT_EQ(240u, video_stream_info->height());
 
-  const AudioDecoderConfig& audio_config = parser->audio_decoder_config();
-  EXPECT_TRUE(audio_config.IsValidConfig());
-  EXPECT_EQ(CHANNEL_LAYOUT_STEREO, audio_config.channel_layout());
-  EXPECT_EQ(8000, audio_config.samples_per_second());
+  scoped_refptr<AudioStreamInfo> audio_stream_info =
+      parser->audio_stream_info();
+  EXPECT_TRUE(audio_stream_info);
+  EXPECT_EQ(2u, audio_stream_info->num_channels());
+  EXPECT_EQ(8000u, audio_stream_info->sampling_frequency());
 }
 
 TEST_F(WebMTracksParserTest, AudioVideoDefaultDurationSet) {
@@ -169,14 +170,12 @@ TEST_F(WebMTracksParserTest, AudioVideoDefaultDurationSet) {
   EXPECT_LE(0, result);
   EXPECT_EQ(static_cast<int>(buf.size()), result);
 
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(12000),
-            parser->GetAudioDefaultDuration(kDefaultTimecodeScaleInUs));
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(985000),
+  EXPECT_EQ(12000, parser->GetAudioDefaultDuration(kDefaultTimecodeScaleInUs));
+  EXPECT_EQ(985000,
             parser->GetVideoDefaultDuration(5000.0));  // 5 ms resolution
-  EXPECT_EQ(kNoTimestamp(), parser->GetAudioDefaultDuration(12346.0));
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(12345),
-            parser->GetAudioDefaultDuration(12345.0));
-  EXPECT_EQ(base::TimeDelta::FromMicroseconds(12003),
+  EXPECT_EQ(kNoTimestamp, parser->GetAudioDefaultDuration(12346.0));
+  EXPECT_EQ(12345, parser->GetAudioDefaultDuration(12345.0));
+  EXPECT_EQ(12003,
             parser->GetAudioDefaultDuration(1000.3));  // 1.0003 ms resolution
 }
 

@@ -4,9 +4,13 @@
 
 #include "packager/media/formats/webm/webm_audio_client.h"
 
-#include "packager/media/base/audio_decoder_config.h"
-#include "packager/media/base/channel_layout.h"
+#include "packager/base/logging.h"
 #include "packager/media/formats/webm/webm_constants.h"
+
+namespace {
+// Timestamps are represented in double in WebM. Convert to uint64_t in us.
+const uint32_t kWebMTimeScale = 1000000u;
+}  // namespace
 
 namespace edash_packager {
 namespace media {
@@ -24,16 +28,12 @@ void WebMAudioClient::Reset() {
   output_samples_per_second_ = -1;
 }
 
-bool WebMAudioClient::InitializeConfig(
+scoped_refptr<AudioStreamInfo> WebMAudioClient::GetAudioStreamInfo(
+    int64_t track_num,
     const std::string& codec_id,
     const std::vector<uint8_t>& codec_private,
-    int64_t seek_preroll,
-    int64_t codec_delay,
-    bool is_encrypted,
-    AudioDecoderConfig* config) {
-  DCHECK(config);
-  SampleFormat sample_format = kSampleFormatPlanarF32;
-
+    const std::string& language,
+    bool is_encrypted) {
   AudioCodec audio_codec = kUnknownAudioCodec;
   if (codec_id == "A_VORBIS") {
     audio_codec = kCodecVorbis;
@@ -41,32 +41,21 @@ bool WebMAudioClient::InitializeConfig(
     audio_codec = kCodecOpus;
   } else {
     LOG(ERROR) << "Unsupported audio codec_id " << codec_id;
-    return false;
+    return scoped_refptr<AudioStreamInfo>();
   }
 
   if (samples_per_second_ <= 0)
-    return false;
+    return scoped_refptr<AudioStreamInfo>();
 
   // Set channel layout default if a Channels element was not present.
   if (channels_ == -1)
     channels_ = 1;
 
-  ChannelLayout channel_layout =  GuessChannelLayout(channels_);
-
-  if (channel_layout == CHANNEL_LAYOUT_UNSUPPORTED) {
-    LOG(ERROR) << "Unsupported channel count " << channels_;
-    return false;
-  }
-
-  int samples_per_second = samples_per_second_;
-  if (output_samples_per_second_ > 0)
-    samples_per_second = output_samples_per_second_;
-
+  uint32_t sampling_frequency = samples_per_second_;
   // Always use 48kHz for OPUS.  See the "Input Sample Rate" section of the
   // spec: http://tools.ietf.org/html/draft-terriberry-oggopus-01#page-11
   if (audio_codec == kCodecOpus) {
-    samples_per_second = 48000;
-    sample_format = kSampleFormatF32;
+    sampling_frequency = 48000;
   }
 
   const uint8_t* extra_data = NULL;
@@ -76,27 +65,12 @@ bool WebMAudioClient::InitializeConfig(
     extra_data_size = codec_private.size();
   }
 
-  // Convert |codec_delay| from nanoseconds into frames.
-  int codec_delay_in_frames = 0;
-  if (codec_delay != -1) {
-    codec_delay_in_frames =
-        0.5 +
-        samples_per_second * (static_cast<double>(codec_delay) /
-                              base::Time::kNanosecondsPerSecond);
-  }
-
-  config->Initialize(
-      audio_codec,
-      sample_format,
-      channel_layout,
-      samples_per_second,
-      extra_data,
-      extra_data_size,
-      is_encrypted,
-      base::TimeDelta::FromMicroseconds(
-          (seek_preroll != -1 ? seek_preroll : 0) / 1000),
-      codec_delay_in_frames);
-  return config->IsValidConfig();
+  const uint32_t kSampleSizeInBits = 4u;
+  return scoped_refptr<AudioStreamInfo>(new AudioStreamInfo(
+      track_num, kWebMTimeScale, 0, audio_codec,
+      AudioStreamInfo::GetCodecString(audio_codec, 0), language,
+      kSampleSizeInBits, channels_, sampling_frequency, extra_data,
+      extra_data_size, is_encrypted));
 }
 
 bool WebMAudioClient::OnUInt(int id, int64_t val) {

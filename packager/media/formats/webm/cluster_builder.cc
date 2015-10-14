@@ -5,7 +5,6 @@
 #include "packager/media/formats/webm/cluster_builder.h"
 
 #include "packager/base/logging.h"
-#include "packager/media/base/data_buffer.h"
 #include "packager/media/formats/webm/webm_constants.h"
 
 namespace edash_packager {

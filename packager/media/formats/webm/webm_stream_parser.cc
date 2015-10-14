@@ -9,7 +9,7 @@
 #include "packager/base/callback.h"
 #include "packager/base/callback_helpers.h"
 #include "packager/base/logging.h"
-#include "packager/media/base/timestamp_constants.h"
+#include "packager/media/base/timestamp.h"
 #include "packager/media/formats/webm/webm_cluster_parser.h"
 #include "packager/media/formats/webm/webm_constants.h"
 #include "packager/media/formats/webm/webm_content_encodings.h"
@@ -29,29 +29,18 @@ WebMStreamParser::~WebMStreamParser() {
 
 void WebMStreamParser::Init(
     const InitCB& init_cb,
-    const NewConfigCB& config_cb,
-    const NewBuffersCB& new_buffers_cb,
-    bool ignore_text_tracks,
-    const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
-    const NewMediaSegmentCB& new_segment_cb,
-    const base::Closure& end_of_segment_cb) {
+    const NewSampleCB& new_sample_cb,
+    KeySource* decryption_key_source) {
   DCHECK_EQ(state_, kWaitingForInit);
   DCHECK(init_cb_.is_null());
   DCHECK(!init_cb.is_null());
-  DCHECK(!config_cb.is_null());
-  DCHECK(!new_buffers_cb.is_null());
-  DCHECK(!encrypted_media_init_data_cb.is_null());
-  DCHECK(!new_segment_cb.is_null());
-  DCHECK(!end_of_segment_cb.is_null());
+  DCHECK(!new_sample_cb.is_null());
 
   ChangeState(kParsingHeaders);
   init_cb_ = init_cb;
-  config_cb_ = config_cb;
-  new_buffers_cb_ = new_buffers_cb;
-  ignore_text_tracks_ = ignore_text_tracks;
-  encrypted_media_init_data_cb_ = encrypted_media_init_data_cb;
-  new_segment_cb_ = new_segment_cb;
-  end_of_segment_cb_ = end_of_segment_cb;
+  new_sample_cb_ = new_sample_cb;
+  decryption_key_source_ = decryption_key_source;
+  ignore_text_tracks_ = true;
 }
 
 void WebMStreamParser::Flush() {
@@ -62,7 +51,6 @@ void WebMStreamParser::Flush() {
     cluster_parser_->Reset();
   if (state_ == kParsingClusters) {
     ChangeState(kParsingHeaders);
-    end_of_segment_cb_.Run();
   }
 }
 
@@ -158,7 +146,6 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
         return -1;
       }
       ChangeState(kParsingClusters);
-      new_segment_cb_.Run();
       return 0;
       break;
     case kWebMIdSegment:
@@ -196,38 +183,22 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
   bytes_parsed += result;
 
   double timecode_scale_in_us = info_parser.timecode_scale() / 1000.0;
-  InitParameters params(kInfiniteDuration());
+  int64_t duration_in_us = info_parser.duration() * timecode_scale_in_us;
 
-  if (info_parser.duration() > 0) {
-    int64_t duration_in_us = info_parser.duration() * timecode_scale_in_us;
-    params.duration = base::TimeDelta::FromMicroseconds(duration_in_us);
-  }
-
-  params.timeline_offset = info_parser.date_utc();
-
-  if (unknown_segment_size_ && (info_parser.duration() <= 0) &&
-      !info_parser.date_utc().is_null()) {
-    params.liveness = DemuxerStream::LIVENESS_LIVE;
-  } else if (info_parser.duration() >= 0) {
-    params.liveness = DemuxerStream::LIVENESS_RECORDED;
-  } else {
-    params.liveness = DemuxerStream::LIVENESS_UNKNOWN;
-  }
-
-  const AudioDecoderConfig& audio_config = tracks_parser.audio_decoder_config();
-  if (audio_config.is_encrypted())
+  std::vector<scoped_refptr<StreamInfo>> streams;
+  scoped_refptr<AudioStreamInfo> audio_stream_info =
+      tracks_parser.audio_stream_info();
+  streams.push_back(tracks_parser.audio_stream_info());
+  streams.back()->set_duration(duration_in_us);
+  if (streams.back()->is_encrypted())
     OnEncryptedMediaInitData(tracks_parser.audio_encryption_key_id());
 
-  const VideoDecoderConfig& video_config = tracks_parser.video_decoder_config();
-  if (video_config.is_encrypted())
+  streams.push_back(tracks_parser.video_stream_info());
+  streams.back()->set_duration(duration_in_us);
+  if (streams.back()->is_encrypted())
     OnEncryptedMediaInitData(tracks_parser.video_encryption_key_id());
 
-  if (!config_cb_.Run(audio_config,
-                      video_config,
-                      tracks_parser.text_tracks())) {
-    DVLOG(1) << "New config data isn't allowed.";
-    return -1;
-  }
+  init_cb_.Run(streams);
 
   cluster_parser_.reset(new WebMClusterParser(
       info_parser.timecode_scale(), tracks_parser.audio_track_num(),
@@ -236,10 +207,8 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
       tracks_parser.GetVideoDefaultDuration(timecode_scale_in_us),
       tracks_parser.text_tracks(), tracks_parser.ignored_tracks(),
       tracks_parser.audio_encryption_key_id(),
-      tracks_parser.video_encryption_key_id(), audio_config.codec());
-
-  if (!init_cb_.is_null())
-    base::ResetAndReturn(&init_cb_).Run(params);
+      tracks_parser.video_encryption_key_id(), audio_stream_info->codec(),
+      new_sample_cb_));
 
   return bytes_parsed;
 }
@@ -252,29 +221,16 @@ int WebMStreamParser::ParseCluster(const uint8_t* data, int size) {
   if (bytes_parsed < 0)
     return bytes_parsed;
 
-  const BufferQueue& audio_buffers = cluster_parser_->GetAudioBuffers();
-  const BufferQueue& video_buffers = cluster_parser_->GetVideoBuffers();
-  const TextBufferQueueMap& text_map = cluster_parser_->GetTextBuffers();
-
   bool cluster_ended = cluster_parser_->cluster_ended();
-
-  if ((!audio_buffers.empty() || !video_buffers.empty() ||
-       !text_map.empty()) &&
-      !new_buffers_cb_.Run(audio_buffers, video_buffers, text_map)) {
-    return -1;
-  }
-
   if (cluster_ended) {
     ChangeState(kParsingHeaders);
-    end_of_segment_cb_.Run();
   }
 
   return bytes_parsed;
 }
 
 void WebMStreamParser::OnEncryptedMediaInitData(const std::string& key_id) {
-  std::vector<uint8_t> key_id_vector(key_id.begin(), key_id.end());
-  encrypted_media_init_data_cb_.Run(EmeInitDataType::WEBM, key_id_vector);
+  NOTIMPLEMENTED() << "WebM decryption is not implemented yet.";
 }
 
 }  // namespace media

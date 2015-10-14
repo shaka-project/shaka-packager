@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/video_stream_info.h"
 #include "packager/media/formats/webm/webm_parser.h"
 
 namespace edash_packager {
@@ -23,17 +25,17 @@ class WebMVideoClient : public WebMParserClient {
   // Reset this object's state so it can process a new video track element.
   void Reset();
 
-  // Initialize |config| with the data in |codec_id|, |codec_private|,
-  // |is_encrypted| and the fields parsed from the last video track element this
-  // object was used to parse.
-  // Returns true if |config| was successfully initialized.
-  // Returns false if there was unexpected values in the provided parameters or
-  // video track element fields. The contents of |config| are undefined in this
-  // case and should not be relied upon.
-  bool InitializeConfig(const std::string& codec_id,
-                        const std::vector<uint8_t>& codec_private,
-                        bool is_encrypted,
-                        VideoDecoderConfig* config);
+  // Create a VideoStreamInfo with the data in |track_num|, |codec_id|,
+  // |codec_private|, |is_encrypted| and the fields parsed from the last video
+  // track element this object was used to parse.
+  // Returns a VideoStreamInfo scoped_refptr if successful.
+  // Returns an empty scoped_refptr if there was unexpected values in the
+  // provided parameters or video track element fields.
+  scoped_refptr<VideoStreamInfo> GetVideoStreamInfo(
+      int64_t track_num,
+      const std::string& codec_id,
+      const std::vector<uint8_t>& codec_private,
+      bool is_encrypted);
 
  private:
   // WebMParserClient implementation.

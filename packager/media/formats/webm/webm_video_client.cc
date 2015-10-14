@@ -4,8 +4,24 @@
 
 #include "packager/media/formats/webm/webm_video_client.h"
 
-#include "packager/media/base/video_decoder_config.h"
+#include "packager/base/logging.h"
 #include "packager/media/formats/webm/webm_constants.h"
+
+namespace {
+
+// Timestamps are represented in double in WebM. Convert to uint64_t in us.
+const uint32_t kWebMTimeScale = 1000000u;
+
+int64_t GetGreatestCommonDivisor(int64_t a, int64_t b) {
+  while (b) {
+    int64_t temp = b;
+    b = a % b;
+    a = temp;
+  }
+  return a;
+}
+
+}  // namespace
 
 namespace edash_packager {
 namespace media {
@@ -30,31 +46,23 @@ void WebMVideoClient::Reset() {
   alpha_mode_ = -1;
 }
 
-bool WebMVideoClient::InitializeConfig(
+scoped_refptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
+    int64_t track_num,
     const std::string& codec_id,
     const std::vector<uint8_t>& codec_private,
-    bool is_encrypted,
-    VideoDecoderConfig* config) {
-  DCHECK(config);
-
+    bool is_encrypted) {
   VideoCodec video_codec = kUnknownVideoCodec;
-  VideoCodecProfile profile = VIDEO_CODEC_PROFILE_UNKNOWN;
   if (codec_id == "V_VP8") {
     video_codec = kCodecVP8;
-    profile = VP8PROFILE_ANY;
   } else if (codec_id == "V_VP9") {
     video_codec = kCodecVP9;
-    profile = VP9PROFILE_ANY;
   } else {
     LOG(ERROR) << "Unsupported video codec_id " << codec_id;
-    return false;
+    return scoped_refptr<VideoStreamInfo>();
   }
 
-  VideoPixelFormat format =
-      (alpha_mode_ == 1) ? PIXEL_FORMAT_YV12A : PIXEL_FORMAT_YV12;
-
   if (pixel_width_ <= 0 || pixel_height_ <= 0)
-    return false;
+    return scoped_refptr<VideoStreamInfo>();
 
   // Set crop and display unit defaults if these elements are not present.
   if (crop_bottom_ == -1)
@@ -72,23 +80,28 @@ bool WebMVideoClient::InitializeConfig(
   if (display_unit_ == -1)
     display_unit_ = 0;
 
-  gfx::Size coded_size(pixel_width_, pixel_height_);
-  gfx::Rect visible_rect(crop_top_, crop_left_,
-                         pixel_width_ - (crop_left_ + crop_right_),
-                         pixel_height_ - (crop_top_ + crop_bottom_));
+  uint16_t width_after_crop = pixel_width_ - (crop_left_ + crop_right_);
+  uint16_t height_after_crop = pixel_height_ - (crop_top_ + crop_bottom_);
+
   if (display_unit_ == 0) {
     if (display_width_ <= 0)
-      display_width_ = visible_rect.width();
+      display_width_ = width_after_crop;
     if (display_height_ <= 0)
-      display_height_ = visible_rect.height();
+      display_height_ = height_after_crop;
   } else if (display_unit_ == 3) {
     if (display_width_ <= 0 || display_height_ <= 0)
-      return false;
+      return scoped_refptr<VideoStreamInfo>();
   } else {
     LOG(ERROR) << "Unsupported display unit type " << display_unit_;
-    return false;
+    return scoped_refptr<VideoStreamInfo>();
   }
-  gfx::Size natural_size = gfx::Size(display_width_, display_height_);
+  // Calculate sample aspect ratio.
+  int64_t sar_x = display_width_ * height_after_crop;
+  int64_t sar_y = display_height_ * width_after_crop;
+  int64_t gcd = GetGreatestCommonDivisor(sar_x, sar_y);
+  sar_x /= gcd;
+  sar_y /= gcd;
+
   const uint8_t* extra_data = NULL;
   size_t extra_data_size = 0;
   if (codec_private.size() > 0) {
@@ -96,10 +109,11 @@ bool WebMVideoClient::InitializeConfig(
     extra_data_size = codec_private.size();
   }
 
-  config->Initialize(video_codec, profile, format, COLOR_SPACE_HD_REC709,
-                     coded_size, visible_rect, natural_size, extra_data,
-                     extra_data_size, is_encrypted);
-  return config->IsValidConfig();
+  return scoped_refptr<VideoStreamInfo>(
+      new VideoStreamInfo(track_num, kWebMTimeScale, 0, video_codec,
+                          VideoStreamInfo::GetCodecString(video_codec, 0, 0, 0),
+                          "", width_after_crop, height_after_crop, sar_x, sar_y,
+                          0, 0, extra_data, extra_data_size, is_encrypted));
 }
 
 bool WebMVideoClient::OnUInt(int id, int64_t val) {

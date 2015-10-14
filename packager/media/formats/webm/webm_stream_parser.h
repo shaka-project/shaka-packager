@@ -7,29 +7,23 @@
 
 #include "packager/base/callback_forward.h"
 #include "packager/base/memory/ref_counted.h"
-#include "packager/media/base/audio_decoder_config.h"
 #include "packager/media/base/byte_queue.h"
-#include "packager/media/base/stream_parser.h"
-#include "packager/media/base/video_decoder_config.h"
+#include "packager/media/base/media_parser.h"
 
 namespace edash_packager {
 namespace media {
 
 class WebMClusterParser;
 
-class WebMStreamParser : public StreamParser {
+class WebMStreamParser : public MediaParser {
  public:
   WebMStreamParser();
   ~WebMStreamParser() override;
 
   // StreamParser implementation.
   void Init(const InitCB& init_cb,
-            const NewConfigCB& config_cb,
-            const NewBuffersCB& new_buffers_cb,
-            bool ignore_text_tracks,
-            const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
-            const NewMediaSegmentCB& new_segment_cb,
-            const base::Closure& end_of_segment_cb) override;
+            const NewSampleCB& new_sample_cb,
+            KeySource* decryption_key_source) override;
   void Flush() override;
   bool Parse(const uint8_t* buf, int size) override;
 
@@ -67,13 +61,9 @@ class WebMStreamParser : public StreamParser {
 
   State state_;
   InitCB init_cb_;
-  NewConfigCB config_cb_;
-  NewBuffersCB new_buffers_cb_;
+  NewSampleCB new_sample_cb_;
+  KeySource* decryption_key_source_;
   bool ignore_text_tracks_;
-  EncryptedMediaInitDataCB encrypted_media_init_data_cb_;
-
-  NewMediaSegmentCB new_segment_cb_;
-  base::Closure end_of_segment_cb_;
 
   bool unknown_segment_size_;
 

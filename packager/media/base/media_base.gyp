@@ -69,6 +69,8 @@
         'stream_info.h',
         'text_track.h',
         'timestamp.h',
+        'text_track_config.cc',
+        'text_track_config.h',
         'video_stream_info.cc',
         'video_stream_info.h',
         'widevine_key_source.cc',

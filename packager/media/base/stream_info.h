@@ -19,6 +19,7 @@ enum StreamType {
   kStreamUnknown = 0,
   kStreamAudio,
   kStreamVideo,
+  kStreamText,
 };
 
 /// Abstract class holds stream information.

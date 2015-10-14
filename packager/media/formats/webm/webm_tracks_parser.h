@@ -13,9 +13,9 @@
 #include "packager/base/compiler_specific.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/time/time.h"
-#include "packager/media/base/audio_decoder_config.h"
+#include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/text_track_config.h"
-#include "packager/media/base/video_decoder_config.h"
+#include "packager/media/base/video_stream_info.h"
 #include "packager/media/formats/webm/webm_audio_client.h"
 #include "packager/media/formats/webm/webm_content_encodings_client.h"
 #include "packager/media/formats/webm/webm_parser.h"
@@ -44,10 +44,8 @@ class WebMTracksParser : public WebMParserClient {
   // video track, returns that value converted from ns to base::TimeDelta with
   // precision not greater than |timecode_scale_in_us|. Defaults to
   // kNoTimestamp().
-  base::TimeDelta GetAudioDefaultDuration(
-      const double timecode_scale_in_us) const;
-  base::TimeDelta GetVideoDefaultDuration(
-      const double timecode_scale_in_us) const;
+  int64_t GetAudioDefaultDuration(const double timecode_scale_in_us) const;
+  int64_t GetVideoDefaultDuration(const double timecode_scale_in_us) const;
 
   const std::set<int64_t>& ignored_tracks() const { return ignored_tracks_; }
 
@@ -55,16 +53,16 @@ class WebMTracksParser : public WebMParserClient {
     return audio_encryption_key_id_;
   }
 
-  const AudioDecoderConfig& audio_decoder_config() {
-    return audio_decoder_config_;
+  scoped_refptr<AudioStreamInfo> audio_stream_info() {
+    return audio_stream_info_;
   }
 
   const std::string& video_encryption_key_id() const {
     return video_encryption_key_id_;
   }
 
-  const VideoDecoderConfig& video_decoder_config() {
-    return video_decoder_config_;
+  scoped_refptr<VideoStreamInfo> video_stream_info() {
+    return video_stream_info_;
   }
 
   typedef std::map<int, TextTrackConfig> TextTracks;
@@ -104,10 +102,10 @@ class WebMTracksParser : public WebMParserClient {
   std::string video_encryption_key_id_;
 
   WebMAudioClient audio_client_;
-  AudioDecoderConfig audio_decoder_config_;
+  scoped_refptr<AudioStreamInfo> audio_stream_info_;
 
   WebMVideoClient video_client_;
-  VideoDecoderConfig video_decoder_config_;
+  scoped_refptr<VideoStreamInfo> video_stream_info_;
 
   DISALLOW_COPY_AND_ASSIGN(WebMTracksParser);
 };

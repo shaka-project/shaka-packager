@@ -7,7 +7,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
-#include "packager/media/base/timestamp_constants.h"
+#include "packager/media/base/timestamp.h"
 #include "packager/media/formats/webm/webm_constants.h"
 #include "packager/media/formats/webm/webm_content_encodings.h"
 
@@ -30,19 +30,19 @@ static TextKind CodecIdToTextKind(const std::string& codec_id) {
   return kTextNone;
 }
 
-static base::TimeDelta PrecisionCappedDefaultDuration(
+static int64_t PrecisionCappedDefaultDuration(
     const double timecode_scale_in_us,
     const int64_t duration_in_ns) {
   if (duration_in_ns <= 0)
-    return kNoTimestamp();
+    return kNoTimestamp;
 
   int64_t mult = duration_in_ns / 1000;
   mult /= timecode_scale_in_us;
   if (mult == 0)
-    return kNoTimestamp();
+    return kNoTimestamp;
 
   mult = static_cast<double>(mult) * timecode_scale_in_us;
-  return base::TimeDelta::FromMicroseconds(mult);
+  return mult;
 }
 
 WebMTracksParser::WebMTracksParser(bool ignore_text_tracks)
@@ -70,10 +70,10 @@ int WebMTracksParser::Parse(const uint8_t* buf, int size) {
   track_language_.clear();
   audio_track_num_ = -1;
   audio_default_duration_ = -1;
-  audio_decoder_config_ = AudioDecoderConfig();
+  audio_stream_info_ = nullptr;
   video_track_num_ = -1;
   video_default_duration_ = -1;
-  video_decoder_config_ = VideoDecoderConfig();
+  video_stream_info_ = nullptr;
   text_tracks_.clear();
   ignored_tracks_.clear();
 
@@ -87,13 +87,13 @@ int WebMTracksParser::Parse(const uint8_t* buf, int size) {
   return parser.IsParsingComplete() ? result : 0;
 }
 
-base::TimeDelta WebMTracksParser::GetAudioDefaultDuration(
+int64_t WebMTracksParser::GetAudioDefaultDuration(
     const double timecode_scale_in_us) const {
   return PrecisionCappedDefaultDuration(timecode_scale_in_us,
                                         audio_default_duration_);
 }
 
-base::TimeDelta WebMTracksParser::GetVideoDefaultDuration(
+int64_t WebMTracksParser::GetVideoDefaultDuration(
     const double timecode_scale_in_us) const {
   return PrecisionCappedDefaultDuration(timecode_scale_in_us,
                                         video_default_duration_);
@@ -201,12 +201,12 @@ bool WebMTracksParser::OnListEnd(int id) {
         }
         audio_default_duration_ = default_duration_;
 
-        DCHECK(!audio_decoder_config_.IsValidConfig());
-        if (!audio_client_.InitializeConfig(
-                codec_id_, codec_private_, seek_preroll_, codec_delay_,
-                !audio_encryption_key_id_.empty(), &audio_decoder_config_)) {
+        DCHECK(!audio_stream_info_);
+        audio_stream_info_ = audio_client_.GetAudioStreamInfo(
+            audio_track_num_, codec_id_, codec_private_, track_language_,
+            !audio_encryption_key_id_.empty());
+        if (!audio_stream_info_)
           return false;
-        }
       } else {
         DLOG(INFO) << "Ignoring audio track " << track_num_;
         ignored_tracks_.insert(track_num_);
@@ -223,12 +223,12 @@ bool WebMTracksParser::OnListEnd(int id) {
         }
         video_default_duration_ = default_duration_;
 
-        DCHECK(!video_decoder_config_.IsValidConfig());
-        if (!video_client_.InitializeConfig(
-                codec_id_, codec_private_, !video_encryption_key_id_.empty(),
-                &video_decoder_config_)) {
+        DCHECK(!video_stream_info_);
+        video_stream_info_ = video_client_.GetVideoStreamInfo(
+            video_track_num_, codec_id_, codec_private_,
+            !video_encryption_key_id_.empty());
+        if (!video_stream_info_)
           return false;
-        }
       } else {
         DLOG(INFO) << "Ignoring video track " << track_num_;
         ignored_tracks_.insert(track_num_);

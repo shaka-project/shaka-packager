@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/audio_stream_info.h"
 #include "packager/media/formats/webm/webm_parser.h"
 
 namespace edash_packager {
@@ -23,18 +25,18 @@ class WebMAudioClient : public WebMParserClient {
   // Reset this object's state so it can process a new audio track element.
   void Reset();
 
-  // Initialize |config| with the data in |codec_id|, |codec_private|,
-  // |is_encrypted| and the fields parsed from the last audio track element this
-  // object was used to parse.
-  // Returns true if |config| was successfully initialized.
-  // Returns false if there was unexpected values in the provided parameters or
-  // audio track element fields.
-  bool InitializeConfig(const std::string& codec_id,
-                        const std::vector<uint8_t>& codec_private,
-                        const int64_t seek_preroll,
-                        const int64_t codec_delay,
-                        bool is_encrypted,
-                        AudioDecoderConfig* config);
+  // Create an AudioStreamInfo with the data in |track_num|, |codec_id|,
+  // |codec_private|, |is_encrypted| and the fields parsed from the last audio
+  // track element this object was used to parse.
+  // Returns an AudioStreamInfo scoped_refptr if successful.
+  // Returns an empty scoped_refptr if there was unexpected values in the
+  // provided parameters or audio track element fields.
+  scoped_refptr<AudioStreamInfo> GetAudioStreamInfo(
+      int64_t track_num,
+      const std::string& codec_id,
+      const std::vector<uint8_t>& codec_private,
+      const std::string& language,
+      bool is_encrypted);
 
  private:
   // WebMParserClient implementation.
