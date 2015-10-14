@@ -855,8 +855,16 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
             if (!ExtractResolutionFromDecoderConfig(
                     vector_as_array(stream_config), stream_config->size(),
                     &coded_width, &coded_height, &pixel_width, &pixel_height)) {
-              LOG(ERROR) << "Failed to parse AVCDecoderConfigurationRecord.";
-              return false;
+              LOG(WARNING) << "Failed to parse AVCDecoderConfigurationRecord. "
+                  "Using computed configuration record instead.";
+              video_stream_info->set_extra_data(decoder_config_record);
+              if (!ExtractResolutionFromDecoderConfig(
+                      vector_as_array(&decoder_config_record),
+                      decoder_config_record.size(),
+                      &coded_width, &coded_height, &pixel_width, &pixel_height)) {
+                LOG(ERROR) << "Failed to parse AVCDecoderConfigurationRecord.";
+                return false;
+              }
             }
             if (pixel_width != video_stream_info->pixel_width() ||
                 pixel_height != video_stream_info->pixel_height()) {
