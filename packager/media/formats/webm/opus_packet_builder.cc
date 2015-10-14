@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
-#include "media/formats/webm/opus_packet_builder.h"
-#include "media/formats/webm/webm_cluster_parser.h"
+#include "packager/base/logging.h"
+#include "packager/media/formats/webm/opus_packet_builder.h"
+#include "packager/media/formats/webm/webm_cluster_parser.h"
 
+namespace edash_packager {
 namespace media {
 
 OpusPacket::OpusPacket(uint8_t config, uint8_t frame_count, bool is_VBR) {
@@ -87,3 +88,4 @@ ScopedVector<OpusPacket> BuildAllOpusPackets() {
 }
 
 }  // namespace media
+}  // namespace edash_packager

@@ -8,16 +8,16 @@
 #include <string>
 #include <vector>
 
-#include "media/base/media_log.h"
-#include "media/formats/webm/webm_parser.h"
+#include "packager/media/formats/webm/webm_parser.h"
 
+namespace edash_packager {
 namespace media {
 class AudioDecoderConfig;
 
 // Helper class used to parse an Audio element inside a TrackEntry element.
 class WebMAudioClient : public WebMParserClient {
  public:
-  explicit WebMAudioClient(const scoped_refptr<MediaLog>& media_log);
+  WebMAudioClient();
   ~WebMAudioClient() override;
 
   // Reset this object's state so it can process a new audio track element.
@@ -30,18 +30,17 @@ class WebMAudioClient : public WebMParserClient {
   // Returns false if there was unexpected values in the provided parameters or
   // audio track element fields.
   bool InitializeConfig(const std::string& codec_id,
-                        const std::vector<uint8>& codec_private,
-                        const int64 seek_preroll,
-                        const int64 codec_delay,
+                        const std::vector<uint8_t>& codec_private,
+                        const int64_t seek_preroll,
+                        const int64_t codec_delay,
                         bool is_encrypted,
                         AudioDecoderConfig* config);
 
  private:
   // WebMParserClient implementation.
-  bool OnUInt(int id, int64 val) override;
+  bool OnUInt(int id, int64_t val) override;
   bool OnFloat(int id, double val) override;
 
-  scoped_refptr<MediaLog> media_log_;
   int channels_;
   double samples_per_second_;
   double output_samples_per_second_;
@@ -50,5 +49,6 @@ class WebMAudioClient : public WebMParserClient {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_AUDIO_CLIENT_H_

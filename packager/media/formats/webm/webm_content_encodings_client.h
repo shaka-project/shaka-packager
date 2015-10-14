@@ -7,22 +7,21 @@
 
 #include <vector>
 
-#include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/memory/scoped_ptr.h"
-#include "media/base/media_export.h"
-#include "media/base/media_log.h"
-#include "media/formats/webm/webm_content_encodings.h"
-#include "media/formats/webm/webm_parser.h"
+#include "packager/base/callback.h"
+#include "packager/base/compiler_specific.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/formats/webm/webm_content_encodings.h"
+#include "packager/media/formats/webm/webm_parser.h"
 
+namespace edash_packager {
 namespace media {
 
 typedef std::vector<ContentEncoding*> ContentEncodings;
 
 // Parser for WebM ContentEncodings element.
-class MEDIA_EXPORT WebMContentEncodingsClient : public WebMParserClient {
+class WebMContentEncodingsClient : public WebMParserClient {
  public:
-  explicit WebMContentEncodingsClient(const scoped_refptr<MediaLog>& media_log);
+  WebMContentEncodingsClient();
   ~WebMContentEncodingsClient() override;
 
   const ContentEncodings& content_encodings() const;
@@ -30,11 +29,10 @@ class MEDIA_EXPORT WebMContentEncodingsClient : public WebMParserClient {
   // WebMParserClient methods
   WebMParserClient* OnListStart(int id) override;
   bool OnListEnd(int id) override;
-  bool OnUInt(int id, int64 val) override;
-  bool OnBinary(int id, const uint8* data, int size) override;
+  bool OnUInt(int id, int64_t val) override;
+  bool OnBinary(int id, const uint8_t* data, int size) override;
 
  private:
-  scoped_refptr<MediaLog> media_log_;
   scoped_ptr<ContentEncoding> cur_content_encoding_;
   bool content_encryption_encountered_;
   ContentEncodings content_encodings_;
@@ -46,5 +44,6 @@ class MEDIA_EXPORT WebMContentEncodingsClient : public WebMParserClient {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_CONTENT_ENCODINGS_CLIENT_H_

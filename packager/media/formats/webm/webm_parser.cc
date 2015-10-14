@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/webm/webm_parser.h"
+#include "packager/media/formats/webm/webm_parser.h"
 
 // This file contains code to parse WebM file elements. It was created
 // from information in the Matroska spec.
@@ -13,10 +13,11 @@
 
 #include <iomanip>
 
-#include "base/logging.h"
-#include "base/numerics/safe_conversions.h"
-#include "media/formats/webm/webm_constants.h"
+#include "packager/base/logging.h"
+#include "packager/base/numerics/safe_conversions.h"
+#include "packager/media/formats/webm/webm_constants.h"
 
+namespace edash_packager {
 namespace media {
 
 enum ElementType {
@@ -423,9 +424,11 @@ static const ListElementInfo kListElementInfo[] = {
 //                     element size fields and is false for ID field values.
 //
 // Returns: The number of bytes parsed on success. -1 on error.
-static int ParseWebMElementHeaderField(const uint8* buf, int size,
-                                       int max_bytes, bool mask_first_byte,
-                                       int64* num) {
+static int ParseWebMElementHeaderField(const uint8_t* buf,
+                                       int size,
+                                       int max_bytes,
+                                       bool mask_first_byte,
+                                       int64_t* num) {
   DCHECK(buf);
   DCHECK(num);
 
@@ -436,7 +439,7 @@ static int ParseWebMElementHeaderField(const uint8* buf, int size,
     return 0;
 
   int mask = 0x80;
-  uint8 ch = buf[0];
+  uint8_t ch = buf[0];
   int extra_bytes = -1;
   bool all_ones = false;
   for (int i = 0; i < max_bytes; ++i) {
@@ -471,8 +474,10 @@ static int ParseWebMElementHeaderField(const uint8* buf, int size,
   return bytes_used;
 }
 
-int WebMParseElementHeader(const uint8* buf, int size,
-                           int* id, int64* element_size) {
+int WebMParseElementHeader(const uint8_t* buf,
+                           int size,
+                           int* id,
+                           int64_t* element_size) {
   DCHECK(buf);
   DCHECK_GE(size, 0);
   DCHECK(id);
@@ -481,7 +486,7 @@ int WebMParseElementHeader(const uint8* buf, int size,
   if (size == 0)
     return 0;
 
-  int64 tmp = 0;
+  int64_t tmp = 0;
   int num_id_bytes = ParseWebMElementHeaderField(buf, size, 4, false, &tmp);
 
   if (num_id_bytes <= 0)
@@ -543,19 +548,22 @@ static int FindListLevel(int id) {
   return -1;
 }
 
-static int ParseUInt(const uint8* buf, int size, int id,
+static int ParseUInt(const uint8_t* buf,
+                     int size,
+                     int id,
                      WebMParserClient* client) {
   if ((size <= 0) || (size > 8))
     return -1;
 
   // Read in the big-endian integer.
-  uint64 value = 0;
+  uint64_t value = 0;
   for (int i = 0; i < size; ++i)
     value = (value << 8) | buf[i];
 
-  // We use int64 in place of uint64 everywhere for convenience.  See this bug
+  // We use int64_t in place of uint64_t everywhere for convenience.  See this
+  // bug
   // for more details: http://crbug.com/366750#c3
-  if (!base::IsValueInRangeForNumericType<int64>(value))
+  if (!base::IsValueInRangeForNumericType<int64_t>(value))
     return -1;
 
   if (!client->OnUInt(id, value))
@@ -564,16 +572,17 @@ static int ParseUInt(const uint8* buf, int size, int id,
   return size;
 }
 
-static int ParseFloat(const uint8* buf, int size, int id,
+static int ParseFloat(const uint8_t* buf,
+                      int size,
+                      int id,
                       WebMParserClient* client) {
-
   if ((size != 4) && (size != 8))
     return -1;
 
   double value = -1;
 
   // Read the bytes from big-endian form into a native endian integer.
-  int64 tmp = 0;
+  int64_t tmp = 0;
   for (int i = 0; i < size; ++i)
     tmp = (tmp << 8) | buf[i];
 
@@ -581,14 +590,14 @@ static int ParseFloat(const uint8* buf, int size, int id,
   // number.
   if (size == 4) {
     union {
-      int32 src;
+      int32_t src;
       float dst;
     } tmp2;
-    tmp2.src = static_cast<int32>(tmp);
+    tmp2.src = static_cast<int32_t>(tmp);
     value = tmp2.dst;
   } else if (size == 8) {
     union {
-      int64 src;
+      int64_t src;
       double dst;
     } tmp2;
     tmp2.src = tmp;
@@ -603,21 +612,28 @@ static int ParseFloat(const uint8* buf, int size, int id,
   return size;
 }
 
-static int ParseBinary(const uint8* buf, int size, int id,
+static int ParseBinary(const uint8_t* buf,
+                       int size,
+                       int id,
                        WebMParserClient* client) {
   return client->OnBinary(id, buf, size) ? size : -1;
 }
 
-static int ParseString(const uint8* buf, int size, int id,
+static int ParseString(const uint8_t* buf,
+                       int size,
+                       int id,
                        WebMParserClient* client) {
-  const uint8* end = static_cast<const uint8*>(memchr(buf, '\0', size));
+  const uint8_t* end = static_cast<const uint8_t*>(memchr(buf, '\0', size));
   int length = (end != NULL) ? static_cast<int>(end - buf) : size;
   std::string str(reinterpret_cast<const char*>(buf), length);
   return client->OnString(id, str) ? size : -1;
 }
 
-static int ParseNonListElement(ElementType type, int id, int64 element_size,
-                               const uint8* buf, int size,
+static int ParseNonListElement(ElementType type,
+                               int id,
+                               int64_t element_size,
+                               const uint8_t* buf,
+                               int size,
                                WebMParserClient* client) {
   DCHECK_GE(size, element_size);
 
@@ -664,7 +680,7 @@ bool WebMParserClient::OnListEnd(int id) {
   return false;
 }
 
-bool WebMParserClient::OnUInt(int id, int64 val) {
+bool WebMParserClient::OnUInt(int id, int64_t val) {
   DVLOG(1) << "Unexpected unsigned integer element with ID " << std::hex << id;
   return false;
 }
@@ -674,7 +690,7 @@ bool WebMParserClient::OnFloat(int id, double val) {
   return false;
 }
 
-bool WebMParserClient::OnBinary(int id, const uint8* data, int size) {
+bool WebMParserClient::OnBinary(int id, const uint8_t* data, int size) {
   DVLOG(1) << "Unexpected binary element with ID " << std::hex << id;
   return false;
 }
@@ -700,7 +716,7 @@ void WebMListParser::Reset() {
   list_state_stack_.clear();
 }
 
-int WebMListParser::Parse(const uint8* buf, int size) {
+int WebMListParser::Parse(const uint8_t* buf, int size) {
   DCHECK(buf);
 
   if (size < 0 || state_ == PARSE_ERROR || state_ == DONE_PARSING_LIST)
@@ -709,13 +725,13 @@ int WebMListParser::Parse(const uint8* buf, int size) {
   if (size == 0)
     return 0;
 
-  const uint8* cur = buf;
+  const uint8_t* cur = buf;
   int cur_size = size;
   int bytes_parsed = 0;
 
   while (cur_size > 0 && state_ != PARSE_ERROR && state_ != DONE_PARSING_LIST) {
     int element_id = 0;
-    int64 element_size = 0;
+    int64_t element_size = 0;
     int result = WebMParseElementHeader(cur, cur_size, &element_id,
                                         &element_size);
 
@@ -749,7 +765,7 @@ int WebMListParser::Parse(const uint8* buf, int size) {
 
       case INSIDE_LIST: {
         int header_size = result;
-        const uint8* element_data = cur + header_size;
+        const uint8_t* element_data = cur + header_size;
         int element_data_size = cur_size - header_size;
 
         if (element_size < element_data_size)
@@ -793,8 +809,10 @@ void WebMListParser::ChangeState(State new_state) {
 }
 
 int WebMListParser::ParseListElement(int header_size,
-                                     int id, int64 element_size,
-                                     const uint8* data, int size) {
+                                     int id,
+                                     int64_t element_size,
+                                     const uint8_t* data,
+                                     int size) {
   DCHECK_GT(list_state_stack_.size(), 0u);
 
   ListState& list_state = list_state_stack_.back();
@@ -827,7 +845,7 @@ int WebMListParser::ParseListElement(int header_size,
   }
 
   // Make sure the whole element can fit inside the current list.
-  int64 total_element_size = header_size + element_size;
+  int64_t total_element_size = header_size + element_size;
   if (list_state.size_ != kWebMUnknownSize &&
       list_state.size_ < list_state.bytes_parsed_ + total_element_size) {
     return -1;
@@ -869,7 +887,7 @@ int WebMListParser::ParseListElement(int header_size,
   return result;
 }
 
-bool WebMListParser::OnListStart(int id, int64 size) {
+bool WebMListParser::OnListStart(int id, int64_t size) {
   const ListElementInfo* element_info = FindListInfo(id);
   if (!element_info)
     return false;
@@ -907,7 +925,7 @@ bool WebMListParser::OnListEnd() {
   int lists_ended = 0;
   for (; !list_state_stack_.empty(); ++lists_ended) {
     const ListState& list_state = list_state_stack_.back();
-    int64 bytes_parsed = list_state.bytes_parsed_;
+    int64_t bytes_parsed = list_state.bytes_parsed_;
     int id = list_state.id_;
 
     if (bytes_parsed != list_state.size_)
@@ -952,3 +970,4 @@ bool WebMListParser::IsSiblingOrAncestor(int id_a, int id_b) const {
 }
 
 }  // namespace media
+}  // namespace edash_packager

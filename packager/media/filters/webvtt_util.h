@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FILTERS_WEBVTT_UTIL_H_
-#define MEDIA_FILTERS_WEBVTT_UTIL_H_
+#ifndef PACKAGER_MEDIA_FILTERS_WEBVTT_UTIL_H_
+#define PACKAGER_MEDIA_FILTERS_WEBVTT_UTIL_H_
 
 #include <vector>
 
+namespace edash_packager {
 namespace media {
 
 // Utility function to create side data item for decoder buffer.
@@ -26,5 +27,6 @@ void MakeSideData(T id_begin, T id_end,
 }
 
 }  // namespace media
+}  // namespace edash_packager
 
-#endif  // MEDIA_FILTERS_WEBVTT_UTIL_H_
+#endif  // PACKAGER_MEDIA_FILTERS_WEBVTT_UTIL_H_

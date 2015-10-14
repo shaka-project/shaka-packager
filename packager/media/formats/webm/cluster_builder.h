@@ -5,21 +5,22 @@
 #ifndef MEDIA_FORMATS_WEBM_CLUSTER_BUILDER_H_
 #define MEDIA_FORMATS_WEBM_CLUSTER_BUILDER_H_
 
-#include "base/basictypes.h"
-#include "base/memory/scoped_ptr.h"
+#include <stdint.h>
+#include "packager/base/memory/scoped_ptr.h"
 
+namespace edash_packager {
 namespace media {
 
 class Cluster {
  public:
-  Cluster(scoped_ptr<uint8[]> data, int size);
+  Cluster(scoped_ptr<uint8_t[]> data, int size);
   ~Cluster();
 
-  const uint8* data() const { return data_.get(); }
+  const uint8_t* data() const { return data_.get(); }
   int size() const { return size_; }
 
  private:
-  scoped_ptr<uint8[]> data_;
+  scoped_ptr<uint8_t[]> data_;
   int size_;
 
   DISALLOW_IMPLICIT_CONSTRUCTORS(Cluster);
@@ -30,35 +31,54 @@ class ClusterBuilder {
   ClusterBuilder();
   ~ClusterBuilder();
 
-  void SetClusterTimecode(int64 cluster_timecode);
-  void AddSimpleBlock(int track_num, int64 timecode, int flags,
-                      const uint8* data, int size);
-  void AddBlockGroup(int track_num, int64 timecode, int duration, int flags,
-                     const uint8* data, int size);
-  void AddBlockGroupWithoutBlockDuration(int track_num, int64 timecode,
-                     int flags, const uint8* data, int size);
+  void SetClusterTimecode(int64_t cluster_timecode);
+  void AddSimpleBlock(int track_num,
+                      int64_t timecode,
+                      int flags,
+                      const uint8_t* data,
+                      int size);
+  void AddBlockGroup(int track_num,
+                     int64_t timecode,
+                     int duration,
+                     int flags,
+                     const uint8_t* data,
+                     int size);
+  void AddBlockGroupWithoutBlockDuration(int track_num,
+                                         int64_t timecode,
+                                         int flags,
+                                         const uint8_t* data,
+                                         int size);
 
   scoped_ptr<Cluster> Finish();
   scoped_ptr<Cluster> FinishWithUnknownSize();
 
  private:
-  void AddBlockGroupInternal(int track_num, int64 timecode,
-                             bool include_block_duration, int duration,
-                             int flags, const uint8* data, int size);
+  void AddBlockGroupInternal(int track_num,
+                             int64_t timecode,
+                             bool include_block_duration,
+                             int duration,
+                             int flags,
+                             const uint8_t* data,
+                             int size);
   void Reset();
   void ExtendBuffer(int bytes_needed);
-  void UpdateUInt64(int offset, int64 value);
-  void WriteBlock(uint8* buf, int track_num, int64 timecode, int flags,
-                  const uint8* data, int size);
+  void UpdateUInt64(int offset, int64_t value);
+  void WriteBlock(uint8_t* buf,
+                  int track_num,
+                  int64_t timecode,
+                  int flags,
+                  const uint8_t* data,
+                  int size);
 
-  scoped_ptr<uint8[]> buffer_;
+  scoped_ptr<uint8_t[]> buffer_;
   int buffer_size_;
   int bytes_used_;
-  int64 cluster_timecode_;
+  int64_t cluster_timecode_;
 
   DISALLOW_COPY_AND_ASSIGN(ClusterBuilder);
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_WEBM_CLUSTER_BUILDER_H_

@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/webm/webm_content_encodings_client.h"
+#include "packager/media/formats/webm/webm_content_encodings_client.h"
 
-#include "base/logging.h"
-#include "base/stl_util.h"
-#include "media/formats/webm/webm_constants.h"
+#include "packager/base/logging.h"
+#include "packager/base/stl_util.h"
+#include "packager/media/formats/webm/webm_constants.h"
 
+namespace edash_packager {
 namespace media {
 
-WebMContentEncodingsClient::WebMContentEncodingsClient(
-    const scoped_refptr<MediaLog>& media_log)
-    : media_log_(media_log),
-      content_encryption_encountered_(false),
-      content_encodings_ready_(false) {
-}
+WebMContentEncodingsClient::WebMContentEncodingsClient()
+    : content_encryption_encountered_(false), content_encodings_ready_(false) {}
 
 WebMContentEncodingsClient::~WebMContentEncodingsClient() {
   STLDeleteElements(&content_encodings_);
@@ -45,7 +42,7 @@ WebMParserClient* WebMContentEncodingsClient::OnListStart(int id) {
   if (id == kWebMIdContentEncryption) {
     DCHECK(cur_content_encoding_.get());
     if (content_encryption_encountered_) {
-      MEDIA_LOG(ERROR, media_log_) << "Unexpected multiple ContentEncryption.";
+      LOG(ERROR) << "Unexpected multiple ContentEncryption.";
       return NULL;
     }
     content_encryption_encountered_ = true;
@@ -68,7 +65,7 @@ bool WebMContentEncodingsClient::OnListEnd(int id) {
   if (id == kWebMIdContentEncodings) {
     // ContentEncoding element is mandatory. Check this!
     if (content_encodings_.empty()) {
-      MEDIA_LOG(ERROR, media_log_) << "Missing ContentEncoding.";
+      LOG(ERROR) << "Missing ContentEncoding.";
       return false;
     }
     content_encodings_ready_ = true;
@@ -86,7 +83,7 @@ bool WebMContentEncodingsClient::OnListEnd(int id) {
       // Default value of encoding order is 0, which should only be used on the
       // first ContentEncoding.
       if (!content_encodings_.empty()) {
-        MEDIA_LOG(ERROR, media_log_) << "Missing ContentEncodingOrder.";
+        LOG(ERROR) << "Missing ContentEncodingOrder.";
         return false;
       }
       cur_content_encoding_->set_order(0);
@@ -100,15 +97,15 @@ bool WebMContentEncodingsClient::OnListEnd(int id) {
 
     // Check for elements valid in spec but not supported for now.
     if (cur_content_encoding_->type() == ContentEncoding::kTypeCompression) {
-      MEDIA_LOG(ERROR, media_log_) << "ContentCompression not supported.";
+      LOG(ERROR) << "ContentCompression not supported.";
       return false;
     }
 
     // Enforce mandatory elements without default values.
     DCHECK(cur_content_encoding_->type() == ContentEncoding::kTypeEncryption);
     if (!content_encryption_encountered_) {
-      MEDIA_LOG(ERROR, media_log_) << "ContentEncodingType is encryption but"
-                                   << " ContentEncryption is missing.";
+      LOG(ERROR) << "ContentEncodingType is encryption but"
+                 << " ContentEncryption is missing.";
       return false;
     }
 
@@ -142,19 +139,18 @@ bool WebMContentEncodingsClient::OnListEnd(int id) {
 
 // Multiple occurrence restriction and range are checked in this function.
 // Mandatory occurrence restriction is checked in OnListEnd.
-bool WebMContentEncodingsClient::OnUInt(int id, int64 val) {
+bool WebMContentEncodingsClient::OnUInt(int id, int64_t val) {
   DCHECK(cur_content_encoding_.get());
 
   if (id == kWebMIdContentEncodingOrder) {
     if (cur_content_encoding_->order() != ContentEncoding::kOrderInvalid) {
-      MEDIA_LOG(ERROR, media_log_)
-          << "Unexpected multiple ContentEncodingOrder.";
+      LOG(ERROR) << "Unexpected multiple ContentEncodingOrder.";
       return false;
     }
 
-    if (val != static_cast<int64>(content_encodings_.size())) {
+    if (val != static_cast<int64_t>(content_encodings_.size())) {
       // According to the spec, encoding order starts with 0 and counts upwards.
-      MEDIA_LOG(ERROR, media_log_) << "Unexpected ContentEncodingOrder.";
+      LOG(ERROR) << "Unexpected ContentEncodingOrder.";
       return false;
     }
 
@@ -164,20 +160,19 @@ bool WebMContentEncodingsClient::OnUInt(int id, int64 val) {
 
   if (id == kWebMIdContentEncodingScope) {
     if (cur_content_encoding_->scope() != ContentEncoding::kScopeInvalid) {
-      MEDIA_LOG(ERROR, media_log_)
-          << "Unexpected multiple ContentEncodingScope.";
+      LOG(ERROR) << "Unexpected multiple ContentEncodingScope.";
       return false;
     }
 
     if (val == ContentEncoding::kScopeInvalid ||
         val > ContentEncoding::kScopeMax) {
-      MEDIA_LOG(ERROR, media_log_) << "Unexpected ContentEncodingScope.";
+      LOG(ERROR) << "Unexpected ContentEncodingScope.";
       return false;
     }
 
     if (val & ContentEncoding::kScopeNextContentEncodingData) {
-      MEDIA_LOG(ERROR, media_log_) << "Encoded next ContentEncoding is not "
-                                      "supported.";
+      LOG(ERROR) << "Encoded next ContentEncoding is not "
+                    "supported.";
       return false;
     }
 
@@ -187,19 +182,17 @@ bool WebMContentEncodingsClient::OnUInt(int id, int64 val) {
 
   if (id == kWebMIdContentEncodingType) {
     if (cur_content_encoding_->type() != ContentEncoding::kTypeInvalid) {
-      MEDIA_LOG(ERROR, media_log_)
-          << "Unexpected multiple ContentEncodingType.";
+      LOG(ERROR) << "Unexpected multiple ContentEncodingType.";
       return false;
     }
 
     if (val == ContentEncoding::kTypeCompression) {
-      MEDIA_LOG(ERROR, media_log_) << "ContentCompression not supported.";
+      LOG(ERROR) << "ContentCompression not supported.";
       return false;
     }
 
     if (val != ContentEncoding::kTypeEncryption) {
-      MEDIA_LOG(ERROR, media_log_) << "Unexpected ContentEncodingType " << val
-                                   << ".";
+      LOG(ERROR) << "Unexpected ContentEncodingType " << val << ".";
       return false;
     }
 
@@ -210,14 +203,13 @@ bool WebMContentEncodingsClient::OnUInt(int id, int64 val) {
   if (id == kWebMIdContentEncAlgo) {
     if (cur_content_encoding_->encryption_algo() !=
         ContentEncoding::kEncAlgoInvalid) {
-      MEDIA_LOG(ERROR, media_log_) << "Unexpected multiple ContentEncAlgo.";
+      LOG(ERROR) << "Unexpected multiple ContentEncAlgo.";
       return false;
     }
 
     if (val < ContentEncoding::kEncAlgoNotEncrypted ||
         val > ContentEncoding::kEncAlgoAes) {
-      MEDIA_LOG(ERROR, media_log_) << "Unexpected ContentEncAlgo " << val
-                                   << ".";
+      LOG(ERROR) << "Unexpected ContentEncAlgo " << val << ".";
       return false;
     }
 
@@ -229,14 +221,12 @@ bool WebMContentEncodingsClient::OnUInt(int id, int64 val) {
   if (id == kWebMIdAESSettingsCipherMode) {
     if (cur_content_encoding_->cipher_mode() !=
         ContentEncoding::kCipherModeInvalid) {
-      MEDIA_LOG(ERROR, media_log_)
-          << "Unexpected multiple AESSettingsCipherMode.";
+      LOG(ERROR) << "Unexpected multiple AESSettingsCipherMode.";
       return false;
     }
 
     if (val != ContentEncoding::kCipherModeCtr) {
-      MEDIA_LOG(ERROR, media_log_) << "Unexpected AESSettingsCipherMode " << val
-                                   << ".";
+      LOG(ERROR) << "Unexpected AESSettingsCipherMode " << val << ".";
       return false;
     }
 
@@ -252,14 +242,16 @@ bool WebMContentEncodingsClient::OnUInt(int id, int64 val) {
 
 // Multiple occurrence restriction is checked in this function.  Mandatory
 // restriction is checked in OnListEnd.
-bool WebMContentEncodingsClient::OnBinary(int id, const uint8* data, int size) {
+bool WebMContentEncodingsClient::OnBinary(int id,
+                                          const uint8_t* data,
+                                          int size) {
   DCHECK(cur_content_encoding_.get());
   DCHECK(data);
   DCHECK_GT(size, 0);
 
   if (id == kWebMIdContentEncKeyID) {
     if (!cur_content_encoding_->encryption_key_id().empty()) {
-      MEDIA_LOG(ERROR, media_log_) << "Unexpected multiple ContentEncKeyID";
+      LOG(ERROR) << "Unexpected multiple ContentEncKeyID";
       return false;
     }
     cur_content_encoding_->SetEncryptionKeyId(data, size);
@@ -272,3 +264,4 @@ bool WebMContentEncodingsClient::OnBinary(int id, const uint8* data, int size) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

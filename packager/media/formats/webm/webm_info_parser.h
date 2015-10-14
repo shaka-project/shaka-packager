@@ -5,15 +5,15 @@
 #ifndef MEDIA_FORMATS_WEBM_WEBM_INFO_PARSER_H_
 #define MEDIA_FORMATS_WEBM_WEBM_INFO_PARSER_H_
 
-#include "base/compiler_specific.h"
-#include "base/time/time.h"
-#include "media/base/media_export.h"
-#include "media/formats/webm/webm_parser.h"
+#include "packager/base/compiler_specific.h"
+#include "packager/base/time/time.h"
+#include "packager/media/formats/webm/webm_parser.h"
 
+namespace edash_packager {
 namespace media {
 
 // Parser for WebM Info element.
-class MEDIA_EXPORT WebMInfoParser : public WebMParserClient {
+class WebMInfoParser : public WebMParserClient {
  public:
   WebMInfoParser();
   ~WebMInfoParser() override;
@@ -23,9 +23,9 @@ class MEDIA_EXPORT WebMInfoParser : public WebMParserClient {
   // Returns -1 if the parse fails.
   // Returns 0 if more data is needed.
   // Returns the number of bytes parsed on success.
-  int Parse(const uint8* buf, int size);
+  int Parse(const uint8_t* buf, int size);
 
-  int64 timecode_scale() const { return timecode_scale_; }
+  int64_t timecode_scale() const { return timecode_scale_; }
   double duration() const { return duration_; }
   base::Time date_utc() const { return date_utc_; }
 
@@ -33,12 +33,12 @@ class MEDIA_EXPORT WebMInfoParser : public WebMParserClient {
   // WebMParserClient methods
   WebMParserClient* OnListStart(int id) override;
   bool OnListEnd(int id) override;
-  bool OnUInt(int id, int64 val) override;
+  bool OnUInt(int id, int64_t val) override;
   bool OnFloat(int id, double val) override;
-  bool OnBinary(int id, const uint8* data, int size) override;
+  bool OnBinary(int id, const uint8_t* data, int size) override;
   bool OnString(int id, const std::string& str) override;
 
-  int64 timecode_scale_;
+  int64_t timecode_scale_;
   double duration_;
   base::Time date_utc_;
 
@@ -46,5 +46,6 @@ class MEDIA_EXPORT WebMInfoParser : public WebMParserClient {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_INFO_PARSER_H_

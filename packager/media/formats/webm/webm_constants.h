@@ -5,9 +5,9 @@
 #ifndef MEDIA_FORMATS_WEBM_WEBM_CONSTANTS_H_
 #define MEDIA_FORMATS_WEBM_WEBM_CONSTANTS_H_
 
-#include "base/basictypes.h"
-#include "media/base/media_export.h"
+#include <stdint.h>
 
+namespace edash_packager {
 namespace media {
 
 // WebM element IDs.
@@ -200,14 +200,14 @@ const int kWebMIdVideo = 0xE0;
 const int kWebMIdVoid = 0xEC;
 const int kWebMIdWritingApp = 0x5741;
 
-const int64 kWebMReservedId = 0x1FFFFFFF;
-const int64 kWebMUnknownSize = 0x00FFFFFFFFFFFFFFLL;
+const int64_t kWebMReservedId = 0x1FFFFFFF;
+const int64_t kWebMUnknownSize = 0x00FFFFFFFFFFFFFFLL;
 
-const uint8 kWebMFlagKeyframe = 0x80;
+const uint8_t kWebMFlagKeyframe = 0x80;
 
 // Current encrypted WebM request for comments specification is here
 // http://wiki.webmproject.org/encryption/webm-encryption-rfc
-const uint8 kWebMFlagEncryptedFrame = 0x1;
+const uint8_t kWebMFlagEncryptedFrame = 0x1;
 const int kWebMIvSize = 8;
 const int kWebMSignalByteSize = 1;
 
@@ -219,11 +219,12 @@ const int kWebMTrackTypeAudio = 2;
 const int kWebMTrackTypeSubtitlesOrCaptions = 0x11;
 const int kWebMTrackTypeDescriptionsOrMetadata = 0x21;
 
-MEDIA_EXPORT extern const char kWebMCodecSubtitles[];
-MEDIA_EXPORT extern const char kWebMCodecCaptions[];
-MEDIA_EXPORT extern const char kWebMCodecDescriptions[];
-MEDIA_EXPORT extern const char kWebMCodecMetadata[];
+extern const char kWebMCodecSubtitles[];
+extern const char kWebMCodecCaptions[];
+extern const char kWebMCodecDescriptions[];
+extern const char kWebMCodecMetadata[];
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_CONSTANTS_H_

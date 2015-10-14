@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/webm/webm_info_parser.h"
+#include "packager/media/formats/webm/webm_info_parser.h"
 
-#include "base/logging.h"
-#include "media/formats/webm/webm_constants.h"
+#include "packager/base/logging.h"
+#include "packager/media/formats/webm/webm_constants.h"
 
+namespace edash_packager {
 namespace media {
 
 // Default timecode scale if the TimecodeScale element is
@@ -20,7 +21,7 @@ WebMInfoParser::WebMInfoParser()
 
 WebMInfoParser::~WebMInfoParser() {}
 
-int WebMInfoParser::Parse(const uint8* buf, int size) {
+int WebMInfoParser::Parse(const uint8_t* buf, int size) {
   timecode_scale_ = -1;
   duration_ = -1;
 
@@ -45,7 +46,7 @@ bool WebMInfoParser::OnListEnd(int id) {
   return true;
 }
 
-bool WebMInfoParser::OnUInt(int id, int64 val) {
+bool WebMInfoParser::OnUInt(int id, int64_t val) {
   if (id != kWebMIdTimecodeScale)
     return true;
 
@@ -73,12 +74,12 @@ bool WebMInfoParser::OnFloat(int id, double val) {
   return true;
 }
 
-bool WebMInfoParser::OnBinary(int id, const uint8* data, int size) {
+bool WebMInfoParser::OnBinary(int id, const uint8_t* data, int size) {
   if (id == kWebMIdDateUTC) {
     if (size != 8)
       return false;
 
-    int64 date_in_nanoseconds = 0;
+    int64_t date_in_nanoseconds = 0;
     for (int i = 0; i < size; ++i)
       date_in_nanoseconds = (date_in_nanoseconds << 8) | data[i];
 
@@ -101,3 +102,4 @@ bool WebMInfoParser::OnString(int id, const std::string& str) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

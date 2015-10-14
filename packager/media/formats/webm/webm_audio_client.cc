@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/webm/webm_audio_client.h"
+#include "packager/media/formats/webm/webm_audio_client.h"
 
-#include "media/base/audio_decoder_config.h"
-#include "media/base/channel_layout.h"
-#include "media/formats/webm/webm_constants.h"
+#include "packager/media/base/audio_decoder_config.h"
+#include "packager/media/base/channel_layout.h"
+#include "packager/media/formats/webm/webm_constants.h"
 
+namespace edash_packager {
 namespace media {
 
-WebMAudioClient::WebMAudioClient(const scoped_refptr<MediaLog>& media_log)
-    : media_log_(media_log) {
+WebMAudioClient::WebMAudioClient() {
   Reset();
 }
 
@@ -25,8 +25,11 @@ void WebMAudioClient::Reset() {
 }
 
 bool WebMAudioClient::InitializeConfig(
-    const std::string& codec_id, const std::vector<uint8>& codec_private,
-    int64 seek_preroll, int64 codec_delay, bool is_encrypted,
+    const std::string& codec_id,
+    const std::vector<uint8_t>& codec_private,
+    int64_t seek_preroll,
+    int64_t codec_delay,
+    bool is_encrypted,
     AudioDecoderConfig* config) {
   DCHECK(config);
   SampleFormat sample_format = kSampleFormatPlanarF32;
@@ -37,7 +40,7 @@ bool WebMAudioClient::InitializeConfig(
   } else if (codec_id == "A_OPUS") {
     audio_codec = kCodecOpus;
   } else {
-    MEDIA_LOG(ERROR, media_log_) << "Unsupported audio codec_id " << codec_id;
+    LOG(ERROR) << "Unsupported audio codec_id " << codec_id;
     return false;
   }
 
@@ -51,7 +54,7 @@ bool WebMAudioClient::InitializeConfig(
   ChannelLayout channel_layout =  GuessChannelLayout(channels_);
 
   if (channel_layout == CHANNEL_LAYOUT_UNSUPPORTED) {
-    MEDIA_LOG(ERROR, media_log_) << "Unsupported channel count " << channels_;
+    LOG(ERROR) << "Unsupported channel count " << channels_;
     return false;
   }
 
@@ -66,7 +69,7 @@ bool WebMAudioClient::InitializeConfig(
     sample_format = kSampleFormatF32;
   }
 
-  const uint8* extra_data = NULL;
+  const uint8_t* extra_data = NULL;
   size_t extra_data_size = 0;
   if (codec_private.size() > 0) {
     extra_data = &codec_private[0];
@@ -96,12 +99,11 @@ bool WebMAudioClient::InitializeConfig(
   return config->IsValidConfig();
 }
 
-bool WebMAudioClient::OnUInt(int id, int64 val) {
+bool WebMAudioClient::OnUInt(int id, int64_t val) {
   if (id == kWebMIdChannels) {
     if (channels_ != -1) {
-      MEDIA_LOG(ERROR, media_log_) << "Multiple values for id " << std::hex
-                                   << id << " specified. (" << channels_
-                                   << " and " << val << ")";
+      LOG(ERROR) << "Multiple values for id " << std::hex << id
+                 << " specified. (" << channels_ << " and " << val << ")";
       return false;
     }
 
@@ -128,9 +130,8 @@ bool WebMAudioClient::OnFloat(int id, double val) {
     return false;
 
   if (*dst != -1) {
-    MEDIA_LOG(ERROR, media_log_) << "Multiple values for id " << std::hex << id
-                                 << " specified (" << *dst << " and " << val
-                                 << ")";
+    LOG(ERROR) << "Multiple values for id " << std::hex << id << " specified ("
+               << *dst << " and " << val << ")";
     return false;
   }
 
@@ -139,3 +140,4 @@ bool WebMAudioClient::OnFloat(int id, double val) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

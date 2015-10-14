@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/webm/webm_webvtt_parser.h"
-#include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "packager/media/formats/webm/webm_webvtt_parser.h"
+
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using ::testing::InSequence;
 
+namespace edash_packager {
 namespace media {
 
-typedef std::vector<uint8> Cue;
+typedef std::vector<uint8_t> Cue;
 
 static Cue EncodeCue(const std::string& id,
                      const std::string& settings,
                      const std::string& content) {
   const std::string result = id + '\n' + settings + '\n' + content;
-  const uint8* const buf = reinterpret_cast<const uint8*>(result.data());
+  const uint8_t* const buf = reinterpret_cast<const uint8_t*>(result.data());
   return Cue(buf, buf + result.length());
 }
 
@@ -103,3 +105,4 @@ TEST_F(WebMWebVTTParserTest, Content) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

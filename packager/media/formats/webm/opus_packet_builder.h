@@ -7,9 +7,10 @@
 
 #include <vector>
 
-#include "base/memory/scoped_ptr.h"
-#include "base/memory/scoped_vector.h"
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/memory/scoped_vector.h"
 
+namespace edash_packager {
 namespace media {
 
 // From Opus RFC. See https://tools.ietf.org/html/rfc6716#page-14
@@ -39,5 +40,6 @@ class OpusPacket {
 ScopedVector<OpusPacket> BuildAllOpusPackets();
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_WEBM_OPUS_PACKET_BUILDER_H_

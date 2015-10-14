@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
-#include "media/formats/webm/webm_content_encodings.h"
+#include "packager/base/logging.h"
+#include "packager/media/formats/webm/webm_content_encodings.h"
 
+namespace edash_packager {
 namespace media {
 
 ContentEncoding::ContentEncoding()
@@ -17,7 +18,7 @@ ContentEncoding::ContentEncoding()
 
 ContentEncoding::~ContentEncoding() {}
 
-void ContentEncoding::SetEncryptionKeyId(const uint8* encryption_key_id,
+void ContentEncoding::SetEncryptionKeyId(const uint8_t* encryption_key_id,
                                          int size) {
   DCHECK(encryption_key_id);
   DCHECK_GT(size, 0);
@@ -26,3 +27,4 @@ void ContentEncoding::SetEncryptionKeyId(const uint8* encryption_key_id,
 }
 
 }  // namespace media
+}  // namespace edash_packager

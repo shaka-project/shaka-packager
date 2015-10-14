@@ -5,12 +5,15 @@
 #ifndef MEDIA_FORMATS_WEBM_TRACKS_BUILDER_H_
 #define MEDIA_FORMATS_WEBM_TRACKS_BUILDER_H_
 
+#include <stdint.h>
+
 #include <list>
 #include <string>
 #include <vector>
 
-#include "base/basictypes.h"
+#include "packager/base/macros.h"
 
+namespace edash_packager {
 namespace media {
 
 class TracksBuilder {
@@ -28,7 +31,7 @@ class TracksBuilder {
   // DefaultDuration. Similar applies to |audio_channels|,
   // |audio_sampling_frequency|, |video_pixel_width| and |video_pixel_height|.
   void AddVideoTrack(int track_num,
-                     uint64 track_uid,
+                     uint64_t track_uid,
                      const std::string& codec_id,
                      const std::string& name,
                      const std::string& language,
@@ -36,7 +39,7 @@ class TracksBuilder {
                      int video_pixel_width,
                      int video_pixel_height);
   void AddAudioTrack(int track_num,
-                     uint64 track_uid,
+                     uint64_t track_uid,
                      const std::string& codec_id,
                      const std::string& name,
                      const std::string& language,
@@ -44,17 +47,17 @@ class TracksBuilder {
                      int audio_channels,
                      double audio_sampling_frequency);
   void AddTextTrack(int track_num,
-                    uint64 track_uid,
+                    uint64_t track_uid,
                     const std::string& codec_id,
                     const std::string& name,
                     const std::string& language);
 
-  std::vector<uint8> Finish();
+  std::vector<uint8_t> Finish();
 
  private:
   void AddTrackInternal(int track_num,
                         int track_type,
-                        uint64 track_uid,
+                        uint64_t track_uid,
                         const std::string& codec_id,
                         const std::string& name,
                         const std::string& language,
@@ -65,13 +68,13 @@ class TracksBuilder {
                         double audio_sampling_frequency);
   int GetTracksSize() const;
   int GetTracksPayloadSize() const;
-  void WriteTracks(uint8* buffer, int buffer_size) const;
+  void WriteTracks(uint8_t* buffer, int buffer_size) const;
 
   class Track {
    public:
     Track(int track_num,
           int track_type,
-          uint64 track_uid,
+          uint64_t track_uid,
           const std::string& codec_id,
           const std::string& name,
           const std::string& language,
@@ -83,7 +86,8 @@ class TracksBuilder {
           bool allow_invalid_values);
 
     int GetSize() const;
-    void Write(uint8** buf, int* buf_size) const;
+    void Write(uint8_t** buf, int* buf_size) const;
+
    private:
     int GetPayloadSize() const;
     int GetVideoPayloadSize() const;
@@ -110,5 +114,6 @@ class TracksBuilder {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_WEBM_TRACKS_BUILDER_H_

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/webm/webm_video_client.h"
+#include "packager/media/formats/webm/webm_video_client.h"
 
-#include "media/base/video_decoder_config.h"
-#include "media/formats/webm/webm_constants.h"
+#include "packager/media/base/video_decoder_config.h"
+#include "packager/media/formats/webm/webm_constants.h"
 
+namespace edash_packager {
 namespace media {
 
-WebMVideoClient::WebMVideoClient(const scoped_refptr<MediaLog>& media_log)
-    : media_log_(media_log) {
+WebMVideoClient::WebMVideoClient() {
   Reset();
 }
 
@@ -31,8 +31,10 @@ void WebMVideoClient::Reset() {
 }
 
 bool WebMVideoClient::InitializeConfig(
-    const std::string& codec_id, const std::vector<uint8>& codec_private,
-    bool is_encrypted, VideoDecoderConfig* config) {
+    const std::string& codec_id,
+    const std::vector<uint8_t>& codec_private,
+    bool is_encrypted,
+    VideoDecoderConfig* config) {
   DCHECK(config);
 
   VideoCodec video_codec = kUnknownVideoCodec;
@@ -44,7 +46,7 @@ bool WebMVideoClient::InitializeConfig(
     video_codec = kCodecVP9;
     profile = VP9PROFILE_ANY;
   } else {
-    MEDIA_LOG(ERROR, media_log_) << "Unsupported video codec_id " << codec_id;
+    LOG(ERROR) << "Unsupported video codec_id " << codec_id;
     return false;
   }
 
@@ -83,12 +85,11 @@ bool WebMVideoClient::InitializeConfig(
     if (display_width_ <= 0 || display_height_ <= 0)
       return false;
   } else {
-    MEDIA_LOG(ERROR, media_log_) << "Unsupported display unit type "
-                                 << display_unit_;
+    LOG(ERROR) << "Unsupported display unit type " << display_unit_;
     return false;
   }
   gfx::Size natural_size = gfx::Size(display_width_, display_height_);
-  const uint8* extra_data = NULL;
+  const uint8_t* extra_data = NULL;
   size_t extra_data_size = 0;
   if (codec_private.size() > 0) {
     extra_data = &codec_private[0];
@@ -101,8 +102,8 @@ bool WebMVideoClient::InitializeConfig(
   return config->IsValidConfig();
 }
 
-bool WebMVideoClient::OnUInt(int id, int64 val) {
-  int64* dst = NULL;
+bool WebMVideoClient::OnUInt(int id, int64_t val) {
+  int64_t* dst = NULL;
 
   switch (id) {
     case kWebMIdPixelWidth:
@@ -140,9 +141,8 @@ bool WebMVideoClient::OnUInt(int id, int64 val) {
   }
 
   if (*dst != -1) {
-    MEDIA_LOG(ERROR, media_log_) << "Multiple values for id " << std::hex << id
-                                 << " specified (" << *dst << " and " << val
-                                 << ")";
+    LOG(ERROR) << "Multiple values for id " << std::hex << id << " specified ("
+               << *dst << " and " << val << ")";
     return false;
   }
 
@@ -150,7 +150,7 @@ bool WebMVideoClient::OnUInt(int id, int64 val) {
   return true;
 }
 
-bool WebMVideoClient::OnBinary(int id, const uint8* data, int size) {
+bool WebMVideoClient::OnBinary(int id, const uint8_t* data, int size) {
   // Accept binary fields we don't care about for now.
   return true;
 }
@@ -161,3 +161,4 @@ bool WebMVideoClient::OnFloat(int id, double val) {
 }
 
 }  // namespace media
+}  // namespace edash_packager

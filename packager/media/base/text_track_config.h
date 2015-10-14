@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_TEXT_TRACK_CONFIG_H_
-#define MEDIA_BASE_TEXT_TRACK_CONFIG_H_
+#ifndef PACKAGER_MEDIA_BASE_TEXT_TRACK_CONFIG_H_
+#define PACKAGER_MEDIA_BASE_TEXT_TRACK_CONFIG_H_
 
 #include <string>
 
-#include "media/base/media_export.h"
-
+namespace edash_packager {
 namespace media {
 
 // Specifies the varieties of text tracks.
@@ -20,7 +19,7 @@ enum TextKind {
   kTextNone
 };
 
-class MEDIA_EXPORT TextTrackConfig {
+class TextTrackConfig {
  public:
   TextTrackConfig();
   TextTrackConfig(TextKind kind,
@@ -44,5 +43,6 @@ class MEDIA_EXPORT TextTrackConfig {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
-#endif  // MEDIA_BASE_TEXT_TRACK_H_
+#endif  // PACKAGER_MEDIA_BASE_TEXT_TRACK_H_

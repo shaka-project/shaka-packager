@@ -5,12 +5,14 @@
 #ifndef MEDIA_FORMATS_WEBM_WEBM_PARSER_H_
 #define MEDIA_FORMATS_WEBM_WEBM_PARSER_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 
-#include "base/basictypes.h"
-#include "media/base/media_export.h"
+#include "packager/base/macros.h"
 
+namespace edash_packager {
 namespace media {
 
 // Interface for receiving WebM parser events.
@@ -25,15 +27,15 @@ namespace media {
 // handle elements parsed out of the list being started. If false (or NULL by
 // OnListStart) is returned then the parse is immediately terminated and an
 // error is reported by the parser.
-class MEDIA_EXPORT WebMParserClient {
+class WebMParserClient {
  public:
   virtual ~WebMParserClient();
 
   virtual WebMParserClient* OnListStart(int id);
   virtual bool OnListEnd(int id);
-  virtual bool OnUInt(int id, int64 val);
+  virtual bool OnUInt(int id, int64_t val);
   virtual bool OnFloat(int id, double val);
-  virtual bool OnBinary(int id, const uint8* data, int size);
+  virtual bool OnBinary(int id, const uint8_t* data, int size);
   virtual bool OnString(int id, const std::string& str);
 
  protected:
@@ -49,7 +51,7 @@ struct ListElementInfo;
 // can be called multiple times with pieces of the list.
 // IsParsingComplete() will return true once the entire list has
 // been parsed.
-class MEDIA_EXPORT WebMListParser {
+class WebMListParser {
  public:
   // |id| - Element ID of the list we intend to parse.
   // |client| - Called as different elements in the list are parsed.
@@ -64,7 +66,7 @@ class MEDIA_EXPORT WebMListParser {
   // Returns < 0 if the parse fails.
   // Returns 0 if more data is needed.
   // Returning > 0 indicates success & the number of bytes parsed.
-  int Parse(const uint8* buf, int size);
+  int Parse(const uint8_t* buf, int size);
 
   // Returns true if the entire list has been parsed.
   bool IsParsingComplete() const;
@@ -79,8 +81,8 @@ class MEDIA_EXPORT WebMListParser {
 
   struct ListState {
     int id_;
-    int64 size_;
-    int64 bytes_parsed_;
+    int64_t size_;
+    int64_t bytes_parsed_;
     const ListElementInfo* element_info_;
     WebMParserClient* client_;
   };
@@ -100,8 +102,10 @@ class MEDIA_EXPORT WebMListParser {
   // Returns 0 if more data is needed.
   // Returning > 0 indicates success & the number of bytes parsed.
   int ParseListElement(int header_size,
-                       int id, int64 element_size,
-                       const uint8* data, int size);
+                       int id,
+                       int64_t element_size,
+                       const uint8_t* data,
+                       int size);
 
   // Called when starting to parse a new list.
   //
@@ -111,7 +115,7 @@ class MEDIA_EXPORT WebMListParser {
   //
   // Returns true if this list can be started in the current context. False
   // if starting this list causes some sort of parse error.
-  bool OnListStart(int id, int64 size);
+  bool OnListStart(int id, int64_t size);
 
   // Called when the end of the current list has been reached. This may also
   // signal the end of the current list's ancestors if the current list happens
@@ -150,9 +154,12 @@ class MEDIA_EXPORT WebMListParser {
 // |*id| contains the element ID on success and is undefined otherwise.
 // |*element_size| contains the element size on success and is undefined
 //                 otherwise.
-int MEDIA_EXPORT WebMParseElementHeader(const uint8* buf, int size,
-                                        int* id, int64* element_size);
+int WebMParseElementHeader(const uint8_t* buf,
+                           int size,
+                           int* id,
+                           int64_t* element_size);
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_PARSER_H_

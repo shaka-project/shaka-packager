@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/webm/tracks_builder.h"
+#include "packager/media/formats/webm/tracks_builder.h"
 
-#include "base/logging.h"
-#include "media/formats/webm/webm_constants.h"
+#include "packager/base/logging.h"
+#include "packager/media/formats/webm/webm_constants.h"
 
+namespace edash_packager {
 namespace media {
 
 // Returns size of an integer, formatted using Matroska serialization.
-static int GetUIntMkvSize(uint64 value) {
+static int GetUIntMkvSize(uint64_t value) {
   if (value < 0x07FULL)
     return 1;
   if (value < 0x03FFFULL)
@@ -29,7 +30,7 @@ static int GetUIntMkvSize(uint64 value) {
 }
 
 // Returns the minimium size required to serialize an integer value.
-static int GetUIntSize(uint64 value) {
+static int GetUIntSize(uint64_t value) {
   if (value < 0x0100ULL)
     return 1;
   if (value < 0x010000ULL)
@@ -51,7 +52,7 @@ static int MasterElementSize(int element_id, int payload_size) {
   return GetUIntSize(element_id) + GetUIntMkvSize(payload_size) + payload_size;
 }
 
-static int UIntElementSize(int element_id, uint64 value) {
+static int UIntElementSize(int element_id, uint64_t value) {
   return GetUIntSize(element_id) + 1 + GetUIntSize(value);
 }
 
@@ -65,23 +66,26 @@ static int StringElementSize(int element_id, const std::string& value) {
         value.length();
 }
 
-static void SerializeInt(uint8** buf_ptr, int* buf_size_ptr,
-                         int64 value, int size) {
-  uint8*& buf = *buf_ptr;
+static void SerializeInt(uint8_t** buf_ptr,
+                         int* buf_size_ptr,
+                         int64_t value,
+                         int size) {
+  uint8_t*& buf = *buf_ptr;
   int& buf_size = *buf_size_ptr;
 
   for (int idx = 1; idx <= size; ++idx) {
-    *buf++ = static_cast<uint8>(value >> ((size - idx) * 8));
+    *buf++ = static_cast<uint8_t>(value >> ((size - idx) * 8));
     --buf_size;
   }
 }
 
-static void SerializeDouble(uint8** buf_ptr, int* buf_size_ptr,
+static void SerializeDouble(uint8_t** buf_ptr,
+                            int* buf_size_ptr,
                             double value) {
   // Use a union to convert |value| to native endian integer bit pattern.
   union {
     double src;
-    int64 dst;
+    int64_t dst;
   } tmp;
   tmp.src = value;
 
@@ -89,26 +93,28 @@ static void SerializeDouble(uint8** buf_ptr, int* buf_size_ptr,
   SerializeInt(buf_ptr, buf_size_ptr, tmp.dst, 8);
 }
 
-static void WriteElementId(uint8** buf, int* buf_size, int element_id) {
+static void WriteElementId(uint8_t** buf, int* buf_size, int element_id) {
   SerializeInt(buf, buf_size, element_id, GetUIntSize(element_id));
 }
 
-static void WriteUInt(uint8** buf, int* buf_size, uint64 value) {
+static void WriteUInt(uint8_t** buf, int* buf_size, uint64_t value) {
   const int size = GetUIntMkvSize(value);
   value |= (1ULL << (size * 7));  // Matroska formatting
   SerializeInt(buf, buf_size, value, size);
 }
 
-static void WriteMasterElement(uint8** buf, int* buf_size,
-                               int element_id, int payload_size) {
+static void WriteMasterElement(uint8_t** buf,
+                               int* buf_size,
+                               int element_id,
+                               int payload_size) {
   WriteElementId(buf, buf_size, element_id);
   WriteUInt(buf, buf_size, payload_size);
 }
 
-static void WriteUIntElement(uint8** buf,
+static void WriteUIntElement(uint8_t** buf,
                              int* buf_size,
                              int element_id,
-                             uint64 value) {
+                             uint64_t value) {
   WriteElementId(buf, buf_size, element_id);
 
   const int size = GetUIntSize(value);
@@ -117,21 +123,25 @@ static void WriteUIntElement(uint8** buf,
   SerializeInt(buf, buf_size, value, size);
 }
 
-static void WriteDoubleElement(uint8** buf, int* buf_size,
-                               int element_id, double value) {
+static void WriteDoubleElement(uint8_t** buf,
+                               int* buf_size,
+                               int element_id,
+                               double value) {
   WriteElementId(buf, buf_size, element_id);
   WriteUInt(buf, buf_size, 8);
   SerializeDouble(buf, buf_size, value);
 }
 
-static void WriteStringElement(uint8** buf_ptr, int* buf_size_ptr,
-                               int element_id, const std::string& value) {
-  uint8*& buf = *buf_ptr;
+static void WriteStringElement(uint8_t** buf_ptr,
+                               int* buf_size_ptr,
+                               int element_id,
+                               const std::string& value) {
+  uint8_t*& buf = *buf_ptr;
   int& buf_size = *buf_size_ptr;
 
   WriteElementId(&buf, &buf_size, element_id);
 
-  const uint64 size = value.length();
+  const uint64_t size = value.length();
   WriteUInt(&buf, &buf_size, size);
 
   memcpy(buf, value.data(), size);
@@ -146,7 +156,7 @@ TracksBuilder::TracksBuilder()
 TracksBuilder::~TracksBuilder() {}
 
 void TracksBuilder::AddVideoTrack(int track_num,
-                                  uint64 track_uid,
+                                  uint64_t track_uid,
                                   const std::string& codec_id,
                                   const std::string& name,
                                   const std::string& language,
@@ -159,7 +169,7 @@ void TracksBuilder::AddVideoTrack(int track_num,
 }
 
 void TracksBuilder::AddAudioTrack(int track_num,
-                                  uint64 track_uid,
+                                  uint64_t track_uid,
                                   const std::string& codec_id,
                                   const std::string& name,
                                   const std::string& language,
@@ -172,7 +182,7 @@ void TracksBuilder::AddAudioTrack(int track_num,
 }
 
 void TracksBuilder::AddTextTrack(int track_num,
-                                 uint64 track_uid,
+                                 uint64_t track_uid,
                                  const std::string& codec_id,
                                  const std::string& name,
                                  const std::string& language) {
@@ -180,9 +190,9 @@ void TracksBuilder::AddTextTrack(int track_num,
                    codec_id, name, language, -1, -1, -1, -1, -1);
 }
 
-std::vector<uint8> TracksBuilder::Finish() {
+std::vector<uint8_t> TracksBuilder::Finish() {
   // Allocate the storage
-  std::vector<uint8> buffer;
+  std::vector<uint8_t> buffer;
   buffer.resize(GetTracksSize());
 
   // Populate the storage with a tracks header
@@ -193,7 +203,7 @@ std::vector<uint8> TracksBuilder::Finish() {
 
 void TracksBuilder::AddTrackInternal(int track_num,
                                      int track_type,
-                                     uint64 track_uid,
+                                     uint64_t track_uid,
                                      const std::string& codec_id,
                                      const std::string& name,
                                      const std::string& language,
@@ -223,7 +233,7 @@ int TracksBuilder::GetTracksPayloadSize() const {
   return payload_size;
 }
 
-void TracksBuilder::WriteTracks(uint8* buf, int buf_size) const {
+void TracksBuilder::WriteTracks(uint8_t* buf, int buf_size) const {
   WriteMasterElement(&buf, &buf_size, kWebMIdTracks, GetTracksPayloadSize());
 
   for (TrackList::const_iterator itr = tracks_.begin();
@@ -234,7 +244,7 @@ void TracksBuilder::WriteTracks(uint8* buf, int buf_size) const {
 
 TracksBuilder::Track::Track(int track_num,
                             int track_type,
-                            uint64 track_uid,
+                            uint64_t track_uid,
                             const std::string& codec_id,
                             const std::string& name,
                             const std::string& language,
@@ -341,7 +351,7 @@ int TracksBuilder::Track::GetPayloadSize() const {
   return size;
 }
 
-void TracksBuilder::Track::Write(uint8** buf, int* buf_size) const {
+void TracksBuilder::Track::Write(uint8_t** buf, int* buf_size) const {
   WriteMasterElement(buf, buf_size, kWebMIdTrackEntry, GetPayloadSize());
 
   WriteUIntElement(buf, buf_size, kWebMIdTrackNumber, track_num_);
@@ -384,3 +394,4 @@ void TracksBuilder::Track::Write(uint8** buf, int* buf_size) const {
 }
 
 }  // namespace media
+}  // namespace edash_packager

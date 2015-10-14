@@ -5,15 +5,15 @@
 #ifndef MEDIA_FORMATS_WEBM_WEBM_CONTENT_ENCODINGS_H_
 #define MEDIA_FORMATS_WEBM_WEBM_CONTENT_ENCODINGS_H_
 
+#include <stdint.h>
 #include <string>
 
-#include "base/basictypes.h"
-#include "base/memory/scoped_ptr.h"
-#include "media/base/media_export.h"
+#include "packager/base/memory/scoped_ptr.h"
 
+namespace edash_packager {
 namespace media {
 
-class MEDIA_EXPORT ContentEncoding {
+class ContentEncoding {
  public:
   // The following enum definitions are based on the ContentEncoding element
   // specified in the Matroska spec.
@@ -52,8 +52,8 @@ class MEDIA_EXPORT ContentEncoding {
   ContentEncoding();
   ~ContentEncoding();
 
-  int64 order() const { return order_; }
-  void set_order(int64 order) { order_ = order; }
+  int64_t order() const { return order_; }
+  void set_order(int64_t order) { order_ = order; }
 
   Scope scope() const { return scope_; }
   void set_scope(Scope scope) { scope_ = scope; }
@@ -67,13 +67,13 @@ class MEDIA_EXPORT ContentEncoding {
   }
 
   const std::string& encryption_key_id() const { return encryption_key_id_; }
-  void SetEncryptionKeyId(const uint8* encryption_key_id, int size);
+  void SetEncryptionKeyId(const uint8_t* encryption_key_id, int size);
 
   CipherMode cipher_mode() const { return cipher_mode_; }
   void set_cipher_mode(CipherMode mode) { cipher_mode_ = mode; }
 
  private:
-  int64 order_;
+  int64_t order_;
   Scope scope_;
   Type type_;
   EncryptionAlgo encryption_algo_;
@@ -84,5 +84,6 @@ class MEDIA_EXPORT ContentEncoding {
 };
 
 }  // namespace media
+}  // namespace edash_packager
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_CONTENT_ENCODINGS_H_

@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/formats/webm/webm_stream_parser.h"
+#include "packager/media/formats/webm/webm_stream_parser.h"
 
 #include <string>
 
-#include "base/callback.h"
-#include "base/callback_helpers.h"
-#include "base/logging.h"
-#include "media/base/timestamp_constants.h"
-#include "media/formats/webm/webm_cluster_parser.h"
-#include "media/formats/webm/webm_constants.h"
-#include "media/formats/webm/webm_content_encodings.h"
-#include "media/formats/webm/webm_info_parser.h"
-#include "media/formats/webm/webm_tracks_parser.h"
+#include "packager/base/callback.h"
+#include "packager/base/callback_helpers.h"
+#include "packager/base/logging.h"
+#include "packager/media/base/timestamp_constants.h"
+#include "packager/media/formats/webm/webm_cluster_parser.h"
+#include "packager/media/formats/webm/webm_constants.h"
+#include "packager/media/formats/webm/webm_content_encodings.h"
+#include "packager/media/formats/webm/webm_info_parser.h"
+#include "packager/media/formats/webm/webm_tracks_parser.h"
 
+namespace edash_packager {
 namespace media {
 
 WebMStreamParser::WebMStreamParser()
@@ -33,8 +34,7 @@ void WebMStreamParser::Init(
     bool ignore_text_tracks,
     const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
     const NewMediaSegmentCB& new_segment_cb,
-    const base::Closure& end_of_segment_cb,
-    const scoped_refptr<MediaLog>& media_log) {
+    const base::Closure& end_of_segment_cb) {
   DCHECK_EQ(state_, kWaitingForInit);
   DCHECK(init_cb_.is_null());
   DCHECK(!init_cb.is_null());
@@ -52,7 +52,6 @@ void WebMStreamParser::Init(
   encrypted_media_init_data_cb_ = encrypted_media_init_data_cb;
   new_segment_cb_ = new_segment_cb;
   end_of_segment_cb_ = end_of_segment_cb;
-  media_log_ = media_log;
 }
 
 void WebMStreamParser::Flush() {
@@ -67,7 +66,7 @@ void WebMStreamParser::Flush() {
   }
 }
 
-bool WebMStreamParser::Parse(const uint8* buf, int size) {
+bool WebMStreamParser::Parse(const uint8_t* buf, int size) {
   DCHECK_NE(state_, kWaitingForInit);
 
   if (state_ == kError)
@@ -77,7 +76,7 @@ bool WebMStreamParser::Parse(const uint8* buf, int size) {
 
   int result = 0;
   int bytes_parsed = 0;
-  const uint8* cur = NULL;
+  const uint8_t* cur = NULL;
   int cur_size = 0;
 
   byte_queue_.Peek(&cur, &cur_size);
@@ -120,17 +119,17 @@ void WebMStreamParser::ChangeState(State new_state) {
   state_ = new_state;
 }
 
-int WebMStreamParser::ParseInfoAndTracks(const uint8* data, int size) {
+int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
   DVLOG(2) << "ParseInfoAndTracks()";
   DCHECK(data);
   DCHECK_GT(size, 0);
 
-  const uint8* cur = data;
+  const uint8_t* cur = data;
   int cur_size = size;
   int bytes_parsed = 0;
 
   int id;
-  int64 element_size;
+  int64_t element_size;
   int result = WebMParseElementHeader(cur, cur_size, &id, &element_size);
 
   if (result <= 0)
@@ -155,7 +154,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8* data, int size) {
       break;
     case kWebMIdCluster:
       if (!cluster_parser_) {
-        MEDIA_LOG(ERROR, media_log_) << "Found Cluster element before Info.";
+        LOG(ERROR) << "Found Cluster element before Info.";
         return -1;
       }
       ChangeState(kParsingClusters);
@@ -173,8 +172,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8* data, int size) {
       // We've found the element we are looking for.
       break;
     default: {
-      MEDIA_LOG(ERROR, media_log_) << "Unexpected element ID 0x" << std::hex
-                                   << id;
+      LOG(ERROR) << "Unexpected element ID 0x" << std::hex << id;
       return -1;
     }
   }
@@ -189,7 +187,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8* data, int size) {
   cur_size -= result;
   bytes_parsed += result;
 
-  WebMTracksParser tracks_parser(media_log_, ignore_text_tracks_);
+  WebMTracksParser tracks_parser(ignore_text_tracks_);
   result = tracks_parser.Parse(cur, cur_size);
 
   if (result <= 0)
@@ -201,7 +199,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8* data, int size) {
   InitParameters params(kInfiniteDuration());
 
   if (info_parser.duration() > 0) {
-    int64 duration_in_us = info_parser.duration() * timecode_scale_in_us;
+    int64_t duration_in_us = info_parser.duration() * timecode_scale_in_us;
     params.duration = base::TimeDelta::FromMicroseconds(duration_in_us);
   }
 
@@ -238,8 +236,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8* data, int size) {
       tracks_parser.GetVideoDefaultDuration(timecode_scale_in_us),
       tracks_parser.text_tracks(), tracks_parser.ignored_tracks(),
       tracks_parser.audio_encryption_key_id(),
-      tracks_parser.video_encryption_key_id(), audio_config.codec(),
-      media_log_));
+      tracks_parser.video_encryption_key_id(), audio_config.codec());
 
   if (!init_cb_.is_null())
     base::ResetAndReturn(&init_cb_).Run(params);
@@ -247,7 +244,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8* data, int size) {
   return bytes_parsed;
 }
 
-int WebMStreamParser::ParseCluster(const uint8* data, int size) {
+int WebMStreamParser::ParseCluster(const uint8_t* data, int size) {
   if (!cluster_parser_)
     return -1;
 
@@ -276,8 +273,9 @@ int WebMStreamParser::ParseCluster(const uint8* data, int size) {
 }
 
 void WebMStreamParser::OnEncryptedMediaInitData(const std::string& key_id) {
-  std::vector<uint8> key_id_vector(key_id.begin(), key_id.end());
+  std::vector<uint8_t> key_id_vector(key_id.begin(), key_id.end());
   encrypted_media_init_data_cb_.Run(EmeInitDataType::WEBM, key_id_vector);
 }
 
 }  // namespace media
+}  // namespace edash_packager
