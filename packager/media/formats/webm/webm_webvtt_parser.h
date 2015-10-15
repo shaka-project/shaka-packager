@@ -16,7 +16,7 @@ namespace media {
 
 class WebMWebVTTParser {
  public:
-  // Utility function to parse the WebVTT cue from a byte stream.
+  /// Utility function to parse the WebVTT cue from a byte stream.
   static void Parse(const uint8_t* payload,
                     int payload_size,
                     std::string* id,

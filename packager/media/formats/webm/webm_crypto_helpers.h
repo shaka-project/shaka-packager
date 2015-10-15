@@ -7,20 +7,20 @@
 
 #include <stdint.h>
 
-#include "packager/base/macros.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/decrypt_config.h"
 
 namespace edash_packager {
 namespace media {
 
-// Fills an initialized DecryptConfig, which can be sent to the Decryptor if
-// the stream has potentially encrypted frames. Also sets |data_offset| which
-// indicates where the encrypted data starts. Leaving the IV empty will tell
-// the decryptor that the frame is unencrypted. Returns true if |data| is valid,
-// false otherwise, in which case |decrypt_config| and |data_offset| will not be
-// changed. Current encrypted WebM request for comments specification is here
-// http://wiki.webmproject.org/encryption/webm-encryption-rfc
+/// Fills an initialized DecryptConfig, which can be sent to the Decryptor if
+/// the stream has potentially encrypted frames. Also sets |data_offset| which
+/// indicates where the encrypted data starts. Leaving the IV empty will tell
+/// the decryptor that the frame is unencrypted.
+/// Current encrypted WebM request for comments specification is here
+/// http://wiki.webmproject.org/encryption/webm-encryption-rfc
+/// @return true if |data| is valid, false otherwise, in which case
+///         |decrypt_config| and |data_offset| will not be changed.
 bool WebMCreateDecryptConfig(const uint8_t* data,
                              int data_size,
                              const uint8_t* key_id,

@@ -136,15 +136,15 @@ int64_t WebMClusterParser::TryGetEncodedAudioDuration(
   // Duration is currently read assuming the *entire* stream is unencrypted.
   // The special "Signal Byte" prepended to Blocks in encrypted streams is
   // assumed to not be present.
-  // TODO(chcunningham): Consider parsing "Signal Byte" for encrypted streams
-  // to return duration for any unencrypted blocks.
+  // TODO: Consider parsing "Signal Byte" for encrypted streams to return
+  // duration for any unencrypted blocks.
 
   if (audio_codec_ == kCodecOpus) {
     return ReadOpusDuration(data, size);
   }
 
-  // TODO(wolenetz/chcunningham): Implement duration reading for Vorbis. See
-  // motivations in http://crbug.com/396634.
+  // TODO: Implement duration reading for Vorbis. See motivations in
+  // http://crbug.com/396634.
 
   return kNoTimestamp;
 }
@@ -344,10 +344,10 @@ bool WebMClusterParser::OnBinary(int id, const uint8_t* data, int size) {
     case kWebMIdBlockAdditional: {
       uint64_t block_add_id = base::HostToNet64(block_add_id_);
       if (block_additional_data_) {
-        // TODO(vigneshv): Technically, more than 1 BlockAdditional is allowed
-        // as per matroska spec. But for now we don't have a use case to
-        // support parsing of such files. Take a look at this again when such a
-        // case arises.
+        // TODO: Technically, more than 1 BlockAdditional is allowed as per
+        // matroska spec. But for now we don't have a use case to support
+        // parsing of such files. Take a look at this again when such a case
+        // arises.
         LOG(ERROR) << "More than 1 BlockAdditional in a "
                       "BlockGroup is not supported.";
         return false;
@@ -395,8 +395,8 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     return false;
   }
 
-  // TODO(acolwell): Should relative negative timecode offsets be rejected?  Or
-  // only when the absolute timecode is negative?  See http://crbug.com/271794
+  // TODO: Should relative negative timecode offsets be rejected?  Or only when
+  // the absolute timecode is negative?  See http://crbug.com/271794
   if (timecode < 0) {
     LOG(ERROR) << "Got a block with negative timecode offset " << timecode;
     return false;
@@ -501,7 +501,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
   // estimation may still apply in cases of encryption and codecs for which
   // we do not extract encoded duration. Within a cluster, estimates are applied
   // as Block Timecode deltas, or once the whole cluster is parsed in the case
-  // of the last Block in the cluster. See Track::AddBuffer and
+  // of the last Block in the cluster. See Track::EmitBuffer and
   // ApplyDurationEstimateIfNeeded().
   if (encoded_duration != kNoTimestamp) {
     DCHECK(encoded_duration != kInfiniteDuration);
@@ -529,7 +529,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     buffer->set_duration(track->default_duration());
   }
 
-  return track->AddBuffer(buffer);
+  return track->EmitBuffer(buffer);
 }
 
 WebMClusterParser::Track::Track(int track_num,
@@ -546,9 +546,9 @@ WebMClusterParser::Track::Track(int track_num,
 
 WebMClusterParser::Track::~Track() {}
 
-bool WebMClusterParser::Track::AddBuffer(
+bool WebMClusterParser::Track::EmitBuffer(
     const scoped_refptr<MediaSample>& buffer) {
-  DVLOG(2) << "AddBuffer() : " << track_num_
+  DVLOG(2) << "EmitBuffer() : " << track_num_
            << " ts " << buffer->pts()
            << " dur " << buffer->duration()
            << " kf " << buffer->is_key_frame()
@@ -559,7 +559,7 @@ bool WebMClusterParser::Track::AddBuffer(
         buffer->pts() - last_added_buffer_missing_duration_->pts();
     last_added_buffer_missing_duration_->set_duration(derived_duration);
 
-    DVLOG(2) << "AddBuffer() : applied derived duration to held-back buffer : "
+    DVLOG(2) << "EmitBuffer() : applied derived duration to held-back buffer : "
              << " ts "
              << last_added_buffer_missing_duration_->pts()
              << " dur "
@@ -569,17 +569,17 @@ bool WebMClusterParser::Track::AddBuffer(
     scoped_refptr<MediaSample> updated_buffer =
         last_added_buffer_missing_duration_;
     last_added_buffer_missing_duration_ = NULL;
-    if (!QueueBuffer(updated_buffer))
+    if (!EmitBufferHelp(updated_buffer))
       return false;
   }
 
   if (buffer->duration() == kNoTimestamp) {
     last_added_buffer_missing_duration_ = buffer;
-    DVLOG(2) << "AddBuffer() : holding back buffer that is missing duration";
+    DVLOG(2) << "EmitBuffer() : holding back buffer that is missing duration";
     return true;
   }
 
-  return QueueBuffer(buffer);
+  return EmitBufferHelp(buffer);
 }
 
 void WebMClusterParser::Track::ApplyDurationEstimateIfNeeded() {
@@ -611,7 +611,7 @@ void WebMClusterParser::Track::ApplyDurationEstimateIfNeeded() {
            << " size " << last_added_buffer_missing_duration_->data_size();
 
   // Don't use the applied duration as a future estimation (don't use
-  // QueueBuffer() here.)
+  // EmitBufferHelp() here.)
   new_sample_cb_.Run(track_num_, last_added_buffer_missing_duration_);
   last_added_buffer_missing_duration_ = NULL;
 }
@@ -643,7 +643,7 @@ bool WebMClusterParser::Track::IsKeyframe(const uint8_t* data, int size) const {
   return true;
 }
 
-bool WebMClusterParser::Track::QueueBuffer(
+bool WebMClusterParser::Track::EmitBufferHelp(
     const scoped_refptr<MediaSample>& buffer) {
   DCHECK(!last_added_buffer_missing_duration_.get());
 
@@ -660,8 +660,8 @@ bool WebMClusterParser::Track::QueueBuffer(
   // so maximum is used and overlap is simply resolved by showing the
   // later of the overlapping frames at its given PTS, effectively trimming down
   // the over-estimated duration of the previous frame.
-  // TODO(chcunningham): Use max for audio and disable splicing whenever
-  // estimated buffers are encountered.
+  // TODO: Use max for audio and disable splicing whenever estimated buffers are
+  // encountered.
   if (duration > 0) {
     int64_t orig_duration_estimate = estimated_next_frame_duration_;
     if (estimated_next_frame_duration_ == kNoTimestamp) {

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/webm/webm_stream_parser.h"
+#include "packager/media/formats/webm/webm_media_parser.h"
 
 #include <string>
 
@@ -19,18 +19,14 @@
 namespace edash_packager {
 namespace media {
 
-WebMStreamParser::WebMStreamParser()
-    : state_(kWaitingForInit),
-      unknown_segment_size_(false) {
-}
+WebMMediaParser::WebMMediaParser()
+    : state_(kWaitingForInit), unknown_segment_size_(false) {}
 
-WebMStreamParser::~WebMStreamParser() {
-}
+WebMMediaParser::~WebMMediaParser() {}
 
-void WebMStreamParser::Init(
-    const InitCB& init_cb,
-    const NewSampleCB& new_sample_cb,
-    KeySource* decryption_key_source) {
+void WebMMediaParser::Init(const InitCB& init_cb,
+                           const NewSampleCB& new_sample_cb,
+                           KeySource* decryption_key_source) {
   DCHECK_EQ(state_, kWaitingForInit);
   DCHECK(init_cb_.is_null());
   DCHECK(!init_cb.is_null());
@@ -43,7 +39,7 @@ void WebMStreamParser::Init(
   ignore_text_tracks_ = true;
 }
 
-void WebMStreamParser::Flush() {
+void WebMMediaParser::Flush() {
   DCHECK_NE(state_, kWaitingForInit);
 
   byte_queue_.Reset();
@@ -54,7 +50,7 @@ void WebMStreamParser::Flush() {
   }
 }
 
-bool WebMStreamParser::Parse(const uint8_t* buf, int size) {
+bool WebMMediaParser::Parse(const uint8_t* buf, int size) {
   DCHECK_NE(state_, kWaitingForInit);
 
   if (state_ == kError)
@@ -102,12 +98,12 @@ bool WebMStreamParser::Parse(const uint8_t* buf, int size) {
   return true;
 }
 
-void WebMStreamParser::ChangeState(State new_state) {
+void WebMMediaParser::ChangeState(State new_state) {
   DVLOG(1) << "ChangeState() : " << state_ << " -> " << new_state;
   state_ = new_state;
 }
 
-int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
+int WebMMediaParser::ParseInfoAndTracks(const uint8_t* data, int size) {
   DVLOG(2) << "ParseInfoAndTracks()";
   DCHECK(data);
   DCHECK_GT(size, 0);
@@ -132,7 +128,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
     case kWebMIdChapters:
     case kWebMIdTags:
     case kWebMIdAttachments:
-      // TODO(matthewjheaney): Implement support for chapters.
+      // TODO: Implement support for chapters.
       if (cur_size < (result + element_size)) {
         // We don't have the whole element yet. Signal we need more data.
         return 0;
@@ -213,7 +209,7 @@ int WebMStreamParser::ParseInfoAndTracks(const uint8_t* data, int size) {
   return bytes_parsed;
 }
 
-int WebMStreamParser::ParseCluster(const uint8_t* data, int size) {
+int WebMMediaParser::ParseCluster(const uint8_t* data, int size) {
   if (!cluster_parser_)
     return -1;
 
@@ -229,7 +225,7 @@ int WebMStreamParser::ParseCluster(const uint8_t* data, int size) {
   return bytes_parsed;
 }
 
-void WebMStreamParser::OnEncryptedMediaInitData(const std::string& key_id) {
+void WebMMediaParser::OnEncryptedMediaInitData(const std::string& key_id) {
   NOTIMPLEMENTED() << "WebM decryption is not implemented yet.";
 }
 

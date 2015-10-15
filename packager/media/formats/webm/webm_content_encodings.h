@@ -15,8 +15,8 @@ namespace media {
 
 class ContentEncoding {
  public:
-  // The following enum definitions are based on the ContentEncoding element
-  // specified in the Matroska spec.
+  /// The following enum definitions are based on the ContentEncoding element
+  /// specified in the Matroska spec.
 
   static const int kOrderInvalid = -1;
 

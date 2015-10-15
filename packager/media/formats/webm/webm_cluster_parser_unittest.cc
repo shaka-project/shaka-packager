@@ -875,7 +875,7 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsBlockGroups) {
   // cluster. Duration for the last block in a cluster is estimated
   // independently for each track in the cluster. For video tracks we use the
   // maximum seen so far. For audio we use the the minimum.
-  // TODO(chcunningham): Move audio over to use the maximum.
+  // TODO: Move audio over to use the maximum.
 
   const int kExpectedAudioEstimationInMs = 22;
   const int kExpectedVideoEstimationInMs = 34;
@@ -925,7 +925,7 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsBlockGroups) {
   ASSERT_TRUE(VerifyBuffers(kBlockInfo2, block_count2));
 }
 
-// TODO(wolenetz): Is parser behavior correct? See http://crbug.com/363433.
+// TODO: Is parser behavior correct? See http://crbug.com/363433.
 TEST_F(WebMClusterParserTest,
        ParseWithDefaultDurationsBlockGroupsWithoutDurations) {
   InSequence s;

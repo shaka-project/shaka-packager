@@ -18,7 +18,7 @@ namespace media {
 
 typedef std::vector<ContentEncoding*> ContentEncodings;
 
-// Parser for WebM ContentEncodings element.
+/// Parser for WebM ContentEncodings element.
 class WebMContentEncodingsClient : public WebMParserClient {
  public:
   WebMContentEncodingsClient();
@@ -26,7 +26,7 @@ class WebMContentEncodingsClient : public WebMParserClient {
 
   const ContentEncodings& content_encodings() const;
 
-  // WebMParserClient methods
+  /// WebMParserClient methods
   WebMParserClient* OnListStart(int id) override;
   bool OnListEnd(int id) override;
   bool OnUInt(int id, int64_t val) override;

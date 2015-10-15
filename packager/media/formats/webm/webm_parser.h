@@ -15,18 +15,18 @@
 namespace edash_packager {
 namespace media {
 
-// Interface for receiving WebM parser events.
-//
-// Each method is called when an element of the specified type is parsed.
-// The ID of the element that was parsed is given along with the value
-// stored in the element. List elements generate calls at the start and
-// end of the list. Any pointers passed to these methods are only guaranteed
-// to be valid for the life of that call. Each method (except for OnListStart)
-// returns a bool that indicates whether the parsed data is valid. OnListStart
-// returns a pointer to a WebMParserClient object, which should be used to
-// handle elements parsed out of the list being started. If false (or NULL by
-// OnListStart) is returned then the parse is immediately terminated and an
-// error is reported by the parser.
+/// Interface for receiving WebM parser events.
+///
+/// Each method is called when an element of the specified type is parsed.
+/// The ID of the element that was parsed is given along with the value
+/// stored in the element. List elements generate calls at the start and
+/// end of the list. Any pointers passed to these methods are only guaranteed
+/// to be valid for the life of that call. Each method (except for OnListStart)
+/// returns a bool that indicates whether the parsed data is valid. OnListStart
+/// returns a pointer to a WebMParserClient object, which should be used to
+/// handle elements parsed out of the list being started. If false (or NULL by
+/// OnListStart) is returned then the parse is immediately terminated and an
+/// error is reported by the parser.
 class WebMParserClient {
  public:
   virtual ~WebMParserClient();
@@ -46,29 +46,28 @@ class WebMParserClient {
 
 struct ListElementInfo;
 
-// Parses a WebM list element and all of its children. This
-// class supports incremental parsing of the list so Parse()
-// can be called multiple times with pieces of the list.
-// IsParsingComplete() will return true once the entire list has
-// been parsed.
+/// Parses a WebM list element and all of its children. This
+/// class supports incremental parsing of the list so Parse()
+/// can be called multiple times with pieces of the list.
+/// IsParsingComplete() will return true once the entire list has
+/// been parsed.
 class WebMListParser {
  public:
-  // |id| - Element ID of the list we intend to parse.
-  // |client| - Called as different elements in the list are parsed.
+  /// @param id Element ID of the list we intend to parse.
+  /// @param client Called as different elements in the list are parsed.
   WebMListParser(int id, WebMParserClient* client);
   ~WebMListParser();
 
-  // Resets the state of the parser so it can start parsing a new list.
+  /// Resets the state of the parser so it can start parsing a new list.
   void Reset();
 
-  // Parses list data contained in |buf|.
-  //
-  // Returns < 0 if the parse fails.
-  // Returns 0 if more data is needed.
-  // Returning > 0 indicates success & the number of bytes parsed.
+  /// Parses list data contained in |buf|.
+  /// @return < 0 if the parse fails.
+  /// @return 0 if more data is needed.
+  /// @return > 0 indicates success & the number of bytes parsed.
   int Parse(const uint8_t* buf, int size);
 
-  // Returns true if the entire list has been parsed.
+  /// @return true if the entire list has been parsed.
   bool IsParsingComplete() const;
 
  private:
@@ -146,14 +145,13 @@ class WebMListParser {
   DISALLOW_COPY_AND_ASSIGN(WebMListParser);
 };
 
-// Parses an element header & returns the ID and element size.
-//
-// Returns < 0 if the parse fails.
-// Returns 0 if more data is needed.
-// Returning > 0 indicates success & the number of bytes parsed.
-// |*id| contains the element ID on success and is undefined otherwise.
-// |*element_size| contains the element size on success and is undefined
-//                 otherwise.
+/// Parses an element header & returns the ID and element size.
+/// @param[out] id contains the element ID on success and is undefined otherwise.
+/// @param[out] element_size contains the element size on success and is
+///             undefined otherwise.
+/// @return < 0 if the parse fails.
+/// @return 0 if more data is needed.
+/// @return > 0 indicates success & the number of bytes parsed.
 int WebMParseElementHeader(const uint8_t* buf,
                            int size,
                            int* id,

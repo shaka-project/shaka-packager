@@ -16,21 +16,21 @@ namespace edash_packager {
 namespace media {
 class VideoDecoderConfig;
 
-// Helper class used to parse a Video element inside a TrackEntry element.
+/// Helper class used to parse a Video element inside a TrackEntry element.
 class WebMVideoClient : public WebMParserClient {
  public:
   WebMVideoClient();
   ~WebMVideoClient() override;
 
-  // Reset this object's state so it can process a new video track element.
+  /// Reset this object's state so it can process a new video track element.
   void Reset();
 
-  // Create a VideoStreamInfo with the data in |track_num|, |codec_id|,
-  // |codec_private|, |is_encrypted| and the fields parsed from the last video
-  // track element this object was used to parse.
-  // Returns a VideoStreamInfo scoped_refptr if successful.
-  // Returns an empty scoped_refptr if there was unexpected values in the
-  // provided parameters or video track element fields.
+  /// Create a VideoStreamInfo with the data in |track_num|, |codec_id|,
+  /// |codec_private|, |is_encrypted| and the fields parsed from the last video
+  /// track element this object was used to parse.
+  /// @return A VideoStreamInfo scoped_refptr if successful.
+  /// @return An empty scoped_refptr if there was unexpected values in the
+  ///         provided parameters or video track element fields.
   scoped_refptr<VideoStreamInfo> GetVideoStreamInfo(
       int64_t track_num,
       const std::string& codec_id,

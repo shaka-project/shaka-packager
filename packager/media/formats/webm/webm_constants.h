@@ -10,9 +10,9 @@
 namespace edash_packager {
 namespace media {
 
-// WebM element IDs.
-// This is a subset of the IDs in the Matroska spec.
-// http://www.matroska.org/technical/specs/index.html
+/// WebM element IDs.
+/// This is a subset of the IDs in the Matroska spec.
+/// http://www.matroska.org/technical/specs/index.html
 const int kWebMIdAESSettingsCipherMode = 0x47E8;
 const int kWebMIdAlphaMode = 0x53C0;
 const int kWebMIdAspectRatioType = 0x54B3;
@@ -205,14 +205,14 @@ const int64_t kWebMUnknownSize = 0x00FFFFFFFFFFFFFFLL;
 
 const uint8_t kWebMFlagKeyframe = 0x80;
 
-// Current encrypted WebM request for comments specification is here
-// http://wiki.webmproject.org/encryption/webm-encryption-rfc
+/// Current encrypted WebM request for comments specification is here
+/// http://wiki.webmproject.org/encryption/webm-encryption-rfc
 const uint8_t kWebMFlagEncryptedFrame = 0x1;
 const int kWebMIvSize = 8;
 const int kWebMSignalByteSize = 1;
 
-// Current specification for WebVTT embedded in WebM
-// http://wiki.webmproject.org/webm-metadata/temporal-metadata/webvtt-in-webm
+/// Current specification for WebVTT embedded in WebM
+/// http://wiki.webmproject.org/webm-metadata/temporal-metadata/webvtt-in-webm
 
 const int kWebMTrackTypeVideo = 1;
 const int kWebMTrackTypeAudio = 2;

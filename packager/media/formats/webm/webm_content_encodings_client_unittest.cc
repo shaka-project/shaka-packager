@@ -4,48 +4,16 @@
 
 #include "packager/media/formats/webm/webm_content_encodings_client.h"
 
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include <string>
 
-#include "packager/base/bind.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/formats/webm/webm_constants.h"
 #include "packager/media/formats/webm/webm_parser.h"
 
-using ::testing::StrictMock;
-
 namespace edash_packager {
 namespace media {
-
-// Matchers for verifying common media log entry strings.
-MATCHER(MissingContentEncoding, "") {
-  return CONTAINS_STRING(arg, "Missing ContentEncoding.");
-}
-
-MATCHER(UnexpectedContentEncodingOrder, "") {
-  return CONTAINS_STRING(arg, "Unexpected ContentEncodingOrder.");
-}
-
-MATCHER(UnexpectedContentEncodingScope, "") {
-  return CONTAINS_STRING(arg, "Unexpected ContentEncodingScope.");
-}
-
-MATCHER(ContentCompressionNotSupported, "") {
-  return CONTAINS_STRING(arg, "ContentCompression not supported.");
-}
-
-MATCHER(MissingContentEncryption, "") {
-  return CONTAINS_STRING(
-      arg,
-      "ContentEncodingType is encryption but ContentEncryption is missing.");
-}
-
-MATCHER_P(UnexpectedContentEncAlgo, algo, "") {
-  return CONTAINS_STRING(
-      arg, "Unexpected ContentEncAlgo " + base::IntToString(algo) + ".");
-}
 
 class WebMContentEncodingsClientTest : public testing::Test {
  public:

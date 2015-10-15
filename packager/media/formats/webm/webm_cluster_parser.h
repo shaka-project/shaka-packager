@@ -21,21 +21,21 @@ namespace media {
 
 class WebMClusterParser : public WebMParserClient {
  public:
-  // Numbers chosen to estimate the duration of a buffer if none is set and
-  // there is not enough information to get a better estimate.
+  /// Numbers chosen to estimate the duration of a buffer if none is set and
+  /// there is not enough information to get a better estimate.
   enum {
-    // Common 1k samples @44.1kHz
+    /// Common 1k samples @44.1kHz
     kDefaultAudioBufferDurationInMs = 23,
 
-    // Chosen to represent 16fps duration, which will prevent MSE stalls in
-    // videos with frame-rates as low as 8fps.
+    /// Chosen to represent 16fps duration, which will prevent MSE stalls in
+    /// videos with frame-rates as low as 8fps.
     kDefaultVideoBufferDurationInMs = 63
   };
 
-  // Opus packets encode the duration and other parameters in the 5 most
-  // significant bits of the first byte. The index in this array corresponds
-  // to the duration of each frame of the packet in microseconds. See
-  // https://tools.ietf.org/html/rfc6716#page-14
+  /// Opus packets encode the duration and other parameters in the 5 most
+  /// significant bits of the first byte. The index in this array corresponds
+  /// to the duration of each frame of the packet in microseconds. See
+  /// https://tools.ietf.org/html/rfc6716#page-14
   static const uint16_t kOpusFrameDurationsMu[];
 
  private:
@@ -51,21 +51,20 @@ class WebMClusterParser : public WebMParserClient {
     int track_num() const { return track_num_; }
 
     // If |last_added_buffer_missing_duration_| is set, updates its duration
-    // relative to |buffer|'s timestamp, and adds it to |buffers_| and unsets
-    // |last_added_buffer_missing_duration_|. Then, if |buffer| is missing
-    // duration, saves |buffer| into |last_added_buffer_missing_duration_|, or
-    // otherwise adds |buffer| to |buffers_|.
-    bool AddBuffer(const scoped_refptr<MediaSample>& buffer);
+    // relative to |buffer|'s timestamp, and emits it and unsets
+    // |last_added_buffer_missing_duration_|. Otherwise, if |buffer| is missing
+    // duration, saves |buffer| into |last_added_buffer_missing_duration_|.
+    bool EmitBuffer(const scoped_refptr<MediaSample>& buffer);
 
     // If |last_added_buffer_missing_duration_| is set, updates its duration to
-    // be non-kNoTimestamp() value of |estimated_next_frame_duration_| or a
-    // hard-coded default, then adds it to |buffers_| and unsets
+    // be non-kNoTimestamp value of |estimated_next_frame_duration_| or a
+    // hard-coded default, then emits it and unsets
     // |last_added_buffer_missing_duration_|. (This method helps stream parser
     // emit all buffers in a media segment before signaling end of segment.)
     void ApplyDurationEstimateIfNeeded();
 
     // Clears all buffer state, including any possibly held-aside buffer that
-    // was missing duration, and all contents of |buffers_|.
+    // was missing duration.
     void Reset();
 
     // Helper function used to inspect block data to determine if the
@@ -78,10 +77,10 @@ class WebMClusterParser : public WebMParserClient {
 
    private:
     // Helper that sanity-checks |buffer| duration, updates
-    // |estimated_next_frame_duration_|, and adds |buffer| to |buffers_|.
-    // Returns false if |buffer| failed sanity check and therefore was not added
-    // to |buffers_|. Returns true otherwise.
-    bool QueueBuffer(const scoped_refptr<MediaSample>& buffer);
+    // |estimated_next_frame_duration_|, and emits |buffer|.
+    // Returns false if |buffer| failed sanity check and therefore was not
+    // emitted. Returns true otherwise.
+    bool EmitBufferHelp(const scoped_refptr<MediaSample>& buffer);
 
     // Helper that calculates the buffer duration to use in
     // ApplyDurationEstimateIfNeeded().
@@ -95,19 +94,18 @@ class WebMClusterParser : public WebMParserClient {
     bool is_video_;
 
     // Parsed track buffers, each with duration and in (decode) timestamp order,
-    // that have not yet been extracted into |ready_buffers_|. Note that up to
-    // one additional buffer missing duration may be tracked by
-    // |last_added_buffer_missing_duration_|.
+    // that have not yet been emitted. Note that up to one additional buffer
+    // missing duration may be tracked by |last_added_buffer_missing_duration_|.
     scoped_refptr<MediaSample> last_added_buffer_missing_duration_;
 
-    // If kNoTimestamp(), then |estimated_next_frame_duration_| will be used.
+    // If kNoTimestamp, then |estimated_next_frame_duration_| will be used.
     int64_t default_duration_;
 
-    // If kNoTimestamp(), then a default value will be used. This estimate is
-    // the maximum (for video), or minimum (for audio) duration seen so far for
-    // this track, and is used only if |default_duration_| is kNoTimestamp().
-    // TODO(chcunningham): Use maximum for audio too, adding checks to disable
-    // splicing when these estimates are observed in SourceBufferStream.
+    // If kNoTimestamp, then a default value will be used. This estimate is the
+    // maximum (for video), or minimum (for audio) duration seen so far for this
+    // track, and is used only if |default_duration_| is kNoTimestamp.
+    // TODO: Use maximum for audio too, adding checks to disable splicing when
+    // these estimates are observed in SourceBufferStream.
     int64_t estimated_next_frame_duration_;
 
     MediaParser::NewSampleCB new_sample_cb_;
@@ -129,19 +127,18 @@ class WebMClusterParser : public WebMParserClient {
                     const MediaParser::NewSampleCB& new_sample_cb);
   ~WebMClusterParser() override;
 
-  // Resets the parser state so it can accept a new cluster.
+  /// Resets the parser state so it can accept a new cluster.
   void Reset();
 
-  // Parses a WebM cluster element in |buf|.
-  //
-  // Returns -1 if the parse fails.
-  // Returns 0 if more data is needed.
-  // Returns the number of bytes parsed on success.
+  /// Parses a WebM cluster element in |buf|.
+  /// @return -1 if the parse fails.
+  /// @return 0 if more data is needed.
+  /// @return The number of bytes parsed on success.
   int Parse(const uint8_t* buf, int size);
 
   int64_t cluster_start_time() const { return cluster_start_time_; }
 
-  // Returns true if the last Parse() call stopped at the end of a cluster.
+  /// @return true if the last Parse() call stopped at the end of a cluster.
   bool cluster_ended() const { return cluster_ended_; }
 
  private:
@@ -177,21 +174,17 @@ class WebMClusterParser : public WebMParserClient {
   Track* FindTextTrack(int track_num);
 
   // Attempts to read the duration from the encoded audio data, returning as
-  // TimeDelta or kNoTimestamp() if duration cannot be retrieved. This obviously
-  // violates layering rules, but is useful for MSE to know duration in cases
-  // where it isn't explicitly given and cannot be calculated for Blocks at the
-  // end of a Cluster (the next Cluster in playback-order may not be the next
-  // Cluster we parse, so we can't simply use the delta of the first Block in
-  // the next Cluster). Avoid calling if encrypted; may produce unexpected
-  // output. See implementation for supported codecs.
+  // kNoTimestamp if duration cannot be retrieved.
+  // Avoid calling if encrypted; may produce unexpected output. See
+  // implementation for supported codecs.
   int64_t TryGetEncodedAudioDuration(const uint8_t* data, int size);
 
   // Reads Opus packet header to determine packet duration. Duration returned
-  // as TimeDelta or kNoTimestamp() upon failure to read duration from packet.
+  // as kNoTimestamp upon failure to read duration from packet.
   int64_t ReadOpusDuration(const uint8_t* data, int size);
 
-  // Tracks the number of LOGs made in process of reading encoded
-  // duration. Useful to prevent log spam.
+  // Tracks the number of LOGs made in process of reading encoded duration.
+  // Useful to prevent log spam.
   int num_duration_errors_ = 0;
 
   double timecode_multiplier_;  // Multiplier used to convert timecodes into

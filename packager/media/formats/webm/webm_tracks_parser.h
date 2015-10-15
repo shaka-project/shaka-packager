@@ -24,26 +24,25 @@
 namespace edash_packager {
 namespace media {
 
-// Parser for WebM Tracks element.
+/// Parser for WebM Tracks element.
 class WebMTracksParser : public WebMParserClient {
  public:
   explicit WebMTracksParser(bool ignore_text_tracks);
   ~WebMTracksParser() override;
 
-  // Parses a WebM Tracks element in |buf|.
-  //
-  // Returns -1 if the parse fails.
-  // Returns 0 if more data is needed.
-  // Returns the number of bytes parsed on success.
+  /// Parses a WebM Tracks element in |buf|.
+  /// @return -1 if the parse fails.
+  /// @return 0 if more data is needed.
+  /// @return The number of bytes parsed on success.
   int Parse(const uint8_t* buf, int size);
 
   int64_t audio_track_num() const { return audio_track_num_; }
   int64_t video_track_num() const { return video_track_num_; }
 
-  // If TrackEntry DefaultDuration field existed for the associated audio or
-  // video track, returns that value converted from ns to base::TimeDelta with
-  // precision not greater than |timecode_scale_in_us|. Defaults to
-  // kNoTimestamp().
+  /// If TrackEntry DefaultDuration field existed for the associated audio or
+  /// video track, returns that value converted from ns to base::TimeDelta with
+  /// precision not greater than |timecode_scale_in_us|. Defaults to
+  /// kNoTimestamp.
   int64_t GetAudioDefaultDuration(const double timecode_scale_in_us) const;
   int64_t GetVideoDefaultDuration(const double timecode_scale_in_us) const;
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FORMATS_WEBM_WEBM_STREAM_PARSER_H_
-#define MEDIA_FORMATS_WEBM_WEBM_STREAM_PARSER_H_
+#ifndef MEDIA_FORMATS_WEBM_WEBM_MEDIA_PARSER_H_
+#define MEDIA_FORMATS_WEBM_WEBM_MEDIA_PARSER_H_
 
 #include "packager/base/callback_forward.h"
 #include "packager/base/memory/ref_counted.h"
@@ -15,12 +15,12 @@ namespace media {
 
 class WebMClusterParser;
 
-class WebMStreamParser : public MediaParser {
+class WebMMediaParser : public MediaParser {
  public:
-  WebMStreamParser();
-  ~WebMStreamParser() override;
+  WebMMediaParser();
+  ~WebMMediaParser() override;
 
-  // StreamParser implementation.
+  /// StreamParser implementation.
   void Init(const InitCB& init_cb,
             const NewSampleCB& new_sample_cb,
             KeySource* decryption_key_source) override;
@@ -70,10 +70,10 @@ class WebMStreamParser : public MediaParser {
   scoped_ptr<WebMClusterParser> cluster_parser_;
   ByteQueue byte_queue_;
 
-  DISALLOW_COPY_AND_ASSIGN(WebMStreamParser);
+  DISALLOW_COPY_AND_ASSIGN(WebMMediaParser);
 };
 
 }  // namespace media
 }  // namespace edash_packager
 
-#endif  // MEDIA_FORMATS_WEBM_WEBM_STREAM_PARSER_H_
+#endif  // MEDIA_FORMATS_WEBM_WEBM_MEDIA_PARSER_H_

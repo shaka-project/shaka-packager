@@ -16,21 +16,21 @@ namespace edash_packager {
 namespace media {
 class AudioDecoderConfig;
 
-// Helper class used to parse an Audio element inside a TrackEntry element.
+/// Helper class used to parse an Audio element inside a TrackEntry element.
 class WebMAudioClient : public WebMParserClient {
  public:
   WebMAudioClient();
   ~WebMAudioClient() override;
 
-  // Reset this object's state so it can process a new audio track element.
+  /// Reset this object's state so it can process a new audio track element.
   void Reset();
 
-  // Create an AudioStreamInfo with the data in |track_num|, |codec_id|,
-  // |codec_private|, |is_encrypted| and the fields parsed from the last audio
-  // track element this object was used to parse.
-  // Returns an AudioStreamInfo scoped_refptr if successful.
-  // Returns an empty scoped_refptr if there was unexpected values in the
-  // provided parameters or audio track element fields.
+  /// Create an AudioStreamInfo with the data in |track_num|, |codec_id|,
+  /// |codec_private|, |is_encrypted| and the fields parsed from the last audio
+  /// track element this object was used to parse.
+  /// @return An AudioStreamInfo scoped_refptr if successful.
+  /// @return An empty scoped_refptr if there was unexpected values in the
+  ///         provided parameters or audio track element fields.
   scoped_refptr<AudioStreamInfo> GetAudioStreamInfo(
       int64_t track_num,
       const std::string& codec_id,

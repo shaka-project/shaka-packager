@@ -12,17 +12,16 @@
 namespace edash_packager {
 namespace media {
 
-// Parser for WebM Info element.
+/// Parser for WebM Info element.
 class WebMInfoParser : public WebMParserClient {
  public:
   WebMInfoParser();
   ~WebMInfoParser() override;
 
-  // Parses a WebM Info element in |buf|.
-  //
-  // Returns -1 if the parse fails.
-  // Returns 0 if more data is needed.
-  // Returns the number of bytes parsed on success.
+  /// Parses a WebM Info element in |buf|.
+  /// @return -1 if the parse fails.
+  /// @return 0 if more data is needed.
+  /// @return The number of bytes parsed on success.
   int Parse(const uint8_t* buf, int size);
 
   int64_t timecode_scale() const { return timecode_scale_; }
