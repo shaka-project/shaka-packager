@@ -9,6 +9,7 @@
 #include <algorithm>
 #include "packager/base/bind.h"
 #include "packager/base/bind_helpers.h"
+#include "packager/base/stl_util.h"
 #include "packager/base/threading/platform_thread.h"
 #include "packager/media/base/closure_thread.h"
 #include "packager/media/file/io_cache.h"
@@ -28,7 +29,7 @@ class IoCacheTest : public testing::Test {
                     int sleep_between_writes,
                     bool close_when_done) {
     for (uint64_t write_idx = 0; write_idx < num_writes; ++write_idx) {
-      uint64_t write_result = cache_->Write(&test_buffer[0],
+      uint64_t write_result = cache_->Write(vector_as_array(&test_buffer),
                                             test_buffer.size());
       if (!write_result) {
         // Cache was closed.
@@ -59,7 +60,7 @@ class IoCacheTest : public testing::Test {
 
   void GenerateTestBuffer(uint64_t size, std::vector<uint8_t>* test_buffer) {
     test_buffer->resize(size);
-    uint8_t* w_ptr(&(*test_buffer)[0]);
+    uint8_t* w_ptr(vector_as_array(test_buffer));
     while (size) {
       uint64_t copy_size(std::min(size, kBlockSize));
       memcpy(w_ptr, reference_block_, copy_size);
@@ -105,7 +106,8 @@ TEST_F(IoCacheTest, VerySmallWrite) {
   WriteToCacheThreaded(write_buffer, 1, 0, false);
 
   std::vector<uint8_t> read_buffer(kTestBytes);
-  EXPECT_EQ(kTestBytes, cache_->Read(&read_buffer[0], kTestBytes));
+  EXPECT_EQ(kTestBytes, cache_->Read(vector_as_array(&read_buffer),
+                                     kTestBytes));
   EXPECT_EQ(write_buffer, read_buffer);
 }
 
@@ -117,7 +119,8 @@ TEST_F(IoCacheTest, LotsOfAlignedBlocks) {
   WriteToCacheThreaded(write_buffer, kNumWrites, 0, false);
   for (uint64_t num_reads = 0; num_reads < kNumWrites; ++num_reads) {
     std::vector<uint8_t> read_buffer(kBlockSize);
-    EXPECT_EQ(kBlockSize, cache_->Read(&read_buffer[0], kBlockSize));
+    EXPECT_EQ(kBlockSize, cache_->Read(vector_as_array(&read_buffer),
+                                       kBlockSize));
     EXPECT_EQ(write_buffer, read_buffer);
   }
 }
@@ -135,7 +138,7 @@ TEST_F(IoCacheTest, LotsOfUnalignedBlocks) {
   WriteToCacheThreaded(write_buffer2, kNumWrites, 0, false);
 
   std::vector<uint8_t> read_buffer1(kUnalignBlockSize);
-  EXPECT_EQ(kUnalignBlockSize, cache_->Read(&read_buffer1[0],
+  EXPECT_EQ(kUnalignBlockSize, cache_->Read(vector_as_array(&read_buffer1),
                                             kUnalignBlockSize));
   EXPECT_EQ(write_buffer1, read_buffer1);
   std::vector<uint8> verify_buffer;
@@ -146,10 +149,11 @@ TEST_F(IoCacheTest, LotsOfUnalignedBlocks) {
   uint64_t verify_index(0);
   while (verify_index < verify_buffer.size()) {
     std::vector<uint8_t> read_buffer2(kBlockSize);
-    uint64_t bytes_read = cache_->Read(&read_buffer2[0], kBlockSize);
+    uint64_t bytes_read = cache_->Read(vector_as_array(&read_buffer2),
+                                       kBlockSize);
     EXPECT_NE(0U, bytes_read);
     EXPECT_FALSE(memcmp(&verify_buffer[verify_index],
-                        &read_buffer2[0],
+                        vector_as_array(&read_buffer2),
                         bytes_read));
     verify_index += bytes_read;
   }
@@ -164,7 +168,8 @@ TEST_F(IoCacheTest, SlowWrite) {
   WriteToCacheThreaded(write_buffer, kNumWrites, kWriteDelayMs, false);
   for (uint64_t num_reads = 0; num_reads < kNumWrites; ++num_reads) {
     std::vector<uint8_t> read_buffer(kBlockSize);
-    EXPECT_EQ(kBlockSize, cache_->Read(&read_buffer[0], kBlockSize));
+    EXPECT_EQ(kBlockSize, cache_->Read(vector_as_array(&read_buffer),
+                                       kBlockSize));
     EXPECT_EQ(write_buffer, read_buffer);
   }
 }
@@ -178,7 +183,8 @@ TEST_F(IoCacheTest, SlowRead) {
   WriteToCacheThreaded(write_buffer, kNumWrites, 0, false);
   for (uint64_t num_reads = 0; num_reads < kNumWrites; ++num_reads) {
     std::vector<uint8_t> read_buffer(kBlockSize);
-    EXPECT_EQ(kBlockSize, cache_->Read(&read_buffer[0], kBlockSize));
+    EXPECT_EQ(kBlockSize, cache_->Read(vector_as_array(&read_buffer),
+                                       kBlockSize));
     EXPECT_EQ(write_buffer, read_buffer);
     base::PlatformThread::Sleep(
         base::TimeDelta::FromMilliseconds(kReadDelayMs));
@@ -206,6 +212,32 @@ TEST_F(IoCacheTest, CloseByWriter) {
   WriteToCacheThreaded(write_buffer, 0, 0, true);
   EXPECT_EQ(0U, cache_->Read(test_buffer, kBlockSize));
   WaitForWriterThread();
+}
+
+TEST_F(IoCacheTest, Reopen) {
+  const uint64_t kTestBytes1(5);
+  const uint64_t kTestBytes2(10);
+
+  std::vector<uint8_t> write_buffer;
+  GenerateTestBuffer(kTestBytes1, &write_buffer);
+  WriteToCacheThreaded(write_buffer, 1, 0, true);
+
+  std::vector<uint8_t> read_buffer(kTestBytes1);
+  EXPECT_EQ(kTestBytes1, cache_->Read(vector_as_array(&read_buffer),
+                                      kTestBytes1));
+  EXPECT_EQ(write_buffer, read_buffer);
+
+  WaitForWriterThread();
+  ASSERT_TRUE(cache_->closed());
+  cache_->Reopen();
+  ASSERT_FALSE(cache_->closed());
+
+  GenerateTestBuffer(kTestBytes2, &write_buffer);
+  WriteToCacheThreaded(write_buffer, 1, 0, false);
+  read_buffer.resize(kTestBytes2);
+  EXPECT_EQ(kTestBytes2, cache_->Read(vector_as_array(&read_buffer),
+                                      kTestBytes2));
+  EXPECT_EQ(write_buffer, read_buffer);
 }
 
 TEST_F(IoCacheTest, SingleLargeWrite) {
@@ -240,7 +272,8 @@ TEST_F(IoCacheTest, LargeRead) {
         base::TimeDelta::FromMilliseconds(10));
   }
   std::vector<uint8_t> read_buffer(kCacheSize);
-  EXPECT_EQ(kCacheSize, cache_->Read(&read_buffer[0], kCacheSize));
+  EXPECT_EQ(kCacheSize, cache_->Read(vector_as_array(&read_buffer),
+                                     kCacheSize));
   EXPECT_EQ(verify_buffer, read_buffer);
   cache_->Close();
 }

@@ -52,7 +52,7 @@ const uint32_t kVersion4 = 4;
 const int kAdtsHeaderMinSize = 7;
 const uint8_t kAacSampleSizeBits = 16;
 // Applies to all video streams.
-const uint8_t kNaluLengthSize = 4; // unit is bytes.
+const uint8_t kNaluLengthSize = 4;  // unit is bytes.
 // Placeholder sampling frequency for all audio streams, which
 // will be overwritten after filter parsing.
 const uint32_t kDefaultSamplingFrequency = 100;
@@ -83,7 +83,7 @@ enum Type {
   Type_string = 9,
   Type_BinaryData = 10
 };
-} // namespace
+}  // namespace
 
 namespace edash_packager {
 namespace media {
@@ -129,11 +129,11 @@ void WvmMediaParser::Init(const InitCB& init_cb,
 bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
   uint32_t num_bytes, prev_size;
   num_bytes = prev_size = 0;
-  uint8_t* read_ptr = (uint8_t*)(&buf[0]);
-  uint8_t* end = read_ptr + size;
+  const uint8_t* read_ptr = buf;
+  const uint8_t* end = read_ptr + size;
 
   while (read_ptr < end) {
-    switch(parse_state_) {
+    switch (parse_state_) {
       case StartCode1:
         if (*read_ptr == kStartCode1) {
           parse_state_ = StartCode2;
@@ -260,7 +260,6 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
       case PesExtension1:
         prev_pes_flags_1_ = pes_flags_1_;
         pes_flags_1_ = *read_ptr;
-        *read_ptr &= ~kScramblingBitsMask;
         --pes_packet_bytes_;
         parse_state_ = PesExtension2;
         break;
@@ -861,7 +860,8 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
               if (!ExtractResolutionFromDecoderConfig(
                       vector_as_array(&decoder_config_record),
                       decoder_config_record.size(),
-                      &coded_width, &coded_height, &pixel_width, &pixel_height)) {
+                      &coded_width, &coded_height,
+                      &pixel_width, &pixel_height)) {
                 LOG(ERROR) << "Failed to parse AVCDecoderConfigurationRecord.";
                 return false;
               }

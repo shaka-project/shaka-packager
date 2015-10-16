@@ -124,5 +124,26 @@ TEST_F(LocalFileTest, WriteRead) {
   EXPECT_EQ(data_, read_data);
 }
 
+TEST_F(LocalFileTest, WriteFlushCheckSize) {
+  const uint32 kNumCycles(10);
+  const uint32 kNumWrites(10);
+
+  for (uint32 cycle_idx = 0; cycle_idx < kNumCycles; ++cycle_idx) {
+    // Write file using File API, using file name directly (without prefix).
+    File* file = File::Open(local_file_name_no_prefix_.c_str(), "w");
+    ASSERT_TRUE(file != NULL);
+    for (uint32 write_idx = 0; write_idx < kNumWrites; ++write_idx)
+      EXPECT_EQ(kDataSize, file->Write(data_.data(), kDataSize));
+    ASSERT_NO_FATAL_FAILURE(file->Flush());
+    EXPECT_TRUE(file->Close());
+
+    file = File::Open(local_file_name_.c_str(), "r");
+    ASSERT_TRUE(file != NULL);
+    EXPECT_EQ(static_cast<int64_t>(data_.size() * kNumWrites), file->Size());
+
+    EXPECT_TRUE(file->Close());
+  }
+}
+
 }  // namespace media
 }  // namespace edash_packager

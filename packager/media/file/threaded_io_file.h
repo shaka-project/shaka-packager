@@ -9,6 +9,7 @@
 
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/synchronization/lock.h"
+#include "packager/base/synchronization/waitable_event.h"
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
 #include "packager/media/file/io_cache.h"
@@ -58,6 +59,8 @@ class ThreadedIoFile : public File {
   scoped_ptr<ClosureThread> thread_;
   uint64_t size_;
   bool eof_;
+  bool flushing_;
+  base::WaitableEvent flush_complete_event_;
   int64_t internal_file_error_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadedIoFile);

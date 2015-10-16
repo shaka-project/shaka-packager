@@ -25,7 +25,9 @@ ThreadedIoFile::ThreadedIoFile(scoped_ptr<File, FileCloser> internal_file,
       io_buffer_(io_block_size),
       size_(0),
       eof_(false),
-      internal_file_error_(0) {
+      flushing_(false),
+      flush_complete_event_(false, false),
+      internal_file_error_(0){
   DCHECK(internal_file_);
 }
 
@@ -101,7 +103,9 @@ bool ThreadedIoFile::Flush() {
   DCHECK(thread_);
   DCHECK_EQ(kOutputMode, mode_);
 
-  cache_.WaitUntilEmptyOrClosed();
+  flushing_ = true;
+  cache_.Close();
+  flush_complete_event_.Wait();
   return internal_file_->Flush();
 }
 
@@ -140,16 +144,23 @@ void ThreadedIoFile::RunInOutputMode() {
 
   while (true) {
     uint64_t write_bytes = cache_.Read(&io_buffer_[0], io_buffer_.size());
-    if (write_bytes == 0)
-      return;
-
-    int64_t write_result = internal_file_->Write(&io_buffer_[0], write_bytes);
-    if (write_result < 0) {
-      internal_file_error_ = write_result;
-      cache_.Close();
-      return;
+    if (write_bytes == 0) {
+      if (flushing_) {
+        cache_.Reopen();
+        flushing_ = false;
+        flush_complete_event_.Signal();
+      } else {
+        return;
+      }
+    } else {
+      int64_t write_result = internal_file_->Write(&io_buffer_[0], write_bytes);
+      if (write_result < 0) {
+        internal_file_error_ = write_result;
+        cache_.Close();
+        return;
+      }
+      CHECK_EQ(write_result, static_cast<int64_t>(write_bytes));
     }
-    CHECK_EQ(write_result, static_cast<int64_t>(write_bytes));
   }
 }
 
