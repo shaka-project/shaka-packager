@@ -43,8 +43,14 @@ class IoCache {
   void Clear();
 
   /// Close the cache. This will call any blocking calls to unblock, and the
-  /// cache won't be usable thereafter.
+  /// cache won't be usable until Reopened.
   void Close();
+
+  /// @return true if the cache is closed, false otherwise.
+  bool closed() { return closed_; }
+
+  /// Reopens the cache. Any data still in the cache will be lost.
+  void Reopen();
 
   /// Returns the number of bytes in the cache.
   /// @return the number of bytes in the cache.
