@@ -97,8 +97,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="comment">// XmlNode in libxml2. There are also MPD XML specific classes as well.</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#ifndef MPD_BASE_XML_XML_NODE_H_</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#define MPD_BASE_XML_XML_NODE_H_</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MPD_BASE_XML_XML_NODE_H_</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;libxml/tree.h&gt;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
@@ -148,7 +148,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
 <div class="line"><a name="l00096"></a><span class="lineno"><a class="line" href="../../d1/dd5/classedash__packager_1_1xml_1_1RepresentationBaseXmlNode.html">   96</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d1/dd5/classedash__packager_1_1xml_1_1RepresentationBaseXmlNode.html">RepresentationBaseXmlNode</a> : <span class="keyword">public</span> <a class="code" href="../../dd/d85/classedash__packager_1_1xml_1_1XmlNode.html">XmlNode</a> {</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d1/dd5/classedash__packager_1_1xml_1_1RepresentationBaseXmlNode.html">RepresentationBaseXmlNode</a>();</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  ~<a class="code" href="../../d1/dd5/classedash__packager_1_1xml_1_1RepresentationBaseXmlNode.html">RepresentationBaseXmlNode</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keywordtype">bool</span> AddContentProtectionElements(</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      <span class="keyword">const</span> std::list&lt;ContentProtectionElement&gt;&amp; content_protection_elements);</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
@@ -165,7 +165,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00113"></a><span class="lineno"><a class="line" href="../../d6/d37/classedash__packager_1_1xml_1_1AdaptationSetXmlNode.html">  113</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d6/d37/classedash__packager_1_1xml_1_1AdaptationSetXmlNode.html">AdaptationSetXmlNode</a> : <span class="keyword">public</span> <a class="code" href="../../d1/dd5/classedash__packager_1_1xml_1_1RepresentationBaseXmlNode.html">RepresentationBaseXmlNode</a> {</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160; <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <a class="code" href="../../d6/d37/classedash__packager_1_1xml_1_1AdaptationSetXmlNode.html">AdaptationSetXmlNode</a>();</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d6/d37/classedash__packager_1_1xml_1_1AdaptationSetXmlNode.html">AdaptationSetXmlNode</a>();</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  ~<a class="code" href="../../d6/d37/classedash__packager_1_1xml_1_1AdaptationSetXmlNode.html">AdaptationSetXmlNode</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../d6/d37/classedash__packager_1_1xml_1_1AdaptationSetXmlNode.html#a40c48f2ed2ac0f550bf019d7e650be94">AddRoleElement</a>(<span class="keyword">const</span> std::string&amp; scheme_id_uri,</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;                      <span class="keyword">const</span> std::string&amp; value);</div>
@@ -177,7 +177,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00128"></a><span class="lineno"><a class="line" href="../../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html">  128</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html">RepresentationXmlNode</a> : <span class="keyword">public</span> <a class="code" href="../../d1/dd5/classedash__packager_1_1xml_1_1RepresentationBaseXmlNode.html">RepresentationBaseXmlNode</a> {</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160; <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <a class="code" href="../../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html">RepresentationXmlNode</a>();</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html">RepresentationXmlNode</a>();</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  ~<a class="code" href="../../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html">RepresentationXmlNode</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html#a2b00f576154e002f067849129cff4c4a">AddVideoInfo</a>(<span class="keyword">const</span> MediaInfo::VideoInfo&amp; video_info);</div>
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;</div>
@@ -228,7 +228,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 15 2015 17:30:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 17:27:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

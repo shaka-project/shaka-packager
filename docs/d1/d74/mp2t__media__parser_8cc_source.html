@@ -149,7 +149,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  PidType pid_type()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> pid_type_; }</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  scoped_refptr&lt;StreamInfo&gt;&amp; config() { <span class="keywordflow">return</span> config_; }</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keywordtype">void</span> set_config(scoped_refptr&lt;StreamInfo&gt;&amp; config) { config_ = config; }</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keywordtype">void</span> set_config(<span class="keyword">const</span> scoped_refptr&lt;StreamInfo&gt;&amp; config) { config_ = config; }</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  SampleQueue&amp; sample_queue() { <span class="keywordflow">return</span> sample_queue_; }</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
@@ -242,7 +242,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  STLDeleteValues(&amp;pids_);</div>
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;}</div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;</div>
-<div class="line"><a name="l00156"></a><span class="lineno"><a class="line" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a14a6993c335f89e8245f1af47fb9e55a">  156</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a14a6993c335f89e8245f1af47fb9e55a">Mp2tMediaParser::Init</a>(</div>
+<div class="line"><a name="l00156"></a><span class="lineno"><a class="line" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#abfcd1be5f00d8091feb044e7199966f5">  156</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#abfcd1be5f00d8091feb044e7199966f5">Mp2tMediaParser::Init</a>(</div>
 <div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;    <span class="keyword">const</span> InitCB&amp; init_cb,</div>
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    <span class="keyword">const</span> NewSampleCB&amp; new_sample_cb,</div>
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a>* decryption_key_source) {</div>
@@ -255,7 +255,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  new_sample_cb_ = new_sample_cb;</div>
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;}</div>
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
-<div class="line"><a name="l00169"></a><span class="lineno"><a class="line" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a3b4fdfa2e74ea2817c44a23feb714758">  169</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a3b4fdfa2e74ea2817c44a23feb714758">Mp2tMediaParser::Flush</a>() {</div>
+<div class="line"><a name="l00169"></a><span class="lineno"><a class="line" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a351806157b3a17e69bf7d06c8259459c">  169</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a351806157b3a17e69bf7d06c8259459c">Mp2tMediaParser::Flush</a>() {</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Mp2tMediaParser::Flush&quot;</span>;</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <span class="comment">// Flush the buffers and reset the pids.</span></div>
@@ -273,7 +273,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  ts_byte_queue_.<a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#a452485879d303d5c8654e1b184bc1235">Reset</a>();</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;}</div>
 <div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;</div>
-<div class="line"><a name="l00187"></a><span class="lineno"><a class="line" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a416aaeb6231a46548871a419795d1ffc">  187</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a416aaeb6231a46548871a419795d1ffc">Mp2tMediaParser::Parse</a>(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">int</span> size) {</div>
+<div class="line"><a name="l00187"></a><span class="lineno"><a class="line" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a8e01eb8219dfd9a649ee5a153f9bbabb">  187</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a8e01eb8219dfd9a649ee5a153f9bbabb">Mp2tMediaParser::Parse</a>(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">int</span> size) {</div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Mp2tMediaParser::Parse size=&quot;</span> &lt;&lt; size;</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;</div>
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <span class="comment">// Add the data to the parser state.</span></div>
@@ -415,7 +415,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;}</div>
 <div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;</div>
 <div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;<span class="keywordtype">void</span> Mp2tMediaParser::OnNewStreamInfo(</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    scoped_refptr&lt;StreamInfo&gt;&amp; new_stream_info) {</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    <span class="keyword">const</span> scoped_refptr&lt;StreamInfo&gt;&amp; new_stream_info) {</div>
 <div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  DCHECK(new_stream_info);</div>
 <div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;OnVideoConfigChanged for pid=&quot;</span> &lt;&lt; new_stream_info-&gt;track_id();</div>
 <div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;</div>
@@ -463,71 +463,72 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;}</div>
 <div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;<span class="keywordtype">void</span> Mp2tMediaParser::OnEmitSample(uint32_t pes_pid,</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;                                   scoped_refptr&lt;MediaSample&gt;&amp; new_sample) {</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;  DCHECK(new_sample);</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;  DVLOG(LOG_LEVEL_ES)</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;OnEmitSample: &quot;</span></div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; pid=&quot;</span></div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;      &lt;&lt; pes_pid</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; size=&quot;</span></div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;      &lt;&lt; new_sample-&gt;data_size()</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; dts=&quot;</span></div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;      &lt;&lt; new_sample-&gt;dts()</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; pts=&quot;</span></div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;      &lt;&lt; new_sample-&gt;pts();</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  <span class="comment">// Add the sample to the appropriate PID sample queue.</span></div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;  PidMap::iterator pid_state = pids_.find(pes_pid);</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;  <span class="keywordflow">if</span> (pid_state == pids_.end()) {</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;PID State for new sample not found (pid = &quot;</span></div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;               &lt;&lt; pes_pid &lt;&lt; <span class="stringliteral">&quot;).&quot;</span>;</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;  }</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;  pid_state-&gt;second-&gt;sample_queue().push_back(new_sample);</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;}</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;<span class="keywordtype">bool</span> Mp2tMediaParser::EmitRemainingSamples() {</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;  DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Mp2tMediaParser::EmitRemainingBuffers&quot;</span>;</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;  <span class="comment">// No buffer should be sent until fully initialized.</span></div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;  <span class="keywordflow">if</span> (!is_initialized_)</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;  <span class="comment">// Buffer emission.</span></div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;  <span class="keywordflow">for</span> (PidMap::const_iterator pid_iter = pids_.begin(); pid_iter != pids_.end();</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;       ++pid_iter) {</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;    SampleQueue&amp; sample_queue = pid_iter-&gt;second-&gt;sample_queue();</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    <span class="keywordflow">for</span> (SampleQueue::iterator sample_iter = sample_queue.begin();</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;         sample_iter != sample_queue.end();</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;         ++sample_iter) {</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;      <span class="keywordflow">if</span> (!new_sample_cb_.Run(pid_iter-&gt;first, *sample_iter)) {</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;        <span class="comment">// Error processing sample. Propagate error condition.</span></div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;      }</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;    }</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;    sample_queue.clear();</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;  }</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;</div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;}</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;<span class="keywordtype">void</span> Mp2tMediaParser::OnEmitSample(</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    uint32_t pes_pid,</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    <span class="keyword">const</span> scoped_refptr&lt;MediaSample&gt;&amp; new_sample) {</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;  DCHECK(new_sample);</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;  DVLOG(LOG_LEVEL_ES)</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;OnEmitSample: &quot;</span></div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; pid=&quot;</span></div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;      &lt;&lt; pes_pid</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; size=&quot;</span></div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;      &lt;&lt; new_sample-&gt;data_size()</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; dts=&quot;</span></div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;      &lt;&lt; new_sample-&gt;dts()</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; pts=&quot;</span></div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;      &lt;&lt; new_sample-&gt;pts();</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;  <span class="comment">// Add the sample to the appropriate PID sample queue.</span></div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;  PidMap::iterator pid_state = pids_.find(pes_pid);</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;  <span class="keywordflow">if</span> (pid_state == pids_.end()) {</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;PID State for new sample not found (pid = &quot;</span></div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;               &lt;&lt; pes_pid &lt;&lt; <span class="stringliteral">&quot;).&quot;</span>;</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;  }</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;  pid_state-&gt;second-&gt;sample_queue().push_back(new_sample);</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;}</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;<span class="keywordtype">bool</span> Mp2tMediaParser::EmitRemainingSamples() {</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;  DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Mp2tMediaParser::EmitRemainingBuffers&quot;</span>;</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;  <span class="comment">// No buffer should be sent until fully initialized.</span></div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;  <span class="keywordflow">if</span> (!is_initialized_)</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;  <span class="comment">// Buffer emission.</span></div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;  <span class="keywordflow">for</span> (PidMap::const_iterator pid_iter = pids_.begin(); pid_iter != pids_.end();</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;       ++pid_iter) {</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    SampleQueue&amp; sample_queue = pid_iter-&gt;second-&gt;sample_queue();</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    <span class="keywordflow">for</span> (SampleQueue::iterator sample_iter = sample_queue.begin();</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;         sample_iter != sample_queue.end();</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;         ++sample_iter) {</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;      <span class="keywordflow">if</span> (!new_sample_cb_.Run(pid_iter-&gt;first, *sample_iter)) {</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;        <span class="comment">// Error processing sample. Propagate error condition.</span></div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;      }</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;    }</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    sample_queue.clear();</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;  }</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;}</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1ByteQueue_html_afa47d3dc54862cee101d4be8746de6eb"><div class="ttname"><a href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#afa47d3dc54862cee101d4be8746de6eb">edash_packager::media::ByteQueue::Push</a></div><div class="ttdeci">void Push(const uint8_t *data, int size)</div><div class="ttdoc">Append new bytes to the end of the queue. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00029">byte_queue.cc:29</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1ByteQueue_html_acac5c7874703c86ba77a50d3be0671d2"><div class="ttname"><a href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#acac5c7874703c86ba77a50d3be0671d2">edash_packager::media::ByteQueue::Pop</a></div><div class="ttdeci">void Pop(int count)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00070">byte_queue.cc:70</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser_html_a3b4fdfa2e74ea2817c44a23feb714758"><div class="ttname"><a href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a3b4fdfa2e74ea2817c44a23feb714758">edash_packager::media::mp2t::Mp2tMediaParser::Flush</a></div><div class="ttdeci">virtual void Flush() OVERRIDE</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00169">mp2t_media_parser.cc:169</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser_html_a14a6993c335f89e8245f1af47fb9e55a"><div class="ttname"><a href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a14a6993c335f89e8245f1af47fb9e55a">edash_packager::media::mp2t::Mp2tMediaParser::Init</a></div><div class="ttdeci">virtual void Init(const InitCB &amp;init_cb, const NewSampleCB &amp;new_sample_cb, KeySource *decryption_key_source) OVERRIDE</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00156">mp2t_media_parser.cc:156</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser_html_a351806157b3a17e69bf7d06c8259459c"><div class="ttname"><a href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a351806157b3a17e69bf7d06c8259459c">edash_packager::media::mp2t::Mp2tMediaParser::Flush</a></div><div class="ttdeci">void Flush() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00169">mp2t_media_parser.cc:169</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsSectionPat_html"><div class="ttname"><a href="../../dd/d0e/classedash__packager_1_1media_1_1mp2t_1_1TsSectionPat.html">edash_packager::media::mp2t::TsSectionPat</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da0/ts__section__pat_8h_source.html#l00016">ts_section_pat.h:16</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser_html_a8e01eb8219dfd9a649ee5a153f9bbabb"><div class="ttname"><a href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a8e01eb8219dfd9a649ee5a153f9bbabb">edash_packager::media::mp2t::Mp2tMediaParser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *buf, int size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00187">mp2t_media_parser.cc:187</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">edash_packager::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00029">key_source.h:29</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1ByteQueue_html_a452485879d303d5c8654e1b184bc1235"><div class="ttname"><a href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#a452485879d303d5c8654e1b184bc1235">edash_packager::media::ByteQueue::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset the queue to the empty state. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00024">byte_queue.cc:24</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser_html_a416aaeb6231a46548871a419795d1ffc"><div class="ttname"><a href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a416aaeb6231a46548871a419795d1ffc">edash_packager::media::mp2t::Mp2tMediaParser::Parse</a></div><div class="ttdeci">virtual bool Parse(const uint8_t *buf, int size) OVERRIDE</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00187">mp2t_media_parser.cc:187</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser_html_abfcd1be5f00d8091feb044e7199966f5"><div class="ttname"><a href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#abfcd1be5f00d8091feb044e7199966f5">edash_packager::media::mp2t::Mp2tMediaParser::Init</a></div><div class="ttdeci">void Init(const InitCB &amp;init_cb, const NewSampleCB &amp;new_sample_cb, KeySource *decryption_key_source) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00156">mp2t_media_parser.cc:156</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1ByteQueue_html_a8253df160751462f3b75290a7c525e56"><div class="ttname"><a href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#a8253df160751462f3b75290a7c525e56">edash_packager::media::ByteQueue::Peek</a></div><div class="ttdeci">void Peek(const uint8_t **data, int *size) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00063">byte_queue.cc:63</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 15 2015 17:30:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 17:27:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

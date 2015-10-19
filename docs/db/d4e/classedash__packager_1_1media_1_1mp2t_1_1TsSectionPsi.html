@@ -107,15 +107,15 @@ Inheritance diagram for edash_packager::media::mp2t::TsSectionPsi:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a748bbd1a80da49bbe02e7f9b984a1668"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a748bbd1a80da49bbe02e7f9b984a1668"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>Parse</b> (bool payload_unit_start_indicator, const uint8_t *buf, int size) OVERRIDE</td></tr>
-<tr class="separator:a748bbd1a80da49bbe02e7f9b984a1668"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afddcbca4c9648d21e5be9e5727fa8cc6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afddcbca4c9648d21e5be9e5727fa8cc6"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Flush</b> () OVERRIDE</td></tr>
-<tr class="separator:afddcbca4c9648d21e5be9e5727fa8cc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b122039bb98b6de79c826046dff6e5d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8b122039bb98b6de79c826046dff6e5d"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Reset</b> () OVERRIDE</td></tr>
-<tr class="separator:a8b122039bb98b6de79c826046dff6e5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcb1888e13d727d66c5dcd7b0cd9a6c0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afcb1888e13d727d66c5dcd7b0cd9a6c0"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>Parse</b> (bool payload_unit_start_indicator, const uint8_t *buf, int size) override</td></tr>
+<tr class="separator:afcb1888e13d727d66c5dcd7b0cd9a6c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e1a66aa49ac0a92da1a358268b1fc18"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0e1a66aa49ac0a92da1a358268b1fc18"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Flush</b> () override</td></tr>
+<tr class="separator:a0e1a66aa49ac0a92da1a358268b1fc18"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af226d4df459bae1db346bf0013884679"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af226d4df459bae1db346bf0013884679"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Reset</b> () override</td></tr>
+<tr class="separator:af226d4df459bae1db346bf0013884679"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae1038b2f09f8dfedd53701b561535fc1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae1038b2f09f8dfedd53701b561535fc1"></a>
 virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>ParsePsiSection</b> (<a class="el" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html">BitReader</a> *bit_reader)=0</td></tr>
 <tr class="separator:ae1038b2f09f8dfedd53701b561535fc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -126,7 +126,7 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>ResetPsiSecti
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_types_classedash__packager_1_1media_1_1mp2t_1_1TsSection"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classedash__packager_1_1media_1_1mp2t_1_1TsSection')"><img src="../../closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="../../d8/d8e/classedash__packager_1_1media_1_1mp2t_1_1TsSection.html">edash_packager::media::mp2t::TsSection</a></td></tr>
-<tr class="memitem:aa3487bd81805e2494236fbfe06ee470c inherit pub_types_classedash__packager_1_1media_1_1mp2t_1_1TsSection"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa3487bd81805e2494236fbfe06ee470c"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>SpecialPid</b> { <br/>
+<tr class="memitem:aa3487bd81805e2494236fbfe06ee470c inherit pub_types_classedash__packager_1_1media_1_1mp2t_1_1TsSection"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>SpecialPid</b> { <br/>
 &#160;&#160;<b>kPidPat</b> = 0x0, 
 <b>kPidCat</b> = 0x1, 
 <b>kPidTsdt</b> = 0x2, 
@@ -147,7 +147,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 15 2015 17:30:54 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 17:27:27 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

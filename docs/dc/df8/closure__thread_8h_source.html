@@ -94,8 +94,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// https://developers.google.com/open-source/licenses/bsd</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#ifndef MEDIA_BASE_CLOSURE_THREAD_H_</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#define MEDIA_BASE_CLOSURE_THREAD_H_</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MEDIA_BASE_CLOSURE_THREAD_H_</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;packager/base/callback.h&quot;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/base/threading/simple_thread.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
@@ -107,10 +107,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="../../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html#a8cbb44ca1f4abd7028ba4602af82de0d">ClosureThread</a>(<span class="keyword">const</span> std::string&amp; name_prefix,</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                         <span class="keyword">const</span> base::Closure&amp; task);</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html#ad39d7f6d00720f04b86f580118da68a5">~ClosureThread</a>();</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <a class="code" href="../../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html#ac7a559c2312121cd383321076ca72c4b">~ClosureThread</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html#a016f08770c94f2e92f66f299ee4a5b04">Run</a>() OVERRIDE;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html#a87d65aa9a1279edaaad6a50c402b2aad">Run</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keyword">const</span> base::Closure task_;</div>
@@ -121,13 +121,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_CLOSURE_THREAD_H_</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1ClosureThread_html_a8cbb44ca1f4abd7028ba4602af82de0d"><div class="ttname"><a href="../../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html#a8cbb44ca1f4abd7028ba4602af82de0d">edash_packager::media::ClosureThread::ClosureThread</a></div><div class="ttdeci">ClosureThread(const std::string &amp;name_prefix, const base::Closure &amp;task)</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d7b/closure__thread_8cc_source.html#l00012">closure_thread.cc:12</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1ClosureThread_html_a016f08770c94f2e92f66f299ee4a5b04"><div class="ttname"><a href="../../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html#a016f08770c94f2e92f66f299ee4a5b04">edash_packager::media::ClosureThread::Run</a></div><div class="ttdeci">virtual void Run() OVERRIDE</div><div class="ttdoc">SimpleThread implementation overrides. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d7b/closure__thread_8cc_source.html#l00022">closure_thread.cc:22</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1ClosureThread_html_ac7a559c2312121cd383321076ca72c4b"><div class="ttname"><a href="../../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html#ac7a559c2312121cd383321076ca72c4b">edash_packager::media::ClosureThread::~ClosureThread</a></div><div class="ttdeci">~ClosureThread() override</div><div class="ttdoc">The destructor calls Join automatically if it is not yet joined. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d7b/closure__thread_8cc_source.html#l00017">closure_thread.cc:17</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1ClosureThread_html"><div class="ttname"><a href="../../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html">edash_packager::media::ClosureThread</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/df8/closure__thread_8h_source.html#l00025">closure_thread.h:25</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1ClosureThread_html_ad39d7f6d00720f04b86f580118da68a5"><div class="ttname"><a href="../../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html#ad39d7f6d00720f04b86f580118da68a5">edash_packager::media::ClosureThread::~ClosureThread</a></div><div class="ttdeci">virtual ~ClosureThread()</div><div class="ttdoc">The destructor calls Join automatically if it is not yet joined. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d7b/closure__thread_8cc_source.html#l00017">closure_thread.cc:17</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1ClosureThread_html_a87d65aa9a1279edaaad6a50c402b2aad"><div class="ttname"><a href="../../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html#a87d65aa9a1279edaaad6a50c402b2aad">edash_packager::media::ClosureThread::Run</a></div><div class="ttdeci">void Run() override</div><div class="ttdoc">SimpleThread implementation overrides. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d7b/closure__thread_8cc_source.html#l00022">closure_thread.cc:22</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 15 2015 17:30:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 17:27:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -108,12 +108,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6dafe794d755100428ed427791ae0e43"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d0d/classedash__packager_1_1media_1_1mp4_1_1MP4MediaParser.html#a6dafe794d755100428ed427791ae0e43">LoadMoov</a> (const std::string &amp;file_path)</td></tr>
 <tr class="separator:a6dafe794d755100428ed427791ae0e43"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">MediaParser implementation overrides.</div></td></tr>
-<tr class="memitem:abe7532e2795f7b08e9663c0c2ba4d5f3"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d0d/classedash__packager_1_1media_1_1mp4_1_1MP4MediaParser.html#abe7532e2795f7b08e9663c0c2ba4d5f3">Init</a> (const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#af5c74c8723a5306faddcdfdcadb4ab4a">InitCB</a> &amp;init_cb, const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a1628c19a91f1b8ae123f7350936bfe32">NewSampleCB</a> &amp;new_sample_cb, <a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a> *decryption_key_source) OVERRIDE</td></tr>
-<tr class="separator:abe7532e2795f7b08e9663c0c2ba4d5f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22f451f9ca693732e0c57e0a46b6a0c6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d0d/classedash__packager_1_1media_1_1mp4_1_1MP4MediaParser.html#a22f451f9ca693732e0c57e0a46b6a0c6">Flush</a> () OVERRIDE</td></tr>
-<tr class="separator:a22f451f9ca693732e0c57e0a46b6a0c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6680c3e6aebbecf7a8f9462f0ff703bf"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d0d/classedash__packager_1_1media_1_1mp4_1_1MP4MediaParser.html#a6680c3e6aebbecf7a8f9462f0ff703bf">Parse</a> (const uint8_t *buf, int size) OVERRIDE</td></tr>
-<tr class="separator:a6680c3e6aebbecf7a8f9462f0ff703bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ef745c8846adc9e932059a4e91f67c2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d0d/classedash__packager_1_1media_1_1mp4_1_1MP4MediaParser.html#a4ef745c8846adc9e932059a4e91f67c2">Init</a> (const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#af5c74c8723a5306faddcdfdcadb4ab4a">InitCB</a> &amp;init_cb, const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a1628c19a91f1b8ae123f7350936bfe32">NewSampleCB</a> &amp;new_sample_cb, <a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a> *decryption_key_source) override</td></tr>
+<tr class="separator:a4ef745c8846adc9e932059a4e91f67c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a042ad7caecf9ff854029a9b72a9b35b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d0d/classedash__packager_1_1media_1_1mp4_1_1MP4MediaParser.html#a042ad7caecf9ff854029a9b72a9b35b4">Flush</a> () override</td></tr>
+<tr class="separator:a042ad7caecf9ff854029a9b72a9b35b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade36e7fd4daf8c6a98c16b6a94bafd28"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d0d/classedash__packager_1_1media_1_1mp4_1_1MP4MediaParser.html#ade36e7fd4daf8c6a98c16b6a94bafd28">Parse</a> (const uint8_t *buf, int size) override</td></tr>
+<tr class="separator:ade36e7fd4daf8c6a98c16b6a94bafd28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -131,7 +131,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
 <div class="textblock">
 <p>Definition at line <a class="el" href="../../de/d7b/mp4__media__parser_8h_source.html#l00036">36</a> of file <a class="el" href="../../de/d7b/mp4__media__parser_8h_source.html">mp4_media_parser.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a22f451f9ca693732e0c57e0a46b6a0c6"></a>
+<a class="anchor" id="a042ad7caecf9ff854029a9b72a9b35b4"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -147,7 +147,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -159,7 +159,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
 
 </div>
 </div>
-<a class="anchor" id="abe7532e2795f7b08e9663c0c2ba4d5f3"></a>
+<a class="anchor" id="a4ef745c8846adc9e932059a4e91f67c2"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -192,11 +192,11 @@ track_id, const scoped_refptr<br class="typebreak"/>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Initialize the parser with necessary callbacks. Must be called before any data is passed to <a class="el" href="../../d8/d0d/classedash__packager_1_1media_1_1mp4_1_1MP4MediaParser.html#a6680c3e6aebbecf7a8f9462f0ff703bf">Parse()</a>. </p>
+<p>Initialize the parser with necessary callbacks. Must be called before any data is passed to <a class="el" href="../../d8/d0d/classedash__packager_1_1media_1_1mp4_1_1MP4MediaParser.html#ade36e7fd4daf8c6a98c16b6a94bafd28">Parse()</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">init_cb</td><td>will be called once enough data has been parsed to determine the initial stream configurations. </td></tr>
@@ -237,7 +237,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
 
 </div>
 </div>
-<a class="anchor" id="a6680c3e6aebbecf7a8f9462f0ff703bf"></a>
+<a class="anchor" id="ade36e7fd4daf8c6a98c16b6a94bafd28"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -264,7 +264,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -284,7 +284,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 15 2015 17:31:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 17:27:28 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

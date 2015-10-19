@@ -94,8 +94,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// https://developers.google.com/open-source/licenses/bsd</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#ifndef MEDIA_FORMATS_MP4_BOX_H_</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#define MEDIA_FORMATS_MP4_BOX_H_</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MEDIA_FORMATS_MP4_BOX_H_</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/base/compiler_specific.h&quot;</span></div>
@@ -130,13 +130,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00058"></a><span class="lineno"><a class="line" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html">   58</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html">FullBox</a> : <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html">Box</a> {</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160; <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <a class="code" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html">FullBox</a>();</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html">FullBox</a>();</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  ~<a class="code" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html">FullBox</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  uint8_t version;</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  uint32_t flags;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a95b3377915124537010b42719d33d41f">ReadWrite</a>(<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html">BoxBuffer</a>* buffer) OVERRIDE;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a870af62c176dfafa79cde0b1a8a55698">ReadWrite</a>(<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html">BoxBuffer</a>* buffer) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;};</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;}  <span class="comment">// namespace mp4</span></div>
@@ -147,8 +147,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1FullBox_html"><div class="ttname"><a href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html">edash_packager::media::mp4::FullBox</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d19/box_8h_source.html#l00058">box.h:58</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_ab588f893676e2c817088fc01caa7b135"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#ab588f893676e2c817088fc01caa7b135">edash_packager::media::mp4::Box::ReadWrite</a></div><div class="ttdeci">virtual bool ReadWrite(BoxBuffer *buffer)</div><div class="ttdoc">Read/write the mp4 box from/to BoxBuffer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00036">box.cc:36</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_a308081198b1fa9f9e4653ad976014a16"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a308081198b1fa9f9e4653ad976014a16">edash_packager::media::mp4::Box::ComputeSize</a></div><div class="ttdeci">virtual uint32_t ComputeSize()=0</div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1FullBox_html_a95b3377915124537010b42719d33d41f"><div class="ttname"><a href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a95b3377915124537010b42719d33d41f">edash_packager::media::mp4::FullBox::ReadWrite</a></div><div class="ttdeci">virtual bool ReadWrite(BoxBuffer *buffer) OVERRIDE</div><div class="ttdoc">Read/write the mp4 box from/to BoxBuffer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00050">box.cc:50</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1BoxBuffer_html"><div class="ttname"><a href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html">edash_packager::media::mp4::BoxBuffer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/dbf/box__buffer_8h_source.html#l00023">box_buffer.h:23</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1FullBox_html_a870af62c176dfafa79cde0b1a8a55698"><div class="ttname"><a href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a870af62c176dfafa79cde0b1a8a55698">edash_packager::media::mp4::FullBox::ReadWrite</a></div><div class="ttdeci">bool ReadWrite(BoxBuffer *buffer) override</div><div class="ttdoc">Read/write the mp4 box from/to BoxBuffer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00050">box.cc:50</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_a7b62a3983faafbea54a32486df60ed96"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a7b62a3983faafbea54a32486df60ed96">edash_packager::media::mp4::Box::Parse</a></div><div class="ttdeci">bool Parse(BoxReader *reader)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00019">box.cc:19</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html">edash_packager::media::mp4::Box</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d19/box_8h_source.html#l00028">box.h:28</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_aa7a756828b5514fcd3eaf16d86c413c0"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa7a756828b5514fcd3eaf16d86c413c0">edash_packager::media::mp4::Box::Write</a></div><div class="ttdeci">void Write(BufferWriter *writer)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00025">box.cc:25</a></div></div>
@@ -158,7 +158,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 15 2015 17:30:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 17:27:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

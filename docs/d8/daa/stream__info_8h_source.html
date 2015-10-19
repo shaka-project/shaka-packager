@@ -94,8 +94,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// https://developers.google.com/open-source/licenses/bsd</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#ifndef MEDIA_BASE_STREAM_INFO_H_</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#define MEDIA_BASE_STREAM_INFO_H_</span></div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MEDIA_BASE_STREAM_INFO_H_</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
@@ -108,83 +108,84 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  kStreamUnknown = 0,</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  kStreamAudio,</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  kStreamVideo,</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;};</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">   25</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> : <span class="keyword">public</span> base::RefCountedThreadSafe&lt;StreamInfo&gt; {</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a>(StreamType stream_type,</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;             <span class="keywordtype">int</span> track_id,</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;             uint32_t time_scale,</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;             uint64_t duration,</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;             <span class="keyword">const</span> std::string&amp; codec_string,</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;             <span class="keyword">const</span> std::string&amp; language,</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;             <span class="keyword">const</span> uint8_t* extra_data,</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;             <span class="keywordtype">size_t</span> extra_data_size,</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;             <span class="keywordtype">bool</span> is_encrypted);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html#ac2a38c803b8baf748ed66b4cf681518f">IsValidConfig</a>() <span class="keyword">const</span> = 0;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keyword">virtual</span> std::string <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html#ac09810e16cf5cee2f87987bfcc70fece">ToString</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  StreamType stream_type()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> stream_type_; }</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  uint32_t track_id()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> track_id_; }</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  uint32_t time_scale()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> time_scale_; }</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  uint64_t duration()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> duration_; }</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keyword">const</span> std::string&amp; codec_string()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> codec_string_; }</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keyword">const</span> std::string&amp; language()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> language_; }</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordtype">bool</span> is_encrypted()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> is_encrypted_; }</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; extra_data()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> extra_data_; }</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keywordtype">void</span> set_duration(<span class="keywordtype">int</span> duration) { duration_ = duration; }</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordtype">void</span> set_extra_data(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; data) { extra_data_ = data; }</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordtype">void</span> set_codec_string(<span class="keyword">const</span> std::string&amp; codec_string) {</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    codec_string_ = codec_string;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  }</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keywordtype">void</span> set_language(<span class="keyword">const</span> std::string&amp; language) { language_ = language; }</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span>base::RefCountedThreadSafe&lt;StreamInfo&gt;;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keyword">virtual</span> ~StreamInfo();</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="comment">// Whether the stream is Audio or Video.</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  StreamType stream_type_;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  uint32_t track_id_;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="comment">// The actual time is calculated as time / time_scale_ in seconds.</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  uint32_t time_scale_;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">// Duration base on time_scale.</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  uint64_t duration_;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  std::string codec_string_;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  std::string language_;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">// Whether the stream is potentially encrypted.</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// Note that in a potentially encrypted stream, individual buffers</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// can be encrypted or not encrypted.</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordtype">bool</span> is_encrypted_;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="comment">// Optional byte data required for some audio/video decoders such as Vorbis</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">// codebooks.</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  std::vector&lt;uint8_t&gt; extra_data_;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="comment">// Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="comment">// generated copy constructor and assignment operator. Since the extra data is</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="comment">// typically small, the performance impact is minimal.</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;};</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_STREAM_INFO_H_</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">edash_packager::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00025">stream_info.h:25</a></div></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  kStreamText,</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;};</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">   26</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> : <span class="keyword">public</span> base::RefCountedThreadSafe&lt;StreamInfo&gt; {</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a>(StreamType stream_type,</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;             <span class="keywordtype">int</span> track_id,</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;             uint32_t time_scale,</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;             uint64_t duration,</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;             <span class="keyword">const</span> std::string&amp; codec_string,</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;             <span class="keyword">const</span> std::string&amp; language,</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;             <span class="keyword">const</span> uint8_t* extra_data,</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;             <span class="keywordtype">size_t</span> extra_data_size,</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;             <span class="keywordtype">bool</span> is_encrypted);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html#ac2a38c803b8baf748ed66b4cf681518f">IsValidConfig</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keyword">virtual</span> std::string <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html#ac09810e16cf5cee2f87987bfcc70fece">ToString</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  StreamType stream_type()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> stream_type_; }</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  uint32_t track_id()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> track_id_; }</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  uint32_t time_scale()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> time_scale_; }</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  uint64_t duration()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> duration_; }</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keyword">const</span> std::string&amp; codec_string()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> codec_string_; }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keyword">const</span> std::string&amp; language()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> language_; }</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordtype">bool</span> is_encrypted()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> is_encrypted_; }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; extra_data()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> extra_data_; }</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordtype">void</span> set_duration(<span class="keywordtype">int</span> duration) { duration_ = duration; }</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordtype">void</span> set_extra_data(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; data) { extra_data_ = data; }</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordtype">void</span> set_codec_string(<span class="keyword">const</span> std::string&amp; codec_string) {</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    codec_string_ = codec_string;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  }</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordtype">void</span> set_language(<span class="keyword">const</span> std::string&amp; language) { language_ = language; }</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span>base::RefCountedThreadSafe&lt;StreamInfo&gt;;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keyword">virtual</span> ~StreamInfo();</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="comment">// Whether the stream is Audio or Video.</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  StreamType stream_type_;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  uint32_t track_id_;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="comment">// The actual time is calculated as time / time_scale_ in seconds.</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  uint32_t time_scale_;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">// Duration base on time_scale.</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  uint64_t duration_;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  std::string codec_string_;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  std::string language_;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// Whether the stream is potentially encrypted.</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// Note that in a potentially encrypted stream, individual buffers</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// can be encrypted or not encrypted.</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordtype">bool</span> is_encrypted_;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">// Optional byte data required for some audio/video decoders such as Vorbis</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="comment">// codebooks.</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  std::vector&lt;uint8_t&gt; extra_data_;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="comment">// Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="comment">// generated copy constructor and assignment operator. Since the extra data is</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="comment">// typically small, the performance impact is minimal.</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;};</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_STREAM_INFO_H_</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">edash_packager::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00026">stream_info.h:26</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1StreamInfo_html_ac2a38c803b8baf748ed66b4cf681518f"><div class="ttname"><a href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html#ac2a38c803b8baf748ed66b4cf681518f">edash_packager::media::StreamInfo::IsValidConfig</a></div><div class="ttdeci">virtual bool IsValidConfig() const =0</div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1StreamInfo_html_ac09810e16cf5cee2f87987bfcc70fece"><div class="ttname"><a href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html#ac09810e16cf5cee2f87987bfcc70fece">edash_packager::media::StreamInfo::ToString</a></div><div class="ttdeci">virtual std::string ToString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../de/dfd/stream__info_8cc_source.html#l00040">stream_info.cc:40</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 15 2015 17:30:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 17:27:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

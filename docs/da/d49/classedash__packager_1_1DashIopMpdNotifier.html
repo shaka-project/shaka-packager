@@ -112,22 +112,22 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifier</b> (DashProfile <a class="el" href="../../da/d38/classedash__packager_1_1MpdNotifier.html#ad49d92e75fcbb2ad1d5e43cd3d0716f7">dash_profile</a>, const <a class="el" href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">MpdOptions</a> &amp;mpd_options, const std::vector&lt; std::string &gt; &amp;base_urls, const std::string &amp;output_path)</td></tr>
 <tr class="separator:a8f34a3c9f2d1087d64639d53be129626"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">MpdNotifier implemetation overrides.</div></td></tr>
-<tr><td colspan="2"><div class="groupText"><p>None of the methods write out the MPD file until <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a952baa36fc361001a1101c39850a160c">Flush()</a> is called. </p>
+<tr><td colspan="2"><div class="groupText"><p>None of the methods write out the MPD file until <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a74080da948602a4deb88046e56eda79e">Flush()</a> is called. </p>
 </div></td></tr>
-<tr class="memitem:ad126fe89d3bb63124c48630d39c034f3"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#ad126fe89d3bb63124c48630d39c034f3">Init</a> () OVERRIDE</td></tr>
-<tr class="separator:ad126fe89d3bb63124c48630d39c034f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c4fefd4a54ba8167e3445890a236076"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a8c4fefd4a54ba8167e3445890a236076">NotifyNewContainer</a> (const MediaInfo &amp;media_info, uint32_t *id) OVERRIDE</td></tr>
-<tr class="separator:a8c4fefd4a54ba8167e3445890a236076"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aefce631c77b946576ecb9c8d6b95f06e"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#aefce631c77b946576ecb9c8d6b95f06e">NotifySampleDuration</a> (uint32_t container_id, uint32_t sample_duration) OVERRIDE</td></tr>
-<tr class="separator:aefce631c77b946576ecb9c8d6b95f06e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afba7a73655f0ad8ae1be714ff8178c2c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#afba7a73655f0ad8ae1be714ff8178c2c">NotifyNewSegment</a> (uint32_t id, uint64_t start_time, uint64_t duration, uint64_t size) OVERRIDE</td></tr>
-<tr class="separator:afba7a73655f0ad8ae1be714ff8178c2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a611739a432dd2e85a2b689face08909c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a611739a432dd2e85a2b689face08909c">NotifyEncryptionUpdate</a> (uint32_t container_id, const std::string &amp;drm_uuid, const std::vector&lt; uint8_t &gt; &amp;new_key_id, const std::vector&lt; uint8_t &gt; &amp;new_pssh) OVERRIDE</td></tr>
-<tr class="separator:a611739a432dd2e85a2b689face08909c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aea9b720de64f38256aeb3cce3ef67ae5"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#aea9b720de64f38256aeb3cce3ef67ae5">AddContentProtectionElement</a> (uint32_t id, const <a class="el" href="../../d0/d96/structedash__packager_1_1ContentProtectionElement.html">ContentProtectionElement</a> &amp;content_protection_element) OVERRIDE</td></tr>
-<tr class="separator:aea9b720de64f38256aeb3cce3ef67ae5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a952baa36fc361001a1101c39850a160c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a952baa36fc361001a1101c39850a160c">Flush</a> () OVERRIDE</td></tr>
-<tr class="separator:a952baa36fc361001a1101c39850a160c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace93090275f0ef9b33cf62648f854690"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#ace93090275f0ef9b33cf62648f854690">Init</a> () override</td></tr>
+<tr class="separator:ace93090275f0ef9b33cf62648f854690"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a567d501580023d78299923993b8b2532"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a567d501580023d78299923993b8b2532">NotifyNewContainer</a> (const MediaInfo &amp;media_info, uint32_t *id) override</td></tr>
+<tr class="separator:a567d501580023d78299923993b8b2532"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4b7f7e7106ca200eebfdd2bf4a09a84"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#ad4b7f7e7106ca200eebfdd2bf4a09a84">NotifySampleDuration</a> (uint32_t container_id, uint32_t sample_duration) override</td></tr>
+<tr class="separator:ad4b7f7e7106ca200eebfdd2bf4a09a84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a61b590c4c9d5b61d3ec0a1335c7daaa5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a61b590c4c9d5b61d3ec0a1335c7daaa5">NotifyNewSegment</a> (uint32_t id, uint64_t start_time, uint64_t duration, uint64_t size) override</td></tr>
+<tr class="separator:a61b590c4c9d5b61d3ec0a1335c7daaa5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a034390af4e3bde792a4479fead594085"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a034390af4e3bde792a4479fead594085">NotifyEncryptionUpdate</a> (uint32_t container_id, const std::string &amp;drm_uuid, const std::vector&lt; uint8_t &gt; &amp;new_key_id, const std::vector&lt; uint8_t &gt; &amp;new_pssh) override</td></tr>
+<tr class="separator:a034390af4e3bde792a4479fead594085"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aef43fd9875d24547d2434d142aeb9805"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#aef43fd9875d24547d2434d142aeb9805">AddContentProtectionElement</a> (uint32_t id, const <a class="el" href="../../d0/d96/structedash__packager_1_1ContentProtectionElement.html">ContentProtectionElement</a> &amp;content_protection_element) override</td></tr>
+<tr class="separator:aef43fd9875d24547d2434d142aeb9805"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74080da948602a4deb88046e56eda79e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a74080da948602a4deb88046e56eda79e">Flush</a> () override</td></tr>
+<tr class="separator:a74080da948602a4deb88046e56eda79e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classedash__packager_1_1MpdNotifier"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classedash__packager_1_1MpdNotifier')"><img src="../../closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="../../da/d38/classedash__packager_1_1MpdNotifier.html">edash_packager::MpdNotifier</a></td></tr>
 <tr class="memitem:abb3ab7091a7972effdfe7fe96f4ffce3 inherit pub_methods_classedash__packager_1_1MpdNotifier"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abb3ab7091a7972effdfe7fe96f4ffce3"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>MpdNotifier</b> (DashProfile <a class="el" href="../../da/d38/classedash__packager_1_1MpdNotifier.html#ad49d92e75fcbb2ad1d5e43cd3d0716f7">dash_profile</a>)</td></tr>
@@ -146,7 +146,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifierTe
 
 <p>Definition at line <a class="el" href="../../d6/d77/dash__iop__mpd__notifier_8h_source.html#l00029">29</a> of file <a class="el" href="../../d6/d77/dash__iop__mpd__notifier_8h_source.html">dash_iop_mpd_notifier.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="aea9b720de64f38256aeb3cce3ef67ae5"></a>
+<a class="anchor" id="aef43fd9875d24547d2434d142aeb9805"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -173,14 +173,14 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifierTe
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 <p>Adds content protection information to the MPD. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">container_id</td><td>is the nummeric container ID obtained from calling <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a8c4fefd4a54ba8167e3445890a236076">NotifyNewContainer()</a>. </td></tr>
+    <tr><td class="paramname">container_id</td><td>is the nummeric container ID obtained from calling <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a567d501580023d78299923993b8b2532">NotifyNewContainer()</a>. </td></tr>
     <tr><td class="paramname">content_protection_element</td><td>New ContentProtection element specification. </td></tr>
   </table>
   </dd>
@@ -193,7 +193,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifierTe
 
 </div>
 </div>
-<a class="anchor" id="a952baa36fc361001a1101c39850a160c"></a>
+<a class="anchor" id="a74080da948602a4deb88046e56eda79e"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -209,7 +209,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifierTe
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -221,7 +221,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifierTe
 
 </div>
 </div>
-<a class="anchor" id="ad126fe89d3bb63124c48630d39c034f3"></a>
+<a class="anchor" id="ace93090275f0ef9b33cf62648f854690"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -237,7 +237,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifierTe
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -250,7 +250,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifierTe
 
 </div>
 </div>
-<a class="anchor" id="a611739a432dd2e85a2b689face08909c"></a>
+<a class="anchor" id="a034390af4e3bde792a4479fead594085"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -289,14 +289,14 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifierTe
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 <p>Notifiers <a class="el" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html" title="This class generates DASH MPDs (Media Presentation Descriptions). ">MpdBuilder</a> that there is a new PSSH for the container. This may be called whenever the key has to change, e.g. key rotation. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">container_id</td><td>Container ID obtained from calling <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a8c4fefd4a54ba8167e3445890a236076">NotifyNewContainer()</a>. </td></tr>
+    <tr><td class="paramname">container_id</td><td>Container ID obtained from calling <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a567d501580023d78299923993b8b2532">NotifyNewContainer()</a>. </td></tr>
     <tr><td class="paramname">drm_uuid</td><td>is the UUID of the DRM for encryption. </td></tr>
     <tr><td class="paramname">new_key_id</td><td>is the new key ID for the key. </td></tr>
     <tr><td class="paramname">new_pssh</td><td>is the new pssh box (including the header). </td></tr>
@@ -311,7 +311,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifierTe
 
 </div>
 </div>
-<a class="anchor" id="a8c4fefd4a54ba8167e3445890a236076"></a>
+<a class="anchor" id="a567d501580023d78299923993b8b2532"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -338,15 +338,15 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifierTe
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Notifies the <a class="el" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html" title="This class generates DASH MPDs (Media Presentation Descriptions). ">MpdBuilder</a> that there is a new container along with <em>media_info</em>. Live may have multiple files (segments) but those should be notified via <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#afba7a73655f0ad8ae1be714ff8178c2c">NotifyNewSegment()</a>. </p>
+<p>Notifies the <a class="el" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html" title="This class generates DASH MPDs (Media Presentation Descriptions). ">MpdBuilder</a> that there is a new container along with <em>media_info</em>. Live may have multiple files (segments) but those should be notified via <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a61b590c4c9d5b61d3ec0a1335c7daaa5">NotifyNewSegment()</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir"></td><td class="paramname">media_info</td><td>is the MediaInfo that will be passed to <a class="el" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html" title="This class generates DASH MPDs (Media Presentation Descriptions). ">MpdBuilder</a>. </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">container_id</td><td>is the numeric ID of the container, possibly for <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#afba7a73655f0ad8ae1be714ff8178c2c">NotifyNewSegment()</a> and <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#aea9b720de64f38256aeb3cce3ef67ae5">AddContentProtectionElement()</a>. Only populated on success. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">container_id</td><td>is the numeric ID of the container, possibly for <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a61b590c4c9d5b61d3ec0a1335c7daaa5">NotifyNewSegment()</a> and <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#aef43fd9875d24547d2434d142aeb9805">AddContentProtectionElement()</a>. Only populated on success. </td></tr>
   </table>
   </dd>
 </dl>
@@ -358,7 +358,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifierTe
 
 </div>
 </div>
-<a class="anchor" id="afba7a73655f0ad8ae1be714ff8178c2c"></a>
+<a class="anchor" id="a61b590c4c9d5b61d3ec0a1335c7daaa5"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -397,14 +397,14 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifierTe
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 <p>Notifies <a class="el" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html" title="This class generates DASH MPDs (Media Presentation Descriptions). ">MpdBuilder</a> that there is a new segment ready. For live, this is usually a new segment, for VOD this is usually a subsegment. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">container_id</td><td>Container ID obtained from calling <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a8c4fefd4a54ba8167e3445890a236076">NotifyNewContainer()</a>. </td></tr>
+    <tr><td class="paramname">container_id</td><td>Container ID obtained from calling <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a567d501580023d78299923993b8b2532">NotifyNewContainer()</a>. </td></tr>
     <tr><td class="paramname">start_time</td><td>is the start time of the new segment, in units of the stream's time scale. </td></tr>
     <tr><td class="paramname">duration</td><td>is the duration of the new segment, in units of the stream's time scale. </td></tr>
     <tr><td class="paramname">size</td><td>is the new segment size in bytes. </td></tr>
@@ -419,7 +419,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifierTe
 
 </div>
 </div>
-<a class="anchor" id="aefce631c77b946576ecb9c8d6b95f06e"></a>
+<a class="anchor" id="ad4b7f7e7106ca200eebfdd2bf4a09a84"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -446,14 +446,14 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifierTe
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 <p>Change the sample duration of container with <em>container_id</em>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">container_id</td><td>Container ID obtained from calling <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a8c4fefd4a54ba8167e3445890a236076">NotifyNewContainer()</a>. </td></tr>
+    <tr><td class="paramname">container_id</td><td>Container ID obtained from calling <a class="el" href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a567d501580023d78299923993b8b2532">NotifyNewContainer()</a>. </td></tr>
     <tr><td class="paramname">sample_duration</td><td>is the duration of a sample in timescale of the media. </td></tr>
   </table>
   </dd>
@@ -473,7 +473,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>DashIopMpdNotifierTe
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 15 2015 17:30:48 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 17:27:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

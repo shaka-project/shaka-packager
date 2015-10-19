@@ -113,7 +113,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#define HAS_HEADER_EXTENSION(x) ((x != 0xBC) &amp;&amp; (x != 0xBE) &amp;&amp; (x != 0xBF) \</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">         &amp;&amp; (x != 0xF0) &amp;&amp; (x != 0xF2) &amp;&amp; (x != 0xF8) \</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">         &amp;&amp; (x != 0xFF))</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">namespace </span>{</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">const</span> uint32_t kMpeg2ClockRate = 90000;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">const</span> uint32_t kPesOptPts = 0x80;</div>
@@ -204,7 +204,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;WvmMediaParser::~WvmMediaParser() {}</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
-<div class="line"><a name="l00118"></a><span class="lineno"><a class="line" href="../../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html#a68d3bba403b0741c7948def9325d5ad1">  118</a></span>&#160;<span class="keywordtype">void</span> WvmMediaParser::Init(<span class="keyword">const</span> InitCB&amp; init_cb,</div>
+<div class="line"><a name="l00118"></a><span class="lineno"><a class="line" href="../../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html#aef36e6f7cc6bdb2c6b287ae07ef9a55a">  118</a></span>&#160;<span class="keywordtype">void</span> WvmMediaParser::Init(<span class="keyword">const</span> InitCB&amp; init_cb,</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;                          <span class="keyword">const</span> NewSampleCB&amp; new_sample_cb,</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;                          <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a>* decryption_key_source) {</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  DCHECK(!is_initialized_);</div>
@@ -215,7 +215,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  new_sample_cb_ = new_sample_cb;</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;}</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
-<div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="../../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html#add788399fd476ba8289958bc8ed4ad0e">  129</a></span>&#160;<span class="keywordtype">bool</span> WvmMediaParser::Parse(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">int</span> size) {</div>
+<div class="line"><a name="l00129"></a><span class="lineno"><a class="line" href="../../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html#af2a6c8b62df30b6515eee30389b271d7">  129</a></span>&#160;<span class="keywordtype">bool</span> WvmMediaParser::Parse(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">int</span> size) {</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  uint32_t num_bytes, prev_size;</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  num_bytes = prev_size = 0;</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  uint8_t* read_ptr = (uint8_t*)(&amp;buf[0]);</div>
@@ -605,7 +605,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;}</div>
 <div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;</div>
-<div class="line"><a name="l00519"></a><span class="lineno"><a class="line" href="../../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html#a812b6a9ecaf18d4cd5da3b0c4adca5b6">  519</a></span>&#160;<span class="keywordtype">void</span> WvmMediaParser::Flush() {</div>
+<div class="line"><a name="l00519"></a><span class="lineno"><a class="line" href="../../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html#ae9e96b9a9d63c3bc4e8365b0538e89eb">  519</a></span>&#160;<span class="keywordtype">void</span> WvmMediaParser::Flush() {</div>
 <div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;  <span class="comment">// Flush the last audio and video sample for current program.</span></div>
 <div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;  <span class="comment">// Reset the streamID when successfully emitted.</span></div>
 <div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;  <span class="keywordflow">if</span> (prev_media_sample_data_.audio_sample != NULL) {</div>
@@ -1266,7 +1266,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 15 2015 17:30:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 17:27:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

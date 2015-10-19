@@ -112,7 +112,7 @@ typedef base::Callback&lt; void(int, <br class="typebreak"/>
 int)&gt;&#160;</td><td class="memItemRight" valign="bottom"><b>RegisterPmtCb</b></td></tr>
 <tr class="separator:a6c4e2b744c6dd4830dbc99a033432627"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_types_classedash__packager_1_1media_1_1mp2t_1_1TsSection"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classedash__packager_1_1media_1_1mp2t_1_1TsSection')"><img src="../../closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="../../d8/d8e/classedash__packager_1_1media_1_1mp2t_1_1TsSection.html">edash_packager::media::mp2t::TsSection</a></td></tr>
-<tr class="memitem:aa3487bd81805e2494236fbfe06ee470c inherit pub_types_classedash__packager_1_1media_1_1mp2t_1_1TsSection"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa3487bd81805e2494236fbfe06ee470c"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>SpecialPid</b> { <br/>
+<tr class="memitem:aa3487bd81805e2494236fbfe06ee470c inherit pub_types_classedash__packager_1_1media_1_1mp2t_1_1TsSection"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>SpecialPid</b> { <br/>
 &#160;&#160;<b>kPidPat</b> = 0x0, 
 <b>kPidCat</b> = 0x1, 
 <b>kPidTsdt</b> = 0x2, 
@@ -128,22 +128,22 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a650d9e229fbf95651747c823f790ea3a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a650d9e229fbf95651747c823f790ea3a"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>TsSectionPat</b> (const RegisterPmtCb &amp;register_pmt_cb)</td></tr>
 <tr class="separator:a650d9e229fbf95651747c823f790ea3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae94bb0ed09f17afd55e8125be6df0265"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae94bb0ed09f17afd55e8125be6df0265"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>ParsePsiSection</b> (<a class="el" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html">BitReader</a> *bit_reader) OVERRIDE</td></tr>
-<tr class="separator:ae94bb0ed09f17afd55e8125be6df0265"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4ecee64b6b8eac1b23779559f6d10dc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa4ecee64b6b8eac1b23779559f6d10dc"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>ResetPsiSection</b> () OVERRIDE</td></tr>
-<tr class="separator:aa4ecee64b6b8eac1b23779559f6d10dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42b59ab6598691e05a962fd6c121b09c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a42b59ab6598691e05a962fd6c121b09c"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>ParsePsiSection</b> (<a class="el" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html">BitReader</a> *bit_reader) override</td></tr>
+<tr class="separator:a42b59ab6598691e05a962fd6c121b09c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1d9c615f36303dc616dbb930ab92d73b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1d9c615f36303dc616dbb930ab92d73b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>ResetPsiSection</b> () override</td></tr>
+<tr class="separator:a1d9c615f36303dc616dbb930ab92d73b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classedash__packager_1_1media_1_1mp2t_1_1TsSectionPsi"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classedash__packager_1_1media_1_1mp2t_1_1TsSectionPsi')"><img src="../../closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="../../db/d4e/classedash__packager_1_1media_1_1mp2t_1_1TsSectionPsi.html">edash_packager::media::mp2t::TsSectionPsi</a></td></tr>
-<tr class="memitem:a748bbd1a80da49bbe02e7f9b984a1668 inherit pub_methods_classedash__packager_1_1media_1_1mp2t_1_1TsSectionPsi"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a748bbd1a80da49bbe02e7f9b984a1668"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>Parse</b> (bool payload_unit_start_indicator, const uint8_t *buf, int size) OVERRIDE</td></tr>
-<tr class="separator:a748bbd1a80da49bbe02e7f9b984a1668 inherit pub_methods_classedash__packager_1_1media_1_1mp2t_1_1TsSectionPsi"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afddcbca4c9648d21e5be9e5727fa8cc6 inherit pub_methods_classedash__packager_1_1media_1_1mp2t_1_1TsSectionPsi"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afddcbca4c9648d21e5be9e5727fa8cc6"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Flush</b> () OVERRIDE</td></tr>
-<tr class="separator:afddcbca4c9648d21e5be9e5727fa8cc6 inherit pub_methods_classedash__packager_1_1media_1_1mp2t_1_1TsSectionPsi"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b122039bb98b6de79c826046dff6e5d inherit pub_methods_classedash__packager_1_1media_1_1mp2t_1_1TsSectionPsi"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8b122039bb98b6de79c826046dff6e5d"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Reset</b> () OVERRIDE</td></tr>
-<tr class="separator:a8b122039bb98b6de79c826046dff6e5d inherit pub_methods_classedash__packager_1_1media_1_1mp2t_1_1TsSectionPsi"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcb1888e13d727d66c5dcd7b0cd9a6c0 inherit pub_methods_classedash__packager_1_1media_1_1mp2t_1_1TsSectionPsi"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afcb1888e13d727d66c5dcd7b0cd9a6c0"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>Parse</b> (bool payload_unit_start_indicator, const uint8_t *buf, int size) override</td></tr>
+<tr class="separator:afcb1888e13d727d66c5dcd7b0cd9a6c0 inherit pub_methods_classedash__packager_1_1media_1_1mp2t_1_1TsSectionPsi"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e1a66aa49ac0a92da1a358268b1fc18 inherit pub_methods_classedash__packager_1_1media_1_1mp2t_1_1TsSectionPsi"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0e1a66aa49ac0a92da1a358268b1fc18"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Flush</b> () override</td></tr>
+<tr class="separator:a0e1a66aa49ac0a92da1a358268b1fc18 inherit pub_methods_classedash__packager_1_1media_1_1mp2t_1_1TsSectionPsi"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af226d4df459bae1db346bf0013884679 inherit pub_methods_classedash__packager_1_1media_1_1mp2t_1_1TsSectionPsi"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af226d4df459bae1db346bf0013884679"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>Reset</b> () override</td></tr>
+<tr class="separator:af226d4df459bae1db346bf0013884679 inherit pub_methods_classedash__packager_1_1media_1_1mp2t_1_1TsSectionPsi"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
@@ -155,7 +155,7 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>Reset</b> () 
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 15 2015 17:30:53 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 17:27:27 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

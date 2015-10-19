@@ -111,25 +111,25 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4af24c3e145e7219b27de3bf9623a073"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0e/classedash__packager_1_1media_1_1MpdNotifyMuxerListener.html#a4af24c3e145e7219b27de3bf9623a073">SetContentProtectionSchemeIdUri</a> (const std::string &amp;scheme_id_uri)</td></tr>
 <tr class="separator:a4af24c3e145e7219b27de3bf9623a073"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">MuxerListener implementation overrides.</div></td></tr>
-<tr class="memitem:a8a1cd4702c1f92270996e899a208c9d8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8a1cd4702c1f92270996e899a208c9d8"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnEncryptionInfoReady</b> (bool is_initial_encryption_info, const std::string &amp;content_protection_uuid, const std::string &amp;content_protection_name_version, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;pssh) OVERRIDE</td></tr>
-<tr class="separator:a8a1cd4702c1f92270996e899a208c9d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a771a3b484df992f38e58c864f434a5f1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a771a3b484df992f38e58c864f434a5f1"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnMediaStart</b> (const <a class="el" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;muxer_options, const <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream_info, uint32_t time_scale, ContainerType container_type) OVERRIDE</td></tr>
-<tr class="separator:a771a3b484df992f38e58c864f434a5f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af65a2b4d9599f110ff70134286403c02"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0e/classedash__packager_1_1media_1_1MpdNotifyMuxerListener.html#af65a2b4d9599f110ff70134286403c02">OnSampleDurationReady</a> (uint32_t sample_duration) OVERRIDE</td></tr>
-<tr class="separator:af65a2b4d9599f110ff70134286403c02"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8959f5b85d5cd29bcc55174b391f504a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8959f5b85d5cd29bcc55174b391f504a"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnMediaEnd</b> (bool has_init_range, uint64_t init_range_start, uint64_t init_range_end, bool has_index_range, uint64_t index_range_start, uint64_t index_range_end, float duration_seconds, uint64_t file_size) OVERRIDE</td></tr>
-<tr class="separator:a8959f5b85d5cd29bcc55174b391f504a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f2608254614654c65c0597090271569"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9f2608254614654c65c0597090271569"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>OnNewSegment</b> (uint64_t start_time, uint64_t duration, uint64_t segment_file_size) OVERRIDE</td></tr>
-<tr class="separator:a9f2608254614654c65c0597090271569"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57fc2ba8f76eea79c43d5333cd994c87"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a57fc2ba8f76eea79c43d5333cd994c87"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>OnEncryptionInfoReady</b> (bool is_initial_encryption_info, const std::string &amp;content_protection_uuid, const std::string &amp;content_protection_name_version, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;pssh) override</td></tr>
+<tr class="separator:a57fc2ba8f76eea79c43d5333cd994c87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad7a00f6505aae4c2282b1a3aec860e9e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad7a00f6505aae4c2282b1a3aec860e9e"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>OnMediaStart</b> (const <a class="el" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;muxer_options, const <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream_info, uint32_t time_scale, ContainerType container_type) override</td></tr>
+<tr class="separator:ad7a00f6505aae4c2282b1a3aec860e9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0d5eb925ea47fb5656c05becb980d17d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0e/classedash__packager_1_1media_1_1MpdNotifyMuxerListener.html#a0d5eb925ea47fb5656c05becb980d17d">OnSampleDurationReady</a> (uint32_t sample_duration) override</td></tr>
+<tr class="separator:a0d5eb925ea47fb5656c05becb980d17d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a811a57864b537ebce82c0144ef9e73d0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a811a57864b537ebce82c0144ef9e73d0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>OnMediaEnd</b> (bool has_init_range, uint64_t init_range_start, uint64_t init_range_end, bool has_index_range, uint64_t index_range_start, uint64_t index_range_end, float duration_seconds, uint64_t file_size) override</td></tr>
+<tr class="separator:a811a57864b537ebce82c0144ef9e73d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6f94f826083b644efc69690671210701"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6f94f826083b644efc69690671210701"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>OnNewSegment</b> (uint64_t start_time, uint64_t duration, uint64_t segment_file_size) override</td></tr>
+<tr class="separator:a6f94f826083b644efc69690671210701"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_types_classedash__packager_1_1media_1_1MuxerListener"><td colspan="2" onclick="javascript:toggleInherit('pub_types_classedash__packager_1_1media_1_1MuxerListener')"><img src="../../closed.png" alt="-"/>&#160;Public Types inherited from <a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">edash_packager::media::MuxerListener</a></td></tr>
-<tr class="memitem:a63d0bba1ea014ed83e45860434590211 inherit pub_types_classedash__packager_1_1media_1_1MuxerListener"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a63d0bba1ea014ed83e45860434590211"></a>enum &#160;</td><td class="memItemRight" valign="bottom"><b>ContainerType</b> { <b>kContainerUnknown</b> = 0, 
+<tr class="memitem:a63d0bba1ea014ed83e45860434590211 inherit pub_types_classedash__packager_1_1media_1_1MuxerListener"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>ContainerType</b> { <b>kContainerUnknown</b> = 0, 
 <b>kContainerMp4</b>, 
 <b>kContainerMpeg2ts</b>, 
 <b>kContainerWebM</b>
@@ -173,7 +173,7 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="af65a2b4d9599f110ff70134286403c02"></a>
+<a class="anchor" id="a0d5eb925ea47fb5656c05becb980d17d"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -190,7 +190,7 @@ Additional Inherited Members</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -234,7 +234,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 15 2015 17:30:51 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 17:27:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

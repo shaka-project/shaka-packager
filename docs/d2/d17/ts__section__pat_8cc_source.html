@@ -182,14 +182,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="comment">// Can now register the PMT.</span></div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="preprocessor">#if !defined(NDEBUG)</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keywordtype">int</span> expected_version_number = version_number;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor"></span>  <span class="keywordtype">int</span> expected_version_number = version_number;</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="keywordflow">if</span> (version_number_ &gt;= 0)</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    expected_version_number = (version_number_ + 1) % 32;</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  DVLOG_IF(1, version_number != expected_version_number)</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;Unexpected version number: &quot;</span></div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;      &lt;&lt; version_number &lt;&lt; <span class="stringliteral">&quot; vs &quot;</span> &lt;&lt; version_number_;</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; pmt_pid_count; k++) {</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="preprocessor"></span>  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> k = 0; k &lt; pmt_pid_count; k++) {</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keywordflow">if</span> (program_number_array[k] != 0) {</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;      <span class="comment">// Program numbers different from 0 correspond to PMT.</span></div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;      register_pmt_cb_.Run(program_number_array[k], pmt_pid_array[k]);</div>
@@ -214,7 +214,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 15 2015 17:30:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 17:27:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

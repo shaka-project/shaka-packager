@@ -167,7 +167,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="comment">// testing.</span></div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="keyword">class </span>FakeClock : <span class="keyword">public</span> base::Clock {</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keyword">virtual</span> base::Time Now() OVERRIDE { <span class="keywordflow">return</span> base::Time(); }</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  base::Time Now()<span class="keyword"> override </span>{ <span class="keywordflow">return</span> base::Time(); }</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;};</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="comment">// Demux, Mux(es) and worker thread used to remux a source file/stream.</span></div>
@@ -177,7 +177,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;      : SimpleThread(<span class="stringliteral">&quot;RemuxJob&quot;</span>),</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        demuxer_(demuxer.Pass()) {}</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keyword">virtual</span> ~RemuxJob() {</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  ~RemuxJob()<span class="keyword"> override </span>{</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    STLDeleteElements(&amp;muxers_);</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  }</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
@@ -189,7 +189,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  Status status() { <span class="keywordflow">return</span> status_; }</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> Run() OVERRIDE {</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keywordtype">void</span> Run()<span class="keyword"> override </span>{</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    DCHECK(demuxer_);</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    status_ = demuxer_-&gt;Run();</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  }</div>
@@ -432,7 +432,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Oct 15 2015 17:30:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 17:27:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
