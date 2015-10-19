@@ -14,6 +14,7 @@ MpdBuilder is responsible for the creation of Media Presentation Description as 
 
 Supported source formats: ISO BMFF (both fragmented and non-fragmented), MPEG-2 TS, IPTV (MPEG-2 TS over UDP), and WVM (Widevine); the only output format supported currently is fragmented ISO BMFF with CENC. Support for more formats will be added soon.
 
+API document is available at https://google.github.io/edash-packager/docs.
 
 ##Creating Demuxer##
 
@@ -228,7 +229,3 @@ muxer->SetKeySource(
   status = demuxer.Run();
   if (!status.ok()) { … }
 ```
-
-#Packager API detail#
-
-Doxygen API documentation coming soon.

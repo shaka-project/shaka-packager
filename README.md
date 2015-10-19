@@ -114,7 +114,7 @@ MpdBuilder is responsible for the creation of Media Presentation Description as 
 
 Supported source formats: ISO BMFF (both fragmented and non-fragmented), MPEG-2 TS, IPTV (MPEG-2 TS over UDP), and WVM (Widevine); the only output format supported currently is fragmented ISO BMFF with CENC. Support for more formats will be added soon.
 
-Refer to [Design](DESIGN.md) for details.
+Refer to [Design](DESIGN.md), [API](https://google.github.io/edash-packager/docs) for details.
 
 
 #DASH-IF IOP Compliance#
