@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -112,7 +112,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keywordflow">return</span> content_encodings_;</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;WebMParserClient* WebMContentEncodingsClient::OnListStart(<span class="keywordtype">int</span> <span class="keywordtype">id</span>) {</div>
+<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="../../d8/d78/classedash__packager_1_1media_1_1WebMContentEncodingsClient.html#a373c4683227bade5618140c330932d3f">   26</a></span>&#160;<a class="code" href="../../de/da5/classedash__packager_1_1media_1_1WebMParserClient.html">WebMParserClient</a>* <a class="code" href="../../d8/d78/classedash__packager_1_1media_1_1WebMContentEncodingsClient.html#a373c4683227bade5618140c330932d3f">WebMContentEncodingsClient::OnListStart</a>(<span class="keywordtype">int</span> <span class="keywordtype">id</span>) {</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordflow">if</span> (<span class="keywordtype">id</span> == kWebMIdContentEncodings) {</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    DCHECK(!cur_content_encoding_.get());</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    DCHECK(!content_encryption_encountered_);</div>
@@ -124,7 +124,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordflow">if</span> (<span class="keywordtype">id</span> == kWebMIdContentEncoding) {</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    DCHECK(!cur_content_encoding_.get());</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    DCHECK(!content_encryption_encountered_);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    cur_content_encoding_.reset(<span class="keyword">new</span> ContentEncoding());</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    cur_content_encoding_.reset(<span class="keyword">new</span> <a class="code" href="../../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html">ContentEncoding</a>());</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">this</span>;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  }</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
@@ -168,7 +168,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="comment">// Specify default values to missing mandatory elements.</span></div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="comment">//</span></div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordflow">if</span> (cur_content_encoding_-&gt;order() == ContentEncoding::kOrderInvalid) {</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordflow">if</span> (cur_content_encoding_-&gt;order() == <a class="code" href="../../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html#a4d87c9881d554fbeb6999280d2e463d1">ContentEncoding::kOrderInvalid</a>) {</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;      <span class="comment">// Default value of encoding order is 0, which should only be used on the</span></div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;      <span class="comment">// first ContentEncoding.</span></div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;      <span class="keywordflow">if</span> (!content_encodings_.empty()) {</div>
@@ -232,7 +232,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  DCHECK(cur_content_encoding_.get());</div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  <span class="keywordflow">if</span> (<span class="keywordtype">id</span> == kWebMIdContentEncodingOrder) {</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    <span class="keywordflow">if</span> (cur_content_encoding_-&gt;order() != ContentEncoding::kOrderInvalid) {</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    <span class="keywordflow">if</span> (cur_content_encoding_-&gt;order() != <a class="code" href="../../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html#a4d87c9881d554fbeb6999280d2e463d1">ContentEncoding::kOrderInvalid</a>) {</div>
 <div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unexpected multiple ContentEncodingOrder.&quot;</span>;</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    }</div>
@@ -354,10 +354,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;</div>
 <div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMParserClient_html"><div class="ttname"><a href="../../de/da5/classedash__packager_1_1media_1_1WebMParserClient.html">edash_packager::media::WebMParserClient</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d46/webm__parser_8h_source.html#l00030">webm_parser.h:30</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1ContentEncoding_html"><div class="ttname"><a href="../../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html">edash_packager::media::ContentEncoding</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d3b/webm__content__encodings_8h_source.html#l00016">webm_content_encodings.h:16</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1ContentEncoding_html_a4d87c9881d554fbeb6999280d2e463d1"><div class="ttname"><a href="../../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html#a4d87c9881d554fbeb6999280d2e463d1">edash_packager::media::ContentEncoding::kOrderInvalid</a></div><div class="ttdeci">static const int kOrderInvalid</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d3b/webm__content__encodings_8h_source.html#l00021">webm_content_encodings.h:21</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMContentEncodingsClient_html_a373c4683227bade5618140c330932d3f"><div class="ttname"><a href="../../d8/d78/classedash__packager_1_1media_1_1WebMContentEncodingsClient.html#a373c4683227bade5618140c330932d3f">edash_packager::media::WebMContentEncodingsClient::OnListStart</a></div><div class="ttdeci">WebMParserClient * OnListStart(int id) override</div><div class="ttdoc">WebMParserClient methods. </div><div class="ttdef"><b>Definition:</b> <a href="../../de/d77/webm__content__encodings__client_8cc_source.html#l00026">webm_content_encodings_client.cc:26</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 19 2015 17:27:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 19:22:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

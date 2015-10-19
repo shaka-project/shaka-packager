@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -151,7 +151,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;WebMTracksParser::~WebMTracksParser() {}</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keywordtype">int</span> WebMTracksParser::Parse(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">int</span> size) {</div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="../../db/d23/classedash__packager_1_1media_1_1WebMTracksParser.html#a8719ba4bc187c32a73f133c0a67a19ab">   65</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="../../db/d23/classedash__packager_1_1media_1_1WebMTracksParser.html#a8719ba4bc187c32a73f133c0a67a19ab">WebMTracksParser::Parse</a>(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">int</span> size) {</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  track_type_ =-1;</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  track_num_ = -1;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  default_duration_ = -1;</div>
@@ -166,17 +166,17 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  text_tracks_.clear();</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  ignored_tracks_.clear();</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  WebMListParser parser(kWebMIdTracks, <span class="keyword">this</span>);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordtype">int</span> result = parser.Parse(buf, size);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <a class="code" href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html">WebMListParser</a> parser(kWebMIdTracks, <span class="keyword">this</span>);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordtype">int</span> result = parser.<a class="code" href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#a5b3b0c8fd0423044d0090357428b8ee0">Parse</a>(buf, size);</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordflow">if</span> (result &lt;= 0)</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keywordflow">return</span> result;</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="comment">// For now we do all or nothing parsing.</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordflow">return</span> parser.IsParsingComplete() ? result : 0;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordflow">return</span> parser.<a class="code" href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#aabb9e87d04df9de57d7069a8943a1711">IsParsingComplete</a>() ? result : 0;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;int64_t WebMTracksParser::GetAudioDefaultDuration(</div>
+<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="../../db/d23/classedash__packager_1_1media_1_1WebMTracksParser.html#a38388e04fa6eb5542a32ab83287002e3">   90</a></span>&#160;int64_t <a class="code" href="../../db/d23/classedash__packager_1_1media_1_1WebMTracksParser.html#a38388e04fa6eb5542a32ab83287002e3">WebMTracksParser::GetAudioDefaultDuration</a>(</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">double</span> timecode_scale_in_us)<span class="keyword"> const </span>{</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordflow">return</span> PrecisionCappedDefaultDuration(timecode_scale_in_us,</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                                        audio_default_duration_);</div>
@@ -203,8 +203,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    track_language_.clear();</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    codec_id_ = <span class="stringliteral">&quot;&quot;</span>;</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    codec_private_.clear();</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    audio_client_.Reset();</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    video_client_.Reset();</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    audio_client_.<a class="code" href="../../de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html#af0d4c26a9ad38ab4757779915d72c8b8">Reset</a>();</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    video_client_.<a class="code" href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#a930005c28c03cc72b0f6b8d2500964a4">Reset</a>();</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">this</span>;</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  }</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
@@ -291,7 +291,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        audio_default_duration_ = default_duration_;</div>
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;</div>
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        DCHECK(!audio_stream_info_);</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        audio_stream_info_ = audio_client_.GetAudioStreamInfo(</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        audio_stream_info_ = audio_client_.<a class="code" href="../../de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html#aa1adf8eaedbb721b663e67630e54e36a">GetAudioStreamInfo</a>(</div>
 <div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;            audio_track_num_, codec_id_, codec_private_, track_language_,</div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;            !audio_encryption_key_id_.empty());</div>
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        <span class="keywordflow">if</span> (!audio_stream_info_)</div>
@@ -313,7 +313,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        video_default_duration_ = default_duration_;</div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;</div>
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        DCHECK(!video_stream_info_);</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;        video_stream_info_ = video_client_.GetVideoStreamInfo(</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;        video_stream_info_ = video_client_.<a class="code" href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#ae9bd12612eca7668a8cca6c122f06065">GetVideoStreamInfo</a>(</div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;            video_track_num_, codec_id_, codec_private_,</div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;            !video_encryption_key_id_.empty());</div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;        <span class="keywordflow">if</span> (!video_stream_info_)</div>
@@ -346,8 +346,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;    codec_private_.clear();</div>
 <div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    track_content_encodings_client_.reset();</div>
 <div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    audio_client_.Reset();</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    video_client_.Reset();</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    audio_client_.<a class="code" href="../../de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html#af0d4c26a9ad38ab4757779915d72c8b8">Reset</a>();</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    video_client_.<a class="code" href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#a930005c28c03cc72b0f6b8d2500964a4">Reset</a>();</div>
 <div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;  }</div>
 <div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;</div>
@@ -428,10 +428,19 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;</div>
 <div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMTracksParser_html_a8719ba4bc187c32a73f133c0a67a19ab"><div class="ttname"><a href="../../db/d23/classedash__packager_1_1media_1_1WebMTracksParser.html#a8719ba4bc187c32a73f133c0a67a19ab">edash_packager::media::WebMTracksParser::Parse</a></div><div class="ttdeci">int Parse(const uint8_t *buf, int size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d9c/webm__tracks__parser_8cc_source.html#l00065">webm_tracks_parser.cc:65</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMVideoClient_html_ae9bd12612eca7668a8cca6c122f06065"><div class="ttname"><a href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#ae9bd12612eca7668a8cca6c122f06065">edash_packager::media::WebMVideoClient::GetVideoStreamInfo</a></div><div class="ttdeci">scoped_refptr&lt; VideoStreamInfo &gt; GetVideoStreamInfo(int64_t track_num, const std::string &amp;codec_id, const std::vector&lt; uint8_t &gt; &amp;codec_private, bool is_encrypted)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d7d/webm__video__client_8cc_source.html#l00049">webm_video_client.cc:49</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMListParser_html_aabb9e87d04df9de57d7069a8943a1711"><div class="ttname"><a href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#aabb9e87d04df9de57d7069a8943a1711">edash_packager::media::WebMListParser::IsParsingComplete</a></div><div class="ttdeci">bool IsParsingComplete() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/db6/webm__parser_8cc_source.html#l00803">webm_parser.cc:803</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMVideoClient_html_a930005c28c03cc72b0f6b8d2500964a4"><div class="ttname"><a href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#a930005c28c03cc72b0f6b8d2500964a4">edash_packager::media::WebMVideoClient::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset this object&#39;s state so it can process a new video track element. </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d7d/webm__video__client_8cc_source.html#l00036">webm_video_client.cc:36</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMListParser_html_a5b3b0c8fd0423044d0090357428b8ee0"><div class="ttname"><a href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#a5b3b0c8fd0423044d0090357428b8ee0">edash_packager::media::WebMListParser::Parse</a></div><div class="ttdeci">int Parse(const uint8_t *buf, int size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/db6/webm__parser_8cc_source.html#l00719">webm_parser.cc:719</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMTracksParser_html_a38388e04fa6eb5542a32ab83287002e3"><div class="ttname"><a href="../../db/d23/classedash__packager_1_1media_1_1WebMTracksParser.html#a38388e04fa6eb5542a32ab83287002e3">edash_packager::media::WebMTracksParser::GetAudioDefaultDuration</a></div><div class="ttdeci">int64_t GetAudioDefaultDuration(const double timecode_scale_in_us) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d9c/webm__tracks__parser_8cc_source.html#l00090">webm_tracks_parser.cc:90</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMListParser_html"><div class="ttname"><a href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html">edash_packager::media::WebMListParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d46/webm__parser_8h_source.html#l00054">webm_parser.h:54</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMAudioClient_html_af0d4c26a9ad38ab4757779915d72c8b8"><div class="ttname"><a href="../../de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html#af0d4c26a9ad38ab4757779915d72c8b8">edash_packager::media::WebMAudioClient::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset this object&#39;s state so it can process a new audio track element. </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d8e/webm__audio__client_8cc_source.html#l00025">webm_audio_client.cc:25</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMAudioClient_html_aa1adf8eaedbb721b663e67630e54e36a"><div class="ttname"><a href="../../de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html#aa1adf8eaedbb721b663e67630e54e36a">edash_packager::media::WebMAudioClient::GetAudioStreamInfo</a></div><div class="ttdeci">scoped_refptr&lt; AudioStreamInfo &gt; GetAudioStreamInfo(int64_t track_num, const std::string &amp;codec_id, const std::vector&lt; uint8_t &gt; &amp;codec_private, const std::string &amp;language, bool is_encrypted)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d8e/webm__audio__client_8cc_source.html#l00031">webm_audio_client.cc:31</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 19 2015 17:27:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 19:22:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

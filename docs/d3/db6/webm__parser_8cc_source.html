@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -789,7 +789,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;}</div>
 <div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;</div>
-<div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;WebMListParser::WebMListParser(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, WebMParserClient* client)</div>
+<div class="line"><a name="l00703"></a><span class="lineno"><a class="line" href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#ac259917babda572b9c37e92acdd2c00d">  703</a></span>&#160;<a class="code" href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#ac259917babda572b9c37e92acdd2c00d">WebMListParser::WebMListParser</a>(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, <a class="code" href="../../de/da5/classedash__packager_1_1media_1_1WebMParserClient.html">WebMParserClient</a>* client)</div>
 <div class="line"><a name="l00704"></a><span class="lineno">  704</span>&#160;    : state_(NEED_LIST_HEADER),</div>
 <div class="line"><a name="l00705"></a><span class="lineno">  705</span>&#160;      root_id_(id),</div>
 <div class="line"><a name="l00706"></a><span class="lineno">  706</span>&#160;      root_level_(FindListLevel(id)),</div>
@@ -800,12 +800,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;</div>
 <div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;WebMListParser::~WebMListParser() {}</div>
 <div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;</div>
-<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;<span class="keywordtype">void</span> WebMListParser::Reset() {</div>
+<div class="line"><a name="l00714"></a><span class="lineno"><a class="line" href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#a4e274d491d064174cb0e29d0e579eb71">  714</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#a4e274d491d064174cb0e29d0e579eb71">WebMListParser::Reset</a>() {</div>
 <div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;  ChangeState(NEED_LIST_HEADER);</div>
 <div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;  list_state_stack_.clear();</div>
 <div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;}</div>
 <div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;</div>
-<div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;<span class="keywordtype">int</span> WebMListParser::Parse(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">int</span> size) {</div>
+<div class="line"><a name="l00719"></a><span class="lineno"><a class="line" href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#a5b3b0c8fd0423044d0090357428b8ee0">  719</a></span>&#160;<span class="keywordtype">int</span> <a class="code" href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#a5b3b0c8fd0423044d0090357428b8ee0">WebMListParser::Parse</a>(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">int</span> size) {</div>
 <div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;  DCHECK(buf);</div>
 <div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;</div>
 <div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;  <span class="keywordflow">if</span> (size &lt; 0 || state_ == PARSE_ERROR || state_ == DONE_PARSING_LIST)</div>
@@ -889,7 +889,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00800"></a><span class="lineno">  800</span>&#160;  <span class="keywordflow">return</span> (state_ == PARSE_ERROR) ? -1 : bytes_parsed;</div>
 <div class="line"><a name="l00801"></a><span class="lineno">  801</span>&#160;}</div>
 <div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160;</div>
-<div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160;<span class="keywordtype">bool</span> WebMListParser::IsParsingComplete()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00803"></a><span class="lineno"><a class="line" href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#aabb9e87d04df9de57d7069a8943a1711">  803</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#aabb9e87d04df9de57d7069a8943a1711">WebMListParser::IsParsingComplete</a>()<span class="keyword"> const </span>{</div>
 <div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160;  <span class="keywordflow">return</span> state_ == DONE_PARSING_LIST;</div>
 <div class="line"><a name="l00805"></a><span class="lineno">  805</span>&#160;}</div>
 <div class="line"><a name="l00806"></a><span class="lineno">  806</span>&#160;</div>
@@ -1060,10 +1060,15 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00971"></a><span class="lineno">  971</span>&#160;</div>
 <div class="line"><a name="l00972"></a><span class="lineno">  972</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00973"></a><span class="lineno">  973</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMParserClient_html"><div class="ttname"><a href="../../de/da5/classedash__packager_1_1media_1_1WebMParserClient.html">edash_packager::media::WebMParserClient</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d46/webm__parser_8h_source.html#l00030">webm_parser.h:30</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMListParser_html_aabb9e87d04df9de57d7069a8943a1711"><div class="ttname"><a href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#aabb9e87d04df9de57d7069a8943a1711">edash_packager::media::WebMListParser::IsParsingComplete</a></div><div class="ttdeci">bool IsParsingComplete() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/db6/webm__parser_8cc_source.html#l00803">webm_parser.cc:803</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMListParser_html_ac259917babda572b9c37e92acdd2c00d"><div class="ttname"><a href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#ac259917babda572b9c37e92acdd2c00d">edash_packager::media::WebMListParser::WebMListParser</a></div><div class="ttdeci">WebMListParser(int id, WebMParserClient *client)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/db6/webm__parser_8cc_source.html#l00703">webm_parser.cc:703</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMListParser_html_a5b3b0c8fd0423044d0090357428b8ee0"><div class="ttname"><a href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#a5b3b0c8fd0423044d0090357428b8ee0">edash_packager::media::WebMListParser::Parse</a></div><div class="ttdeci">int Parse(const uint8_t *buf, int size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/db6/webm__parser_8cc_source.html#l00719">webm_parser.cc:719</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMListParser_html_a4e274d491d064174cb0e29d0e579eb71"><div class="ttname"><a href="../../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#a4e274d491d064174cb0e29d0e579eb71">edash_packager::media::WebMListParser::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Resets the state of the parser so it can start parsing a new list. </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/db6/webm__parser_8cc_source.html#l00714">webm_parser.cc:714</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 19 2015 17:27:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 19:22:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

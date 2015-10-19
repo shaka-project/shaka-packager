@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -116,13 +116,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;WebMVideoClient::WebMVideoClient() {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  Reset();</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <a class="code" href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#a930005c28c03cc72b0f6b8d2500964a4">Reset</a>();</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;}</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;WebMVideoClient::~WebMVideoClient() {</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keywordtype">void</span> WebMVideoClient::Reset() {</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#a930005c28c03cc72b0f6b8d2500964a4">   36</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#a930005c28c03cc72b0f6b8d2500964a4">WebMVideoClient::Reset</a>() {</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  pixel_width_ = -1;</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  pixel_height_ = -1;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  crop_bottom_ = -1;</div>
@@ -135,7 +135,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  alpha_mode_ = -1;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;}</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;scoped_refptr&lt;VideoStreamInfo&gt; WebMVideoClient::GetVideoStreamInfo(</div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#ae9bd12612eca7668a8cca6c122f06065">   49</a></span>&#160;scoped_refptr&lt;VideoStreamInfo&gt; <a class="code" href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#ae9bd12612eca7668a8cca6c122f06065">WebMVideoClient::GetVideoStreamInfo</a>(</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    int64_t track_num,</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">const</span> std::string&amp; codec_id,</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; codec_private,</div>
@@ -199,7 +199,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  }</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keywordflow">return</span> scoped_refptr&lt;VideoStreamInfo&gt;(</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;      <span class="keyword">new</span> VideoStreamInfo(track_num, kWebMTimeScale, 0, video_codec,</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;      <span class="keyword">new</span> <a class="code" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a>(track_num, kWebMTimeScale, 0, video_codec,</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                          <a class="code" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a801612f825520fae9c3c3ce1de138128">VideoStreamInfo::GetCodecString</a>(video_codec, 0, 0, 0),</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;                          <span class="stringliteral">&quot;&quot;</span>, width_after_crop, height_after_crop, sar_x, sar_y,</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;                          0, 0, extra_data, extra_data_size, is_encrypted));</div>
@@ -265,11 +265,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMVideoClient_html_ae9bd12612eca7668a8cca6c122f06065"><div class="ttname"><a href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#ae9bd12612eca7668a8cca6c122f06065">edash_packager::media::WebMVideoClient::GetVideoStreamInfo</a></div><div class="ttdeci">scoped_refptr&lt; VideoStreamInfo &gt; GetVideoStreamInfo(int64_t track_num, const std::string &amp;codec_id, const std::vector&lt; uint8_t &gt; &amp;codec_private, bool is_encrypted)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d7d/webm__video__client_8cc_source.html#l00049">webm_video_client.cc:49</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1VideoStreamInfo_html_a801612f825520fae9c3c3ce1de138128"><div class="ttname"><a href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a801612f825520fae9c3c3ce1de138128">edash_packager::media::VideoStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(VideoCodec codec, uint8_t profile, uint8_t compatible_profiles, uint8_t level)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d19/video__stream__info_8cc_source.html#l00095">video_stream_info.cc:95</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMVideoClient_html_a930005c28c03cc72b0f6b8d2500964a4"><div class="ttname"><a href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#a930005c28c03cc72b0f6b8d2500964a4">edash_packager::media::WebMVideoClient::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset this object&#39;s state so it can process a new video track element. </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d7d/webm__video__client_8cc_source.html#l00036">webm_video_client.cc:36</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1VideoStreamInfo_html"><div class="ttname"><a href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html">edash_packager::media::VideoStreamInfo</a></div><div class="ttdoc">Holds video stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d87/video__stream__info_8h_source.html#l00028">video_stream_info.h:28</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 19 2015 17:27:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 19:22:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

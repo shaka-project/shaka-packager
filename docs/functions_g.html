@@ -72,6 +72,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_func.html"><span>Functions</span></a></li>
       <li><a href="functions_vars.html"><span>Variables</span></a></li>
       <li><a href="functions_type.html"><span>Typedefs</span></a></li>
+      <li><a href="functions_eval.html"><span>Enumerator</span></a></li>
     </ul>
   </div>
   <div id="navrow4" class="tabs3">
@@ -107,7 +108,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -138,8 +139,14 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>GetAdtsHeaderSize()
 : <a class="el" href="db/d69/classedash__packager_1_1media_1_1mp2t_1_1AdtsHeader.html#a87affdf0dc61bedb13bafd76c3d5b484">edash_packager::media::mp2t::AdtsHeader</a>
 </li>
+<li>GetAudioDefaultDuration()
+: <a class="el" href="db/d23/classedash__packager_1_1media_1_1WebMTracksParser.html#a38388e04fa6eb5542a32ab83287002e3">edash_packager::media::WebMTracksParser</a>
+</li>
 <li>GetAudioSpecificConfig()
 : <a class="el" href="db/d69/classedash__packager_1_1media_1_1mp2t_1_1AdtsHeader.html#a65c36a606121daa90c44b44632b634ec">edash_packager::media::mp2t::AdtsHeader</a>
+</li>
+<li>GetAudioStreamInfo()
+: <a class="el" href="de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html#aa1adf8eaedbb721b663e67630e54e36a">edash_packager::media::WebMAudioClient</a>
 </li>
 <li>GetAVCDecoderConfigurationRecord()
 : <a class="el" href="d5/d30/classedash__packager_1_1media_1_1H264ByteToUnitStreamConverter.html#a0f4d8f75700dc0674eb6eb9c7d6dd393">edash_packager::media::H264ByteToUnitStreamConverter</a>
@@ -172,8 +179,8 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 , <a class="el" href="da/d75/classedash__packager_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html#aab8ffe19fcdd8688e9685264ad10fa60">edash_packager::media::mp4::SingleSegmentSegmenter</a>
 </li>
 <li>GetKey()
-: <a class="el" href="d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a49ccfe7a61c36ac9818482a7892915d3">edash_packager::media::KeySource</a>
-, <a class="el" href="db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#ac1e7cae9bd5f008f20ca1d1603588441">edash_packager::media::WidevineKeySource</a>
+: <a class="el" href="d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a2d44267b238a221bb8a7d2bc1bf68ea2">edash_packager::media::KeySource</a>
+, <a class="el" href="db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a7b65c5c7b65d7e304956c86f5c058c1a">edash_packager::media::WidevineKeySource</a>
 </li>
 <li>GetMaxClearOffset()
 : <a class="el" href="db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a0927d4e877f453b00e3eb08230510a6c">edash_packager::media::mp4::TrackRunIterator</a>
@@ -197,6 +204,9 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>GetTrackTypeFromString()
 : <a class="el" href="d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab15ba8121f76e0945d4f10d722da5cc8">edash_packager::media::KeySource</a>
 </li>
+<li>GetVideoStreamInfo()
+: <a class="el" href="dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#ae9bd12612eca7668a8cca6c122f06065">edash_packager::media::WebMVideoClient</a>
+</li>
 <li>GetXml()
 : <a class="el" href="db/de4/classedash__packager_1_1AdaptationSet.html#a44984cfaed799fd6683c6c9d41394dd6">edash_packager::AdaptationSet</a>
 , <a class="el" href="d7/d15/classedash__packager_1_1Representation.html#a4eefc1cf0da6ff78806f8d1099cb01d1">edash_packager::Representation</a>
@@ -208,7 +218,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 19 2015 17:27:29 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 19:22:29 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -93,6 +93,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="title">edash_packager::media::WebMContentEncodingsClient Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p>Parser for WebM ContentEncodings element.  
+ <a href="../../d8/d78/classedash__packager_1_1media_1_1WebMContentEncodingsClient.html#details">More...</a></p>
+
+<p><code>#include &lt;<a class="el" href="../../d8/d33/webm__content__encodings__client_8h_source.html">webm_content_encodings_client.h</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for edash_packager::media::WebMContentEncodingsClient:</div>
 <div class="dyncontent">
@@ -109,7 +114,8 @@ Public Member Functions</h2></td></tr>
 const ContentEncodings &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>content_encodings</b> () const </td></tr>
 <tr class="separator:aaab82d59ae7c7a3ddd4f123550dd41ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a373c4683227bade5618140c330932d3f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a373c4683227bade5618140c330932d3f"></a>
-<a class="el" href="../../de/da5/classedash__packager_1_1media_1_1WebMParserClient.html">WebMParserClient</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>OnListStart</b> (int id) override</td></tr>
+<a class="el" href="../../de/da5/classedash__packager_1_1media_1_1WebMParserClient.html">WebMParserClient</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d78/classedash__packager_1_1media_1_1WebMContentEncodingsClient.html#a373c4683227bade5618140c330932d3f">OnListStart</a> (int id) override</td></tr>
+<tr class="memdesc:a373c4683227bade5618140c330932d3f"><td class="mdescLeft">&#160;</td><td class="mdescRight"><a class="el" href="../../de/da5/classedash__packager_1_1media_1_1WebMParserClient.html">WebMParserClient</a> methods. <br/></td></tr>
 <tr class="separator:a373c4683227bade5618140c330932d3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7557b9a89c94b0805a067ab6ad5aa1cc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7557b9a89c94b0805a067ab6ad5aa1cc"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>OnListEnd</b> (int id) override</td></tr>
@@ -136,7 +142,8 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:a52a93fb7c60f9b756f74fd0fa396d3d7 inherit pro_methods_classedash__packager_1_1media_1_1WebMParserClient"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock">
+<div class="textblock"><p>Parser for WebM ContentEncodings element. </p>
+
 <p>Definition at line <a class="el" href="../../d8/d33/webm__content__encodings__client_8h_source.html#l00022">22</a> of file <a class="el" href="../../d8/d33/webm__content__encodings__client_8h_source.html">webm_content_encodings_client.h</a>.</p>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>media/formats/webm/<a class="el" href="../../d8/d33/webm__content__encodings__client_8h_source.html">webm_content_encodings_client.h</a></li>
@@ -145,7 +152,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 19 2015 17:27:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 19:22:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -14,6 +14,7 @@ var searchData=
   ['closurethread',['ClosureThread',['../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html#a8cbb44ca1f4abd7028ba4602af82de0d',1,'edash_packager::media::ClosureThread']]],
   ['closurethread',['ClosureThread',['../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html',1,'edash_packager::media']]],
   ['cluster',['Cluster',['../df/d40/classedash__packager_1_1media_1_1Cluster.html',1,'edash_packager::media']]],
+  ['cluster_5fended',['cluster_ended',['../db/da0/classedash__packager_1_1media_1_1WebMClusterParser.html#ae62be1971c352525906d6fad2ee831bd',1,'edash_packager::media::WebMClusterParser']]],
   ['clusterbuilder',['ClusterBuilder',['../d3/d69/classedash__packager_1_1media_1_1ClusterBuilder.html',1,'edash_packager::media']]],
   ['compactsamplesize',['CompactSampleSize',['../db/d89/structedash__packager_1_1media_1_1mp4_1_1CompactSampleSize.html',1,'edash_packager::media::mp4']]],
   ['compositionoffset',['CompositionOffset',['../da/dfe/structedash__packager_1_1media_1_1mp4_1_1CompositionOffset.html',1,'edash_packager::media::mp4']]],

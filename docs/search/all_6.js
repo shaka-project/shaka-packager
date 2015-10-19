@@ -5,7 +5,9 @@ var searchData=
   ['get',['Get',['../d3/d3e/classedash__packager_1_1media_1_1HttpKeyFetcher.html#a20da7a424dfe7ec7bf198b118a08aacb',1,'edash_packager::media::HttpKeyFetcher']]],
   ['getadtsframesize',['GetAdtsFrameSize',['../db/d69/classedash__packager_1_1media_1_1mp2t_1_1AdtsHeader.html#aacce540b215432703697c6a1172c3011',1,'edash_packager::media::mp2t::AdtsHeader']]],
   ['getadtsheadersize',['GetAdtsHeaderSize',['../db/d69/classedash__packager_1_1media_1_1mp2t_1_1AdtsHeader.html#a87affdf0dc61bedb13bafd76c3d5b484',1,'edash_packager::media::mp2t::AdtsHeader']]],
+  ['getaudiodefaultduration',['GetAudioDefaultDuration',['../db/d23/classedash__packager_1_1media_1_1WebMTracksParser.html#a38388e04fa6eb5542a32ab83287002e3',1,'edash_packager::media::WebMTracksParser']]],
   ['getaudiospecificconfig',['GetAudioSpecificConfig',['../db/d69/classedash__packager_1_1media_1_1mp2t_1_1AdtsHeader.html#a65c36a606121daa90c44b44632b634ec',1,'edash_packager::media::mp2t::AdtsHeader']]],
+  ['getaudiostreaminfo',['GetAudioStreamInfo',['../de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html#aa1adf8eaedbb721b663e67630e54e36a',1,'edash_packager::media::WebMAudioClient']]],
   ['getavcdecoderconfigurationrecord',['GetAVCDecoderConfigurationRecord',['../d5/d30/classedash__packager_1_1media_1_1H264ByteToUnitStreamConverter.html#a0f4d8f75700dc0674eb6eb9c7d6dd393',1,'edash_packager::media::H264ByteToUnitStreamConverter']]],
   ['getcodecstring',['GetCodecString',['../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#aa62e486f463c867b8e2f41ebb4ecea34',1,'edash_packager::media::AudioStreamInfo::GetCodecString()'],['../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a801612f825520fae9c3c3ce1de138128',1,'edash_packager::media::VideoStreamInfo::GetCodecString()']]],
   ['getcontenttype',['GetContentType',['../db/d09/namespaceedash__packager.html#a7f479c5670e5c9f721772e0bd316bff9',1,'edash_packager']]],
@@ -23,6 +25,7 @@ var searchData=
   ['getrawptr',['GetRawPtr',['../dd/d85/classedash__packager_1_1xml_1_1XmlNode.html#a05a6a89d477a5a59ed8081a2b1ee2d20',1,'edash_packager::xml::XmlNode']]],
   ['getsamplingfrequency',['GetSamplingFrequency',['../db/d69/classedash__packager_1_1media_1_1mp2t_1_1AdtsHeader.html#a95e3365db36b2c5c1f4f688631c2a236',1,'edash_packager::media::mp2t::AdtsHeader']]],
   ['gettracktypefromstring',['GetTrackTypeFromString',['../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab15ba8121f76e0945d4f10d722da5cc8',1,'edash_packager::media::KeySource']]],
+  ['getvideostreaminfo',['GetVideoStreamInfo',['../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#ae9bd12612eca7668a8cca6c122f06065',1,'edash_packager::media::WebMVideoClient']]],
   ['getxml',['GetXml',['../db/de4/classedash__packager_1_1AdaptationSet.html#a44984cfaed799fd6683c6c9d41394dd6',1,'edash_packager::AdaptationSet::GetXml()'],['../d7/d15/classedash__packager_1_1Representation.html#a4eefc1cf0da6ff78806f8d1099cb01d1',1,'edash_packager::Representation::GetXml()']]],
   ['group',['Group',['../db/de4/classedash__packager_1_1AdaptationSet.html#ad5efd9add7037cf939c6a48733e38f8f',1,'edash_packager::AdaptationSet']]]
 ];

@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -108,8 +108,8 @@ Inheritance diagram for edash_packager::media::WebMClusterParser:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
 Public Types</h2></td></tr>
-<tr class="memitem:a9a9e4f3a5a1360d947528a553397779e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <b>kDefaultAudioBufferDurationInMs</b> = 23, 
-<b>kDefaultVideoBufferDurationInMs</b> = 63
+<tr class="memitem:a9a9e4f3a5a1360d947528a553397779e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom">{ <a class="el" href="../../db/da0/classedash__packager_1_1media_1_1WebMClusterParser.html#a9a9e4f3a5a1360d947528a553397779eadcde56d3670a152494df7b401c6db1dd">kDefaultAudioBufferDurationInMs</a> = 23, 
+<a class="el" href="../../db/da0/classedash__packager_1_1media_1_1WebMClusterParser.html#a9a9e4f3a5a1360d947528a553397779ea32a5cc2c19fb1598071109cad939311a">kDefaultVideoBufferDurationInMs</a> = 63
  }</td></tr>
 <tr class="separator:a9a9e4f3a5a1360d947528a553397779e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -119,16 +119,15 @@ Public Member Functions</h2></td></tr>
 &#160;</td><td class="memItemRight" valign="bottom"><b>WebMClusterParser</b> (int64_t timecode_scale, int audio_track_num, int64_t audio_default_duration, int video_track_num, int64_t video_default_duration, const WebMTracksParser::TextTracks &amp;text_tracks, const std::set&lt; int64_t &gt; &amp;ignored_tracks, const std::string &amp;audio_encryption_key_id, const std::string &amp;video_encryption_key_id, const AudioCodec audio_codec, const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a1628c19a91f1b8ae123f7350936bfe32">MediaParser::NewSampleCB</a> &amp;new_sample_cb)</td></tr>
 <tr class="separator:a772ae4cd7aa703fb470c07a08a725279"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd772eabfa31927d47dacfb219fca3ad"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afd772eabfa31927d47dacfb219fca3ad"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Reset</b> ()</td></tr>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/da0/classedash__packager_1_1media_1_1WebMClusterParser.html#afd772eabfa31927d47dacfb219fca3ad">Reset</a> ()</td></tr>
+<tr class="memdesc:afd772eabfa31927d47dacfb219fca3ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the parser state so it can accept a new cluster. <br/></td></tr>
 <tr class="separator:afd772eabfa31927d47dacfb219fca3ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a060661d4a0bfc01543fa025fb4b09a7d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a060661d4a0bfc01543fa025fb4b09a7d"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>Parse</b> (const uint8_t *buf, int size)</td></tr>
+<tr class="memitem:a060661d4a0bfc01543fa025fb4b09a7d"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/da0/classedash__packager_1_1media_1_1WebMClusterParser.html#a060661d4a0bfc01543fa025fb4b09a7d">Parse</a> (const uint8_t *buf, int size)</td></tr>
 <tr class="separator:a060661d4a0bfc01543fa025fb4b09a7d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad031c293aa9a461af5d8a4e6af681583"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad031c293aa9a461af5d8a4e6af681583"></a>
 int64_t&#160;</td><td class="memItemRight" valign="bottom"><b>cluster_start_time</b> () const </td></tr>
 <tr class="separator:ad031c293aa9a461af5d8a4e6af681583"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae62be1971c352525906d6fad2ee831bd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae62be1971c352525906d6fad2ee831bd"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>cluster_ended</b> () const </td></tr>
+<tr class="memitem:ae62be1971c352525906d6fad2ee831bd"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/da0/classedash__packager_1_1media_1_1WebMClusterParser.html#ae62be1971c352525906d6fad2ee831bd">cluster_ended</a> () const </td></tr>
 <tr class="separator:ae62be1971c352525906d6fad2ee831bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classedash__packager_1_1media_1_1WebMParserClient"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classedash__packager_1_1media_1_1WebMParserClient')"><img src="../../closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="../../de/da5/classedash__packager_1_1media_1_1WebMParserClient.html">edash_packager::media::WebMParserClient</a></td></tr>
 <tr class="memitem:a740e2a83ce9f413b47b376e7d0103ce8 inherit pub_methods_classedash__packager_1_1media_1_1WebMParserClient"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a740e2a83ce9f413b47b376e7d0103ce8"></a>
@@ -140,7 +139,7 @@ virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>OnString</b> 
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
-<tr class="memitem:ab08c27583d9585af4a71d81bcb4f6772"><td class="memItemLeft" align="right" valign="top">static const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>kOpusFrameDurationsMu</b> []</td></tr>
+<tr class="memitem:ab08c27583d9585af4a71d81bcb4f6772"><td class="memItemLeft" align="right" valign="top">static const uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/da0/classedash__packager_1_1media_1_1WebMClusterParser.html#ab08c27583d9585af4a71d81bcb4f6772">kOpusFrameDurationsMu</a> []</td></tr>
 <tr class="separator:ab08c27583d9585af4a71d81bcb4f6772"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
@@ -153,7 +152,92 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
 <p>Definition at line <a class="el" href="../../dc/d3c/webm__cluster__parser_8h_source.html#l00022">22</a> of file <a class="el" href="../../dc/d3c/webm__cluster__parser_8h_source.html">webm_cluster_parser.h</a>.</p>
-</div><h2 class="groupheader">Member Data Documentation</h2>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a class="anchor" id="a9a9e4f3a5a1360d947528a553397779e"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">anonymous enum</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Numbers chosen to estimate the duration of a buffer if none is set and there is not enough information to get a better estimate. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><em><a class="anchor" id="a9a9e4f3a5a1360d947528a553397779eadcde56d3670a152494df7b401c6db1dd"></a>kDefaultAudioBufferDurationInMs</em>&#160;</td><td class="fielddoc">
+<p>Common 1k samples @44.1kHz. </p>
+</td></tr>
+<tr><td class="fieldname"><em><a class="anchor" id="a9a9e4f3a5a1360d947528a553397779ea32a5cc2c19fb1598071109cad939311a"></a>kDefaultVideoBufferDurationInMs</em>&#160;</td><td class="fielddoc">
+<p>Chosen to represent 16fps duration, which will prevent MSE stalls in videos with frame-rates as low as 8fps. </p>
+</td></tr>
+</table>
+
+<p>Definition at line <a class="el" href="../../dc/d3c/webm__cluster__parser_8h_source.html#l00026">26</a> of file <a class="el" href="../../dc/d3c/webm__cluster__parser_8h_source.html">webm_cluster_parser.h</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="ae62be1971c352525906d6fad2ee831bd"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool edash_packager::media::WebMClusterParser::cluster_ended </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>true if the last <a class="el" href="../../db/da0/classedash__packager_1_1media_1_1WebMClusterParser.html#a060661d4a0bfc01543fa025fb4b09a7d">Parse()</a> call stopped at the end of a cluster. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../dc/d3c/webm__cluster__parser_8h_source.html#l00142">142</a> of file <a class="el" href="../../dc/d3c/webm__cluster__parser_8h_source.html">webm_cluster_parser.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a060661d4a0bfc01543fa025fb4b09a7d"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int edash_packager::media::WebMClusterParser::Parse </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>buf</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Parses a WebM cluster element in |buf|. </p>
+<dl class="section return"><dt>Returns</dt><dd>-1 if the parse fails. </dd>
+<dd>
+0 if more data is needed. </dd>
+<dd>
+The number of bytes parsed on success. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d5/d8f/webm__cluster__parser_8cc_source.html#l00096">96</a> of file <a class="el" href="../../d5/d8f/webm__cluster__parser_8cc_source.html">webm_cluster_parser.cc</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
 <a class="anchor" id="ab08c27583d9585af4a71d81bcb4f6772"></a>
 <div class="memitem">
 <div class="memproto">
@@ -175,7 +259,8 @@ Additional Inherited Members</h2></td></tr>
 <div class="line">    10000, 20000, 40000, 60000, 10000, 20000, 40000, 60000, 10000, 20000, 40000,</div>
 <div class="line">    60000, 10000, 20000, 10000, 20000, 2500,  5000,  10000, 20000, 2500,  5000,</div>
 <div class="line">    10000, 20000, 2500,  5000,  10000, 20000, 2500,  5000,  10000, 20000}</div>
-</div><!-- fragment -->
+</div><!-- fragment --><p>Opus packets encode the duration and other parameters in the 5 most significant bits of the first byte. The index in this array corresponds to the duration of each frame of the packet in microseconds. See <a href="https://tools.ietf.org/html/rfc6716#page-14">https://tools.ietf.org/html/rfc6716#page-14</a> </p>
+
 <p>Definition at line <a class="el" href="../../dc/d3c/webm__cluster__parser_8h_source.html#l00039">39</a> of file <a class="el" href="../../dc/d3c/webm__cluster__parser_8h_source.html">webm_cluster_parser.h</a>.</p>
 
 </div>
@@ -187,7 +272,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 19 2015 17:27:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 19:22:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: edash_packager::media::WebMStreamParser Class Reference</title>
+<title>DASH Media Packaging SDK: edash_packager::media::WebMMediaParser Class Reference</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -82,35 +82,37 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../db/d09/namespaceedash__packager.html">edash_packager</a></li><li class="navelem"><b>media</b></li><li class="navelem"><a class="el" href="../../d4/d20/classedash__packager_1_1media_1_1WebMStreamParser.html">WebMStreamParser</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../db/d09/namespaceedash__packager.html">edash_packager</a></li><li class="navelem"><b>media</b></li><li class="navelem"><a class="el" href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html">WebMMediaParser</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="../../d2/d03/classedash__packager_1_1media_1_1WebMStreamParser-members.html">List of all members</a>  </div>
+<a href="../../d3/dbe/classedash__packager_1_1media_1_1WebMMediaParser-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">edash_packager::media::WebMStreamParser Class Reference</div>  </div>
+<div class="title">edash_packager::media::WebMMediaParser Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="dynheader">
-Inheritance diagram for edash_packager::media::WebMStreamParser:</div>
+Inheritance diagram for edash_packager::media::WebMMediaParser:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="../../d4/d20/classedash__packager_1_1media_1_1WebMStreamParser.png" usemap="#edash_packager::media::WebMStreamParser_map" alt=""/>
-  <map id="edash_packager::media::WebMStreamParser_map" name="edash_packager::media::WebMStreamParser_map">
-<area href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html" alt="edash_packager::media::MediaParser" shape="rect" coords="0,0,264,24"/>
+  <img src="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.png" usemap="#edash_packager::media::WebMMediaParser_map" alt=""/>
+  <map id="edash_packager::media::WebMMediaParser_map" name="edash_packager::media::WebMMediaParser_map">
+<area href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html" alt="edash_packager::media::MediaParser" shape="rect" coords="0,0,260,24"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae46318cf5b0e9d1c88ad5978c090f3df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d20/classedash__packager_1_1media_1_1WebMStreamParser.html#ae46318cf5b0e9d1c88ad5978c090f3df">Init</a> (const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#af5c74c8723a5306faddcdfdcadb4ab4a">InitCB</a> &amp;init_cb, const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a1628c19a91f1b8ae123f7350936bfe32">NewSampleCB</a> &amp;new_sample_cb, <a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a> *decryption_key_source) override</td></tr>
-<tr class="separator:ae46318cf5b0e9d1c88ad5978c090f3df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab0d151b74a2d567dbd400289028ff1f1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d20/classedash__packager_1_1media_1_1WebMStreamParser.html#ab0d151b74a2d567dbd400289028ff1f1">Flush</a> () override</td></tr>
-<tr class="separator:ab0d151b74a2d567dbd400289028ff1f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6854bdb8bafe8e4962b7f4b4cb797b71"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d20/classedash__packager_1_1media_1_1WebMStreamParser.html#a6854bdb8bafe8e4962b7f4b4cb797b71">Parse</a> (const uint8_t *buf, int size) override</td></tr>
-<tr class="separator:a6854bdb8bafe8e4962b7f4b4cb797b71"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a85bf527013ebbb0b902dcd56039467"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8a85bf527013ebbb0b902dcd56039467"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a8a85bf527013ebbb0b902dcd56039467">Init</a> (const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#af5c74c8723a5306faddcdfdcadb4ab4a">InitCB</a> &amp;init_cb, const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a1628c19a91f1b8ae123f7350936bfe32">NewSampleCB</a> &amp;new_sample_cb, <a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a> *decryption_key_source) override</td></tr>
+<tr class="memdesc:a8a85bf527013ebbb0b902dcd56039467"><td class="mdescLeft">&#160;</td><td class="mdescRight">StreamParser implementation. <br/></td></tr>
+<tr class="separator:a8a85bf527013ebbb0b902dcd56039467"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c0e6fc0e48bb49e6687f566a87e6f12"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a3c0e6fc0e48bb49e6687f566a87e6f12">Flush</a> () override</td></tr>
+<tr class="separator:a3c0e6fc0e48bb49e6687f566a87e6f12"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a95d3879a9a96830fdcf4f866879143"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a5a95d3879a9a96830fdcf4f866879143">Parse</a> (const uint8_t *buf, int size) override</td></tr>
+<tr class="separator:a5a95d3879a9a96830fdcf4f866879143"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -126,9 +128,9 @@ track_id, const scoped_refptr<br class="typebreak"/>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="../../d1/de0/webm__stream__parser_8h_source.html#l00018">18</a> of file <a class="el" href="../../d1/de0/webm__stream__parser_8h_source.html">webm_stream_parser.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d58/webm__media__parser_8h_source.html#l00018">18</a> of file <a class="el" href="../../dc/d58/webm__media__parser_8h_source.html">webm_media_parser.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="ab0d151b74a2d567dbd400289028ff1f1"></a>
+<a class="anchor" id="a3c0e6fc0e48bb49e6687f566a87e6f12"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -136,7 +138,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void edash_packager::media::WebMStreamParser::Flush </td>
+          <td class="memname">void edash_packager::media::WebMMediaParser::Flush </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -152,11 +154,11 @@ track_id, const scoped_refptr<br class="typebreak"/>
 
 <p>Implements <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#ad9906a71035190a798a9aa8aed0a92b8">edash_packager::media::MediaParser</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d9/dbd/webm__stream__parser_8cc_source.html#l00046">46</a> of file <a class="el" href="../../d9/dbd/webm__stream__parser_8cc_source.html">webm_stream_parser.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/dff/webm__media__parser_8cc_source.html#l00042">42</a> of file <a class="el" href="../../d4/dff/webm__media__parser_8cc_source.html">webm_media_parser.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ae46318cf5b0e9d1c88ad5978c090f3df"></a>
+<a class="anchor" id="a5a95d3879a9a96830fdcf4f866879143"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -164,59 +166,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void edash_packager::media::WebMStreamParser::Init </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#af5c74c8723a5306faddcdfdcadb4ab4a">InitCB</a> &amp;&#160;</td>
-          <td class="paramname"><em>init_cb</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a1628c19a91f1b8ae123f7350936bfe32">NewSampleCB</a> &amp;&#160;</td>
-          <td class="paramname"><em>new_sample_cb</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a> *&#160;</td>
-          <td class="paramname"><em>decryption_key_source</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Initialize the parser with necessary callbacks. Must be called before any data is passed to <a class="el" href="../../d4/d20/classedash__packager_1_1media_1_1WebMStreamParser.html#a6854bdb8bafe8e4962b7f4b4cb797b71">Parse()</a>. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">init_cb</td><td>will be called once enough data has been parsed to determine the initial stream configurations. </td></tr>
-    <tr><td class="paramname">new_sample_cb</td><td>will be called each time a new media sample is available from the parser. May be NULL, and caller retains ownership. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Implements <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a7ac1ee5db298922f094920cd564bfb16">edash_packager::media::MediaParser</a>.</p>
-
-<p>Definition at line <a class="el" href="../../d9/dbd/webm__stream__parser_8cc_source.html#l00030">30</a> of file <a class="el" href="../../d9/dbd/webm__stream__parser_8cc_source.html">webm_stream_parser.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a6854bdb8bafe8e4962b7f4b4cb797b71"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool edash_packager::media::WebMStreamParser::Parse </td>
+          <td class="memname">bool edash_packager::media::WebMMediaParser::Parse </td>
           <td>(</td>
           <td class="paramtype">const uint8_t *&#160;</td>
           <td class="paramname"><em>buf</em>, </td>
@@ -244,18 +194,18 @@ track_id, const scoped_refptr<br class="typebreak"/>
 
 <p>Implements <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a6bc31ca2303d340a11a63a6f4bbb8b0a">edash_packager::media::MediaParser</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d9/dbd/webm__stream__parser_8cc_source.html#l00057">57</a> of file <a class="el" href="../../d9/dbd/webm__stream__parser_8cc_source.html">webm_stream_parser.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/dff/webm__media__parser_8cc_source.html#l00053">53</a> of file <a class="el" href="../../d4/dff/webm__media__parser_8cc_source.html">webm_media_parser.cc</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>media/formats/webm/<a class="el" href="../../d1/de0/webm__stream__parser_8h_source.html">webm_stream_parser.h</a></li>
-<li>media/formats/webm/<a class="el" href="../../d9/dbd/webm__stream__parser_8cc_source.html">webm_stream_parser.cc</a></li>
+<li>media/formats/webm/<a class="el" href="../../dc/d58/webm__media__parser_8h_source.html">webm_media_parser.h</a></li>
+<li>media/formats/webm/<a class="el" href="../../d4/dff/webm__media__parser_8cc_source.html">webm_media_parser.cc</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 19 2015 17:27:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 19:22:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

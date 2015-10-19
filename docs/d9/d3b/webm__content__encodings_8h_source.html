@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -104,10 +104,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
 <div class="line"><a name="l00016"></a><span class="lineno"><a class="line" href="../../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html">   16</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html">ContentEncoding</a> {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  <span class="comment">// The following enum definitions are based on the ContentEncoding element</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="comment">// specified in the Matroska spec.</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span> kOrderInvalid = -1;</div>
+<div class="line"><a name="l00021"></a><span class="lineno"><a class="line" href="../../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html#a4d87c9881d554fbeb6999280d2e463d1">   21</a></span>&#160;  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">int</span> <a class="code" href="../../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html#a4d87c9881d554fbeb6999280d2e463d1">kOrderInvalid</a> = -1;</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="keyword">enum</span> Scope {</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    kScopeInvalid = 0,</div>
@@ -138,8 +136,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    kCipherModeCtr = 1,</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  };</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <a class="code" href="../../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html">ContentEncoding</a>();</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  ~<a class="code" href="../../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html">ContentEncoding</a>();</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  ContentEncoding();</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  ~ContentEncoding();</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  int64_t order()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> order_; }</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordtype">void</span> set_order(int64_t order) { order_ = order; }</div>
@@ -169,7 +167,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  std::string encryption_key_id_;</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  CipherMode cipher_mode_;</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html">ContentEncoding</a>);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  DISALLOW_COPY_AND_ASSIGN(ContentEncoding);</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;};</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}  <span class="comment">// namespace media</span></div>
@@ -177,10 +175,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_WEBM_CONTENT_ENCODINGS_H_</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1ContentEncoding_html"><div class="ttname"><a href="../../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html">edash_packager::media::ContentEncoding</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d3b/webm__content__encodings_8h_source.html#l00016">webm_content_encodings.h:16</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1ContentEncoding_html_a4d87c9881d554fbeb6999280d2e463d1"><div class="ttname"><a href="../../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html#a4d87c9881d554fbeb6999280d2e463d1">edash_packager::media::ContentEncoding::kOrderInvalid</a></div><div class="ttdeci">static const int kOrderInvalid</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d3b/webm__content__encodings_8h_source.html#l00021">webm_content_encodings.h:21</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 19 2015 17:27:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 19 2015 19:22:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
