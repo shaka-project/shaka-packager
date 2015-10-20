@@ -15,6 +15,7 @@ var searchData=
   ['readwritechild',['ReadWriteChild',['../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#ae2f4c04bd204e593491db3e24715efd2',1,'edash_packager::media::mp4::BoxBuffer']]],
   ['readwriteuint64nbytes',['ReadWriteUInt64NBytes',['../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a726ab4970a19fa671137e88098e3cd48',1,'edash_packager::media::mp4::BoxBuffer']]],
   ['release',['Release',['../dd/d85/classedash__packager_1_1xml_1_1XmlNode.html#a0942bc721718b70b49fc9e91a6934513',1,'edash_packager::xml::XmlNode']]],
+  ['reopen',['Reopen',['../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a60aed7e0d5b1bf784cbc32bb75e1fb5b',1,'edash_packager::media::IoCache']]],
   ['representation',['Representation',['../d7/d15/classedash__packager_1_1Representation.html#a4fc4d0fd6f240f1c79fac0b68b9d9f0d',1,'edash_packager::Representation']]],
   ['representation',['Representation',['../d7/d15/classedash__packager_1_1Representation.html',1,'edash_packager']]],
   ['representationbasexmlnode',['RepresentationBaseXmlNode',['../d1/dd5/classedash__packager_1_1xml_1_1RepresentationBaseXmlNode.html',1,'edash_packager::xml']]],

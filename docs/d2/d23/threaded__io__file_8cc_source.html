@@ -114,154 +114,165 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;      io_buffer_(io_block_size),</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;      size_(0),</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;      eof_(false),</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      internal_file_error_(0) {</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  DCHECK(internal_file_);</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;}</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;ThreadedIoFile::~ThreadedIoFile() {}</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      flushing_(false),</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;      flush_complete_event_(false, false),</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;      internal_file_error_(0){</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  DCHECK(internal_file_);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;}</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a5ad6384c116d61739667daa2a7a5613a">   34</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a5ad6384c116d61739667daa2a7a5613a">ThreadedIoFile::Open</a>() {</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  DCHECK(internal_file_);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keywordflow">if</span> (!internal_file_-&gt;Open())</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  size_ = internal_file_-&gt;Size();</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;ThreadedIoFile::~ThreadedIoFile() {}</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a5ad6384c116d61739667daa2a7a5613a">   36</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a5ad6384c116d61739667daa2a7a5613a">ThreadedIoFile::Open</a>() {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  DCHECK(internal_file_);</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordflow">if</span> (!internal_file_-&gt;Open())</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  thread_.reset(<span class="keyword">new</span> <a class="code" href="../../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html">ClosureThread</a>(<span class="stringliteral">&quot;ThreadedIoFile&quot;</span>,</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                                  base::Bind(mode_ == kInputMode ?</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                                             &amp;ThreadedIoFile::RunInInputMode :</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                                             &amp;ThreadedIoFile::RunInOutputMode,</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                                             base::Unretained(<span class="keyword">this</span>))));</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  thread_-&gt;Start();</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;}</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a72f8485ab641d5e3b5df89a6959c1209">   51</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a72f8485ab641d5e3b5df89a6959c1209">ThreadedIoFile::Close</a>() {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  DCHECK(internal_file_);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  DCHECK(thread_);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keywordflow">if</span> (mode_ == kOutputMode)</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7d65b07dd7545b7c6d759884b736ad2d">Flush</a>();</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4588dbf505a08da8423b525ce24fee92">Close</a>();</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  thread_-&gt;Join();</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordtype">bool</span> result = internal_file_.release()-&gt;Close();</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keyword">delete</span> <span class="keyword">this</span>;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;}</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a5075259d07b1b004d8b7985527fa6e63">   66</a></span>&#160;int64_t <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a5075259d07b1b004d8b7985527fa6e63">ThreadedIoFile::Read</a>(<span class="keywordtype">void</span>* buffer, uint64_t length) {</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  DCHECK(internal_file_);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  DCHECK(thread_);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  DCHECK_EQ(kInputMode, mode_);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordflow">if</span> (internal_file_error_)</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordflow">return</span> internal_file_error_;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keywordflow">if</span> (eof_ &amp;&amp; !cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a0fe59125434e46c2ea5474cfc9f0e95c">BytesCached</a>())</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordflow">return</span> 0;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordflow">return</span> cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a462bd5ddce8041eaa109271fd0d155a9">Read</a>(buffer, length);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7dc883b5751c9027adabfbb0b9edd876">   80</a></span>&#160;int64_t <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7dc883b5751c9027adabfbb0b9edd876">ThreadedIoFile::Write</a>(<span class="keyword">const</span> <span class="keywordtype">void</span>* buffer, uint64_t length) {</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  DCHECK(internal_file_);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  DCHECK(thread_);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  DCHECK_EQ(kOutputMode, mode_);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordflow">if</span> (internal_file_error_)</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordflow">return</span> internal_file_error_;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  size_ += length;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordflow">return</span> cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4b7ee97ec07a6b2702ae4b58c9df4413">Write</a>(buffer, length);</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#af61d3986b87d43e3b5ffd86c86094478">   92</a></span>&#160;int64_t <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#af61d3986b87d43e3b5ffd86c86094478">ThreadedIoFile::Size</a>() {</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  DCHECK(internal_file_);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  DCHECK(thread_);</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keywordflow">return</span> size_;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;}</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
-<div class="line"><a name="l00099"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7d65b07dd7545b7c6d759884b736ad2d">   99</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7d65b07dd7545b7c6d759884b736ad2d">ThreadedIoFile::Flush</a>() {</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  DCHECK(internal_file_);</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  DCHECK(thread_);</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  DCHECK_EQ(kOutputMode, mode_);</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#ace4946f4ecb34f84c4750d276404a3e5">WaitUntilEmptyOrClosed</a>();</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keywordflow">return</span> internal_file_-&gt;Flush();</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;}</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="keywordtype">void</span> ThreadedIoFile::RunInInputMode() {</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  DCHECK(internal_file_);</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  DCHECK(thread_);</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  DCHECK_EQ(kInputMode, mode_);</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    int64_t read_result = internal_file_-&gt;Read(&amp;io_buffer_[0],</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;                                               io_buffer_.size());</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <span class="keywordflow">if</span> (read_result &lt;= 0) {</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      eof_ = read_result == 0;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      internal_file_error_ = read_result;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;      cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4588dbf505a08da8423b525ce24fee92">Close</a>();</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;      <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    }</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4b7ee97ec07a6b2702ae4b58c9df4413">Write</a>(&amp;io_buffer_[0], read_result);</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  }</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;}</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
-<div class="line"><a name="l00126"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a46346ba1ff6a626aedb6f14475bde10d">  126</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a46346ba1ff6a626aedb6f14475bde10d">ThreadedIoFile::Seek</a>(uint64_t position) {</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  NOTIMPLEMENTED();</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;}</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
-<div class="line"><a name="l00131"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#acef8a84a1ec55e42588fec8bc8e0b698">  131</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#acef8a84a1ec55e42588fec8bc8e0b698">ThreadedIoFile::Tell</a>(uint64_t* position) {</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  NOTIMPLEMENTED();</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;}</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;<span class="keywordtype">void</span> ThreadedIoFile::RunInOutputMode() {</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  DCHECK(internal_file_);</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;  DCHECK(thread_);</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  DCHECK_EQ(kOutputMode, mode_);</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    uint64_t write_bytes = cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a462bd5ddce8041eaa109271fd0d155a9">Read</a>(&amp;io_buffer_[0], io_buffer_.size());</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    <span class="keywordflow">if</span> (write_bytes == 0)</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;      <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    int64_t write_result = internal_file_-&gt;Write(&amp;io_buffer_[0], write_bytes);</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <span class="keywordflow">if</span> (write_result &lt; 0) {</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;      internal_file_error_ = write_result;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;      cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4588dbf505a08da8423b525ce24fee92">Close</a>();</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;      <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    }</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    CHECK_EQ(write_result, static_cast&lt;int64_t&gt;(write_bytes));</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  }</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;}</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1IoCache_html_a0fe59125434e46c2ea5474cfc9f0e95c"><div class="ttname"><a href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a0fe59125434e46c2ea5474cfc9f0e95c">edash_packager::media::IoCache::BytesCached</a></div><div class="ttdeci">uint64_t BytesCached()</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00116">io_cache.cc:116</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_a7dc883b5751c9027adabfbb0b9edd876"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7dc883b5751c9027adabfbb0b9edd876">edash_packager::media::ThreadedIoFile::Write</a></div><div class="ttdeci">int64_t Write(const void *buffer, uint64_t length) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00080">threaded_io_file.cc:80</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_a46346ba1ff6a626aedb6f14475bde10d"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a46346ba1ff6a626aedb6f14475bde10d">edash_packager::media::ThreadedIoFile::Seek</a></div><div class="ttdeci">bool Seek(uint64_t position) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00126">threaded_io_file.cc:126</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_a7d65b07dd7545b7c6d759884b736ad2d"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7d65b07dd7545b7c6d759884b736ad2d">edash_packager::media::ThreadedIoFile::Flush</a></div><div class="ttdeci">bool Flush() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00099">threaded_io_file.cc:99</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1IoCache_html_a4588dbf505a08da8423b525ce24fee92"><div class="ttname"><a href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4588dbf505a08da8423b525ce24fee92">edash_packager::media::IoCache::Close</a></div><div class="ttdeci">void Close()</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00109">io_cache.cc:109</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1IoCache_html_ace4946f4ecb34f84c4750d276404a3e5"><div class="ttname"><a href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#ace4946f4ecb34f84c4750d276404a3e5">edash_packager::media::IoCache::WaitUntilEmptyOrClosed</a></div><div class="ttdeci">void WaitUntilEmptyOrClosed()</div><div class="ttdoc">Waits until the cache is empty or has been closed. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00136">io_cache.cc:136</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_a5075259d07b1b004d8b7985527fa6e63"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a5075259d07b1b004d8b7985527fa6e63">edash_packager::media::ThreadedIoFile::Read</a></div><div class="ttdeci">int64_t Read(void *buffer, uint64_t length) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00066">threaded_io_file.cc:66</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_a5ad6384c116d61739667daa2a7a5613a"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a5ad6384c116d61739667daa2a7a5613a">edash_packager::media::ThreadedIoFile::Open</a></div><div class="ttdeci">bool Open() override</div><div class="ttdoc">Internal open. Should not be used directly. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00034">threaded_io_file.cc:34</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1IoCache_html_a4b7ee97ec07a6b2702ae4b58c9df4413"><div class="ttname"><a href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4b7ee97ec07a6b2702ae4b58c9df4413">edash_packager::media::IoCache::Write</a></div><div class="ttdeci">uint64_t Write(const void *buffer, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00066">io_cache.cc:66</a></div></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  size_ = internal_file_-&gt;Size();</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  thread_.reset(<span class="keyword">new</span> <a class="code" href="../../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html">ClosureThread</a>(<span class="stringliteral">&quot;ThreadedIoFile&quot;</span>,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                                  base::Bind(mode_ == kInputMode ?</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                                             &amp;ThreadedIoFile::RunInInputMode :</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                                             &amp;ThreadedIoFile::RunInOutputMode,</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                                             base::Unretained(<span class="keyword">this</span>))));</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  thread_-&gt;Start();</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a72f8485ab641d5e3b5df89a6959c1209">   53</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a72f8485ab641d5e3b5df89a6959c1209">ThreadedIoFile::Close</a>() {</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  DCHECK(internal_file_);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  DCHECK(thread_);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordflow">if</span> (mode_ == kOutputMode)</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7d65b07dd7545b7c6d759884b736ad2d">Flush</a>();</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4588dbf505a08da8423b525ce24fee92">Close</a>();</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  thread_-&gt;Join();</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keywordtype">bool</span> result = internal_file_.release()-&gt;Close();</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keyword">delete</span> <span class="keyword">this</span>;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a5075259d07b1b004d8b7985527fa6e63">   68</a></span>&#160;int64_t <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a5075259d07b1b004d8b7985527fa6e63">ThreadedIoFile::Read</a>(<span class="keywordtype">void</span>* buffer, uint64_t length) {</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  DCHECK(internal_file_);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  DCHECK(thread_);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  DCHECK_EQ(kInputMode, mode_);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordflow">if</span> (internal_file_error_)</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordflow">return</span> internal_file_error_;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keywordflow">if</span> (eof_ &amp;&amp; !cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a0fe59125434e46c2ea5474cfc9f0e95c">BytesCached</a>())</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordflow">return</span> 0;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordflow">return</span> cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a462bd5ddce8041eaa109271fd0d155a9">Read</a>(buffer, length);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;}</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7dc883b5751c9027adabfbb0b9edd876">   82</a></span>&#160;int64_t <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7dc883b5751c9027adabfbb0b9edd876">ThreadedIoFile::Write</a>(<span class="keyword">const</span> <span class="keywordtype">void</span>* buffer, uint64_t length) {</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  DCHECK(internal_file_);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  DCHECK(thread_);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  DCHECK_EQ(kOutputMode, mode_);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordflow">if</span> (internal_file_error_)</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordflow">return</span> internal_file_error_;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  size_ += length;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordflow">return</span> cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4b7ee97ec07a6b2702ae4b58c9df4413">Write</a>(buffer, length);</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#af61d3986b87d43e3b5ffd86c86094478">   94</a></span>&#160;int64_t <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#af61d3986b87d43e3b5ffd86c86094478">ThreadedIoFile::Size</a>() {</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  DCHECK(internal_file_);</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  DCHECK(thread_);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keywordflow">return</span> size_;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;}</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
+<div class="line"><a name="l00101"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7d65b07dd7545b7c6d759884b736ad2d">  101</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7d65b07dd7545b7c6d759884b736ad2d">ThreadedIoFile::Flush</a>() {</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  DCHECK(internal_file_);</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  DCHECK(thread_);</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  DCHECK_EQ(kOutputMode, mode_);</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  flushing_ = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4588dbf505a08da8423b525ce24fee92">Close</a>();</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  flush_complete_event_.Wait();</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordflow">return</span> internal_file_-&gt;Flush();</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;}</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="keywordtype">void</span> ThreadedIoFile::RunInInputMode() {</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  DCHECK(internal_file_);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  DCHECK(thread_);</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  DCHECK_EQ(kInputMode, mode_);</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    int64_t read_result = internal_file_-&gt;Read(&amp;io_buffer_[0],</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;                                               io_buffer_.size());</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keywordflow">if</span> (read_result &lt;= 0) {</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;      eof_ = read_result == 0;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      internal_file_error_ = read_result;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;      cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4588dbf505a08da8423b525ce24fee92">Close</a>();</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    }</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4b7ee97ec07a6b2702ae4b58c9df4413">Write</a>(&amp;io_buffer_[0], read_result);</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  }</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;}</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
+<div class="line"><a name="l00130"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a46346ba1ff6a626aedb6f14475bde10d">  130</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a46346ba1ff6a626aedb6f14475bde10d">ThreadedIoFile::Seek</a>(uint64_t position) {</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  NOTIMPLEMENTED();</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;}</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
+<div class="line"><a name="l00135"></a><span class="lineno"><a class="line" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#acef8a84a1ec55e42588fec8bc8e0b698">  135</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#acef8a84a1ec55e42588fec8bc8e0b698">ThreadedIoFile::Tell</a>(uint64_t* position) {</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  NOTIMPLEMENTED();</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;}</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;<span class="keywordtype">void</span> ThreadedIoFile::RunInOutputMode() {</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  DCHECK(internal_file_);</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  DCHECK(thread_);</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  DCHECK_EQ(kOutputMode, mode_);</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    uint64_t write_bytes = cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a462bd5ddce8041eaa109271fd0d155a9">Read</a>(&amp;io_buffer_[0], io_buffer_.size());</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <span class="keywordflow">if</span> (write_bytes == 0) {</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;      <span class="keywordflow">if</span> (flushing_) {</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;        cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a60aed7e0d5b1bf784cbc32bb75e1fb5b">Reopen</a>();</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;        flushing_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;        flush_complete_event_.Signal();</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;      } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;        <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;      }</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      int64_t write_result = internal_file_-&gt;Write(&amp;io_buffer_[0], write_bytes);</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      <span class="keywordflow">if</span> (write_result &lt; 0) {</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;        internal_file_error_ = write_result;</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;        cache_.<a class="code" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4588dbf505a08da8423b525ce24fee92">Close</a>();</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;        <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;      }</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;      CHECK_EQ(write_result, static_cast&lt;int64_t&gt;(write_bytes));</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    }</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  }</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;}</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1IoCache_html_a0fe59125434e46c2ea5474cfc9f0e95c"><div class="ttname"><a href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a0fe59125434e46c2ea5474cfc9f0e95c">edash_packager::media::IoCache::BytesCached</a></div><div class="ttdeci">uint64_t BytesCached()</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00126">io_cache.cc:126</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1IoCache_html_a60aed7e0d5b1bf784cbc32bb75e1fb5b"><div class="ttname"><a href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a60aed7e0d5b1bf784cbc32bb75e1fb5b">edash_packager::media::IoCache::Reopen</a></div><div class="ttdeci">void Reopen()</div><div class="ttdoc">Reopens the cache. Any data still in the cache will be lost. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00117">io_cache.cc:117</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_a7dc883b5751c9027adabfbb0b9edd876"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7dc883b5751c9027adabfbb0b9edd876">edash_packager::media::ThreadedIoFile::Write</a></div><div class="ttdeci">int64_t Write(const void *buffer, uint64_t length) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00082">threaded_io_file.cc:82</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_a46346ba1ff6a626aedb6f14475bde10d"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a46346ba1ff6a626aedb6f14475bde10d">edash_packager::media::ThreadedIoFile::Seek</a></div><div class="ttdeci">bool Seek(uint64_t position) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00130">threaded_io_file.cc:130</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_a7d65b07dd7545b7c6d759884b736ad2d"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7d65b07dd7545b7c6d759884b736ad2d">edash_packager::media::ThreadedIoFile::Flush</a></div><div class="ttdeci">bool Flush() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00101">threaded_io_file.cc:101</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1IoCache_html_a4588dbf505a08da8423b525ce24fee92"><div class="ttname"><a href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4588dbf505a08da8423b525ce24fee92">edash_packager::media::IoCache::Close</a></div><div class="ttdeci">void Close()</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00110">io_cache.cc:110</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_a5075259d07b1b004d8b7985527fa6e63"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a5075259d07b1b004d8b7985527fa6e63">edash_packager::media::ThreadedIoFile::Read</a></div><div class="ttdeci">int64_t Read(void *buffer, uint64_t length) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00068">threaded_io_file.cc:68</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_a5ad6384c116d61739667daa2a7a5613a"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a5ad6384c116d61739667daa2a7a5613a">edash_packager::media::ThreadedIoFile::Open</a></div><div class="ttdeci">bool Open() override</div><div class="ttdoc">Internal open. Should not be used directly. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00036">threaded_io_file.cc:36</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1IoCache_html_a4b7ee97ec07a6b2702ae4b58c9df4413"><div class="ttname"><a href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4b7ee97ec07a6b2702ae4b58c9df4413">edash_packager::media::IoCache::Write</a></div><div class="ttdeci">uint64_t Write(const void *buffer, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00067">io_cache.cc:67</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1ClosureThread_html"><div class="ttname"><a href="../../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html">edash_packager::media::ClosureThread</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/df8/closure__thread_8h_source.html#l00025">closure_thread.h:25</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_af61d3986b87d43e3b5ffd86c86094478"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#af61d3986b87d43e3b5ffd86c86094478">edash_packager::media::ThreadedIoFile::Size</a></div><div class="ttdeci">int64_t Size() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00092">threaded_io_file.cc:92</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_a72f8485ab641d5e3b5df89a6959c1209"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a72f8485ab641d5e3b5df89a6959c1209">edash_packager::media::ThreadedIoFile::Close</a></div><div class="ttdeci">bool Close() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00051">threaded_io_file.cc:51</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1IoCache_html_a462bd5ddce8041eaa109271fd0d155a9"><div class="ttname"><a href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a462bd5ddce8041eaa109271fd0d155a9">edash_packager::media::IoCache::Read</a></div><div class="ttdeci">uint64_t Read(void *buffer, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00038">io_cache.cc:38</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_acef8a84a1ec55e42588fec8bc8e0b698"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#acef8a84a1ec55e42588fec8bc8e0b698">edash_packager::media::ThreadedIoFile::Tell</a></div><div class="ttdeci">bool Tell(uint64_t *position) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00131">threaded_io_file.cc:131</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_af61d3986b87d43e3b5ffd86c86094478"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#af61d3986b87d43e3b5ffd86c86094478">edash_packager::media::ThreadedIoFile::Size</a></div><div class="ttdeci">int64_t Size() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00094">threaded_io_file.cc:94</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_a72f8485ab641d5e3b5df89a6959c1209"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a72f8485ab641d5e3b5df89a6959c1209">edash_packager::media::ThreadedIoFile::Close</a></div><div class="ttdeci">bool Close() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00053">threaded_io_file.cc:53</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1IoCache_html_a462bd5ddce8041eaa109271fd0d155a9"><div class="ttname"><a href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a462bd5ddce8041eaa109271fd0d155a9">edash_packager::media::IoCache::Read</a></div><div class="ttdeci">uint64_t Read(void *buffer, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d37/io__cache_8cc_source.html#l00039">io_cache.cc:39</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1ThreadedIoFile_html_acef8a84a1ec55e42588fec8bc8e0b698"><div class="ttname"><a href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#acef8a84a1ec55e42588fec8bc8e0b698">edash_packager::media::ThreadedIoFile::Tell</a></div><div class="ttdeci">bool Tell(uint64_t *position) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d23/threaded__io__file_8cc_source.html#l00135">threaded_io_file.cc:135</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 19 2015 20:36:19 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Oct 20 2015 16:47:27 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

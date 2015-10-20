@@ -114,6 +114,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <tr class="separator:ae8ed4943296a88e5d5356347e63c6a42"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4588dbf505a08da8423b525ce24fee92"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4588dbf505a08da8423b525ce24fee92">Close</a> ()</td></tr>
 <tr class="separator:a4588dbf505a08da8423b525ce24fee92"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a742807639a2983fc05cf058a88bfbe79"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a742807639a2983fc05cf058a88bfbe79">closed</a> ()</td></tr>
+<tr class="separator:a742807639a2983fc05cf058a88bfbe79"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a60aed7e0d5b1bf784cbc32bb75e1fb5b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a60aed7e0d5b1bf784cbc32bb75e1fb5b"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a60aed7e0d5b1bf784cbc32bb75e1fb5b">Reopen</a> ()</td></tr>
+<tr class="memdesc:a60aed7e0d5b1bf784cbc32bb75e1fb5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reopens the cache. Any data still in the cache will be lost. <br/></td></tr>
+<tr class="separator:a60aed7e0d5b1bf784cbc32bb75e1fb5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0fe59125434e46c2ea5474cfc9f0e95c"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a0fe59125434e46c2ea5474cfc9f0e95c">BytesCached</a> ()</td></tr>
 <tr class="separator:a0fe59125434e46c2ea5474cfc9f0e95c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab5f7b9c5bc61e33f91cef7726f222586"><td class="memItemLeft" align="right" valign="top">uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#ab5f7b9c5bc61e33f91cef7726f222586">BytesFree</a> ()</td></tr>
@@ -143,7 +149,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <p>Returns the number of bytes in the cache. </p>
 <dl class="section return"><dt>Returns</dt><dd>the number of bytes in the cache. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d4/d37/io__cache_8cc_source.html#l00116">116</a> of file <a class="el" href="../../d4/d37/io__cache_8cc_source.html">io_cache.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/d37/io__cache_8cc_source.html#l00126">126</a> of file <a class="el" href="../../d4/d37/io__cache_8cc_source.html">io_cache.cc</a>.</p>
 
 </div>
 </div>
@@ -162,7 +168,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <p>Returns the number of free bytes in the cache. </p>
 <dl class="section return"><dt>Returns</dt><dd>the number of free bytes in the cache. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d4/d37/io__cache_8cc_source.html#l00121">121</a> of file <a class="el" href="../../d4/d37/io__cache_8cc_source.html">io_cache.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/d37/io__cache_8cc_source.html#l00131">131</a> of file <a class="el" href="../../d4/d37/io__cache_8cc_source.html">io_cache.cc</a>.</p>
 
 </div>
 </div>
@@ -178,9 +184,35 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Close the cache. This will call any blocking calls to unblock, and the cache won't be usable thereafter. </p>
+<p>Close the cache. This will call any blocking calls to unblock, and the cache won't be usable until Reopened. </p>
 
-<p>Definition at line <a class="el" href="../../d4/d37/io__cache_8cc_source.html#l00109">109</a> of file <a class="el" href="../../d4/d37/io__cache_8cc_source.html">io_cache.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/d37/io__cache_8cc_source.html#l00110">110</a> of file <a class="el" href="../../d4/d37/io__cache_8cc_source.html">io_cache.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a742807639a2983fc05cf058a88bfbe79"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool edash_packager::media::IoCache::closed </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>true if the cache is closed, false otherwise. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d3/d19/io__cache_8h_source.html#l00050">50</a> of file <a class="el" href="../../d3/d19/io__cache_8h_source.html">io_cache.h</a>.</p>
 
 </div>
 </div>
@@ -217,7 +249,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>the number of bytes read into <em>buffer</em>, or 0 if the call unblocked because the cache has been closed and is empty. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d4/d37/io__cache_8cc_source.html#l00038">38</a> of file <a class="el" href="../../d4/d37/io__cache_8cc_source.html">io_cache.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/d37/io__cache_8cc_source.html#l00039">39</a> of file <a class="el" href="../../d4/d37/io__cache_8cc_source.html">io_cache.cc</a>.</p>
 
 </div>
 </div>
@@ -254,7 +286,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>the amount of data written to the buffer (which will equal <em>data</em>), or 0 if the call unblocked because the cache has been closed. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d4/d37/io__cache_8cc_source.html#l00066">66</a> of file <a class="el" href="../../d4/d37/io__cache_8cc_source.html">io_cache.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/d37/io__cache_8cc_source.html#l00067">67</a> of file <a class="el" href="../../d4/d37/io__cache_8cc_source.html">io_cache.cc</a>.</p>
 
 </div>
 </div>
@@ -265,7 +297,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 19 2015 20:36:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Oct 20 2015 16:47:28 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
