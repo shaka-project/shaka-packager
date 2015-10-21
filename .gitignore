@@ -17,9 +17,11 @@
 /packager/third_party/gflags/
 /packager/third_party/gold/
 /packager/third_party/icu/
+/packager/third_party/libwebm/src/
 /packager/third_party/llvm-build/
 /packager/third_party/modp_b64/
 /packager/third_party/openssl/
+/packager/third_party/webm-tools/src/
 /packager/third_party/yasm/source/patched-yasm/
 /packager/third_party/zlib/
 /packager/tools/clang/

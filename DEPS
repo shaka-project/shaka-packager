@@ -48,8 +48,14 @@ deps = {
   "src/packager/third_party/icu":
     Var("chromium_git") + "/chromium/third_party/icu46@78597121d71a5922f5726e715c6ad06c50ae6cdc",
 
+  "src/packager/third_party/libwebm/src":
+    Var("chromium_git") + "/webm/libwebm@1ad314e297a43966605c4ef23a6442bb58e1d9be",
+
   "src/packager/third_party/modp_b64":
     Var("chromium_git") + "/chromium/src/third_party/modp_b64@3a0e3b4ef6c54678a2d14522533df56b33b56119",
+
+  "src/packager/third_party/webm-tools/src":
+    Var("chromium_git") + "/webm/webm-tools@702ff3e4bb462b24464a202f8fcf9f65cc44b6e5",
 
   "src/packager/tools/clang":
     Var("chromium_git") + "/chromium/src/tools/clang@0de8f3bb6af64e13876273c601704795d5e00faf",

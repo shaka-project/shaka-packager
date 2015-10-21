@@ -39,6 +39,7 @@
         'webm_webvtt_parser.h'
       ],
       'dependencies': [
+        '../../../third_party/libwebm/libwebm.gyp:libwebm',
         '../../base/media_base.gyp:base',
       ],
     },
