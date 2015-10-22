@@ -32,24 +32,11 @@ bool ExtractResolutionFromDecoderConfig(const uint8_t* avc_decoder_config_data,
   RCHECK(reader.Read1(&value));
   RCHECK(value == 1);
 
-  // avc profile. No value check.
-  RCHECK(reader.Read1(&value));
+  // Skip avc profile, profile compatibility, avc level, and length size.
+  RCHECK(reader.SkipBytes(4));
 
-  // profile compatibility. No value check.
+  // Reserved and num sps.
   RCHECK(reader.Read1(&value));
-
-  // avc level indication. No value check.
-  RCHECK(reader.Read1(&value));
-
-  // reserved and length sized minus one.
-  RCHECK(reader.Read1(&value));
-  // upper 6 bits are reserved and must be 111111.
-  RCHECK((value & 0xFC) == 0xFC);
-
-  // reserved and num sps.
-  RCHECK(reader.Read1(&value));
-  // upper 3 bits are reserved for 0b111.
-  RCHECK((value & 0xE0) == 0xE0);
 
   const uint8_t num_sps = value & 0x1F;
   if (num_sps < 1) {
