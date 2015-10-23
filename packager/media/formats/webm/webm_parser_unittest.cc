@@ -13,6 +13,7 @@
 using ::testing::InSequence;
 using ::testing::Return;
 using ::testing::ReturnNull;
+using ::testing::StrEq;
 using ::testing::StrictMock;
 using ::testing::_;
 
@@ -393,10 +394,14 @@ TEST_F(WebMParserTest, ZeroPaddedStrings) {
   InSequence s;
   EXPECT_CALL(client_, OnListStart(kWebMIdEBMLHeader))
       .WillOnce(Return(&client_));
-  EXPECT_CALL(client_, OnString(kWebMIdDocType, "")).WillOnce(Return(true));
-  EXPECT_CALL(client_, OnString(kWebMIdDocType, "")).WillOnce(Return(true));
-  EXPECT_CALL(client_, OnString(kWebMIdDocType, "a")).WillOnce(Return(true));
-  EXPECT_CALL(client_, OnString(kWebMIdDocType, "a")).WillOnce(Return(true));
+  EXPECT_CALL(client_, OnString(kWebMIdDocType, StrEq("")))
+      .WillOnce(Return(true));
+  EXPECT_CALL(client_, OnString(kWebMIdDocType, StrEq("")))
+      .WillOnce(Return(true));
+  EXPECT_CALL(client_, OnString(kWebMIdDocType, StrEq("a")))
+      .WillOnce(Return(true));
+  EXPECT_CALL(client_, OnString(kWebMIdDocType, StrEq("a")))
+      .WillOnce(Return(true));
   EXPECT_CALL(client_, OnListEnd(kWebMIdEBMLHeader)).WillOnce(Return(true));
 
   WebMListParser parser(kWebMIdEBMLHeader, &client_);
