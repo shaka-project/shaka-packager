@@ -21,6 +21,7 @@ enum VideoCodec {
   kCodecTheora,
   kCodecVP8,
   kCodecVP9,
+  kCodecVP10,
   kNumVideoCodec
 };
 

@@ -22,7 +22,12 @@
 #include "packager/media/formats/mp4/multi_segment_segmenter.h"
 #include "packager/media/formats/mp4/single_segment_segmenter.h"
 
+namespace edash_packager {
+namespace media {
+namespace mp4 {
+
 namespace {
+
 // Sets the range start and end value from offset and size.
 // |start| and |end| are for byte-range-spec specified in RFC2616.
 void SetStartAndEndFromOffsetAndSize(size_t offset,
@@ -34,11 +39,23 @@ void SetStartAndEndFromOffsetAndSize(size_t offset,
   // Note that ranges are inclusive. So we need - 1.
   *end = *start + static_cast<uint32_t>(size) - 1;
 }
-}  // namespace
 
-namespace edash_packager {
-namespace media {
-namespace mp4 {
+FourCC CodecToFourCC(VideoCodec codec) {
+  switch (codec) {
+    case kCodecH264:
+      return FOURCC_AVC1;
+    case kCodecVP8:
+      return FOURCC_VP08;
+    case kCodecVP9:
+      return FOURCC_VP09;
+    case kCodecVP10:
+      return FOURCC_VP10;
+    default:
+      return FOURCC_NULL;
+  }
+}
+
+}  // namespace
 
 MP4Muxer::MP4Muxer(const MuxerOptions& options) : Muxer(options) {}
 MP4Muxer::~MP4Muxer() {}
@@ -53,8 +70,12 @@ Status MP4Muxer::Initialize() {
   ftyp->compatible_brands.push_back(FOURCC_ISO6);
   ftyp->compatible_brands.push_back(FOURCC_MP41);
   if (streams().size() == 1 &&
-      streams()[0]->info()->stream_type() == kStreamVideo)
-    ftyp->compatible_brands.push_back(FOURCC_AVC1);
+      streams()[0]->info()->stream_type() == kStreamVideo) {
+    const FourCC codec_fourcc = CodecToFourCC(
+        static_cast<VideoStreamInfo*>(streams()[0]->info().get())->codec());
+    if (codec_fourcc != FOURCC_NULL)
+      ftyp->compatible_brands.push_back(codec_fourcc);
+  }
 
   moov->header.creation_time = IsoTimeNow();
   moov->header.modification_time = IsoTimeNow();
@@ -176,7 +197,7 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   trak->media.handler.type = kVideo;
 
   VideoSampleEntry video;
-  video.format = FOURCC_AVC1;
+  video.format = CodecToFourCC(video_info->codec());
   video.width = video_info->width();
   video.height = video_info->height();
   video.codec_config_record.data = video_info->extra_data();

@@ -21,12 +21,16 @@
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
 #include "packager/media/filters/avc_decoder_configuration.h"
+#include "packager/media/filters/vp_codec_configuration.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/box_reader.h"
 #include "packager/media/formats/mp4/es_descriptor.h"
 #include "packager/media/formats/mp4/rcheck.h"
 #include "packager/media/formats/mp4/track_run_iterator.h"
 
+namespace edash_packager {
+namespace media {
+namespace mp4 {
 namespace {
 
 uint64_t Rescale(uint64_t time_in_old_scale,
@@ -35,14 +39,24 @@ uint64_t Rescale(uint64_t time_in_old_scale,
   return (static_cast<double>(time_in_old_scale) / old_scale) * new_scale;
 }
 
+VideoCodec FourCCToCodec(FourCC fourcc) {
+  switch (fourcc) {
+    case FOURCC_AVC1:
+      return kCodecH264;
+    case FOURCC_VP08:
+      return kCodecVP8;
+    case FOURCC_VP09:
+      return kCodecVP9;
+    case FOURCC_VP10:
+      return kCodecVP10;
+    default:
+      return kUnknownVideoCodec;
+  }
+}
 
 const char kWidevineKeySystemId[] = "edef8ba979d64acea3c827dcd51d21ed";
 
 }  // namespace
-
-namespace edash_packager {
-namespace media {
-namespace mp4 {
 
 MP4MediaParser::MP4MediaParser()
     : state_(kWaitingForInit), moof_head_(0), mdat_tail_(0) {}
@@ -367,6 +381,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       uint8_t nalu_length_size = 0;
 
       const FourCC actual_format = entry.GetActualFormat();
+      const VideoCodec video_codec = FourCCToCodec(actual_format);
       switch (actual_format) {
         case FOURCC_AVC1: {
           AVCDecoderConfiguration avc_config;
@@ -404,6 +419,17 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           }
           break;
         }
+        case FOURCC_VP08:
+        case FOURCC_VP09:
+        case FOURCC_VP10: {
+          VPCodecConfiguration vp_config;
+          if (!vp_config.Parse(entry.codec_config_record.data)) {
+            LOG(ERROR) << "Failed to parse vpcc.";
+            return false;
+          }
+          codec_string = vp_config.GetCodecString(video_codec);
+          break;
+        }
         default:
           LOG(ERROR) << "Unsupported video format "
                      << FourCCToString(actual_format) << " in stsd box.";
@@ -413,7 +439,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       bool is_encrypted = entry.sinf.info.track_encryption.is_encrypted;
       DVLOG(1) << "is_video_track_encrypted_: " << is_encrypted;
       streams.push_back(new VideoStreamInfo(
-          track->header.track_id, timescale, duration, kCodecH264,
+          track->header.track_id, timescale, duration, video_codec,
           codec_string, track->media.header.language, coded_width, coded_height,
           pixel_width, pixel_height,
           0,  // trick_play_rate

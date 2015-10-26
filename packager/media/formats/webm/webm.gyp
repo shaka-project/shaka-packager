@@ -41,6 +41,7 @@
       'dependencies': [
         '../../../third_party/libwebm/libwebm.gyp:libwebm',
         '../../base/media_base.gyp:base',
+        '../../filters/filters.gyp:filters'
       ],
     },
     {

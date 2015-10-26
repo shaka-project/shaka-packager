@@ -21,6 +21,8 @@
         'h264_byte_to_unit_stream_converter.h',
         'h264_parser.cc',
         'h264_parser.h',
+        'vp_codec_configuration.cc',
+        'vp_codec_configuration.h',
       ],
       'dependencies': [
         '../../base/base.gyp:base',
@@ -34,6 +36,7 @@
         'h264_bit_reader_unittest.cc',
         'h264_byte_to_unit_stream_converter_unittest.cc',
         'h264_parser_unittest.cc',
+        'vp_codec_configuration_unittest.cc',
       ],
       'dependencies': [
         '../../media/base/media_base.gyp:base',

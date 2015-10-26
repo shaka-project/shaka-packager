@@ -36,6 +36,8 @@ const uint16_t kVideoFrameCount = 1;
 const uint16_t kVideoDepth = 0x0018;
 
 const uint32_t kCompressorNameSize = 32u;
+const char kAvcCompressorName[] = "\012AVC Coding";
+const char kVpcCompressorName[] = "\012VPC Coding";
 
 // Utility functions to check if the 64bit integers can fit in 32bit integer.
 bool IsFitIn32Bits(uint64_t a) {
@@ -933,12 +935,33 @@ FourCC VideoSampleEntry::BoxType() const {
 }
 
 bool VideoSampleEntry::ReadWrite(BoxBuffer* buffer) {
+  std::vector<uint8_t> compressor_name;
   if (buffer->Reading()) {
     DCHECK(buffer->reader());
     format = buffer->reader()->type();
   } else {
     RCHECK(buffer->ReadWriteUInt32(&atom_size) &&
            buffer->ReadWriteFourCC(&format));
+
+    const FourCC actual_format = GetActualFormat();
+    switch (actual_format) {
+      case FOURCC_AVC1:
+        compressor_name.assign(
+            kAvcCompressorName,
+            kAvcCompressorName + arraysize(kAvcCompressorName));
+        break;
+      case FOURCC_VP08:
+      case FOURCC_VP09:
+      case FOURCC_VP10:
+        compressor_name.assign(
+            kVpcCompressorName,
+            kVpcCompressorName + arraysize(kVpcCompressorName));
+        break;
+      default:
+        LOG(ERROR) << FourCCToString(actual_format) << " is not supported.";
+        return false;
+    }
+    compressor_name.resize(kCompressorNameSize);
   }
 
   uint32_t video_resolution = kVideoResolution;
@@ -954,7 +977,7 @@ bool VideoSampleEntry::ReadWrite(BoxBuffer* buffer) {
          buffer->ReadWriteUInt32(&video_resolution) &&
          buffer->IgnoreBytes(4) &&  // reserved.
          buffer->ReadWriteUInt16(&video_frame_count) &&
-         buffer->IgnoreBytes(32) &&  // comparessor_name.
+         buffer->ReadWriteVector(&compressor_name, kCompressorNameSize) &&
          buffer->ReadWriteUInt16(&video_depth) &&
          buffer->ReadWriteInt16(&predefined));
 
@@ -977,6 +1000,11 @@ bool VideoSampleEntry::ReadWrite(BoxBuffer* buffer) {
   switch (actual_format) {
     case FOURCC_AVC1:
       codec_config_record.box_type = FOURCC_AVCC;
+      break;
+    case FOURCC_VP08:
+    case FOURCC_VP09:
+    case FOURCC_VP10:
+      codec_config_record.box_type = FOURCC_VPCC;
       break;
     default:
       LOG(ERROR) << FourCCToString(actual_format) << " is not supported.";
