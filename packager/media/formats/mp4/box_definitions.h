@@ -5,7 +5,6 @@
 #ifndef MEDIA_FORMATS_MP4_BOX_DEFINITIONS_H_
 #define MEDIA_FORMATS_MP4_BOX_DEFINITIONS_H_
 
-#include <string>
 #include <vector>
 
 #include "packager/media/formats/mp4/aac_audio_specific_config.h"
@@ -165,27 +164,12 @@ struct HandlerReference : FullBox {
   TrackType type;
 };
 
-struct AVCDecoderConfigurationRecord : Box {
-  DECLARE_BOX_METHODS(AVCDecoderConfigurationRecord);
-  bool ParseData(BufferReader* reader);
+struct CodecConfigurationRecord : Box {
+  DECLARE_BOX_METHODS(CodecConfigurationRecord);
 
-  // Contains full avc decoder configuration record as defined in iso14496-15
-  // 5.2.4.1, including possible extension bytes described in paragraph 3.
-  // Known fields defined in the spec are also parsed and included in this
-  // structure.
+  FourCC box_type;
+  // Contains full codec configuration record, including possible extension boxes.
   std::vector<uint8_t> data;
-
-  uint8_t version;
-  uint8_t profile_indication;
-  uint8_t profile_compatibility;
-  uint8_t avc_level;
-  uint8_t length_size;
-
-  typedef std::vector<uint8_t> SPS;
-  typedef std::vector<uint8_t> PPS;
-
-  std::vector<SPS> sps_list;
-  std::vector<PPS> pps_list;
 };
 
 struct PixelAspectRatioBox : Box {
@@ -197,6 +181,10 @@ struct PixelAspectRatioBox : Box {
 
 struct VideoSampleEntry : Box {
   DECLARE_BOX_METHODS(VideoSampleEntry);
+  // Returns actual format of this sample entry.
+  FourCC GetActualFormat() const {
+    return format == FOURCC_ENCV ? sinf.format.format : format;
+  }
 
   FourCC format;
   uint16_t data_reference_index;
@@ -205,9 +193,7 @@ struct VideoSampleEntry : Box {
 
   PixelAspectRatioBox pixel_aspect;
   ProtectionSchemeInfo sinf;
-
-  // Currently expected to be present regardless of format.
-  AVCDecoderConfigurationRecord avcc;
+  CodecConfigurationRecord codec_config_record;
 };
 
 struct ElementaryStreamDescriptor : FullBox {
@@ -219,6 +205,10 @@ struct ElementaryStreamDescriptor : FullBox {
 
 struct AudioSampleEntry : Box {
   DECLARE_BOX_METHODS(AudioSampleEntry);
+  // Returns actual format of this sample entry.
+  FourCC GetActualFormat() const {
+    return format == FOURCC_ENCA ? sinf.format.format : format;
+  }
 
   FourCC format;
   uint16_t data_reference_index;

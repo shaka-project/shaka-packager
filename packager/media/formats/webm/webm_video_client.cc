@@ -109,11 +109,13 @@ scoped_refptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
     extra_data_size = codec_private.size();
   }
 
-  return scoped_refptr<VideoStreamInfo>(
-      new VideoStreamInfo(track_num, kWebMTimeScale, 0, video_codec,
-                          VideoStreamInfo::GetCodecString(video_codec, 0, 0, 0),
-                          "", width_after_crop, height_after_crop, sar_x, sar_y,
-                          0, 0, extra_data, extra_data_size, is_encrypted));
+  // TODO(kqyang): Generate codec string.
+  std::string codec_string;
+
+  return scoped_refptr<VideoStreamInfo>(new VideoStreamInfo(
+      track_num, kWebMTimeScale, 0, video_codec, codec_string, std::string(),
+      width_after_crop, height_after_crop, sar_x, sar_y, 0, 0, extra_data,
+      extra_data_size, is_encrypted));
 }
 
 bool WebMVideoClient::OnUInt(int id, int64_t val) {

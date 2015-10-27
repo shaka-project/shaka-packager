@@ -13,6 +13,8 @@
       'target_name': 'filters',
       'type': '<(component)',
       'sources': [
+        'avc_decoder_configuration.cc',
+        'avc_decoder_configuration.h',
         'h264_bit_reader.cc',
         'h264_bit_reader.h',
         'h264_byte_to_unit_stream_converter.cc',
@@ -28,6 +30,7 @@
       'target_name': 'filters_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
+        'avc_decoder_configuration_unittest.cc',
         'h264_bit_reader_unittest.cc',
         'h264_byte_to_unit_stream_converter_unittest.cc',
         'h264_parser_unittest.cc',

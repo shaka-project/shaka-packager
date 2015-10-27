@@ -274,26 +274,24 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Modify(PixelAspectRatioBox* pasp) { pasp->v_spacing *= 8; }
 
-  void Fill(AVCDecoderConfigurationRecord* avcc) {
+  void Fill(CodecConfigurationRecord* codec_config_record) {
     const uint8_t kAvccData[] = {
         0x01, 0x64, 0x00, 0x1f, 0xff, 0xe1, 0x00, 0x18, 0x67, 0x64, 0x00,
         0x1f, 0xac, 0xd9, 0x40, 0x50, 0x05, 0xbb, 0x01, 0x10, 0x00, 0x00,
         0x3e, 0x90, 0x00, 0x0e, 0xa6, 0x00, 0xf1, 0x83, 0x19, 0x60, 0x01,
         0x00, 0x06, 0x68, 0xeb, 0xe3, 0xcb, 0x22, 0xc0};
-    BufferReader buffer_reader(kAvccData, arraysize(kAvccData));
-    CHECK(avcc->ParseData(&buffer_reader));
-    avcc->data.assign(kAvccData, kAvccData + arraysize(kAvccData));
+    codec_config_record->data.assign(kAvccData,
+                                     kAvccData + arraysize(kAvccData));
   }
 
-  void Modify(AVCDecoderConfigurationRecord* avcc) {
+  void Modify(CodecConfigurationRecord* codec_config_record) {
     const uint8_t kAvccData[] = {
         0x01, 0x64, 0x00, 0x1e, 0xff, 0xe1, 0x00, 0x19, 0x67, 0x64, 0x00,
         0x1e, 0xac, 0xd9, 0x40, 0xa0, 0x2f, 0xf9, 0x70, 0x11, 0x00, 0x00,
         0x03, 0x03, 0xe9, 0x00, 0x00, 0xea, 0x60, 0x0f, 0x16, 0x2d, 0x96,
         0x01, 0x00, 0x05, 0x68, 0xeb, 0xec, 0xb2, 0x2c};
-    BufferReader buffer_reader(kAvccData, arraysize(kAvccData));
-    CHECK(avcc->ParseData(&buffer_reader));
-    avcc->data.assign(kAvccData, kAvccData + arraysize(kAvccData));
+    codec_config_record->data.assign(kAvccData,
+                                     kAvccData + arraysize(kAvccData));
   }
 
   void Fill(VideoSampleEntry* encv) {
@@ -303,12 +301,12 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     encv->height = 600;
     Fill(&encv->pixel_aspect);
     Fill(&encv->sinf);
-    Fill(&encv->avcc);
+    Fill(&encv->codec_config_record);
   }
 
   void Modify(VideoSampleEntry* encv) {
     encv->height += 600;
-    Modify(&encv->avcc);
+    Modify(&encv->codec_config_record);
   }
 
   void Fill(ElementaryStreamDescriptor* esds) {
@@ -725,7 +723,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   bool IsOptional(const ProtectionSchemeInfo* box) { return true; }
   bool IsOptional(const EditList* box) { return true; }
   bool IsOptional(const Edit* box) { return true; }
-  bool IsOptional(const AVCDecoderConfigurationRecord* box) { return true; }
+  bool IsOptional(const CodecConfigurationRecord* box) { return true; }
   bool IsOptional(const PixelAspectRatioBox* box) { return true; }
   bool IsOptional(const ElementaryStreamDescriptor* box) { return true; }
   bool IsOptional(const CompositionTimeToSample* box) { return true; }
@@ -755,7 +753,7 @@ typedef testing::Types<
     EditList,
     Edit,
     HandlerReference,
-    AVCDecoderConfigurationRecord,
+    CodecConfigurationRecord,
     PixelAspectRatioBox,
     VideoSampleEntry,
     ElementaryStreamDescriptor,

@@ -20,7 +20,7 @@
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
-#include "packager/media/filters/h264_parser.h"
+#include "packager/media/filters/avc_decoder_configuration.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/box_reader.h"
 #include "packager/media/formats/mp4/es_descriptor.h"
@@ -355,73 +355,70 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         desc_idx = 0;
       const VideoSampleEntry& entry = samp_descr.video_entries[desc_idx];
 
-      if (!(entry.format == FOURCC_AVC1 ||
-            (entry.format == FOURCC_ENCV &&
-             entry.sinf.format.format == FOURCC_AVC1))) {
-        LOG(ERROR) << "Unsupported video format 0x"
-                   << std::hex << entry.format << " in stsd box.";
-        return false;
+      uint32_t coded_width = entry.width;
+      uint32_t coded_height = entry.height;
+      uint32_t pixel_width = entry.pixel_aspect.h_spacing;
+      uint32_t pixel_height = entry.pixel_aspect.v_spacing;
+      if (pixel_width == 0 && pixel_height == 0) {
+        pixel_width = 1;
+        pixel_height = 1;
       }
+      std::string codec_string;
+      uint8_t nalu_length_size = 0;
 
-      const std::string codec_string =
-          VideoStreamInfo::GetCodecString(kCodecH264,
-                                          entry.avcc.profile_indication,
-                                          entry.avcc.profile_compatibility,
-                                          entry.avcc.avc_level);
+      const FourCC actual_format = entry.GetActualFormat();
+      switch (actual_format) {
+        case FOURCC_AVC1: {
+          AVCDecoderConfiguration avc_config;
+          if (!avc_config.Parse(entry.codec_config_record.data)) {
+            LOG(ERROR) << "Failed to parse avcc.";
+            return false;
+          }
+          codec_string = avc_config.GetCodecString();
+          nalu_length_size = avc_config.length_size();
 
-      uint32_t coded_width = 0;
-      uint32_t coded_height = 0;
-      uint32_t pixel_width = 0;
-      uint32_t pixel_height = 0;
+          if (coded_width != avc_config.coded_width() ||
+              coded_height != avc_config.coded_height()) {
+            LOG(WARNING) << "Resolution in VisualSampleEntry (" << coded_width
+                         << "," << coded_height
+                         << ") does not match with resolution in "
+                            "AVCDecoderConfigurationRecord ("
+                         << avc_config.coded_width() << ","
+                         << avc_config.coded_height()
+                         << "). Use AVCDecoderConfigurationRecord.";
+            coded_width = avc_config.coded_width();
+            coded_height = avc_config.coded_height();
+          }
 
-      if (entry.avcc.sps_list.empty()) {
-        LOG(ERROR) << "Cannot find sps in avc decoder configuration record.";
+          if (pixel_width != avc_config.pixel_width() ||
+              pixel_height != avc_config.pixel_height()) {
+            LOG_IF(WARNING, pixel_width != 1 || pixel_height != 1)
+                << "Pixel aspect ratio in PASP box (" << pixel_width << ","
+                << pixel_height
+                << ") does not match with SAR in AVCDecoderConfigurationRecord "
+                   "("
+                << avc_config.pixel_width() << "," << avc_config.pixel_height()
+                << "). Use AVCDecoderConfigurationRecord.";
+            pixel_width = avc_config.pixel_width();
+            pixel_height = avc_config.pixel_height();
+          }
+          break;
+        }
+        default:
+          LOG(ERROR) << "Unsupported video format "
+                     << FourCCToString(actual_format) << " in stsd box.";
         return false;
-      }
-      const std::vector<uint8_t>& sps = entry.avcc.sps_list[0];
-      if (!ExtractResolutionFromSpsData(&sps[0], sps.size(), &coded_width,
-                                        &coded_height, &pixel_width,
-                                        &pixel_height)) {
-        LOG(ERROR) << "Failed to parse SPS.";
-        return false;
-      }
-
-      LOG_IF(WARNING,
-             entry.width != coded_width || entry.height != coded_height)
-          << "Resolution in VisualSampleEntry (" << entry.width << ","
-          << entry.height << ") does not match with resolution in "
-                             "AVCDecoderConfigurationRecord ("
-          << coded_width << "," << coded_height
-          << "). Use AVCDecoderConfigurationRecord.";
-
-      if (entry.pixel_aspect.h_spacing != 0 || entry.pixel_aspect.v_spacing != 0) {
-        LOG_IF(WARNING, entry.pixel_aspect.h_spacing != pixel_width ||
-                            entry.pixel_aspect.v_spacing != pixel_height)
-            << "Pixel aspect ratio in PASP box ("
-            << entry.pixel_aspect.h_spacing << ","
-            << entry.pixel_aspect.v_spacing
-            << ") does not match with SAR in AVCDecoderConfigurationRecord ("
-            << pixel_width << "," << pixel_height
-            << "). Use AVCDecoderConfigurationRecord.";
       }
 
       bool is_encrypted = entry.sinf.info.track_encryption.is_encrypted;
       DVLOG(1) << "is_video_track_encrypted_: " << is_encrypted;
-      streams.push_back(new VideoStreamInfo(track->header.track_id,
-                                            timescale,
-                                            duration,
-                                            kCodecH264,
-                                            codec_string,
-                                            track->media.header.language,
-                                            coded_width,
-                                            coded_height,
-                                            pixel_width,
-                                            pixel_height,
-                                            0,  // trick_play_rate
-                                            entry.avcc.length_size,
-                                            &entry.avcc.data[0],
-                                            entry.avcc.data.size(),
-                                            is_encrypted));
+      streams.push_back(new VideoStreamInfo(
+          track->header.track_id, timescale, duration, kCodecH264,
+          codec_string, track->media.header.language, coded_width, coded_height,
+          pixel_width, pixel_height,
+          0,  // trick_play_rate
+          nalu_length_size, vector_as_array(&entry.codec_config_record.data),
+          entry.codec_config_record.data.size(), is_encrypted));
     }
   }
 

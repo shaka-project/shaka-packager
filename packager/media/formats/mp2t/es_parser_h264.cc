@@ -12,6 +12,7 @@
 #include "packager/media/base/offset_byte_queue.h"
 #include "packager/media/base/timestamp.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/filters/avc_decoder_configuration.h"
 #include "packager/media/filters/h264_byte_to_unit_stream_converter.h"
 #include "packager/media/filters/h264_parser.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
@@ -361,10 +362,9 @@ bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
           kMpeg2Timescale,
           kInfiniteDuration,
           kCodecH264,
-          VideoStreamInfo::GetCodecString(kCodecH264,
-                                          decoder_config_record[1],
-                                          decoder_config_record[2],
-                                          decoder_config_record[3]),
+          AVCDecoderConfiguration::GetCodecString(decoder_config_record[1],
+                                                  decoder_config_record[2],
+                                                  decoder_config_record[3]),
           std::string(),
           coded_width,
           coded_height,

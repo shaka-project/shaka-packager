@@ -35,6 +35,8 @@ const uint32_t kVideoResolution = 0x00480000;  // 72 dpi.
 const uint16_t kVideoFrameCount = 1;
 const uint16_t kVideoDepth = 0x0018;
 
+const uint32_t kCompressorNameSize = 32u;
+
 // Utility functions to check if the 64bit integers can fit in 32bit integer.
 bool IsFitIn32Bits(uint64_t a) {
   return a <= std::numeric_limits<uint32_t>::max();
@@ -873,63 +875,25 @@ uint32_t HandlerReference::ComputeSize() {
   return atom_size;
 }
 
-AVCDecoderConfigurationRecord::AVCDecoderConfigurationRecord()
-    : version(0),
-      profile_indication(0),
-      profile_compatibility(0),
-      avc_level(0),
-      length_size(0) {}
+CodecConfigurationRecord::CodecConfigurationRecord() : box_type(FOURCC_NULL) {}
+CodecConfigurationRecord::~CodecConfigurationRecord() {}
+FourCC CodecConfigurationRecord::BoxType() const {
+  // CodecConfigurationRecord should be parsed according to format recovered in
+  // VideoSampleEntry. |box_type| is determined dynamically there.
+  return box_type;
+}
 
-AVCDecoderConfigurationRecord::~AVCDecoderConfigurationRecord() {}
-FourCC AVCDecoderConfigurationRecord::BoxType() const { return FOURCC_AVCC; }
-
-bool AVCDecoderConfigurationRecord::ReadWrite(BoxBuffer* buffer) {
+bool CodecConfigurationRecord::ReadWrite(BoxBuffer* buffer) {
   RCHECK(Box::ReadWrite(buffer));
   if (buffer->Reading()) {
     RCHECK(buffer->ReadWriteVector(&data, buffer->Size() - buffer->Pos()));
-    BufferReader buffer_reader(&data[0], data.size());
-    return ParseData(&buffer_reader);
   } else {
     RCHECK(buffer->ReadWriteVector(&data, data.size()));
   }
   return true;
 }
 
-bool AVCDecoderConfigurationRecord::ParseData(BufferReader* reader) {
-  RCHECK(reader->Read1(&version) && version == 1 &&
-         reader->Read1(&profile_indication) &&
-         reader->Read1(&profile_compatibility) &&
-         reader->Read1(&avc_level));
-
-  uint8_t length_size_minus_one;
-  RCHECK(reader->Read1(&length_size_minus_one));
-  length_size = (length_size_minus_one & 0x3) + 1;
-
-  uint8_t num_sps;
-  RCHECK(reader->Read1(&num_sps));
-  num_sps &= 0x1f;
-
-  sps_list.resize(num_sps);
-  for (int i = 0; i < num_sps; i++) {
-    uint16_t sps_length;
-    RCHECK(reader->Read2(&sps_length) &&
-           reader->ReadToVector(&sps_list[i], sps_length));
-  }
-
-  uint8_t num_pps;
-  RCHECK(reader->Read1(&num_pps));
-
-  pps_list.resize(num_pps);
-  for (int i = 0; i < num_pps; i++) {
-    uint16_t pps_length;
-    RCHECK(reader->Read2(&pps_length) &&
-           reader->ReadToVector(&pps_list[i], pps_length));
-  }
-
-  return true;
-}
-
-uint32_t AVCDecoderConfigurationRecord::ComputeSize() {
+uint32_t CodecConfigurationRecord::ComputeSize() {
   atom_size = 0;
   if (!data.empty())
     atom_size = kBoxSize + data.size();
@@ -1009,10 +973,16 @@ bool VideoSampleEntry::ReadWrite(BoxBuffer* buffer) {
     }
   }
 
-  if (format == FOURCC_AVC1 ||
-      (format == FOURCC_ENCV && sinf.format.format == FOURCC_AVC1)) {
-    RCHECK(buffer->ReadWriteChild(&avcc));
+  const FourCC actual_format = GetActualFormat();
+  switch (actual_format) {
+    case FOURCC_AVC1:
+      codec_config_record.box_type = FOURCC_AVCC;
+      break;
+    default:
+      LOG(ERROR) << FourCCToString(actual_format) << " is not supported.";
+      return false;
   }
+  RCHECK(buffer->ReadWriteChild(&codec_config_record));
   RCHECK(buffer->TryReadWriteChild(&pixel_aspect));
   return true;
 }
@@ -1022,7 +992,7 @@ uint32_t VideoSampleEntry::ComputeSize() {
               sizeof(height) + sizeof(kVideoResolution) * 2 +
               sizeof(kVideoFrameCount) + sizeof(kVideoDepth) +
               pixel_aspect.ComputeSize() + sinf.ComputeSize() +
-              avcc.ComputeSize() + 32 +  // 32 bytes comparessor_name.
+              codec_config_record.ComputeSize() + kCompressorNameSize +
               6 + 4 + 16 + 2;  // 6 + 4 bytes reserved, 16 + 2 bytes predefined.
   return atom_size;
 }

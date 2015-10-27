@@ -28,9 +28,6 @@ enum VideoCodec {
 class VideoStreamInfo : public StreamInfo {
  public:
   /// Construct an initialized video stream info object.
-  /// If @a codec is @a kCodecH264 and either @pixel_width and @pixel_height is
-  /// 0 (unknown), then this tries to parse @extra_data to extract the pixel
-  /// width and height from it.
   /// @param pixel_width is the width of the pixel. 0 if unknown.
   /// @param pixel_height is the height of the pixels. 0 if unknown.
   VideoStreamInfo(int track_id,
@@ -71,13 +68,6 @@ class VideoStreamInfo : public StreamInfo {
   void set_height(uint32_t height) { height_ = height; }
   void set_pixel_width(uint32_t pixel_width) { pixel_width_ = pixel_width; }
   void set_pixel_height(uint32_t pixel_height) { pixel_height_ = pixel_height; }
-
-  /// @param profile,compatible_profiles,level are only used by H.264 codec.
-  /// @return The codec string.
-  static std::string GetCodecString(VideoCodec codec,
-                                    uint8_t profile,
-                                    uint8_t compatible_profiles,
-                                    uint8_t level);
 
  private:
   ~VideoStreamInfo() override;

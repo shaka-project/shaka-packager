@@ -12,62 +12,6 @@
 namespace edash_packager {
 namespace media {
 
-#define RCHECK(x)                                                     \
-  do {                                                                \
-    if (!(x)) {                                                       \
-      LOG(ERROR) << "Failure while parsing AVCDecoderConfig: " << #x; \
-      return false;                                                   \
-    }                                                                 \
-  } while (0)
-
-bool ExtractResolutionFromDecoderConfig(const uint8_t* avc_decoder_config_data,
-                                        size_t avc_decoder_config_data_size,
-                                        uint32_t* coded_width,
-                                        uint32_t* coded_height,
-                                        uint32_t* pixel_width,
-                                        uint32_t* pixel_height) {
-  BufferReader reader(avc_decoder_config_data, avc_decoder_config_data_size);
-  uint8_t value = 0;
-  // version check, must be 1.
-  RCHECK(reader.Read1(&value));
-  RCHECK(value == 1);
-
-  // Skip avc profile, profile compatibility, avc level, and length size.
-  RCHECK(reader.SkipBytes(4));
-
-  // Reserved and num sps.
-  RCHECK(reader.Read1(&value));
-
-  const uint8_t num_sps = value & 0x1F;
-  if (num_sps < 1) {
-    LOG(ERROR) << "No SPS found.";
-    return false;
-  }
-  uint16_t sps_length = 0;
-  RCHECK(reader.Read2(&sps_length));
-
-  return ExtractResolutionFromSpsData(reader.data() + reader.pos(), sps_length,
-                                      coded_width, coded_height, pixel_width,
-                                      pixel_height);
-  // It is unlikely to have more than one SPS in practice. Also there's
-  // no way to change the {coded,pixel}_{width,height} dynamically from
-  // VideoStreamInfo. So skip the rest (if there are any).
-}
-
-bool ExtractResolutionFromSpsData(const uint8_t* sps_data,
-                                  size_t sps_data_size,
-                                  uint32_t* coded_width,
-                                  uint32_t* coded_height,
-                                  uint32_t* pixel_width,
-                                  uint32_t* pixel_height) {
-  H264Parser parser;
-  int sps_id;
-  RCHECK(parser.ParseSPSFromArray(sps_data, sps_data_size, &sps_id) ==
-         H264Parser::kOk);
-  return ExtractResolutionFromSps(*parser.GetSPS(sps_id), coded_width,
-                                  coded_height, pixel_width, pixel_height);
-}
-
 // Implemented according to ISO/IEC 14496-10:2005 7.4.2.1 Sequence parameter set
 // RBSP semantics.
 bool ExtractResolutionFromSps(const H264SPS& sps,
@@ -132,8 +76,6 @@ bool ExtractResolutionFromSps(const H264SPS& sps,
            << " pixel_height: " << *pixel_height;
   return true;
 }
-
-#undef RCHECK
 
 bool H264SliceHeader::IsPSlice() const {
   return (slice_type % 5 == kPSlice);

@@ -165,8 +165,8 @@ inline bool operator==(const HandlerReference& lhs,
   return lhs.type == rhs.type;
 }
 
-inline bool operator==(const AVCDecoderConfigurationRecord& lhs,
-                       const AVCDecoderConfigurationRecord& rhs) {
+inline bool operator==(const CodecConfigurationRecord& lhs,
+                       const CodecConfigurationRecord& rhs) {
   return lhs.data == rhs.data;
 }
 
@@ -181,7 +181,7 @@ inline bool operator==(const VideoSampleEntry& lhs,
          lhs.data_reference_index == rhs.data_reference_index &&
          lhs.width == rhs.width && lhs.height == rhs.height &&
          lhs.pixel_aspect == rhs.pixel_aspect && lhs.sinf == rhs.sinf &&
-         lhs.avcc == rhs.avcc;
+         lhs.codec_config_record == rhs.codec_config_record;
 }
 
 inline bool operator==(const ESDescriptor& lhs, const ESDescriptor& rhs) {

@@ -41,9 +41,7 @@ VideoStreamInfoParameters GetDefaultVideoStreamInfoParams() {
   const uint32_t kTimeScale = 10;
   const uint64_t kVideoStreamDuration = 200;
   const VideoCodec kH264Codec = kCodecH264;
-  const uint8_t kH264Profile = 1;
-  const uint8_t kH264CompatibleProfile = 1;
-  const uint8_t kH264Level = 1;
+  const char* kCodecString = "avc1.010101";
   const char* kLanuageUndefined = "und";
   const uint16_t kWidth = 720;
   const uint16_t kHeight = 480;
@@ -57,8 +55,7 @@ VideoStreamInfoParameters GetDefaultVideoStreamInfoParams() {
   params.time_scale = kTimeScale;
   params.duration = kVideoStreamDuration;
   params.codec = kH264Codec;
-  params.codec_string = VideoStreamInfo::GetCodecString(
-      kCodecH264, kH264Profile, kH264CompatibleProfile, kH264Level);
+  params.codec_string = kCodecString;
   params.language = kLanuageUndefined;
   params.width = kWidth;
   params.height = kHeight;

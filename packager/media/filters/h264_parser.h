@@ -17,28 +17,9 @@
 namespace edash_packager {
 namespace media {
 
-// |avc_decoder_config_data| must be AVCDecoderConfigurationRecord specified
-// in ISO/IEC 14496-15.
-// On success, |coded_width| and |coded_height| contains coded resolution after
-// cropping; |pixel_width:pixel_height| contains pixel aspect ratio, 1:1 is
-// assigned if it is not present.
-bool ExtractResolutionFromDecoderConfig(const uint8_t* avc_decoder_config_data,
-                                        size_t avc_decoder_config_data_size,
-                                        uint32_t* coded_width,
-                                        uint32_t* coded_height,
-                                        uint32_t* pixel_width,
-                                        uint32_t* pixel_height);
-
-// |sps_data| must be a valid SPS specified in ISO/IEC 14496-10.
 // On success, |coded_width| and |coded_height| contains coded resolution after
 // cropping; |pixel_width:pixel_height| contains pixel aspect ratio, 1:1 is
 // assigned if it is not present in SPS.
-bool ExtractResolutionFromSpsData(const uint8_t* sps_data,
-                                  size_t sps_data_size,
-                                  uint32_t* coded_width,
-                                  uint32_t* coded_height,
-                                  uint32_t* pixel_width,
-                                  uint32_t* pixel_height);
 struct H264SPS;
 bool ExtractResolutionFromSps(const H264SPS& sps,
                               uint32_t* coded_width,

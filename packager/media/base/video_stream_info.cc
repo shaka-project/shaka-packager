@@ -92,25 +92,5 @@ std::string VideoStreamInfo::ToString() const {
       nalu_length_size_);
 }
 
-std::string VideoStreamInfo::GetCodecString(VideoCodec codec,
-                                            uint8_t profile,
-                                            uint8_t compatible_profiles,
-                                            uint8_t level) {
-  switch (codec) {
-    case kCodecVP8:
-      return "vp8";
-    case kCodecVP9:
-      return "vp9";
-    case kCodecH264: {
-      const uint8_t bytes[] = {profile, compatible_profiles, level};
-      return "avc1." +
-             base::StringToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));
-    }
-    default:
-      NOTIMPLEMENTED() << "Unknown Codec: " << codec;
-      return "unknown";
-  }
-}
-
 }  // namespace media
 }  // namespace edash_packager

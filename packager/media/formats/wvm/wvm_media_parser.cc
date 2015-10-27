@@ -16,7 +16,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/status.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/filters/h264_parser.h"
+#include "packager/media/filters/avc_decoder_configuration.h"
 #include "packager/media/formats/mp2t/adts_header.h"
 #include "packager/media/formats/mp4/aac_audio_specific_config.h"
 #include "packager/media/formats/mp4/es_descriptor.h"
@@ -841,33 +841,24 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
               stream_config = &stream_infos_[i]->extra_data();
             }
             DCHECK(stream_config);
-            stream_infos_[i]->set_codec_string(VideoStreamInfo::GetCodecString(
-                kCodecH264, (*stream_config)[1], (*stream_config)[2],
-                (*stream_config)[3]));
 
             VideoStreamInfo* video_stream_info =
                 reinterpret_cast<VideoStreamInfo*>(stream_infos_[i].get());
-            uint32_t coded_width = 0;
-            uint32_t coded_height = 0;
-            uint32_t pixel_width = 0;
-            uint32_t pixel_height = 0;
-            if (!ExtractResolutionFromDecoderConfig(
-                    vector_as_array(stream_config), stream_config->size(),
-                    &coded_width, &coded_height, &pixel_width, &pixel_height)) {
+            AVCDecoderConfiguration avc_config;
+            if (!avc_config.Parse(*stream_config)) {
               LOG(WARNING) << "Failed to parse AVCDecoderConfigurationRecord. "
-                  "Using computed configuration record instead.";
+                              "Using computed configuration record instead.";
               video_stream_info->set_extra_data(decoder_config_record);
-              if (!ExtractResolutionFromDecoderConfig(
-                      vector_as_array(&decoder_config_record),
-                      decoder_config_record.size(),
-                      &coded_width, &coded_height,
-                      &pixel_width, &pixel_height)) {
+              if (!avc_config.Parse(decoder_config_record)) {
                 LOG(ERROR) << "Failed to parse AVCDecoderConfigurationRecord.";
                 return false;
               }
             }
-            if (pixel_width != video_stream_info->pixel_width() ||
-                pixel_height != video_stream_info->pixel_height()) {
+            video_stream_info->set_codec_string(avc_config.GetCodecString());
+
+            if (avc_config.pixel_width() != video_stream_info->pixel_width() ||
+                avc_config.pixel_height() !=
+                    video_stream_info->pixel_height()) {
               LOG_IF(WARNING, video_stream_info->pixel_width() != 0 ||
                                   video_stream_info->pixel_height() != 0)
                   << "Pixel aspect ratio in WVM metadata ("
@@ -875,22 +866,24 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
                   << video_stream_info->pixel_height()
                   << ") does not match with SAR in "
                      "AVCDecoderConfigurationRecord ("
-                  << pixel_width << "," << pixel_height
+                  << avc_config.pixel_width() << ","
+                  << avc_config.pixel_height()
                   << "). Use AVCDecoderConfigurationRecord.";
-              video_stream_info->set_pixel_width(pixel_width);
-              video_stream_info->set_pixel_height(pixel_height);
+              video_stream_info->set_pixel_width(avc_config.pixel_width());
+              video_stream_info->set_pixel_height(avc_config.pixel_height());
             }
-            if (coded_width != video_stream_info->width() ||
-                coded_height != video_stream_info->height()) {
+            if (avc_config.coded_width() != video_stream_info->width() ||
+                avc_config.coded_height() != video_stream_info->height()) {
               LOG(WARNING) << "Resolution in WVM metadata ("
                            << video_stream_info->width() << ","
                            << video_stream_info->height()
                            << ") does not match with resolution in "
                               "AVCDecoderConfigurationRecord ("
-                           << coded_width << "," << coded_height
+                           << avc_config.coded_width() << ","
+                           << avc_config.coded_height()
                            << "). Use AVCDecoderConfigurationRecord.";
-              video_stream_info->set_width(coded_width);
-              video_stream_info->set_height(coded_height);
+              video_stream_info->set_width(avc_config.coded_width());
+              video_stream_info->set_height(avc_config.coded_height());
             }
           }
         }
