@@ -28,6 +28,8 @@
         'app/stream_descriptor.h',
         'app/validate_flag.cc',
         'app/validate_flag.h',
+        'app/vlog_flags.cc',
+        'app/vlog_flags.h',
         'app/widevine_encryption_flags.cc',
         'app/widevine_encryption_flags.h',
       ],
@@ -51,6 +53,8 @@
       'sources': [
         'app/mpd_generator.cc',
         'app/mpd_generator_flags.h',
+        'app/vlog_flags.cc',
+        'app/vlog_flags.h',
       ],
       'dependencies': [
         'base/base.gyp:base',
