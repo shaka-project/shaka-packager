@@ -182,17 +182,25 @@ int WebMMediaParser::ParseInfoAndTracks(const uint8_t* data, int size) {
   int64_t duration_in_us = info_parser.duration() * timecode_scale_in_us;
 
   std::vector<scoped_refptr<StreamInfo>> streams;
-  scoped_refptr<AudioStreamInfo> audio_stream_info =
-      tracks_parser.audio_stream_info();
-  streams.push_back(tracks_parser.audio_stream_info());
-  streams.back()->set_duration(duration_in_us);
-  if (streams.back()->is_encrypted())
-    OnEncryptedMediaInitData(tracks_parser.audio_encryption_key_id());
+  AudioCodec audio_codec = kCodecOpus;
+  if (tracks_parser.audio_stream_info()) {
+    streams.push_back(tracks_parser.audio_stream_info());
+    streams.back()->set_duration(duration_in_us);
+    if (streams.back()->is_encrypted())
+      OnEncryptedMediaInitData(tracks_parser.audio_encryption_key_id());
+    audio_codec = tracks_parser.audio_stream_info()->codec();
+  } else {
+    VLOG(1) << "No audio track info found.";
+  }
 
-  streams.push_back(tracks_parser.video_stream_info());
-  streams.back()->set_duration(duration_in_us);
-  if (streams.back()->is_encrypted())
-    OnEncryptedMediaInitData(tracks_parser.video_encryption_key_id());
+  if (tracks_parser.video_stream_info()) {
+    streams.push_back(tracks_parser.video_stream_info());
+    streams.back()->set_duration(duration_in_us);
+    if (streams.back()->is_encrypted())
+      OnEncryptedMediaInitData(tracks_parser.video_encryption_key_id());
+  } else {
+    VLOG(1) << "No video track info found.";
+  }
 
   init_cb_.Run(streams);
 
@@ -203,8 +211,7 @@ int WebMMediaParser::ParseInfoAndTracks(const uint8_t* data, int size) {
       tracks_parser.GetVideoDefaultDuration(timecode_scale_in_us),
       tracks_parser.text_tracks(), tracks_parser.ignored_tracks(),
       tracks_parser.audio_encryption_key_id(),
-      tracks_parser.video_encryption_key_id(), audio_stream_info->codec(),
-      new_sample_cb_));
+      tracks_parser.video_encryption_key_id(), audio_codec, new_sample_cb_));
 
   return bytes_parsed;
 }

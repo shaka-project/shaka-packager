@@ -13,6 +13,18 @@
       'target_name': 'webm',
       'type': '<(component)',
       'sources': [
+        'mkv_writer.cc',
+        'mkv_writer.h',
+        'multi_segment_segmenter.cc',
+        'multi_segment_segmenter.h',
+        'seek_head.cc',
+        'seek_head.h',
+        'segmenter.cc',
+        'segmenter.h',
+        'single_segment_segmenter.cc',
+        'single_segment_segmenter.h',
+        'two_pass_single_segment_segmenter.cc',
+        'two_pass_single_segment_segmenter.h',
         'webm_audio_client.cc',
         'webm_audio_client.h',
         'webm_cluster_parser.cc',
@@ -31,6 +43,8 @@
         'webm_parser.h',
         'webm_media_parser.cc',
         'webm_media_parser.h',
+        'webm_muxer.cc',
+        'webm_muxer.h',
         'webm_tracks_parser.cc',
         'webm_tracks_parser.h',
         'webm_video_client.cc',
@@ -39,6 +53,7 @@
         'webm_webvtt_parser.h'
       ],
       'dependencies': [
+        '../../../third_party/boringssl/boringssl.gyp:boringssl',
         '../../../third_party/libwebm/libwebm.gyp:libwebm',
         '../../base/media_base.gyp:base',
         '../../filters/filters.gyp:filters'

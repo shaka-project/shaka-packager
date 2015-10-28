@@ -17,6 +17,7 @@ namespace edash_packager {
 namespace media {
 
 extern const char* kLocalFilePrefix;
+const int64_t kWholeFile = -1;
 
 /// Define an abstract file interface.
 class File {
@@ -109,6 +110,19 @@ class File {
   /// @param to_file_name is the destination file name.
   /// @return true on success, false otherwise.
   static bool Copy(const char* from_file_name, const char* to_file_name);
+
+  /// Copies the contents from source to destination.
+  /// @param source The file to copy from.
+  /// @param destination The file to copy to.
+  /// @return Number of bytes written, or a value < 0 on error.
+  static int64_t CopyFile(File* source, File* destination);
+
+  /// Copies the contents from source to destination.
+  /// @param source The file to copy from.
+  /// @param destination The file to copy to.
+  /// @param max_copy The maximum number of bytes to copy; < 0 to copy to EOF.
+  /// @return Number of bytes written, or a value < 0 on error.
+  static int64_t CopyFile(File* source, File* destination, int64_t max_copy);
 
  protected:
   explicit File(const std::string& file_name) : file_name_(file_name) {}

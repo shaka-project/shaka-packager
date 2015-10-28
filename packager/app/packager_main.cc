@@ -19,6 +19,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/stl_util.h"
 #include "packager/base/strings/string_split.h"
+#include "packager/base/strings/string_util.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/threading/simple_thread.h"
 #include "packager/base/time/clock.h"
@@ -31,6 +32,7 @@
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
 #include "packager/media/file/file.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
+#include "packager/media/formats/webm/webm_muxer.h"
 #include "packager/mpd/base/dash_iop_mpd_notifier.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_builder.h"
@@ -181,6 +183,25 @@ bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
   return true;
 }
 
+scoped_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options) {
+  // TODO(modmaker): Add a config option for output format
+  const std::string& file_name = options.output_file_name;
+  if (base::EndsWith(file_name, ".webm",
+                     base::CompareCase::INSENSITIVE_ASCII)) {
+    return scoped_ptr<Muxer>(new webm::WebMMuxer(options));
+  } else if (base::EndsWith(file_name, ".mp4",
+                            base::CompareCase::INSENSITIVE_ASCII) ||
+             base::EndsWith(file_name, ".m4a",
+                            base::CompareCase::INSENSITIVE_ASCII) ||
+             base::EndsWith(file_name, ".m4v",
+                            base::CompareCase::INSENSITIVE_ASCII)) {
+    return scoped_ptr<Muxer>(new mp4::MP4Muxer(options));
+  } else {
+    LOG(ERROR) << "Unrecognized output format " << file_name;
+    return NULL;
+  }
+}
+
 bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                      const MuxerOptions& muxer_options,
                      FakeClock* fake_clock,
@@ -261,7 +282,9 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     }
     DCHECK(!remux_jobs->empty());
 
-    scoped_ptr<Muxer> muxer(new mp4::MP4Muxer(stream_muxer_options));
+    scoped_ptr<Muxer> muxer(CreateOutputMuxer(stream_muxer_options));
+    if (!muxer)
+      return false;
     if (FLAGS_use_fake_clock_for_muxer) muxer->set_clock(fake_clock);
 
     if (key_source) {

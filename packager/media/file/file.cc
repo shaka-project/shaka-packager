@@ -6,6 +6,8 @@
 
 #include "packager/media/file/file.h"
 
+#include <algorithm>
+
 #include <gflags/gflags.h>
 #include "packager/base/logging.h"
 #include "packager/base/memory/scoped_ptr.h"
@@ -203,6 +205,44 @@ bool File::Copy(const char* from_file_name, const char* to_file_name) {
     total_bytes_written += bytes_written;
   }
   return true;
+}
+
+int64_t File::CopyFile(File* source, File* destination) {
+  return CopyFile(source, destination, kWholeFile);
+}
+
+int64_t File::CopyFile(File* source, File* destination, int64_t max_copy) {
+  DCHECK(source);
+  DCHECK(destination);
+  if (max_copy < 0)
+    max_copy = std::numeric_limits<int64_t>::max();
+
+  const int64_t kBufferSize = 0x40000;  // 256KB.
+  scoped_ptr<uint8_t[]> buffer(new uint8_t[kBufferSize]);
+  int64_t bytes_copied = 0;
+  while (bytes_copied < max_copy) {
+    const int64_t size = std::min(kBufferSize, max_copy - bytes_copied);
+    const int64_t bytes_read = source->Read(buffer.get(), size);
+    if (bytes_read < 0)
+      return bytes_read;
+    if (bytes_read == 0)
+      break;
+
+    int64_t total_bytes_written = 0;
+    while (total_bytes_written < bytes_read) {
+      const int64_t bytes_written = destination->Write(
+          buffer.get() + total_bytes_written, bytes_read - total_bytes_written);
+      if (bytes_written < 0)
+        return bytes_written;
+
+      total_bytes_written += bytes_written;
+    }
+
+    DCHECK_EQ(total_bytes_written, bytes_read);
+    bytes_copied += bytes_read;
+  }
+
+  return bytes_copied;
 }
 
 }  // namespace media
