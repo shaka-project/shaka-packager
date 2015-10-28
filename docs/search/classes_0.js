@@ -13,5 +13,5 @@ var searchData=
   ['audiosampleentry',['AudioSampleEntry',['../df/d62/structedash__packager_1_1media_1_1mp4_1_1AudioSampleEntry.html',1,'edash_packager::media::mp4']]],
   ['audiostreaminfo',['AudioStreamInfo',['../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html',1,'edash_packager::media']]],
   ['audiotimestamphelper',['AudioTimestampHelper',['../da/de4/classedash__packager_1_1media_1_1AudioTimestampHelper.html',1,'edash_packager::media']]],
-  ['avcdecoderconfigurationrecord',['AVCDecoderConfigurationRecord',['../d8/dbb/structedash__packager_1_1media_1_1mp4_1_1AVCDecoderConfigurationRecord.html',1,'edash_packager::media::mp4']]]
+  ['avcdecoderconfiguration',['AVCDecoderConfiguration',['../d6/d49/classedash__packager_1_1media_1_1AVCDecoderConfiguration.html',1,'edash_packager::media']]]
 ];

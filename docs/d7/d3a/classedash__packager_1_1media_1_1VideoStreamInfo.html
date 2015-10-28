@@ -88,7 +88,6 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="../../d6/d10/classedash__packager_1_1media_1_1VideoStreamInfo-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">edash_packager::media::VideoStreamInfo Class Reference</div>  </div>
@@ -189,11 +188,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_codec_string</b> 
 <tr class="memitem:aac3d8e058647982ef21b55d7b0b837ec inherit pub_methods_classedash__packager_1_1media_1_1StreamInfo"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aac3d8e058647982ef21b55d7b0b837ec"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_language</b> (const std::string &amp;language)</td></tr>
 <tr class="separator:aac3d8e058647982ef21b55d7b0b837ec inherit pub_methods_classedash__packager_1_1media_1_1StreamInfo"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a801612f825520fae9c3c3ce1de138128"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a801612f825520fae9c3c3ce1de138128">GetCodecString</a> (VideoCodec codec, uint8_t profile, uint8_t compatible_profiles, uint8_t level)</td></tr>
-<tr class="separator:a801612f825520fae9c3c3ce1de138128"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Holds video stream information. </p>
@@ -301,7 +295,7 @@ Static Public Member Functions</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Construct an initialized video stream info object. If <em>codec</em> is <em>kCodecH264</em> and either  and  is 0 (unknown), then this tries to parse  to extract the pixel width and height from it. </p>
+<p>Construct an initialized video stream info object. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">pixel_width</td><td>is the width of the pixel. 0 if unknown. </td></tr>
@@ -315,61 +309,6 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a801612f825520fae9c3c3ce1de138128"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string edash_packager::media::VideoStreamInfo::GetCodecString </td>
-          <td>(</td>
-          <td class="paramtype">VideoCodec&#160;</td>
-          <td class="paramname"><em>codec</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>profile</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>compatible_profiles</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>level</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">profile,compatible_profiles,level</td><td>are only used by H.264 codec. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>The codec string. </dd></dl>
-
-<p>Definition at line <a class="el" href="../../dd/d19/video__stream__info_8cc_source.html#l00095">95</a> of file <a class="el" href="../../dd/d19/video__stream__info_8cc_source.html">video_stream_info.cc</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="a128154cbdecb54f2b1bb64a52ae60b24"></a>
 <div class="memitem">
 <div class="memproto">
@@ -421,7 +360,7 @@ Static Public Member Functions</h2></td></tr>
 <p>Returns the pixel height. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 if unknown. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d87/video__stream__info_8h_source.html#l00066">66</a> of file <a class="el" href="../../d7/d87/video__stream__info_8h_source.html">video_stream_info.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d87/video__stream__info_8h_source.html#l00063">63</a> of file <a class="el" href="../../d7/d87/video__stream__info_8h_source.html">video_stream_info.h</a>.</p>
 
 </div>
 </div>
@@ -448,7 +387,7 @@ Static Public Member Functions</h2></td></tr>
 <p>Returns the pixel width. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 if unknown. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d87/video__stream__info_8h_source.html#l00063">63</a> of file <a class="el" href="../../d7/d87/video__stream__info_8h_source.html">video_stream_info.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d87/video__stream__info_8h_source.html#l00060">60</a> of file <a class="el" href="../../d7/d87/video__stream__info_8h_source.html">video_stream_info.h</a>.</p>
 
 </div>
 </div>
@@ -487,7 +426,7 @@ Static Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Oct 27 2015 21:17:29 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Oct 28 2015 00:32:28 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

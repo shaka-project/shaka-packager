@@ -40,5 +40,5 @@ var searchData=
   ['audiostreaminfo',['AudioStreamInfo',['../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a014cdf015863a200c10cb72c3ec042ab',1,'edash_packager::media::AudioStreamInfo']]],
   ['audiotimestamphelper',['AudioTimestampHelper',['../da/de4/classedash__packager_1_1media_1_1AudioTimestampHelper.html',1,'edash_packager::media']]],
   ['auxinfoneedstobecached',['AuxInfoNeedsToBeCached',['../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a3538a0f31238843afd2dfb4e94587f03',1,'edash_packager::media::mp4::TrackRunIterator']]],
-  ['avcdecoderconfigurationrecord',['AVCDecoderConfigurationRecord',['../d8/dbb/structedash__packager_1_1media_1_1mp4_1_1AVCDecoderConfigurationRecord.html',1,'edash_packager::media::mp4']]]
+  ['avcdecoderconfiguration',['AVCDecoderConfiguration',['../d6/d49/classedash__packager_1_1media_1_1AVCDecoderConfiguration.html',1,'edash_packager::media']]]
 ];
