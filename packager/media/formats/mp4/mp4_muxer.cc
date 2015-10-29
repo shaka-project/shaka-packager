@@ -44,6 +44,10 @@ FourCC CodecToFourCC(VideoCodec codec) {
   switch (codec) {
     case kCodecH264:
       return FOURCC_AVC1;
+    case kCodecHEV1:
+      return FOURCC_HEV1;
+    case kCodecHVC1:
+      return FOURCC_HVC1;
     case kCodecVP8:
       return FOURCC_VP08;
     case kCodecVP9:

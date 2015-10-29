@@ -21,6 +21,7 @@
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
 #include "packager/media/filters/avc_decoder_configuration.h"
+#include "packager/media/filters/hevc_decoder_configuration.h"
 #include "packager/media/filters/vp_codec_configuration.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/box_reader.h"
@@ -43,6 +44,10 @@ VideoCodec FourCCToCodec(FourCC fourcc) {
   switch (fourcc) {
     case FOURCC_AVC1:
       return kCodecH264;
+    case FOURCC_HEV1:
+      return kCodecHEV1;
+    case FOURCC_HVC1:
+      return kCodecHVC1;
     case FOURCC_VP08:
       return kCodecVP8;
     case FOURCC_VP09:
@@ -417,6 +422,17 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             pixel_width = avc_config.pixel_width();
             pixel_height = avc_config.pixel_height();
           }
+          break;
+        }
+        case FOURCC_HEV1:
+        case FOURCC_HVC1: {
+          HEVCDecoderConfiguration hevc_config;
+          if (!hevc_config.Parse(entry.codec_config_record.data)) {
+            LOG(ERROR) << "Failed to parse hevc.";
+            return false;
+          }
+          codec_string = hevc_config.GetCodecString(video_codec);
+          nalu_length_size = hevc_config.length_size();
           break;
         }
         case FOURCC_VP08:

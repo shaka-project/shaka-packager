@@ -37,6 +37,7 @@ const uint16_t kVideoDepth = 0x0018;
 
 const uint32_t kCompressorNameSize = 32u;
 const char kAvcCompressorName[] = "\012AVC Coding";
+const char kHevcCompressorName[] = "\013HEVC Coding";
 const char kVpcCompressorName[] = "\012VPC Coding";
 
 // Utility functions to check if the 64bit integers can fit in 32bit integer.
@@ -950,6 +951,12 @@ bool VideoSampleEntry::ReadWrite(BoxBuffer* buffer) {
             kAvcCompressorName,
             kAvcCompressorName + arraysize(kAvcCompressorName));
         break;
+      case FOURCC_HEV1:
+      case FOURCC_HVC1:
+        compressor_name.assign(
+            kHevcCompressorName,
+            kHevcCompressorName + arraysize(kHevcCompressorName));
+        break;
       case FOURCC_VP08:
       case FOURCC_VP09:
       case FOURCC_VP10:
@@ -1000,6 +1007,10 @@ bool VideoSampleEntry::ReadWrite(BoxBuffer* buffer) {
   switch (actual_format) {
     case FOURCC_AVC1:
       codec_config_record.box_type = FOURCC_AVCC;
+      break;
+    case FOURCC_HEV1:
+    case FOURCC_HVC1:
+      codec_config_record.box_type = FOURCC_HVCC;
       break;
     case FOURCC_VP08:
     case FOURCC_VP09:
@@ -1680,7 +1691,9 @@ bool SampleToGroup::ReadWrite(BoxBuffer* buffer) {
 
   if (grouping_type != FOURCC_SEIG) {
     DCHECK(buffer->Reading());
-    DLOG(WARNING) << "Sample group '" << grouping_type << "' is not supported.";
+    DLOG(WARNING) << "Sample group "
+                  << FourCCToString(static_cast<FourCC>(grouping_type))
+                  << " is not supported.";
     return true;
   }
 

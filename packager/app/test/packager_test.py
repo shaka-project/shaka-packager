@@ -84,6 +84,13 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-golden.mpd')
 
+  def testPackageHevcWithEncryption(self):
+    self.packager.Package(self._GetStreams(['video'],
+                                           test_file='bear-640x360-hevc.mp4'),
+                          self._GetFlags(encryption=True))
+    self._DiffGold(self.output[0], 'bear-640x360-hevc-v-cenc-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-hevc-v-cenc-golden.mpd')
+
   def testPackageWithEncryptionAndRandomIv(self):
     self.packager.Package(self._GetStreams(['audio', 'video']),
                           self._GetFlags(encryption=True, random_iv=True))
@@ -198,13 +205,14 @@ class PackagerAppTest(unittest.TestCase):
     self._AssertStreamInfo(self.output[0], 'is_encrypted: true')
     self._AssertStreamInfo(self.output[1], 'is_encrypted: true')
 
-  def _GetStreams(self, stream_descriptors, live = False):
+  def _GetStreams(self, stream_descriptors, live = False,
+                  test_file = 'bear-640x360.mp4'):
     streams = []
     self.output = []
 
     test_data_dir = os.path.join(
         test_env.SRC_DIR, 'packager', 'media', 'test', 'data')
-    input = os.path.join(test_data_dir, 'bear-640x360.mp4')
+    input = os.path.join(test_data_dir, test_file)
     for stream_descriptor in stream_descriptors:
         if live:
             # This is still output prefix actually.

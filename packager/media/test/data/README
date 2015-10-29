@@ -31,6 +31,7 @@ bear-1280x720_ptswraparound.ts - Same as bear-1280x720.ts, with a timestamp wrap
 // ISO-BMFF streams.
 bear-1280x720.mp4 - AVC + AAC encode, mulitplexed into an ISOBMFF container.
 bear-640x360.mp4  - Same as above, but in a different resolution.
+bear-640x360-hevc.mp4  - Same content, but encoded with HEVC.
 bear-320x180.mp4  - Same as above, but in a different resolution.
 bear-640x360-trailing-moov.mp4  - Same content, but with moov box in the end.
 bear-640x360-av_frag.mp4  - Same content, but in fragmented mp4.

@@ -15,6 +15,8 @@
       'sources': [
         'avc_decoder_configuration.cc',
         'avc_decoder_configuration.h',
+        'hevc_decoder_configuration.cc',
+        'hevc_decoder_configuration.h',
         'h264_bit_reader.cc',
         'h264_bit_reader.h',
         'h264_byte_to_unit_stream_converter.cc',
@@ -36,6 +38,7 @@
         'h264_bit_reader_unittest.cc',
         'h264_byte_to_unit_stream_converter_unittest.cc',
         'h264_parser_unittest.cc',
+        'hevc_decoder_configuration_unittest.cc',
         'vp_codec_configuration_unittest.cc',
       ],
       'dependencies': [

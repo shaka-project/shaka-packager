@@ -15,6 +15,8 @@ namespace media {
 enum VideoCodec {
   kUnknownVideoCodec = 0,
   kCodecH264,
+  kCodecHEV1,
+  kCodecHVC1,
   kCodecVC1,
   kCodecMPEG2,
   kCodecMPEG4,

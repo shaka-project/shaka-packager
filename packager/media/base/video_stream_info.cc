@@ -21,6 +21,10 @@ std::string VideoCodecToString(VideoCodec video_codec) {
   switch (video_codec) {
     case kCodecH264:
       return "H264";
+    case kCodecHEV1:
+      return "HEV1";
+    case kCodecHVC1:
+      return "HVC1";
     case kCodecVC1:
       return "VC1";
     case kCodecMPEG2:
