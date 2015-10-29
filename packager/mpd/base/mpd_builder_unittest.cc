@@ -95,7 +95,7 @@ class MockRepresentationStateChangeListener
 }  // namespace
 
 template <MpdBuilder::MpdType type>
-class MpdBuilderTest: public ::testing::Test {
+class MpdBuilderTest : public ::testing::Test {
  public:
   MpdBuilderTest() : mpd_(type, MpdOptions()), representation_() {}
   ~MpdBuilderTest() override {}
@@ -119,6 +119,30 @@ class MpdBuilderTest: public ::testing::Test {
     ASSERT_TRUE(representation);
 
     representation_ = representation;
+  }
+
+  // TODO(rkuroiwa): Once std::forward() is allowed by chromium style guide, use
+  // variadic template and std::forward() so that we don't need to copy the
+  // constructor signatures.
+  scoped_ptr<Representation> CreateRepresentation(
+      const MediaInfo& media_info,
+      const MpdOptions& mpd_options,
+      uint32_t representation_id,
+      scoped_ptr<RepresentationStateChangeListener> state_change_listener) {
+    return make_scoped_ptr(new Representation(media_info, mpd_options,
+                                              representation_id,
+                                              state_change_listener.Pass()));
+  }
+
+  scoped_ptr<AdaptationSet> CreateAdaptationSet(
+      uint32_t adaptation_set_id,
+      const std::string& lang,
+      const MpdOptions& mpd_options,
+      MpdBuilder::MpdType mpd_type,
+      base::AtomicSequenceNumber* representation_counter) {
+    return make_scoped_ptr(new AdaptationSet(adaptation_set_id, lang,
+                                             mpd_options, mpd_type,
+                                             representation_counter));
   }
 
   // Helper function to return an empty listener for tests that don't need
@@ -353,17 +377,18 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
 // Verify that AdaptationSet@group can be set and unset.
 TEST_F(CommonMpdBuilderTest, SetAdaptationSetGroup) {
   base::AtomicSequenceNumber sequence_counter;
-  AdaptationSet adaptation_set(kAnyAdaptationSetId, "", MpdOptions(),
-                               MpdBuilder::kStatic, &sequence_counter);
-  adaptation_set.SetGroup(1);
+  auto adaptation_set =
+      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
+                          MpdBuilder::kStatic, &sequence_counter);
+  adaptation_set->SetGroup(1);
 
-  xml::ScopedXmlPtr<xmlNode>::type xml_with_group(adaptation_set.GetXml());
+  xml::ScopedXmlPtr<xmlNode>::type xml_with_group(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeEqString("group", "1", xml_with_group.get()));
 
   // Unset by passing a negative value.
-  adaptation_set.SetGroup(-1);
-  xml::ScopedXmlPtr<xmlNode>::type xml_without_group(adaptation_set.GetXml());
+  adaptation_set->SetGroup(-1);
+  xml::ScopedXmlPtr<xmlNode>::type xml_without_group(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeNotSet("group", xml_without_group.get()));
 }
@@ -382,10 +407,11 @@ TEST_F(CommonMpdBuilderTest, ValidMediaInfo) {
       "  pixel_height: 1\n"
       "}\n"
       "container_type: 1\n";
-  Representation representation(ConvertToMediaInfo(kTestMediaInfo),
-                                MpdOptions(), kAnyRepresentationId,
-                                NoListener());
-  EXPECT_TRUE(representation.Init());
+
+  auto representation =
+      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
+                           kAnyRepresentationId, NoListener());
+  EXPECT_TRUE(representation->Init());
 }
 
 // Verify that Representation::Init() fails if a required field is missing.
@@ -401,10 +427,10 @@ TEST_F(CommonMpdBuilderTest, InvalidMediaInfo) {
       "  pixel_height: 1\n"
       "}\n"
       "container_type: 1\n";
-  Representation representation(ConvertToMediaInfo(kTestMediaInfo),
-                                MpdOptions(), kAnyRepresentationId,
-                                NoListener());
-  EXPECT_FALSE(representation.Init());
+  auto representation =
+      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
+                           kAnyRepresentationId, NoListener());
+  EXPECT_FALSE(representation->Init());
 }
 
 // Basic check that the fields in video info are in the XML.
@@ -420,11 +446,11 @@ TEST_F(CommonMpdBuilderTest, CheckVideoInfoReflectedInXml) {
       "  pixel_height: 1\n"
       "}\n"
       "container_type: 1\n";
-  Representation representation(ConvertToMediaInfo(kTestMediaInfo),
-                                MpdOptions(), kAnyRepresentationId,
-                                NoListener());
-  EXPECT_TRUE(representation.Init());
-  xml::ScopedXmlPtr<xmlNode>::type node_xml(representation.GetXml());
+  auto representation =
+      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
+                           kAnyRepresentationId, NoListener());
+  EXPECT_TRUE(representation->Init());
+  xml::ScopedXmlPtr<xmlNode>::type node_xml(representation->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeEqString("codecs", "avc1", node_xml.get()));
   EXPECT_NO_FATAL_FAILURE(
@@ -459,12 +485,12 @@ TEST_F(CommonMpdBuilderTest,
       new MockRepresentationStateChangeListener());
   EXPECT_CALL(*listener,
               OnNewSegmentForRepresentation(kStartTime, kDuration));
-  Representation representation(ConvertToMediaInfo(kTestMediaInfo),
-                                MpdOptions(), kAnyRepresentationId,
-                                listener.Pass());
-  EXPECT_TRUE(representation.Init());
+  auto representation = CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo),
+                                           MpdOptions(), kAnyRepresentationId,
+                                           listener.Pass());
+  EXPECT_TRUE(representation->Init());
 
-  representation.AddNewSegment(kStartTime, kDuration, 10 /* any size */);
+  representation->AddNewSegment(kStartTime, kDuration, 10 /* any size */);
 }
 
 // Make sure
@@ -490,12 +516,12 @@ TEST_F(CommonMpdBuilderTest,
       new MockRepresentationStateChangeListener());
   EXPECT_CALL(*listener,
               OnSetFrameRateForRepresentation(kFrameDuration, kTimeScale));
-  Representation representation(ConvertToMediaInfo(kTestMediaInfo),
-                                MpdOptions(), kAnyRepresentationId,
-                                listener.Pass());
-  EXPECT_TRUE(representation.Init());
+  auto representation =
+      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
+                           kAnyRepresentationId, listener.Pass());
+  EXPECT_TRUE(representation->Init());
 
-  representation.SetSampleDuration(kFrameDuration);
+  representation->SetSampleDuration(kFrameDuration);
 }
 
 // Verify that content type is set correctly if video info is present in
@@ -514,11 +540,12 @@ TEST_F(CommonMpdBuilderTest, CheckAdaptationSetVideoContentType) {
       "}\n"
       "container_type: 1\n";
 
-  AdaptationSet adaptation_set(kAnyAdaptationSetId, "", MpdOptions(),
-                               MpdBuilder::kStatic, &sequence_counter);
-  adaptation_set.AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo));
+  auto adaptation_set =
+      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
+                          MpdBuilder::kStatic, &sequence_counter);
+  adaptation_set->AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo));
 
-  xml::ScopedXmlPtr<xmlNode>::type node_xml(adaptation_set.GetXml());
+  xml::ScopedXmlPtr<xmlNode>::type node_xml(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeEqString("contentType", "video", node_xml.get()));
 }
@@ -536,11 +563,12 @@ TEST_F(CommonMpdBuilderTest, CheckAdaptationSetAudioContentType) {
       "}\n"
       "container_type: 1\n";
 
-  AdaptationSet adaptation_set(kAnyAdaptationSetId, "", MpdOptions(),
-                               MpdBuilder::kStatic, &sequence_counter);
-  adaptation_set.AddRepresentation(ConvertToMediaInfo(kAudioMediaInfo));
+  auto adaptation_set =
+      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
+                          MpdBuilder::kStatic, &sequence_counter);
+  adaptation_set->AddRepresentation(ConvertToMediaInfo(kAudioMediaInfo));
 
-  xml::ScopedXmlPtr<xmlNode>::type node_xml(adaptation_set.GetXml());
+  xml::ScopedXmlPtr<xmlNode>::type node_xml(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeEqString("contentType", "audio", node_xml.get()));
 }
@@ -559,11 +587,12 @@ TEST_F(CommonMpdBuilderTest, DISABLED_CheckAdaptationSetTextContentType) {
       "}\n"
       "container_type: 1\n";
 
-  AdaptationSet adaptation_set(kAnyAdaptationSetId, "", MpdOptions(),
-                               MpdBuilder::kStatic, &sequence_counter);
-  adaptation_set.AddRepresentation(ConvertToMediaInfo(kTextMediaInfo));
+  auto adaptation_set =
+      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
+                          MpdBuilder::kStatic, &sequence_counter);
+  adaptation_set->AddRepresentation(ConvertToMediaInfo(kTextMediaInfo));
 
-  xml::ScopedXmlPtr<xmlNode>::type node_xml(adaptation_set.GetXml());
+  xml::ScopedXmlPtr<xmlNode>::type node_xml(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeEqString("contentType", "text", node_xml.get()));
 }
@@ -571,9 +600,10 @@ TEST_F(CommonMpdBuilderTest, DISABLED_CheckAdaptationSetTextContentType) {
 TEST_F(CommonMpdBuilderTest, CheckAdaptationSetId) {
   base::AtomicSequenceNumber sequence_counter;
   const uint32_t kAdaptationSetId = 42;
-  AdaptationSet adaptation_set(kAdaptationSetId, "", MpdOptions(),
-                               MpdBuilder::kStatic, &sequence_counter);
-  ASSERT_NO_FATAL_FAILURE(CheckIdEqual(kAdaptationSetId, &adaptation_set));
+  auto adaptation_set =
+      CreateAdaptationSet(kAdaptationSetId, "", MpdOptions(),
+                          MpdBuilder::kStatic, &sequence_counter);
+  ASSERT_NO_FATAL_FAILURE(CheckIdEqual(kAdaptationSetId, adaptation_set.get()));
 }
 
 // Verify AdaptationSet::AddRole() works for "main" role.
@@ -763,16 +793,17 @@ TEST_F(CommonMpdBuilderTest,
       "}\n"
       "container_type: 1\n";
 
-  AdaptationSet adaptation_set(kAnyAdaptationSetId, "", MpdOptions(),
-                               MpdBuilder::kStatic, &sequence_counter);
+  auto adaptation_set =
+      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
+                          MpdBuilder::kStatic, &sequence_counter);
   Representation* representation_480p =
-      adaptation_set.AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
   Representation* representation_360p =
-      adaptation_set.AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
 
   // First, make sure that maxFrameRate nor frameRate are set because
   // frame durations were not provided in the MediaInfo.
-  xml::ScopedXmlPtr<xmlNode>::type no_frame_rate(adaptation_set.GetXml());
+  xml::ScopedXmlPtr<xmlNode>::type no_frame_rate(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeNotSet("maxFrameRate", no_frame_rate.get()));
   EXPECT_NO_FATAL_FAILURE(
@@ -784,7 +815,7 @@ TEST_F(CommonMpdBuilderTest,
   representation_480p->SetSampleDuration(kSameFrameDuration);
   representation_360p->SetSampleDuration(kSameFrameDuration);
 
-  xml::ScopedXmlPtr<xmlNode>::type same_frame_rate(adaptation_set.GetXml());
+  xml::ScopedXmlPtr<xmlNode>::type same_frame_rate(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeNotSet("maxFrameRate", same_frame_rate.get()));
   EXPECT_NO_FATAL_FAILURE(
@@ -796,7 +827,7 @@ TEST_F(CommonMpdBuilderTest,
                  frame_duration_must_be_shorter_for_max_frame_rate);
   representation_480p->SetSampleDuration(k5FPSFrameDuration);
 
-  xml::ScopedXmlPtr<xmlNode>::type max_frame_rate(adaptation_set.GetXml());
+  xml::ScopedXmlPtr<xmlNode>::type max_frame_rate(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeEqString("maxFrameRate", "10/2", max_frame_rate.get()));
   EXPECT_NO_FATAL_FAILURE(
@@ -1010,25 +1041,26 @@ TEST_F(StaticMpdBuilderTest, SubSegmentAlignment) {
   const uint64_t kDuration = 10u;
   const uint64_t kAnySize = 19834u;
 
-  AdaptationSet adaptation_set(kAnyAdaptationSetId, "", MpdOptions(),
-                               MpdBuilder::kStatic, &sequence_counter);
+  auto adaptation_set =
+      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
+                          MpdBuilder::kStatic, &sequence_counter);
   Representation* representation_480p =
-      adaptation_set.AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
   // Add a subsegment immediately before adding the 360p Representation.
   // This should still work for VOD.
   representation_480p->AddNewSegment(kStartTime, kDuration, kAnySize);
 
   Representation* representation_360p =
-      adaptation_set.AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
   representation_360p->AddNewSegment(kStartTime, kDuration, kAnySize);
 
-  xml::ScopedXmlPtr<xmlNode>::type aligned(adaptation_set.GetXml());
+  xml::ScopedXmlPtr<xmlNode>::type aligned(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeEqString("subSegmentAlignment", "true", aligned.get()));
 
   // Unknown because 480p has an extra subsegments.
   representation_480p->AddNewSegment(11, 20, kAnySize);
-  xml::ScopedXmlPtr<xmlNode>::type alignment_unknown(adaptation_set.GetXml());
+  xml::ScopedXmlPtr<xmlNode>::type alignment_unknown(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeNotSet("subSegmentAlignment", alignment_unknown.get()));
 
@@ -1036,7 +1068,7 @@ TEST_F(StaticMpdBuilderTest, SubSegmentAlignment) {
   representation_360p->AddNewSegment(10, 1, kAnySize);
   representation_360p->AddNewSegment(11, 19, kAnySize);
 
-  xml::ScopedXmlPtr<xmlNode>::type unaligned(adaptation_set.GetXml());
+  xml::ScopedXmlPtr<xmlNode>::type unaligned(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeNotSet("subSegmentAlignment", unaligned.get()));
 }
@@ -1066,12 +1098,13 @@ TEST_F(StaticMpdBuilderTest, ForceSetSubSegmentAlignment) {
       "  pixel_height: 1\n"
       "}\n"
       "container_type: 1\n";
-  AdaptationSet adaptation_set(kAnyAdaptationSetId, "", MpdOptions(),
-                               MpdBuilder::kStatic, &sequence_counter);
+  auto adaptation_set =
+      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
+                          MpdBuilder::kStatic, &sequence_counter);
   Representation* representation_480p =
-      adaptation_set.AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
   Representation* representation_360p =
-      adaptation_set.AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
 
   // Use different starting times to make the segments "not aligned".
   const uint64_t kStartTime1 = 1u;
@@ -1081,13 +1114,13 @@ TEST_F(StaticMpdBuilderTest, ForceSetSubSegmentAlignment) {
   const uint64_t kAnySize = 19834u;
   representation_480p->AddNewSegment(kStartTime1, kDuration, kAnySize);
   representation_360p->AddNewSegment(kStartTime2, kDuration, kAnySize);
-  xml::ScopedXmlPtr<xmlNode>::type unaligned(adaptation_set.GetXml());
+  xml::ScopedXmlPtr<xmlNode>::type unaligned(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeNotSet("subSegmentAlignment", unaligned.get()));
 
   // Then force set the segment alignment attribute to true.
-  adaptation_set.ForceSetSegmentAlignment(true);
-  xml::ScopedXmlPtr<xmlNode>::type aligned(adaptation_set.GetXml());
+  adaptation_set->ForceSetSegmentAlignment(true);
+  xml::ScopedXmlPtr<xmlNode>::type aligned(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeEqString("subSegmentAlignment", "true", aligned.get()));
 }
@@ -1118,12 +1151,13 @@ TEST_F(DynamicMpdBuilderTest, SegmentAlignment) {
       "  pixel_height: 1\n"
       "}\n"
       "container_type: 1\n";
-  AdaptationSet adaptation_set(kAnyAdaptationSetId, "", MpdOptions(),
-                               MpdBuilder::kDynamic, &sequence_counter);
+  auto adaptation_set =
+      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
+                          MpdBuilder::kDynamic, &sequence_counter);
   Representation* representation_480p =
-      adaptation_set.AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
   Representation* representation_360p =
-      adaptation_set.AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(k360pMediaInfo));
 
   // First use same start time and duration, and verify that that
   // segmentAlignment is set.
@@ -1132,7 +1166,7 @@ TEST_F(DynamicMpdBuilderTest, SegmentAlignment) {
   const uint64_t kAnySize = 19834u;
   representation_480p->AddNewSegment(kStartTime, kDuration, kAnySize);
   representation_360p->AddNewSegment(kStartTime, kDuration, kAnySize);
-  xml::ScopedXmlPtr<xmlNode>::type aligned(adaptation_set.GetXml());
+  xml::ScopedXmlPtr<xmlNode>::type aligned(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeEqString("segmentAlignment", "true", aligned.get()));
 
@@ -1141,7 +1175,7 @@ TEST_F(DynamicMpdBuilderTest, SegmentAlignment) {
   representation_360p->AddNewSegment(10, 1, kAnySize);
   representation_360p->AddNewSegment(11, 19, kAnySize);
 
-  xml::ScopedXmlPtr<xmlNode>::type unaligned(adaptation_set.GetXml());
+  xml::ScopedXmlPtr<xmlNode>::type unaligned(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeNotSet("subSegmentAlignment", unaligned.get()));
 }
@@ -1231,26 +1265,44 @@ TEST_F(CommonMpdBuilderTest, CheckRepresentationId) {
   const MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
   const uint32_t kRepresentationId = 1;
 
-  Representation representation(
-      video_media_info, MpdOptions(), kRepresentationId, NoListener());
-  EXPECT_TRUE(representation.Init());
-  ASSERT_NO_FATAL_FAILURE(CheckIdEqual(kRepresentationId, &representation));
+  auto representation = CreateRepresentation(video_media_info, MpdOptions(),
+                                             kRepresentationId, NoListener());
+  EXPECT_TRUE(representation->Init());
+  ASSERT_NO_FATAL_FAILURE(
+      CheckIdEqual(kRepresentationId, representation.get()));
 }
 
-// TODO(rkuroiwa): Better way to test this is to use GetXml(). Check that
-// frameRate is set once the patch that adds frameRate attribute lands.
-// For now, check that media_info_ owned by Representation has
-// frame_duration = sample_duration.
+// Verify that Representation::SetSampleDuration() works by checking that
+// AdaptationSet@frameRate is in the XML.
 TEST_F(CommonMpdBuilderTest, SetSampleDuration) {
-  const MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
-  const uint32_t kRepresentationId = 1;
+  // Omit frame_duration so that SetSampleDuration() will set a new frameRate.
+  const char kVideoMediaInfo[] =
+      "video_info {\n"
+      "  codec: \"avc1\"\n"
+      "  width: 1920\n"
+      "  height: 1080\n"
+      "  time_scale: 3000\n"
+      "}\n"
+      "container_type: 1\n";
 
-  Representation representation(
-      video_media_info, MpdOptions(), kRepresentationId, NoListener());
-  EXPECT_TRUE(representation.Init());
-  representation.SetSampleDuration(2u);
-  EXPECT_EQ(2u,
-            representation.media_info_.video_info().frame_duration());
+  base::AtomicSequenceNumber sequence_counter;
+  auto adaptation_set =
+      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
+                          MpdBuilder::kStatic, &sequence_counter);
+
+  const MediaInfo video_media_info = ConvertToMediaInfo(kVideoMediaInfo);
+  Representation* representation =
+      adaptation_set->AddRepresentation(video_media_info);
+  EXPECT_TRUE(representation->Init());
+
+  xml::ScopedXmlPtr<xmlNode>::type adaptation_set_xml(adaptation_set->GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("frameRate", adaptation_set_xml.get()));
+
+  representation->SetSampleDuration(2u);
+  adaptation_set_xml = adaptation_set->GetXml().Pass();
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("frameRate", "3000/2", adaptation_set_xml.get()));
 }
 
 // Verify that AdaptationSet::AddContentProtection() and

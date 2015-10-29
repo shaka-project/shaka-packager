@@ -281,6 +281,10 @@ class AdaptationSet {
                 base::AtomicSequenceNumber* representation_counter);
 
  private:
+  friend class MpdBuilder;
+  template <MpdBuilder::MpdType type>
+  friend class MpdBuilderTest;
+
   // kSegmentAlignmentUnknown means that it is uncertain if the
   // (sub)segments are aligned or not.
   // kSegmentAlignmentTrue means that it is certain that the all the (current)
@@ -301,23 +305,6 @@ class AdaptationSet {
   // 1 -> [0, 100, 200]
   // 2 -> [0, 200, 400]
   typedef std::map<uint32_t, std::list<uint64_t> > RepresentationTimeline;
-
-  friend class MpdBuilder;
-
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckAdaptationSetId);
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest,
-                           CheckAdaptationSetVideoContentType);
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest,
-                           CheckAdaptationSetAudioContentType);
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest,
-                           CheckAdaptationSetTextContentType);
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, SetAdaptationSetGroup);
-  FRIEND_TEST_ALL_PREFIXES(StaticMpdBuilderTest, SubSegmentAlignment);
-  FRIEND_TEST_ALL_PREFIXES(StaticMpdBuilderTest, ForceSetSubSegmentAlignment);
-  FRIEND_TEST_ALL_PREFIXES(DynamicMpdBuilderTest, SegmentAlignment);
-  FRIEND_TEST_ALL_PREFIXES(
-      CommonMpdBuilderTest,
-      SetAdaptationFrameRateUsingRepresentationSetSampleDuration);
 
   // Gets the earliest, normalized segment timestamp. Returns true if
   // successful, false otherwise.
@@ -506,20 +493,8 @@ class Representation {
 
  private:
   friend class AdaptationSet;
-
-  // TODO(rkuroiwa): Consider defining a public factory method that constructs
-  // and Init()s, at least for testing.
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, ValidMediaInfo);
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, InvalidMediaInfo);
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckVideoInfoReflectedInXml);
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, CheckRepresentationId);
-  FRIEND_TEST_ALL_PREFIXES(CommonMpdBuilderTest, SetSampleDuration);
-  FRIEND_TEST_ALL_PREFIXES(
-      CommonMpdBuilderTest,
-      RepresentationStateChangeListenerOnNewSegmentForRepresentation);
-  FRIEND_TEST_ALL_PREFIXES(
-      CommonMpdBuilderTest,
-      RepresentationStateChangeListenerOnSetFrameRateForRepresentation);
+  template <MpdBuilder::MpdType type>
+  friend class MpdBuilderTest;
 
   bool AddLiveInfo(xml::RepresentationXmlNode* representation);
 
