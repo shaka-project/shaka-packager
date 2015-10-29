@@ -414,6 +414,42 @@ TEST_F(CommonMpdBuilderTest, ValidMediaInfo) {
   EXPECT_TRUE(representation->Init());
 }
 
+// Verify that if VideoInfo, AudioInfo, or TextInfo is not set, Init() fails.
+TEST_F(CommonMpdBuilderTest, VideoAudioTextInfoNotSet) {
+  const char kTestMediaInfo[] = "container_type: 1";
+
+  auto representation =
+      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
+                           kAnyRepresentationId, NoListener());
+  EXPECT_FALSE(representation->Init());
+}
+
+// Verify that if more than one of VideoInfo, AudioInfo, or TextInfo is set,
+// then Init() fails.
+TEST_F(CommonMpdBuilderTest, VideoAndAudioInfoSet) {
+  const char kTestMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "}\n"
+      "container_type: CONTAINER_MP4\n";
+
+  auto representation =
+      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
+                           kAnyRepresentationId, NoListener());
+  EXPECT_FALSE(representation->Init());
+}
+
 // Verify that Representation::Init() fails if a required field is missing.
 TEST_F(CommonMpdBuilderTest, InvalidMediaInfo) {
   // Missing width.
@@ -538,16 +574,15 @@ TEST_F(CommonMpdBuilderTest, CheckAdaptationSetVideoContentType) {
       "  pixel_width: 1\n"
       "  pixel_height: 1\n"
       "}\n"
-      "container_type: 1\n";
+      "container_type: CONTAINER_MP4\n";
 
   auto adaptation_set =
       CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
                           MpdBuilder::kStatic, &sequence_counter);
   adaptation_set->AddRepresentation(ConvertToMediaInfo(kVideoMediaInfo));
 
-  xml::ScopedXmlPtr<xmlNode>::type node_xml(adaptation_set->GetXml());
-  EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeEqString("contentType", "video", node_xml.get()));
+  EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
+      "contentType", "video", adaptation_set->GetXml().get()));
 }
 
 // Verify that content type is set correctly if audio info is present in
@@ -561,40 +596,100 @@ TEST_F(CommonMpdBuilderTest, CheckAdaptationSetAudioContentType) {
       "  time_scale: 1200\n"
       "  num_channels: 2\n"
       "}\n"
-      "container_type: 1\n";
+      "container_type: CONTAINER_MP4\n";
 
   auto adaptation_set =
       CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
                           MpdBuilder::kStatic, &sequence_counter);
   adaptation_set->AddRepresentation(ConvertToMediaInfo(kAudioMediaInfo));
 
-  xml::ScopedXmlPtr<xmlNode>::type node_xml(adaptation_set->GetXml());
-  EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeEqString("contentType", "audio", node_xml.get()));
+  EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
+      "contentType", "audio", adaptation_set->GetXml().get()));
 }
 
 // Verify that content type is set correctly if text info is present in
 // MediaInfo.
-// TODO(rkuroiwa): Enable this once text support is implemented.
-// This fails because it fails to get the codec, therefore Representation
-// creation fails.
-TEST_F(CommonMpdBuilderTest, DISABLED_CheckAdaptationSetTextContentType) {
+TEST_F(CommonMpdBuilderTest, CheckAdaptationSetTextContentType) {
   base::AtomicSequenceNumber sequence_counter;
   const char kTextMediaInfo[] =
       "text_info {\n"
       "  format: 'ttml'\n"
       "  language: 'en'\n"
       "}\n"
-      "container_type: 1\n";
+      "container_type: CONTAINER_TEXT\n";
 
   auto adaptation_set =
       CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
                           MpdBuilder::kStatic, &sequence_counter);
   adaptation_set->AddRepresentation(ConvertToMediaInfo(kTextMediaInfo));
 
+  EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
+      "contentType", "text", adaptation_set->GetXml().get()));
+}
+
+TEST_F(CommonMpdBuilderTest, TtmlXmlMimeType) {
+  const char kTtmlXmlMediaInfo[] =
+      "text_info {\n"
+      "  format: 'ttml'\n"
+      "}\n"
+      "container_type: CONTAINER_TEXT\n";
+
+  auto representation =
+      CreateRepresentation(ConvertToMediaInfo(kTtmlXmlMediaInfo), MpdOptions(),
+                           kAnyRepresentationId, NoListener());
+  EXPECT_TRUE(representation->Init());
+  EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
+      "mimeType", "application/ttml+xml", representation->GetXml().get()));
+}
+
+TEST_F(CommonMpdBuilderTest, TtmlMp4MimeType) {
+  const char kTtmlMp4MediaInfo[] =
+      "text_info {\n"
+      "  format: 'ttml'\n"
+      "}\n"
+      "container_type: CONTAINER_MP4\n";
+
+  auto representation =
+      CreateRepresentation(ConvertToMediaInfo(kTtmlMp4MediaInfo), MpdOptions(),
+                           kAnyRepresentationId, NoListener()).Pass();
+  EXPECT_TRUE(representation->Init());
+  EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
+      "mimeType", "application/mp4", representation->GetXml().get()));
+}
+
+TEST_F(CommonMpdBuilderTest, WebVttMimeType) {
+  const char kWebVttMediaInfo[] =
+      "text_info {\n"
+      "  format: 'vtt'\n"
+      "}\n"
+      "container_type: CONTAINER_TEXT\n";
+
+  auto representation =
+      CreateRepresentation(ConvertToMediaInfo(kWebVttMediaInfo), MpdOptions(),
+                           kAnyRepresentationId, NoListener()).Pass();
+  EXPECT_TRUE(representation->Init());
+  EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
+      "mimeType", "text/vtt", representation->GetXml().get()));
+}
+
+// Verify that language passed to the constructor sets the @lang field is set.
+TEST_F(CommonMpdBuilderTest, CheckLanguageAttributeSet) {
+  base::AtomicSequenceNumber sequence_counter;
+  // The media info doesn't really matter as long as it is valid.
+  const char kTextMediaInfo[] =
+      "text_info {\n"
+      "  format: 'ttml'\n"
+      "}\n"
+      "container_type: CONTAINER_TEXT\n";
+
+  auto adaptation_set =
+      CreateAdaptationSet(kAnyAdaptationSetId, "en", MpdOptions(),
+                          MpdBuilder::kStatic, &sequence_counter);
+  adaptation_set->AddRepresentation(ConvertToMediaInfo(kTextMediaInfo));
+
   xml::ScopedXmlPtr<xmlNode>::type node_xml(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeEqString("contentType", "text", node_xml.get()));
+      ExpectAttributeEqString("lang", "en", node_xml.get()));
 }
 
 TEST_F(CommonMpdBuilderTest, CheckAdaptationSetId) {
@@ -1619,6 +1714,54 @@ TEST_F(StaticMpdBuilderTest, WriteToFile) {
 
   const bool kNonRecursive = false;
   EXPECT_TRUE(DeleteFile(file_path, kNonRecursive));
+}
+
+// Verify that a text path works.
+TEST_F(StaticMpdBuilderTest, Text) {
+  const char kTextMediaInfo[] =
+      "text_info {\n"
+      "  format: 'ttml'\n"
+      "  language: 'en'\n"
+      "  type: SUBTITLE\n"
+      "}\n"
+      "media_duration_seconds: 35\n"
+      "bandwidth: 1000\n"
+      "media_file_name: 'subtitle.xml'\n"
+      "container_type: CONTAINER_TEXT\n";
+
+  const char kExpectedOutput[] =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\""
+      " xmlns:cenc=\"urn:mpeg:cenc:2013\""
+      " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
+      " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
+      " xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\""
+      " minBufferTime=\"PT2S\" type=\"static\""
+      " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
+      " mediaPresentationDuration=\"PT35S\">"
+      "  <Period>"
+      "    <AdaptationSet id=\"0\" contentType=\"text\" lang=\"en\">"
+      "      <Role schemeIdUri=\"urn:mpeg:dash:role:2011\""
+      "       value=\"subtitle\"/>\n"
+      "      <Representation id=\"0\" bandwidth=\"1000\""
+      "       mimeType=\"application/ttml+xml\">"
+      "        <BaseURL>subtitle.xml</BaseURL>"
+      "      </Representation>"
+      "    </AdaptationSet>"
+      "  </Period>"
+      "</MPD>";
+
+  AdaptationSet* text_adaptation_set = mpd_.AddAdaptationSet("en");
+  ASSERT_TRUE(text_adaptation_set);
+
+  Representation* text_representation = text_adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(kTextMediaInfo));
+  ASSERT_TRUE(text_representation);
+
+  std::string mpd_output;
+  ASSERT_TRUE(mpd_.ToString(&mpd_output));
+  ASSERT_TRUE(ValidateMpdSchema(mpd_output));
+  EXPECT_TRUE(XmlEqual(kExpectedOutput, mpd_output));
 }
 
 // Check whether the attributes are set correctly for dynamic <MPD> element.

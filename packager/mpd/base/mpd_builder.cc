@@ -39,6 +39,22 @@ namespace {
 
 const int kAdaptationSetGroupNotSet = -1;
 
+AdaptationSet::Role MediaInfoTextTypeToRole(MediaInfo::TextInfo::TextType type) {
+  switch (type) {
+    case MediaInfo::TextInfo::UNKNOWN:
+      LOG(WARNING) << "Unknown text type, assuming subtitle.";
+      return AdaptationSet::kRoleSubtitle;
+    case MediaInfo::TextInfo::CAPTION:
+      return AdaptationSet::kRoleCaption;
+    case MediaInfo::TextInfo::SUBTITLE:
+      return AdaptationSet::kRoleSubtitle;
+    default:
+      NOTREACHED() << "Unknown MediaInfo TextType: " << type
+                   << " assuming subtitle.";
+      return AdaptationSet::kRoleSubtitle;
+  }
+}
+
 std::string GetMimeType(const std::string& prefix,
                         MediaInfo::ContainerType container_type) {
   switch (container_type) {
@@ -54,7 +70,7 @@ std::string GetMimeType(const std::string& prefix,
   }
 
   // Unsupported container types should be rejected/handled by the caller.
-  NOTREACHED() << "Unrecognized container type: " << container_type;
+  LOG(ERROR) << "Unrecognized container type: " << container_type;
   return std::string();
 }
 
@@ -684,6 +700,13 @@ Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
     content_type_ = "video";
   } else if (media_info.has_audio_info()) {
     content_type_ = "audio";
+  } else if (media_info.has_text_info()) {
+    content_type_ = "text";
+
+    if (media_info.text_info().has_type() &&
+        (media_info.text_info().type() != MediaInfo::TextInfo::UNKNOWN)) {
+      roles_.insert(MediaInfoTextTypeToRole(media_info.text_info().type()));
+    }
   }
 
   representations_.push_back(representation.get());
@@ -998,20 +1021,20 @@ Representation::Representation(
 Representation::~Representation() {}
 
 bool Representation::Init() {
-  codecs_ = GetCodecs(media_info_);
-  if (codecs_.empty()) {
-    LOG(ERROR) << "Missing codec info in MediaInfo.";
-    return false;
-  }
-
-  const bool has_video_info = media_info_.has_video_info();
-  const bool has_audio_info = media_info_.has_audio_info();
-
-  if (!has_video_info && !has_audio_info) {
+  if (!AtLeastOneTrue(media_info_.has_video_info(),
+                      media_info_.has_audio_info(),
+                      media_info_.has_text_info())) {
     // This is an error. Segment information can be in AdaptationSet, Period, or
     // MPD but the interface does not provide a way to set them.
     // See 5.3.9.1 ISO 23009-1:2012 for segment info.
-    LOG(ERROR) << "Representation needs video or audio.";
+    LOG(ERROR) << "Representation needs one of video, audio, or text.";
+    return false;
+  }
+
+  if (MoreThanOneTrue(media_info_.has_video_info(),
+                      media_info_.has_audio_info(),
+                      media_info_.has_text_info())) {
+    LOG(ERROR) << "Only one of VideoInfo, AudioInfo, or TextInfo can be set.";
     return false;
   }
 
@@ -1020,18 +1043,22 @@ bool Representation::Init() {
     return false;
   }
 
-  // For mimetypes, this checks the video and then audio. Usually when there is
-  // audio + video, we take video/<type>.
-  if (has_video_info) {
+  if (media_info_.has_video_info()) {
     mime_type_ = GetVideoMimeType();
     if (!HasRequiredVideoFields(media_info_.video_info())) {
       LOG(ERROR) << "Missing required fields to create a video Representation.";
       return false;
     }
-  } else if (has_audio_info) {
+  } else if (media_info_.has_audio_info()) {
     mime_type_ = GetAudioMimeType();
+  } else if (media_info_.has_text_info()) {
+    mime_type_ = GetTextMimeType();
   }
 
+  if (mime_type_.empty())
+    return false;
+
+  codecs_ = GetCodecs(media_info_);
   return true;
 }
 
@@ -1110,7 +1137,8 @@ xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
   // Mandatory fields for Representation.
   representation.SetId(id_);
   representation.SetIntegerAttribute("bandwidth", bandwidth);
-  representation.SetStringAttribute("codecs", codecs_);
+  if (!codecs_.empty()) 
+    representation.SetStringAttribute("codecs", codecs_);
   representation.SetStringAttribute("mimeType", mime_type_);
 
   const bool has_video_info = media_info_.has_video_info();
@@ -1283,6 +1311,35 @@ std::string Representation::GetVideoMimeType() const {
 
 std::string Representation::GetAudioMimeType() const {
   return GetMimeType("audio", media_info_.container_type());
+}
+
+std::string Representation::GetTextMimeType() const {
+  CHECK(media_info_.has_text_info());
+  if (media_info_.text_info().format() == "ttml") {
+    switch (media_info_.container_type()) {
+      case MediaInfo::CONTAINER_TEXT:
+        return "application/ttml+xml";
+      case MediaInfo::CONTAINER_MP4:
+        return "application/mp4";
+      default:
+        LOG(ERROR) << "Failed to determine MIME type for TTML container: "
+                   << media_info_.container_type();
+        return "";
+    }
+  }
+  if (media_info_.text_info().format() == "vtt") {
+    if (media_info_.container_type() == MediaInfo::CONTAINER_TEXT) {
+      return "text/vtt";
+    }
+    LOG(ERROR) << "Failed to determine MIME type for VTT container: "
+               << media_info_.container_type();
+    return "";
+  }
+
+  LOG(ERROR) << "Cannot determine MIME type for format: "
+             << media_info_.text_info().format()
+             << " container: " << media_info_.container_type();
+  return "";
 }
 
 bool Representation::GetEarliestTimestamp(double* timestamp_seconds) {

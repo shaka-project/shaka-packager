@@ -172,7 +172,8 @@ class AdaptationSet {
 
   /// Create a Representation instance using @a media_info.
   /// @param media_info is a MediaInfo object used to initialize the returned
-  ///        Representation instance.
+  ///        Representation instance. It may contain only one of VideoInfo,
+  ///        AudioInfo, or TextInfo, i.e. VideoInfo XOR AudioInfo XOR TextInfo.
   /// @return On success, returns a pointer to Representation. Otherwise returns
   ///         NULL. The returned pointer is owned by the AdaptationSet instance.
   virtual Representation* AddRepresentation(const MediaInfo& media_info);
@@ -220,7 +221,7 @@ class AdaptationSet {
   /// for the AdaptationSet.
   /// @param segment_alignment is the value used for (sub)segmentAlignment
   ///        attribute.
-  void ForceSetSegmentAlignment(bool segment_alignment);
+  virtual void ForceSetSegmentAlignment(bool segment_alignment);
 
   /// Sets the AdaptationSet@group attribute.
   /// Passing a negative value to this method will unset the attribute.
@@ -517,11 +518,14 @@ class Representation {
   // strings.
   std::string GetVideoMimeType() const;
   std::string GetAudioMimeType() const;
+  std::string GetTextMimeType() const;
 
   // Gets the earliest, normalized segment timestamp. Returns true if
   // successful, false otherwise.
   bool GetEarliestTimestamp(double* timestamp_seconds);
 
+  // Init() checks that only one of VideoInfo, AudioInfo, or TextInfo is set. So
+  // any logic using this can assume only one set.
   MediaInfo media_info_;
   std::list<ContentProtectionElement> content_protection_elements_;
   std::list<SegmentInfo> segment_infos_;

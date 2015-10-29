@@ -135,7 +135,9 @@ class DashIopMpdNotifierTest
   const MpdOptions empty_mpd_option_;
   const std::vector<std::string> empty_base_urls_;
 
-  // Default AdaptationSet mock.
+  // Default mocks that can be used for the tests.
+  // IOW, if a test only requires one instance of
+  // Mock{AdaptationSet,Representation}, these can be used.
   scoped_ptr<MockAdaptationSet> default_mock_adaptation_set_;
   scoped_ptr<MockRepresentation> default_mock_representation_;
 
@@ -177,6 +179,38 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainer) {
   uint32_t unused_container_id;
   SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
+                                          &unused_container_id));
+  EXPECT_TRUE(notifier.Flush());
+}
+
+// Verify that if the MediaInfo contains text information, then
+// MpdBuilder::ForceSetSegmentAlignment() is called.
+TEST_P(DashIopMpdNotifierTest, NotifyNewTextContainer) {
+  const char kTextMediaInfo[] =
+      "text_info {\n"
+      "  format: 'ttml'\n"
+      "  language: 'en'\n"
+      "}\n"
+      "container_type: CONTAINER_TEXT\n";
+  DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
+                              empty_base_urls_, output_path_);
+
+  scoped_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder(mpd_type()));
+
+  EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(StrEq("en")))
+      .WillOnce(Return(default_mock_adaptation_set_.get()));
+  EXPECT_CALL(*default_mock_adaptation_set_, AddRole(_)).Times(0);
+  EXPECT_CALL(*default_mock_adaptation_set_, ForceSetSegmentAlignment(true));
+  EXPECT_CALL(*default_mock_adaptation_set_, AddRepresentation(_))
+      .WillOnce(Return(default_mock_representation_.get()));
+
+  // This is for the Flush() below but adding expectation here because the next
+  // lines Pass() the pointer.
+  EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
+
+  uint32_t unused_container_id;
+  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kTextMediaInfo),
                                           &unused_container_id));
   EXPECT_TRUE(notifier.Flush());
 }

@@ -77,11 +77,19 @@ bool DashIopMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   std::string lang;
   if (media_info.has_audio_info()) {
     lang = media_info.audio_info().language();
+  } else if (media_info.has_text_info()) {
+    lang = media_info.text_info().language();
   }
 
   AdaptationSet* adaptation_set =
       GetAdaptationSetForMediaInfo(media_info, content_type, lang);
   DCHECK(adaptation_set);
+  if (media_info.has_text_info()) {
+    // IOP requires all AdaptationSets to have (sub)segmentAlignment set to
+    // true, so carelessly set it to true.
+    // In practice it doesn't really make sense to adapt between text tracks.
+    adaptation_set->ForceSetSegmentAlignment(true);
+  }
 
   MediaInfo adjusted_media_info(media_info);
   MpdBuilder::MakePathsRelativeToMpd(output_path_, &adjusted_media_info);

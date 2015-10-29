@@ -13,6 +13,24 @@
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
 namespace edash_packager {
+namespace {
+
+std::string TextCodecString(
+    const edash_packager::MediaInfo& media_info) {
+  CHECK(media_info.has_text_info());
+  const std::string& format = media_info.text_info().format();
+  // DASH IOP mentions that the codec for ttml in mp4 is stpp.
+  if (format == "ttml" &&
+      (media_info.container_type() == MediaInfo::CONTAINER_MP4)) {
+    return "stpp";
+  }
+
+  // Otherwise codec doesn't need to be specified, e.g. vtt and ttml+xml are
+  // obvious from the mime type.
+  return "";
+}
+
+}  // namespace
 
 bool HasVODOnlyFields(const MediaInfo& media_info) {
   return media_info.has_init_range() || media_info.has_index_range() ||
@@ -40,22 +58,19 @@ void RemoveDuplicateAttributes(
 }
 
 std::string GetCodecs(const MediaInfo& media_info) {
-  std::string video_codec;
+  CHECK(OnlyOneTrue(media_info.has_video_info(), media_info.has_audio_info(),
+                    media_info.has_text_info()));
+
   if (media_info.has_video_info())
-    video_codec = media_info.video_info().codec();
+    return media_info.video_info().codec();
 
-  std::string audio_codec;
   if (media_info.has_audio_info())
-    audio_codec = media_info.audio_info().codec();
+    return media_info.audio_info().codec();
 
-  if (!video_codec.empty() && !audio_codec.empty()) {
-    return video_codec + "," + audio_codec;
-  } else if (!video_codec.empty()) {
-    return video_codec;
-  } else if (!audio_codec.empty()) {
-    return audio_codec;
-  }
+  if (media_info.has_text_info())
+    return TextCodecString(media_info);
 
+  NOTREACHED();
   return "";
 }
 

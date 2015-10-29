@@ -38,6 +38,7 @@ class MockAdaptationSet : public AdaptationSet {
   MOCK_METHOD2(UpdateContentProtectionPssh,
                void(const std::string& drm_uuid, const std::string& pssh));
   MOCK_METHOD1(AddRole, void(AdaptationSet::Role role));
+  MOCK_METHOD1(ForceSetSegmentAlignment, void(bool segment_alignment));
 
   MOCK_METHOD1(SetGroup, void(int group_number));
   MOCK_CONST_METHOD0(Group, int());

@@ -49,6 +49,8 @@ bool SimpleMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
   std::string lang;
   if (media_info.has_audio_info()) {
     lang = media_info.audio_info().language();
+  } else if (media_info.has_text_info()) {
+    lang = media_info.text_info().language();
   }
   AdaptationSet** adaptation_set = &adaptation_set_map_[content_type][lang];
   if (*adaptation_set == NULL)
