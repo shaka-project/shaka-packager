@@ -122,76 +122,78 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;VP8&quot;</span>;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keywordflow">case</span> kCodecVP9:</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;VP9&quot;</span>;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;Unknown Video Codec: &quot;</span> &lt;&lt; video_codec;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;UnknownVideoCodec&quot;</span>;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  }</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;}  <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordflow">case</span> kCodecVP10:</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;VP10&quot;</span>;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;Unknown Video Codec: &quot;</span> &lt;&lt; video_codec;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;UnknownVideoCodec&quot;</span>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  }</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;}</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a75ccfbc06b8458390e1672968eb9bd96">   44</a></span>&#160;<a class="code" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a75ccfbc06b8458390e1672968eb9bd96">VideoStreamInfo::VideoStreamInfo</a>(<span class="keywordtype">int</span> track_id,</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                                 uint32_t time_scale,</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                                 uint64_t duration,</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                                 VideoCodec codec,</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                                 <span class="keyword">const</span> std::string&amp; codec_string,</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                                 <span class="keyword">const</span> std::string&amp; language,</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                                 uint16_t width,</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                                 uint16_t height,</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                                 uint32_t pixel_width,</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                                 uint32_t pixel_height,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                                 int16_t trick_play_rate,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                                 uint8_t nalu_length_size,</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                                 <span class="keyword">const</span> uint8_t* extra_data,</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                                 <span class="keywordtype">size_t</span> extra_data_size,</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                                 <span class="keywordtype">bool</span> is_encrypted)</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    : <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a>(kStreamVideo,</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                 track_id,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                 time_scale,</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                 duration,</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                 codec_string,</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                 language,</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                 extra_data,</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                 extra_data_size,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                 is_encrypted),</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      codec_(codec),</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      width_(width),</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      height_(height),</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      pixel_width_(pixel_width),</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      pixel_height_(pixel_height),</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      trick_play_rate_(trick_play_rate),</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      nalu_length_size_(nalu_length_size) {</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;}</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;VideoStreamInfo::~VideoStreamInfo() {}</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;}  <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a75ccfbc06b8458390e1672968eb9bd96">   46</a></span>&#160;<a class="code" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a75ccfbc06b8458390e1672968eb9bd96">VideoStreamInfo::VideoStreamInfo</a>(<span class="keywordtype">int</span> track_id,</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                                 uint32_t time_scale,</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                                 uint64_t duration,</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                                 VideoCodec codec,</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                                 <span class="keyword">const</span> std::string&amp; codec_string,</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                                 <span class="keyword">const</span> std::string&amp; language,</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                                 uint16_t width,</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                                 uint16_t height,</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                                 uint32_t pixel_width,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                                 uint32_t pixel_height,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                                 int16_t trick_play_rate,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                                 uint8_t nalu_length_size,</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                                 <span class="keyword">const</span> uint8_t* extra_data,</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                                 <span class="keywordtype">size_t</span> extra_data_size,</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                                 <span class="keywordtype">bool</span> is_encrypted)</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    : <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a>(kStreamVideo,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                 track_id,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                 time_scale,</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                 duration,</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                 codec_string,</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                 language,</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                 extra_data,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                 extra_data_size,</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                 is_encrypted),</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      codec_(codec),</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      width_(width),</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      height_(height),</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      pixel_width_(pixel_width),</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      pixel_height_(pixel_height),</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      trick_play_rate_(trick_play_rate),</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      nalu_length_size_(nalu_length_size) {</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a128154cbdecb54f2b1bb64a52ae60b24">   79</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a128154cbdecb54f2b1bb64a52ae60b24">VideoStreamInfo::IsValidConfig</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordflow">return</span> codec_ != kUnknownVideoCodec &amp;&amp;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;         width_ &gt; 0 &amp;&amp; width_ &lt;= limits::kMaxDimension &amp;&amp;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;         height_ &gt; 0 &amp;&amp; height_ &lt;= limits::kMaxDimension &amp;&amp;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;         (nalu_length_size_ &lt;= 2 || nalu_length_size_ == 4);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a08fb4a4fdd658266dc860ab9c5cf7ace">   86</a></span>&#160;std::string <a class="code" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a08fb4a4fdd658266dc860ab9c5cf7ace">VideoStreamInfo::ToString</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordflow">return</span> base::StringPrintf(</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;      <span class="stringliteral">&quot;%s codec: %s\n width: %d\n height: %d\n pixel aspect ratio: %d:%d\n &quot;</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;      <span class="stringliteral">&quot;trick_play_rate: %d\n nalu_length_size: %d\n&quot;</span>,</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;      <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html#ac09810e16cf5cee2f87987bfcc70fece">StreamInfo::ToString</a>().c_str(), VideoCodecToString(codec_).c_str(),</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      width_, height_, pixel_width_, pixel_height_, trick_play_rate_,</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;      nalu_length_size_);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1VideoStreamInfo_html_a08fb4a4fdd658266dc860ab9c5cf7ace"><div class="ttname"><a href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a08fb4a4fdd658266dc860ab9c5cf7ace">edash_packager::media::VideoStreamInfo::ToString</a></div><div class="ttdeci">std::string ToString() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d19/video__stream__info_8cc_source.html#l00086">video_stream_info.cc:86</a></div></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;VideoStreamInfo::~VideoStreamInfo() {}</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a128154cbdecb54f2b1bb64a52ae60b24">   81</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a128154cbdecb54f2b1bb64a52ae60b24">VideoStreamInfo::IsValidConfig</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordflow">return</span> codec_ != kUnknownVideoCodec &amp;&amp;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;         width_ &gt; 0 &amp;&amp; width_ &lt;= limits::kMaxDimension &amp;&amp;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;         height_ &gt; 0 &amp;&amp; height_ &lt;= limits::kMaxDimension &amp;&amp;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;         (nalu_length_size_ &lt;= 2 || nalu_length_size_ == 4);</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a08fb4a4fdd658266dc860ab9c5cf7ace">   88</a></span>&#160;std::string <a class="code" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a08fb4a4fdd658266dc860ab9c5cf7ace">VideoStreamInfo::ToString</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordflow">return</span> base::StringPrintf(</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;      <span class="stringliteral">&quot;%s codec: %s\n width: %d\n height: %d\n pixel aspect ratio: %d:%d\n &quot;</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      <span class="stringliteral">&quot;trick_play_rate: %d\n nalu_length_size: %d\n&quot;</span>,</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;      <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html#ac09810e16cf5cee2f87987bfcc70fece">StreamInfo::ToString</a>().c_str(), VideoCodecToString(codec_).c_str(),</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;      width_, height_, pixel_width_, pixel_height_, trick_play_rate_,</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;      nalu_length_size_);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;}</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1VideoStreamInfo_html_a08fb4a4fdd658266dc860ab9c5cf7ace"><div class="ttname"><a href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a08fb4a4fdd658266dc860ab9c5cf7ace">edash_packager::media::VideoStreamInfo::ToString</a></div><div class="ttdeci">std::string ToString() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d19/video__stream__info_8cc_source.html#l00088">video_stream_info.cc:88</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">edash_packager::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00026">stream_info.h:26</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1VideoStreamInfo_html_a128154cbdecb54f2b1bb64a52ae60b24"><div class="ttname"><a href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a128154cbdecb54f2b1bb64a52ae60b24">edash_packager::media::VideoStreamInfo::IsValidConfig</a></div><div class="ttdeci">bool IsValidConfig() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d19/video__stream__info_8cc_source.html#l00079">video_stream_info.cc:79</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1VideoStreamInfo_html_a128154cbdecb54f2b1bb64a52ae60b24"><div class="ttname"><a href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a128154cbdecb54f2b1bb64a52ae60b24">edash_packager::media::VideoStreamInfo::IsValidConfig</a></div><div class="ttdeci">bool IsValidConfig() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d19/video__stream__info_8cc_source.html#l00081">video_stream_info.cc:81</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1StreamInfo_html_ac09810e16cf5cee2f87987bfcc70fece"><div class="ttname"><a href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html#ac09810e16cf5cee2f87987bfcc70fece">edash_packager::media::StreamInfo::ToString</a></div><div class="ttdeci">virtual std::string ToString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../de/dfd/stream__info_8cc_source.html#l00040">stream_info.cc:40</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1VideoStreamInfo_html_a75ccfbc06b8458390e1672968eb9bd96"><div class="ttname"><a href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a75ccfbc06b8458390e1672968eb9bd96">edash_packager::media::VideoStreamInfo::VideoStreamInfo</a></div><div class="ttdeci">VideoStreamInfo(int track_id, uint32_t time_scale, uint64_t duration, VideoCodec codec, const std::string &amp;codec_string, const std::string &amp;language, uint16_t width, uint16_t height, uint32_t pixel_width, uint32_t pixel_height, int16_t trick_play_rate, uint8_t nalu_length_size, const uint8_t *extra_data, size_t extra_data_size, bool is_encrypted)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d19/video__stream__info_8cc_source.html#l00044">video_stream_info.cc:44</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1VideoStreamInfo_html_a75ccfbc06b8458390e1672968eb9bd96"><div class="ttname"><a href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a75ccfbc06b8458390e1672968eb9bd96">edash_packager::media::VideoStreamInfo::VideoStreamInfo</a></div><div class="ttdeci">VideoStreamInfo(int track_id, uint32_t time_scale, uint64_t duration, VideoCodec codec, const std::string &amp;codec_string, const std::string &amp;language, uint16_t width, uint16_t height, uint32_t pixel_width, uint32_t pixel_height, int16_t trick_play_rate, uint8_t nalu_length_size, const uint8_t *extra_data, size_t extra_data_size, bool is_encrypted)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d19/video__stream__info_8cc_source.html#l00046">video_stream_info.cc:46</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Nov 3 2015 19:42:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 4 2015 00:37:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
