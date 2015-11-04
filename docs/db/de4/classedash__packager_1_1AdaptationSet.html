@@ -135,7 +135,7 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a3bfc3e2de3eaafc61a4dc2e23c698956"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44984cfaed799fd6683c6c9d41394dd6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d8/df3/structedash__packager_1_1xml_1_1ScopedXmlPtr.html">xml::ScopedXmlPtr</a>&lt; xmlNode &gt;::type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a44984cfaed799fd6683c6c9d41394dd6">GetXml</a> ()</td></tr>
 <tr class="separator:a44984cfaed799fd6683c6c9d41394dd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a949526c833122b9a1ca40b9990224990"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a949526c833122b9a1ca40b9990224990">ForceSetSegmentAlignment</a> (bool segment_alignment)</td></tr>
+<tr class="memitem:a949526c833122b9a1ca40b9990224990"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a949526c833122b9a1ca40b9990224990">ForceSetSegmentAlignment</a> (bool segment_alignment)</td></tr>
 <tr class="separator:a949526c833122b9a1ca40b9990224990"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3bea0954dfe1781afc1c7a624965bc84"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a3bea0954dfe1781afc1c7a624965bc84">SetGroup</a> (int group_number)</td></tr>
 <tr class="separator:a3bea0954dfe1781afc1c7a624965bc84"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -229,7 +229,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00636">636</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00652">652</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -263,7 +263,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00693">693</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00716">716</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -291,13 +291,13 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
 <p>Create a <a class="el" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a> instance using <em>media_info</em>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">media_info</td><td>is a MediaInfo object used to initialize the returned <a class="el" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a> instance. </td></tr>
+    <tr><td class="paramname">media_info</td><td>is a MediaInfo object used to initialize the returned <a class="el" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a> instance. It may contain only one of VideoInfo, AudioInfo, or TextInfo, i.e. VideoInfo XOR AudioInfo XOR TextInfo. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>On success, returns a pointer to <a class="el" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a>. Otherwise returns NULL. The returned pointer is owned by the <a class="el" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a> instance. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00655">655</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00671">671</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -330,13 +330,16 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00707">707</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00730">730</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
 <a class="anchor" id="a949526c833122b9a1ca40b9990224990"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">void edash_packager::AdaptationSet::ForceSetSegmentAlignment </td>
@@ -346,6 +349,11 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>Forces the (sub)segmentAlignment field to be set to <em>segment_alignment</em>. Use this if you are certain that the (sub)segments are alinged/unaligned for the <a class="el" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -355,7 +363,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00783">783</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00806">806</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -374,7 +382,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
 <p>Makes a copy of <a class="el" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a> xml element with its child <a class="el" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a> and ContentProtection elements. </p>
 <dl class="section return"><dt>Returns</dt><dd>On success returns a non-NULL ScopedXmlPtr. Otherwise returns a NULL ScopedXmlPtr. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00713">713</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00736">736</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -400,7 +408,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>Returns the value for group. If not set, returns a negative value. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00793">793</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00816">816</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -443,7 +451,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00804">804</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00827">827</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -485,7 +493,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00817">817</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00840">840</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -518,7 +526,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00789">789</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00812">812</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -563,7 +571,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
 </dl>
 <dl class="section attention"><dt>Attention</dt><dd>This might get removed once DASH IF IOP specification makes a a clear guideline on how to handle key rotation. Also to get this working with shaka-player, this method <em>DOES NOT</em> update the PSSH element. Instead, it removes the element regardless of the content of <em>pssh</em>. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00700">700</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l00723">723</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -574,7 +582,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Nov 4 2015 00:37:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 4 2015 20:02:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
