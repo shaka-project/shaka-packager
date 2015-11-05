@@ -47,9 +47,11 @@ enum MediaContainerName {
   CONTAINER_RM,               // RM (RealMedia)
   CONTAINER_SRT,              // SRT (SubRip subtitle)
   CONTAINER_SWF,              // SWF (ShockWave Flash)
+  CONTAINER_TTML,             // TTML file.
   CONTAINER_VC1,              // VC-1
   CONTAINER_WAV,              // WAV / WAVE (Waveform Audio)
   CONTAINER_WEBM,             // Matroska / WebM
+  CONTAINER_WEBVTT,           // WebVTT file.
   CONTAINER_WTV,              // WTV (Windows Television)
   CONTAINER_MAX               // Must be last
 };

@@ -24,7 +24,6 @@ struct MpdOptions;
 namespace media {
 
 class KeySource;
-class MediaInfo;
 class MediaStream;
 class Muxer;
 struct MuxerOptions;

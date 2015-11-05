@@ -19,8 +19,8 @@ namespace edash_packager {
 namespace media {
 
 VodMediaInfoDumpMuxerListener::VodMediaInfoDumpMuxerListener(
-    const std::string& output_file_name)
-    : output_file_name_(output_file_name), is_encrypted_(false) {}
+    const std::string& output_file_path)
+    : output_file_name_(output_file_path), is_encrypted_(false) {}
 
 VodMediaInfoDumpMuxerListener::~VodMediaInfoDumpMuxerListener() {}
 
@@ -97,7 +97,7 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(bool has_init_range,
     LOG(ERROR) << "Failed to generate VOD information from input.";
     return;
   }
-  SerializeMediaInfoToFile();
+  WriteMediaInfoToFile(*media_info_, output_file_name_);
 }
 
 void VodMediaInfoDumpMuxerListener::OnNewSegment(uint64_t start_time,
@@ -105,17 +105,20 @@ void VodMediaInfoDumpMuxerListener::OnNewSegment(uint64_t start_time,
                                                  uint64_t segment_file_size) {
 }
 
-bool VodMediaInfoDumpMuxerListener::SerializeMediaInfoToFile() {
+// static
+bool VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
+    const edash_packager::MediaInfo& media_info,
+    const std::string& output_file_path) {
   std::string output_string;
-  if (!google::protobuf::TextFormat::PrintToString(*media_info_,
+  if (!google::protobuf::TextFormat::PrintToString(media_info,
                                                    &output_string)) {
     LOG(ERROR) << "Failed to serialize MediaInfo to string.";
     return false;
   }
 
-  media::File* file = File::Open(output_file_name_.c_str(), "w");
+  media::File* file = File::Open(output_file_path.c_str(), "w");
   if (!file) {
-    LOG(ERROR) << "Failed to open " << output_file_name_;
+    LOG(ERROR) << "Failed to open " << output_file_path;
     return false;
   }
   if (file->Write(output_string.data(), output_string.size()) <= 0) {
@@ -124,7 +127,7 @@ bool VodMediaInfoDumpMuxerListener::SerializeMediaInfoToFile() {
     return false;
   }
   if (!file->Close()) {
-    LOG(ERROR) << "Failed to close " << output_file_name_;
+    LOG(ERROR) << "Failed to close " << output_file_path;
     return false;
   }
   return true;

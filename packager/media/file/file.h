@@ -102,6 +102,14 @@ class File {
   /// @return true on success, false otherwise.
   static bool ReadFileToString(const char* file_name, std::string* contents);
 
+  /// Copies files. This is not good for copying huge files. Although not
+  /// recommended, it is safe to have source file and destination file name be
+  /// the same.
+  /// @param from_file_name is the source file name.
+  /// @param to_file_name is the destination file name.
+  /// @return true on success, false otherwise.
+  static bool Copy(const char* from_file_name, const char* to_file_name);
+
  protected:
   explicit File(const std::string& file_name) : file_name_(file_name) {}
   /// Do *not* call the destructor directly (with the "delete" keyword)

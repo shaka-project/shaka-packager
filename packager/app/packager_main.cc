@@ -22,14 +22,17 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/threading/simple_thread.h"
 #include "packager/base/time/clock.h"
+#include "packager/media/base/container_names.h"
 #include "packager/media/base/demuxer.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/event/mpd_notify_muxer_listener.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
+#include "packager/media/file/file.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
 #include "packager/mpd/base/dash_iop_mpd_notifier.h"
+#include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/simple_mpd_notifier.h"
 
@@ -64,6 +67,8 @@ const char kUsage[] =
     "language tag. If specified, this value overrides any language metadata "
     "in the input track.\n";
 
+const char kMediaInfoSuffix[] = ".media_info";
+
 enum ExitStatus {
   kSuccess = 0,
   kNoArgument,
@@ -71,6 +76,29 @@ enum ExitStatus {
   kPackagingFailed,
   kInternalError,
 };
+
+// TODO(rkuroiwa): Write TTML and WebVTT parser (demuxing) for a better check
+// and for supporting live/segmenting (muxing).  With a demuxer and a muxer,
+// CreateRemuxJobs() shouldn't treat text as a special case.
+std::string DetermineTextFileFormat(const std::string& file) {
+  std::string content;
+  if (!edash_packager::media::File::ReadFileToString(file.c_str(), &content)) {
+    LOG(ERROR) << "Failed to open file " << file
+               << " to determine file format.";
+    return "";
+  }
+  edash_packager::media::MediaContainerName container_name =
+      edash_packager::media::DetermineContainer(
+          reinterpret_cast<const uint8_t*>(content.data()), content.size());
+  if (container_name == edash_packager::media::CONTAINER_WEBVTT) {
+    return "vtt";
+  } else if (container_name == edash_packager::media::CONTAINER_TTML) {
+    return "ttml";
+  }
+
+  return "";
+}
+
 }  // namespace
 
 namespace edash_packager {
@@ -114,6 +142,45 @@ class RemuxJob : public base::SimpleThread {
   DISALLOW_COPY_AND_ASSIGN(RemuxJob);
 };
 
+bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
+                               const MuxerOptions& stream_muxer_options,
+                               MediaInfo* text_media_info) {
+  const std::string& language = stream_descriptor.language;
+  std::string format = DetermineTextFileFormat(stream_descriptor.input);
+  if (format.empty()) {
+    LOG(ERROR) << "Failed to determine the text file format for "
+               << stream_descriptor.input;
+    return false;
+  }
+
+  if (!File::Copy(stream_descriptor.input.c_str(),
+                  stream_muxer_options.output_file_name.c_str())) {
+    LOG(ERROR) << "Failed to copy the input file (" << stream_descriptor.input
+               << ") to output file (" << stream_muxer_options.output_file_name
+               << ").";
+    return false;
+  }
+
+  text_media_info->set_media_file_name(stream_muxer_options.output_file_name);
+  text_media_info->set_container_type(MediaInfo::CONTAINER_TEXT);
+
+  if (stream_muxer_options.bandwidth != 0) {
+    text_media_info->set_bandwidth(stream_muxer_options.bandwidth);
+  } else {
+    // Text files are usually small and since the input is one file; there's no
+    // way for the player to do ranged requests. So set this value to something
+    // reasonable.
+    text_media_info->set_bandwidth(256);
+  }
+
+  MediaInfo::TextInfo* text_info = text_media_info->mutable_text_info();
+  text_info->set_format(format);
+  if (!language.empty())
+    text_info->set_language(language);
+
+  return true;
+}
+
 bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                      const MuxerOptions& muxer_options,
                      FakeClock* fake_clock,
@@ -139,6 +206,34 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       stream_muxer_options.segment_template = stream_iter->segment_template;
     }
     stream_muxer_options.bandwidth = stream_iter->bandwidth;
+
+    // Handle text input.
+    if (stream_iter->stream_selector == "text") {
+      MediaInfo text_media_info;
+      if (!StreamInfoToTextMediaInfo(*stream_iter, stream_muxer_options,
+                                     &text_media_info)) {
+        return false;
+      }
+
+      if (mpd_notifier) {
+        uint32 unused;
+        if (!mpd_notifier->NotifyNewContainer(text_media_info, &unused)) {
+          LOG(ERROR) << "Failed to process text file " << stream_iter->input;
+        } else {
+          mpd_notifier->Flush();
+        }
+      } else if (FLAGS_output_media_info) {
+        VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
+            text_media_info,
+            stream_muxer_options.output_file_name + kMediaInfoSuffix);
+      } else {
+        NOTIMPLEMENTED()
+            << "--mpd_output or --output_media_info flags are "
+               "required for text output. Skipping manifest related output for "
+            << stream_iter->input;
+      }
+      continue;
+    }
 
     if (stream_iter->input != previous_input) {
       // New remux job needed. Create demux and job thread.
@@ -180,7 +275,7 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     DCHECK(!(FLAGS_output_media_info && mpd_notifier));
     if (FLAGS_output_media_info) {
       const std::string output_media_info_file_name =
-          stream_muxer_options.output_file_name + ".media_info";
+          stream_muxer_options.output_file_name + kMediaInfoSuffix;
       scoped_ptr<VodMediaInfoDumpMuxerListener>
           vod_media_info_dump_muxer_listener(
               new VodMediaInfoDumpMuxerListener(output_media_info_file_name));

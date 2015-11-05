@@ -28,6 +28,7 @@ class PackagerAppTest(unittest.TestCase):
     self.tmp_dir = tempfile.mkdtemp()
     self.output_prefix = os.path.join(self.tmp_dir, 'output')
     self.mpd_output = self.output_prefix + '.mpd'
+    self.output = None
 
   def tearDown(self):
     shutil.rmtree(self.tmp_dir)
@@ -70,12 +71,29 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffGold(self.output[0], 'bear-640x360-v-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-v-golden.mpd')
 
-  def testPackage(self):
-    self.packager.Package(self._GetStreams(['audio', 'video']),
+  def testPackageText(self):
+    self.packager.Package(self._GetStreams(['text'],
+                                           test_file='subtitle-english.vtt'),
                           self._GetFlags())
+    self._DiffGold(self.output[0], 'subtitle-english-golden.vtt')
+    self._DiffGold(self.mpd_output, 'subtitle-english-vtt-golden.mpd')
+
+  # Probably one of the most common scenarios is to package audio and video.
+  def testPackageAudioVideo(self):
+    self.packager.Package(self._GetStreams(['audio', 'video']), self._GetFlags())
     self._DiffGold(self.output[0], 'bear-640x360-a-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-av-golden.mpd')
+
+  # Package all video, audio, and text.
+  def testPackageVideoAudioText(self):
+    audio_video_streams = self._GetStreams(['audio', 'video'])
+    text_stream = self._GetStreams(['text'], test_file='subtitle-english.vtt')
+    self.packager.Package(audio_video_streams + text_stream, self._GetFlags())
+    self._DiffGold(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-golden.mp4')
+    self._DiffGold(self.output[2], 'subtitle-english-golden.vtt')
+    self._DiffGold(self.mpd_output, 'bear-640x360-avt-golden.mpd')
 
   def testPackageWithEncryption(self):
     self.packager.Package(self._GetStreams(['audio', 'video']),
@@ -208,7 +226,8 @@ class PackagerAppTest(unittest.TestCase):
   def _GetStreams(self, stream_descriptors, live = False,
                   test_file = 'bear-640x360.mp4'):
     streams = []
-    self.output = []
+    if not self.output:
+      self.output = []
 
     test_data_dir = os.path.join(
         test_env.SRC_DIR, 'packager', 'media', 'test', 'data')
@@ -221,11 +240,19 @@ class PackagerAppTest(unittest.TestCase):
                       'segment_template=%s-$Number$.m4s')
             streams.append(stream % (input, stream_descriptor, output, output))
         else:
-            output = '%s_%s.mp4' % (self.output_prefix, stream_descriptor)
+            output = '%s_%s.%s' % (self.output_prefix,
+                                   stream_descriptor,
+                                   self._GetExtension(stream_descriptor))
             stream = 'input=%s,stream=%s,output=%s'
             streams.append(stream % (input, stream_descriptor, output))
         self.output.append(output)
     return streams
+
+  def _GetExtension(self, stream_descriptor):
+    # TODO(rkuroiwa): Support ttml.
+    if stream_descriptor == "text":
+      return "vtt"
+    return "mp4"
 
   def _GetFlags(self, encryption = False, random_iv = False,
                 widevine_encryption = False, key_rotation = False,
@@ -276,14 +303,14 @@ class PackagerAppTest(unittest.TestCase):
             print "Updating golden file: ", golden_file_name
             shutil.copyfile(test_output, golden_file)
     else:
-        match = filecmp.cmp(test_output, golden_file)
-        if not match:
-            p = subprocess.Popen(['git', '--no-pager', 'diff', '--color=auto',
-                                  '--no-ext-diff', '--no-index',
-                                  golden_file, test_output],
-                                 stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            output, error = p.communicate()
-            self.fail(output + error)
+      match = filecmp.cmp(test_output, golden_file)
+      if not match:
+        p = subprocess.Popen(['git', '--no-pager', 'diff', '--color=auto',
+                              '--no-ext-diff', '--no-index',
+                              golden_file, test_output],
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        output, error = p.communicate()
+        self.fail(output + error)
 
   # '*.media_info' outputs contain media file names, which is changing for
   # every test run. These needs to be replaced for comparison.

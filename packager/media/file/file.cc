@@ -175,5 +175,35 @@ bool File::ReadFileToString(const char* file_name, std::string* contents) {
   return len == 0;
 }
 
+bool File::Copy(const char* from_file_name, const char* to_file_name) {
+  std::string content;
+  if (!ReadFileToString(from_file_name, &content)) {
+    LOG(ERROR) << "Failed to open file " << from_file_name;
+    return false;
+  }
+
+  scoped_ptr<edash_packager::media::File, edash_packager::media::FileCloser>
+      output_file(edash_packager::media::File::Open(to_file_name, "w"));
+  if (!output_file) {
+    LOG(ERROR) << "Failed to write to " << to_file_name;
+    return false;
+  }
+
+  uint64_t bytes_left = content.size();
+  uint64_t total_bytes_written = 0;
+  const char* content_cstr = content.c_str();
+  while (bytes_left > total_bytes_written) {
+    const int64_t bytes_written =
+        output_file->Write(content_cstr + total_bytes_written, bytes_left);
+    if (bytes_written < 0) {
+      LOG(ERROR) << "Failure while writing to " << to_file_name;
+      return false;
+    }
+
+    total_bytes_written += bytes_written;
+  }
+  return true;
+}
+
 }  // namespace media
 }  // namespace edash_packager

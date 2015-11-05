@@ -59,9 +59,16 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
                     uint64_t segment_file_size) override;
   /// @}
 
+  /// Write @a media_info to @a output_file_path in human readable format.
+  /// @param media_info is the MediaInfo to write out.
+  /// @param output_file_path is the path of the output file.
+  /// @return true on success, false otherwise.
+  // TODO(rkuroiwa): Move this to muxer_listener_internal and rename
+  // muxer_listener_internal to muxer_listener_util.
+  static bool WriteMediaInfoToFile(const MediaInfo& media_info,
+                                   const std::string& output_file_path);
+
  private:
-  // Write |media_info_| to |output_file_name_|.
-  bool SerializeMediaInfoToFile();
 
   std::string output_file_name_;
   std::string scheme_id_uri_;

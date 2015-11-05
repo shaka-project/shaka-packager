@@ -1618,6 +1618,29 @@ static MediaContainerName LookupContainerByFirst4(const uint8_t* buffer,
   return CONTAINER_UNKNOWN;
 }
 
+namespace {
+const char kWebVtt[] = "WEBVTT";
+
+bool CheckWebVtt(const uint8_t* buffer, int buffer_size) {
+  const int offset =
+      StartsWith(buffer, buffer_size, UTF8_BYTE_ORDER_MARK) ? 3 : 0;
+
+  return StartsWith(buffer + offset, buffer_size - offset,
+                    reinterpret_cast<const uint8_t*>(kWebVtt),
+                    arraysize(kWebVtt) - 1);
+}
+
+// TODO(rkuroiwa): This check is a very simple check to see if it is UTF-8 or
+// UTF-16, which is not sufficient to determine whether it is TTML. Check if the
+// entire buffer is a valid TTML.
+bool CheckTtml(const uint8_t* buffer, int buffer_size) {
+  return StartsWith(buffer, buffer_size,
+                    "<?xml version='1.0' encoding='UTF-8'?>") ||
+         StartsWith(buffer, buffer_size,
+                    "<?xml version='1.0' encoding='UTF-16'?>");
+}
+}  // namespace
+
 // Attempt to determine the container name from the buffer provided.
 MediaContainerName DetermineContainer(const uint8_t* buffer, int buffer_size) {
   DCHECK(buffer);
@@ -1631,6 +1654,10 @@ MediaContainerName DetermineContainer(const uint8_t* buffer, int buffer_size) {
   MediaContainerName result = LookupContainerByFirst4(buffer, buffer_size);
   if (result != CONTAINER_UNKNOWN)
     return result;
+
+  // WebVTT check only checks for the first few bytes.
+  if (CheckWebVtt(buffer, buffer_size))
+      return CONTAINER_WEBVTT;
 
   // Additional checks that may scan a portion of the buffer.
   if (CheckMpeg2ProgramStream(buffer, buffer_size))
@@ -1665,6 +1692,11 @@ MediaContainerName DetermineContainer(const uint8_t* buffer, int buffer_size) {
     if (CheckEac3(buffer + offset, buffer_size - offset))
       return CONTAINER_EAC3;
   }
+
+  // To do a TTML check, it (should) do a schema check which requires scanning
+  // the whole content.
+  if (CheckTtml(buffer, buffer_size))
+    return CONTAINER_TTML;
 
   return CONTAINER_UNKNOWN;
 }

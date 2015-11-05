@@ -60,6 +60,30 @@ TEST_F(LocalFileTest, Size) {
   ASSERT_EQ(kDataSize, File::GetFileSize(local_file_name_.c_str()));
 }
 
+TEST_F(LocalFileTest, Copy) {
+  ASSERT_EQ(kDataSize,
+            base::WriteFile(test_file_path_, data_.data(), kDataSize));
+
+  base::FilePath temp_dir;
+  ASSERT_TRUE(base::CreateNewTempDirectory("", &temp_dir));
+
+  // Copy the test file to temp dir as filename "a".
+  base::FilePath destination = temp_dir.Append("a");
+  ASSERT_TRUE(
+      File::Copy(local_file_name_.c_str(), destination.value().c_str()));
+
+  // Make a buffer bigger than the expected file content size to make sure that
+  // there isn't extra stuff appended.
+  char copied_file_content_buffer[kDataSize * 2] = {};
+  ASSERT_EQ(kDataSize, base::ReadFile(destination,
+                                      copied_file_content_buffer,
+                                      arraysize(copied_file_content_buffer)));
+
+  ASSERT_EQ(data_, std::string(copied_file_content_buffer, kDataSize));
+
+  base::DeleteFile(temp_dir, true);
+}
+
 TEST_F(LocalFileTest, Write) {
   // Write file using File API.
   File* file = File::Open(local_file_name_.c_str(), "w");
