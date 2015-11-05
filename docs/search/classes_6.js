@@ -13,5 +13,6 @@ var searchData=
   ['h264sps',['H264SPS',['../d8/db0/structedash__packager_1_1media_1_1H264SPS.html',1,'edash_packager::media']]],
   ['h264weightingfactors',['H264WeightingFactors',['../d3/dbc/structedash__packager_1_1media_1_1H264WeightingFactors.html',1,'edash_packager::media']]],
   ['handlerreference',['HandlerReference',['../d3/dbd/structedash__packager_1_1media_1_1mp4_1_1HandlerReference.html',1,'edash_packager::media::mp4']]],
+  ['hevcdecoderconfiguration',['HEVCDecoderConfiguration',['../d6/d5d/classedash__packager_1_1media_1_1HEVCDecoderConfiguration.html',1,'edash_packager::media']]],
   ['httpkeyfetcher',['HttpKeyFetcher',['../d3/d3e/classedash__packager_1_1media_1_1HttpKeyFetcher.html',1,'edash_packager::media']]]
 ];
