@@ -264,8 +264,38 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  <span class="keywordflow">return</span> len == 0;</div>
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;}</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00178"></a><span class="lineno"><a class="line" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a79b8b288ff78288bdbb8c62d5dd858e1">  178</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a79b8b288ff78288bdbb8c62d5dd858e1">File::Copy</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* from_file_name, <span class="keyword">const</span> <span class="keywordtype">char</span>* to_file_name) {</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  std::string content;</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a9a4f45dcab338be2b6843e0de87ce8f1">ReadFileToString</a>(from_file_name, &amp;content)) {</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to open file &quot;</span> &lt;&lt; from_file_name;</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  }</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  scoped_ptr&lt;edash_packager::media::File, edash_packager::media::FileCloser&gt;</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;      output_file(<a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a0933ccd7df76fcf8fbcfe12c15dbf6c5">edash_packager::media::File::Open</a>(to_file_name, <span class="stringliteral">&quot;w&quot;</span>));</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  <span class="keywordflow">if</span> (!output_file) {</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to write to &quot;</span> &lt;&lt; to_file_name;</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  }</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  uint64_t bytes_left = content.size();</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  uint64_t total_bytes_written = 0;</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span>* content_cstr = content.c_str();</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <span class="keywordflow">while</span> (bytes_left &gt; total_bytes_written) {</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    <span class="keyword">const</span> int64_t bytes_written =</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;        output_file-&gt;Write(content_cstr + total_bytes_written, bytes_left);</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <span class="keywordflow">if</span> (bytes_written &lt; 0) {</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failure while writing to &quot;</span> &lt;&lt; to_file_name;</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    }</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    total_bytes_written += bytes_written;</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  }</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;}</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1File_html_a9a4f45dcab338be2b6843e0de87ce8f1"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a9a4f45dcab338be2b6843e0de87ce8f1">edash_packager::media::File::ReadFileToString</a></div><div class="ttdeci">static bool ReadFileToString(const char *file_name, std::string *contents)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00160">file.cc:160</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1File_html_a42290da768cd34316d2f4c5fc3976b38"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a42290da768cd34316d2f4c5fc3976b38">edash_packager::media::File::Close</a></div><div class="ttdeci">virtual bool Close()=0</div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1File_html_a663547ead01b035117429c0bc757aab7"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a663547ead01b035117429c0bc757aab7">edash_packager::media::File::Read</a></div><div class="ttdeci">virtual int64_t Read(void *buffer, uint64_t length)=0</div></div>
@@ -275,12 +305,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classedash__packager_1_1media_1_1File_html_a4dfd6f4d8f67d2ee1caff4f4e1717c70"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a4dfd6f4d8f67d2ee1caff4f4e1717c70">edash_packager::media::File::Open</a></div><div class="ttdeci">static File * Open(const char *file_name, const char *mode)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00116">file.cc:116</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1File_html_a1bb2a295cb69b3e51b9cc14969848632"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a1bb2a295cb69b3e51b9cc14969848632">edash_packager::media::File::Size</a></div><div class="ttdeci">virtual int64_t Size()=0</div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1LocalFile_html_a95e4a5eff87224c9a156b5e2c7824cb9"><div class="ttname"><a href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#a95e4a5eff87224c9a156b5e2c7824cb9">edash_packager::media::LocalFile::Delete</a></div><div class="ttdeci">static bool Delete(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00084">local_file.cc:84</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1File_html_a79b8b288ff78288bdbb8c62d5dd858e1"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a79b8b288ff78288bdbb8c62d5dd858e1">edash_packager::media::File::Copy</a></div><div class="ttdeci">static bool Copy(const char *from_file_name, const char *to_file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00178">file.cc:178</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1File_html_a239a76adb5ff5c5340c58f96d7034ec6"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a239a76adb5ff5c5340c58f96d7034ec6">edash_packager::media::File::GetFileSize</a></div><div class="ttdeci">static int64_t GetFileSize(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00151">file.cc:151</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1File_html_a47194a7cd303640c2a8b689d18ef9701"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a47194a7cd303640c2a8b689d18ef9701">edash_packager::media::File::OpenWithNoBuffering</a></div><div class="ttdeci">static File * OpenWithNoBuffering(const char *file_name, const char *mode)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00127">file.cc:127</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Nov 5 2015 01:47:32 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 11 2015 21:47:45 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

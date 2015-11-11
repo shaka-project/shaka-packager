@@ -1707,63 +1707,95 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01618"></a><span class="lineno"> 1618</span>&#160;  <span class="keywordflow">return</span> CONTAINER_UNKNOWN;</div>
 <div class="line"><a name="l01619"></a><span class="lineno"> 1619</span>&#160;}</div>
 <div class="line"><a name="l01620"></a><span class="lineno"> 1620</span>&#160;</div>
-<div class="line"><a name="l01621"></a><span class="lineno"> 1621</span>&#160;<span class="comment">// Attempt to determine the container name from the buffer provided.</span></div>
-<div class="line"><a name="l01622"></a><span class="lineno"> 1622</span>&#160;MediaContainerName DetermineContainer(<span class="keyword">const</span> uint8_t* buffer, <span class="keywordtype">int</span> buffer_size) {</div>
-<div class="line"><a name="l01623"></a><span class="lineno"> 1623</span>&#160;  DCHECK(buffer);</div>
-<div class="line"><a name="l01624"></a><span class="lineno"> 1624</span>&#160;</div>
-<div class="line"><a name="l01625"></a><span class="lineno"> 1625</span>&#160;  <span class="comment">// Since MOV/QuickTime/MPEG4 streams are common, check for them first.</span></div>
-<div class="line"><a name="l01626"></a><span class="lineno"> 1626</span>&#160;  <span class="keywordflow">if</span> (CheckMov(buffer, buffer_size))</div>
-<div class="line"><a name="l01627"></a><span class="lineno"> 1627</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MOV;</div>
-<div class="line"><a name="l01628"></a><span class="lineno"> 1628</span>&#160;</div>
-<div class="line"><a name="l01629"></a><span class="lineno"> 1629</span>&#160;  <span class="comment">// Next attempt the simple checks, that typically look at just the</span></div>
-<div class="line"><a name="l01630"></a><span class="lineno"> 1630</span>&#160;  <span class="comment">// first few bytes of the file.</span></div>
-<div class="line"><a name="l01631"></a><span class="lineno"> 1631</span>&#160;  MediaContainerName result = LookupContainerByFirst4(buffer, buffer_size);</div>
-<div class="line"><a name="l01632"></a><span class="lineno"> 1632</span>&#160;  <span class="keywordflow">if</span> (result != CONTAINER_UNKNOWN)</div>
-<div class="line"><a name="l01633"></a><span class="lineno"> 1633</span>&#160;    <span class="keywordflow">return</span> result;</div>
-<div class="line"><a name="l01634"></a><span class="lineno"> 1634</span>&#160;</div>
-<div class="line"><a name="l01635"></a><span class="lineno"> 1635</span>&#160;  <span class="comment">// Additional checks that may scan a portion of the buffer.</span></div>
-<div class="line"><a name="l01636"></a><span class="lineno"> 1636</span>&#160;  <span class="keywordflow">if</span> (CheckMpeg2ProgramStream(buffer, buffer_size))</div>
-<div class="line"><a name="l01637"></a><span class="lineno"> 1637</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MPEG2PS;</div>
-<div class="line"><a name="l01638"></a><span class="lineno"> 1638</span>&#160;  <span class="keywordflow">if</span> (CheckMpeg2TransportStream(buffer, buffer_size))</div>
-<div class="line"><a name="l01639"></a><span class="lineno"> 1639</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MPEG2TS;</div>
-<div class="line"><a name="l01640"></a><span class="lineno"> 1640</span>&#160;  <span class="keywordflow">if</span> (CheckMJpeg(buffer, buffer_size))</div>
-<div class="line"><a name="l01641"></a><span class="lineno"> 1641</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MJPEG;</div>
-<div class="line"><a name="l01642"></a><span class="lineno"> 1642</span>&#160;  <span class="keywordflow">if</span> (CheckDV(buffer, buffer_size))</div>
-<div class="line"><a name="l01643"></a><span class="lineno"> 1643</span>&#160;    <span class="keywordflow">return</span> CONTAINER_DV;</div>
-<div class="line"><a name="l01644"></a><span class="lineno"> 1644</span>&#160;  <span class="keywordflow">if</span> (CheckH261(buffer, buffer_size))</div>
-<div class="line"><a name="l01645"></a><span class="lineno"> 1645</span>&#160;    <span class="keywordflow">return</span> CONTAINER_H261;</div>
-<div class="line"><a name="l01646"></a><span class="lineno"> 1646</span>&#160;  <span class="keywordflow">if</span> (CheckH263(buffer, buffer_size))</div>
-<div class="line"><a name="l01647"></a><span class="lineno"> 1647</span>&#160;    <span class="keywordflow">return</span> CONTAINER_H263;</div>
-<div class="line"><a name="l01648"></a><span class="lineno"> 1648</span>&#160;  <span class="keywordflow">if</span> (CheckH264(buffer, buffer_size))</div>
-<div class="line"><a name="l01649"></a><span class="lineno"> 1649</span>&#160;    <span class="keywordflow">return</span> CONTAINER_H264;</div>
-<div class="line"><a name="l01650"></a><span class="lineno"> 1650</span>&#160;  <span class="keywordflow">if</span> (CheckMpeg4BitStream(buffer, buffer_size))</div>
-<div class="line"><a name="l01651"></a><span class="lineno"> 1651</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MPEG4BS;</div>
-<div class="line"><a name="l01652"></a><span class="lineno"> 1652</span>&#160;  <span class="keywordflow">if</span> (CheckVC1(buffer, buffer_size))</div>
-<div class="line"><a name="l01653"></a><span class="lineno"> 1653</span>&#160;    <span class="keywordflow">return</span> CONTAINER_VC1;</div>
-<div class="line"><a name="l01654"></a><span class="lineno"> 1654</span>&#160;  <span class="keywordflow">if</span> (CheckSrt(buffer, buffer_size))</div>
-<div class="line"><a name="l01655"></a><span class="lineno"> 1655</span>&#160;    <span class="keywordflow">return</span> CONTAINER_SRT;</div>
-<div class="line"><a name="l01656"></a><span class="lineno"> 1656</span>&#160;  <span class="keywordflow">if</span> (CheckGsm(buffer, buffer_size))</div>
-<div class="line"><a name="l01657"></a><span class="lineno"> 1657</span>&#160;    <span class="keywordflow">return</span> CONTAINER_GSM;</div>
-<div class="line"><a name="l01658"></a><span class="lineno"> 1658</span>&#160;</div>
-<div class="line"><a name="l01659"></a><span class="lineno"> 1659</span>&#160;  <span class="comment">// AC3/EAC3 might not start at the beginning of the stream,</span></div>
-<div class="line"><a name="l01660"></a><span class="lineno"> 1660</span>&#160;  <span class="comment">// so scan for a start code.</span></div>
-<div class="line"><a name="l01661"></a><span class="lineno"> 1661</span>&#160;  <span class="keywordtype">int</span> offset = 1;  <span class="comment">// No need to start at byte 0 due to First4 check.</span></div>
-<div class="line"><a name="l01662"></a><span class="lineno"> 1662</span>&#160;  <span class="keywordflow">if</span> (AdvanceToStartCode(buffer, buffer_size, &amp;offset, 4, 16, kAc3SyncWord)) {</div>
-<div class="line"><a name="l01663"></a><span class="lineno"> 1663</span>&#160;    <span class="keywordflow">if</span> (CheckAc3(buffer + offset, buffer_size - offset))</div>
-<div class="line"><a name="l01664"></a><span class="lineno"> 1664</span>&#160;      <span class="keywordflow">return</span> CONTAINER_AC3;</div>
-<div class="line"><a name="l01665"></a><span class="lineno"> 1665</span>&#160;    <span class="keywordflow">if</span> (CheckEac3(buffer + offset, buffer_size - offset))</div>
-<div class="line"><a name="l01666"></a><span class="lineno"> 1666</span>&#160;      <span class="keywordflow">return</span> CONTAINER_EAC3;</div>
-<div class="line"><a name="l01667"></a><span class="lineno"> 1667</span>&#160;  }</div>
-<div class="line"><a name="l01668"></a><span class="lineno"> 1668</span>&#160;</div>
-<div class="line"><a name="l01669"></a><span class="lineno"> 1669</span>&#160;  <span class="keywordflow">return</span> CONTAINER_UNKNOWN;</div>
-<div class="line"><a name="l01670"></a><span class="lineno"> 1670</span>&#160;}</div>
-<div class="line"><a name="l01671"></a><span class="lineno"> 1671</span>&#160;</div>
-<div class="line"><a name="l01672"></a><span class="lineno"> 1672</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l01673"></a><span class="lineno"> 1673</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l01621"></a><span class="lineno"> 1621</span>&#160;<span class="keyword">namespace </span>{</div>
+<div class="line"><a name="l01622"></a><span class="lineno"> 1622</span>&#160;<span class="keyword">const</span> <span class="keywordtype">char</span> kWebVtt[] = <span class="stringliteral">&quot;WEBVTT&quot;</span>;</div>
+<div class="line"><a name="l01623"></a><span class="lineno"> 1623</span>&#160;</div>
+<div class="line"><a name="l01624"></a><span class="lineno"> 1624</span>&#160;<span class="keywordtype">bool</span> CheckWebVtt(<span class="keyword">const</span> uint8_t* buffer, <span class="keywordtype">int</span> buffer_size) {</div>
+<div class="line"><a name="l01625"></a><span class="lineno"> 1625</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">int</span> offset =</div>
+<div class="line"><a name="l01626"></a><span class="lineno"> 1626</span>&#160;      StartsWith(buffer, buffer_size, UTF8_BYTE_ORDER_MARK) ? 3 : 0;</div>
+<div class="line"><a name="l01627"></a><span class="lineno"> 1627</span>&#160;</div>
+<div class="line"><a name="l01628"></a><span class="lineno"> 1628</span>&#160;  <span class="keywordflow">return</span> StartsWith(buffer + offset, buffer_size - offset,</div>
+<div class="line"><a name="l01629"></a><span class="lineno"> 1629</span>&#160;                    reinterpret_cast&lt;const uint8_t*&gt;(kWebVtt),</div>
+<div class="line"><a name="l01630"></a><span class="lineno"> 1630</span>&#160;                    arraysize(kWebVtt) - 1);</div>
+<div class="line"><a name="l01631"></a><span class="lineno"> 1631</span>&#160;}</div>
+<div class="line"><a name="l01632"></a><span class="lineno"> 1632</span>&#160;</div>
+<div class="line"><a name="l01633"></a><span class="lineno"> 1633</span>&#160;<span class="comment">// TODO(rkuroiwa): This check is a very simple check to see if it is UTF-8 or</span></div>
+<div class="line"><a name="l01634"></a><span class="lineno"> 1634</span>&#160;<span class="comment">// UTF-16, which is not sufficient to determine whether it is TTML. Check if the</span></div>
+<div class="line"><a name="l01635"></a><span class="lineno"> 1635</span>&#160;<span class="comment">// entire buffer is a valid TTML.</span></div>
+<div class="line"><a name="l01636"></a><span class="lineno"> 1636</span>&#160;<span class="keywordtype">bool</span> CheckTtml(<span class="keyword">const</span> uint8_t* buffer, <span class="keywordtype">int</span> buffer_size) {</div>
+<div class="line"><a name="l01637"></a><span class="lineno"> 1637</span>&#160;  <span class="keywordflow">return</span> StartsWith(buffer, buffer_size,</div>
+<div class="line"><a name="l01638"></a><span class="lineno"> 1638</span>&#160;                    <span class="stringliteral">&quot;&lt;?xml version=&#39;1.0&#39; encoding=&#39;UTF-8&#39;?&gt;&quot;</span>) ||</div>
+<div class="line"><a name="l01639"></a><span class="lineno"> 1639</span>&#160;         StartsWith(buffer, buffer_size,</div>
+<div class="line"><a name="l01640"></a><span class="lineno"> 1640</span>&#160;                    <span class="stringliteral">&quot;&lt;?xml version=&#39;1.0&#39; encoding=&#39;UTF-16&#39;?&gt;&quot;</span>);</div>
+<div class="line"><a name="l01641"></a><span class="lineno"> 1641</span>&#160;}</div>
+<div class="line"><a name="l01642"></a><span class="lineno"> 1642</span>&#160;}  <span class="comment">// namespace</span></div>
+<div class="line"><a name="l01643"></a><span class="lineno"> 1643</span>&#160;</div>
+<div class="line"><a name="l01644"></a><span class="lineno"> 1644</span>&#160;<span class="comment">// Attempt to determine the container name from the buffer provided.</span></div>
+<div class="line"><a name="l01645"></a><span class="lineno"> 1645</span>&#160;MediaContainerName DetermineContainer(<span class="keyword">const</span> uint8_t* buffer, <span class="keywordtype">int</span> buffer_size) {</div>
+<div class="line"><a name="l01646"></a><span class="lineno"> 1646</span>&#160;  DCHECK(buffer);</div>
+<div class="line"><a name="l01647"></a><span class="lineno"> 1647</span>&#160;</div>
+<div class="line"><a name="l01648"></a><span class="lineno"> 1648</span>&#160;  <span class="comment">// Since MOV/QuickTime/MPEG4 streams are common, check for them first.</span></div>
+<div class="line"><a name="l01649"></a><span class="lineno"> 1649</span>&#160;  <span class="keywordflow">if</span> (CheckMov(buffer, buffer_size))</div>
+<div class="line"><a name="l01650"></a><span class="lineno"> 1650</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MOV;</div>
+<div class="line"><a name="l01651"></a><span class="lineno"> 1651</span>&#160;</div>
+<div class="line"><a name="l01652"></a><span class="lineno"> 1652</span>&#160;  <span class="comment">// Next attempt the simple checks, that typically look at just the</span></div>
+<div class="line"><a name="l01653"></a><span class="lineno"> 1653</span>&#160;  <span class="comment">// first few bytes of the file.</span></div>
+<div class="line"><a name="l01654"></a><span class="lineno"> 1654</span>&#160;  MediaContainerName result = LookupContainerByFirst4(buffer, buffer_size);</div>
+<div class="line"><a name="l01655"></a><span class="lineno"> 1655</span>&#160;  <span class="keywordflow">if</span> (result != CONTAINER_UNKNOWN)</div>
+<div class="line"><a name="l01656"></a><span class="lineno"> 1656</span>&#160;    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l01657"></a><span class="lineno"> 1657</span>&#160;</div>
+<div class="line"><a name="l01658"></a><span class="lineno"> 1658</span>&#160;  <span class="comment">// WebVTT check only checks for the first few bytes.</span></div>
+<div class="line"><a name="l01659"></a><span class="lineno"> 1659</span>&#160;  <span class="keywordflow">if</span> (CheckWebVtt(buffer, buffer_size))</div>
+<div class="line"><a name="l01660"></a><span class="lineno"> 1660</span>&#160;      <span class="keywordflow">return</span> CONTAINER_WEBVTT;</div>
+<div class="line"><a name="l01661"></a><span class="lineno"> 1661</span>&#160;</div>
+<div class="line"><a name="l01662"></a><span class="lineno"> 1662</span>&#160;  <span class="comment">// Additional checks that may scan a portion of the buffer.</span></div>
+<div class="line"><a name="l01663"></a><span class="lineno"> 1663</span>&#160;  <span class="keywordflow">if</span> (CheckMpeg2ProgramStream(buffer, buffer_size))</div>
+<div class="line"><a name="l01664"></a><span class="lineno"> 1664</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MPEG2PS;</div>
+<div class="line"><a name="l01665"></a><span class="lineno"> 1665</span>&#160;  <span class="keywordflow">if</span> (CheckMpeg2TransportStream(buffer, buffer_size))</div>
+<div class="line"><a name="l01666"></a><span class="lineno"> 1666</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MPEG2TS;</div>
+<div class="line"><a name="l01667"></a><span class="lineno"> 1667</span>&#160;  <span class="keywordflow">if</span> (CheckMJpeg(buffer, buffer_size))</div>
+<div class="line"><a name="l01668"></a><span class="lineno"> 1668</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MJPEG;</div>
+<div class="line"><a name="l01669"></a><span class="lineno"> 1669</span>&#160;  <span class="keywordflow">if</span> (CheckDV(buffer, buffer_size))</div>
+<div class="line"><a name="l01670"></a><span class="lineno"> 1670</span>&#160;    <span class="keywordflow">return</span> CONTAINER_DV;</div>
+<div class="line"><a name="l01671"></a><span class="lineno"> 1671</span>&#160;  <span class="keywordflow">if</span> (CheckH261(buffer, buffer_size))</div>
+<div class="line"><a name="l01672"></a><span class="lineno"> 1672</span>&#160;    <span class="keywordflow">return</span> CONTAINER_H261;</div>
+<div class="line"><a name="l01673"></a><span class="lineno"> 1673</span>&#160;  <span class="keywordflow">if</span> (CheckH263(buffer, buffer_size))</div>
+<div class="line"><a name="l01674"></a><span class="lineno"> 1674</span>&#160;    <span class="keywordflow">return</span> CONTAINER_H263;</div>
+<div class="line"><a name="l01675"></a><span class="lineno"> 1675</span>&#160;  <span class="keywordflow">if</span> (CheckH264(buffer, buffer_size))</div>
+<div class="line"><a name="l01676"></a><span class="lineno"> 1676</span>&#160;    <span class="keywordflow">return</span> CONTAINER_H264;</div>
+<div class="line"><a name="l01677"></a><span class="lineno"> 1677</span>&#160;  <span class="keywordflow">if</span> (CheckMpeg4BitStream(buffer, buffer_size))</div>
+<div class="line"><a name="l01678"></a><span class="lineno"> 1678</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MPEG4BS;</div>
+<div class="line"><a name="l01679"></a><span class="lineno"> 1679</span>&#160;  <span class="keywordflow">if</span> (CheckVC1(buffer, buffer_size))</div>
+<div class="line"><a name="l01680"></a><span class="lineno"> 1680</span>&#160;    <span class="keywordflow">return</span> CONTAINER_VC1;</div>
+<div class="line"><a name="l01681"></a><span class="lineno"> 1681</span>&#160;  <span class="keywordflow">if</span> (CheckSrt(buffer, buffer_size))</div>
+<div class="line"><a name="l01682"></a><span class="lineno"> 1682</span>&#160;    <span class="keywordflow">return</span> CONTAINER_SRT;</div>
+<div class="line"><a name="l01683"></a><span class="lineno"> 1683</span>&#160;  <span class="keywordflow">if</span> (CheckGsm(buffer, buffer_size))</div>
+<div class="line"><a name="l01684"></a><span class="lineno"> 1684</span>&#160;    <span class="keywordflow">return</span> CONTAINER_GSM;</div>
+<div class="line"><a name="l01685"></a><span class="lineno"> 1685</span>&#160;</div>
+<div class="line"><a name="l01686"></a><span class="lineno"> 1686</span>&#160;  <span class="comment">// AC3/EAC3 might not start at the beginning of the stream,</span></div>
+<div class="line"><a name="l01687"></a><span class="lineno"> 1687</span>&#160;  <span class="comment">// so scan for a start code.</span></div>
+<div class="line"><a name="l01688"></a><span class="lineno"> 1688</span>&#160;  <span class="keywordtype">int</span> offset = 1;  <span class="comment">// No need to start at byte 0 due to First4 check.</span></div>
+<div class="line"><a name="l01689"></a><span class="lineno"> 1689</span>&#160;  <span class="keywordflow">if</span> (AdvanceToStartCode(buffer, buffer_size, &amp;offset, 4, 16, kAc3SyncWord)) {</div>
+<div class="line"><a name="l01690"></a><span class="lineno"> 1690</span>&#160;    <span class="keywordflow">if</span> (CheckAc3(buffer + offset, buffer_size - offset))</div>
+<div class="line"><a name="l01691"></a><span class="lineno"> 1691</span>&#160;      <span class="keywordflow">return</span> CONTAINER_AC3;</div>
+<div class="line"><a name="l01692"></a><span class="lineno"> 1692</span>&#160;    <span class="keywordflow">if</span> (CheckEac3(buffer + offset, buffer_size - offset))</div>
+<div class="line"><a name="l01693"></a><span class="lineno"> 1693</span>&#160;      <span class="keywordflow">return</span> CONTAINER_EAC3;</div>
+<div class="line"><a name="l01694"></a><span class="lineno"> 1694</span>&#160;  }</div>
+<div class="line"><a name="l01695"></a><span class="lineno"> 1695</span>&#160;</div>
+<div class="line"><a name="l01696"></a><span class="lineno"> 1696</span>&#160;  <span class="comment">// To do a TTML check, it (should) do a schema check which requires scanning</span></div>
+<div class="line"><a name="l01697"></a><span class="lineno"> 1697</span>&#160;  <span class="comment">// the whole content.</span></div>
+<div class="line"><a name="l01698"></a><span class="lineno"> 1698</span>&#160;  <span class="keywordflow">if</span> (CheckTtml(buffer, buffer_size))</div>
+<div class="line"><a name="l01699"></a><span class="lineno"> 1699</span>&#160;    <span class="keywordflow">return</span> CONTAINER_TTML;</div>
+<div class="line"><a name="l01700"></a><span class="lineno"> 1700</span>&#160;</div>
+<div class="line"><a name="l01701"></a><span class="lineno"> 1701</span>&#160;  <span class="keywordflow">return</span> CONTAINER_UNKNOWN;</div>
+<div class="line"><a name="l01702"></a><span class="lineno"> 1702</span>&#160;}</div>
+<div class="line"><a name="l01703"></a><span class="lineno"> 1703</span>&#160;</div>
+<div class="line"><a name="l01704"></a><span class="lineno"> 1704</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l01705"></a><span class="lineno"> 1705</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Nov 5 2015 01:47:32 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 11 2015 21:47:45 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

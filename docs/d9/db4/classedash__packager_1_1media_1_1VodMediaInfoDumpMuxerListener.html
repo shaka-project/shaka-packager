@@ -88,6 +88,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="../../de/d77/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">edash_packager::media::VodMediaInfoDumpMuxerListener Class Reference</div>  </div>
@@ -125,6 +126,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>OnMediaEnd</b> (bool 
 <tr class="memitem:ac74719c3b8f9fdec5b35f03bcd289d51"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac74719c3b8f9fdec5b35f03bcd289d51"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>OnNewSegment</b> (uint64_t start_time, uint64_t duration, uint64_t segment_file_size) override</td></tr>
 <tr class="separator:ac74719c3b8f9fdec5b35f03bcd289d51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a4c197fa6ac276f1da4486f33fbd8267a"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a4c197fa6ac276f1da4486f33fbd8267a">WriteMediaInfoToFile</a> (const MediaInfo &amp;media_info, const std::string &amp;output_file_path)</td></tr>
+<tr class="separator:a4c197fa6ac276f1da4486f33fbd8267a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -194,6 +200,51 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="a4c197fa6ac276f1da4486f33fbd8267a"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool edash_packager::media::VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile </td>
+          <td>(</td>
+          <td class="paramtype">const MediaInfo &amp;&#160;</td>
+          <td class="paramname"><em>media_info</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>output_file_path</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Write <em>media_info</em> to <em>output_file_path</em> in human readable format. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">media_info</td><td>is the MediaInfo to write out. </td></tr>
+    <tr><td class="paramname">output_file_path</td><td>is the path of the output file. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00109">109</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>media/event/<a class="el" href="../../dd/daa/vod__media__info__dump__muxer__listener_8h_source.html">vod_media_info_dump_muxer_listener.h</a></li>
 <li>media/event/<a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a></li>
@@ -201,7 +252,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Nov 5 2015 01:47:34 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Nov 11 2015 21:47:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
