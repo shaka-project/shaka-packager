@@ -74,10 +74,10 @@ bool VPCodecConfiguration::Parse(const std::vector<uint8_t>& data) {
   uint16_t codec_initialization_data_size = 0;
   RCHECK(reader.ReadBits(16, &codec_initialization_data_size));
   RCHECK(reader.bits_available() >= codec_initialization_data_size * 8);
-  const size_t kHeaderSize = 6u;  // Size of bytes read so far.
+  const size_t header_size = data.size() - reader.bits_available() / 8;
   codec_initialization_data_.assign(
-      data.begin() + kHeaderSize,
-      data.begin() + kHeaderSize + codec_initialization_data_size);
+      data.begin() + header_size,
+      data.begin() + header_size + codec_initialization_data_size);
   return true;
 }
 

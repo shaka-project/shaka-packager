@@ -25,6 +25,8 @@
         'h264_parser.h',
         'vp_codec_configuration.cc',
         'vp_codec_configuration.h',
+        'vp9_parser.cc',
+        'vp9_parser.h',
       ],
       'dependencies': [
         '../../base/base.gyp:base',
@@ -40,9 +42,11 @@
         'h264_parser_unittest.cc',
         'hevc_decoder_configuration_unittest.cc',
         'vp_codec_configuration_unittest.cc',
+        'vp9_parser_unittest.cc',
       ],
       'dependencies': [
         '../../media/base/media_base.gyp:base',
+        '../../testing/gmock.gyp:gmock',
         '../../testing/gtest.gyp:gtest',
         '../test/media_test.gyp:media_test_support',
         'filters',
