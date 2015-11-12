@@ -180,6 +180,22 @@ TEST_F(SimpleMpdNotifierTest, OnDemandNotifySampleDuration) {
       notifier.NotifySampleDuration(kRepresentationId, kSampleDuration));
 }
 
+// This test is mainly for tsan. Using both the notifier and the MpdBuilder.
+// Although locks in MpdBuilder have been removed,
+// https://github.com/google/edash-packager/issues/45
+// This issue identified a bug where using SimpleMpdNotifier with multiple
+// threads causes a deadlock.
+TEST_F(SimpleMpdNotifierTest, NotifyNewContainerAndSampleDurationNoMock) {
+  SimpleMpdNotifier notifier(kOnDemandProfile, empty_mpd_option_,
+                             empty_base_urls_, output_path_);
+  uint32_t container_id;
+  EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
+                                          &container_id));
+  const uint32_t kAnySampleDuration = 1000;
+  EXPECT_TRUE(notifier.NotifySampleDuration(container_id,  kAnySampleDuration));
+  EXPECT_TRUE(notifier.Flush());
+}
+
 // Verify that NotifyNewSegment() for live works.
 TEST_F(SimpleMpdNotifierTest, LiveNotifyNewSegment) {
   SimpleMpdNotifier notifier(kLiveProfile, empty_mpd_option_, empty_base_urls_,

@@ -726,6 +726,22 @@ TEST_P(DashIopMpdNotifierTest, UpdateEncryption) {
       container_id, "myuuid", std::vector<uint8_t>(), kBogusNewPsshVector));
 }
 
+// This test is mainly for tsan. Using both the notifier and the MpdBuilder.
+// Although locks in MpdBuilder have been removed,
+// https://github.com/google/edash-packager/issues/45
+// This issue identified a bug where using SimpleMpdNotifier with multiple
+// threads causes a deadlock. This tests with DashIopMpdNotifier.
+TEST_F(DashIopMpdNotifierTest, NotifyNewContainerAndSampleDurationNoMock) {
+  DashIopMpdNotifier notifier(kOnDemandProfile, empty_mpd_option_,
+                             empty_base_urls_, output_path_);
+  uint32_t container_id;
+  EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
+                                          &container_id));
+  const uint32_t kAnySampleDuration = 1000;
+  EXPECT_TRUE(notifier.NotifySampleDuration(container_id,  kAnySampleDuration));
+  EXPECT_TRUE(notifier.Flush());
+}
+
 INSTANTIATE_TEST_CASE_P(StaticAndDynamic,
                         DashIopMpdNotifierTest,
                         ::testing::Values(MpdBuilder::kStatic,

@@ -127,6 +127,7 @@ bool SimpleMpdNotifier::AddContentProtectionElement(
 }
 
 bool SimpleMpdNotifier::Flush() {
+  base::AutoLock auto_lock(lock_);
   return WriteMpdToFile(output_path_, mpd_builder_.get());
 }
 

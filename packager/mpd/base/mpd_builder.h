@@ -25,7 +25,6 @@
 #include "packager/base/atomic_sequence_num.h"
 #include "packager/base/gtest_prod_util.h"
 #include "packager/base/stl_util.h"
-#include "packager/base/synchronization/lock.h"
 #include "packager/mpd/base/bandwidth_estimator.h"
 #include "packager/mpd/base/content_protection_element.h"
 #include "packager/mpd/base/media_info.pb.h"
@@ -144,7 +143,6 @@ class MpdBuilder {
   std::list<std::string> base_urls_;
   std::string availability_start_time_;
 
-  base::Lock lock_;
   base::AtomicSequenceNumber adaptation_set_counter_;
   base::AtomicSequenceNumber representation_counter_;
 
@@ -344,8 +342,6 @@ class AdaptationSet {
   std::list<ContentProtectionElement> content_protection_elements_;
   std::list<Representation*> representations_;
   ::STLElementDeleter<std::list<Representation*> > representations_deleter_;
-
-  base::Lock lock_;
 
   base::AtomicSequenceNumber* const representation_counter_;
 
@@ -550,8 +546,6 @@ class Representation {
   MediaInfo media_info_;
   std::list<ContentProtectionElement> content_protection_elements_;
   std::list<SegmentInfo> segment_infos_;
-
-  base::Lock lock_;
 
   const uint32_t id_;
   std::string mime_type_;

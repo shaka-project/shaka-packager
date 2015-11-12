@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "packager/base/synchronization/lock.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/mpd_notifier_util.h"
 #include "packager/mpd/base/mpd_options.h"
