@@ -17,9 +17,12 @@ namespace media {
 /// scope.
 struct FileCloser {
   inline void operator()(File* file) const {
-    if (file != NULL && !file->Close()) {
-      LOG(WARNING) << "Failed to close the file properly: "
-                   << file->file_name();
+    if (file != NULL) {
+      const std::string filename = file->file_name();
+      if (!file->Close()) {
+        LOG(WARNING) << "Failed to close the file properly: "
+                     << filename;
+      }
     }
   }
 };
