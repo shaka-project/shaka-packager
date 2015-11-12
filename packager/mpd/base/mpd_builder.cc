@@ -401,16 +401,13 @@ MpdBuilder::MpdBuilder(MpdType type, const MpdOptions& mpd_options)
 MpdBuilder::~MpdBuilder() {}
 
 void MpdBuilder::AddBaseUrl(const std::string& base_url) {
-  base::AutoLock scoped_lock(lock_);
   base_urls_.push_back(base_url);
 }
 
 AdaptationSet* MpdBuilder::AddAdaptationSet(const std::string& lang) {
-  base::AutoLock scoped_lock(lock_);
   scoped_ptr<AdaptationSet> adaptation_set(
       new AdaptationSet(adaptation_set_counter_.GetNext(), lang, mpd_options_,
-                        type_,
-                        &representation_counter_));
+                        type_, &representation_counter_));
 
   DCHECK(adaptation_set);
   adaptation_sets_.push_back(adaptation_set.get());
@@ -418,13 +415,11 @@ AdaptationSet* MpdBuilder::AddAdaptationSet(const std::string& lang) {
 }
 
 bool MpdBuilder::WriteMpdToFile(media::File* output_file) {
-  base::AutoLock scoped_lock(lock_);
   DCHECK(output_file);
   return WriteMpdToOutput(output_file);
 }
 
 bool MpdBuilder::ToString(std::string* output) {
-  base::AutoLock scoped_lock(lock_);
   DCHECK(output);
   return WriteMpdToOutput(output);
 }
@@ -669,7 +664,6 @@ AdaptationSet::AdaptationSet(uint32_t adaptation_set_id,
 AdaptationSet::~AdaptationSet() {}
 
 Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
-  base::AutoLock scoped_lock(lock_);
   const uint32_t representation_id = representation_counter_->GetNext();
   // Note that AdaptationSet outlive Representation, so this object
   // will die before AdaptationSet.
@@ -715,14 +709,12 @@ Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
 
 void AdaptationSet::AddContentProtectionElement(
     const ContentProtectionElement& content_protection_element) {
-  base::AutoLock scoped_lock(lock_);
   content_protection_elements_.push_back(content_protection_element);
   RemoveDuplicateAttributes(&content_protection_elements_.back());
 }
 
 void AdaptationSet::UpdateContentProtectionPssh(const std::string& drm_uuid,
                                                 const std::string& pssh) {
-  base::AutoLock scoped_lock(lock_);
   UpdateContentProtectionPsshHelper(drm_uuid, pssh,
                                     &content_protection_elements_);
 }
@@ -734,7 +726,6 @@ void AdaptationSet::AddRole(Role role) {
 // Creates a copy of <AdaptationSet> xml element, iterate thru all the
 // <Representation> (child) elements and add them to the copy.
 xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
-  base::AutoLock scoped_lock(lock_);
   AdaptationSetXmlNode adaptation_set;
 
   if (!adaptation_set.AddContentProtectionElements(
@@ -827,8 +818,6 @@ int AdaptationSet::Group() const {
 void AdaptationSet::OnNewSegmentForRepresentation(uint32_t representation_id,
                                                   uint64_t start_time,
                                                   uint64_t duration) {
-  base::AutoLock scoped_lock(lock_);
-
   if (mpd_type_ == MpdBuilder::kDynamic) {
     CheckLiveSegmentAlignment(representation_id, start_time, duration);
   } else {
@@ -838,17 +827,15 @@ void AdaptationSet::OnNewSegmentForRepresentation(uint32_t representation_id,
 }
 
 void AdaptationSet::OnSetFrameRateForRepresentation(
-    uint32_t /* representation_id */,
+    uint32_t representation_id,
     uint32_t frame_duration,
     uint32_t timescale) {
-  base::AutoLock scoped_lock(lock_);
   RecordFrameRate(frame_duration, timescale);
 }
 
 bool AdaptationSet::GetEarliestTimestamp(double* timestamp_seconds) {
   DCHECK(timestamp_seconds);
 
-  base::AutoLock scoped_lock(lock_);
   double earliest_timestamp(-1);
   for (std::list<Representation*>::const_iterator iter =
            representations_.begin();
@@ -1064,14 +1051,12 @@ bool Representation::Init() {
 
 void Representation::AddContentProtectionElement(
     const ContentProtectionElement& content_protection_element) {
-  base::AutoLock scoped_lock(lock_);
   content_protection_elements_.push_back(content_protection_element);
   RemoveDuplicateAttributes(&content_protection_elements_.back());
 }
 
 void Representation::UpdateContentProtectionPssh(const std::string& drm_uuid,
                                                  const std::string& pssh) {
-  base::AutoLock scoped_lock(lock_);
   UpdateContentProtectionPsshHelper(drm_uuid, pssh,
                                     &content_protection_elements_);
 }
@@ -1084,7 +1069,6 @@ void Representation::AddNewSegment(uint64_t start_time,
     return;
   }
 
-  base::AutoLock scoped_lock(lock_);
   if (state_change_listener_)
     state_change_listener_->OnNewSegmentForRepresentation(start_time, duration);
   if (IsContiguous(start_time, duration, size)) {
@@ -1102,8 +1086,6 @@ void Representation::AddNewSegment(uint64_t start_time,
 }
 
 void Representation::SetSampleDuration(uint32_t sample_duration) {
-  base::AutoLock scoped_lock(lock_);
-
   if (media_info_.has_video_info()) {
     media_info_.mutable_video_info()->set_frame_duration(sample_duration);
     if (state_change_listener_) {
@@ -1120,8 +1102,6 @@ void Representation::SetSampleDuration(uint32_t sample_duration) {
 // AudioChannelConfig elements), AddContentProtectionElements*(), and
 // AddVODOnlyInfo() (Adds segment info).
 xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
-  base::AutoLock scoped_lock(lock_);
-
   if (!HasRequiredMediaInfoFields()) {
     LOG(ERROR) << "MediaInfo missing required fields.";
     return xml::ScopedXmlPtr<xmlNode>::type();
@@ -1137,7 +1117,7 @@ xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
   // Mandatory fields for Representation.
   representation.SetId(id_);
   representation.SetIntegerAttribute("bandwidth", bandwidth);
-  if (!codecs_.empty()) 
+  if (!codecs_.empty())
     representation.SetStringAttribute("codecs", codecs_);
   representation.SetStringAttribute("mimeType", mime_type_);
 
@@ -1345,7 +1325,6 @@ std::string Representation::GetTextMimeType() const {
 bool Representation::GetEarliestTimestamp(double* timestamp_seconds) {
   DCHECK(timestamp_seconds);
 
-  base::AutoLock scoped_lock(lock_);
   if (segment_infos_.empty())
     return false;
 
