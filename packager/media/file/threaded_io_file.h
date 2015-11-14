@@ -7,6 +7,7 @@
 #ifndef PACKAGER_FILE_THREADED_IO_FILE_H_
 #define PACKAGER_FILE_THREADED_IO_FILE_H_
 
+#include "packager/base/atomicops.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/synchronization/lock.h"
 #include "packager/base/synchronization/waitable_event.h"
@@ -58,10 +59,10 @@ class ThreadedIoFile : public File {
   std::vector<uint8_t> io_buffer_;
   scoped_ptr<ClosureThread> thread_;
   uint64_t size_;
-  bool eof_;
+  base::subtle::Atomic32 eof_;
   bool flushing_;
   base::WaitableEvent flush_complete_event_;
-  int64_t internal_file_error_;
+  base::subtle::Atomic32 internal_file_error_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadedIoFile);
 };
