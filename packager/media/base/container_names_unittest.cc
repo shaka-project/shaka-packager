@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 
 #include "packager/base/files/file_util.h"
+#include "packager/base/stl_util.h"
 #include "packager/media/base/container_names.h"
 #include "packager/media/test/test_data_util.h"
 
@@ -118,6 +119,48 @@ void TestFile(MediaContainerName expected, const base::FilePath& filename) {
   EXPECT_EQ(expected,
             DetermineContainer(reinterpret_cast<const uint8_t*>(buffer), read))
       << "Failure with file " << filename.value();
+}
+
+TEST(ContainerNamesTest, Ttml) {
+  // One of the actual TTMLs from the TTML spec page.
+  const char kTtml[] =
+      "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+      "<tt xml:lang=\"en\" xmlns=\"http://www.w3.org/ns/ttml\">\n"
+      "  <body>\n"
+      "    <div>\n"
+      "      <p dur=\"10s\">\n"
+      "        Some subtitle.\n"
+      "      </p>\n"
+      "    </div>\n"
+      "  </body>\n"
+      "</tt>\n";
+
+  EXPECT_EQ(CONTAINER_TTML,
+            DetermineContainer(reinterpret_cast<const uint8_t*>(kTtml),
+                               arraysize(kTtml)));
+}
+
+TEST(ContainerNamesTest, WebVtt) {
+  const char kWebVtt[] =
+      "WEBVTT\n"
+      "\n"
+      "00:1.000 --> 00:2.000\n"
+      "Subtitle";
+  EXPECT_EQ(CONTAINER_WEBVTT,
+            DetermineContainer(reinterpret_cast<const uint8_t*>(kWebVtt),
+                               arraysize(kWebVtt)));
+
+  const uint8_t kUtf8ByteOrderMark[] = {0xef, 0xbb, 0xbf};
+  std::vector<uint8_t> webvtt_with_utf8_byte_order_mark(
+      kUtf8ByteOrderMark, kUtf8ByteOrderMark + arraysize(kUtf8ByteOrderMark));
+  webvtt_with_utf8_byte_order_mark.insert(
+      webvtt_with_utf8_byte_order_mark.end(), kWebVtt,
+      kWebVtt + arraysize(kWebVtt));
+
+  EXPECT_EQ(
+      CONTAINER_WEBVTT,
+      DetermineContainer(vector_as_array(&webvtt_with_utf8_byte_order_mark),
+                         webvtt_with_utf8_byte_order_mark.size()));
 }
 
 TEST(ContainerNamesTest, FileCheckOGG) {

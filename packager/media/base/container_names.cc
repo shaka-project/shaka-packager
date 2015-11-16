@@ -4,6 +4,8 @@
 
 #include "packager/media/base/container_names.h"
 
+#include <libxml/parser.h>
+#include <libxml/tree.h>
 #include <stdint.h>
 
 #include <cctype>
@@ -11,6 +13,7 @@
 
 #include "packager/base/logging.h"
 #include "packager/media/base/bit_reader.h"
+#include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
 namespace edash_packager {
 namespace media {
@@ -1630,15 +1633,25 @@ bool CheckWebVtt(const uint8_t* buffer, int buffer_size) {
                     arraysize(kWebVtt) - 1);
 }
 
-// TODO(rkuroiwa): This check is a very simple check to see if it is UTF-8 or
-// UTF-16, which is not sufficient to determine whether it is TTML. Check if the
-// entire buffer is a valid TTML.
 bool CheckTtml(const uint8_t* buffer, int buffer_size) {
-  return StartsWith(buffer, buffer_size,
-                    "<?xml version='1.0' encoding='UTF-8'?>") ||
-         StartsWith(buffer, buffer_size,
-                    "<?xml version='1.0' encoding='UTF-16'?>");
+  // Sanity check first before reading the entire thing.
+  if (!StartsWith(buffer, buffer_size, "<?xml"))
+    return false;
+
+  // Make sure that it can be parsed so that it doesn't error later in the
+  // process. Not doing a schema check to allow TTMLs that makes some sense but
+  // not necessarily compliant to the schema.
+  xml::scoped_xml_ptr<xmlDoc> doc(
+      xmlParseMemory(reinterpret_cast<const char*>(buffer), buffer_size));
+  if (!doc)
+    return false;
+
+  xmlNodePtr root_node = xmlDocGetRootElement(doc.get());
+  std::string root_node_name(reinterpret_cast<const char*>(root_node->name));
+  // "tt" is supposed to be the top level element for ttml.
+  return root_node_name == "tt";
 }
+
 }  // namespace
 
 // Attempt to determine the container name from the buffer provided.
@@ -1693,7 +1706,7 @@ MediaContainerName DetermineContainer(const uint8_t* buffer, int buffer_size) {
       return CONTAINER_EAC3;
   }
 
-  // To do a TTML check, it (should) do a schema check which requires scanning
+  // To do a TTML check, it parses the XML which requires scanning
   // the whole content.
   if (CheckTtml(buffer, buffer_size))
     return CONTAINER_TTML;
