@@ -111,411 +111,405 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;packager/base/atomic_sequence_num.h&quot;</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;packager/base/gtest_prod_util.h&quot;</span></div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;packager/base/stl_util.h&quot;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;packager/base/synchronization/lock.h&quot;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/bandwidth_estimator.h&quot;</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/content_protection_element.h&quot;</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/media_info.pb.h&quot;</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/mpd_options.h&quot;</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/segment_info.h&quot;</span></div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/xml/scoped_xml_ptr.h&quot;</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">// TODO(rkuroiwa): For classes with |id_|, consider removing the field and let</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">// the MPD (XML) generation functions take care of assigning an ID to each</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">// element.</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">namespace </span>media {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="keyword">class </span>File;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">class </span>AdaptationSet;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keyword">class </span>Representation;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="keyword">namespace </span>xml {</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="keyword">class </span>XmlNode;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keyword">class </span>RepresentationXmlNode;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}  <span class="comment">// namespace xml</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html">   56</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html">MpdBuilder</a> {</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keyword">enum</span> MpdType {</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    kStatic = 0,</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    kDynamic</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  };</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a7c826239ca4611979691fa04a563c49f">MpdBuilder</a>(MpdType <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#ab23432768423d4489380f45c292c7648">type</a>, <span class="keyword">const</span> <a class="code" href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">MpdOptions</a>&amp; mpd_options);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html">MpdBuilder</a>();</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a5318f500aa6a5b3db7b7925c08d78d91">AddBaseUrl</a>(<span class="keyword">const</span> std::string&amp; base_url);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>* <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a301a9b49e15371117e2c050c4e5b038c">AddAdaptationSet</a>(<span class="keyword">const</span> std::string&amp; lang);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a9efa414ddfaf48561f3085daada49ebc">WriteMpdToFile</a>(<a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html">media::File</a>* output_file);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a1c0fd80514f6f1d90f70bb9e96e744a1">ToString</a>(std::string* output);</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno"><a class="line" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#ab23432768423d4489380f45c292c7648">   91</a></span>&#160;  MpdType <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#ab23432768423d4489380f45c292c7648">type</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> type_; }</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a341e1050c0ae351db7cf0e4d23421a7f">MakePathsRelativeToMpd</a>(<span class="keyword">const</span> std::string&amp; mpd_path,</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                                     MediaInfo* media_info);</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">// DynamicMpdBuilderTest needs to set availabilityStartTime so that the test</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="comment">// doesn&#39;t need to depend on current time.</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span>DynamicMpdBuilderTest;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="keywordtype">bool</span> ToStringImpl(std::string* output);</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="comment">// This is a helper method for writing out MPDs, called from WriteMpdToFile()</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="comment">// and ToString().</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> OutputType&gt;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordtype">bool</span> WriteMpdToOutput(OutputType* output);</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="comment">// Returns the document pointer to the MPD. This must be freed by the caller</span></div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="comment">// using appropriate xmlDocPtr freeing function.</span></div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <span class="comment">// On failure, this returns NULL.</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  xmlDocPtr GenerateMpd();</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="comment">// Set MPD attributes common to all profiles. Uses non-zero |mpd_options_| to</span></div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="comment">// set attributes for the MPD.</span></div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <span class="keywordtype">void</span> AddCommonMpdInfo(<a class="code" href="../../dd/d85/classedash__packager_1_1xml_1_1XmlNode.html">xml::XmlNode</a>* mpd_node);</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <span class="comment">// Adds &#39;static&#39; MPD attributes and elements to |mpd_node|. This assumes that</span></div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="comment">// the first child element is a Period element.</span></div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="keywordtype">void</span> AddStaticMpdInfo(<a class="code" href="../../dd/d85/classedash__packager_1_1xml_1_1XmlNode.html">xml::XmlNode</a>* mpd_node);</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="comment">// Same as AddStaticMpdInfo() but for &#39;dynamic&#39; MPDs.</span></div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="keywordtype">void</span> AddDynamicMpdInfo(<a class="code" href="../../dd/d85/classedash__packager_1_1xml_1_1XmlNode.html">xml::XmlNode</a>* mpd_node);</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keywordtype">float</span> GetStaticMpdDuration(<a class="code" href="../../dd/d85/classedash__packager_1_1xml_1_1XmlNode.html">xml::XmlNode</a>* mpd_node);</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="comment">// Set MPD attributes for dynamic profile MPD. Uses non-zero |mpd_options_| as</span></div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="comment">// well as various calculations to set attributes for the MPD.</span></div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  <span class="keywordtype">void</span> SetDynamicMpdAttributes(<a class="code" href="../../dd/d85/classedash__packager_1_1xml_1_1XmlNode.html">xml::XmlNode</a>* mpd_node);</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  <span class="comment">// Gets the earliest, normalized segment timestamp. Returns true if</span></div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  <span class="comment">// successful, false otherwise.</span></div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  <span class="keywordtype">bool</span> GetEarliestTimestamp(<span class="keywordtype">double</span>* timestamp_seconds);</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  MpdType type_;</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  <a class="code" href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">MpdOptions</a> mpd_options_;</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  std::list&lt;AdaptationSet*&gt; adaptation_sets_;</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  ::STLElementDeleter&lt;std::list&lt;AdaptationSet*&gt; &gt; adaptation_sets_deleter_;</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  std::list&lt;std::string&gt; base_urls_;</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  std::string availability_start_time_;</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  base::Lock lock_;</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  base::AtomicSequenceNumber adaptation_set_counter_;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  base::AtomicSequenceNumber representation_counter_;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html">MpdBuilder</a>);</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;};</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;</div>
-<div class="line"><a name="l00156"></a><span class="lineno"><a class="line" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">  156</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a> {</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  <span class="comment">// The role for this AdaptationSet. These values are used to add a Role</span></div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  <span class="comment">// element to the AdaptationSet with schemeIdUri=urn:mpeg:dash:role:2011.</span></div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  <span class="comment">// See ISO/IEC 23009-1:2012 section 5.8.5.5.</span></div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  <span class="keyword">enum</span> Role {</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    kRoleCaption,</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    kRoleSubtitle,</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    kRoleMain,</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    kRoleAlternate,</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    kRoleSupplementary,</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    kRoleCommentary,</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;    kRoleDub</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  };</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/bandwidth_estimator.h&quot;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/content_protection_element.h&quot;</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/media_info.pb.h&quot;</span></div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/mpd_options.h&quot;</span></div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/segment_info.h&quot;</span></div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/xml/scoped_xml_ptr.h&quot;</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="comment">// TODO(rkuroiwa): For classes with |id_|, consider removing the field and let</span></div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="comment">// the MPD (XML) generation functions take care of assigning an ID to each</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">// element.</span></div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">namespace </span>media {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">class </span>File;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="keyword">class </span>AdaptationSet;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="keyword">class </span>Representation;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keyword">namespace </span>xml {</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keyword">class </span>XmlNode;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="keyword">class </span>RepresentationXmlNode;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;}  <span class="comment">// namespace xml</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html">   55</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html">MpdBuilder</a> {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keyword">enum</span> MpdType {</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    kStatic = 0,</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    kDynamic</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  };</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a7c826239ca4611979691fa04a563c49f">MpdBuilder</a>(MpdType <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#ab23432768423d4489380f45c292c7648">type</a>, <span class="keyword">const</span> <a class="code" href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">MpdOptions</a>&amp; mpd_options);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html">MpdBuilder</a>();</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a5318f500aa6a5b3db7b7925c08d78d91">AddBaseUrl</a>(<span class="keyword">const</span> std::string&amp; base_url);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>* <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a301a9b49e15371117e2c050c4e5b038c">AddAdaptationSet</a>(<span class="keyword">const</span> std::string&amp; lang);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a9efa414ddfaf48561f3085daada49ebc">WriteMpdToFile</a>(<a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html">media::File</a>* output_file);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a1c0fd80514f6f1d90f70bb9e96e744a1">ToString</a>(std::string* output);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
+<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#ab23432768423d4489380f45c292c7648">   90</a></span>&#160;  MpdType <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#ab23432768423d4489380f45c292c7648">type</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> type_; }</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a341e1050c0ae351db7cf0e4d23421a7f">MakePathsRelativeToMpd</a>(<span class="keyword">const</span> std::string&amp; mpd_path,</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                                     MediaInfo* media_info);</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="comment">// DynamicMpdBuilderTest needs to set availabilityStartTime so that the test</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">// doesn&#39;t need to depend on current time.</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span>DynamicMpdBuilderTest;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keywordtype">bool</span> ToStringImpl(std::string* output);</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="comment">// This is a helper method for writing out MPDs, called from WriteMpdToFile()</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="comment">// and ToString().</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keyword">template</span> &lt;<span class="keyword">typename</span> OutputType&gt;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="keywordtype">bool</span> WriteMpdToOutput(OutputType* output);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="comment">// Returns the document pointer to the MPD. This must be freed by the caller</span></div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="comment">// using appropriate xmlDocPtr freeing function.</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="comment">// On failure, this returns NULL.</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  xmlDocPtr GenerateMpd();</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="comment">// Set MPD attributes common to all profiles. Uses non-zero |mpd_options_| to</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="comment">// set attributes for the MPD.</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keywordtype">void</span> AddCommonMpdInfo(<a class="code" href="../../dd/d85/classedash__packager_1_1xml_1_1XmlNode.html">xml::XmlNode</a>* mpd_node);</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="comment">// Adds &#39;static&#39; MPD attributes and elements to |mpd_node|. This assumes that</span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <span class="comment">// the first child element is a Period element.</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keywordtype">void</span> AddStaticMpdInfo(<a class="code" href="../../dd/d85/classedash__packager_1_1xml_1_1XmlNode.html">xml::XmlNode</a>* mpd_node);</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  <span class="comment">// Same as AddStaticMpdInfo() but for &#39;dynamic&#39; MPDs.</span></div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="keywordtype">void</span> AddDynamicMpdInfo(<a class="code" href="../../dd/d85/classedash__packager_1_1xml_1_1XmlNode.html">xml::XmlNode</a>* mpd_node);</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keywordtype">float</span> GetStaticMpdDuration(<a class="code" href="../../dd/d85/classedash__packager_1_1xml_1_1XmlNode.html">xml::XmlNode</a>* mpd_node);</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="comment">// Set MPD attributes for dynamic profile MPD. Uses non-zero |mpd_options_| as</span></div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="comment">// well as various calculations to set attributes for the MPD.</span></div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordtype">void</span> SetDynamicMpdAttributes(<a class="code" href="../../dd/d85/classedash__packager_1_1xml_1_1XmlNode.html">xml::XmlNode</a>* mpd_node);</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  <span class="comment">// Gets the earliest, normalized segment timestamp. Returns true if</span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  <span class="comment">// successful, false otherwise.</span></div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  <span class="keywordtype">bool</span> GetEarliestTimestamp(<span class="keywordtype">double</span>* timestamp_seconds);</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;  MpdType type_;</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  <a class="code" href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">MpdOptions</a> mpd_options_;</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  std::list&lt;AdaptationSet*&gt; adaptation_sets_;</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  ::STLElementDeleter&lt;std::list&lt;AdaptationSet*&gt; &gt; adaptation_sets_deleter_;</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  std::list&lt;std::string&gt; base_urls_;</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  std::string availability_start_time_;</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  base::AtomicSequenceNumber adaptation_set_counter_;</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  base::AtomicSequenceNumber representation_counter_;</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html">MpdBuilder</a>);</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;};</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;</div>
+<div class="line"><a name="l00154"></a><span class="lineno"><a class="line" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">  154</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a> {</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  <span class="comment">// The role for this AdaptationSet. These values are used to add a Role</span></div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  <span class="comment">// element to the AdaptationSet with schemeIdUri=urn:mpeg:dash:role:2011.</span></div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  <span class="comment">// See ISO/IEC 23009-1:2012 section 5.8.5.5.</span></div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  <span class="keyword">enum</span> Role {</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    kRoleCaption,</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    kRoleSubtitle,</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    kRoleMain,</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    kRoleAlternate,</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    kRoleSupplementary,</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    kRoleCommentary,</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    kRoleDub</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  };</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>();</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>();</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a>* <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a9a15647b565f9898a5a0e1d3176ff935">AddRepresentation</a>(<span class="keyword">const</span> MediaInfo&amp; media_info);</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a419e5b2dc27fef47fb0fcaa17ea09314">AddContentProtectionElement</a>(</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;      <span class="keyword">const</span> <a class="code" href="../../d0/d96/structedash__packager_1_1ContentProtectionElement.html">ContentProtectionElement</a>&amp; element);</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a6630f9954b604bee7f90c11778336fdc">UpdateContentProtectionPssh</a>(<span class="keyword">const</span> std::string&amp; drm_uuid,</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;                                           <span class="keyword">const</span> std::string&amp; pssh);</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a3bfc3e2de3eaafc61a4dc2e23c698956">AddRole</a>(Role role);</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  xml::ScopedXmlPtr&lt;xmlNode&gt;::type <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a44984cfaed799fd6683c6c9d41394dd6">GetXml</a>();</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a949526c833122b9a1ca40b9990224990">ForceSetSegmentAlignment</a>(<span class="keywordtype">bool</span> segment_alignment);</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a3bea0954dfe1781afc1c7a624965bc84">SetGroup</a>(<span class="keywordtype">int</span> group_number);</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#ad5efd9add7037cf939c6a48733e38f8f">Group</a>() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  <span class="comment">// Must be unique in the Period.</span></div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  uint32_t id()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> id_; }</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#aed9c81cd32d8bbb8ed71d5ab3f16efac">OnNewSegmentForRepresentation</a>(uint32_t representation_id,</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;                                     uint64_t start_time,</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;                                     uint64_t duration);</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#ad9adf17a02fabfd4aa8d91a2d65d52ad">OnSetFrameRateForRepresentation</a>(uint32_t representation_id,</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;                                       uint32_t frame_duration,</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;                                       uint32_t timescale);</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a21ce7ce804532a95f9aea7e2a9c3570e">AdaptationSet</a>(uint32_t adaptation_set_id,</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;                <span class="keyword">const</span> std::string&amp; lang,</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;                <span class="keyword">const</span> <a class="code" href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">MpdOptions</a>&amp; mpd_options,</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;                MpdBuilder::MpdType mpd_type,</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;                base::AtomicSequenceNumber* representation_counter);</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html">MpdBuilder</a>;</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;  <span class="keyword">template</span> &lt;MpdBuilder::MpdType type&gt;</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span>MpdBuilderTest;</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  <span class="comment">// kSegmentAlignmentUnknown means that it is uncertain if the</span></div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  <span class="comment">// (sub)segments are aligned or not.</span></div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  <span class="comment">// kSegmentAlignmentTrue means that it is certain that the all the (current)</span></div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  <span class="comment">// segments added to the adaptation set are aligned.</span></div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  <span class="comment">// kSegmentAlignmentFalse means that it is it is certain that some segments</span></div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  <span class="comment">// are not aligned. This is useful to disable the computation for</span></div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  <span class="comment">// segment alignment, once it is certain that some segments are not aligned.</span></div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  <span class="keyword">enum</span> SegmentAligmentStatus {</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    kSegmentAlignmentUnknown,</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    kSegmentAlignmentTrue,</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    kSegmentAlignmentFalse</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  };</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  <span class="comment">// This maps Representations (IDs) to a list of start times of the segments.</span></div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  <span class="comment">// e.g.</span></div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  <span class="comment">// If Representation 1 has start time 0, 100, 200 and Representation 2 has</span></div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  <span class="comment">// start times 0, 200, 400, then the map contains:</span></div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  <span class="comment">// 1 -&gt; [0, 100, 200]</span></div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;  <span class="comment">// 2 -&gt; [0, 200, 400]</span></div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  <span class="keyword">typedef</span> std::map&lt;uint32_t, std::list&lt;uint64_t&gt; &gt; RepresentationTimeline;</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  <span class="comment">// Gets the earliest, normalized segment timestamp. Returns true if</span></div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;  <span class="comment">// successful, false otherwise.</span></div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;  <span class="keywordtype">bool</span> GetEarliestTimestamp(<span class="keywordtype">double</span>* timestamp_seconds);</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;  <span class="keywordtype">void</span> CheckLiveSegmentAlignment(uint32_t representation_id,</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;                                 uint64_t start_time,</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;                                 uint64_t duration);</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  <span class="comment">// Checks representation_segment_start_times_ and sets segments_aligned_.</span></div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  <span class="comment">// Use this for VOD, do not use for Live.</span></div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  <span class="keywordtype">void</span> CheckVodSegmentAlignment();</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  <span class="comment">// Records the framerate of a Representation.</span></div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  <span class="keywordtype">void</span> RecordFrameRate(uint32_t frame_duration, uint32_t timescale);</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  std::list&lt;ContentProtectionElement&gt; content_protection_elements_;</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  std::list&lt;Representation*&gt; representations_;</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  ::STLElementDeleter&lt;std::list&lt;Representation*&gt; &gt; representations_deleter_;</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  <span class="keyword">virtual</span> <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a>* <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a9a15647b565f9898a5a0e1d3176ff935">AddRepresentation</a>(<span class="keyword">const</span> MediaInfo&amp; media_info);</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a419e5b2dc27fef47fb0fcaa17ea09314">AddContentProtectionElement</a>(</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;      <span class="keyword">const</span> <a class="code" href="../../d0/d96/structedash__packager_1_1ContentProtectionElement.html">ContentProtectionElement</a>&amp; element);</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a6630f9954b604bee7f90c11778336fdc">UpdateContentProtectionPssh</a>(<span class="keyword">const</span> std::string&amp; drm_uuid,</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;                                           <span class="keyword">const</span> std::string&amp; pssh);</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a3bfc3e2de3eaafc61a4dc2e23c698956">AddRole</a>(Role role);</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;  xml::ScopedXmlPtr&lt;xmlNode&gt;::type <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a44984cfaed799fd6683c6c9d41394dd6">GetXml</a>();</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a949526c833122b9a1ca40b9990224990">ForceSetSegmentAlignment</a>(<span class="keywordtype">bool</span> segment_alignment);</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a3bea0954dfe1781afc1c7a624965bc84">SetGroup</a>(<span class="keywordtype">int</span> group_number);</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">int</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#ad5efd9add7037cf939c6a48733e38f8f">Group</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  <span class="comment">// Must be unique in the Period.</span></div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  uint32_t id()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> id_; }</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#aed9c81cd32d8bbb8ed71d5ab3f16efac">OnNewSegmentForRepresentation</a>(uint32_t representation_id,</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;                                     uint64_t start_time,</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;                                     uint64_t duration);</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#ad9adf17a02fabfd4aa8d91a2d65d52ad">OnSetFrameRateForRepresentation</a>(uint32_t representation_id,</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;                                       uint32_t frame_duration,</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;                                       uint32_t timescale);</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a21ce7ce804532a95f9aea7e2a9c3570e">AdaptationSet</a>(uint32_t adaptation_set_id,</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;                <span class="keyword">const</span> std::string&amp; lang,</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;                <span class="keyword">const</span> <a class="code" href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">MpdOptions</a>&amp; mpd_options,</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;                MpdBuilder::MpdType mpd_type,</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;                base::AtomicSequenceNumber* representation_counter);</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html">MpdBuilder</a>;</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;  <span class="keyword">template</span> &lt;MpdBuilder::MpdType type&gt;</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span>MpdBuilderTest;</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  <span class="comment">// kSegmentAlignmentUnknown means that it is uncertain if the</span></div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  <span class="comment">// (sub)segments are aligned or not.</span></div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  <span class="comment">// kSegmentAlignmentTrue means that it is certain that the all the (current)</span></div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  <span class="comment">// segments added to the adaptation set are aligned.</span></div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  <span class="comment">// kSegmentAlignmentFalse means that it is it is certain that some segments</span></div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  <span class="comment">// are not aligned. This is useful to disable the computation for</span></div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  <span class="comment">// segment alignment, once it is certain that some segments are not aligned.</span></div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  <span class="keyword">enum</span> SegmentAligmentStatus {</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    kSegmentAlignmentUnknown,</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    kSegmentAlignmentTrue,</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    kSegmentAlignmentFalse</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  };</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  <span class="comment">// This maps Representations (IDs) to a list of start times of the segments.</span></div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  <span class="comment">// e.g.</span></div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  <span class="comment">// If Representation 1 has start time 0, 100, 200 and Representation 2 has</span></div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  <span class="comment">// start times 0, 200, 400, then the map contains:</span></div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  <span class="comment">// 1 -&gt; [0, 100, 200]</span></div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  <span class="comment">// 2 -&gt; [0, 200, 400]</span></div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  <span class="keyword">typedef</span> std::map&lt;uint32_t, std::list&lt;uint64_t&gt; &gt; RepresentationTimeline;</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  <span class="comment">// Gets the earliest, normalized segment timestamp. Returns true if</span></div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  <span class="comment">// successful, false otherwise.</span></div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  <span class="keywordtype">bool</span> GetEarliestTimestamp(<span class="keywordtype">double</span>* timestamp_seconds);</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;  <span class="keywordtype">void</span> CheckLiveSegmentAlignment(uint32_t representation_id,</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;                                 uint64_t start_time,</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;                                 uint64_t duration);</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;  <span class="comment">// Checks representation_segment_start_times_ and sets segments_aligned_.</span></div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  <span class="comment">// Use this for VOD, do not use for Live.</span></div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  <span class="keywordtype">void</span> CheckVodSegmentAlignment();</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  <span class="comment">// Records the framerate of a Representation.</span></div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  <span class="keywordtype">void</span> RecordFrameRate(uint32_t frame_duration, uint32_t timescale);</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  std::list&lt;ContentProtectionElement&gt; content_protection_elements_;</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  std::list&lt;Representation*&gt; representations_;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  ::STLElementDeleter&lt;std::list&lt;Representation*&gt; &gt; representations_deleter_;</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  base::AtomicSequenceNumber* <span class="keyword">const</span> representation_counter_;</div>
 <div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  base::Lock lock_;</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;  base::AtomicSequenceNumber* <span class="keyword">const</span> representation_counter_;</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;  <span class="keyword">const</span> uint32_t id_;</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;  <span class="keyword">const</span> std::string lang_;</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">MpdOptions</a>&amp; mpd_options_;</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;  <span class="keyword">const</span> MpdBuilder::MpdType mpd_type_;</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;  <span class="comment">// The group attribute for the AdaptationSet. If the value is negative,</span></div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;  <span class="comment">// no group number is specified.</span></div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;  <span class="comment">// Note that group 0 is a special group number.</span></div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  <span class="keywordtype">int</span> group_;</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  <span class="comment">// Video widths and heights of Representations. Note that this is a set; if</span></div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;  <span class="comment">// there is only 1 resolution, then @width &amp; @height should be set, otherwise</span></div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;  <span class="comment">// @maxWidth &amp; @maxHeight should be set for DASH IOP.</span></div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;  std::set&lt;uint32_t&gt; video_widths_;</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;  std::set&lt;uint32_t&gt; video_heights_;</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;  <span class="comment">// Video representations&#39; frame rates.</span></div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;  <span class="comment">// The frame rate notation for MPD is &lt;integer&gt;/&lt;integer&gt; (where the</span></div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;  <span class="comment">// denominator is optional). This means the frame rate could be non-whole</span></div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;  <span class="comment">// rational value, therefore the key is of type double.</span></div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;  <span class="comment">// Value is &lt;integer&gt;/&lt;integer&gt; in string form.</span></div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;  <span class="comment">// So, key == CalculatedValue(value)</span></div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;  std::map&lt;double, std::string&gt; video_frame_rates_;</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  <span class="keyword">const</span> uint32_t id_;</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  <span class="keyword">const</span> std::string lang_;</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">MpdOptions</a>&amp; mpd_options_;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  <span class="keyword">const</span> MpdBuilder::MpdType mpd_type_;</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;  <span class="comment">// The group attribute for the AdaptationSet. If the value is negative,</span></div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  <span class="comment">// no group number is specified.</span></div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;  <span class="comment">// Note that group 0 is a special group number.</span></div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;  <span class="keywordtype">int</span> group_;</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;  <span class="comment">// Video widths and heights of Representations. Note that this is a set; if</span></div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;  <span class="comment">// there is only 1 resolution, then @width &amp; @height should be set, otherwise</span></div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  <span class="comment">// @maxWidth &amp; @maxHeight should be set for DASH IOP.</span></div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  std::set&lt;uint32_t&gt; video_widths_;</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  std::set&lt;uint32_t&gt; video_heights_;</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;  <span class="comment">// Video representations&#39; frame rates.</span></div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;  <span class="comment">// The frame rate notation for MPD is &lt;integer&gt;/&lt;integer&gt; (where the</span></div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;  <span class="comment">// denominator is optional). This means the frame rate could be non-whole</span></div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;  <span class="comment">// rational value, therefore the key is of type double.</span></div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;  <span class="comment">// Value is &lt;integer&gt;/&lt;integer&gt; in string form.</span></div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;  <span class="comment">// So, key == CalculatedValue(value)</span></div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;  std::map&lt;double, std::string&gt; video_frame_rates_;</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;  <span class="comment">// contentType attribute of AdaptationSet.</span></div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;  <span class="comment">// Determined by examining the MediaInfo passed to AddRepresentation().</span></div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;  std::string content_type_;</div>
 <div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;  <span class="comment">// contentType attribute of AdaptationSet.</span></div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;  <span class="comment">// Determined by examining the MediaInfo passed to AddRepresentation().</span></div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;  std::string content_type_;</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;  <span class="comment">// This does not have to be a set, it could be a list or vector because all we</span></div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;  <span class="comment">// really care is whether there is more than one entry.</span></div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;  <span class="comment">// Contains one entry if all the Representations have the same picture aspect</span></div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;  <span class="comment">// ratio (@par attribute for AdaptationSet).</span></div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;  <span class="comment">// There will be more than one entry if there are multiple picture aspect</span></div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;  <span class="comment">// ratios.</span></div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;  <span class="comment">// The @par attribute should only be set if there is exactly one entry</span></div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;  <span class="comment">// in this set.</span></div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;  std::set&lt;std::string&gt; picture_aspect_ratio_;</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;  <span class="comment">// The roles of this AdaptationSet.</span></div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;  std::set&lt;Role&gt; roles_;</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;  <span class="comment">// This does not have to be a set, it could be a list or vector because all we</span></div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;  <span class="comment">// really care is whether there is more than one entry.</span></div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;  <span class="comment">// Contains one entry if all the Representations have the same picture aspect</span></div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;  <span class="comment">// ratio (@par attribute for AdaptationSet).</span></div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;  <span class="comment">// There will be more than one entry if there are multiple picture aspect</span></div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;  <span class="comment">// ratios.</span></div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;  <span class="comment">// The @par attribute should only be set if there is exactly one entry</span></div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;  <span class="comment">// in this set.</span></div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;  std::set&lt;std::string&gt; picture_aspect_ratio_;</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;  <span class="comment">// The roles of this AdaptationSet.</span></div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;  std::set&lt;Role&gt; roles_;</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;  <span class="comment">// True iff all the segments are aligned.</span></div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;  SegmentAligmentStatus segments_aligned_;</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;  <span class="keywordtype">bool</span> force_set_segment_alignment_;</div>
 <div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;  <span class="comment">// True iff all the segments are aligned.</span></div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;  SegmentAligmentStatus segments_aligned_;</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;  <span class="keywordtype">bool</span> force_set_segment_alignment_;</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;  <span class="comment">// Keeps track of segment start times of Representations.</span></div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;  <span class="comment">// For VOD, this will not be cleared, all the segment start times are</span></div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;  <span class="comment">// stored in this. This should not out-of-memory for a reasonable length</span></div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;  <span class="comment">// video and reasonable subsegment length.</span></div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;  <span class="comment">// For Live, the entries are deleted (see CheckLiveSegmentAlignment()</span></div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;  <span class="comment">// implementation comment) because storing the entire timeline is not</span></div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  <span class="comment">// reasonable and may cause an out-of-memory problem.</span></div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;  RepresentationTimeline representation_segment_start_times_;</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>);</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;};</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;</div>
-<div class="line"><a name="l00397"></a><span class="lineno"><a class="line" href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html">  397</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html">RepresentationStateChangeListener</a> {</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;  <a class="code" href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html">RepresentationStateChangeListener</a>() {}</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html">RepresentationStateChangeListener</a>() {}</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html#a555f268d74e4c70afd067ffe2e6ca64e">OnNewSegmentForRepresentation</a>(uint64_t start_time,</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;                                             uint64_t duration) = 0;</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html#aec87eac5d1aefe55dd8c0483ac4354a5">OnSetFrameRateForRepresentation</a>(uint32_t frame_duration,</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;                                               uint32_t timescale) = 0;</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;};</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;</div>
-<div class="line"><a name="l00419"></a><span class="lineno"><a class="line" href="../../d7/d15/classedash__packager_1_1Representation.html">  419</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a> {</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a>();</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#aac7ad6e54e88b4d31196d54ad5fb4a9d">Init</a>();</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#a8cb3729f52457e7df08cd05b8f19090e">AddContentProtectionElement</a>(</div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;      <span class="keyword">const</span> <a class="code" href="../../d0/d96/structedash__packager_1_1ContentProtectionElement.html">ContentProtectionElement</a>&amp; element);</div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;</div>
-<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#a7fc0e59f273082ccf654025486af79ae">UpdateContentProtectionPssh</a>(<span class="keyword">const</span> std::string&amp; drm_uuid,</div>
-<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;                                           <span class="keyword">const</span> std::string&amp; pssh);</div>
-<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;</div>
-<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#ad40b7da1667aeb77c84958ec4ec0d9eb">AddNewSegment</a>(uint64_t start_time,</div>
-<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;                             uint64_t duration,</div>
-<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;                             uint64_t size);</div>
-<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;</div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#a4a81a2db7ec245892334ad927621909c">SetSampleDuration</a>(uint32_t sample_duration);</div>
-<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;</div>
-<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;  xml::ScopedXmlPtr&lt;xmlNode&gt;::type <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#a4eefc1cf0da6ff78806f8d1099cb01d1">GetXml</a>();</div>
-<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;</div>
-<div class="line"><a name="l00478"></a><span class="lineno"><a class="line" href="../../d7/d15/classedash__packager_1_1Representation.html#a0a59920aa8a31f1fb2b30a2ee8cc4e95">  478</a></span>&#160;  uint32_t <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#a0a59920aa8a31f1fb2b30a2ee8cc4e95">id</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> id_; }</div>
-<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;</div>
-<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;  <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#a4fc4d0fd6f240f1c79fac0b68b9d9f0d">Representation</a>(</div>
-<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;      <span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;      <span class="keyword">const</span> <a class="code" href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">MpdOptions</a>&amp; mpd_options,</div>
-<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;      uint32_t representation_id,</div>
-<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;      scoped_ptr&lt;RepresentationStateChangeListener&gt; state_change_listener);</div>
-<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;</div>
-<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>;</div>
-<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;  <span class="keyword">template</span> &lt;MpdBuilder::MpdType type&gt;</div>
-<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span>MpdBuilderTest;</div>
-<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;</div>
-<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;  <span class="keywordtype">bool</span> AddLiveInfo(<a class="code" href="../../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html">xml::RepresentationXmlNode</a>* representation);</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;  <span class="comment">// Keeps track of segment start times of Representations.</span></div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;  <span class="comment">// For VOD, this will not be cleared, all the segment start times are</span></div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;  <span class="comment">// stored in this. This should not out-of-memory for a reasonable length</span></div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;  <span class="comment">// video and reasonable subsegment length.</span></div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;  <span class="comment">// For Live, the entries are deleted (see CheckLiveSegmentAlignment()</span></div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;  <span class="comment">// implementation comment) because storing the entire timeline is not</span></div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;  <span class="comment">// reasonable and may cause an out-of-memory problem.</span></div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;  RepresentationTimeline representation_segment_start_times_;</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>);</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;};</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;</div>
+<div class="line"><a name="l00393"></a><span class="lineno"><a class="line" href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html">  393</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html">RepresentationStateChangeListener</a> {</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;  <a class="code" href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html">RepresentationStateChangeListener</a>() {}</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html">RepresentationStateChangeListener</a>() {}</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html#a555f268d74e4c70afd067ffe2e6ca64e">OnNewSegmentForRepresentation</a>(uint64_t start_time,</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;                                             uint64_t duration) = 0;</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html#aec87eac5d1aefe55dd8c0483ac4354a5">OnSetFrameRateForRepresentation</a>(uint32_t frame_duration,</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;                                               uint32_t timescale) = 0;</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;};</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;</div>
+<div class="line"><a name="l00415"></a><span class="lineno"><a class="line" href="../../d7/d15/classedash__packager_1_1Representation.html">  415</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a> {</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a>();</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#aac7ad6e54e88b4d31196d54ad5fb4a9d">Init</a>();</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#a8cb3729f52457e7df08cd05b8f19090e">AddContentProtectionElement</a>(</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;      <span class="keyword">const</span> <a class="code" href="../../d0/d96/structedash__packager_1_1ContentProtectionElement.html">ContentProtectionElement</a>&amp; element);</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;</div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#a7fc0e59f273082ccf654025486af79ae">UpdateContentProtectionPssh</a>(<span class="keyword">const</span> std::string&amp; drm_uuid,</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;                                           <span class="keyword">const</span> std::string&amp; pssh);</div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;</div>
+<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#ad40b7da1667aeb77c84958ec4ec0d9eb">AddNewSegment</a>(uint64_t start_time,</div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;                             uint64_t duration,</div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;                             uint64_t size);</div>
+<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;</div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#a4a81a2db7ec245892334ad927621909c">SetSampleDuration</a>(uint32_t sample_duration);</div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;</div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;  xml::ScopedXmlPtr&lt;xmlNode&gt;::type <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#a4eefc1cf0da6ff78806f8d1099cb01d1">GetXml</a>();</div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;</div>
+<div class="line"><a name="l00474"></a><span class="lineno"><a class="line" href="../../d7/d15/classedash__packager_1_1Representation.html#a0a59920aa8a31f1fb2b30a2ee8cc4e95">  474</a></span>&#160;  uint32_t <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#a0a59920aa8a31f1fb2b30a2ee8cc4e95">id</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> id_; }</div>
+<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;</div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;  <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#a4fc4d0fd6f240f1c79fac0b68b9d9f0d">Representation</a>(</div>
+<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;      <span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;      <span class="keyword">const</span> <a class="code" href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">MpdOptions</a>&amp; mpd_options,</div>
+<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;      uint32_t representation_id,</div>
+<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;      scoped_ptr&lt;RepresentationStateChangeListener&gt; state_change_listener);</div>
+<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;</div>
+<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span><a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>;</div>
+<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;  <span class="keyword">template</span> &lt;MpdBuilder::MpdType type&gt;</div>
+<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;  <span class="keyword">friend</span> <span class="keyword">class </span>MpdBuilderTest;</div>
+<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;</div>
+<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;  <span class="keywordtype">bool</span> AddLiveInfo(<a class="code" href="../../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html">xml::RepresentationXmlNode</a>* representation);</div>
+<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;</div>
+<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;  <span class="comment">// Returns true if |media_info_| has required fields to generate a valid</span></div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;  <span class="comment">// Representation. Otherwise returns false.</span></div>
+<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;  <span class="keywordtype">bool</span> HasRequiredMediaInfoFields();</div>
 <div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;</div>
-<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;  <span class="comment">// Returns true if |media_info_| has required fields to generate a valid</span></div>
-<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;  <span class="comment">// Representation. Otherwise returns false.</span></div>
-<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;  <span class="keywordtype">bool</span> HasRequiredMediaInfoFields();</div>
-<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;</div>
-<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;  <span class="comment">// Return false if the segment should be considered a new segment. True if the</span></div>
-<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;  <span class="comment">// segment is contiguous.</span></div>
-<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;  <span class="keywordtype">bool</span> IsContiguous(uint64_t start_time,</div>
-<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;                    uint64_t duration,</div>
-<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;                    uint64_t size) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;</div>
-<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;  <span class="comment">// Remove elements from |segment_infos_| if</span></div>
-<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;  <span class="comment">// mpd_options_.time_shift_buffer_depth is specified. Increments</span></div>
-<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;  <span class="comment">// |start_number_| by the number of segments removed.</span></div>
-<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;  <span class="keywordtype">void</span> SlideWindow();</div>
-<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;</div>
-<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;  <span class="comment">// Note: Because &#39;mimeType&#39; is a required field for a valid MPD, these return</span></div>
-<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;  <span class="comment">// strings.</span></div>
-<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;  std::string GetVideoMimeType() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;  std::string GetAudioMimeType() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;  std::string GetTextMimeType() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;  <span class="comment">// Return false if the segment should be considered a new segment. True if the</span></div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;  <span class="comment">// segment is contiguous.</span></div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;  <span class="keywordtype">bool</span> IsContiguous(uint64_t start_time,</div>
+<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;                    uint64_t duration,</div>
+<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;                    uint64_t size) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;</div>
+<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;  <span class="comment">// Remove elements from |segment_infos_| if</span></div>
+<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;  <span class="comment">// mpd_options_.time_shift_buffer_depth is specified. Increments</span></div>
+<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;  <span class="comment">// |start_number_| by the number of segments removed.</span></div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;  <span class="keywordtype">void</span> SlideWindow();</div>
+<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;</div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;  <span class="comment">// Note: Because &#39;mimeType&#39; is a required field for a valid MPD, these return</span></div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;  <span class="comment">// strings.</span></div>
+<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;  std::string GetVideoMimeType() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;  std::string GetAudioMimeType() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;  std::string GetTextMimeType() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;</div>
+<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;  <span class="comment">// Gets the earliest, normalized segment timestamp. Returns true if</span></div>
+<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;  <span class="comment">// successful, false otherwise.</span></div>
+<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;  <span class="keywordtype">bool</span> GetEarliestTimestamp(<span class="keywordtype">double</span>* timestamp_seconds);</div>
 <div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;</div>
-<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;  <span class="comment">// Gets the earliest, normalized segment timestamp. Returns true if</span></div>
-<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;  <span class="comment">// successful, false otherwise.</span></div>
-<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;  <span class="keywordtype">bool</span> GetEarliestTimestamp(<span class="keywordtype">double</span>* timestamp_seconds);</div>
-<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;</div>
-<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;  <span class="comment">// Init() checks that only one of VideoInfo, AudioInfo, or TextInfo is set. So</span></div>
-<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;  <span class="comment">// any logic using this can assume only one set.</span></div>
-<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;  MediaInfo media_info_;</div>
-<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;  std::list&lt;ContentProtectionElement&gt; content_protection_elements_;</div>
-<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;  std::list&lt;SegmentInfo&gt; segment_infos_;</div>
-<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;</div>
-<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;  base::Lock lock_;</div>
+<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;  <span class="comment">// Init() checks that only one of VideoInfo, AudioInfo, or TextInfo is set. So</span></div>
+<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;  <span class="comment">// any logic using this can assume only one set.</span></div>
+<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;  MediaInfo media_info_;</div>
+<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;  std::list&lt;ContentProtectionElement&gt; content_protection_elements_;</div>
+<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;  std::list&lt;SegmentInfo&gt; segment_infos_;</div>
+<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;</div>
+<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;  <span class="keyword">const</span> uint32_t id_;</div>
+<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;  std::string mime_type_;</div>
+<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;  std::string codecs_;</div>
+<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;  <a class="code" href="../../d2/d6f/classBandwidthEstimator.html">BandwidthEstimator</a> bandwidth_estimator_;</div>
+<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">MpdOptions</a>&amp; mpd_options_;</div>
 <div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;</div>
-<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;  <span class="keyword">const</span> uint32_t id_;</div>
-<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;  std::string mime_type_;</div>
-<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;  std::string codecs_;</div>
-<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;  <a class="code" href="../../d2/d6f/classBandwidthEstimator.html">BandwidthEstimator</a> bandwidth_estimator_;</div>
-<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">MpdOptions</a>&amp; mpd_options_;</div>
-<div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;</div>
-<div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;  <span class="comment">// startNumber attribute for SegmentTemplate.</span></div>
-<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;  <span class="comment">// Starts from 1.</span></div>
-<div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;  uint32_t start_number_;</div>
-<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;</div>
-<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;  <span class="comment">// If this is not null, then Representation is responsible for calling the</span></div>
-<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;  <span class="comment">// right methods at right timings.</span></div>
-<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;  scoped_ptr&lt;RepresentationStateChangeListener&gt; state_change_listener_;</div>
-<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;</div>
-<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a>);</div>
-<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;};</div>
-<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;</div>
-<div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;</div>
-<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_MPD_BUILDER_H_</span></div>
-<div class="ttc" id="classedash__packager_1_1MpdBuilder_html_ab23432768423d4489380f45c292c7648"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#ab23432768423d4489380f45c292c7648">edash_packager::MpdBuilder::type</a></div><div class="ttdeci">MpdType type() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00091">mpd_builder.h:91</a></div></div>
-<div class="ttc" id="classedash__packager_1_1Representation_html_ad40b7da1667aeb77c84958ec4ec0d9eb"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#ad40b7da1667aeb77c84958ec4ec0d9eb">edash_packager::Representation::AddNewSegment</a></div><div class="ttdeci">virtual void AddNewSegment(uint64_t start_time, uint64_t duration, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01079">mpd_builder.cc:1079</a></div></div>
-<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a21ce7ce804532a95f9aea7e2a9c3570e"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a21ce7ce804532a95f9aea7e2a9c3570e">edash_packager::AdaptationSet::AdaptationSet</a></div><div class="ttdeci">AdaptationSet(uint32_t adaptation_set_id, const std::string &amp;lang, const MpdOptions &amp;mpd_options, MpdBuilder::MpdType mpd_type, base::AtomicSequenceNumber *representation_counter)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00652">mpd_builder.cc:652</a></div></div>
-<div class="ttc" id="classedash__packager_1_1Representation_html_aac7ad6e54e88b4d31196d54ad5fb4a9d"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#aac7ad6e54e88b4d31196d54ad5fb4a9d">edash_packager::Representation::Init</a></div><div class="ttdeci">bool Init()</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01023">mpd_builder.cc:1023</a></div></div>
+<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;  <span class="comment">// startNumber attribute for SegmentTemplate.</span></div>
+<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;  <span class="comment">// Starts from 1.</span></div>
+<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;  uint32_t start_number_;</div>
+<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;</div>
+<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;  <span class="comment">// If this is not null, then Representation is responsible for calling the</span></div>
+<div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;  <span class="comment">// right methods at right timings.</span></div>
+<div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;  scoped_ptr&lt;RepresentationStateChangeListener&gt; state_change_listener_;</div>
+<div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;</div>
+<div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a>);</div>
+<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;};</div>
+<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;</div>
+<div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;</div>
+<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_MPD_BUILDER_H_</span></div>
+<div class="ttc" id="classedash__packager_1_1MpdBuilder_html_ab23432768423d4489380f45c292c7648"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#ab23432768423d4489380f45c292c7648">edash_packager::MpdBuilder::type</a></div><div class="ttdeci">MpdType type() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00090">mpd_builder.h:90</a></div></div>
+<div class="ttc" id="classedash__packager_1_1Representation_html_ad40b7da1667aeb77c84958ec4ec0d9eb"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#ad40b7da1667aeb77c84958ec4ec0d9eb">edash_packager::Representation::AddNewSegment</a></div><div class="ttdeci">virtual void AddNewSegment(uint64_t start_time, uint64_t duration, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01064">mpd_builder.cc:1064</a></div></div>
+<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a21ce7ce804532a95f9aea7e2a9c3570e"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a21ce7ce804532a95f9aea7e2a9c3570e">edash_packager::AdaptationSet::AdaptationSet</a></div><div class="ttdeci">AdaptationSet(uint32_t adaptation_set_id, const std::string &amp;lang, const MpdOptions &amp;mpd_options, MpdBuilder::MpdType mpd_type, base::AtomicSequenceNumber *representation_counter)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00647">mpd_builder.cc:647</a></div></div>
+<div class="ttc" id="classedash__packager_1_1Representation_html_aac7ad6e54e88b4d31196d54ad5fb4a9d"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#aac7ad6e54e88b4d31196d54ad5fb4a9d">edash_packager::Representation::Init</a></div><div class="ttdeci">bool Init()</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01010">mpd_builder.cc:1010</a></div></div>
 <div class="ttc" id="structedash__packager_1_1MpdOptions_html"><div class="ttname"><a href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">edash_packager::MpdOptions</a></div><div class="ttdoc">Defines Mpd Options. </div><div class="ttdef"><b>Definition:</b> <a href="../../db/d60/mpd__options_8h_source.html#l00013">mpd_options.h:13</a></div></div>
-<div class="ttc" id="classedash__packager_1_1Representation_html"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html">edash_packager::Representation</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00419">mpd_builder.h:419</a></div></div>
-<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_ad5efd9add7037cf939c6a48733e38f8f"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#ad5efd9add7037cf939c6a48733e38f8f">edash_packager::AdaptationSet::Group</a></div><div class="ttdeci">virtual int Group() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00816">mpd_builder.cc:816</a></div></div>
-<div class="ttc" id="classedash__packager_1_1MpdBuilder_html_a301a9b49e15371117e2c050c4e5b038c"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a301a9b49e15371117e2c050c4e5b038c">edash_packager::MpdBuilder::AddAdaptationSet</a></div><div class="ttdeci">virtual AdaptationSet * AddAdaptationSet(const std::string &amp;lang)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00408">mpd_builder.cc:408</a></div></div>
+<div class="ttc" id="classedash__packager_1_1Representation_html"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html">edash_packager::Representation</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00415">mpd_builder.h:415</a></div></div>
+<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_ad5efd9add7037cf939c6a48733e38f8f"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#ad5efd9add7037cf939c6a48733e38f8f">edash_packager::AdaptationSet::Group</a></div><div class="ttdeci">virtual int Group() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00807">mpd_builder.cc:807</a></div></div>
+<div class="ttc" id="classedash__packager_1_1MpdBuilder_html_a301a9b49e15371117e2c050c4e5b038c"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a301a9b49e15371117e2c050c4e5b038c">edash_packager::MpdBuilder::AddAdaptationSet</a></div><div class="ttdeci">virtual AdaptationSet * AddAdaptationSet(const std::string &amp;lang)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00407">mpd_builder.cc:407</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1File_html"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html">edash_packager::media::File</a></div><div class="ttdoc">Define an abstract file interface. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4d/file_8h_source.html#l00022">file.h:22</a></div></div>
-<div class="ttc" id="classedash__packager_1_1Representation_html_a4eefc1cf0da6ff78806f8d1099cb01d1"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a4eefc1cf0da6ff78806f8d1099cb01d1">edash_packager::Representation::GetXml</a></div><div class="ttdeci">xml::ScopedXmlPtr&lt; xmlNode &gt;::type GetXml()</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01122">mpd_builder.cc:1122</a></div></div>
-<div class="ttc" id="classedash__packager_1_1MpdBuilder_html_a341e1050c0ae351db7cf0e4d23421a7f"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a341e1050c0ae351db7cf0e4d23421a7f">edash_packager::MpdBuilder::MakePathsRelativeToMpd</a></div><div class="ttdeci">static void MakePathsRelativeToMpd(const std::string &amp;mpd_path, MediaInfo *media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00624">mpd_builder.cc:624</a></div></div>
+<div class="ttc" id="classedash__packager_1_1Representation_html_a4eefc1cf0da6ff78806f8d1099cb01d1"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a4eefc1cf0da6ff78806f8d1099cb01d1">edash_packager::Representation::GetXml</a></div><div class="ttdeci">xml::ScopedXmlPtr&lt; xmlNode &gt;::type GetXml()</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01104">mpd_builder.cc:1104</a></div></div>
+<div class="ttc" id="classedash__packager_1_1MpdBuilder_html_a341e1050c0ae351db7cf0e4d23421a7f"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a341e1050c0ae351db7cf0e4d23421a7f">edash_packager::MpdBuilder::MakePathsRelativeToMpd</a></div><div class="ttdeci">static void MakePathsRelativeToMpd(const std::string &amp;mpd_path, MediaInfo *media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00619">mpd_builder.cc:619</a></div></div>
 <div class="ttc" id="classedash__packager_1_1xml_1_1XmlNode_html"><div class="ttname"><a href="../../dd/d85/classedash__packager_1_1xml_1_1XmlNode.html">edash_packager::xml::XmlNode</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/de7/xml__node_8h_source.html#l00031">xml_node.h:31</a></div></div>
-<div class="ttc" id="classedash__packager_1_1MpdBuilder_html"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html">edash_packager::MpdBuilder</a></div><div class="ttdoc">This class generates DASH MPDs (Media Presentation Descriptions). </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00056">mpd_builder.h:56</a></div></div>
-<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a949526c833122b9a1ca40b9990224990"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a949526c833122b9a1ca40b9990224990">edash_packager::AdaptationSet::ForceSetSegmentAlignment</a></div><div class="ttdeci">virtual void ForceSetSegmentAlignment(bool segment_alignment)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00806">mpd_builder.cc:806</a></div></div>
-<div class="ttc" id="classedash__packager_1_1Representation_html_a4a81a2db7ec245892334ad927621909c"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a4a81a2db7ec245892334ad927621909c">edash_packager::Representation::SetSampleDuration</a></div><div class="ttdeci">virtual void SetSampleDuration(uint32_t sample_duration)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01104">mpd_builder.cc:1104</a></div></div>
+<div class="ttc" id="classedash__packager_1_1MpdBuilder_html"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html">edash_packager::MpdBuilder</a></div><div class="ttdoc">This class generates DASH MPDs (Media Presentation Descriptions). </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00055">mpd_builder.h:55</a></div></div>
+<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a949526c833122b9a1ca40b9990224990"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a949526c833122b9a1ca40b9990224990">edash_packager::AdaptationSet::ForceSetSegmentAlignment</a></div><div class="ttdeci">virtual void ForceSetSegmentAlignment(bool segment_alignment)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00797">mpd_builder.cc:797</a></div></div>
+<div class="ttc" id="classedash__packager_1_1Representation_html_a4a81a2db7ec245892334ad927621909c"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a4a81a2db7ec245892334ad927621909c">edash_packager::Representation::SetSampleDuration</a></div><div class="ttdeci">virtual void SetSampleDuration(uint32_t sample_duration)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01088">mpd_builder.cc:1088</a></div></div>
 <div class="ttc" id="classedash__packager_1_1MpdBuilder_html_a5318f500aa6a5b3db7b7925c08d78d91"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a5318f500aa6a5b3db7b7925c08d78d91">edash_packager::MpdBuilder::AddBaseUrl</a></div><div class="ttdeci">void AddBaseUrl(const std::string &amp;base_url)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00403">mpd_builder.cc:403</a></div></div>
-<div class="ttc" id="classedash__packager_1_1Representation_html_a7fc0e59f273082ccf654025486af79ae"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a7fc0e59f273082ccf654025486af79ae">edash_packager::Representation::UpdateContentProtectionPssh</a></div><div class="ttdeci">virtual void UpdateContentProtectionPssh(const std::string &amp;drm_uuid, const std::string &amp;pssh)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01072">mpd_builder.cc:1072</a></div></div>
-<div class="ttc" id="classedash__packager_1_1Representation_html_a4fc4d0fd6f240f1c79fac0b68b9d9f0d"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a4fc4d0fd6f240f1c79fac0b68b9d9f0d">edash_packager::Representation::Representation</a></div><div class="ttdeci">Representation(const MediaInfo &amp;media_info, const MpdOptions &amp;mpd_options, uint32_t representation_id, scoped_ptr&lt; RepresentationStateChangeListener &gt; state_change_listener)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01009">mpd_builder.cc:1009</a></div></div>
-<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a3bea0954dfe1781afc1c7a624965bc84"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a3bea0954dfe1781afc1c7a624965bc84">edash_packager::AdaptationSet::SetGroup</a></div><div class="ttdeci">virtual void SetGroup(int group_number)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00812">mpd_builder.cc:812</a></div></div>
+<div class="ttc" id="classedash__packager_1_1Representation_html_a7fc0e59f273082ccf654025486af79ae"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a7fc0e59f273082ccf654025486af79ae">edash_packager::Representation::UpdateContentProtectionPssh</a></div><div class="ttdeci">virtual void UpdateContentProtectionPssh(const std::string &amp;drm_uuid, const std::string &amp;pssh)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01058">mpd_builder.cc:1058</a></div></div>
+<div class="ttc" id="classedash__packager_1_1Representation_html_a4fc4d0fd6f240f1c79fac0b68b9d9f0d"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a4fc4d0fd6f240f1c79fac0b68b9d9f0d">edash_packager::Representation::Representation</a></div><div class="ttdeci">Representation(const MediaInfo &amp;media_info, const MpdOptions &amp;mpd_options, uint32_t representation_id, scoped_ptr&lt; RepresentationStateChangeListener &gt; state_change_listener)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00996">mpd_builder.cc:996</a></div></div>
+<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a3bea0954dfe1781afc1c7a624965bc84"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a3bea0954dfe1781afc1c7a624965bc84">edash_packager::AdaptationSet::SetGroup</a></div><div class="ttdeci">virtual void SetGroup(int group_number)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00803">mpd_builder.cc:803</a></div></div>
 <div class="ttc" id="classedash__packager_1_1RepresentationStateChangeListener_html_a555f268d74e4c70afd067ffe2e6ca64e"><div class="ttname"><a href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html#a555f268d74e4c70afd067ffe2e6ca64e">edash_packager::RepresentationStateChangeListener::OnNewSegmentForRepresentation</a></div><div class="ttdeci">virtual void OnNewSegmentForRepresentation(uint64_t start_time, uint64_t duration)=0</div></div>
-<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a44984cfaed799fd6683c6c9d41394dd6"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a44984cfaed799fd6683c6c9d41394dd6">edash_packager::AdaptationSet::GetXml</a></div><div class="ttdeci">xml::ScopedXmlPtr&lt; xmlNode &gt;::type GetXml()</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00736">mpd_builder.cc:736</a></div></div>
-<div class="ttc" id="classedash__packager_1_1Representation_html_a8cb3729f52457e7df08cd05b8f19090e"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a8cb3729f52457e7df08cd05b8f19090e">edash_packager::Representation::AddContentProtectionElement</a></div><div class="ttdeci">virtual void AddContentProtectionElement(const ContentProtectionElement &amp;element)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01065">mpd_builder.cc:1065</a></div></div>
+<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a44984cfaed799fd6683c6c9d41394dd6"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a44984cfaed799fd6683c6c9d41394dd6">edash_packager::AdaptationSet::GetXml</a></div><div class="ttdeci">xml::ScopedXmlPtr&lt; xmlNode &gt;::type GetXml()</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00728">mpd_builder.cc:728</a></div></div>
+<div class="ttc" id="classedash__packager_1_1Representation_html_a8cb3729f52457e7df08cd05b8f19090e"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a8cb3729f52457e7df08cd05b8f19090e">edash_packager::Representation::AddContentProtectionElement</a></div><div class="ttdeci">virtual void AddContentProtectionElement(const ContentProtectionElement &amp;element)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01052">mpd_builder.cc:1052</a></div></div>
 <div class="ttc" id="classedash__packager_1_1RepresentationStateChangeListener_html_aec87eac5d1aefe55dd8c0483ac4354a5"><div class="ttname"><a href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html#aec87eac5d1aefe55dd8c0483ac4354a5">edash_packager::RepresentationStateChangeListener::OnSetFrameRateForRepresentation</a></div><div class="ttdeci">virtual void OnSetFrameRateForRepresentation(uint32_t frame_duration, uint32_t timescale)=0</div></div>
 <div class="ttc" id="classedash__packager_1_1xml_1_1RepresentationXmlNode_html"><div class="ttname"><a href="../../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html">edash_packager::xml::RepresentationXmlNode</a></div><div class="ttdoc">RepresentationType in MPD. </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/de7/xml__node_8h_source.html#l00128">xml_node.h:128</a></div></div>
-<div class="ttc" id="classedash__packager_1_1MpdBuilder_html_a9efa414ddfaf48561f3085daada49ebc"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a9efa414ddfaf48561f3085daada49ebc">edash_packager::MpdBuilder::WriteMpdToFile</a></div><div class="ttdeci">bool WriteMpdToFile(media::File *output_file)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00420">mpd_builder.cc:420</a></div></div>
-<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_ad9adf17a02fabfd4aa8d91a2d65d52ad"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#ad9adf17a02fabfd4aa8d91a2d65d52ad">edash_packager::AdaptationSet::OnSetFrameRateForRepresentation</a></div><div class="ttdeci">void OnSetFrameRateForRepresentation(uint32_t representation_id, uint32_t frame_duration, uint32_t timescale)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00840">mpd_builder.cc:840</a></div></div>
-<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a9a15647b565f9898a5a0e1d3176ff935"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a9a15647b565f9898a5a0e1d3176ff935">edash_packager::AdaptationSet::AddRepresentation</a></div><div class="ttdeci">virtual Representation * AddRepresentation(const MediaInfo &amp;media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00671">mpd_builder.cc:671</a></div></div>
+<div class="ttc" id="classedash__packager_1_1MpdBuilder_html_a9efa414ddfaf48561f3085daada49ebc"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a9efa414ddfaf48561f3085daada49ebc">edash_packager::MpdBuilder::WriteMpdToFile</a></div><div class="ttdeci">bool WriteMpdToFile(media::File *output_file)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00417">mpd_builder.cc:417</a></div></div>
+<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_ad9adf17a02fabfd4aa8d91a2d65d52ad"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#ad9adf17a02fabfd4aa8d91a2d65d52ad">edash_packager::AdaptationSet::OnSetFrameRateForRepresentation</a></div><div class="ttdeci">void OnSetFrameRateForRepresentation(uint32_t representation_id, uint32_t frame_duration, uint32_t timescale)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00829">mpd_builder.cc:829</a></div></div>
+<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a9a15647b565f9898a5a0e1d3176ff935"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a9a15647b565f9898a5a0e1d3176ff935">edash_packager::AdaptationSet::AddRepresentation</a></div><div class="ttdeci">virtual Representation * AddRepresentation(const MediaInfo &amp;media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00666">mpd_builder.cc:666</a></div></div>
 <div class="ttc" id="structedash__packager_1_1ContentProtectionElement_html"><div class="ttname"><a href="../../d0/d96/structedash__packager_1_1ContentProtectionElement.html">edash_packager::ContentProtectionElement</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dd6/content__protection__element_8h_source.html#l00036">content_protection_element.h:36</a></div></div>
-<div class="ttc" id="classedash__packager_1_1RepresentationStateChangeListener_html"><div class="ttname"><a href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html">edash_packager::RepresentationStateChangeListener</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00397">mpd_builder.h:397</a></div></div>
-<div class="ttc" id="classedash__packager_1_1AdaptationSet_html"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html">edash_packager::AdaptationSet</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00156">mpd_builder.h:156</a></div></div>
-<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a6630f9954b604bee7f90c11778336fdc"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a6630f9954b604bee7f90c11778336fdc">edash_packager::AdaptationSet::UpdateContentProtectionPssh</a></div><div class="ttdeci">virtual void UpdateContentProtectionPssh(const std::string &amp;drm_uuid, const std::string &amp;pssh)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00723">mpd_builder.cc:723</a></div></div>
-<div class="ttc" id="classedash__packager_1_1MpdBuilder_html_a1c0fd80514f6f1d90f70bb9e96e744a1"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a1c0fd80514f6f1d90f70bb9e96e744a1">edash_packager::MpdBuilder::ToString</a></div><div class="ttdeci">virtual bool ToString(std::string *output)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00426">mpd_builder.cc:426</a></div></div>
-<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a3bfc3e2de3eaafc61a4dc2e23c698956"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a3bfc3e2de3eaafc61a4dc2e23c698956">edash_packager::AdaptationSet::AddRole</a></div><div class="ttdeci">virtual void AddRole(Role role)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00730">mpd_builder.cc:730</a></div></div>
+<div class="ttc" id="classedash__packager_1_1RepresentationStateChangeListener_html"><div class="ttname"><a href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html">edash_packager::RepresentationStateChangeListener</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00393">mpd_builder.h:393</a></div></div>
+<div class="ttc" id="classedash__packager_1_1AdaptationSet_html"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html">edash_packager::AdaptationSet</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00154">mpd_builder.h:154</a></div></div>
+<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a6630f9954b604bee7f90c11778336fdc"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a6630f9954b604bee7f90c11778336fdc">edash_packager::AdaptationSet::UpdateContentProtectionPssh</a></div><div class="ttdeci">virtual void UpdateContentProtectionPssh(const std::string &amp;drm_uuid, const std::string &amp;pssh)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00716">mpd_builder.cc:716</a></div></div>
+<div class="ttc" id="classedash__packager_1_1MpdBuilder_html_a1c0fd80514f6f1d90f70bb9e96e744a1"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a1c0fd80514f6f1d90f70bb9e96e744a1">edash_packager::MpdBuilder::ToString</a></div><div class="ttdeci">virtual bool ToString(std::string *output)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00422">mpd_builder.cc:422</a></div></div>
+<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a3bfc3e2de3eaafc61a4dc2e23c698956"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a3bfc3e2de3eaafc61a4dc2e23c698956">edash_packager::AdaptationSet::AddRole</a></div><div class="ttdeci">virtual void AddRole(Role role)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00722">mpd_builder.cc:722</a></div></div>
 <div class="ttc" id="classedash__packager_1_1MpdBuilder_html_a7c826239ca4611979691fa04a563c49f"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a7c826239ca4611979691fa04a563c49f">edash_packager::MpdBuilder::MpdBuilder</a></div><div class="ttdeci">MpdBuilder(MpdType type, const MpdOptions &amp;mpd_options)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00396">mpd_builder.cc:396</a></div></div>
-<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a419e5b2dc27fef47fb0fcaa17ea09314"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a419e5b2dc27fef47fb0fcaa17ea09314">edash_packager::AdaptationSet::AddContentProtectionElement</a></div><div class="ttdeci">virtual void AddContentProtectionElement(const ContentProtectionElement &amp;element)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00716">mpd_builder.cc:716</a></div></div>
+<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a419e5b2dc27fef47fb0fcaa17ea09314"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a419e5b2dc27fef47fb0fcaa17ea09314">edash_packager::AdaptationSet::AddContentProtectionElement</a></div><div class="ttdeci">virtual void AddContentProtectionElement(const ContentProtectionElement &amp;element)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00710">mpd_builder.cc:710</a></div></div>
 <div class="ttc" id="classBandwidthEstimator_html"><div class="ttname"><a href="../../d2/d6f/classBandwidthEstimator.html">BandwidthEstimator</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d19/bandwidth__estimator_8h_source.html#l00015">bandwidth_estimator.h:15</a></div></div>
-<div class="ttc" id="classedash__packager_1_1Representation_html_a0a59920aa8a31f1fb2b30a2ee8cc4e95"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a0a59920aa8a31f1fb2b30a2ee8cc4e95">edash_packager::Representation::id</a></div><div class="ttdeci">uint32_t id() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00478">mpd_builder.h:478</a></div></div>
-<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_aed9c81cd32d8bbb8ed71d5ab3f16efac"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#aed9c81cd32d8bbb8ed71d5ab3f16efac">edash_packager::AdaptationSet::OnNewSegmentForRepresentation</a></div><div class="ttdeci">void OnNewSegmentForRepresentation(uint32_t representation_id, uint64_t start_time, uint64_t duration)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00827">mpd_builder.cc:827</a></div></div>
+<div class="ttc" id="classedash__packager_1_1Representation_html_a0a59920aa8a31f1fb2b30a2ee8cc4e95"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a0a59920aa8a31f1fb2b30a2ee8cc4e95">edash_packager::Representation::id</a></div><div class="ttdeci">uint32_t id() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00474">mpd_builder.h:474</a></div></div>
+<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_aed9c81cd32d8bbb8ed71d5ab3f16efac"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#aed9c81cd32d8bbb8ed71d5ab3f16efac">edash_packager::AdaptationSet::OnNewSegmentForRepresentation</a></div><div class="ttdeci">void OnNewSegmentForRepresentation(uint32_t representation_id, uint64_t start_time, uint64_t duration)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00818">mpd_builder.cc:818</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Nov 13 2015 19:02:32 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Nov 16 2015 20:02:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
