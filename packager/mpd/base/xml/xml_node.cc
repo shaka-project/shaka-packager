@@ -61,7 +61,7 @@ XmlNode::XmlNode(const char* name) : node_(xmlNewNode(NULL, BAD_CAST name)) {
 
 XmlNode::~XmlNode() {}
 
-bool XmlNode::AddChild(ScopedXmlPtr<xmlNode>::type child) {
+bool XmlNode::AddChild(scoped_xml_ptr<xmlNode> child) {
   DCHECK(node_);
   DCHECK(child);
   if (!xmlAddChild(node_.get(), child.get()))
@@ -136,7 +136,7 @@ void XmlNode::SetContent(const std::string& content) {
   xmlNodeSetContent(node_.get(), BAD_CAST content.c_str());
 }
 
-ScopedXmlPtr<xmlNode>::type XmlNode::PassScopedPtr() {
+scoped_xml_ptr<xmlNode> XmlNode::PassScopedPtr() {
   DVLOG(2) << "Passing node_.";
   DCHECK(node_);
   return node_.Pass();

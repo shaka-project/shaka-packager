@@ -82,7 +82,7 @@ bool GetDurationAttribute(xmlNodePtr node, float* duration) {
   DCHECK(node);
   DCHECK(duration);
   static const char kDuration[] = "duration";
-  xml::ScopedXmlPtr<xmlChar>::type duration_value(
+  xml::scoped_xml_ptr<xmlChar> duration_value(
       xmlGetProp(node, BAD_CAST kDuration));
 
   if (!duration_value)

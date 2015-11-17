@@ -210,9 +210,9 @@ class AdaptationSet {
 
   /// Makes a copy of AdaptationSet xml element with its child Representation
   /// and ContentProtection elements.
-  /// @return On success returns a non-NULL ScopedXmlPtr. Otherwise returns a
-  ///         NULL ScopedXmlPtr.
-  xml::ScopedXmlPtr<xmlNode>::type GetXml();
+  /// @return On success returns a non-NULL scoped_xml_ptr. Otherwise returns a
+  ///         NULL scoped_xml_ptr.
+  xml::scoped_xml_ptr<xmlNode> GetXml();
 
   /// Forces the (sub)segmentAlignment field to be set to @a segment_alignment.
   /// Use this if you are certain that the (sub)segments are alinged/unaligned
@@ -468,7 +468,7 @@ class Representation {
   virtual void SetSampleDuration(uint32_t sample_duration);
 
   /// @return Copy of <Representation>.
-  xml::ScopedXmlPtr<xmlNode>::type GetXml();
+  xml::scoped_xml_ptr<xmlNode> GetXml();
 
   /// @return ID number for <Representation>.
   uint32_t id() const { return id_; }

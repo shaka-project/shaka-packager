@@ -34,13 +34,8 @@ struct XmlDeleter {
   inline void operator()(xmlChar* ptr) const { xmlFree(ptr); }
 };
 
-// C++11 allows template alias but standards before it do not. This struct is
-// for aliasing scoped_ptr with libxml2 object deleter.
-/// scoped_ptr for libxml2 resources.
 template <typename XmlType>
-struct ScopedXmlPtr {
-  typedef scoped_ptr<XmlType, XmlDeleter> type;
-};
+using scoped_xml_ptr = scoped_ptr<XmlType, XmlDeleter>;
 
 }  // namespace xml
 }  // namespace edash_packager

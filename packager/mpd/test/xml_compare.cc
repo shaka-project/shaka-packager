@@ -15,8 +15,8 @@
 namespace edash_packager {
 
 namespace {
-xml::ScopedXmlPtr<xmlDoc>::type GetDocFromString(const std::string& xml_str) {
-  xml::ScopedXmlPtr<xmlDoc>::type schema_as_doc(xmlReadMemory(
+xml::scoped_xml_ptr<xmlDoc> GetDocFromString(const std::string& xml_str) {
+  xml::scoped_xml_ptr<xmlDoc> schema_as_doc(xmlReadMemory(
       xml_str.data(), xml_str.size(), NULL, NULL, 0));
   return schema_as_doc.Pass();
 }
@@ -30,7 +30,7 @@ std::map<std::string, std::string> GetMapOfAttributes(xmlNodePtr node) {
        attribute && attribute->name && attribute->children;
        attribute = attribute->next) {
     const char* name = reinterpret_cast<const char*>(attribute->name);
-    xml::ScopedXmlPtr<xmlChar>::type value(
+    xml::scoped_xml_ptr<xmlChar> value(
         xmlNodeListGetString(node->doc, attribute->children, 1));
 
     attribute_map[name] = reinterpret_cast<const char*>(value.get());
@@ -76,8 +76,8 @@ bool CompareNames(xmlNodePtr node1, xmlNodePtr node2) {
 }
 
 bool CompareContents(xmlNodePtr node1, xmlNodePtr node2) {
-  xml::ScopedXmlPtr<xmlChar>::type node1_content_ptr(xmlNodeGetContent(node1));
-  xml::ScopedXmlPtr<xmlChar>::type node2_content_ptr(xmlNodeGetContent(node2));
+  xml::scoped_xml_ptr<xmlChar> node1_content_ptr(xmlNodeGetContent(node1));
+  xml::scoped_xml_ptr<xmlChar> node2_content_ptr(xmlNodeGetContent(node2));
   std::string node1_content =
       reinterpret_cast<const char*>(node1_content_ptr.get());
   std::string node2_content =
@@ -144,13 +144,13 @@ bool CompareNodes(xmlNodePtr node1, xmlNodePtr node2) {
 }  // namespace
 
 bool XmlEqual(const std::string& xml1, const std::string& xml2) {
-  xml::ScopedXmlPtr<xmlDoc>::type xml1_doc(GetDocFromString(xml1));
-  xml::ScopedXmlPtr<xmlDoc>::type xml2_doc(GetDocFromString(xml2));
+  xml::scoped_xml_ptr<xmlDoc> xml1_doc(GetDocFromString(xml1));
+  xml::scoped_xml_ptr<xmlDoc> xml2_doc(GetDocFromString(xml2));
   return XmlEqual(xml1_doc.get(), xml2_doc.get());
 }
 
 bool XmlEqual(const std::string& xml1, xmlDocPtr xml2) {
-  xml::ScopedXmlPtr<xmlDoc>::type xml1_doc(GetDocFromString(xml1));
+  xml::scoped_xml_ptr<xmlDoc> xml1_doc(GetDocFromString(xml1));
   return XmlEqual(xml1_doc.get(), xml2);
 }
 

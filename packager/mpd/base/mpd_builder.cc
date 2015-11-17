@@ -427,7 +427,7 @@ template <typename OutputType>
 bool MpdBuilder::WriteMpdToOutput(OutputType* output) {
   static LibXmlInitializer lib_xml_initializer;
 
-  xml::ScopedXmlPtr<xmlDoc>::type doc(GenerateMpd());
+  xml::scoped_xml_ptr<xmlDoc> doc(GenerateMpd());
   if (!doc.get())
     return false;
 
@@ -448,7 +448,7 @@ bool MpdBuilder::WriteMpdToOutput(OutputType* output) {
 xmlDocPtr MpdBuilder::GenerateMpd() {
   // Setup nodes.
   static const char kXmlVersion[] = "1.0";
-  xml::ScopedXmlPtr<xmlDoc>::type doc(xmlNewDoc(BAD_CAST kXmlVersion));
+  xml::scoped_xml_ptr<xmlDoc> doc(xmlNewDoc(BAD_CAST kXmlVersion));
   XmlNode mpd("MPD");
 
   // Iterate thru AdaptationSets and add them to one big Period element.
@@ -456,7 +456,7 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
   std::list<AdaptationSet*>::iterator adaptation_sets_it =
       adaptation_sets_.begin();
   for (; adaptation_sets_it != adaptation_sets_.end(); ++adaptation_sets_it) {
-    xml::ScopedXmlPtr<xmlNode>::type child((*adaptation_sets_it)->GetXml());
+    xml::scoped_xml_ptr<xmlNode> child((*adaptation_sets_it)->GetXml());
     if (!child.get() || !period.AddChild(child.Pass()))
       return NULL;
   }
@@ -725,12 +725,12 @@ void AdaptationSet::AddRole(Role role) {
 
 // Creates a copy of <AdaptationSet> xml element, iterate thru all the
 // <Representation> (child) elements and add them to the copy.
-xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
+xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
   AdaptationSetXmlNode adaptation_set;
 
   if (!adaptation_set.AddContentProtectionElements(
           content_protection_elements_)) {
-    return xml::ScopedXmlPtr<xmlNode>::type();
+    return xml::scoped_xml_ptr<xmlNode>();
   }
   for (std::set<Role>::const_iterator role_it = roles_.begin();
        role_it != roles_.end(); ++role_it) {
@@ -742,9 +742,9 @@ xml::ScopedXmlPtr<xmlNode>::type AdaptationSet::GetXml() {
       representations_.begin();
 
   for (; representation_it != representations_.end(); ++representation_it) {
-    xml::ScopedXmlPtr<xmlNode>::type child((*representation_it)->GetXml());
+    xml::scoped_xml_ptr<xmlNode> child((*representation_it)->GetXml());
     if (!child || !adaptation_set.AddChild(child.Pass()))
-      return xml::ScopedXmlPtr<xmlNode>::type();
+      return xml::scoped_xml_ptr<xmlNode>();
   }
 
   adaptation_set.SetId(id_);
@@ -1101,10 +1101,10 @@ void Representation::SetSampleDuration(uint32_t sample_duration) {
 // AddVideoInfo() (possibly adds FramePacking elements), AddAudioInfo() (Adds
 // AudioChannelConfig elements), AddContentProtectionElements*(), and
 // AddVODOnlyInfo() (Adds segment info).
-xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
+xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
   if (!HasRequiredMediaInfoFields()) {
     LOG(ERROR) << "MediaInfo missing required fields.";
-    return xml::ScopedXmlPtr<xmlNode>::type();
+    return xml::scoped_xml_ptr<xmlNode>();
   }
 
   const uint64_t bandwidth = media_info_.has_bandwidth()
@@ -1127,31 +1127,31 @@ xml::ScopedXmlPtr<xmlNode>::type Representation::GetXml() {
   if (has_video_info &&
       !representation.AddVideoInfo(media_info_.video_info())) {
     LOG(ERROR) << "Failed to add video info to Representation XML.";
-    return xml::ScopedXmlPtr<xmlNode>::type();
+    return xml::scoped_xml_ptr<xmlNode>();
   }
 
   if (has_audio_info &&
       !representation.AddAudioInfo(media_info_.audio_info())) {
     LOG(ERROR) << "Failed to add audio info to Representation XML.";
-    return xml::ScopedXmlPtr<xmlNode>::type();
+    return xml::scoped_xml_ptr<xmlNode>();
   }
 
   if (!representation.AddContentProtectionElements(
           content_protection_elements_)) {
-    return xml::ScopedXmlPtr<xmlNode>::type();
+    return xml::scoped_xml_ptr<xmlNode>();
   }
 
   if (HasVODOnlyFields(media_info_) &&
       !representation.AddVODOnlyInfo(media_info_)) {
     LOG(ERROR) << "Failed to add VOD segment info.";
-    return xml::ScopedXmlPtr<xmlNode>::type();
+    return xml::scoped_xml_ptr<xmlNode>();
   }
 
   if (HasLiveOnlyFields(media_info_) &&
       !representation.AddLiveOnlyInfo(media_info_, segment_infos_,
                                       start_number_)) {
     LOG(ERROR) << "Failed to add Live info.";
-    return xml::ScopedXmlPtr<xmlNode>::type();
+    return xml::scoped_xml_ptr<xmlNode>();
   }
   // TODO(rkuroiwa): It is likely that all representations have the exact same
   // SegmentTemplate. Optimize and propagate the tag up to AdaptationSet level.

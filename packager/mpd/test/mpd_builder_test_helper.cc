@@ -62,7 +62,7 @@ MediaInfo GetTestMediaInfo(const std::string& media_info_file_name) {
 }
 
 bool ValidateMpdSchema(const std::string& mpd) {
-  xml::ScopedXmlPtr<xmlDoc>::type doc(
+  xml::scoped_xml_ptr<xmlDoc> doc(
       xmlParseMemory(mpd.data(), mpd.size()));
   if (!doc) {
     LOG(ERROR) << "Failed to parse mpd into an xml doc.";
@@ -75,22 +75,22 @@ bool ValidateMpdSchema(const std::string& mpd) {
   // First, I need to load the schema as a xmlDoc so that I can pass the path of
   // the DASH-MPD.xsd. Then it can resolve the relative path included from the
   // XSD when creating xmlSchemaParserCtxt.
-  xml::ScopedXmlPtr<xmlDoc>::type schema_as_doc(
+  xml::scoped_xml_ptr<xmlDoc> schema_as_doc(
       xmlReadMemory(schema_str.data(),
                     schema_str.size(),
                     schema_path.value().c_str(),
                     NULL,
                     0));
   DCHECK(schema_as_doc);
-  xml::ScopedXmlPtr<xmlSchemaParserCtxt>::type
+  xml::scoped_xml_ptr<xmlSchemaParserCtxt>
       schema_parser_ctxt(xmlSchemaNewDocParserCtxt(schema_as_doc.get()));
   DCHECK(schema_parser_ctxt);
 
-  xml::ScopedXmlPtr<xmlSchema>::type schema(
+  xml::scoped_xml_ptr<xmlSchema> schema(
       xmlSchemaParse(schema_parser_ctxt.get()));
   DCHECK(schema);
 
-  xml::ScopedXmlPtr<xmlSchemaValidCtxt>::type valid_ctxt(
+  xml::scoped_xml_ptr<xmlSchemaValidCtxt> valid_ctxt(
       xmlSchemaNewValidCtxt(schema.get()));
   DCHECK(valid_ctxt);
   int validation_result =

@@ -44,8 +44,8 @@ std::string GetDocAsFlatString(xmlDocPtr doc) {
   return output;
 }
 
-ScopedXmlPtr<xmlDoc>::type MakeDoc(ScopedXmlPtr<xmlNode>::type node) {
-  xml::ScopedXmlPtr<xmlDoc>::type doc(xmlNewDoc(BAD_CAST ""));
+scoped_xml_ptr<xmlDoc> MakeDoc(scoped_xml_ptr<xmlNode> node) {
+  xml::scoped_xml_ptr<xmlDoc> doc(xmlNewDoc(BAD_CAST ""));
   xmlDocSetRootElement(doc.get(), node.release());
   return doc.Pass();
 }
@@ -61,7 +61,7 @@ class RepresentationTest : public ::testing::Test {
   // |node|. Returns |node| in string format.
   // You should not call this function multiple times.
   std::string GetStringFormat() {
-    xml::ScopedXmlPtr<xmlDoc>::type doc(xmlNewDoc(BAD_CAST ""));
+    xml::scoped_xml_ptr<xmlDoc> doc(xmlNewDoc(BAD_CAST ""));
 
     // Because you cannot easily get the string format of a xmlNodePtr, it gets
     // attached to a temporary xml doc.
@@ -202,7 +202,7 @@ TEST_F(RepresentationTest, AddContentProtectionElements) {
   content_protections.push_back(content_protection_clearkey);
 
   representation_.AddContentProtectionElements(content_protections);
-  ScopedXmlPtr<xmlDoc>::type doc(MakeDoc(representation_.PassScopedPtr()));
+  scoped_xml_ptr<xmlDoc> doc(MakeDoc(representation_.PassScopedPtr()));
   ASSERT_TRUE(XmlEqual(
       "<Representation>\n"
       " <ContentProtection\n"

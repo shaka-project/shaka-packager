@@ -39,7 +39,7 @@ class XmlNode {
   /// @param child is a xmlNode to add as a child for this element. Ownership
   ///        of the child node is transferred.
   /// @return true on success, false otherwise.
-  bool AddChild(ScopedXmlPtr<xmlNode>::type child);
+  bool AddChild(scoped_xml_ptr<xmlNode> child);
 
   /// Adds Elements to this node using the Element struct.
   bool AddElements(const std::vector<Element>& elements);
@@ -75,7 +75,7 @@ class XmlNode {
   /// Transfer the ownership of the xmlNodePtr. After calling this method, the
   /// behavior of any methods, except the destructor, is undefined.
   /// @return The resource of this object.
-  ScopedXmlPtr<xmlNode>::type PassScopedPtr();
+  scoped_xml_ptr<xmlNode> PassScopedPtr();
 
   /// Release the xmlNodePtr of this object. After calling this method, the
   /// behavior of any methods, except the destructor, is undefined.
@@ -85,7 +85,7 @@ class XmlNode {
   xmlNodePtr GetRawPtr();
 
  private:
-  ScopedXmlPtr<xmlNode>::type node_;
+  scoped_xml_ptr<xmlNode> node_;
 
   DISALLOW_COPY_AND_ASSIGN(XmlNode);
 };
