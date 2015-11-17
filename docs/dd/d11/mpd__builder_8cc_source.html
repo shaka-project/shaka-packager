@@ -516,7 +516,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;<span class="keywordtype">bool</span> MpdBuilder::WriteMpdToOutput(OutputType* output) {</div>
 <div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;  <span class="keyword">static</span> LibXmlInitializer lib_xml_initializer;</div>
 <div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;  xml::ScopedXmlPtr&lt;xmlDoc&gt;::type doc(GenerateMpd());</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;  xml::scoped_xml_ptr&lt;xmlDoc&gt; doc(GenerateMpd());</div>
 <div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;  <span class="keywordflow">if</span> (!doc.get())</div>
 <div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;</div>
@@ -537,7 +537,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;xmlDocPtr MpdBuilder::GenerateMpd() {</div>
 <div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;  <span class="comment">// Setup nodes.</span></div>
 <div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> kXmlVersion[] = <span class="stringliteral">&quot;1.0&quot;</span>;</div>
-<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;  xml::ScopedXmlPtr&lt;xmlDoc&gt;::type doc(xmlNewDoc(BAD_CAST kXmlVersion));</div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;  xml::scoped_xml_ptr&lt;xmlDoc&gt; doc(xmlNewDoc(BAD_CAST kXmlVersion));</div>
 <div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;  XmlNode mpd(<span class="stringliteral">&quot;MPD&quot;</span>);</div>
 <div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;</div>
 <div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;  <span class="comment">// Iterate thru AdaptationSets and add them to one big Period element.</span></div>
@@ -545,7 +545,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;  std::list&lt;AdaptationSet*&gt;::iterator adaptation_sets_it =</div>
 <div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;      adaptation_sets_.begin();</div>
 <div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;  <span class="keywordflow">for</span> (; adaptation_sets_it != adaptation_sets_.end(); ++adaptation_sets_it) {</div>
-<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;    xml::ScopedXmlPtr&lt;xmlNode&gt;::type child((*adaptation_sets_it)-&gt;GetXml());</div>
+<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;    xml::scoped_xml_ptr&lt;xmlNode&gt; child((*adaptation_sets_it)-&gt;GetXml());</div>
 <div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;    <span class="keywordflow">if</span> (!child.get() || !period.AddChild(child.Pass()))</div>
 <div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;      <span class="keywordflow">return</span> NULL;</div>
 <div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;  }</div>
@@ -814,12 +814,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;</div>
 <div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;<span class="comment">// Creates a copy of &lt;AdaptationSet&gt; xml element, iterate thru all the</span></div>
 <div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;<span class="comment">// &lt;Representation&gt; (child) elements and add them to the copy.</span></div>
-<div class="line"><a name="l00728"></a><span class="lineno"><a class="line" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a44984cfaed799fd6683c6c9d41394dd6">  728</a></span>&#160;xml::ScopedXmlPtr&lt;xmlNode&gt;::type <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a44984cfaed799fd6683c6c9d41394dd6">AdaptationSet::GetXml</a>() {</div>
+<div class="line"><a name="l00728"></a><span class="lineno"><a class="line" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#af2f5773f7ad01f239cdb6d61bb36ca01">  728</a></span>&#160;xml::scoped_xml_ptr&lt;xmlNode&gt; <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html#af2f5773f7ad01f239cdb6d61bb36ca01">AdaptationSet::GetXml</a>() {</div>
 <div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;  AdaptationSetXmlNode adaptation_set;</div>
 <div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;</div>
 <div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;  <span class="keywordflow">if</span> (!adaptation_set.AddContentProtectionElements(</div>
 <div class="line"><a name="l00732"></a><span class="lineno">  732</span>&#160;          content_protection_elements_)) {</div>
-<div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;    <span class="keywordflow">return</span> xml::ScopedXmlPtr&lt;xmlNode&gt;::type();</div>
+<div class="line"><a name="l00733"></a><span class="lineno">  733</span>&#160;    <span class="keywordflow">return</span> xml::scoped_xml_ptr&lt;xmlNode&gt;();</div>
 <div class="line"><a name="l00734"></a><span class="lineno">  734</span>&#160;  }</div>
 <div class="line"><a name="l00735"></a><span class="lineno">  735</span>&#160;  <span class="keywordflow">for</span> (std::set&lt;Role&gt;::const_iterator role_it = roles_.begin();</div>
 <div class="line"><a name="l00736"></a><span class="lineno">  736</span>&#160;       role_it != roles_.end(); ++role_it) {</div>
@@ -831,9 +831,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00742"></a><span class="lineno">  742</span>&#160;      representations_.begin();</div>
 <div class="line"><a name="l00743"></a><span class="lineno">  743</span>&#160;</div>
 <div class="line"><a name="l00744"></a><span class="lineno">  744</span>&#160;  <span class="keywordflow">for</span> (; representation_it != representations_.end(); ++representation_it) {</div>
-<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;    xml::ScopedXmlPtr&lt;xmlNode&gt;::type child((*representation_it)-&gt;GetXml());</div>
+<div class="line"><a name="l00745"></a><span class="lineno">  745</span>&#160;    xml::scoped_xml_ptr&lt;xmlNode&gt; child((*representation_it)-&gt;GetXml());</div>
 <div class="line"><a name="l00746"></a><span class="lineno">  746</span>&#160;    <span class="keywordflow">if</span> (!child || !adaptation_set.AddChild(child.Pass()))</div>
-<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;      <span class="keywordflow">return</span> xml::ScopedXmlPtr&lt;xmlNode&gt;::type();</div>
+<div class="line"><a name="l00747"></a><span class="lineno">  747</span>&#160;      <span class="keywordflow">return</span> xml::scoped_xml_ptr&lt;xmlNode&gt;();</div>
 <div class="line"><a name="l00748"></a><span class="lineno">  748</span>&#160;  }</div>
 <div class="line"><a name="l00749"></a><span class="lineno">  749</span>&#160;</div>
 <div class="line"><a name="l00750"></a><span class="lineno">  750</span>&#160;  adaptation_set.SetId(id_);</div>
@@ -1190,10 +1190,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01101"></a><span class="lineno"> 1101</span>&#160;<span class="comment">// AddVideoInfo() (possibly adds FramePacking elements), AddAudioInfo() (Adds</span></div>
 <div class="line"><a name="l01102"></a><span class="lineno"> 1102</span>&#160;<span class="comment">// AudioChannelConfig elements), AddContentProtectionElements*(), and</span></div>
 <div class="line"><a name="l01103"></a><span class="lineno"> 1103</span>&#160;<span class="comment">// AddVODOnlyInfo() (Adds segment info).</span></div>
-<div class="line"><a name="l01104"></a><span class="lineno"><a class="line" href="../../d7/d15/classedash__packager_1_1Representation.html#a4eefc1cf0da6ff78806f8d1099cb01d1"> 1104</a></span>&#160;xml::ScopedXmlPtr&lt;xmlNode&gt;::type <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#a4eefc1cf0da6ff78806f8d1099cb01d1">Representation::GetXml</a>() {</div>
+<div class="line"><a name="l01104"></a><span class="lineno"><a class="line" href="../../d7/d15/classedash__packager_1_1Representation.html#a52225b2a8c588ce52454baede35987a5"> 1104</a></span>&#160;xml::scoped_xml_ptr&lt;xmlNode&gt; <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html#a52225b2a8c588ce52454baede35987a5">Representation::GetXml</a>() {</div>
 <div class="line"><a name="l01105"></a><span class="lineno"> 1105</span>&#160;  <span class="keywordflow">if</span> (!HasRequiredMediaInfoFields()) {</div>
 <div class="line"><a name="l01106"></a><span class="lineno"> 1106</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;MediaInfo missing required fields.&quot;</span>;</div>
-<div class="line"><a name="l01107"></a><span class="lineno"> 1107</span>&#160;    <span class="keywordflow">return</span> xml::ScopedXmlPtr&lt;xmlNode&gt;::type();</div>
+<div class="line"><a name="l01107"></a><span class="lineno"> 1107</span>&#160;    <span class="keywordflow">return</span> xml::scoped_xml_ptr&lt;xmlNode&gt;();</div>
 <div class="line"><a name="l01108"></a><span class="lineno"> 1108</span>&#160;  }</div>
 <div class="line"><a name="l01109"></a><span class="lineno"> 1109</span>&#160;</div>
 <div class="line"><a name="l01110"></a><span class="lineno"> 1110</span>&#160;  <span class="keyword">const</span> uint64_t bandwidth = media_info_.has_bandwidth()</div>
@@ -1216,31 +1216,31 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01127"></a><span class="lineno"> 1127</span>&#160;  <span class="keywordflow">if</span> (has_video_info &amp;&amp;</div>
 <div class="line"><a name="l01128"></a><span class="lineno"> 1128</span>&#160;      !representation.AddVideoInfo(media_info_.video_info())) {</div>
 <div class="line"><a name="l01129"></a><span class="lineno"> 1129</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to add video info to Representation XML.&quot;</span>;</div>
-<div class="line"><a name="l01130"></a><span class="lineno"> 1130</span>&#160;    <span class="keywordflow">return</span> xml::ScopedXmlPtr&lt;xmlNode&gt;::type();</div>
+<div class="line"><a name="l01130"></a><span class="lineno"> 1130</span>&#160;    <span class="keywordflow">return</span> xml::scoped_xml_ptr&lt;xmlNode&gt;();</div>
 <div class="line"><a name="l01131"></a><span class="lineno"> 1131</span>&#160;  }</div>
 <div class="line"><a name="l01132"></a><span class="lineno"> 1132</span>&#160;</div>
 <div class="line"><a name="l01133"></a><span class="lineno"> 1133</span>&#160;  <span class="keywordflow">if</span> (has_audio_info &amp;&amp;</div>
 <div class="line"><a name="l01134"></a><span class="lineno"> 1134</span>&#160;      !representation.AddAudioInfo(media_info_.audio_info())) {</div>
 <div class="line"><a name="l01135"></a><span class="lineno"> 1135</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to add audio info to Representation XML.&quot;</span>;</div>
-<div class="line"><a name="l01136"></a><span class="lineno"> 1136</span>&#160;    <span class="keywordflow">return</span> xml::ScopedXmlPtr&lt;xmlNode&gt;::type();</div>
+<div class="line"><a name="l01136"></a><span class="lineno"> 1136</span>&#160;    <span class="keywordflow">return</span> xml::scoped_xml_ptr&lt;xmlNode&gt;();</div>
 <div class="line"><a name="l01137"></a><span class="lineno"> 1137</span>&#160;  }</div>
 <div class="line"><a name="l01138"></a><span class="lineno"> 1138</span>&#160;</div>
 <div class="line"><a name="l01139"></a><span class="lineno"> 1139</span>&#160;  <span class="keywordflow">if</span> (!representation.AddContentProtectionElements(</div>
 <div class="line"><a name="l01140"></a><span class="lineno"> 1140</span>&#160;          content_protection_elements_)) {</div>
-<div class="line"><a name="l01141"></a><span class="lineno"> 1141</span>&#160;    <span class="keywordflow">return</span> xml::ScopedXmlPtr&lt;xmlNode&gt;::type();</div>
+<div class="line"><a name="l01141"></a><span class="lineno"> 1141</span>&#160;    <span class="keywordflow">return</span> xml::scoped_xml_ptr&lt;xmlNode&gt;();</div>
 <div class="line"><a name="l01142"></a><span class="lineno"> 1142</span>&#160;  }</div>
 <div class="line"><a name="l01143"></a><span class="lineno"> 1143</span>&#160;</div>
 <div class="line"><a name="l01144"></a><span class="lineno"> 1144</span>&#160;  <span class="keywordflow">if</span> (HasVODOnlyFields(media_info_) &amp;&amp;</div>
 <div class="line"><a name="l01145"></a><span class="lineno"> 1145</span>&#160;      !representation.AddVODOnlyInfo(media_info_)) {</div>
 <div class="line"><a name="l01146"></a><span class="lineno"> 1146</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to add VOD segment info.&quot;</span>;</div>
-<div class="line"><a name="l01147"></a><span class="lineno"> 1147</span>&#160;    <span class="keywordflow">return</span> xml::ScopedXmlPtr&lt;xmlNode&gt;::type();</div>
+<div class="line"><a name="l01147"></a><span class="lineno"> 1147</span>&#160;    <span class="keywordflow">return</span> xml::scoped_xml_ptr&lt;xmlNode&gt;();</div>
 <div class="line"><a name="l01148"></a><span class="lineno"> 1148</span>&#160;  }</div>
 <div class="line"><a name="l01149"></a><span class="lineno"> 1149</span>&#160;</div>
 <div class="line"><a name="l01150"></a><span class="lineno"> 1150</span>&#160;  <span class="keywordflow">if</span> (HasLiveOnlyFields(media_info_) &amp;&amp;</div>
 <div class="line"><a name="l01151"></a><span class="lineno"> 1151</span>&#160;      !representation.AddLiveOnlyInfo(media_info_, segment_infos_,</div>
 <div class="line"><a name="l01152"></a><span class="lineno"> 1152</span>&#160;                                      start_number_)) {</div>
 <div class="line"><a name="l01153"></a><span class="lineno"> 1153</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to add Live info.&quot;</span>;</div>
-<div class="line"><a name="l01154"></a><span class="lineno"> 1154</span>&#160;    <span class="keywordflow">return</span> xml::ScopedXmlPtr&lt;xmlNode&gt;::type();</div>
+<div class="line"><a name="l01154"></a><span class="lineno"> 1154</span>&#160;    <span class="keywordflow">return</span> xml::scoped_xml_ptr&lt;xmlNode&gt;();</div>
 <div class="line"><a name="l01155"></a><span class="lineno"> 1155</span>&#160;  }</div>
 <div class="line"><a name="l01156"></a><span class="lineno"> 1156</span>&#160;  <span class="comment">// TODO(rkuroiwa): It is likely that all representations have the exact same</span></div>
 <div class="line"><a name="l01157"></a><span class="lineno"> 1157</span>&#160;  <span class="comment">// SegmentTemplate. Optimize and propagate the tag up to AdaptationSet level.</span></div>
@@ -1431,8 +1431,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classedash__packager_1_1Representation_html"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html">edash_packager::Representation</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00415">mpd_builder.h:415</a></div></div>
 <div class="ttc" id="classedash__packager_1_1AdaptationSet_html_ad5efd9add7037cf939c6a48733e38f8f"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#ad5efd9add7037cf939c6a48733e38f8f">edash_packager::AdaptationSet::Group</a></div><div class="ttdeci">virtual int Group() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00807">mpd_builder.cc:807</a></div></div>
 <div class="ttc" id="classedash__packager_1_1MpdBuilder_html_a301a9b49e15371117e2c050c4e5b038c"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a301a9b49e15371117e2c050c4e5b038c">edash_packager::MpdBuilder::AddAdaptationSet</a></div><div class="ttdeci">virtual AdaptationSet * AddAdaptationSet(const std::string &amp;lang)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00407">mpd_builder.cc:407</a></div></div>
+<div class="ttc" id="classedash__packager_1_1Representation_html_a52225b2a8c588ce52454baede35987a5"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a52225b2a8c588ce52454baede35987a5">edash_packager::Representation::GetXml</a></div><div class="ttdeci">xml::scoped_xml_ptr&lt; xmlNode &gt; GetXml()</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01104">mpd_builder.cc:1104</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1File_html"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html">edash_packager::media::File</a></div><div class="ttdoc">Define an abstract file interface. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4d/file_8h_source.html#l00022">file.h:22</a></div></div>
-<div class="ttc" id="classedash__packager_1_1Representation_html_a4eefc1cf0da6ff78806f8d1099cb01d1"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a4eefc1cf0da6ff78806f8d1099cb01d1">edash_packager::Representation::GetXml</a></div><div class="ttdeci">xml::ScopedXmlPtr&lt; xmlNode &gt;::type GetXml()</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01104">mpd_builder.cc:1104</a></div></div>
 <div class="ttc" id="classedash__packager_1_1MpdBuilder_html_a341e1050c0ae351db7cf0e4d23421a7f"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a341e1050c0ae351db7cf0e4d23421a7f">edash_packager::MpdBuilder::MakePathsRelativeToMpd</a></div><div class="ttdeci">static void MakePathsRelativeToMpd(const std::string &amp;mpd_path, MediaInfo *media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00619">mpd_builder.cc:619</a></div></div>
 <div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a949526c833122b9a1ca40b9990224990"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a949526c833122b9a1ca40b9990224990">edash_packager::AdaptationSet::ForceSetSegmentAlignment</a></div><div class="ttdeci">virtual void ForceSetSegmentAlignment(bool segment_alignment)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00797">mpd_builder.cc:797</a></div></div>
 <div class="ttc" id="classedash__packager_1_1Representation_html_a4a81a2db7ec245892334ad927621909c"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a4a81a2db7ec245892334ad927621909c">edash_packager::Representation::SetSampleDuration</a></div><div class="ttdeci">virtual void SetSampleDuration(uint32_t sample_duration)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01088">mpd_builder.cc:1088</a></div></div>
@@ -1440,13 +1440,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classedash__packager_1_1Representation_html_a7fc0e59f273082ccf654025486af79ae"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a7fc0e59f273082ccf654025486af79ae">edash_packager::Representation::UpdateContentProtectionPssh</a></div><div class="ttdeci">virtual void UpdateContentProtectionPssh(const std::string &amp;drm_uuid, const std::string &amp;pssh)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01058">mpd_builder.cc:1058</a></div></div>
 <div class="ttc" id="classedash__packager_1_1Representation_html_a4fc4d0fd6f240f1c79fac0b68b9d9f0d"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a4fc4d0fd6f240f1c79fac0b68b9d9f0d">edash_packager::Representation::Representation</a></div><div class="ttdeci">Representation(const MediaInfo &amp;media_info, const MpdOptions &amp;mpd_options, uint32_t representation_id, scoped_ptr&lt; RepresentationStateChangeListener &gt; state_change_listener)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00996">mpd_builder.cc:996</a></div></div>
 <div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a3bea0954dfe1781afc1c7a624965bc84"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a3bea0954dfe1781afc1c7a624965bc84">edash_packager::AdaptationSet::SetGroup</a></div><div class="ttdeci">virtual void SetGroup(int group_number)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00803">mpd_builder.cc:803</a></div></div>
-<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a44984cfaed799fd6683c6c9d41394dd6"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a44984cfaed799fd6683c6c9d41394dd6">edash_packager::AdaptationSet::GetXml</a></div><div class="ttdeci">xml::ScopedXmlPtr&lt; xmlNode &gt;::type GetXml()</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00728">mpd_builder.cc:728</a></div></div>
 <div class="ttc" id="structedash__packager_1_1SegmentInfo_html"><div class="ttname"><a href="../../d9/d9b/structedash__packager_1_1SegmentInfo.html">edash_packager::SegmentInfo</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/de9/segment__info_8h_source.html#l00014">segment_info.h:14</a></div></div>
 <div class="ttc" id="classedash__packager_1_1Representation_html_a8cb3729f52457e7df08cd05b8f19090e"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html#a8cb3729f52457e7df08cd05b8f19090e">edash_packager::Representation::AddContentProtectionElement</a></div><div class="ttdeci">virtual void AddContentProtectionElement(const ContentProtectionElement &amp;element)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01052">mpd_builder.cc:1052</a></div></div>
 <div class="ttc" id="classedash__packager_1_1MpdBuilder_html_a9efa414ddfaf48561f3085daada49ebc"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a9efa414ddfaf48561f3085daada49ebc">edash_packager::MpdBuilder::WriteMpdToFile</a></div><div class="ttdeci">bool WriteMpdToFile(media::File *output_file)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00417">mpd_builder.cc:417</a></div></div>
 <div class="ttc" id="classedash__packager_1_1AdaptationSet_html_ad9adf17a02fabfd4aa8d91a2d65d52ad"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#ad9adf17a02fabfd4aa8d91a2d65d52ad">edash_packager::AdaptationSet::OnSetFrameRateForRepresentation</a></div><div class="ttdeci">void OnSetFrameRateForRepresentation(uint32_t representation_id, uint32_t frame_duration, uint32_t timescale)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00829">mpd_builder.cc:829</a></div></div>
 <div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a9a15647b565f9898a5a0e1d3176ff935"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a9a15647b565f9898a5a0e1d3176ff935">edash_packager::AdaptationSet::AddRepresentation</a></div><div class="ttdeci">virtual Representation * AddRepresentation(const MediaInfo &amp;media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00666">mpd_builder.cc:666</a></div></div>
 <div class="ttc" id="structedash__packager_1_1ContentProtectionElement_html"><div class="ttname"><a href="../../d0/d96/structedash__packager_1_1ContentProtectionElement.html">edash_packager::ContentProtectionElement</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dd6/content__protection__element_8h_source.html#l00036">content_protection_element.h:36</a></div></div>
+<div class="ttc" id="classedash__packager_1_1AdaptationSet_html_af2f5773f7ad01f239cdb6d61bb36ca01"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#af2f5773f7ad01f239cdb6d61bb36ca01">edash_packager::AdaptationSet::GetXml</a></div><div class="ttdeci">xml::scoped_xml_ptr&lt; xmlNode &gt; GetXml()</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00728">mpd_builder.cc:728</a></div></div>
 <div class="ttc" id="classedash__packager_1_1AdaptationSet_html"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html">edash_packager::AdaptationSet</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00154">mpd_builder.h:154</a></div></div>
 <div class="ttc" id="classedash__packager_1_1AdaptationSet_html_a6630f9954b604bee7f90c11778336fdc"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html#a6630f9954b604bee7f90c11778336fdc">edash_packager::AdaptationSet::UpdateContentProtectionPssh</a></div><div class="ttdeci">virtual void UpdateContentProtectionPssh(const std::string &amp;drm_uuid, const std::string &amp;pssh)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00716">mpd_builder.cc:716</a></div></div>
 <div class="ttc" id="classedash__packager_1_1MpdBuilder_html_a1c0fd80514f6f1d90f70bb9e96e744a1"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a1c0fd80514f6f1d90f70bb9e96e744a1">edash_packager::MpdBuilder::ToString</a></div><div class="ttdeci">virtual bool ToString(std::string *output)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00422">mpd_builder.cc:422</a></div></div>
@@ -1458,7 +1458,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Nov 17 2015 20:24:53 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Nov 17 2015 22:30:49 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

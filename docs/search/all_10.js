@@ -18,8 +18,6 @@ var searchData=
   ['scanchildren',['ScanChildren',['../db/d6c/classedash__packager_1_1media_1_1mp4_1_1BoxReader.html#a6c660acb6864f70ee1125c3f4c809e02',1,'edash_packager::media::mp4::BoxReader']]],
   ['schemeinfo',['SchemeInfo',['../d2/d6f/structedash__packager_1_1media_1_1mp4_1_1SchemeInfo.html',1,'edash_packager::media::mp4']]],
   ['schemetype',['SchemeType',['../d4/dcc/structedash__packager_1_1media_1_1mp4_1_1SchemeType.html',1,'edash_packager::media::mp4']]],
-  ['scopedxmlptr',['ScopedXmlPtr',['../d8/df3/structedash__packager_1_1xml_1_1ScopedXmlPtr.html',1,'edash_packager::xml']]],
-  ['scopedxmlptr_3c_20xmlnode_20_3e',['ScopedXmlPtr&lt; xmlNode &gt;',['../d8/df3/structedash__packager_1_1xml_1_1ScopedXmlPtr.html',1,'edash_packager::xml']]],
   ['seek',['Seek',['../de/d19/classedash__packager_1_1media_1_1File.html#a28da55565be854b866bf223aa4232042',1,'edash_packager::media::File::Seek()'],['../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#a31ed97a6c4a45bb9d80f55dc444aba35',1,'edash_packager::media::LocalFile::Seek()'],['../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a46346ba1ff6a626aedb6f14475bde10d',1,'edash_packager::media::ThreadedIoFile::Seek()'],['../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#a02cd760eab677a8c59af522830c7b1a4',1,'edash_packager::media::UdpFile::Seek()']]],
   ['segment_5fduration',['segment_duration',['../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#ad6f281dfd832bd073f5fb5fc46342f9f',1,'edash_packager::media::MuxerOptions']]],
   ['segment_5fsap_5faligned',['segment_sap_aligned',['../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#af0403298bf08392bb3009061cd8de2b0',1,'edash_packager::media::MuxerOptions']]],
@@ -65,7 +63,7 @@ var searchData=
   ['streams',['streams',['../d5/dce/classedash__packager_1_1media_1_1Demuxer.html#ae8182d61264096c811f457f50009fe3d',1,'edash_packager::media::Demuxer']]],
   ['subsampleentry',['SubsampleEntry',['../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html',1,'edash_packager::media']]],
   ['syncsample',['SyncSample',['../d9/d18/structedash__packager_1_1media_1_1mp4_1_1SyncSample.html',1,'edash_packager::media::mp4']]],
-  ['syncsampleiterator',['SyncSampleIterator',['../db/d01/classedash__packager_1_1media_1_1mp4_1_1SyncSampleIterator.html#aa96fc4d3705ea3e25b97266675aa9e01',1,'edash_packager::media::mp4::SyncSampleIterator']]],
   ['syncsampleiterator',['SyncSampleIterator',['../db/d01/classedash__packager_1_1media_1_1mp4_1_1SyncSampleIterator.html',1,'edash_packager::media::mp4']]],
+  ['syncsampleiterator',['SyncSampleIterator',['../db/d01/classedash__packager_1_1media_1_1mp4_1_1SyncSampleIterator.html#aa96fc4d3705ea3e25b97266675aa9e01',1,'edash_packager::media::mp4::SyncSampleIterator']]],
   ['systemname',['SystemName',['../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#aa73dacef997e7700b8669bb2db5f8f31',1,'edash_packager::media::KeySource']]]
 ];

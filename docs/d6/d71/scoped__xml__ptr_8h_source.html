@@ -121,22 +121,17 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keyword">inline</span> <span class="keywordtype">void</span> operator()(xmlChar* ptr)<span class="keyword"> const </span>{ xmlFree(ptr); }</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;};</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="comment">// C++11 allows template alias but standards before it do not. This struct is</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="comment">// for aliasing scoped_ptr with libxml2 object deleter.</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="comment"></span><span class="keyword">template</span> &lt;<span class="keyword">typename</span> XmlType&gt;</div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="../../d8/df3/structedash__packager_1_1xml_1_1ScopedXmlPtr.html">   41</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d8/df3/structedash__packager_1_1xml_1_1ScopedXmlPtr.html">ScopedXmlPtr</a> {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keyword">typedef</span> scoped_ptr&lt;XmlType, XmlDeleter&gt; type;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;};</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;}  <span class="comment">// namespace xml</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_XML_SCOPED_XML_PTR_H_</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> XmlType&gt;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">using</span> scoped_xml_ptr = scoped_ptr&lt;XmlType, XmlDeleter&gt;;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}  <span class="comment">// namespace xml</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_XML_SCOPED_XML_PTR_H_</span></div>
 <div class="ttc" id="structedash__packager_1_1xml_1_1XmlDeleter_html"><div class="ttname"><a href="../../d7/de3/structedash__packager_1_1xml_1_1XmlDeleter.html">edash_packager::xml::XmlDeleter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d71/scoped__xml__ptr_8h_source.html#l00023">scoped_xml_ptr.h:23</a></div></div>
-<div class="ttc" id="structedash__packager_1_1xml_1_1ScopedXmlPtr_html"><div class="ttname"><a href="../../d8/df3/structedash__packager_1_1xml_1_1ScopedXmlPtr.html">edash_packager::xml::ScopedXmlPtr</a></div><div class="ttdoc">scoped_ptr for libxml2 resources. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d71/scoped__xml__ptr_8h_source.html#l00041">scoped_xml_ptr.h:41</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Nov 17 2015 20:24:53 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Nov 17 2015 22:30:49 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

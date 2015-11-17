@@ -11,8 +11,6 @@ var searchData=
   ['sampletogroupentry',['SampleToGroupEntry',['../dd/dab/structedash__packager_1_1media_1_1mp4_1_1SampleToGroupEntry.html',1,'edash_packager::media::mp4']]],
   ['schemeinfo',['SchemeInfo',['../d2/d6f/structedash__packager_1_1media_1_1mp4_1_1SchemeInfo.html',1,'edash_packager::media::mp4']]],
   ['schemetype',['SchemeType',['../d4/dcc/structedash__packager_1_1media_1_1mp4_1_1SchemeType.html',1,'edash_packager::media::mp4']]],
-  ['scopedxmlptr',['ScopedXmlPtr',['../d8/df3/structedash__packager_1_1xml_1_1ScopedXmlPtr.html',1,'edash_packager::xml']]],
-  ['scopedxmlptr_3c_20xmlnode_20_3e',['ScopedXmlPtr&lt; xmlNode &gt;',['../d8/df3/structedash__packager_1_1xml_1_1ScopedXmlPtr.html',1,'edash_packager::xml']]],
   ['segmenter',['Segmenter',['../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html',1,'edash_packager::media::mp4']]],
   ['segmentindex',['SegmentIndex',['../d1/d81/structedash__packager_1_1media_1_1mp4_1_1SegmentIndex.html',1,'edash_packager::media::mp4']]],
   ['segmentinfo',['SegmentInfo',['../d9/d9b/structedash__packager_1_1SegmentInfo.html',1,'edash_packager']]],

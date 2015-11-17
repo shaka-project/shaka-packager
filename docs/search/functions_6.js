@@ -26,6 +26,6 @@ var searchData=
   ['getsamplingfrequency',['GetSamplingFrequency',['../db/d69/classedash__packager_1_1media_1_1mp2t_1_1AdtsHeader.html#a95e3365db36b2c5c1f4f688631c2a236',1,'edash_packager::media::mp2t::AdtsHeader']]],
   ['gettracktypefromstring',['GetTrackTypeFromString',['../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab15ba8121f76e0945d4f10d722da5cc8',1,'edash_packager::media::KeySource']]],
   ['getvideostreaminfo',['GetVideoStreamInfo',['../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#ae9bd12612eca7668a8cca6c122f06065',1,'edash_packager::media::WebMVideoClient']]],
-  ['getxml',['GetXml',['../db/de4/classedash__packager_1_1AdaptationSet.html#a44984cfaed799fd6683c6c9d41394dd6',1,'edash_packager::AdaptationSet::GetXml()'],['../d7/d15/classedash__packager_1_1Representation.html#a4eefc1cf0da6ff78806f8d1099cb01d1',1,'edash_packager::Representation::GetXml()']]],
+  ['getxml',['GetXml',['../db/de4/classedash__packager_1_1AdaptationSet.html#af2f5773f7ad01f239cdb6d61bb36ca01',1,'edash_packager::AdaptationSet::GetXml()'],['../d7/d15/classedash__packager_1_1Representation.html#a52225b2a8c588ce52454baede35987a5',1,'edash_packager::Representation::GetXml()']]],
   ['group',['Group',['../db/de4/classedash__packager_1_1AdaptationSet.html#ad5efd9add7037cf939c6a48733e38f8f',1,'edash_packager::AdaptationSet']]]
 ];
