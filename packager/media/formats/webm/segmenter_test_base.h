@@ -46,12 +46,16 @@ class SegmentTestBase : public ::testing::Test {
   template <typename S>
   void CreateAndInitializeSegmenter(const MuxerOptions& options,
                                     StreamInfo* info,
+                                    KeySource* key_source,
                                     scoped_ptr<webm::Segmenter>* result) const {
     scoped_ptr<S> segmenter(new S(options));
 
     scoped_ptr<MkvWriter> writer(new MkvWriter());
     ASSERT_OK(writer->Open(options.output_file_name));
-    ASSERT_OK(segmenter->Initialize(writer.Pass(), info, NULL, NULL, NULL));
+    ASSERT_OK(segmenter->Initialize(
+        writer.Pass(), info, NULL /* progress_listener */,
+        NULL /* muxer_listener */, key_source, 0 /* max_sd_pixels */,
+        1 /* clear_lead_in_seconds */));
     *result = segmenter.Pass();
   }
 

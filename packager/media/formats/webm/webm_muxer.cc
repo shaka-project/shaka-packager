@@ -24,6 +24,12 @@ WebMMuxer::~WebMMuxer() {}
 Status WebMMuxer::Initialize() {
   CHECK_EQ(streams().size(), 1U);
 
+  if (crypto_period_duration_in_seconds() > 0) {
+    NOTIMPLEMENTED() << "Key rotation is not implemented for WebM";
+    return Status(error::UNIMPLEMENTED,
+                  "Key rotation is not implemented for WebM");
+  }
+
   scoped_ptr<MkvWriter> writer(new MkvWriter);
   Status status = writer->Open(options().output_file_name);
   if (!status.ok())
@@ -39,7 +45,8 @@ Status WebMMuxer::Initialize() {
 
   Status initialized = segmenter_->Initialize(
       writer.Pass(), streams()[0]->info().get(), progress_listener(),
-      muxer_listener(), encryption_key_source());
+      muxer_listener(), encryption_key_source(), max_sd_pixels(),
+      clear_lead_in_seconds());
 
   if (!initialized.ok())
     return initialized;

@@ -122,6 +122,10 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
     data_.assign(data, data + data_size);
   }
 
+  void resize_data(const size_t data_size) {
+    data_.resize(data_size);
+  }
+
   void set_is_key_frame(bool value) {
     is_key_frame_ = value;
   }

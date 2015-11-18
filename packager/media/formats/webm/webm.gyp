@@ -13,6 +13,8 @@
       'target_name': 'webm',
       'type': '<(component)',
       'sources': [
+        'encryptor.cc',
+        'encryptor.h',
         'mkv_writer.cc',
         'mkv_writer.h',
         'multi_segment_segmenter.cc',
@@ -65,6 +67,7 @@
       'sources': [
         'cluster_builder.cc',
         'cluster_builder.h',
+        'encrypted_segmenter_unittest.cc',
         'multi_segment_segmenter_unittest.cc',
         'opus_packet_builder.cc',
         'opus_packet_builder.h',

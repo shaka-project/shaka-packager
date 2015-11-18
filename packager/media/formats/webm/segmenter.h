@@ -10,6 +10,7 @@
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/status.h"
+#include "packager/media/formats/webm/encryptor.h"
 #include "packager/media/formats/webm/mkv_writer.h"
 #include "packager/media/formats/webm/seek_head.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
@@ -44,12 +45,18 @@ class Segmenter {
   /// @param encryption_key_source points to the key source which contains
   ///        the encryption keys. It can be NULL to indicate that no encryption
   ///        is required.
+  /// @param max_sd_pixels specifies the threshold to determine whether a video
+  ///        track should be considered as SD or HD. If the track has more
+  ///        pixels per frame than max_sd_pixels, it is HD, SD otherwise.
+  /// @param clear_time specifies clear lead duration in seconds.
   /// @return OK on success, an error status otherwise.
   Status Initialize(scoped_ptr<MkvWriter> writer,
                     StreamInfo* info,
                     ProgressListener* progress_listener,
                     MuxerListener* muxer_listener,
-                    KeySource* encryption_key_source);
+                    KeySource* encryption_key_source,
+                    uint32_t max_sd_pixels,
+                    double clear_lead_in_seconds);
 
   /// Finalize the segmenter.
   /// @return OK on success, an error status otherwise.
@@ -59,8 +66,6 @@ class Segmenter {
   /// @param sample points to the sample to be added.
   /// @return OK on success, an error status otherwise.
   Status AddSample(scoped_refptr<MediaSample> sample);
-
-  // TODO(modmaker):  Add key source support.
 
   /// @return true if there is an initialization range, while setting @a start
   ///         and @a end; or false if initialization range does not apply.
@@ -107,6 +112,7 @@ class Segmenter {
  private:
   Status CreateVideoTrack(VideoStreamInfo* info);
   Status CreateAudioTrack(AudioStreamInfo* info);
+  Status InitializeEncryptor(KeySource* key_source, uint32_t max_sd_pixels);
 
   // This is called when there needs to be a new subsegment.  This does nothing
   // in single-segment mode.  In multi-segment mode this creates a new Cluster
@@ -121,6 +127,8 @@ class Segmenter {
   Status FinalizeSegment(uint64_t end_timescale);
 
   const MuxerOptions& options_;
+  scoped_ptr<Encryptor> encryptor_;
+  double clear_lead_;
 
   scoped_ptr<mkvmuxer::Cluster> cluster_;
   mkvmuxer::Cues cues_;

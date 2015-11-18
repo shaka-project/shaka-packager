@@ -46,9 +46,12 @@ Status Segmenter::Initialize(scoped_ptr<MkvWriter> writer,
                              StreamInfo* info,
                              ProgressListener* progress_listener,
                              MuxerListener* muxer_listener,
-                             KeySource* encryption_key_source) {
+                             KeySource* encryption_key_source,
+                             uint32_t max_sd_pixels,
+                             double clear_lead_in_seconds) {
   muxer_listener_ = muxer_listener;
   info_ = info;
+  clear_lead_ = clear_lead_in_seconds;
 
   // Use media duration as progress target.
   progress_target_ = info_->duration();
@@ -67,8 +70,14 @@ Status Segmenter::Initialize(scoped_ptr<MkvWriter> writer,
     segment_info_.set_duration(1);
   }
 
-  // Create the track info.
   Status status;
+  if (encryption_key_source) {
+    status = InitializeEncryptor(encryption_key_source, max_sd_pixels);
+    if (!status.ok())
+      return status;
+  }
+
+  // Create the track info.
   switch (info_->stream_type()) {
     case kStreamVideo:
       status = CreateVideoTrack(static_cast<VideoStreamInfo*>(info_));
@@ -119,6 +128,18 @@ Status Segmenter::AddSample(scoped_refptr<MediaSample> sample) {
   }
   if (!status.ok())
     return status;
+
+  // Encrypt the frame.
+  if (encryptor_) {
+    const bool encrypt_frame =
+        static_cast<double>(total_duration_) / info_->time_scale() >=
+        clear_lead_;
+    status = encryptor_->EncryptFrame(sample, encrypt_frame);
+    if (!status.ok()) {
+      LOG(ERROR) << "Error encrypting frame.";
+      return status;
+    }
+  }
 
   const int64_t time_ns =
       sample->pts() * kSecondsToNs / info_->time_scale();
@@ -258,6 +279,9 @@ Status Segmenter::CreateVideoTrack(VideoStreamInfo* info) {
   track->set_display_width(info->width() * info->pixel_width() /
                            info->pixel_height());
 
+  if (encryptor_)
+    encryptor_->AddTrackInfo(track);
+
   tracks_.AddTrack(track, info->track_id());
   track_id_ = track->number();
   return Status::OK;
@@ -292,9 +316,33 @@ Status Segmenter::CreateAudioTrack(AudioStreamInfo* info) {
   track->set_sample_rate(info->sampling_frequency());
   track->set_channels(info->num_channels());
 
+  if (encryptor_)
+    encryptor_->AddTrackInfo(track);
+
   tracks_.AddTrack(track, info->track_id());
   track_id_ = track->number();
   return Status::OK;
+}
+
+Status Segmenter::InitializeEncryptor(KeySource* key_source,
+                                      uint32_t max_sd_pixels) {
+  encryptor_.reset(new Encryptor());
+  switch (info_->stream_type()) {
+    case kStreamVideo: {
+      VideoStreamInfo* video_info = static_cast<VideoStreamInfo*>(info_);
+      uint32_t pixels = video_info->width() * video_info->height();
+      KeySource::TrackType type = (pixels > max_sd_pixels)
+                                      ? KeySource::TRACK_TYPE_HD
+                                      : KeySource::TRACK_TYPE_SD;
+      return encryptor_->Initialize(muxer_listener_, type, key_source);
+    }
+    case kStreamAudio:
+      return encryptor_->Initialize(
+          muxer_listener_, KeySource::TrackType::TRACK_TYPE_AUDIO, key_source);
+    default:
+      // Other streams are not encrypted.
+      return Status::OK;
+  }
 }
 
 }  // namespace webm

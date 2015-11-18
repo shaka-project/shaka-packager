@@ -148,11 +148,11 @@ class SingleSegmentSegmenterTest : public SegmentTestBase,
     if (!GetParam()) {
       ASSERT_NO_FATAL_FAILURE(
           CreateAndInitializeSegmenter<webm::SingleSegmentSegmenter>(
-              options, info_.get(), &segmenter_));
+              options, info_.get(), NULL, &segmenter_));
     } else {
       ASSERT_NO_FATAL_FAILURE(
           CreateAndInitializeSegmenter<webm::TwoPassSingleSegmentSegmenter>(
-              options, info_.get(), &segmenter_));
+              options, info_.get(), NULL, &segmenter_));
     }
   }
 

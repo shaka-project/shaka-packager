@@ -44,6 +44,7 @@ class AesCtrEncryptor {
 
   /// @name Various forms of encrypt calls.
   /// block_offset() will be updated according to input plaintext size.
+  /// The plaintext and ciphertext pointers can be the same address.
   /// @{
   bool Encrypt(const uint8_t* plaintext,
                size_t plaintext_size,
