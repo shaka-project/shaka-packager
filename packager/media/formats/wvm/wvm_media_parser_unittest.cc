@@ -32,6 +32,8 @@ const int kExpectedAudioFrameCount = 11964;
 const int kExpectedEncryptedSampleCount = 17287;
 const uint8_t kExpectedAssetKey[] =
     "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc";
+const uint8_t kExpectedMultiConfigAssetKey[] =
+    "\x92\x48\xd2\x45\x39\x0e\x0a\x49\xd4\x83\xba\x9b\x43\xfc\x69\xc3";
 const uint8_t k64ByteAssetKey[] =
     "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc"
     "\x06\x81\x7f\x48\x6b\xf2\x7f\x3e\xc7\x39\xa8\x3f\x12\x0a\xd2\xfc"
@@ -212,9 +214,13 @@ TEST_F(WvmMediaParserTest, ParseWvmWith64ByteAssetKey) {
 }
 
 TEST_F(WvmMediaParserTest, ParseMultiConfigWvm) {
+  EncryptionKey encryption_key;
+  encryption_key.key.assign(kExpectedMultiConfigAssetKey,
+                            kExpectedMultiConfigAssetKey + 16);
+
   EXPECT_CALL(*key_source_, FetchKeys(_)).WillOnce(Return(Status::OK));
   EXPECT_CALL(*key_source_, GetKey(_, _))
-      .WillOnce(DoAll(SetArgPointee<1>(encryption_key_), Return(Status::OK)));
+      .WillOnce(DoAll(SetArgPointee<1>(encryption_key), Return(Status::OK)));
   Parse(kMultiConfigWvmFile);
   EXPECT_EQ(6u, stream_map_.size());
 
