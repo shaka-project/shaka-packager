@@ -10,7 +10,10 @@ namespace edash_packager {
 namespace media {
 
 BitReader::BitReader(const uint8_t* data, off_t size)
-    : data_(data), bytes_left_(size), num_remaining_bits_in_curr_byte_(0) {
+    : data_(data),
+      initial_size_(size),
+      bytes_left_(size),
+      num_remaining_bits_in_curr_byte_(0) {
   DCHECK(data_ != NULL && bytes_left_ > 0);
 
   UpdateCurrByte();
@@ -48,10 +51,6 @@ bool BitReader::SkipBits(int num_bits) {
   // for subsequent operations.
   uint64_t not_needed;
   return ReadBitsInternal(num_bits, &not_needed);
-}
-
-int BitReader::bits_available() const {
-  return 8 * bytes_left_ + num_remaining_bits_in_curr_byte_;
 }
 
 bool BitReader::ReadBitsInternal(int num_bits, uint64_t* out) {

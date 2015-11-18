@@ -24,9 +24,11 @@ class VPCodecConfiguration {
     COLOR_SPACE_UNSPECIFIED = 0,
     COLOR_SPACE_BT_601 = 1,
     COLOR_SPACE_BT_709 = 2,
-    COLOR_SPACE_BT_2020_NON_CONSTANT_LUMINANCE = 3,
-    COLOR_SPACE_BT_2020_CONSTANT_LUMINANCE = 4,
-    COLOR_SPACE_SRGB = 5,
+    COLOR_SPACE_SMPTE_170 = 3,
+    COLOR_SPACE_SMPTE_240 = 4,
+    COLOR_SPACE_BT_2020_NON_CONSTANT_LUMINANCE = 5,
+    COLOR_SPACE_BT_2020_CONSTANT_LUMINANCE = 6,
+    COLOR_SPACE_SRGB = 7,
   };
 
   enum ChromaSubsampling {
@@ -91,7 +93,9 @@ class VPCodecConfiguration {
   bool video_full_range_flag_;
   std::vector<uint8_t> codec_initialization_data_;
 
-  DISALLOW_COPY_AND_ASSIGN(VPCodecConfiguration);
+  // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
+  // generated copy constructor and assignment operator. Since the internal data
+  // is small, the performance impact is minimal.
 };
 
 }  // namespace media

@@ -10,6 +10,7 @@
 #include "packager/base/sys_byteorder.h"
 #include "packager/media/base/decrypt_config.h"
 #include "packager/media/base/timestamp.h"
+#include "packager/media/filters/vp9_parser.h"
 #include "packager/media/filters/webvtt_util.h"
 #include "packager/media/formats/webm/webm_constants.h"
 #include "packager/media/formats/webm/webm_crypto_helpers.h"
@@ -30,17 +31,11 @@
                 "may be suppressed): "                         \
               : "")
 
-namespace {
-const int64_t kMicrosecondsPerMillisecond = 1000;
-}  // namespace
-
 namespace edash_packager {
 namespace media {
+namespace {
 
-const uint16_t WebMClusterParser::kOpusFrameDurationsMu[] = {
-    10000, 20000, 40000, 60000, 10000, 20000, 40000, 60000, 10000, 20000, 40000,
-    60000, 10000, 20000, 10000, 20000, 2500,  5000,  10000, 20000, 2500,  5000,
-    10000, 20000, 2500,  5000,  10000, 20000, 2500,  5000,  10000, 20000};
+const int64_t kMicrosecondsPerMillisecond = 1000;
 
 enum {
   // Limits the number of LOG() calls in the path of reading encoded
@@ -51,27 +46,78 @@ enum {
   kMaxDurationEstimateLogs = 10,
 };
 
+// Helper function used to inspect block data to determine if the
+// block is a keyframe.
+// |data| contains the bytes in the block.
+// |size| indicates the number of bytes in |data|.
+bool IsKeyframe(bool is_video,
+                VideoCodec codec,
+                const uint8_t* data,
+                int size) {
+  // For now, assume that all blocks are keyframes for datatypes other than
+  // video. This is a valid assumption for Vorbis, WebVTT, & Opus.
+  if (!is_video)
+    return true;
+
+  if (codec == kCodecVP9)
+    return VP9Parser::IsKeyframe(data, size);
+
+  CHECK_EQ(kCodecVP8, codec);
+
+  // Make sure the block is big enough for the minimal keyframe header size.
+  if (size < 7)
+    return false;
+
+  // The LSb of the first byte must be a 0 for a keyframe.
+  // http://tools.ietf.org/html/rfc6386 Section 19.1
+  if ((data[0] & 0x01) != 0)
+    return false;
+
+  // Verify VP8 keyframe startcode.
+  // http://tools.ietf.org/html/rfc6386 Section 19.1
+  if (data[3] != 0x9d || data[4] != 0x01 || data[5] != 0x2a)
+    return false;
+
+  return true;
+}
+
+}  // namespace
+
+const uint16_t WebMClusterParser::kOpusFrameDurationsMu[] = {
+    10000, 20000, 40000, 60000, 10000, 20000, 40000, 60000, 10000, 20000, 40000,
+    60000, 10000, 20000, 10000, 20000, 2500,  5000,  10000, 20000, 2500,  5000,
+    10000, 20000, 2500,  5000,  10000, 20000, 2500,  5000,  10000, 20000};
+
 WebMClusterParser::WebMClusterParser(
     int64_t timecode_scale,
-    int audio_track_num,
+    scoped_refptr<AudioStreamInfo> audio_stream_info,
+    scoped_refptr<VideoStreamInfo> video_stream_info,
     int64_t audio_default_duration,
-    int video_track_num,
     int64_t video_default_duration,
     const WebMTracksParser::TextTracks& text_tracks,
     const std::set<int64_t>& ignored_tracks,
     const std::string& audio_encryption_key_id,
     const std::string& video_encryption_key_id,
-    const AudioCodec audio_codec,
-    const MediaParser::NewSampleCB& new_sample_cb)
+    const MediaParser::NewSampleCB& new_sample_cb,
+    const MediaParser::InitCB& init_cb)
     : timecode_multiplier_(timecode_scale / 1000.0),
+      audio_stream_info_(audio_stream_info),
+      video_stream_info_(video_stream_info),
       ignored_tracks_(ignored_tracks),
       audio_encryption_key_id_(audio_encryption_key_id),
       video_encryption_key_id_(video_encryption_key_id),
-      audio_codec_(audio_codec),
       parser_(kWebMIdCluster, this),
+      initialized_(false),
+      init_cb_(init_cb),
       cluster_start_time_(kNoTimestamp),
-      audio_(audio_track_num, false, audio_default_duration, new_sample_cb),
-      video_(video_track_num, true, video_default_duration, new_sample_cb) {
+      audio_(audio_stream_info ? audio_stream_info->track_id() : -1,
+             false,
+             audio_default_duration,
+             new_sample_cb),
+      video_(video_stream_info ? video_stream_info->track_id() : -1,
+             true,
+             video_default_duration,
+             new_sample_cb) {
   for (WebMTracksParser::TextTracks::const_iterator it = text_tracks.begin();
        it != text_tracks.end();
        ++it) {
@@ -143,7 +189,8 @@ int64_t WebMClusterParser::TryGetEncodedAudioDuration(
   // TODO: Consider parsing "Signal Byte" for encrypted streams to return
   // duration for any unencrypted blocks.
 
-  if (audio_codec_ == kCodecOpus) {
+  DCHECK(audio_stream_info_);
+  if (audio_stream_info_->codec() == kCodecOpus) {
     return ReadOpusDuration(data, size);
   }
 
@@ -450,7 +497,12 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     // necessary to determine whether it contains a keyframe or not.
     // http://www.matroska.org/technical/specs/index.html
     bool is_keyframe =
-        is_simple_block ? (flags & 0x80) != 0 : track->IsKeyframe(data, size);
+        is_simple_block
+            ? (flags & 0x80) != 0
+            : IsKeyframe(stream_type == kStreamVideo,
+                         video_stream_info_ ? video_stream_info_->codec()
+                                            : kUnknownVideoCodec,
+                         data, size);
 
     // Every encrypted Block has a signal byte and IV prepended to it. Current
     // encrypted WebM request for comments specification is here
@@ -529,6 +581,44 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     buffer->set_duration(block_duration_time_delta);
   } else {
     buffer->set_duration(track->default_duration());
+  }
+
+  if (!initialized_) {
+    std::vector<scoped_refptr<StreamInfo>> streams;
+    if (audio_stream_info_)
+      streams.push_back(audio_stream_info_);
+    if (video_stream_info_) {
+      if (stream_type == kStreamVideo) {
+        VPCodecConfiguration codec_config;
+        if (video_stream_info_->codec() == kCodecVP9) {
+          VP9Parser vp9_parser;
+          std::vector<VPxFrameInfo> vpx_frames;
+          if (!vp9_parser.Parse(buffer->data(), buffer->data_size(),
+                                &vpx_frames)) {
+            LOG(ERROR) << "Failed to parse vp9 frame.";
+            return false;
+          }
+          if (vpx_frames.size() != 1u || !vpx_frames[0].is_keyframe) {
+            LOG(ERROR) << "The first frame should be a key frame.";
+            return false;
+          }
+          codec_config = vp9_parser.codec_config();
+        }
+        // TODO(kqyang): Support VP8.
+
+        video_stream_info_->set_codec_string(
+            codec_config.GetCodecString(video_stream_info_->codec()));
+        std::vector<uint8_t> extra_data;
+        codec_config.Write(&extra_data);
+        video_stream_info_->set_extra_data(extra_data);
+        streams.push_back(video_stream_info_);
+        init_cb_.Run(streams);
+        initialized_ = true;
+      }
+    } else {
+      init_cb_.Run(streams);
+      initialized_ = true;
+    }
   }
 
   return track->EmitBuffer(buffer);
@@ -614,28 +704,6 @@ void WebMClusterParser::Track::Reset() {
   last_added_buffer_missing_duration_ = NULL;
 }
 
-bool WebMClusterParser::Track::IsKeyframe(const uint8_t* data, int size) const {
-  // For now, assume that all blocks are keyframes for datatypes other than
-  // video. This is a valid assumption for Vorbis, WebVTT, & Opus.
-  if (!is_video_)
-    return true;
-
-  // Make sure the block is big enough for the minimal keyframe header size.
-  if (size < 7)
-    return false;
-
-  // The LSb of the first byte must be a 0 for a keyframe.
-  // http://tools.ietf.org/html/rfc6386 Section 19.1
-  if ((data[0] & 0x01) != 0)
-    return false;
-
-  // Verify VP8 keyframe startcode.
-  // http://tools.ietf.org/html/rfc6386 Section 19.1
-  if (data[3] != 0x9d || data[4] != 0x01 || data[5] != 0x2a)
-    return false;
-
-  return true;
-}
 
 bool WebMClusterParser::Track::EmitBufferHelp(
     const scoped_refptr<MediaSample>& buffer) {

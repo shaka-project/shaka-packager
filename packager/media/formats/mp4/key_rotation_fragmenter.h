@@ -31,6 +31,9 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
   ///        of the current track's timescale.
   /// @param clear_time specifies clear lead duration in units of the current
   ///        track's timescale.
+  /// @param video_codec specifies the codec if input is a video stream; it
+  ///        should be set to kUnknownVideoCodec for audio stream. This
+  ///        parameter is used for proper subsample encryption.
   /// @param nalu_length_size NAL unit length size, in bytes, for subsample
   ///        encryption.
   /// @param muxer_listener is a pointer to MuxerListener for notifying
@@ -41,6 +44,7 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
                         KeySource::TrackType track_type,
                         int64_t crypto_period_duration,
                         int64_t clear_time,
+                        VideoCodec video_codec,
                         uint8_t nalu_length_size,
                         MuxerListener* muxer_listener);
   ~KeyRotationFragmenter() override;

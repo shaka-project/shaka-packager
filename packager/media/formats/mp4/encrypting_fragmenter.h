@@ -7,6 +7,8 @@
 #ifndef MEDIA_FORMATS_MP4_ENCRYPTING_FRAGMENTER_H_
 #define MEDIA_FORMATS_MP4_ENCRYPTING_FRAGMENTER_H_
 
+#include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/filters/vp9_parser.h"
 #include "packager/media/formats/mp4/fragmenter.h"
 
 namespace edash_packager {
@@ -24,11 +26,15 @@ class EncryptingFragmenter : public Fragmenter {
   /// @param encryption_key contains the encryption parameters.
   /// @param clear_time specifies clear lead duration in units of the current
   ///        track's timescale.
+  /// @param video_codec specifies the codec if input is a video stream; it
+  ///        should be set to kUnknownVideoCodec for audio stream. This
+  ///        parameter is used for proper subsample encryption.
   /// @param nalu_length_size specifies the size of NAL unit length, in bytes,
   ///        for subsample encryption.
   EncryptingFragmenter(TrackFragment* traf,
                        scoped_ptr<EncryptionKey> encryption_key,
                        int64_t clear_time,
+                       VideoCodec video_codec,
                        uint8_t nalu_length_size);
 
   ~EncryptingFragmenter() override;
@@ -64,15 +70,22 @@ class EncryptingFragmenter : public Fragmenter {
   Status EncryptSample(scoped_refptr<MediaSample> sample);
 
   // Should we enable subsample encryption?
-  bool IsSubsampleEncryptionRequired() { return nalu_length_size_ != 0; }
+  bool IsSubsampleEncryptionRequired() {
+    return video_codec_ == kCodecVP9 || nalu_length_size_ != 0;
+  }
 
   scoped_ptr<EncryptionKey> encryption_key_;
   scoped_ptr<AesCtrEncryptor> encryptor_;
+  // For VP8/VP9, uncompressed_header should not be encrypted; for AVC/HEVC,
+  // the size and type NAL units should not be encrypted.
+  VideoCodec video_codec_;
   // If this stream contains AVC, subsample encryption specifies that the size
   // and type of NAL units remain unencrypted. This field specifies the size of
   // the size field. Can be 1, 2 or 4 bytes.
   const uint8_t nalu_length_size_;
   int64_t clear_time_;
+
+  scoped_ptr<VP9Parser> vp9_parser_;
 
   DISALLOW_COPY_AND_ASSIGN(EncryptingFragmenter);
 };

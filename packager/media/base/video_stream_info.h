@@ -67,6 +67,7 @@ class VideoStreamInfo : public StreamInfo {
   uint8_t nalu_length_size() const { return nalu_length_size_; }
   int16_t trick_play_rate() const { return trick_play_rate_; }
 
+  void set_codec(VideoCodec codec) { codec_ = codec; }
   void set_width(uint32_t width) { width_ = width; }
   void set_height(uint32_t height) { height_ = height; }
   void set_pixel_width(uint32_t pixel_width) { pixel_width_ = pixel_width; }

@@ -49,7 +49,12 @@ class BitReader {
   bool SkipBits(int num_bits);
 
   /// @return The number of bits available for reading.
-  int bits_available() const;
+  int bits_available() const {
+    return 8 * bytes_left_ + num_remaining_bits_in_curr_byte_;
+  }
+
+  /// @return The current bit position.
+  int bit_position() const { return 8 * initial_size_ - bits_available(); }
 
  private:
   // Help function used by ReadBits to avoid inlining the bit reading logic.
@@ -62,6 +67,10 @@ class BitReader {
 
   // Pointer to the next unread (not in curr_byte_) byte in the stream.
   const uint8_t* data_;
+
+  // Initial size of the input data.
+  // TODO(kqyang): Use size_t instead of off_t instead.
+  off_t initial_size_;
 
   // Bytes left in the stream (without the curr_byte_).
   off_t bytes_left_;

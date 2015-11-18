@@ -184,6 +184,10 @@ VPCodecConfiguration::ColorSpace GetColorSpace(uint8_t color_space) {
       return VPCodecConfiguration::COLOR_SPACE_BT_601;
     case VPX_COLOR_SPACE_BT_709:
       return VPCodecConfiguration::COLOR_SPACE_BT_709;
+    case VPX_COLOR_SPACE_SMPTE_170:
+      return VPCodecConfiguration::COLOR_SPACE_SMPTE_170;
+    case VPX_COLOR_SPACE_SMPTE_240:
+      return VPCodecConfiguration::COLOR_SPACE_SMPTE_240;
     case VPX_COLOR_SPACE_BT_2020:
       // VP9 does not specify if it is in the form of “constant luminance” or
       // “non-constant luminance”. As such, application should rely on the
@@ -368,15 +372,14 @@ bool ReadSegmentation(VP9BitReader* reader) {
   bool update_map;
   RCHECK(reader->ReadBits(1, &update_map));
   if (update_map) {
-    for (uint32_t i = 0; i < SEG_TREE_PROBS; ++i) {
+    for (uint32_t i = 0; i < SEG_TREE_PROBS; ++i)
       RCHECK(reader->SkipBitsConditional(8));
 
-      bool temporal_update;
-      RCHECK(reader->ReadBits(1, &temporal_update));
-      if (temporal_update) {
-        for (uint32_t j = 0; j < PREDICTION_PROBS; ++j)
-          RCHECK(reader->SkipBitsConditional(8));
-      }
+    bool temporal_update;
+    RCHECK(reader->ReadBits(1, &temporal_update));
+    if (temporal_update) {
+      for (uint32_t j = 0; j < PREDICTION_PROBS; ++j)
+        RCHECK(reader->SkipBitsConditional(8));
     }
   }
 
@@ -449,23 +452,23 @@ bool VP9Parser::Parse(const uint8_t* data,
       // End of current frame data. There should be no more bytes available.
       RCHECK(reader.bits_available() < 8);
 
-      vpx_frame.is_key_frame = false;
+      vpx_frame.is_keyframe = false;
       vpx_frame.uncompressed_header_size = vpx_frame.frame_size;
       vpx_frame.width = width_;
       vpx_frame.height = height_;
       continue;
     }
 
-    bool is_inter_frame;
-    RCHECK(reader.ReadBits(1, &is_inter_frame));
-    vpx_frame.is_key_frame = !is_inter_frame;
+    bool is_interframe;
+    RCHECK(reader.ReadBits(1, &is_interframe));
+    vpx_frame.is_keyframe = !is_interframe;
 
     bool show_frame;
     RCHECK(reader.ReadBits(1, &show_frame));
     bool error_resilient_mode;
     RCHECK(reader.ReadBits(1, &error_resilient_mode));
 
-    if (vpx_frame.is_key_frame) {
+    if (vpx_frame.is_keyframe) {
       RCHECK(ReadSyncCode(&reader));
       RCHECK(ReadBitDepthAndColorSpace(&reader, &codec_config_));
       RCHECK(ReadFrameSizes(&reader, &width_, &height_));
@@ -516,8 +519,7 @@ bool VP9Parser::Parse(const uint8_t* data,
     }
     RCHECK(reader.SkipBits(FRAME_CONTEXTS_LOG2));  // frame_context_idx
 
-    VLOG(4) << "bit offset: "
-            << vpx_frame.frame_size * 8 - reader.bits_available();
+    VLOG(4) << "Bits read before ReadLoopFilter: " << reader.bit_position();
     RCHECK(ReadLoopFilter(&reader));
     RCHECK(ReadQuantization(&reader));
     RCHECK(ReadSegmentation(&reader));
@@ -532,8 +534,7 @@ bool VP9Parser::Parse(const uint8_t* data,
 
     VLOG(3) << "\n frame_size: " << vpx_frame.frame_size
             << "\n header_size: " << vpx_frame.uncompressed_header_size
-            << "\n bits_read: "
-            << vpx_frame.frame_size * 8 - reader.bits_available()
+            << "\n Bits read: " << reader.bit_position()
             << "\n first_partition_size: " << first_partition_size;
 
     RCHECK(first_partition_size > 0);
@@ -541,6 +542,31 @@ bool VP9Parser::Parse(const uint8_t* data,
 
     data += vpx_frame.frame_size;
   }
+  return true;
+}
+
+bool VP9Parser::IsKeyframe(const uint8_t* data, size_t data_size) {
+  VP9BitReader reader(data, data_size);
+  uint8_t frame_marker;
+  RCHECK(reader.ReadBits(2, &frame_marker));
+  RCHECK(frame_marker == VP9_FRAME_MARKER);
+
+  VPCodecConfiguration codec_config;
+  RCHECK(ReadProfile(&reader, &codec_config));
+
+  bool show_existing_frame;
+  RCHECK(reader.ReadBits(1, &show_existing_frame));
+  if (show_existing_frame)
+    return false;
+
+  bool is_interframe;
+  RCHECK(reader.ReadBits(1, &is_interframe));
+  if (is_interframe)
+    return false;
+
+  RCHECK(reader.SkipBits(2));  // show_frame, error_resilient_mode.
+
+  RCHECK(ReadSyncCode(&reader));
   return true;
 }
 

@@ -67,12 +67,6 @@ class WebMClusterParser : public WebMParserClient {
     // was missing duration.
     void Reset();
 
-    // Helper function used to inspect block data to determine if the
-    // block is a keyframe.
-    // |data| contains the bytes in the block.
-    // |size| indicates the number of bytes in |data|.
-    bool IsKeyframe(const uint8_t* data, int size) const;
-
     int64_t default_duration() const { return default_duration_; }
 
    private:
@@ -113,16 +107,16 @@ class WebMClusterParser : public WebMParserClient {
 
  public:
   WebMClusterParser(int64_t timecode_scale,
-                    int audio_track_num,
+                    scoped_refptr<AudioStreamInfo> audio_stream_info,
+                    scoped_refptr<VideoStreamInfo> video_stream_info,
                     int64_t audio_default_duration,
-                    int video_track_num,
                     int64_t video_default_duration,
                     const WebMTracksParser::TextTracks& text_tracks,
                     const std::set<int64_t>& ignored_tracks,
                     const std::string& audio_encryption_key_id,
                     const std::string& video_encryption_key_id,
-                    const AudioCodec audio_codec,
-                    const MediaParser::NewSampleCB& new_sample_cb);
+                    const MediaParser::NewSampleCB& new_sample_cb,
+                    const MediaParser::InitCB& init_cb);
   ~WebMClusterParser() override;
 
   /// Resets the parser state so it can accept a new cluster.
@@ -191,12 +185,19 @@ class WebMClusterParser : public WebMParserClient {
 
   double timecode_multiplier_;  // Multiplier used to convert timecodes into
                                 // microseconds.
+  scoped_refptr<AudioStreamInfo> audio_stream_info_;
+  scoped_refptr<VideoStreamInfo> video_stream_info_;
   std::set<int64_t> ignored_tracks_;
   std::string audio_encryption_key_id_;
   std::string video_encryption_key_id_;
-  const AudioCodec audio_codec_;
 
   WebMListParser parser_;
+
+  // Indicates whether init_cb has been executed. |init_cb| is executed when we
+  // have codec configuration of video stream, which is extracted from the first
+  // video sample.
+  bool initialized_;
+  MediaParser::InitCB init_cb_;
 
   int64_t last_block_timecode_ = -1;
   scoped_ptr<uint8_t[]> block_data_;

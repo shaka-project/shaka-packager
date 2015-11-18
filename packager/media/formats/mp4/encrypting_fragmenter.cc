@@ -10,6 +10,7 @@
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
+#include "packager/media/filters/vp9_parser.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/cenc.h"
 
@@ -26,15 +27,19 @@ EncryptingFragmenter::EncryptingFragmenter(
     TrackFragment* traf,
     scoped_ptr<EncryptionKey> encryption_key,
     int64_t clear_time,
+    VideoCodec video_codec,
     uint8_t nalu_length_size)
     : Fragmenter(traf),
       encryption_key_(encryption_key.Pass()),
+      video_codec_(video_codec),
       nalu_length_size_(nalu_length_size),
       clear_time_(clear_time) {
   DCHECK(encryption_key_);
+  if (video_codec == kCodecVP9)
+    vp9_parser_.reset(new VP9Parser);
 }
-EncryptingFragmenter::~EncryptingFragmenter() {}
 
+EncryptingFragmenter::~EncryptingFragmenter() {}
 
 Status EncryptingFragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   DCHECK(sample);
@@ -134,30 +139,48 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
 
   FrameCENCInfo cenc_info(encryptor_->iv());
   uint8_t* data = sample->writable_data();
-  if (!IsSubsampleEncryptionRequired()) {
-    EncryptBytes(data, sample->data_size());
-  } else {
-    BufferReader reader(data, sample->data_size());
-    while (reader.HasBytes(1)) {
-      uint64_t nalu_length;
-      if (!reader.ReadNBytesInto8(&nalu_length, nalu_length_size_))
-        return Status(error::MUXER_FAILURE, "Fail to read nalu_length.");
-
-      SubsampleEntry subsample;
-      subsample.clear_bytes = nalu_length_size_ + 1;
-      subsample.cipher_bytes = nalu_length - 1;
-      if (!reader.SkipBytes(nalu_length)) {
-        return Status(error::MUXER_FAILURE,
-                      "Sample size does not match nalu_length.");
+  if (IsSubsampleEncryptionRequired()) {
+    if (video_codec_ == kCodecVP9) {
+      std::vector<VPxFrameInfo> vpx_frames;
+      if (!vp9_parser_->Parse(sample->data(), sample->data_size(),
+                              &vpx_frames)) {
+        return Status(error::MUXER_FAILURE, "Failed to parse vp9 frame.");
       }
+      for (const VPxFrameInfo& frame : vpx_frames) {
+        SubsampleEntry subsample;
+        subsample.clear_bytes = frame.uncompressed_header_size;
+        subsample.cipher_bytes =
+            frame.frame_size - frame.uncompressed_header_size;
+        cenc_info.AddSubsample(subsample);
+        if (subsample.cipher_bytes > 0)
+          EncryptBytes(data + subsample.clear_bytes, subsample.cipher_bytes);
+        data += frame.frame_size;
+      }
+    } else {
+      BufferReader reader(data, sample->data_size());
+      while (reader.HasBytes(1)) {
+        uint64_t nalu_length;
+        if (!reader.ReadNBytesInto8(&nalu_length, nalu_length_size_))
+          return Status(error::MUXER_FAILURE, "Fail to read nalu_length.");
 
-      EncryptBytes(data + subsample.clear_bytes, subsample.cipher_bytes);
-      cenc_info.AddSubsample(subsample);
-      data += nalu_length_size_ + nalu_length;
+        SubsampleEntry subsample;
+        subsample.clear_bytes = nalu_length_size_ + 1;
+        subsample.cipher_bytes = nalu_length - 1;
+        if (!reader.SkipBytes(nalu_length)) {
+          return Status(error::MUXER_FAILURE,
+                        "Sample size does not match nalu_length.");
+        }
+
+        EncryptBytes(data + subsample.clear_bytes, subsample.cipher_bytes);
+        cenc_info.AddSubsample(subsample);
+        data += nalu_length_size_ + nalu_length;
+      }
     }
 
     // The length of per-sample auxiliary datum, defined in CENC ch. 7.
     traf()->auxiliary_size.sample_info_sizes.push_back(cenc_info.ComputeSize());
+  } else {
+    EncryptBytes(data, sample->data_size());
   }
 
   cenc_info.Write(aux_data());

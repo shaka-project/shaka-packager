@@ -181,37 +181,33 @@ int WebMMediaParser::ParseInfoAndTracks(const uint8_t* data, int size) {
   double timecode_scale_in_us = info_parser.timecode_scale() / 1000.0;
   int64_t duration_in_us = info_parser.duration() * timecode_scale_in_us;
 
-  std::vector<scoped_refptr<StreamInfo>> streams;
-  AudioCodec audio_codec = kCodecOpus;
-  if (tracks_parser.audio_stream_info()) {
-    streams.push_back(tracks_parser.audio_stream_info());
-    streams.back()->set_duration(duration_in_us);
-    if (streams.back()->is_encrypted())
+  scoped_refptr<AudioStreamInfo> audio_stream_info =
+      tracks_parser.audio_stream_info();
+  if (audio_stream_info) {
+    audio_stream_info->set_duration(duration_in_us);
+    if (audio_stream_info->is_encrypted())
       OnEncryptedMediaInitData(tracks_parser.audio_encryption_key_id());
-    audio_codec = tracks_parser.audio_stream_info()->codec();
   } else {
     VLOG(1) << "No audio track info found.";
   }
 
-  if (tracks_parser.video_stream_info()) {
-    streams.push_back(tracks_parser.video_stream_info());
-    streams.back()->set_duration(duration_in_us);
-    if (streams.back()->is_encrypted())
+  scoped_refptr<VideoStreamInfo> video_stream_info =
+      tracks_parser.video_stream_info();
+  if (video_stream_info) {
+    video_stream_info->set_duration(duration_in_us);
+    if (video_stream_info->is_encrypted())
       OnEncryptedMediaInitData(tracks_parser.video_encryption_key_id());
   } else {
     VLOG(1) << "No video track info found.";
   }
 
-  init_cb_.Run(streams);
-
   cluster_parser_.reset(new WebMClusterParser(
-      info_parser.timecode_scale(), tracks_parser.audio_track_num(),
+      info_parser.timecode_scale(), audio_stream_info, video_stream_info,
       tracks_parser.GetAudioDefaultDuration(timecode_scale_in_us),
-      tracks_parser.video_track_num(),
       tracks_parser.GetVideoDefaultDuration(timecode_scale_in_us),
       tracks_parser.text_tracks(), tracks_parser.ignored_tracks(),
       tracks_parser.audio_encryption_key_id(),
-      tracks_parser.video_encryption_key_id(), audio_codec, new_sample_cb_));
+      tracks_parser.video_encryption_key_id(), new_sample_cb_, init_cb_));
 
   return bytes_parsed;
 }

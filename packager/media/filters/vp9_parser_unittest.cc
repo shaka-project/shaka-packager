@@ -17,16 +17,16 @@ namespace {
 MATCHER_P5(EqualVPxFrame,
            frame_size,
            uncompressed_header_size,
-           is_key_frame,
+           is_keyframe,
            width,
            height,
            "") {
   *result_listener << "which is (" << arg.frame_size << ", "
-                   << arg.uncompressed_header_size << ", " << arg.is_key_frame
+                   << arg.uncompressed_header_size << ", " << arg.is_keyframe
                    << ", " << arg.width << ", " << arg.height << ").";
   return arg.frame_size == frame_size &&
          arg.uncompressed_header_size == uncompressed_header_size &&
-         arg.is_key_frame == is_key_frame && arg.width == width &&
+         arg.is_keyframe == is_keyframe && arg.width == width &&
          arg.height == height;
 }
 }  // namespace
@@ -46,6 +46,8 @@ TEST(VP9ParserTest, Superframe) {
       0xbc, 0x85, 0xf1, 0xd0, 0x00, 0x7b, 0x80, 0xa7, 0x96, 0xbf, 0x8c, 0x21,
       0xc9, 0x3c, 0x00, 0x48, 0x00, 0xc9,
   };
+
+  EXPECT_FALSE(VP9Parser::IsKeyframe(data, arraysize(data)));
 
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
@@ -69,6 +71,8 @@ TEST(VP9ParserTest, KeyframeChroma420) {
       0x35, 0x7a, 0x88, 0x69, 0xf7, 0x1f, 0x26, 0x8b,
   };
 
+  EXPECT_TRUE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
+
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
   ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
@@ -88,6 +92,8 @@ TEST(VP9ParserTest, KeyframeProfile1Chroma422) {
       0x31, 0x07, 0xab, 0xc7, 0x11, 0x67, 0x95, 0x30, 0x37, 0x6d, 0xc5, 0xcf,
       0xa0, 0x96, 0xa7, 0xb8, 0xf4, 0xb4, 0x65, 0xff,
   };
+
+  EXPECT_TRUE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
 
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
@@ -109,6 +115,8 @@ TEST(VP9ParserTest, KeyframeProfile2Chroma420) {
       0xa4, 0xdf, 0x05, 0xaf, 0x6f, 0xff, 0xd1, 0x74,
   };
 
+  EXPECT_TRUE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
+
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
   ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
@@ -119,7 +127,7 @@ TEST(VP9ParserTest, KeyframeProfile2Chroma420) {
 }
 
 TEST(VP9ParserTest, KeyframeProfile3Chroma444) {
-  uint8_t kData[] = {
+  const uint8_t kData[] = {
       0xb1, 0x24, 0xc1, 0xa1, 0x40, 0x00, 0x4f, 0x80, 0x2c, 0xa0, 0x41, 0xc1,
       0x20, 0xe0, 0xc3, 0xf0, 0x00, 0x09, 0x00, 0x7c, 0x57, 0x77, 0x3f, 0x67,
       0x99, 0x3e, 0x1f, 0xfb, 0xdf, 0x0f, 0x02, 0x0a, 0x37, 0x81, 0x53, 0x80,
@@ -128,6 +136,8 @@ TEST(VP9ParserTest, KeyframeProfile3Chroma444) {
       0x0c, 0x74, 0x48, 0x8b, 0x95, 0x30, 0xc9, 0xf0, 0x37, 0x3b, 0xe6, 0x11,
       0xe1, 0xe6, 0xef, 0xff, 0xfd, 0xf7, 0x4f, 0x0f,
   };
+
+  EXPECT_TRUE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
 
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
@@ -146,7 +156,10 @@ TEST(VP9ParserTest, Intra) {
       0xe2, 0xbd, 0x53, 0xd9, 0x00, 0x3a, 0x70, 0xe0, 0x00, 0x78, 0xea, 0xa5,
       0x61, 0x08, 0xb7, 0x9f, 0x33, 0xe5, 0xf8, 0xa5, 0x82, 0x32, 0xbb, 0xa3,
       0x75, 0xb4, 0x60, 0xf3, 0x39, 0x75, 0x1f, 0x2b,
+
   };
+
+  EXPECT_FALSE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
 
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
@@ -159,6 +172,7 @@ TEST(VP9ParserTest, Intra) {
 
 TEST(VP9ParserTest, ShowExisting) {
   const uint8_t kData[] = {0x88};
+  EXPECT_FALSE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
   ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
@@ -177,6 +191,8 @@ TEST(VP9ParserTest, Interframe) {
       0x90, 0xeb, 0x8c, 0xad, 0x5f, 0x69, 0xb7, 0x9b,
   };
 
+  EXPECT_FALSE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
+
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
   ASSERT_TRUE(parser.Parse(kData, arraysize(kData), &frames));
@@ -186,6 +202,7 @@ TEST(VP9ParserTest, Interframe) {
 
 TEST(VP9ParserTest, CorruptedFrameMarker) {
   const uint8_t kData[] = {0xc8};
+  EXPECT_FALSE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
   ASSERT_FALSE(parser.Parse(kData, arraysize(kData), &frames));
@@ -202,6 +219,8 @@ TEST(VP9ParserTest, CorruptedSynccode) {
       0x35, 0x7a, 0x88, 0x69, 0xf7, 0x1f, 0x26, 0x8b,
   };
 
+  EXPECT_FALSE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
+
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;
   ASSERT_FALSE(parser.Parse(kData, arraysize(kData), &frames));
@@ -217,6 +236,10 @@ TEST(VP9ParserTest, NotEnoughBytesForFirstPartitionSize) {
       0xff, 0x0d, 0xf9, 0xbf, 0xf0, 0xbf, 0xe4, 0x7f, 0xbb, 0xff, 0x54, 0x19,
       0x07, 0xf4, 0x7f, 0xc7, 0xff, 0x6d, 0xff, 0xeb,
   };
+
+  // IsKeyframe only parses the bytes that is necessary to determine whether it
+  // is a keyframe.
+  EXPECT_TRUE(VP9Parser::IsKeyframe(kData, arraysize(kData)));
 
   VP9Parser parser;
   std::vector<VPxFrameInfo> frames;

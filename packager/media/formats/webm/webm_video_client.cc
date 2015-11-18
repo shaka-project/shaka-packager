@@ -6,7 +6,6 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/stl_util.h"
-#include "packager/media/filters/vp_codec_configuration.h"
 #include "packager/media/formats/webm/webm_constants.h"
 
 namespace {
@@ -106,25 +105,10 @@ scoped_refptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
   sar_x /= gcd;
   sar_y /= gcd;
 
-  // TODO(kqyang): Fill in the values for vp codec configuration.
-  const uint8_t profile = 0;
-  const uint8_t level = 0;
-  const uint8_t bit_depth = 8;
-  const uint8_t color_space = 0;
-  const uint8_t chroma_subsampling = 0;
-  const uint8_t transfer_function = 0;
-  const bool video_full_range_flag = false;
-  VPCodecConfiguration vp_config(profile, level, bit_depth, color_space,
-                                 chroma_subsampling, transfer_function,
-                                 video_full_range_flag, codec_private);
-  std::vector<uint8_t> extra_data;
-  vp_config.Write(&extra_data);
-
   return scoped_refptr<VideoStreamInfo>(new VideoStreamInfo(
-      track_num, kWebMTimeScale, 0, video_codec,
-      vp_config.GetCodecString(video_codec), std::string(), width_after_crop,
-      height_after_crop, sar_x, sar_y, 0, 0, vector_as_array(&extra_data),
-      extra_data.size(), is_encrypted));
+      track_num, kWebMTimeScale, 0, video_codec, std::string(), std::string(),
+      width_after_crop, height_after_crop, sar_x, sar_y, 0, 0, NULL, 0,
+      is_encrypted));
 }
 
 bool WebMVideoClient::OnUInt(int id, int64_t val) {

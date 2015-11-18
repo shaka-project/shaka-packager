@@ -89,6 +89,14 @@ void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
   }
 }
 
+VideoCodec GetVideoCodec(const StreamInfo& stream_info) {
+  if (stream_info.stream_type() != kStreamVideo)
+    return kUnknownVideoCodec;
+  const VideoStreamInfo& video_stream_info =
+      static_cast<const VideoStreamInfo&>(stream_info);
+  return video_stream_info.codec();
+}
+
 uint8_t GetNaluLengthSize(const StreamInfo& stream_info) {
   if (stream_info.stream_type() != kStreamVideo)
     return 0;
@@ -160,6 +168,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
       continue;
     }
 
+    VideoCodec video_codec = GetVideoCodec(*streams[i]->info());
     uint8_t nalu_length_size = GetNaluLengthSize(*streams[i]->info());
     KeySource::TrackType track_type =
         GetTrackTypeForEncryption(*streams[i]->info(), max_sd_pixels);
@@ -182,14 +191,10 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
       }
 
       fragmenters_[i] = new KeyRotationFragmenter(
-          moof_.get(),
-          &moof_->tracks[i],
-          encryption_key_source,
-          track_type,
+          moof_.get(), &moof_->tracks[i], encryption_key_source, track_type,
           crypto_period_duration_in_seconds * streams[i]->info()->time_scale(),
-          clear_lead_in_seconds * streams[i]->info()->time_scale(),
-          nalu_length_size,
-          muxer_listener_);
+          clear_lead_in_seconds * streams[i]->info()->time_scale(), video_codec,
+          nalu_length_size, muxer_listener_);
       continue;
     }
 
@@ -217,9 +222,8 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
     }
 
     fragmenters_[i] = new EncryptingFragmenter(
-        &moof_->tracks[i],
-        encryption_key.Pass(),
-        clear_lead_in_seconds * streams[i]->info()->time_scale(),
+        &moof_->tracks[i], encryption_key.Pass(),
+        clear_lead_in_seconds * streams[i]->info()->time_scale(), video_codec,
         nalu_length_size);
   }
 
