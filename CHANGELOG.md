@@ -1,3 +1,16 @@
+## [1.2.1] - 2015-11-18
+### Fixed
+- Fixed a deadlock in MpdBuilder which could lead to program hang #45
+- Fixed a race condition in MpdNotifier which could lead to corrupted mpd #49
+- Improved support for WVM files:
+  - Support files with no PES stream ID metadata.
+  - Support files with multiple audio or video configurations.
+- Fixed a race condition when flushing ThreadedIoFile which may cause flush
+  to be called before file being written; fixed another race condition in
+  ThreadedIoFile if there is an error in reading or writing files.
+- Relaxed requirement on reserved bits when parsing AVCC #44
+- Fixed stropts.h not found issue in CentOS 7.
+
 ## [1.2.0] - 2015-10-01
 ### Added
 - Added [docker](https://www.docker.com/) support. Thanks @leandromoreira.
