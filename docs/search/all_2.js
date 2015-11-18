@@ -17,6 +17,7 @@ var searchData=
   ['cluster',['Cluster',['../df/d40/classedash__packager_1_1media_1_1Cluster.html',1,'edash_packager::media']]],
   ['cluster_5fended',['cluster_ended',['../db/da0/classedash__packager_1_1media_1_1WebMClusterParser.html#ae62be1971c352525906d6fad2ee831bd',1,'edash_packager::media::WebMClusterParser']]],
   ['clusterbuilder',['ClusterBuilder',['../d3/d69/classedash__packager_1_1media_1_1ClusterBuilder.html',1,'edash_packager::media']]],
+  ['codec_5fconfig',['codec_config',['../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html#aef742d16d34b6a9480a3f3899e684695',1,'edash_packager::media::VP9Parser']]],
   ['codecconfigurationrecord',['CodecConfigurationRecord',['../d1/d31/structedash__packager_1_1media_1_1mp4_1_1CodecConfigurationRecord.html',1,'edash_packager::media::mp4']]],
   ['compactsamplesize',['CompactSampleSize',['../db/d89/structedash__packager_1_1media_1_1mp4_1_1CompactSampleSize.html',1,'edash_packager::media::mp4']]],
   ['compositionoffset',['CompositionOffset',['../da/dfe/structedash__packager_1_1media_1_1mp4_1_1CompositionOffset.html',1,'edash_packager::media::mp4']]],
