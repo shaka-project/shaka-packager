@@ -58,6 +58,7 @@ class ThreadedIoFile : public File {
   IoCache cache_;
   std::vector<uint8_t> io_buffer_;
   scoped_ptr<ClosureThread> thread_;
+  uint64_t position_;
   uint64_t size_;
   base::subtle::Atomic32 eof_;
   bool flushing_;

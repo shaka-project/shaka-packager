@@ -26,6 +26,7 @@ ThreadedIoFile::ThreadedIoFile(scoped_ptr<File, FileCloser> internal_file,
       mode_(mode),
       cache_(io_cache_size),
       io_buffer_(io_block_size),
+      position_(0),
       size_(0),
       eof_(false),
       flushing_(false),
@@ -42,6 +43,7 @@ bool ThreadedIoFile::Open() {
   if (!internal_file_->Open())
     return false;
 
+  position_ = 0;
   size_ = internal_file_->Size();
 
   thread_.reset(new ClosureThread("ThreadedIoFile",
@@ -79,7 +81,11 @@ int64_t ThreadedIoFile::Read(void* buffer, uint64_t length) {
   if (NoBarrier_Load(&internal_file_error_))
     return NoBarrier_Load(&internal_file_error_);
 
-  return cache_.Read(buffer, length);
+
+  uint64_t bytes_read = cache_.Read(buffer, length);
+  position_ += bytes_read;
+
+  return bytes_read;
 }
 
 int64_t ThreadedIoFile::Write(const void* buffer, uint64_t length) {
@@ -90,8 +96,12 @@ int64_t ThreadedIoFile::Write(const void* buffer, uint64_t length) {
   if (NoBarrier_Load(&internal_file_error_))
     return NoBarrier_Load(&internal_file_error_);
 
-  size_ += length;
-  return cache_.Write(buffer, length);
+  uint64_t bytes_written = cache_.Write(buffer, length);
+  position_ += bytes_written;
+  if (position_ > size_)
+    size_ = position_;
+
+  return bytes_written;
 }
 
 int64_t ThreadedIoFile::Size() {
@@ -112,6 +122,42 @@ bool ThreadedIoFile::Flush() {
   return internal_file_->Flush();
 }
 
+bool ThreadedIoFile::Seek(uint64_t position) {
+  if (mode_ == kOutputMode) {
+    // Writing. Just flush the cache and seek.
+    if (!Flush()) return false;
+    if (!internal_file_->Seek(position)) return false;
+  } else {
+    // Reading. Close cache, wait for I/O thread to exit, seek, and restart
+    // I/O thread.
+    cache_.Close();
+    thread_->Join();
+    bool result = internal_file_->Seek(position);
+    if (!result) {
+      // Seek failed. Seek to logical position instead.
+      if (!internal_file_->Seek(position_) && (position != position_)) {
+        LOG(WARNING) << "Seek failed. ThreadedIoFile left in invalid state.";
+      }
+    }
+    cache_.Reopen();
+    eof_ = false;
+    thread_.reset(new ClosureThread("ThreadedIoFile",
+                                    base::Bind(&ThreadedIoFile::RunInInputMode,
+                                               base::Unretained(this))));
+    thread_->Start();
+    if (!result) return false;
+  }
+  position_ = position;
+  return true;
+}
+
+bool ThreadedIoFile::Tell(uint64_t* position) {
+  DCHECK(position);
+
+  *position = position_;
+  return true;
+}
+
 void ThreadedIoFile::RunInInputMode() {
   DCHECK(internal_file_);
   DCHECK(thread_);
@@ -126,18 +172,10 @@ void ThreadedIoFile::RunInInputMode() {
       cache_.Close();
       return;
     }
-    cache_.Write(&io_buffer_[0], read_result);
+    if (cache_.Write(&io_buffer_[0], read_result) == 0) {
+      return;
+    }
   }
-}
-
-bool ThreadedIoFile::Seek(uint64_t position) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-bool ThreadedIoFile::Tell(uint64_t* position) {
-  NOTIMPLEMENTED();
-  return false;
 }
 
 void ThreadedIoFile::RunInOutputMode() {

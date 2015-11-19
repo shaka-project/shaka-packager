@@ -51,6 +51,7 @@
       'dependencies': [
         '../../testing/gtest.gyp:gtest',
         '../../testing/gtest.gyp:gtest_main',
+        '../../third_party/gflags/gflags.gyp:gflags',
         'file',
       ],
     },
