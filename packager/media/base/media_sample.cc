@@ -26,8 +26,6 @@ MediaSample::MediaSample(const uint8_t* data,
       is_encrypted_(false) {
   if (!data) {
     CHECK_EQ(size, 0u);
-    CHECK(!side_data);
-    return;
   }
 
   data_.assign(data, data + size);
@@ -63,6 +61,13 @@ scoped_refptr<MediaSample> MediaSample::CopyFrom(const uint8_t* data,
   CHECK(data);
   return make_scoped_refptr(new MediaSample(
       data, data_size, side_data, side_data_size, is_key_frame));
+}
+
+// static
+scoped_refptr<MediaSample> MediaSample::FromMetadata(const uint8_t* metadata,
+                                                     size_t metadata_size) {
+  return make_scoped_refptr(
+      new MediaSample(nullptr, 0, metadata, metadata_size, false));
 }
 
 // static

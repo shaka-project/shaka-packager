@@ -38,13 +38,21 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   ///        Must not be NULL.
   /// @param size indicates sample size in bytes. Must not be negative.
   /// @param side_data_size indicates additional sample data size in bytes.
-  ///        Must not be negative.
   /// @param is_key_frame indicates whether the sample is a key frame.
   static scoped_refptr<MediaSample> CopyFrom(const uint8_t* data,
                                              size_t size,
                                              const uint8_t* side_data,
                                              size_t side_data_size,
                                              bool is_key_frame);
+
+  /// Create a MediaSample object from metadata.
+  /// Unlike other factory methods, this cannot be a key frame. It must be only
+  /// for metadata.
+  /// @param metadata points to the buffer containing metadata.
+  ///        Must not be NULL.
+  /// @param metadata_size is the size of metadata in bytes.
+  static scoped_refptr<MediaSample> FromMetadata(const uint8_t* metadata,
+                                                 size_t metadata_size);
 
   /// Create a MediaSample object with default members.
   static scoped_refptr<MediaSample> CreateEmptyMediaSample();
@@ -103,12 +111,10 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   }
 
   const uint8_t* side_data() const {
-    DCHECK(!end_of_stream());
     return &side_data_[0];
   }
 
   size_t side_data_size() const {
-    DCHECK(!end_of_stream());
     return side_data_.size();
   }
 
@@ -126,6 +132,11 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
 
   // If there's no data in this buffer, it represents end of stream.
   bool end_of_stream() const { return data_.size() == 0; }
+
+  const std::string& config_id() const { return config_id_; }
+  void set_config_id(const std::string& config_id) {
+    config_id_ = config_id;
+  }
 
   /// @return a human-readable string describing |*this|.
   std::string ToString() const;
@@ -159,6 +170,10 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   // http://www.matroska.org/technical/specs/index.html BlockAdditional[A5].
   // Not used by mp4 and other containers.
   std::vector<uint8_t> side_data_;
+
+  // Text specific fields.
+  // For now this is the cue identifier for WebVTT.
+  std::string config_id_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSample);
 };
