@@ -44,9 +44,33 @@ class BitReader {
   /// @param num_bits specifies the number of bits to be skipped.
   /// @return false if the given number of bits cannot be skipped (not enough
   ///         bits in the stream), true otherwise. When false is returned, the
-  ///         stream will enter a state where further ReadBits/SkipBits
-  ///         operations will always return false unless |num_bits| is 0.
+  ///         stream will enter a state where further ReadXXX/SkipXXX
+  ///         operations will always return false unless |num_bits/bytes| is 0.
   bool SkipBits(int num_bits);
+
+  /// Read one bit then skip the number of bits specified if that bit matches @a
+  /// condition.
+  /// @param condition indicates when the number of bits should be skipped.
+  /// @param num_bits specifies the number of bits to be skipped.
+  /// @return false if the one bit cannot be read (not enough bits in the
+  ///         stream) or if the bit is set but the given number of bits cannot
+  ///         be skipped (not enough bits in the stream), true otherwise. When
+  ///         false is returned, the stream will enter a state where further
+  ///         ReadXXX/SkipXXX operations will always return false.
+  bool SkipBitsConditional(bool condition, int num_bits) {
+    bool condition_read = true;
+    if (!ReadBits(1, &condition_read))
+      return false;
+    return condition_read == condition ? SkipBits(num_bits) : true;
+  }
+
+  /// Skip a number of bytes from stream. The current posision should be byte
+  /// aligned, otherwise a false is returned and bytes are not skipped.
+  /// @param num_bytes specifies the number of bytes to be skipped.
+  /// @return false if the current position is not byte aligned or if the given
+  ///         number of bytes cannot be skipped (not enough bytes in the
+  ///         stream), true otherwise.
+  bool SkipBytes(int num_bytes);
 
   /// @return The number of bits available for reading.
   int bits_available() const {

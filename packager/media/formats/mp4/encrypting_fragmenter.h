@@ -8,7 +8,7 @@
 #define MEDIA_FORMATS_MP4_ENCRYPTING_FRAGMENTER_H_
 
 #include "packager/base/memory/scoped_ptr.h"
-#include "packager/media/filters/vp9_parser.h"
+#include "packager/media/filters/vpx_parser.h"
 #include "packager/media/formats/mp4/fragmenter.h"
 
 namespace edash_packager {
@@ -71,7 +71,7 @@ class EncryptingFragmenter : public Fragmenter {
 
   // Should we enable subsample encryption?
   bool IsSubsampleEncryptionRequired() {
-    return video_codec_ == kCodecVP9 || nalu_length_size_ != 0;
+    return vpx_parser_ || nalu_length_size_ != 0;
   }
 
   scoped_ptr<EncryptionKey> encryption_key_;
@@ -85,7 +85,7 @@ class EncryptingFragmenter : public Fragmenter {
   const uint8_t nalu_length_size_;
   int64_t clear_time_;
 
-  scoped_ptr<VP9Parser> vp9_parser_;
+  scoped_ptr<VPxParser> vpx_parser_;
 
   DISALLOW_COPY_AND_ASSIGN(EncryptingFragmenter);
 };

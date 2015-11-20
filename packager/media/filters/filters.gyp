@@ -25,8 +25,11 @@
         'h264_parser.h',
         'vp_codec_configuration.cc',
         'vp_codec_configuration.h',
+        'vp8_parser.cc',
+        'vp8_parser.h',
         'vp9_parser.cc',
         'vp9_parser.h',
+        'vpx_parser.h',
       ],
       'dependencies': [
         '../../base/base.gyp:base',
@@ -42,6 +45,7 @@
         'h264_parser_unittest.cc',
         'hevc_decoder_configuration_unittest.cc',
         'vp_codec_configuration_unittest.cc',
+        'vp8_parser_unittest.cc',
         'vp9_parser_unittest.cc',
       ],
       'dependencies': [

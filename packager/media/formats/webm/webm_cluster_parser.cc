@@ -10,6 +10,7 @@
 #include "packager/base/sys_byteorder.h"
 #include "packager/media/base/decrypt_config.h"
 #include "packager/media/base/timestamp.h"
+#include "packager/media/filters/vp8_parser.h"
 #include "packager/media/filters/vp9_parser.h"
 #include "packager/media/filters/webvtt_util.h"
 #include "packager/media/formats/webm/webm_constants.h"
@@ -59,26 +60,15 @@ bool IsKeyframe(bool is_video,
   if (!is_video)
     return true;
 
-  if (codec == kCodecVP9)
-    return VP9Parser::IsKeyframe(data, size);
-
-  CHECK_EQ(kCodecVP8, codec);
-
-  // Make sure the block is big enough for the minimal keyframe header size.
-  if (size < 7)
-    return false;
-
-  // The LSb of the first byte must be a 0 for a keyframe.
-  // http://tools.ietf.org/html/rfc6386 Section 19.1
-  if ((data[0] & 0x01) != 0)
-    return false;
-
-  // Verify VP8 keyframe startcode.
-  // http://tools.ietf.org/html/rfc6386 Section 19.1
-  if (data[3] != 0x9d || data[4] != 0x01 || data[5] != 0x2a)
-    return false;
-
-  return true;
+  switch (codec) {
+    case kCodecVP8:
+      return VP8Parser::IsKeyframe(data, size);
+    case kCodecVP9:
+      return VP9Parser::IsKeyframe(data, size);
+    default:
+      NOTIMPLEMENTED() << "Unsupported codec " << codec;
+      return false;
+  }
 }
 
 }  // namespace
@@ -583,33 +573,41 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     buffer->set_duration(track->default_duration());
   }
 
-  if (!initialized_) {
+  if (!init_cb_.is_null() && !initialized_) {
     std::vector<scoped_refptr<StreamInfo>> streams;
     if (audio_stream_info_)
       streams.push_back(audio_stream_info_);
     if (video_stream_info_) {
       if (stream_type == kStreamVideo) {
-        VPCodecConfiguration codec_config;
-        if (video_stream_info_->codec() == kCodecVP9) {
-          VP9Parser vp9_parser;
-          std::vector<VPxFrameInfo> vpx_frames;
-          if (!vp9_parser.Parse(buffer->data(), buffer->data_size(),
-                                &vpx_frames)) {
-            LOG(ERROR) << "Failed to parse vp9 frame.";
+        scoped_ptr<VPxParser> vpx_parser;
+        switch (video_stream_info_->codec()) {
+          case kCodecVP8:
+            vpx_parser.reset(new VP8Parser);
+            break;
+          case kCodecVP9:
+            vpx_parser.reset(new VP9Parser);
+            break;
+          default:
+            NOTIMPLEMENTED() << "Unsupported codec "
+                             << video_stream_info_->codec();
             return false;
-          }
-          if (vpx_frames.size() != 1u || !vpx_frames[0].is_keyframe) {
-            LOG(ERROR) << "The first frame should be a key frame.";
-            return false;
-          }
-          codec_config = vp9_parser.codec_config();
         }
-        // TODO(kqyang): Support VP8.
+        std::vector<VPxFrameInfo> vpx_frames;
+        if (!vpx_parser->Parse(buffer->data(), buffer->data_size(),
+                               &vpx_frames)) {
+          LOG(ERROR) << "Failed to parse vpx frame.";
+          return false;
+        }
+        if (vpx_frames.size() != 1u || !vpx_frames[0].is_keyframe) {
+          LOG(ERROR) << "The first frame should be a key frame.";
+          return false;
+        }
 
+        const VPCodecConfiguration* codec_config = &vpx_parser->codec_config();
         video_stream_info_->set_codec_string(
-            codec_config.GetCodecString(video_stream_info_->codec()));
+            codec_config->GetCodecString(video_stream_info_->codec()));
         std::vector<uint8_t> extra_data;
-        codec_config.Write(&extra_data);
+        codec_config->Write(&extra_data);
         video_stream_info_->set_extra_data(extra_data);
         streams.push_back(video_stream_info_);
         init_cb_.Run(streams);

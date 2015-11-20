@@ -10,6 +10,7 @@
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
+#include "packager/media/filters/vp8_parser.h"
 #include "packager/media/filters/vp9_parser.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/cenc.h"
@@ -35,8 +36,11 @@ EncryptingFragmenter::EncryptingFragmenter(
       nalu_length_size_(nalu_length_size),
       clear_time_(clear_time) {
   DCHECK(encryption_key_);
-  if (video_codec == kCodecVP9)
-    vp9_parser_.reset(new VP9Parser);
+  if (video_codec == kCodecVP8) {
+    vpx_parser_.reset(new VP8Parser);
+  } else if (video_codec == kCodecVP9) {
+    vpx_parser_.reset(new VP9Parser);
+  }
 }
 
 EncryptingFragmenter::~EncryptingFragmenter() {}
@@ -140,11 +144,11 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
   FrameCENCInfo cenc_info(encryptor_->iv());
   uint8_t* data = sample->writable_data();
   if (IsSubsampleEncryptionRequired()) {
-    if (video_codec_ == kCodecVP9) {
+    if (vpx_parser_) {
       std::vector<VPxFrameInfo> vpx_frames;
-      if (!vp9_parser_->Parse(sample->data(), sample->data_size(),
+      if (!vpx_parser_->Parse(sample->data(), sample->data_size(),
                               &vpx_frames)) {
-        return Status(error::MUXER_FAILURE, "Failed to parse vp9 frame.");
+        return Status(error::MUXER_FAILURE, "Failed to parse vpx frame.");
       }
       for (const VPxFrameInfo& frame : vpx_frames) {
         SubsampleEntry subsample;

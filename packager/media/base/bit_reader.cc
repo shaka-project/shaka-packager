@@ -53,6 +53,21 @@ bool BitReader::SkipBits(int num_bits) {
   return ReadBitsInternal(num_bits, &not_needed);
 }
 
+bool BitReader::SkipBytes(int num_bytes) {
+  if (num_remaining_bits_in_curr_byte_ != 8)
+    return false;
+  if (num_bytes == 0)
+    return true;
+
+  data_ += num_bytes - 1;  // One additional byte in curr_byte_.
+  if (num_bytes > bytes_left_ + 1)
+    return false;
+  bytes_left_ -= num_bytes - 1;
+  num_remaining_bits_in_curr_byte_ = 0;
+  UpdateCurrByte();
+  return true;
+}
+
 bool BitReader::ReadBitsInternal(int num_bits, uint64_t* out) {
   DCHECK_LE(num_bits, 64);
 

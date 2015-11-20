@@ -46,22 +46,6 @@ enum VpxColorSpace {
   VPX_COLOR_SPACE_SRGB = 7,
 };
 
-class VP9BitReader : public BitReader {
- public:
-  VP9BitReader(const uint8_t* data, off_t size) : BitReader(data, size) {}
-  ~VP9BitReader() {}
-
-  bool SkipBitsConditional(uint32_t num_bits) {
-    bool condition;
-    if (!ReadBits(1, &condition))
-      return false;
-    return condition ? SkipBits(num_bits) : true;
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VP9BitReader);
-};
-
 uint32_t RoundupShift(uint32_t value, uint32_t n) {
   return (value + (1 << n) - 1) >> n;
 }
@@ -156,7 +140,7 @@ bool ParseIfSuperframeIndex(const uint8_t* data,
   return true;
 }
 
-bool ReadProfile(VP9BitReader* reader, VPCodecConfiguration* codec_config) {
+bool ReadProfile(BitReader* reader, VPCodecConfiguration* codec_config) {
   uint8_t bit[2];
   RCHECK(reader->ReadBits(1, &bit[0]));
   RCHECK(reader->ReadBits(1, &bit[1]));
@@ -170,7 +154,7 @@ bool ReadProfile(VP9BitReader* reader, VPCodecConfiguration* codec_config) {
   return true;
 }
 
-bool ReadSyncCode(VP9BitReader* reader) {
+bool ReadSyncCode(BitReader* reader) {
   uint32_t sync_code;
   RCHECK(reader->ReadBits(24, &sync_code));
   return sync_code == VP9_SYNC_CODE;
@@ -222,7 +206,7 @@ VPCodecConfiguration::ChromaSubsampling GetChromaSubsampling(
   }
 }
 
-bool ReadBitDepthAndColorSpace(VP9BitReader* reader,
+bool ReadBitDepthAndColorSpace(BitReader* reader,
                                VPCodecConfiguration* codec_config) {
   uint8_t bit_depth = 8;
   if (codec_config->profile() >= 2) {
@@ -284,7 +268,7 @@ bool ReadBitDepthAndColorSpace(VP9BitReader* reader,
   return true;
 }
 
-bool ReadFrameSize(VP9BitReader* reader, uint32_t* width, uint32_t* height) {
+bool ReadFrameSize(BitReader* reader, uint32_t* width, uint32_t* height) {
   RCHECK(reader->ReadBits(16, width));
   *width += 1;  // Off by 1.
   RCHECK(reader->ReadBits(16, height));
@@ -292,7 +276,7 @@ bool ReadFrameSize(VP9BitReader* reader, uint32_t* width, uint32_t* height) {
   return true;
 }
 
-bool ReadDisplayFrameSize(VP9BitReader* reader,
+bool ReadDisplayFrameSize(BitReader* reader,
                           uint32_t* display_width,
                           uint32_t* display_height) {
   bool has_display_size;
@@ -302,7 +286,7 @@ bool ReadDisplayFrameSize(VP9BitReader* reader,
   return true;
 }
 
-bool ReadFrameSizes(VP9BitReader* reader, uint32_t* width, uint32_t* height) {
+bool ReadFrameSizes(BitReader* reader, uint32_t* width, uint32_t* height) {
   uint32_t new_width;
   uint32_t new_height;
   RCHECK(ReadFrameSize(reader, &new_width, &new_height));
@@ -321,7 +305,7 @@ bool ReadFrameSizes(VP9BitReader* reader, uint32_t* width, uint32_t* height) {
   return true;
 }
 
-bool ReadFrameSizesWithRefs(VP9BitReader* reader,
+bool ReadFrameSizesWithRefs(BitReader* reader,
                             uint32_t* width,
                             uint32_t* height) {
   bool found = false;
@@ -340,7 +324,7 @@ bool ReadFrameSizesWithRefs(VP9BitReader* reader,
   return true;
 }
 
-bool ReadLoopFilter(VP9BitReader* reader) {
+bool ReadLoopFilter(BitReader* reader) {
   RCHECK(reader->SkipBits(9));  // filter_evel, sharness_level
   bool mode_ref_delta_enabled;
   RCHECK(reader->ReadBits(1, &mode_ref_delta_enabled));
@@ -348,22 +332,23 @@ bool ReadLoopFilter(VP9BitReader* reader) {
     return true;
   bool mode_ref_delta_update;
   RCHECK(reader->ReadBits(1, &mode_ref_delta_update));
-  if (!mode_ref_delta_update) return true;
+  if (!mode_ref_delta_update)
+    return true;
 
   for (uint32_t i = 0; i < MAX_REF_LF_DELTAS + MAX_MODE_LF_DELTAS; ++i)
-    RCHECK(reader->SkipBitsConditional(6 + 1));
+    RCHECK(reader->SkipBitsConditional(true, 6 + 1));
   return true;
 }
 
-bool ReadQuantization(VP9BitReader* reader) {
+bool ReadQuantization(BitReader* reader) {
   RCHECK(reader->SkipBits(QINDEX_BITS));
   // Skip delta_q bits.
   for (uint32_t i = 0; i < 3; ++i)
-    RCHECK(reader->SkipBitsConditional(4 + 1));
+    RCHECK(reader->SkipBitsConditional(true, 4 + 1));
   return true;
 }
 
-bool ReadSegmentation(VP9BitReader* reader) {
+bool ReadSegmentation(BitReader* reader) {
   bool enabled;
   RCHECK(reader->ReadBits(1, &enabled));
   if (!enabled)
@@ -373,13 +358,13 @@ bool ReadSegmentation(VP9BitReader* reader) {
   RCHECK(reader->ReadBits(1, &update_map));
   if (update_map) {
     for (uint32_t i = 0; i < SEG_TREE_PROBS; ++i)
-      RCHECK(reader->SkipBitsConditional(8));
+      RCHECK(reader->SkipBitsConditional(true, 8));
 
     bool temporal_update;
     RCHECK(reader->ReadBits(1, &temporal_update));
     if (temporal_update) {
       for (uint32_t j = 0; j < PREDICTION_PROBS; ++j)
-        RCHECK(reader->SkipBitsConditional(8));
+        RCHECK(reader->SkipBitsConditional(true, 8));
     }
   }
 
@@ -402,7 +387,7 @@ bool ReadSegmentation(VP9BitReader* reader) {
   return true;
 }
 
-bool ReadTileInfo(uint32_t width, VP9BitReader* reader) {
+bool ReadTileInfo(uint32_t width, BitReader* reader) {
   uint32_t mi_cols = GetNumMiUnits(width);
 
   uint32_t min_log2_tile_cols;
@@ -420,7 +405,7 @@ bool ReadTileInfo(uint32_t width, VP9BitReader* reader) {
   }
   RCHECK(log2_tile_cols <= 6);
 
-  RCHECK(reader->SkipBitsConditional(1));  // log2_tile_rows
+  RCHECK(reader->SkipBitsConditional(true, 1));  // log2_tile_rows
   return true;
 }
 
@@ -438,12 +423,12 @@ bool VP9Parser::Parse(const uint8_t* data,
 
   for (auto& vpx_frame : *vpx_frames) {
     VLOG(4) << "process frame with size " << vpx_frame.frame_size;
-    VP9BitReader reader(data, vpx_frame.frame_size);
+    BitReader reader(data, vpx_frame.frame_size);
     uint8_t frame_marker;
     RCHECK(reader.ReadBits(2, &frame_marker));
     RCHECK(frame_marker == VP9_FRAME_MARKER);
 
-    RCHECK(ReadProfile(&reader, &codec_config_));
+    RCHECK(ReadProfile(&reader, writable_codec_config()));
 
     bool show_existing_frame;
     RCHECK(reader.ReadBits(1, &show_existing_frame));
@@ -470,7 +455,7 @@ bool VP9Parser::Parse(const uint8_t* data,
 
     if (vpx_frame.is_keyframe) {
       RCHECK(ReadSyncCode(&reader));
-      RCHECK(ReadBitDepthAndColorSpace(&reader, &codec_config_));
+      RCHECK(ReadBitDepthAndColorSpace(&reader, writable_codec_config()));
       RCHECK(ReadFrameSizes(&reader, &width_, &height_));
     } else {
       bool intra_only = false;
@@ -481,16 +466,16 @@ bool VP9Parser::Parse(const uint8_t* data,
 
       if (intra_only) {
         RCHECK(ReadSyncCode(&reader));
-        if (codec_config_.profile() > 0) {
-          RCHECK(ReadBitDepthAndColorSpace(&reader, &codec_config_));
+        if (codec_config().profile() > 0) {
+          RCHECK(ReadBitDepthAndColorSpace(&reader, writable_codec_config()));
         } else {
           // NOTE: The intra-only frame header does not include the
           // specification of either the color format or color sub-sampling in
           // profile 0. VP9 specifies that the default color format should be
           // YUV 4:2:0 in this case (normative).
-          codec_config_.set_chroma_subsampling(
+          writable_codec_config()->set_chroma_subsampling(
               VPCodecConfiguration::CHROMA_420_COLLOCATED_WITH_LUMA);
-          codec_config_.set_bit_depth(8);
+          writable_codec_config()->set_bit_depth(8);
         }
 
         RCHECK(reader.SkipBits(REF_FRAMES));  // refresh_frame_flags
@@ -519,26 +504,27 @@ bool VP9Parser::Parse(const uint8_t* data,
     }
     RCHECK(reader.SkipBits(FRAME_CONTEXTS_LOG2));  // frame_context_idx
 
-    VLOG(4) << "Bits read before ReadLoopFilter: " << reader.bit_position();
+    VLOG(4) << "bits read before ReadLoopFilter: " << reader.bit_position();
     RCHECK(ReadLoopFilter(&reader));
     RCHECK(ReadQuantization(&reader));
     RCHECK(ReadSegmentation(&reader));
     RCHECK(ReadTileInfo(width_, &reader));
 
-    uint16_t first_partition_size;
-    RCHECK(reader.ReadBits(16, &first_partition_size));
+    uint16_t header_size;
+    RCHECK(reader.ReadBits(16, &header_size));
     vpx_frame.uncompressed_header_size =
         vpx_frame.frame_size - reader.bits_available() / 8;
     vpx_frame.width = width_;
     vpx_frame.height = height_;
 
     VLOG(3) << "\n frame_size: " << vpx_frame.frame_size
-            << "\n header_size: " << vpx_frame.uncompressed_header_size
-            << "\n Bits read: " << reader.bit_position()
-            << "\n first_partition_size: " << first_partition_size;
+            << "\n uncompressed_header_size: "
+            << vpx_frame.uncompressed_header_size
+            << "\n bits read: " << reader.bit_position()
+            << "\n header_size: " << header_size;
 
-    RCHECK(first_partition_size > 0);
-    RCHECK(first_partition_size * 8 <= reader.bits_available());
+    RCHECK(header_size > 0);
+    RCHECK(header_size * 8 <= reader.bits_available());
 
     data += vpx_frame.frame_size;
   }
@@ -546,7 +532,7 @@ bool VP9Parser::Parse(const uint8_t* data,
 }
 
 bool VP9Parser::IsKeyframe(const uint8_t* data, size_t data_size) {
-  VP9BitReader reader(data, data_size);
+  BitReader reader(data, data_size);
   uint8_t frame_marker;
   RCHECK(reader.ReadBits(2, &frame_marker));
   RCHECK(frame_marker == VP9_FRAME_MARKER);

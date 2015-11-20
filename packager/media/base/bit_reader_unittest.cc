@@ -17,20 +17,22 @@ TEST(BitReaderTest, NormalOperationTest) {
   BitReader reader1(buffer, 6);  // Initialize with 6 bytes only
 
   EXPECT_TRUE(reader1.ReadBits(1, &value8));
-  EXPECT_EQ(value8, 0);
+  EXPECT_EQ(0, value8);
   EXPECT_TRUE(reader1.ReadBits(8, &value8));
-  EXPECT_EQ(value8, 0xab);  // 1010 1011
+  EXPECT_EQ(0xab, value8);  // 1010 1011
+  EXPECT_EQ(39, reader1.bits_available());
+  EXPECT_EQ(9, reader1.bit_position());
   EXPECT_TRUE(reader1.ReadBits(7, &value64));
   EXPECT_TRUE(reader1.ReadBits(32, &value64));
-  EXPECT_EQ(value64, 0x55995599u);
+  EXPECT_EQ(0x55995599u, value64);
   EXPECT_FALSE(reader1.ReadBits(1, &value8));
   value8 = 0xff;
   EXPECT_TRUE(reader1.ReadBits(0, &value8));
-  EXPECT_EQ(value8, 0);
+  EXPECT_EQ(0, value8);
 
   BitReader reader2(buffer, 8);
   EXPECT_TRUE(reader2.ReadBits(64, &value64));
-  EXPECT_EQ(value64, 0x5599559955995599ull);
+  EXPECT_EQ(0x5599559955995599ull, value64);
   EXPECT_FALSE(reader2.ReadBits(1, &value8));
   EXPECT_TRUE(reader2.ReadBits(0, &value8));
 }
@@ -53,16 +55,37 @@ TEST(BitReaderTest, SkipBitsTest) {
 
   EXPECT_TRUE(reader1.SkipBits(2));
   EXPECT_TRUE(reader1.ReadBits(3, &value8));
-  EXPECT_EQ(value8, 1);
+  EXPECT_EQ(1, value8);
+  EXPECT_FALSE(reader1.SkipBytes(1));  // not aligned.
   EXPECT_TRUE(reader1.SkipBits(11));
   EXPECT_TRUE(reader1.ReadBits(8, &value8));
-  EXPECT_EQ(value8, 3);
-  EXPECT_TRUE(reader1.SkipBits(76));
+  EXPECT_EQ(3, value8);
+  EXPECT_TRUE(reader1.SkipBytes(2));
+  EXPECT_TRUE(reader1.SkipBytes(0));
+  EXPECT_TRUE(reader1.SkipBytes(1));
+  EXPECT_TRUE(reader1.SkipBits(52));
+  EXPECT_EQ(20, reader1.bits_available());
+  EXPECT_EQ(100, reader1.bit_position());
   EXPECT_TRUE(reader1.ReadBits(4, &value8));
-  EXPECT_EQ(value8, 13);
+  EXPECT_EQ(13, value8);
   EXPECT_FALSE(reader1.SkipBits(100));
   EXPECT_TRUE(reader1.SkipBits(0));
   EXPECT_FALSE(reader1.SkipBits(1));
+}
+
+TEST(BitReaderTest, SkipBitsConditionalTest) {
+  uint8_t buffer[] = {0x8a, 0x12};
+  BitReader reader(buffer, sizeof(buffer));
+  EXPECT_TRUE(reader.SkipBitsConditional(false, 2));
+  EXPECT_EQ(1, reader.bit_position());  // Not skipped.
+  EXPECT_TRUE(reader.SkipBitsConditional(false, 3));
+  EXPECT_EQ(5, reader.bit_position());  // Skipped.
+  EXPECT_TRUE(reader.SkipBitsConditional(true, 2));
+  EXPECT_EQ(6, reader.bit_position());  // Not skipped.
+  EXPECT_TRUE(reader.SkipBitsConditional(true, 5));
+  EXPECT_EQ(12, reader.bit_position());  // Skipped.
+  EXPECT_TRUE(reader.SkipBits(4));
+  EXPECT_FALSE(reader.SkipBits(1));
 }
 
 }  // namespace media

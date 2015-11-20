@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_FILTERS_VP9_PARSER_H_
-#define MEDIA_FILTERS_VP9_PARSER_H_
+#ifndef MEDIA_FILTERS_VP8_PARSER_H_
+#define MEDIA_FILTERS_VP8_PARSER_H_
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -16,11 +16,12 @@
 namespace edash_packager {
 namespace media {
 
-/// Class to parse a vp9 bit stream.
-class VP9Parser : public VPxParser {
+/// Class to parse a vp8 bit stream. Implemented according to
+/// https://tools.ietf.org/html/rfc6386.
+class VP8Parser : public VPxParser {
  public:
-  VP9Parser();
-  ~VP9Parser() override;
+  VP8Parser();
+  ~VP8Parser() override;
 
   /// Parse @a data with size @a data_size.
   /// @param data_size Size of the sample in bytes. Note that it should be a
@@ -45,10 +46,10 @@ class VP9Parser : public VPxParser {
   uint32_t width_;
   uint32_t height_;
 
-  DISALLOW_COPY_AND_ASSIGN(VP9Parser);
+  DISALLOW_COPY_AND_ASSIGN(VP8Parser);
 };
 
 }  // namespace media
 }  // namespace edash_packager
 
-#endif  // MEDIA_FILTERS_VP9_PARSER_H_
+#endif  // MEDIA_FILTERS_VP8_PARSER_H_
