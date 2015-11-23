@@ -184,6 +184,11 @@ bool ParseTimingAndSettingsLine(const std::string& line,
   return true;
 }
 
+}  // namespace
+
+Cue::Cue() : start_time(0), duration(0) {}
+Cue::~Cue() {}
+
 // Mapping:
 // comment --> side data (and side data only sample)
 // settings --> side data
@@ -208,10 +213,29 @@ std::shared_ptr<MediaSample> CueToMediaSample(const Cue& cue) {
   return media_sample;
 }
 
-}  // namespace
+// TODO(rkuroiwa): Cue gets converted to MediaSample in WebVttMediaParser and
+// then back to Cue in the muxer. Consider making MediaSample a protobuf or make
+// Cue a protobuf and (ab)use MediaSample::data() to store serialized Cue.
+Cue MediaSampleToCue(const MediaSample& sample) {
+  Cue cue;
+  if (sample.data_size() == 0) {
+    std::string comment(sample.side_data(),
+                        sample.side_data() + sample.side_data_size());
+    cue.comment.push_back(comment);
+    return cue;
+  }
 
-Cue::Cue() : start_time(0), duration(0) {}
-Cue::~Cue() {}
+  std::string payload(sample.data(), sample.data() + sample.data_size());
+  cue.payload.push_back(payload);
+  cue.identifier.assign(sample.config_id());
+  cue.start_time = sample.pts();
+  cue.duration = sample.duration();
+  if (sample.side_data_size() != 0) {
+    cue.settings.assign(sample.side_data(),
+                        sample.side_data() + sample.side_data_size());
+  }
+  return cue;
+}
 
 WebVttMediaParser::WebVttMediaParser() : state_(kHeader) {}
 WebVttMediaParser::~WebVttMediaParser() {}

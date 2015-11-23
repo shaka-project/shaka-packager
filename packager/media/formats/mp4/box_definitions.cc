@@ -2733,10 +2733,10 @@ FourCC VTTCueBox::BoxType() const  {
 bool VTTCueBox::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->PrepareChildren() &&
-         buffer->ReadWriteChild(&cue_source_id) &&
-         buffer->ReadWriteChild(&cue_id) &&
-         buffer->ReadWriteChild(&cue_time) &&
-         buffer->ReadWriteChild(&cue_settings) &&
+         buffer->TryReadWriteChild(&cue_source_id) &&
+         buffer->TryReadWriteChild(&cue_id) &&
+         buffer->TryReadWriteChild(&cue_time) &&
+         buffer->TryReadWriteChild(&cue_settings) &&
          buffer->ReadWriteChild(&cue_payload));
   return true;
 }

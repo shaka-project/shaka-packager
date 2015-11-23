@@ -32,6 +32,16 @@ struct Cue {
   std::vector<std::string> comment;
 };
 
+/// Convert Cue to MediaSample.
+/// @param cue data.
+/// @return @a cue converted to a MediaSample.
+std::shared_ptr<MediaSample> CueToMediaSample(const Cue& cue);
+
+/// Convert MediaSample to Cue.
+/// @param sample to be converted.
+/// @return @a sample converted to Cue.
+Cue MediaSampleToCue(const MediaSample& sample);
+
 // WebVTT parser.
 // The input may not be encrypted so decryption_key_source is ignored.
 class WebVttMediaParser : public MediaParser {
