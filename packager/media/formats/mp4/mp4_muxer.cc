@@ -13,6 +13,7 @@
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
+#include "packager/media/base/text_stream_info.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/es_descriptor.h"
 #include "packager/media/event/muxer_listener.h"
@@ -149,6 +150,10 @@ Status MP4Muxer::InitializeMuxer() {
       case kStreamAudio:
         GenerateAudioTrak(static_cast<AudioStreamInfo*>(streams()[i].get()),
                           &trak, i + 1);
+        break;
+      case kStreamText:
+        GenerateTextTrak(static_cast<TextStreamInfo*>(streams()[i].get()),
+                         &trak, i + 1);
         break;
       default:
         NOTIMPLEMENTED() << "Not implemented for stream type: "
@@ -371,6 +376,31 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
     LOG(WARNING) << "Unexpected seek preroll for codec " << audio_info->codec();
     return;
   }
+}
+
+void MP4Muxer::GenerateTextTrak(const TextStreamInfo* text_info,
+                                Track* trak,
+                                uint32_t track_id) {
+  InitializeTrak(text_info, trak);
+
+  if (text_info->codec_string() == "wvtt") {
+    // Handle WebVTT.
+    TextSampleEntry webvtt;
+    webvtt.format = FOURCC_wvtt;
+    webvtt.config.config.assign(text_info->codec_config().begin(),
+                                text_info->codec_config().end());
+    // TODO(rkuroiwa): This should be the source file URI(s). Putting bogus
+    // string for now so that the box will be there for samples with overlapping
+    // cues.
+    webvtt.label.source_label = "source_label";
+    SampleDescription& sample_description =
+        trak->media.information.sample_table.description;
+    sample_description.type = kText;
+    sample_description.text_entries.push_back(webvtt);
+    return;
+  }
+  NOTIMPLEMENTED() << text_info->codec_string()
+                   << " handling not implemented yet.";
 }
 
 bool MP4Muxer::GetInitRangeStartAndEnd(uint32_t* start, uint32_t* end) {

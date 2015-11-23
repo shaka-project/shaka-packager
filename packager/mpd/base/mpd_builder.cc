@@ -707,8 +707,10 @@ Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
   std::unique_ptr<Representation> representation(new Representation(
       media_info, mpd_options_, representation_id, std::move(listener)));
 
-  if (!representation->Init())
+  if (!representation->Init()) {
+    LOG(ERROR) << "Failed to initialize Representation.";
     return NULL;
+  }
 
   // For videos, record the width, height, and the frame rate to calculate the
   // max {width,height,framerate} required for DASH IOP.
@@ -1383,6 +1385,8 @@ std::string Representation::GetTextMimeType() const {
   if (media_info_.text_info().format() == "vtt") {
     if (media_info_.container_type() == MediaInfo::CONTAINER_TEXT) {
       return "text/vtt";
+    } else if (media_info_.container_type() == MediaInfo::CONTAINER_MP4) {
+      return "application/mp4";
     }
     LOG(ERROR) << "Failed to determine MIME type for VTT container: "
                << media_info_.container_type();

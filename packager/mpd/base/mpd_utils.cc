@@ -23,6 +23,10 @@ std::string TextCodecString(const MediaInfo& media_info) {
       (media_info.container_type() == MediaInfo::CONTAINER_MP4)) {
     return "stpp";
   }
+  if (format == "vtt" &&
+      (media_info.container_type() == MediaInfo::CONTAINER_MP4)) {
+    return "wvtt";
+  }
 
   // Otherwise codec doesn't need to be specified, e.g. vtt and ttml+xml are
   // obvious from the mime type.

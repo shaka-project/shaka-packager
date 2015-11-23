@@ -16,6 +16,7 @@ namespace media {
 
 class AudioStreamInfo;
 class StreamInfo;
+class TextStreamInfo;
 class VideoStreamInfo;
 
 namespace mp4 {
@@ -50,6 +51,9 @@ class MP4Muxer : public Muxer {
   void GenerateVideoTrak(const VideoStreamInfo* video_info,
                          Track* trak,
                          uint32_t track_id);
+  void GenerateTextTrak(const TextStreamInfo* video_info,
+                        Track* trak,
+                        uint32_t track_id);
 
   // Gets |start| and |end| initialization range. Returns true if there is an
   // init range and sets start-end byte-range-spec specified in RFC2616.

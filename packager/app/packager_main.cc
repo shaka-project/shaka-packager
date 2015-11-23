@@ -82,7 +82,7 @@ const char kUsage[] =
     "  - input (in): Required input/source media file path or network stream\n"
     "    URL.\n"
     "  - stream_selector (stream): Required field with value 'audio',\n"
-    "    'video', or stream number (zero based).\n"
+    "    'video', 'text', or stream number (zero based).\n"
     "  - output (out): Required output file (single file) or initialization\n"
     "    file path (multiple file).\n"
     "  - segment_template (segment): Optional value which specifies the\n"
@@ -253,8 +253,8 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     }
     stream_muxer_options.bandwidth = stream_iter->bandwidth;
 
-    // Handle text input.
-    if (stream_iter->stream_selector == "text") {
+    if (stream_iter->stream_selector == "text" &&
+        stream_iter->output_format != CONTAINER_MOV) {
       MediaInfo text_media_info;
       if (!StreamInfoToTextMediaInfo(*stream_iter, stream_muxer_options,
                                      &text_media_info)) {

@@ -33,6 +33,7 @@ const size_t kQueuedSamplesLimit = 10000;
 const size_t kInvalidStreamIndex = static_cast<size_t>(-1);
 const size_t kBaseVideoOutputStreamIndex = 0x100;
 const size_t kBaseAudioOutputStreamIndex = 0x200;
+const size_t kBaseTextOutputStreamIndex = 0x300;
 
 std::string GetStreamLabel(size_t stream_index) {
   switch (stream_index) {
@@ -40,6 +41,8 @@ std::string GetStreamLabel(size_t stream_index) {
       return "video";
     case kBaseAudioOutputStreamIndex:
       return "audio";
+    case kBaseTextOutputStreamIndex:
+      return "text";
     default:
       return base::SizeTToString(stream_index);
   }
@@ -51,11 +54,13 @@ bool GetStreamIndex(const std::string& stream_label, size_t* stream_index) {
     *stream_index = kBaseVideoOutputStreamIndex;
   } else if (stream_label == "audio") {
     *stream_index = kBaseAudioOutputStreamIndex;
+  } else if (stream_label == "text") {
+    *stream_index = kBaseTextOutputStreamIndex;
   } else {
     // Expect stream_label to be a zero based stream id.
     if (!base::StringToSizeT(stream_label, stream_index)) {
       LOG(ERROR) << "Invalid argument --stream=" << stream_label << "; "
-                 << "should be 'audio', 'video', or a number";
+                 << "should be 'audio', 'video', 'text', or a number";
       return false;
     }
   }
@@ -221,6 +226,9 @@ void Demuxer::ParserInitEvent(
   bool audio_handler_set =
       output_handlers().find(kBaseAudioOutputStreamIndex) !=
       output_handlers().end();
+  bool text_handler_set =
+      output_handlers().find(kBaseTextOutputStreamIndex) !=
+      output_handlers().end();
   for (const std::shared_ptr<StreamInfo>& stream_info : stream_infos) {
     size_t stream_index = base_stream_index;
     if (video_handler_set && stream_info->stream_type() == kStreamVideo) {
@@ -232,6 +240,10 @@ void Demuxer::ParserInitEvent(
       stream_index = kBaseAudioOutputStreamIndex;
       // Only for the first audio stream.
       audio_handler_set = false;
+    }
+    if (text_handler_set && stream_info->stream_type() == kStreamText) {
+      stream_index = kBaseTextOutputStreamIndex;
+      text_handler_set = false;
     }
 
     const bool handler_set =

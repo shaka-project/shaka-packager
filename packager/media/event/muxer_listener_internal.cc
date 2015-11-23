@@ -14,6 +14,7 @@
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/protection_system_specific_info.h"
+#include "packager/media/base/text_stream_info.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/codecs/ec3_audio_util.h"
 #include "packager/mpd/base/media_info.pb.h"
@@ -134,11 +135,29 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
   }
 }
 
+void AddTextInfo(const TextStreamInfo& text_stream_info,
+                 MediaInfo* media_info) {
+  MediaInfo::TextInfo* text_info = media_info->mutable_text_info();
+  // For now, set everything as subtitle.
+  text_info->set_type(MediaInfo::TextInfo::SUBTITLE);
+  if (text_stream_info.codec_string() == "wvtt") {
+    text_info->set_format("vtt");
+  } else {
+    LOG(WARNING) << "Unhandled codec " << text_stream_info.codec_string()
+                 << " copying it as format.";
+    text_info->set_format(text_stream_info.codec_string());
+  }
+
+  text_info->set_language(text_stream_info.language());
+}
+
 void SetMediaInfoStreamInfo(const StreamInfo& stream_info,
                             MediaInfo* media_info) {
   if (stream_info.stream_type() == kStreamAudio) {
     AddAudioInfo(static_cast<const AudioStreamInfo*>(&stream_info),
                  media_info);
+  } else if (stream_info.stream_type() == kStreamText) {
+    AddTextInfo(static_cast<const TextStreamInfo&>(stream_info), media_info);
   } else {
     DCHECK_EQ(stream_info.stream_type(), kStreamVideo);
     AddVideoInfo(static_cast<const VideoStreamInfo*>(&stream_info),
