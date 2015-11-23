@@ -53,6 +53,15 @@ bool BufferReader::ReadToVector(std::vector<uint8_t>* vec, size_t count) {
   return true;
 }
 
+bool BufferReader::ReadToString(std::string* str, size_t size) {
+  DCHECK(str);
+  if (!HasBytes(size))
+    return false;
+  str->assign(buf_ + pos_, buf_ + pos_ + size);
+  pos_ += size;
+  return true;
+}
+
 bool BufferReader::SkipBytes(size_t num_bytes) {
   if (!HasBytes(num_bytes))
     return false;

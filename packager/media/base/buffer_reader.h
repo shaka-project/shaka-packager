@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
 #include "packager/base/compiler_specific.h"
@@ -53,6 +54,7 @@ class BufferReader {
   /// @}
 
   bool ReadToVector(std::vector<uint8_t>* t, size_t count) WARN_UNUSED_RESULT;
+  bool ReadToString(std::string* str, size_t size) WARN_UNUSED_RESULT;
 
   /// Advance the stream by this many bytes.
   /// @return false if there are not enough bytes in the buffer, true otherwise.

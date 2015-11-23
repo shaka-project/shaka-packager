@@ -11,6 +11,7 @@ namespace edash_packager {
 namespace media {
 namespace mp4 {
 
+// TODO(rkuroiwa): Make these case sensitive. e.g. FOURCC_avc1.
 enum FourCC {
   FOURCC_NULL = 0,
   FOURCC_AVC1 = 0x61766331,
@@ -88,7 +89,9 @@ enum FourCC {
   FOURCC_STTS = 0x73747473,
   FOURCC_STYP = 0x73747970,
   FOURCC_STZ2 = 0x73747a32,
+  FOURCC_SUBT = 0x73756274,
   FOURCC_TENC = 0x74656e63,
+  FOURCC_TEXT = 0x74657874,
   FOURCC_TFDT = 0x74666474,
   FOURCC_TFHD = 0x74666864,
   FOURCC_TKHD = 0x746b6864,
@@ -97,8 +100,8 @@ enum FourCC {
   FOURCC_TREX = 0x74726578,
   FOURCC_TRUN = 0x7472756e,
   FOURCC_UDTA = 0x75647461,
-  FOURCC_URL  = 0x75726c20,
-  FOURCC_URN  = 0x75726e20,
+  FOURCC_URL = 0x75726c20,
+  FOURCC_URN = 0x75726e20,
   FOURCC_UUID = 0x75756964,
   FOURCC_VIDE = 0x76696465,
   FOURCC_VMHD = 0x766d6864,
@@ -107,6 +110,18 @@ enum FourCC {
   FOURCC_VP10 = 0x76703130,
   FOURCC_VPCC = 0x76706343,
   FOURCC_WIDE = 0x77696465,
+  FOURCC_ctim = 0x6374696d,
+  FOURCC_iden = 0x6964656e,
+  FOURCC_payl = 0x7061796c,
+  FOURCC_sthd = 0x73746864,
+  FOURCC_sttg = 0x73747467,
+  FOURCC_vlab = 0x766c6162,
+  FOURCC_vsid = 0x76736964,
+  FOURCC_vttC = 0x76747443,
+  FOURCC_vtta = 0x76747461,
+  FOURCC_vttc = 0x76747463,
+  FOURCC_vtte = 0x76747465,
+  FOURCC_wvtt = 0x77767474,
 };
 
 const inline std::string FourCCToString(FourCC fourcc) {

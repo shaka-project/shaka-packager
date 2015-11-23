@@ -23,7 +23,8 @@ enum TrackType {
   kInvalid = 0,
   kVideo,
   kAudio,
-  kHint
+  kHint,
+  kText,
 };
 
 class BoxBuffer;
@@ -233,12 +234,33 @@ struct AudioSampleEntry : Box {
   DTSSpecific ddts;
 };
 
+struct WebVTTConfigurationBox : Box {
+  DECLARE_BOX_METHODS(WebVTTConfigurationBox);
+  std::string config;
+};
+
+struct WebVTTSourceLabelBox : Box {
+  DECLARE_BOX_METHODS(WebVTTSourceLabelBox);
+  std::string source_label;
+};
+
+struct WVTTSampleEntry : Box {
+  DECLARE_BOX_METHODS(WVTTSampleEntry);
+
+  uint16_t data_reference_index;
+
+  WebVTTConfigurationBox config;
+  WebVTTSourceLabelBox label;
+  // Optional MPEG4BitRateBox.
+};
+
 struct SampleDescription : FullBox {
   DECLARE_BOX_METHODS(SampleDescription);
 
   TrackType type;
   std::vector<VideoSampleEntry> video_entries;
   std::vector<AudioSampleEntry> audio_entries;
+  std::vector<WVTTSampleEntry> wvtt_entries;
 };
 
 struct DecodingTime {
@@ -358,6 +380,10 @@ struct SoundMediaHeader : FullBox {
   uint16_t balance;
 };
 
+struct SubtitleMediaHeader : FullBox {
+  DECLARE_BOX_METHODS(SubtitleMediaHeader);
+};
+
 struct DataEntryUrl : FullBox {
   DECLARE_BOX_METHODS(DataEntryUrl);
 
@@ -385,6 +411,7 @@ struct MediaInformation : Box {
   // Exactly one specific meida header shall be present, vmhd, smhd, hmhd, nmhd.
   VideoMediaHeader vmhd;
   SoundMediaHeader smhd;
+  SubtitleMediaHeader sthd;
 };
 
 struct Media : Box {
@@ -589,6 +616,50 @@ struct MediaData : Box {
   DECLARE_BOX_METHODS(MediaData);
 
   uint32_t data_size;
+};
+
+struct CueSourceIDBox : Box {
+  DECLARE_BOX_METHODS(CueSourceIDBox);
+  int32_t source_id;
+};
+
+struct CueTimeBox : Box {
+  DECLARE_BOX_METHODS(CueTimeBox);
+  std::string cue_current_time;
+};
+
+struct CueIDBox : Box {
+  DECLARE_BOX_METHODS(CueIDBox);
+  std::string cue_id;
+};
+
+struct CueSettingsBox : Box {
+  DECLARE_BOX_METHODS(CueSettingsBox);
+  std::string settings;
+};
+
+struct CuePayloadBox : Box {
+  DECLARE_BOX_METHODS(CuePayloadBox);
+  std::string cue_text;
+};
+
+struct VTTEmptyCueBox : Box {
+  DECLARE_BOX_METHODS(VTTEmptyCueBox);
+};
+
+struct VTTAdditionalTextBox : Box {
+  DECLARE_BOX_METHODS(VTTAdditionalTextBox);
+  std::string cue_additional_text;
+};
+
+struct VTTCueBox : Box {
+  DECLARE_BOX_METHODS(VTTCueBox);
+
+  CueSourceIDBox cue_source_id;
+  CueIDBox cue_id;
+  CueTimeBox cue_time;
+  CueSettingsBox cue_settings;
+  CuePayloadBox cue_payload;
 };
 
 #undef DECLARE_BOX

@@ -209,6 +209,21 @@ inline bool operator==(const AudioSampleEntry& lhs,
          lhs.ddts == rhs.ddts;
 }
 
+inline bool operator==(const WebVTTConfigurationBox& lhs,
+                       const WebVTTConfigurationBox& rhs) {
+  return lhs.config == rhs.config;
+}
+
+inline bool operator==(const WebVTTSourceLabelBox& lhs,
+                       const WebVTTSourceLabelBox& rhs) {
+  return lhs.source_label == rhs.source_label;
+}
+
+inline bool operator==(const WVTTSampleEntry& lhs,
+                       const WVTTSampleEntry& rhs) {
+  return lhs.config == rhs.config && lhs.label == rhs.label;
+}
+
 inline bool operator==(const MediaHeader& lhs, const MediaHeader& rhs) {
   return lhs.creation_time == rhs.creation_time &&
          lhs.modification_time == rhs.modification_time &&
@@ -227,6 +242,11 @@ inline bool operator==(const VideoMediaHeader& lhs,
 inline bool operator==(const SoundMediaHeader& lhs,
                        const SoundMediaHeader& rhs) {
   return lhs.balance == rhs.balance;
+}
+
+inline bool operator==(const SubtitleMediaHeader& lhs,
+                       const SubtitleMediaHeader& rhs) {
+  return true;
 }
 
 inline bool operator==(const DataEntryUrl& lhs, const DataEntryUrl& rhs) {
@@ -364,6 +384,47 @@ inline bool operator==(const SegmentIndex& lhs, const SegmentIndex& rhs) {
          lhs.earliest_presentation_time == rhs.earliest_presentation_time &&
          lhs.first_offset == rhs.first_offset &&
          lhs.references == rhs.references;
+}
+
+inline bool operator==(const CueSourceIDBox& lhs,
+                       const CueSourceIDBox& rhs) {
+  return lhs.source_id == rhs.source_id;
+}
+
+inline bool operator==(const CueTimeBox& lhs,
+                       const CueTimeBox& rhs) {
+  return lhs.cue_current_time == rhs.cue_current_time;
+}
+
+inline bool operator==(const CueIDBox& lhs,
+                       const CueIDBox& rhs) {
+  return lhs.cue_id == rhs.cue_id;
+}
+
+inline bool operator==(const CueSettingsBox& lhs,
+                       const CueSettingsBox& rhs) {
+  return lhs.settings == rhs.settings;
+}
+
+inline bool operator==(const CuePayloadBox& lhs,
+                       const CuePayloadBox& rhs) {
+  return lhs.cue_text == rhs.cue_text;
+}
+
+inline bool operator==(const VTTEmptyCueBox& lhs, const VTTEmptyCueBox& rhs) {
+  return true;
+}
+
+inline bool operator==(const VTTAdditionalTextBox& lhs,
+                       const VTTAdditionalTextBox& rhs) {
+  return lhs.cue_additional_text == rhs.cue_additional_text;
+}
+
+inline bool operator==(const VTTCueBox& lhs,
+                       const VTTCueBox& rhs) {
+  return lhs.cue_source_id == rhs.cue_source_id && lhs.cue_id == rhs.cue_id &&
+         lhs.cue_time == rhs.cue_time && lhs.cue_settings == rhs.cue_settings &&
+         lhs.cue_payload == rhs.cue_payload;
 }
 
 }  // namespace mp4

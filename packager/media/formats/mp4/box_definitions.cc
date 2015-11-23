@@ -25,6 +25,7 @@ const uint8_t kUnityMatrix[] = {0, 1, 0, 0, 0, 0, 0, 0, 0,    0, 0, 0,
 // Default entries for HandlerReference box.
 const char kVideoHandlerName[] = "VideoHandler";
 const char kAudioHandlerName[] = "SoundHandler";
+const char kTextHandlerName[] = "TextHandler";
 
 // Default values for VideoSampleEntry box.
 const uint32_t kVideoResolution = 0x00480000;  // 72 dpi.
@@ -35,6 +36,10 @@ const uint32_t kCompressorNameSize = 32u;
 const char kAvcCompressorName[] = "\012AVC Coding";
 const char kHevcCompressorName[] = "\013HEVC Coding";
 const char kVpcCompressorName[] = "\012VPC Coding";
+
+// Using negative value as "not set". It is very unlikely that 2^31 cues happen
+// at once.
+const int kCueSourceIdNotSet = -1;
 
 // Utility functions to check if the 64bit integers can fit in 32bit integer.
 bool IsFitIn32Bits(uint64_t a) {
@@ -377,10 +382,20 @@ FourCC SampleDescription::BoxType() const { return FOURCC_STSD; }
 
 bool SampleDescription::ReadWriteInternal(BoxBuffer* buffer) {
   uint32_t count = 0;
-  if (type == kVideo)
-    count = video_entries.size();
-  else
-    count = audio_entries.size();
+  switch (type) {
+    case kVideo:
+      count = video_entries.size();
+      break;
+    case kAudio:
+      count = audio_entries.size();
+      break;
+    case kText:
+      count = wvtt_entries.size();
+      break;
+    default:
+      NOTIMPLEMENTED() << "SampleDecryption type " << type
+                       << " is not handled. Skipping.";
+  }
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->ReadWriteUInt32(&count));
 
@@ -397,6 +412,9 @@ bool SampleDescription::ReadWriteInternal(BoxBuffer* buffer) {
     } else if (type == kAudio) {
       RCHECK(reader->ReadAllChildren(&audio_entries));
       RCHECK(audio_entries.size() == count);
+    } else if (type == kText) {
+      RCHECK(reader->ReadAllChildren(&wvtt_entries));
+      RCHECK(wvtt_entries.size() == count);
     }
   } else {
     DCHECK_LT(0u, count);
@@ -406,6 +424,9 @@ bool SampleDescription::ReadWriteInternal(BoxBuffer* buffer) {
     } else if (type == kAudio) {
       for (uint32_t i = 0; i < count; ++i)
         RCHECK(buffer->ReadWriteChild(&audio_entries[i]));
+    } else if (type == kText) {
+      for (uint32_t i = 0; i < count; ++i)
+        RCHECK(buffer->ReadWriteChild(&wvtt_entries[i]));
     } else {
       NOTIMPLEMENTED();
     }
@@ -803,6 +824,10 @@ bool HandlerReference::ReadWriteInternal(BoxBuffer* buffer) {
       hdlr_type = FOURCC_SOUN;
       handler_name.assign(kAudioHandlerName,
                           kAudioHandlerName + arraysize(kAudioHandlerName));
+    } else if (type == kText) {
+      hdlr_type = FOURCC_TEXT;
+      handler_name.assign(kTextHandlerName,
+                          kTextHandlerName + arraysize(kTextHandlerName));
     } else {
       NOTIMPLEMENTED();
       return false;
@@ -828,9 +853,15 @@ bool HandlerReference::ReadWriteInternal(BoxBuffer* buffer) {
 }
 
 uint32_t HandlerReference::ComputeSizeInternal() {
-  return HeaderSize() + kFourCCSize + 16 +  // 16 bytes Reserved
-         (type == kVideo ? sizeof(kVideoHandlerName)
-                         : sizeof(kAudioHandlerName));
+  uint32_t box_size = HeaderSize() + kFourCCSize + 16;  // 16 bytes Reserved
+  if (type == kVideo) {
+    box_size += sizeof(kVideoHandlerName);
+  } else if (type == kAudio) {
+    box_size += sizeof(kAudioHandlerName);
+  } else {
+    box_size += sizeof(kTextHandlerName);
+  }
+  return box_size;
 }
 
 CodecConfigurationRecord::CodecConfigurationRecord() : box_type(FOURCC_NULL) {}
@@ -844,7 +875,7 @@ FourCC CodecConfigurationRecord::BoxType() const {
 bool CodecConfigurationRecord::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
   if (buffer->Reading()) {
-    RCHECK(buffer->ReadWriteVector(&data, buffer->Size() - buffer->Pos()));
+    RCHECK(buffer->ReadWriteVector(&data, buffer->BytesLeft()));
   } else {
     RCHECK(buffer->ReadWriteVector(&data, data.size()));
   }
@@ -996,7 +1027,7 @@ bool ElementaryStreamDescriptor::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
   if (buffer->Reading()) {
     std::vector<uint8_t> data;
-    RCHECK(buffer->ReadWriteVector(&data, buffer->Size() - buffer->Pos()));
+    RCHECK(buffer->ReadWriteVector(&data, buffer->BytesLeft()));
     RCHECK(es_descriptor.Parse(data));
     if (es_descriptor.IsAAC()) {
       RCHECK(aac_audio_specific_config.Parse(
@@ -1104,6 +1135,68 @@ uint32_t AudioSampleEntry::ComputeSizeInternal() {
          4;   // 4 bytes predefined.
 }
 
+WebVTTConfigurationBox::WebVTTConfigurationBox() {}
+WebVTTConfigurationBox::~WebVTTConfigurationBox() {}
+
+FourCC WebVTTConfigurationBox::BoxType() const {
+  return FOURCC_vttC;
+}
+
+bool WebVTTConfigurationBox::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  return buffer->ReadWriteString(
+      &config,
+      buffer->Reading() ? buffer->BytesLeft() : config.size());
+}
+
+uint32_t WebVTTConfigurationBox::ComputeSizeInternal() {
+  return HeaderSize() + config.size();
+}
+
+WebVTTSourceLabelBox::WebVTTSourceLabelBox() {}
+WebVTTSourceLabelBox::~WebVTTSourceLabelBox() {}
+
+FourCC WebVTTSourceLabelBox::BoxType() const {
+  return FOURCC_vlab;
+}
+
+bool WebVTTSourceLabelBox::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  return buffer->ReadWriteString(&source_label, buffer->Reading()
+                                                    ? buffer->BytesLeft()
+                                                    : source_label.size());
+}
+
+uint32_t WebVTTSourceLabelBox::ComputeSizeInternal() {
+  if (source_label.empty())
+    return 0;
+  return HeaderSize() + source_label.size();
+}
+
+WVTTSampleEntry::WVTTSampleEntry() {}
+WVTTSampleEntry::~WVTTSampleEntry() {}
+
+FourCC WVTTSampleEntry::BoxType() const {
+  return FOURCC_wvtt;
+}
+
+bool WVTTSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
+  // TODO(rkuroiwa): Handle the optional MPEG4BitRateBox.
+  RCHECK(ReadWriteHeaderInternal(buffer) &&
+         buffer->IgnoreBytes(6) &&  // reserved for SampleEntry.
+         buffer->ReadWriteUInt16(&data_reference_index) &&
+         buffer->PrepareChildren() &&
+         buffer->ReadWriteChild(&config) &&
+         buffer->ReadWriteChild(&label));
+  return true;
+}
+
+uint32_t WVTTSampleEntry::ComputeSizeInternal() {
+  // 6 for the (anonymous) reserved bytes for SampleEntry class.
+  return HeaderSize() + 6 + sizeof(data_reference_index) +
+         config.ComputeSize() + label.ComputeSize();
+}
+
 MediaHeader::MediaHeader()
     : creation_time(0), modification_time(0), timescale(0), duration(0) {
   language[0] = 0;
@@ -1192,6 +1285,19 @@ uint32_t SoundMediaHeader::ComputeSizeInternal() {
   return HeaderSize() + sizeof(balance) + sizeof(uint16_t);
 }
 
+SubtitleMediaHeader::SubtitleMediaHeader() {}
+SubtitleMediaHeader::~SubtitleMediaHeader() {}
+
+FourCC SubtitleMediaHeader::BoxType() const { return FOURCC_sthd; }
+
+bool SubtitleMediaHeader::ReadWriteInternal(BoxBuffer* buffer) {
+  return ReadWriteHeaderInternal(buffer);
+}
+
+uint32_t SubtitleMediaHeader::ComputeSizeInternal() {
+  return HeaderSize();
+}
+
 DataEntryUrl::DataEntryUrl() {
   const uint32_t kDataEntryUrlFlags = 1;
   flags = kDataEntryUrlFlags;
@@ -1260,12 +1366,19 @@ bool MediaInformation::ReadWriteInternal(BoxBuffer* buffer) {
          buffer->PrepareChildren() &&
          buffer->ReadWriteChild(&dinf) &&
          buffer->ReadWriteChild(&sample_table));
-  if (sample_table.description.type == kVideo)
-    RCHECK(buffer->ReadWriteChild(&vmhd));
-  else if (sample_table.description.type == kAudio)
-    RCHECK(buffer->ReadWriteChild(&smhd));
-  else
-    NOTIMPLEMENTED();
+  switch (sample_table.description.type) {
+    case kVideo:
+      RCHECK(buffer->ReadWriteChild(&vmhd));
+      break;
+    case kAudio:
+      RCHECK(buffer->ReadWriteChild(&smhd));
+      break;
+    case kText:
+      RCHECK(buffer->ReadWriteChild(&sthd));
+      break;
+    default:
+      NOTIMPLEMENTED();
+  }
   // Hint is not supported for now.
   return true;
 }
@@ -1273,10 +1386,19 @@ bool MediaInformation::ReadWriteInternal(BoxBuffer* buffer) {
 uint32_t MediaInformation::ComputeSizeInternal() {
   uint32_t box_size =
       HeaderSize() + dinf.ComputeSize() + sample_table.ComputeSize();
-  if (sample_table.description.type == kVideo)
-    box_size += vmhd.ComputeSize();
-  else if (sample_table.description.type == kAudio)
-    box_size += smhd.ComputeSize();
+  switch (sample_table.description.type) {
+    case kVideo:
+      box_size += vmhd.ComputeSize();
+      break;
+    case kAudio:
+      box_size += smhd.ComputeSize();
+      break;
+    case kText:
+      box_size += sthd.ComputeSize();
+      break;
+    default:
+      NOTIMPLEMENTED();
+  }
   return box_size;
 }
 
@@ -1910,6 +2032,154 @@ bool MediaData::ReadWriteInternal(BoxBuffer* buffer) {
 
 uint32_t MediaData::ComputeSizeInternal() {
   return HeaderSize() + data_size;
+}
+
+CueSourceIDBox::CueSourceIDBox() : source_id(kCueSourceIdNotSet) {}
+CueSourceIDBox::~CueSourceIDBox() {}
+
+FourCC CueSourceIDBox::BoxType() const { return FOURCC_vsid; }
+
+bool CueSourceIDBox::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer) && buffer->ReadWriteInt32(&source_id));
+  return true;
+}
+
+uint32_t CueSourceIDBox::ComputeSizeInternal() {
+  if (source_id == kCueSourceIdNotSet)
+    return 0;
+  return HeaderSize() + sizeof(source_id);
+}
+
+CueTimeBox::CueTimeBox() {}
+CueTimeBox::~CueTimeBox() {}
+
+FourCC CueTimeBox::BoxType() const {
+  return FOURCC_ctim;
+}
+
+bool CueTimeBox::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  return buffer->ReadWriteString(
+      &cue_current_time,
+      buffer->Reading() ? buffer->BytesLeft() : cue_current_time.size());
+}
+
+uint32_t CueTimeBox::ComputeSizeInternal() {
+  if (cue_current_time.empty())
+    return 0;
+  return HeaderSize() + cue_current_time.size();
+}
+
+CueIDBox::CueIDBox() {}
+CueIDBox::~CueIDBox() {}
+
+FourCC CueIDBox::BoxType() const {
+  return FOURCC_iden;
+}
+
+bool CueIDBox::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  return buffer->ReadWriteString(
+      &cue_id, buffer->Reading() ? buffer->BytesLeft() : cue_id.size());
+}
+
+uint32_t CueIDBox::ComputeSizeInternal() {
+  if (cue_id.empty())
+    return 0;
+  return HeaderSize() + cue_id.size();
+}
+
+CueSettingsBox::CueSettingsBox() {}
+CueSettingsBox::~CueSettingsBox() {}
+
+FourCC CueSettingsBox::BoxType() const {
+  return FOURCC_sttg;
+}
+
+bool CueSettingsBox::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  return buffer->ReadWriteString(
+      &settings, buffer->Reading() ? buffer->BytesLeft() : settings.size());
+}
+
+uint32_t CueSettingsBox::ComputeSizeInternal() {
+  if (settings.empty())
+    return 0;
+  return HeaderSize() + settings.size();
+}
+
+CuePayloadBox::CuePayloadBox() {}
+CuePayloadBox::~CuePayloadBox() {}
+
+FourCC CuePayloadBox::BoxType() const {
+  return FOURCC_payl;
+}
+
+bool CuePayloadBox::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  return buffer->ReadWriteString(
+      &cue_text, buffer->Reading() ? buffer->BytesLeft() : cue_text.size());
+}
+
+uint32_t CuePayloadBox::ComputeSizeInternal() {
+  return HeaderSize() + cue_text.size();
+}
+
+VTTEmptyCueBox::VTTEmptyCueBox() {}
+VTTEmptyCueBox::~VTTEmptyCueBox() {}
+
+FourCC VTTEmptyCueBox::BoxType() const {
+  return FOURCC_vtte;
+}
+
+bool VTTEmptyCueBox::ReadWriteInternal(BoxBuffer* buffer) {
+  return ReadWriteHeaderInternal(buffer);
+}
+
+uint32_t VTTEmptyCueBox::ComputeSizeInternal() {
+  return HeaderSize();
+}
+
+VTTAdditionalTextBox::VTTAdditionalTextBox() {}
+VTTAdditionalTextBox::~VTTAdditionalTextBox() {}
+
+FourCC VTTAdditionalTextBox::BoxType() const {
+  return FOURCC_vtta;
+}
+
+bool VTTAdditionalTextBox::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  return buffer->ReadWriteString(
+      &cue_additional_text,
+      buffer->Reading() ? buffer->BytesLeft() : cue_additional_text.size());
+}
+
+uint32_t VTTAdditionalTextBox::ComputeSizeInternal() {
+  return HeaderSize() + cue_additional_text.size();
+}
+
+VTTCueBox::VTTCueBox() {}
+VTTCueBox::~VTTCueBox() {}
+
+FourCC VTTCueBox::BoxType() const  {
+  return FOURCC_vttc;
+}
+
+bool VTTCueBox::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer) &&
+         buffer->PrepareChildren() &&
+         buffer->ReadWriteChild(&cue_source_id) &&
+         buffer->ReadWriteChild(&cue_id) &&
+         buffer->ReadWriteChild(&cue_time) &&
+         buffer->ReadWriteChild(&cue_settings) &&
+         buffer->ReadWriteChild(&cue_payload));
+  return true;
+}
+
+uint32_t VTTCueBox::ComputeSizeInternal() {
+  return HeaderSize() + cue_source_id.ComputeSize() + cue_id.ComputeSize() +
+         cue_time.ComputeSize() + cue_settings.ComputeSize() +
+         cue_payload.ComputeSize();
 }
 
 }  // namespace mp4

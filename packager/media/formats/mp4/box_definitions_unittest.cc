@@ -335,6 +335,33 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Modify(AudioSampleEntry* enca) { enca->channelcount = 2; }
 
+  void Fill(WebVTTConfigurationBox* vttc) {
+    vttc->config = "WEBVTT";
+  }
+
+  void Modify(WebVTTConfigurationBox* vttc) {
+    vttc->config = "WEBVTT\n"
+                   "Region: id=someting width=40\% lines=3";
+  }
+
+  void Fill(WebVTTSourceLabelBox* vlab) {
+    vlab->source_label = "some_label";
+  }
+
+  void Modify(WebVTTSourceLabelBox* vlab) {
+    vlab->source_label = "another_label";
+  }
+
+  void Fill(WVTTSampleEntry* wvtt) {
+    Fill(&wvtt->config);
+    Fill(&wvtt->label);
+  }
+
+  void Modify(WVTTSampleEntry* wvtt) {
+    Modify(&wvtt->config);
+    Modify(&wvtt->label);
+  }
+
   void Fill(SampleDescription* stsd) {
     stsd->type = kSampleDescriptionTrackType;
     stsd->video_entries.resize(1);
@@ -474,6 +501,9 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   void Fill(SoundMediaHeader* smhd) { smhd->balance = 8762; }
 
   void Modify(SoundMediaHeader* smhd) { smhd->balance /= 2; }
+
+  void Fill(SubtitleMediaHeader* sthd) {}
+  void Modify(SubtitleMediaHeader* sthd) {}
 
   void Fill(DataEntryUrl* url) {
     url->flags = 2;
@@ -718,6 +748,73 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     sidx->version = 1;
   }
 
+  void Fill(CueSourceIDBox* vsid) {
+    vsid->source_id = 5;
+  }
+
+  void Modify(CueSourceIDBox* vsid) {
+    vsid->source_id = 100;
+  }
+
+  void Fill(CueTimeBox* ctim) {
+    ctim->cue_current_time = "00:19:00.000";
+  }
+
+  void Modify(CueTimeBox* ctim) {
+    ctim->cue_current_time = "00:20:01.291";
+  }
+
+  void Fill(CueIDBox* iden) {
+    iden->cue_id = "some_id";
+  }
+
+  void Modify(CueIDBox* iden) {
+    iden->cue_id = "another_id";
+  }
+
+  void Fill(CueSettingsBox* sttg) {
+    sttg->settings = "align:left";
+  }
+
+  void Modify(CueSettingsBox* sttg) {
+    sttg->settings = "align:right";
+  }
+
+  void Fill(CuePayloadBox* payl) {
+    payl->cue_text = "hello";
+  }
+
+  void Modify(CuePayloadBox* payl) {
+    payl->cue_text = "hi";
+  }
+
+  void Fill(VTTEmptyCueBox* vtte) {}
+  void Modify(VTTEmptyCueBox* vtte) {}
+
+  void Fill(VTTAdditionalTextBox* vtta) {
+    vtta->cue_additional_text = "NOTE some comment";
+  }
+
+  void Modify(VTTAdditionalTextBox* vtta) {
+    vtta->cue_additional_text = "NOTE another comment";
+  }
+
+  void Fill(VTTCueBox* vttc) {
+    Fill(&vttc->cue_source_id);
+    Fill(&vttc->cue_id);
+    Fill(&vttc->cue_time);
+    Fill(&vttc->cue_settings);
+    Fill(&vttc->cue_payload);
+  }
+
+  void Modify(VTTCueBox* vttc) {
+    Modify(&vttc->cue_source_id);
+    Modify(&vttc->cue_id);
+    Modify(&vttc->cue_time);
+    Modify(&vttc->cue_settings);
+    Modify(&vttc->cue_payload);
+  }
+
   bool IsOptional(const SampleAuxiliaryInformationOffset* box) { return true; }
   bool IsOptional(const SampleAuxiliaryInformationSize* box) { return true; }
   bool IsOptional(const ProtectionSchemeInfo* box) { return true; }
@@ -726,12 +823,18 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   bool IsOptional(const CodecConfigurationRecord* box) { return true; }
   bool IsOptional(const PixelAspectRatio* box) { return true; }
   bool IsOptional(const ElementaryStreamDescriptor* box) { return true; }
+  // Recommended, but optional.
+  bool IsOptional(const WebVTTSourceLabelBox* box) { return true; }
   bool IsOptional(const CompositionTimeToSample* box) { return true; }
   bool IsOptional(const SyncSample* box) { return true; }
   bool IsOptional(const MovieExtendsHeader* box) { return true; }
   bool IsOptional(const MovieExtends* box) { return true; }
   bool IsOptional(const SampleToGroup* box) { return true; }
   bool IsOptional(const SampleGroupDescription* box) { return true; }
+  bool IsOptional(const CueSourceIDBox* box) { return true; }
+  bool IsOptional(const CueIDBox* box) { return true; }
+  bool IsOptional(const CueTimeBox* box) { return true; }
+  bool IsOptional(const CueSettingsBox* box) { return true; }
 
  protected:
   scoped_ptr<BufferWriter> buffer_;
@@ -758,6 +861,9 @@ typedef testing::Types<
     VideoSampleEntry,
     ElementaryStreamDescriptor,
     AudioSampleEntry,
+    WebVTTConfigurationBox,
+    WebVTTSourceLabelBox,
+    WVTTSampleEntry,
     SampleDescription,
     DecodingTimeToSample,
     CompositionTimeToSample,
@@ -771,6 +877,7 @@ typedef testing::Types<
     MediaHeader,
     VideoMediaHeader,
     SoundMediaHeader,
+    SubtitleMediaHeader,
     DataEntryUrl,
     DataReference,
     DataInformation,
@@ -783,17 +890,25 @@ typedef testing::Types<
     Movie,
     TrackFragmentDecodeTime,
     MovieFragmentHeader,
-    TrackFragmentHeader,
-    TrackFragmentRun,
-    TrackFragment,
-    MovieFragment,
-    SegmentIndex> Boxes;
+    TrackFragmentHeader> Boxes;
 
 // GTEST support a maximum of 50 types in the template list, so we have to
 // break it into two groups.
 typedef testing::Types<
+    TrackFragmentRun,
+    TrackFragment,
+    MovieFragment,
+    SegmentIndex,
     SampleToGroup,
-    SampleGroupDescription> Boxes2;
+    SampleGroupDescription,
+    CueSourceIDBox,
+    CueTimeBox,
+    CueIDBox,
+    CueSettingsBox,
+    CuePayloadBox,
+    VTTEmptyCueBox,
+    VTTAdditionalTextBox,
+    VTTCueBox> Boxes2;
 
 TYPED_TEST_CASE_P(BoxDefinitionsTestGeneral);
 

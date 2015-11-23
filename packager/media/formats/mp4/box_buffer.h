@@ -7,6 +7,8 @@
 #ifndef MEDIA_FORMATS_MP4_BOX_BUFFER_H_
 #define MEDIA_FORMATS_MP4_BOX_BUFFER_H_
 
+#include <string>
+
 #include "packager/base/compiler_specific.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/formats/mp4/box.h"
@@ -53,6 +55,14 @@ class BoxBuffer {
     if (reader_)
       return reader_->size();
     return writer_->Size();
+  }
+
+  /// @return In read mode, return the number of bytes left in the box.
+  ///         In write mode, return 0.
+  size_t BytesLeft() const {
+    if (reader_)
+      return reader_->size() - reader_->pos();
+    return 0;
   }
 
   /// @name Read/write integers of various sizes and signedness.
@@ -120,9 +130,21 @@ class BoxBuffer {
     if (reader_)
       return reader_->ReadToVector(vector, count);
     DCHECK_EQ(vector->size(), count);
-    writer_->AppendVector(*vector);
+    writer_->AppendArray(vector_as_array(vector), count);
     return true;
   }
+
+  /// Reads @a size characters from the buffer and sets it to str.
+  /// Writes @a str to the buffer. Write mode ignores @a size.
+  bool ReadWriteString(std::string* str, size_t size) {
+    if (reader_)
+      return reader_->ReadToString(str, size);
+    DCHECK_EQ(str->size(), size);
+    writer_->AppendArray(reinterpret_cast<const uint8_t*>(str->data()),
+                         str->size());
+    return true;
+  }
+
   bool ReadWriteFourCC(FourCC* fourcc) {
     if (reader_)
       return reader_->ReadFourCC(fourcc);
