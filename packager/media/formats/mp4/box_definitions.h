@@ -218,7 +218,6 @@ struct AudioSampleEntry : Box {
 
   ProtectionSchemeInfo sinf;
   ElementaryStreamDescriptor esds;
-  std::vector<uint8_t> extra_data;
 };
 
 struct SampleDescription : FullBox {

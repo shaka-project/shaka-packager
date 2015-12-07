@@ -1101,43 +1101,30 @@ bool AudioSampleEntry::ReadWrite(BoxBuffer* buffer) {
   // Convert from 16.16 fixed point to integer.
   samplerate >>= 16;
 
-  if (format == FOURCC_ENCA || format == FOURCC_MP4A) {
-    RCHECK(buffer->PrepareChildren());
-    if (format == FOURCC_ENCA) {
-      if (buffer->Reading()) {
-        // Continue scanning until a recognized protection scheme is found,
-        // or until we run out of protection schemes.
-        while (sinf.type.type != FOURCC_CENC) {
-          if (!buffer->ReadWriteChild(&sinf))
-            return false;
-        }
-      } else {
-        RCHECK(buffer->ReadWriteChild(&sinf));
+  RCHECK(buffer->PrepareChildren());
+  if (format == FOURCC_ENCA) {
+    if (buffer->Reading()) {
+      // Continue scanning until a recognized protection scheme is found,
+      // or until we run out of protection schemes.
+      while (sinf.type.type != FOURCC_CENC) {
+        if (!buffer->ReadWriteChild(&sinf))
+          return false;
       }
+    } else {
+      RCHECK(buffer->ReadWriteChild(&sinf));
     }
-
-    // ESDS is not valid in case of EAC3.
-    RCHECK(buffer->TryReadWriteChild(&esds));
   }
 
-  // Read/write all other data in the buffer extra_data.
-  if (buffer->Reading()) {
-    LOG(INFO) << "read vector: " << buffer->Size() << ", " << buffer->Pos();
-    RCHECK(buffer->ReadWriteVector(&extra_data, buffer->Size() - buffer->Pos()));
-  } else {
-    LOG(INFO) << "write vector: " << extra_data.size();
-    RCHECK(buffer->ReadWriteVector(&extra_data, extra_data.size()));
-  }
-
+  // ESDS is not valid in case of EAC3.
+  RCHECK(buffer->TryReadWriteChild(&esds));
   return true;
 }
 
 uint32_t AudioSampleEntry::ComputeSize() {
   atom_size = kBoxSize + sizeof(data_reference_index) + sizeof(channelcount) +
               sizeof(samplesize) + sizeof(samplerate) + sinf.ComputeSize() +
-              esds.ComputeSize() + extra_data.size() +
-              6 + 8 + // 6 + 8 bytes reserved.
-              4;      // 4 bytes predefined.
+              esds.ComputeSize() + 6 + 8 +  // 6 + 8 bytes reserved.
+              4;                            // 4 bytes predefined.
   return atom_size;
 }
 

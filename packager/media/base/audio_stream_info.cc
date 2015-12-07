@@ -43,18 +43,6 @@ std::string AudioCodecToString(AudioCodec audio_codec) {
       return "Opus";
     case kCodecEAC3:
       return "EAC3";
-    case kCodecDTSC:
-      return "DTSC";
-    case kCodecDTSH:
-      return "DTSH";
-    case kCodecDTSL:
-      return "DTSL";
-    case kCodecDTSE:
-      return "DTSE";
-    case kCodecDTSP:
-      return "DTS+";
-    case kCodecDTSM:
-      return "DTS-";
     default:
       NOTIMPLEMENTED() << "Unknown Audio Codec: " << audio_codec;
       return "UnknownAudioCodec";
@@ -116,18 +104,6 @@ std::string AudioStreamInfo::GetCodecString(AudioCodec codec,
       return "opus";
     case kCodecAAC:
       return "mp4a.40." + base::UintToString(audio_object_type);
-    case kCodecDTSC:
-      return "dtsc";
-    case kCodecDTSH:
-      return "dtsh";
-    case kCodecDTSL:
-      return "dtsl";
-    case kCodecDTSE:
-      return "dtse";
-    case kCodecDTSP:
-      return "dts+";
-    case kCodecDTSM:
-      return "dts-";
     default:
       NOTIMPLEMENTED() << "Codec: " << codec;
       return "unknown";

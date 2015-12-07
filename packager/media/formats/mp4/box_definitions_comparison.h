@@ -200,8 +200,7 @@ inline bool operator==(const AudioSampleEntry& lhs,
          lhs.data_reference_index == rhs.data_reference_index &&
          lhs.channelcount == rhs.channelcount &&
          lhs.samplesize == rhs.samplesize && lhs.samplerate == rhs.samplerate &&
-         lhs.sinf == rhs.sinf && lhs.esds == rhs.esds &&
-         lhs.extra_data == rhs.extra_data;
+         lhs.sinf == rhs.sinf && lhs.esds == rhs.esds;
 }
 
 inline bool operator==(const MediaHeader& lhs, const MediaHeader& rhs) {
