@@ -132,109 +132,85 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;Opus&quot;</span>;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordflow">case</span> kCodecEAC3:</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;EAC3&quot;</span>;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordflow">case</span> kCodecDTSC:</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;DTSC&quot;</span>;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordflow">case</span> kCodecDTSH:</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;DTSH&quot;</span>;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordflow">case</span> kCodecDTSL:</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;DTSL&quot;</span>;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordflow">case</span> kCodecDTSE:</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;DTSE&quot;</span>;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">case</span> kCodecDTSP:</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;DTS+&quot;</span>;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordflow">case</span> kCodecDTSM:</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;DTS-&quot;</span>;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;Unknown Audio Codec: &quot;</span> &lt;&lt; audio_codec;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;UnknownAudioCodec&quot;</span>;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  }</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;}</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;}  <span class="comment">// namespace</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a014cdf015863a200c10cb72c3ec042ab">   65</a></span>&#160;<a class="code" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a014cdf015863a200c10cb72c3ec042ab">AudioStreamInfo::AudioStreamInfo</a>(<span class="keywordtype">int</span> track_id,</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                                 uint32_t time_scale,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                                 uint64_t duration,</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                                 AudioCodec codec,</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                                 <span class="keyword">const</span> std::string&amp; codec_string,</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                                 <span class="keyword">const</span> std::string&amp; language,</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                                 uint8_t sample_bits,</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                                 uint8_t num_channels,</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                                 uint32_t sampling_frequency,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                                 <span class="keyword">const</span> uint8_t* extra_data,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                                 <span class="keywordtype">size_t</span> extra_data_size,</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                                 <span class="keywordtype">bool</span> is_encrypted)</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    : <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a>(kStreamAudio,</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                 track_id,</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                 time_scale,</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                 duration,</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                 codec_string,</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                 language,</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                 extra_data,</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                 extra_data_size,</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                 is_encrypted),</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;      codec_(codec),</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;      sample_bits_(sample_bits),</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;      num_channels_(num_channels),</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;      sampling_frequency_(sampling_frequency) {</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;AudioStreamInfo::~AudioStreamInfo() {}</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno"><a class="line" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a98bbb5085d1dee09bd79b72d1efe590c">   94</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a98bbb5085d1dee09bd79b72d1efe590c">AudioStreamInfo::IsValidConfig</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keywordflow">return</span> codec_ != kUnknownAudioCodec &amp;&amp; num_channels_ != 0 &amp;&amp;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;         num_channels_ &lt;= limits::kMaxChannels &amp;&amp; sample_bits_ &gt; 0 &amp;&amp;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;         sample_bits_ &lt;= limits::kMaxBitsPerSample &amp;&amp;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;         sampling_frequency_ &gt; 0 &amp;&amp;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;         sampling_frequency_ &lt;= limits::kMaxSampleRate;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;}</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
-<div class="line"><a name="l00102"></a><span class="lineno"><a class="line" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a614479ac0820d6491845aa1a4bb85ba4">  102</a></span>&#160;std::string <a class="code" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a614479ac0820d6491845aa1a4bb85ba4">AudioStreamInfo::ToString</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keywordflow">return</span> base::StringPrintf(</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      <span class="stringliteral">&quot;%s codec: %s\n sample_bits: %d\n num_channels: %d\n &quot;</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;      <span class="stringliteral">&quot;sampling_frequency: %d\n language: %s\n&quot;</span>,</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;      <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html#ac09810e16cf5cee2f87987bfcc70fece">StreamInfo::ToString</a>().c_str(), AudioCodecToString(codec_).c_str(),</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;      sample_bits_, num_channels_, sampling_frequency_, language().c_str());</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;}</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
-<div class="line"><a name="l00110"></a><span class="lineno"><a class="line" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#aa62e486f463c867b8e2f41ebb4ecea34">  110</a></span>&#160;std::string <a class="code" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#aa62e486f463c867b8e2f41ebb4ecea34">AudioStreamInfo::GetCodecString</a>(AudioCodec codec,</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;                                            uint8_t audio_object_type) {</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keywordflow">switch</span> (codec) {</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="keywordflow">case</span> kCodecVorbis:</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;vorbis&quot;</span>;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="keywordflow">case</span> kCodecOpus:</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;opus&quot;</span>;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keywordflow">case</span> kCodecAAC:</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;mp4a.40.&quot;</span> + base::UintToString(audio_object_type);</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <span class="keywordflow">case</span> kCodecDTSC:</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;dtsc&quot;</span>;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keywordflow">case</span> kCodecDTSH:</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;dtsh&quot;</span>;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="keywordflow">case</span> kCodecDTSL:</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;dtsl&quot;</span>;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    <span class="keywordflow">case</span> kCodecDTSE:</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;dtse&quot;</span>;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="keywordflow">case</span> kCodecDTSP:</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;dts+&quot;</span>;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <span class="keywordflow">case</span> kCodecDTSM:</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;dts-&quot;</span>;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;      NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;Codec: &quot;</span> &lt;&lt; codec;</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;unknown&quot;</span>;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  }</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;}</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AudioStreamInfo_html_a614479ac0820d6491845aa1a4bb85ba4"><div class="ttname"><a href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a614479ac0820d6491845aa1a4bb85ba4">edash_packager::media::AudioStreamInfo::ToString</a></div><div class="ttdeci">std::string ToString() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00102">audio_stream_info.cc:102</a></div></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;Unknown Audio Codec: &quot;</span> &lt;&lt; audio_codec;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;UnknownAudioCodec&quot;</span>;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}  <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a014cdf015863a200c10cb72c3ec042ab">   53</a></span>&#160;<a class="code" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a014cdf015863a200c10cb72c3ec042ab">AudioStreamInfo::AudioStreamInfo</a>(<span class="keywordtype">int</span> track_id,</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                                 uint32_t time_scale,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                                 uint64_t duration,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                                 AudioCodec codec,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                                 <span class="keyword">const</span> std::string&amp; codec_string,</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                                 <span class="keyword">const</span> std::string&amp; language,</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                                 uint8_t sample_bits,</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                                 uint8_t num_channels,</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                                 uint32_t sampling_frequency,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                                 <span class="keyword">const</span> uint8_t* extra_data,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                                 <span class="keywordtype">size_t</span> extra_data_size,</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                                 <span class="keywordtype">bool</span> is_encrypted)</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    : <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a>(kStreamAudio,</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                 track_id,</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                 time_scale,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                 duration,</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                 codec_string,</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                 language,</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                 extra_data,</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                 extra_data_size,</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                 is_encrypted),</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      codec_(codec),</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      sample_bits_(sample_bits),</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      num_channels_(num_channels),</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;      sampling_frequency_(sampling_frequency) {</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;AudioStreamInfo::~AudioStreamInfo() {}</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a98bbb5085d1dee09bd79b72d1efe590c">   82</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a98bbb5085d1dee09bd79b72d1efe590c">AudioStreamInfo::IsValidConfig</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordflow">return</span> codec_ != kUnknownAudioCodec &amp;&amp; num_channels_ != 0 &amp;&amp;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;         num_channels_ &lt;= limits::kMaxChannels &amp;&amp; sample_bits_ &gt; 0 &amp;&amp;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;         sample_bits_ &lt;= limits::kMaxBitsPerSample &amp;&amp;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;         sampling_frequency_ &gt; 0 &amp;&amp;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;         sampling_frequency_ &lt;= limits::kMaxSampleRate;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a614479ac0820d6491845aa1a4bb85ba4">   90</a></span>&#160;std::string <a class="code" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a614479ac0820d6491845aa1a4bb85ba4">AudioStreamInfo::ToString</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordflow">return</span> base::StringPrintf(</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;      <span class="stringliteral">&quot;%s codec: %s\n sample_bits: %d\n num_channels: %d\n &quot;</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;      <span class="stringliteral">&quot;sampling_frequency: %d\n language: %s\n&quot;</span>,</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;      <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html#ac09810e16cf5cee2f87987bfcc70fece">StreamInfo::ToString</a>().c_str(), AudioCodecToString(codec_).c_str(),</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;      sample_bits_, num_channels_, sampling_frequency_, language().c_str());</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;}</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#aa62e486f463c867b8e2f41ebb4ecea34">   98</a></span>&#160;std::string <a class="code" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#aa62e486f463c867b8e2f41ebb4ecea34">AudioStreamInfo::GetCodecString</a>(AudioCodec codec,</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;                                            uint8_t audio_object_type) {</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keywordflow">switch</span> (codec) {</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordflow">case</span> kCodecVorbis:</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;vorbis&quot;</span>;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keywordflow">case</span> kCodecOpus:</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;opus&quot;</span>;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordflow">case</span> kCodecAAC:</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;mp4a.40.&quot;</span> + base::UintToString(audio_object_type);</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;      NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;Codec: &quot;</span> &lt;&lt; codec;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;unknown&quot;</span>;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  }</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;}</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AudioStreamInfo_html_a614479ac0820d6491845aa1a4bb85ba4"><div class="ttname"><a href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a614479ac0820d6491845aa1a4bb85ba4">edash_packager::media::AudioStreamInfo::ToString</a></div><div class="ttdeci">std::string ToString() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00090">audio_stream_info.cc:90</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">edash_packager::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00026">stream_info.h:26</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AudioStreamInfo_html_a014cdf015863a200c10cb72c3ec042ab"><div class="ttname"><a href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a014cdf015863a200c10cb72c3ec042ab">edash_packager::media::AudioStreamInfo::AudioStreamInfo</a></div><div class="ttdeci">AudioStreamInfo(int track_id, uint32_t time_scale, uint64_t duration, AudioCodec codec, const std::string &amp;codec_string, const std::string &amp;language, uint8_t sample_bits, uint8_t num_channels, uint32_t sampling_frequency, const uint8_t *extra_data, size_t extra_data_size, bool is_encrypted)</div><div class="ttdoc">Construct an initialized audio stream info object. </div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00065">audio_stream_info.cc:65</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AudioStreamInfo_html_a014cdf015863a200c10cb72c3ec042ab"><div class="ttname"><a href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a014cdf015863a200c10cb72c3ec042ab">edash_packager::media::AudioStreamInfo::AudioStreamInfo</a></div><div class="ttdeci">AudioStreamInfo(int track_id, uint32_t time_scale, uint64_t duration, AudioCodec codec, const std::string &amp;codec_string, const std::string &amp;language, uint8_t sample_bits, uint8_t num_channels, uint32_t sampling_frequency, const uint8_t *extra_data, size_t extra_data_size, bool is_encrypted)</div><div class="ttdoc">Construct an initialized audio stream info object. </div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00053">audio_stream_info.cc:53</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1StreamInfo_html_ac09810e16cf5cee2f87987bfcc70fece"><div class="ttname"><a href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html#ac09810e16cf5cee2f87987bfcc70fece">edash_packager::media::StreamInfo::ToString</a></div><div class="ttdeci">virtual std::string ToString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../de/dfd/stream__info_8cc_source.html#l00040">stream_info.cc:40</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AudioStreamInfo_html_a98bbb5085d1dee09bd79b72d1efe590c"><div class="ttname"><a href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a98bbb5085d1dee09bd79b72d1efe590c">edash_packager::media::AudioStreamInfo::IsValidConfig</a></div><div class="ttdeci">bool IsValidConfig() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00094">audio_stream_info.cc:94</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AudioStreamInfo_html_aa62e486f463c867b8e2f41ebb4ecea34"><div class="ttname"><a href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#aa62e486f463c867b8e2f41ebb4ecea34">edash_packager::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(AudioCodec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00110">audio_stream_info.cc:110</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AudioStreamInfo_html_a98bbb5085d1dee09bd79b72d1efe590c"><div class="ttname"><a href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a98bbb5085d1dee09bd79b72d1efe590c">edash_packager::media::AudioStreamInfo::IsValidConfig</a></div><div class="ttdeci">bool IsValidConfig() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00082">audio_stream_info.cc:82</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AudioStreamInfo_html_aa62e486f463c867b8e2f41ebb4ecea34"><div class="ttname"><a href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#aa62e486f463c867b8e2f41ebb4ecea34">edash_packager::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(AudioCodec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00098">audio_stream_info.cc:98</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 7 2015 19:37:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Dec 7 2015 19:42:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
