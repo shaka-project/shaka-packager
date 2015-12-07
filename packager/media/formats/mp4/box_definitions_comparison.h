@@ -194,13 +194,19 @@ inline bool operator==(const ElementaryStreamDescriptor& lhs,
   return lhs.es_descriptor == rhs.es_descriptor;
 }
 
+inline bool operator==(const DTSSpecificBox& lhs,
+                       const DTSSpecificBox& rhs) {
+  return lhs.data == rhs.data;
+}
+
 inline bool operator==(const AudioSampleEntry& lhs,
                        const AudioSampleEntry& rhs) {
   return lhs.format == rhs.format &&
          lhs.data_reference_index == rhs.data_reference_index &&
          lhs.channelcount == rhs.channelcount &&
          lhs.samplesize == rhs.samplesize && lhs.samplerate == rhs.samplerate &&
-         lhs.sinf == rhs.sinf && lhs.esds == rhs.esds;
+         lhs.sinf == rhs.sinf && lhs.esds == rhs.esds &&
+         lhs.ddts == rhs.ddts;
 }
 
 inline bool operator==(const MediaHeader& lhs, const MediaHeader& rhs) {

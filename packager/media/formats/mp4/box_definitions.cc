@@ -1065,6 +1065,30 @@ uint32_t ElementaryStreamDescriptor::ComputeSize() {
   return atom_size;
 }
 
+DTSSpecificBox::DTSSpecificBox() {}
+DTSSpecificBox::~DTSSpecificBox() {}
+FourCC DTSSpecificBox::BoxType() const { return FOURCC_DDTS; }
+
+bool DTSSpecificBox::ReadWrite(BoxBuffer* buffer) {
+  RCHECK(Box::ReadWrite(buffer));
+
+  if (buffer->Reading()) {
+    RCHECK(
+        buffer->ReadWriteVector(&data, buffer->Size() - buffer->Pos()));
+  } else {
+    RCHECK(buffer->ReadWriteVector(&data, data.size()));
+  }
+  return true;
+}
+
+uint32_t DTSSpecificBox::ComputeSize() {
+  // This box is optional. Skip it if not initialized.
+  atom_size = 0;
+  if (data.size() > 0)
+    atom_size = kBoxSize + data.size();
+  return atom_size;
+}
+
 AudioSampleEntry::AudioSampleEntry()
     : format(FOURCC_NULL),
       data_reference_index(1),
@@ -1115,16 +1139,18 @@ bool AudioSampleEntry::ReadWrite(BoxBuffer* buffer) {
     }
   }
 
-  // ESDS is not valid in case of EAC3.
   RCHECK(buffer->TryReadWriteChild(&esds));
+  RCHECK(buffer->TryReadWriteChild(&ddts));
+
   return true;
 }
 
 uint32_t AudioSampleEntry::ComputeSize() {
   atom_size = kBoxSize + sizeof(data_reference_index) + sizeof(channelcount) +
               sizeof(samplesize) + sizeof(samplerate) + sinf.ComputeSize() +
-              esds.ComputeSize() + 6 + 8 +  // 6 + 8 bytes reserved.
-              4;                            // 4 bytes predefined.
+              esds.ComputeSize() + ddts.ComputeSize() +
+              6 + 8 +  // 6 + 8 bytes reserved.
+              4;       // 4 bytes predefined.
   return atom_size;
 }
 

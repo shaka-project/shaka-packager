@@ -29,6 +29,12 @@ enum AudioCodec {
   kCodecPCM_S24BE,
   kCodecOpus,
   kCodecEAC3,
+  kCodecDTSC,
+  kCodecDTSH,
+  kCodecDTSL,
+  kCodecDTSE,
+  kCodecDTSP,
+  kCodecDTSM,
 
   kNumAudioCodec
 };

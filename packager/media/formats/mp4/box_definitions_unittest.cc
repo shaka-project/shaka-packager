@@ -854,6 +854,25 @@ INSTANTIATE_TYPED_TEST_CASE_P(BoxDefinitionTypedTests2,
 // Test other cases of box input.
 class BoxDefinitionsTest : public BoxDefinitionsTestGeneral<Box> {};
 
+TEST_F(BoxDefinitionsTest, DTSSampleEntry) {
+  const uint8_t kDtseData[] = {0x00, 0x00, 0x00, 0x1c, 0x64, 0x64, 0x74,
+                               0x73, 0x00, 0x00, 0xbb, 0x80, 0x00, 0x03,
+                               0xe4, 0x18, 0x00, 0x03, 0xe4, 0x18, 0x18,
+                               0xe4, 0x7c, 0x00, 0x04, 0x00, 0x0f, 0x00};
+  AudioSampleEntry entry;
+  entry.format = FOURCC_DTSE;
+  entry.data_reference_index = 2;
+  entry.channelcount = 5;
+  entry.samplesize = 16;
+  entry.samplerate = 44100;
+  entry.ddts.data.assign(kDtseData, kDtseData + arraysize(kDtseData));
+  entry.Write(this->buffer_.get());
+
+  AudioSampleEntry entry_readback;
+  ASSERT_TRUE(ReadBack(&entry_readback));
+  ASSERT_EQ(entry, entry_readback);
+}
+
 TEST_F(BoxDefinitionsTest, ProtectionSystemSpecificHeader) {
   ProtectionSystemSpecificHeader pssh;
   Fill(&pssh);

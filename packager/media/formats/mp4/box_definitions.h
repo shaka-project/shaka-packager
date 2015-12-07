@@ -203,6 +203,12 @@ struct ElementaryStreamDescriptor : FullBox {
   ESDescriptor es_descriptor;
 };
 
+struct DTSSpecificBox : Box {
+  DECLARE_BOX_METHODS(DTSSpecificBox);
+
+  std::vector<uint8_t> data;
+};
+
 struct AudioSampleEntry : Box {
   DECLARE_BOX_METHODS(AudioSampleEntry);
   // Returns actual format of this sample entry.
@@ -218,6 +224,7 @@ struct AudioSampleEntry : Box {
 
   ProtectionSchemeInfo sinf;
   ElementaryStreamDescriptor esds;
+  DTSSpecificBox ddts;
 };
 
 struct SampleDescription : FullBox {

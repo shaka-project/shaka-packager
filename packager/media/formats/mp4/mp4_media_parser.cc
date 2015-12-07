@@ -40,7 +40,7 @@ uint64_t Rescale(uint64_t time_in_old_scale,
   return (static_cast<double>(time_in_old_scale) / old_scale) * new_scale;
 }
 
-VideoCodec FourCCToCodec(FourCC fourcc) {
+VideoCodec FourCCToVideoCodec(FourCC fourcc) {
   switch (fourcc) {
     case FOURCC_AVC1:
       return kCodecH264;
@@ -56,6 +56,27 @@ VideoCodec FourCCToCodec(FourCC fourcc) {
       return kCodecVP10;
     default:
       return kUnknownVideoCodec;
+  }
+}
+
+AudioCodec FourCCToAudioCodec(FourCC fourcc) {
+  switch(fourcc) {
+    case FOURCC_DTSC:
+      return kCodecDTSC;
+    case FOURCC_DTSH:
+      return kCodecDTSH;
+    case FOURCC_DTSL:
+      return kCodecDTSL;
+    case FOURCC_DTSE:
+      return kCodecDTSE;
+    case FOURCC_DTSP:
+      return kCodecDTSP;
+    case FOURCC_DTSM:
+      return kCodecDTSM;
+    case FOURCC_EAC3:
+      return kCodecEAC3;
+    default:
+      return kUnknownAudioCodec;
   }
 }
 
@@ -310,45 +331,50 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       // description indices, so we fail gracefully in that case.
       if (desc_idx >= samp_descr.audio_entries.size())
         desc_idx = 0;
+
       const AudioSampleEntry& entry = samp_descr.audio_entries[desc_idx];
-
-      if (!(entry.format == FOURCC_MP4A || entry.format == FOURCC_EAC3 ||
-            (entry.format == FOURCC_ENCA &&
-             entry.sinf.format.format == FOURCC_MP4A))) {
-        LOG(ERROR) << "Unsupported audio format 0x"
-                   << std::hex << entry.format << " in stsd box.";
-        return false;
-      }
-
-      ObjectType audio_type = entry.esds.es_descriptor.object_type();
-      DVLOG(1) << "audio_type " << std::hex << audio_type;
-      if (audio_type == kForbidden && entry.format == FOURCC_EAC3) {
-        audio_type = kEAC3;
-      }
-
-      AudioCodec codec = kUnknownAudioCodec;
+      const FourCC actual_format = entry.GetActualFormat();
+      AudioCodec codec = FourCCToAudioCodec(actual_format);
       uint8_t num_channels = 0;
       uint32_t sampling_frequency = 0;
       uint8_t audio_object_type = 0;
       std::vector<uint8_t> extra_data;
-      // Check if it is MPEG4 AAC defined in ISO 14496 Part 3 or
-      // supported MPEG2 AAC variants.
-      if (entry.esds.es_descriptor.IsAAC()) {
-        codec = kCodecAAC;
-        const AACAudioSpecificConfig& aac_audio_specific_config =
-            entry.esds.aac_audio_specific_config;
-        num_channels = aac_audio_specific_config.num_channels();
-        sampling_frequency = aac_audio_specific_config.frequency();
-        audio_object_type = aac_audio_specific_config.audio_object_type();
-        extra_data = entry.esds.es_descriptor.decoder_specific_info();
-      } else if (audio_type == kEAC3) {
-        codec = kCodecEAC3;
-        num_channels = entry.channelcount;
-        sampling_frequency = entry.samplerate;
-      } else {
-        LOG(ERROR) << "Unsupported audio object type 0x"
-                   << std::hex << audio_type << " in esds.";
-        return false;
+
+      switch (actual_format) {
+        case FOURCC_MP4A:
+          // Check if it is MPEG4 AAC defined in ISO 14496 Part 3 or
+          // supported MPEG2 AAC variants.
+          if (entry.esds.es_descriptor.IsAAC()) {
+            codec = kCodecAAC;
+            const AACAudioSpecificConfig& aac_audio_specific_config =
+                entry.esds.aac_audio_specific_config;
+            num_channels = aac_audio_specific_config.num_channels();
+            sampling_frequency = aac_audio_specific_config.frequency();
+            audio_object_type = aac_audio_specific_config.audio_object_type();
+            extra_data = entry.esds.es_descriptor.decoder_specific_info();
+            break;
+          } else {
+            LOG(ERROR) << "Unsupported audio format 0x" << std::hex
+                       << actual_format << " in stsd box.";
+            return false;
+          }
+        case FOURCC_DTSC:
+        case FOURCC_DTSH:
+        case FOURCC_DTSL:
+        case FOURCC_DTSE:
+        case FOURCC_DTSM:
+          extra_data = entry.ddts.data;
+          num_channels = entry.channelcount;
+          sampling_frequency = entry.samplerate;
+          break;
+        case FOURCC_EAC3:
+          num_channels = entry.channelcount;
+          sampling_frequency = entry.samplerate;
+          break;
+        default:
+          LOG(ERROR) << "Unsupported audio format 0x" << std::hex
+                     << actual_format << " in stsd box.";
+          return false;
       }
 
       bool is_encrypted = entry.sinf.info.track_encryption.is_encrypted;
@@ -386,7 +412,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       uint8_t nalu_length_size = 0;
 
       const FourCC actual_format = entry.GetActualFormat();
-      const VideoCodec video_codec = FourCCToCodec(actual_format);
+      const VideoCodec video_codec = FourCCToVideoCodec(actual_format);
       switch (actual_format) {
         case FOURCC_AVC1: {
           AVCDecoderConfiguration avc_config;
