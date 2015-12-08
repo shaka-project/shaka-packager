@@ -17,5 +17,6 @@ var searchData=
   ['demuxer',['Demuxer',['../d5/dce/classedash__packager_1_1media_1_1Demuxer.html',1,'edash_packager::media']]],
   ['demuxer',['Demuxer',['../d5/dce/classedash__packager_1_1media_1_1Demuxer.html#a5305b2b16956b7ab973eeded4232226e',1,'edash_packager::media::Demuxer']]],
   ['demuxstreamidmediasample',['DemuxStreamIdMediaSample',['../d0/dfa/structedash__packager_1_1media_1_1wvm_1_1DemuxStreamIdMediaSample.html',1,'edash_packager::media::wvm']]],
+  ['dtsspecificbox',['DTSSpecificBox',['../dc/dea/structedash__packager_1_1media_1_1mp4_1_1DTSSpecificBox.html',1,'edash_packager::media::mp4']]],
   ['duration',['Duration',['../d4/d90/classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator.html#a20162e42fe14b8135828f2d8d6cdd2ef',1,'edash_packager::media::mp4::DecodingTimeIterator']]]
 ];
