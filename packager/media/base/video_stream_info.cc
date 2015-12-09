@@ -91,7 +91,7 @@ bool VideoStreamInfo::IsValidConfig() const {
 
 std::string VideoStreamInfo::ToString() const {
   return base::StringPrintf(
-      "%s codec: %s\n width: %d\n height: %d\n pixel aspect ratio: %d:%d\n "
+      "%s codec: %s\n width: %d\n height: %d\n pixel_aspect_ratio: %d:%d\n "
       "trick_play_rate: %d\n nalu_length_size: %d\n",
       StreamInfo::ToString().c_str(), VideoCodecToString(codec_).c_str(),
       width_, height_, pixel_width_, pixel_height_, trick_play_rate_,

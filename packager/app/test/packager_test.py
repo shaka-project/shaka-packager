@@ -50,7 +50,7 @@ class PackagerAppTest(unittest.TestCase):
                             ' codec: H264\n'
                             ' width: 640\n'
                             ' height: 360\n'
-                            ' pixel aspect ratio: 1:1\n'
+                            ' pixel_aspect_ratio: 1:1\n'
                             ' trick_play_rate: 0\n'
                             ' nalu_length_size: 4\n\n'
                             'Stream [1] type: Audio\n'
@@ -327,8 +327,7 @@ class PackagerAppTest(unittest.TestCase):
       flags += ['--enable_fixed_key_encryption',
                 '--key_id=31323334353637383930313233343536',
                 '--key=32333435363738393021323334353637',
-                '--pssh=31323334353637383930313233343536',
-                '--clear_lead=1']
+                '--pssh=31323334353637383930313233343536', '--clear_lead=1']
       if not random_iv:
         flags.append('--iv=3334353637383930')
     if key_rotation:
