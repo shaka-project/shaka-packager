@@ -225,20 +225,42 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
   trak->media.handler.type = kAudio;
 
   AudioSampleEntry audio;
-  audio.format = FOURCC_MP4A;
+  switch(audio_info->codec()){
+    case kCodecAAC:
+      audio.format = FOURCC_MP4A;
+      audio.esds.es_descriptor.set_object_type(kISO_14496_3);  // MPEG4 AAC.
+      audio.esds.es_descriptor.set_esid(track_id);
+      audio.esds.es_descriptor.set_decoder_specific_info(
+          audio_info->extra_data());
+      break;
+    case kCodecDTSC:
+      audio.format = FOURCC_DTSC;
+      audio.ddts.data = audio_info->extra_data();
+      break;
+    case kCodecDTSH:
+      audio.format = FOURCC_DTSH;
+      audio.ddts.data = audio_info->extra_data();
+      break;
+    case kCodecDTSL:
+      audio.format = FOURCC_DTSL;
+      audio.ddts.data = audio_info->extra_data();
+      break;
+    case kCodecDTSE:
+      audio.format = FOURCC_DTSE;
+      audio.ddts.data = audio_info->extra_data();
+      break;
+    case kCodecDTSM:
+      audio.format = FOURCC_DTSM;
+      audio.ddts.data = audio_info->extra_data();
+      break;
+    default:
+      NOTIMPLEMENTED();
+      break;
+  }
+
   audio.channelcount = audio_info->num_channels();
   audio.samplesize = audio_info->sample_bits();
   audio.samplerate = audio_info->sampling_frequency();
-
-  if (kCodecAAC) {
-    audio.esds.es_descriptor.set_object_type(kISO_14496_3);  // MPEG4 AAC.
-  } else {
-    // Do we need to support other types?
-    NOTIMPLEMENTED();
-  }
-  audio.esds.es_descriptor.set_esid(track_id);
-  audio.esds.es_descriptor.set_decoder_specific_info(audio_info->extra_data());
-
   SampleDescription& sample_description =
       trak->media.information.sample_table.description;
   sample_description.type = kAudio;
