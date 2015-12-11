@@ -138,7 +138,7 @@ class MpdBuilder {
   MpdType type_;
   MpdOptions mpd_options_;
   std::list<AdaptationSet*> adaptation_sets_;
-  ::STLElementDeleter<std::list<AdaptationSet*> > adaptation_sets_deleter_;
+  STLElementDeleter<std::list<AdaptationSet*> > adaptation_sets_deleter_;
 
   std::list<std::string> base_urls_;
   std::string availability_start_time_;
@@ -329,7 +329,7 @@ class AdaptationSet {
 
   std::list<ContentProtectionElement> content_protection_elements_;
   std::list<Representation*> representations_;
-  ::STLElementDeleter<std::list<Representation*> > representations_deleter_;
+  STLElementDeleter<std::list<Representation*> > representations_deleter_;
 
   base::AtomicSequenceNumber* const representation_counter_;
 
