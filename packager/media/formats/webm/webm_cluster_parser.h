@@ -102,10 +102,8 @@ class WebMClusterParser : public WebMParserClient {
     int64_t default_duration_;
 
     // If kNoTimestamp, then a default value will be used. This estimate is the
-    // maximum (for video), or minimum (for audio) duration seen so far for this
-    // track, and is used only if |default_duration_| is kNoTimestamp.
-    // TODO: Use maximum for audio too, adding checks to disable splicing when
-    // these estimates are observed in SourceBufferStream.
+    // maximum duration seen so far for this track, and is used only if
+    // |default_duration_| is kNoTimestamp.
     int64_t estimated_next_frame_duration_;
 
     MediaParser::NewSampleCB new_sample_cb_;
@@ -129,6 +127,10 @@ class WebMClusterParser : public WebMParserClient {
 
   /// Resets the parser state so it can accept a new cluster.
   void Reset();
+
+  /// Flush data currently in the parser and reset the parser so it can accept a
+  /// new cluster.
+  void Flush();
 
   /// Parses a WebM cluster element in |buf|.
   /// @return -1 if the parse fails.

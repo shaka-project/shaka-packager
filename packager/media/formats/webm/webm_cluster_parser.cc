@@ -93,6 +93,13 @@ void WebMClusterParser::Reset() {
   ResetTextTracks();
 }
 
+void WebMClusterParser::Flush() {
+  // Estimate the duration of the last frame if necessary.
+  audio_.ApplyDurationEstimateIfNeeded();
+  video_.ApplyDurationEstimateIfNeeded();
+  Reset();
+}
+
 int WebMClusterParser::Parse(const uint8_t* buf, int size) {
   int result = parser_.Parse(buf, size);
 
@@ -103,9 +110,6 @@ int WebMClusterParser::Parse(const uint8_t* buf, int size) {
 
   cluster_ended_ = parser_.IsParsingComplete();
   if (cluster_ended_) {
-    audio_.ApplyDurationEstimateIfNeeded();
-    video_.ApplyDurationEstimateIfNeeded();
-
     // If there were no buffers in this cluster, set the cluster start time to
     // be the |cluster_timecode_|.
     if (cluster_start_time_ == kNoTimestamp) {
@@ -155,7 +159,7 @@ int64_t WebMClusterParser::ReadOpusDuration(const uint8_t* data, int size) {
   static const uint8_t kTocConfigMask = 0xf8;
   static const uint8_t kTocFrameCountCodeMask = 0x03;
   static const uint8_t kFrameCountMask = 0x3f;
-  static const int64_t kPacketDurationMax = 120;
+  static const int64_t kPacketDurationMaxMs = 120000;
 
   if (size < 1) {
     LIMITED_DLOG(INFO, num_duration_errors_, kMaxDurationErrorLogs)
@@ -209,14 +213,14 @@ int64_t WebMClusterParser::ReadOpusDuration(const uint8_t* data, int size) {
   DCHECK_GT(frame_count, 0);
   int64_t duration = kOpusFrameDurationsMu[opusConfig] * frame_count;
 
-  if (duration > kPacketDurationMax) {
+  if (duration > kPacketDurationMaxMs * 1000) {
     // Intentionally allowing packet to pass through for now. Decoder should
     // either handle or fail gracefully. LOG as breadcrumbs in case
     // things go sideways.
     LIMITED_DLOG(INFO, num_duration_errors_, kMaxDurationErrorLogs)
         << "Warning, demuxed Opus packet with encoded duration: "
-        << duration << "ms. Should be no greater than "
-        << kPacketDurationMax << "ms.";
+        << duration / 1000 << "ms. Should be no greater than "
+        << kPacketDurationMaxMs << "ms.";
   }
 
   return duration;
@@ -496,13 +500,11 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
   // TrackEntry->DefaultDuration when available. This layering violation is a
   // workaround for http://crbug.com/396634, decreasing the likelihood of
   // fall-back to rough estimation techniques for Blocks that lack a
-  // BlockDuration at the end of a cluster. Cross cluster durations are not
-  // feasible given flexibility of cluster ordering and MSE APIs. Duration
-  // estimation may still apply in cases of encryption and codecs for which
-  // we do not extract encoded duration. Within a cluster, estimates are applied
-  // as Block Timecode deltas, or once the whole cluster is parsed in the case
-  // of the last Block in the cluster. See Track::EmitBuffer and
-  // ApplyDurationEstimateIfNeeded().
+  // BlockDuration at the end of a cluster. Duration estimation may still apply
+  // in cases of encryption and codecs for which we do not extract encoded
+  // duration. Estimates are applied as Block Timecode deltas, or once the whole
+  // stream is parsed in the case of the last Block in the stream. See
+  // Track::EmitBuffer and ApplyDurationEstimateIfNeeded().
   if (encoded_duration != kNoTimestamp) {
     DCHECK(encoded_duration != kInfiniteDuration);
     DCHECK(encoded_duration > 0);
@@ -518,9 +520,9 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
       const auto kWarnDurationDiff = timecode_multiplier_ * 2;
       if (duration_difference > kWarnDurationDiff) {
         LIMITED_DLOG(INFO, num_duration_errors_, kMaxDurationErrorLogs)
-            << "BlockDuration (" << block_duration_time_delta
+            << "BlockDuration (" << block_duration_time_delta / 1000
             << "ms) differs significantly from encoded duration ("
-            << encoded_duration << "ms).";
+            << encoded_duration / 1000 << "ms).";
       }
     }
   } else if (block_duration_time_delta != kNoTimestamp) {
@@ -589,16 +591,8 @@ void WebMClusterParser::Track::ApplyDurationEstimateIfNeeded() {
   int64_t estimated_duration = GetDurationEstimate();
   last_added_buffer_missing_duration_->set_duration(estimated_duration);
 
-  if (is_video_) {
-    // Exposing estimation so splicing/overlap frame processing can make
-    // informed decisions downstream.
-    // TODO(kqyang): Should we wait for the next cluster to set the duration?
-    // last_added_buffer_missing_duration_->set_is_duration_estimated(true);
-  }
-
   LIMITED_LOG(INFO, num_duration_estimates_, kMaxDurationEstimateLogs)
-      << "Estimating WebM block duration to be "
-      << estimated_duration
+      << "Estimating WebM block duration to be " << estimated_duration / 1000
       << "ms for the last (Simple)Block in the Cluster for this Track. Use "
          "BlockGroups with BlockDurations at the end of each Track in a "
          "Cluster to avoid estimation.";
@@ -653,25 +647,15 @@ bool WebMClusterParser::Track::EmitBufferHelp(
     return false;
   }
 
-  // The estimated frame duration is the minimum (for audio) or the maximum
-  // (for video) non-zero duration since the last initialization segment. The
-  // minimum is used for audio to ensure frame durations aren't overestimated,
-  // triggering unnecessary frame splicing. For video, splicing does not apply,
-  // so maximum is used and overlap is simply resolved by showing the
-  // later of the overlapping frames at its given PTS, effectively trimming down
-  // the over-estimated duration of the previous frame.
-  // TODO: Use max for audio and disable splicing whenever estimated buffers are
-  // encountered.
+  // The estimated frame duration is the maximum non-zero duration since the
+  // last initialization segment.
   if (duration > 0) {
     int64_t orig_duration_estimate = estimated_next_frame_duration_;
     if (estimated_next_frame_duration_ == kNoTimestamp) {
       estimated_next_frame_duration_ = duration;
-    } else if (is_video_) {
-      estimated_next_frame_duration_ =
-          std::max(duration, estimated_next_frame_duration_);
     } else {
       estimated_next_frame_duration_ =
-          std::min(duration, estimated_next_frame_duration_);
+          std::max(duration, estimated_next_frame_duration_);
     }
 
     if (orig_duration_estimate != estimated_next_frame_duration_) {

@@ -44,7 +44,7 @@ void WebMMediaParser::Flush() {
 
   byte_queue_.Reset();
   if (cluster_parser_)
-    cluster_parser_->Reset();
+    cluster_parser_->Flush();
   if (state_ == kParsingClusters) {
     ChangeState(kParsingHeaders);
   }

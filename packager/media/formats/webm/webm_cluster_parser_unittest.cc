@@ -417,8 +417,8 @@ TEST_F(WebMClusterParserTest, TracksWithSampleMissingDuration) {
       {kAudioTrackNum, 36, kTestAudioFrameDefaultDurationInMs, true, NULL, 0},
       {kVideoTrackNum, 33, 33, true, NULL, 0},
       {kAudioTrackNum, 70, kTestAudioFrameDefaultDurationInMs, true, NULL, 0},
-      {kVideoTrackNum, 66, kExpectedVideoEstimationInMs, true, NULL, 0},
       {kAudioTrackNum, 83, kTestAudioFrameDefaultDurationInMs, true, NULL, 0},
+      {kVideoTrackNum, 66, kExpectedVideoEstimationInMs, true, NULL, 0},
   };
   const int kExpectedBuffersOnPartialCluster[] = {
     0,  // Video simple block without DefaultDuration should be held back
@@ -429,46 +429,32 @@ TEST_F(WebMClusterParserTest, TracksWithSampleMissingDuration) {
     5,  // 3rd audio ready
     6,  // 2nd video emitted, 3rd video held back with no duration
     7,  // 4th audio ready
-    9,  // Cluster end emits all buffers and 3rd video's duration is estimated
+    8,  // 5th audio ready
   };
 
   ASSERT_EQ(arraysize(kBlockInfo), arraysize(kExpectedBuffersOnPartialCluster));
   int block_count = arraysize(kBlockInfo);
 
-  // Iteratively create a cluster containing the first N+1 blocks and parse all
-  // but the last byte of the cluster (except when N==|block_count|, just parse
-  // the whole cluster). Verify that the corresponding entry in
+  // Iteratively create a cluster containing the first N+1 blocks and parse the
+  // cluster. Verify that the corresponding entry in
   // |kExpectedBuffersOnPartialCluster| identifies the exact subset of
   // |kBlockInfo| returned by the parser.
   for (int i = 0; i < block_count; ++i) {
-    if (i > 0)
-      parser_->Reset();
-    // Since we don't know exactly the offsets of each block in the full
-    // cluster, build a cluster with exactly one additional block so that
-    // parse of all but one byte should deterministically parse all but the
-    // last full block. Don't |exceed block_count| blocks though.
-    int blocks_in_cluster = std::min(i + 2, block_count);
-    scoped_ptr<Cluster> cluster(CreateCluster(0, kBlockInfo,
-                                              blocks_in_cluster));
-    // Parse all but the last byte unless we need to parse the full cluster.
-    bool parse_full_cluster = i == (block_count - 1);
+    parser_->Reset();
 
-    int result = parser_->Parse(cluster->data(), parse_full_cluster ?
-                                cluster->size() : cluster->size() - 1);
-    if (parse_full_cluster) {
-      DVLOG(1) << "Verifying parse result of full cluster of "
-               << blocks_in_cluster << " blocks";
-      EXPECT_EQ(cluster->size(), result);
-    } else {
-      DVLOG(1) << "Verifying parse result of cluster of "
-               << blocks_in_cluster << " blocks with last block incomplete";
-      EXPECT_GT(cluster->size(), result);
-      EXPECT_LT(0, result);
-    }
+    const int blocks_in_cluster = i + 1;
+    scoped_ptr<Cluster> cluster(
+        CreateCluster(0, kBlockInfo, blocks_in_cluster));
 
+    EXPECT_EQ(cluster->size(),
+              parser_->Parse(cluster->data(), cluster->size()));
     EXPECT_TRUE(
         VerifyBuffers(kExpectedBlockInfo, kExpectedBuffersOnPartialCluster[i]));
   }
+
+  // The last (3rd) video is emitted on flush with duration estimated.
+  parser_->Flush();
+  EXPECT_TRUE(VerifyBuffers(&kExpectedBlockInfo[block_count - 1], 1));
 }
 
 TEST_F(WebMClusterParserTest, Reset) {
@@ -611,6 +597,7 @@ TEST_F(WebMClusterParserTest, IgnoredTracks) {
 
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
+  parser_->Flush();
   ASSERT_TRUE(VerifyBuffers(kOutputBlockInfo, output_block_count));
 }
 
@@ -640,6 +627,7 @@ TEST_F(WebMClusterParserTest, ParseTextTracks) {
 
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
+  parser_->Flush();
   ASSERT_TRUE(VerifyBuffers(kInputBlockInfo, input_block_count));
 }
 
@@ -718,6 +706,7 @@ TEST_F(WebMClusterParserTest, ParseEncryptedBlock) {
 
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
+  parser_->Flush();
   ASSERT_EQ(1UL, video_buffers_.size());
   scoped_refptr<MediaSample> buffer = video_buffers_[0];
   VerifyEncryptedBuffer(buffer);
@@ -811,59 +800,51 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsSimpleBlocks) {
   InSequence s;
 
   // Absent DefaultDuration information, SimpleBlock durations are derived from
-  // inter-buffer track timestamp delta if within the cluster. Duration for the
-  // last block in a cluster is estimated independently for each track in the
-  // cluster. For video tracks we use the maximum seen so far. For audio we use
-  // the the minimum.
-  // TODO: Move audio over to use the maximum.
+  // inter-buffer track timestamp delta either within or across clusters.
+  // Duration for the last block is estimated independently for each track when
+  // Flush() is called. We use the maximum seen so far for estimation.
 
-  const int kExpectedAudioEstimationInMs = 22;
-  const int kExpectedVideoEstimationInMs = 34;
   const BlockInfo kBlockInfo1[] = {
       {kAudioTrackNum, 0, 23, true, NULL, 0},
       {kAudioTrackNum, 23, 22, true, NULL, 0},
       {kVideoTrackNum, 33, 33, true, NULL, 0},
       {kAudioTrackNum, 45, 23, true, NULL, 0},
       {kVideoTrackNum, 66, 34, true, NULL, 0},
-      {kAudioTrackNum, 68, kExpectedAudioEstimationInMs, true, NULL, 0},
-      {kVideoTrackNum, 100, kExpectedVideoEstimationInMs, true, NULL, 0},
+      {kAudioTrackNum, 68, 24, true, NULL, 0},
+      {kVideoTrackNum, 100, 35, true, NULL, 0},
   };
 
   int block_count1 = arraysize(kBlockInfo1);
   scoped_ptr<Cluster> cluster1(CreateCluster(0, kBlockInfo1, block_count1));
 
-  // Send slightly less than the first full cluster so all but the last video
-  // block is parsed. Verify the last fully parsed audio and video buffer are
-  // both missing from the result (parser should hold them aside for duration
-  // estimation prior to end of cluster detection in the absence of
-  // DefaultDurations.)
-  int result = parser_->Parse(cluster1->data(), cluster1->size() - 1);
-  EXPECT_GT(result, 0);
-  EXPECT_LT(result, cluster1->size());
+  // Verify the last fully parsed audio and video buffer are both missing from
+  // the result (parser should hold them aside for duration estimation until
+  // Flush() called in the absence of DefaultDurations).
+  EXPECT_EQ(cluster1->size(),
+            parser_->Parse(cluster1->data(), cluster1->size()));
   EXPECT_EQ(3UL, audio_buffers_.size());
-  EXPECT_EQ(1UL, video_buffers_.size());
-  ASSERT_TRUE(VerifyBuffers(kBlockInfo1, block_count1 - 3));
-
-  parser_->Reset();
-
-  // Now parse the full first cluster and verify all the blocks are parsed.
-  result = parser_->Parse(cluster1->data(), cluster1->size());
-  EXPECT_EQ(cluster1->size(), result);
-  ASSERT_TRUE(VerifyBuffers(kBlockInfo1, block_count1));
+  EXPECT_EQ(2UL, video_buffers_.size());
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo1, block_count1 - 2));
 
   // Verify that the estimated frame duration is tracked across clusters for
   // each track.
+  const int kExpectedAudioEstimationInMs = 24;
+  const int kExpectedVideoEstimationInMs = 35;
   const BlockInfo kBlockInfo2[] = {
-      // Estimate carries over across clusters
-      {kAudioTrackNum, 200, kExpectedAudioEstimationInMs, true, NULL, 0},
-      // Estimate carries over across clusters
-      {kVideoTrackNum, 201, kExpectedVideoEstimationInMs, true, NULL, 0},
+      {kAudioTrackNum, 92, kExpectedAudioEstimationInMs, true, NULL, 0},
+      {kVideoTrackNum, 135, kExpectedVideoEstimationInMs, true, NULL, 0},
   };
 
   int block_count2 = arraysize(kBlockInfo2);
   scoped_ptr<Cluster> cluster2(CreateCluster(0, kBlockInfo2, block_count2));
-  result = parser_->Parse(cluster2->data(), cluster2->size());
-  EXPECT_EQ(cluster2->size(), result);
+  EXPECT_EQ(cluster2->size(),
+            parser_->Parse(cluster2->data(), cluster2->size()));
+
+  // Verify that remaining blocks of cluster1 are emitted.
+  ASSERT_TRUE(VerifyBuffers(&kBlockInfo1[block_count1 - 2], 2));
+
+  // Now flush and verify blocks in cluster2 are emitted.
+  parser_->Flush();
   ASSERT_TRUE(VerifyBuffers(kBlockInfo2, block_count2));
 }
 
@@ -871,57 +852,51 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsBlockGroups) {
   InSequence s;
 
   // Absent DefaultDuration and BlockDuration information, BlockGroup block
-  // durations are derived from inter-buffer track timestamp delta if within the
-  // cluster. Duration for the last block in a cluster is estimated
-  // independently for each track in the cluster. For video tracks we use the
-  // maximum seen so far. For audio we use the the minimum.
-  // TODO: Move audio over to use the maximum.
+  // durations are derived from inter-buffer track timestamp delta either within
+  // or across clusters. Duration for the last block is estimated independently
+  // for each track when Flush() is called. We use the maximum seen so far.
 
-  const int kExpectedAudioEstimationInMs = 22;
-  const int kExpectedVideoEstimationInMs = 34;
   const BlockInfo kBlockInfo1[] = {
       {kAudioTrackNum, 0, -23, false, NULL, 0},
       {kAudioTrackNum, 23, -22, false, NULL, 0},
       {kVideoTrackNum, 33, -33, false, NULL, 0},
       {kAudioTrackNum, 45, -23, false, NULL, 0},
       {kVideoTrackNum, 66, -34, false, NULL, 0},
-      {kAudioTrackNum, 68, -kExpectedAudioEstimationInMs, false, NULL, 0},
-      {kVideoTrackNum, 100, -kExpectedVideoEstimationInMs, false, NULL, 0},
+      {kAudioTrackNum, 68, -24, false, NULL, 0},
+      {kVideoTrackNum, 100, -35, false, NULL, 0},
   };
 
   int block_count1 = arraysize(kBlockInfo1);
   scoped_ptr<Cluster> cluster1(CreateCluster(0, kBlockInfo1, block_count1));
 
-  // Send slightly less than the first full cluster so all but the last video
-  // block is parsed. Verify the last fully parsed audio and video buffer are
-  // both missing from the result (parser should hold them aside for duration
-  // estimation prior to end of cluster detection in the absence of
-  // DefaultDurations.)
-  int result = parser_->Parse(cluster1->data(), cluster1->size() - 1);
-  EXPECT_GT(result, 0);
-  EXPECT_LT(result, cluster1->size());
+  // Verify the last fully parsed audio and video buffer are both missing from
+  // the result (parser should hold them aside for duration estimation until
+  // Flush() called in the absence of DefaultDurations).
+  EXPECT_EQ(cluster1->size(),
+            parser_->Parse(cluster1->data(), cluster1->size()));
   EXPECT_EQ(3UL, audio_buffers_.size());
-  EXPECT_EQ(1UL, video_buffers_.size());
-  ASSERT_TRUE(VerifyBuffers(kBlockInfo1, block_count1 - 3));
-
-  parser_->Reset();
-
-  // Now parse the full first cluster and verify all the blocks are parsed.
-  result = parser_->Parse(cluster1->data(), cluster1->size());
-  EXPECT_EQ(cluster1->size(), result);
-  ASSERT_TRUE(VerifyBuffers(kBlockInfo1, block_count1));
+  EXPECT_EQ(2UL, video_buffers_.size());
+  ASSERT_TRUE(VerifyBuffers(kBlockInfo1, block_count1 - 2));
 
   // Verify that the estimated frame duration is tracked across clusters for
   // each track.
+  const int kExpectedAudioEstimationInMs = 24;
+  const int kExpectedVideoEstimationInMs = 35;
   const BlockInfo kBlockInfo2[] = {
-      {kAudioTrackNum, 200, -kExpectedAudioEstimationInMs, false, NULL, 0},
-      {kVideoTrackNum, 201, -kExpectedVideoEstimationInMs, false, NULL, 0},
+      {kAudioTrackNum, 92, -kExpectedAudioEstimationInMs, false, NULL, 0},
+      {kVideoTrackNum, 135, -kExpectedVideoEstimationInMs, false, NULL, 0},
   };
 
   int block_count2 = arraysize(kBlockInfo2);
   scoped_ptr<Cluster> cluster2(CreateCluster(0, kBlockInfo2, block_count2));
-  result = parser_->Parse(cluster2->data(), cluster2->size());
-  EXPECT_EQ(cluster2->size(), result);
+  EXPECT_EQ(cluster2->size(),
+            parser_->Parse(cluster2->data(), cluster2->size()));
+
+  // Verify that remaining blocks of cluster1 are emitted.
+  ASSERT_TRUE(VerifyBuffers(&kBlockInfo1[block_count1 - 2], 2));
+
+  // Now flush and verify blocks in cluster2 are emitted.
+  parser_->Flush();
   ASSERT_TRUE(VerifyBuffers(kBlockInfo2, block_count2));
 }
 
@@ -958,13 +933,13 @@ TEST_F(WebMClusterParserTest,
   int result = parser_->Parse(cluster->data(), cluster->size() - 1);
   EXPECT_GT(result, 0);
   EXPECT_LT(result, cluster->size());
+  parser_->Flush();
   ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count - 1));
-
-  parser_->Reset();
 
   // Now parse a whole cluster to verify that all the blocks will get parsed.
   result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
+  parser_->Flush();
   ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count));
 }
 
@@ -988,6 +963,7 @@ TEST_F(WebMClusterParserTest,
   scoped_ptr<Cluster> cluster(CreateCluster(0, kBlockInfo, block_count));
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
+  parser_->Flush();
   ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count));
 }
 
@@ -1004,6 +980,7 @@ TEST_F(WebMClusterParserTest,
   scoped_ptr<Cluster> cluster(CreateCluster(0, kBlockInfo, block_count));
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
+  parser_->Flush();
   ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count));
 }
 
