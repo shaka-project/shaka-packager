@@ -29,11 +29,16 @@ enum TrackType {
 class BoxBuffer;
 
 #define DECLARE_BOX_METHODS(T)                        \
+ public:                                              \
   T();                                                \
-  ~T() override;                                       \
-  bool ReadWrite(BoxBuffer* buffer) override; \
-  FourCC BoxType() const override;            \
-  uint32_t ComputeSize() override;
+  ~T() override;                                      \
+  FourCC BoxType() const override;                    \
+                                                      \
+ private:                                             \
+  bool ReadWriteInternal(BoxBuffer* buffer) override; \
+  uint32_t ComputeSizeInternal() override;            \
+                                                      \
+ public:
 
 struct FileType : Box {
   DECLARE_BOX_METHODS(FileType);
@@ -44,7 +49,7 @@ struct FileType : Box {
 };
 
 struct SegmentType : FileType {
-  DECLARE_BOX_METHODS(SegmentType);
+  FourCC BoxType() const override;
 };
 
 struct ProtectionSystemSpecificHeader : FullBox {
@@ -168,12 +173,13 @@ struct CodecConfigurationRecord : Box {
   DECLARE_BOX_METHODS(CodecConfigurationRecord);
 
   FourCC box_type;
-  // Contains full codec configuration record, including possible extension boxes.
+  // Contains full codec configuration record, including possible extension
+  // boxes.
   std::vector<uint8_t> data;
 };
 
-struct PixelAspectRatioBox : Box {
-  DECLARE_BOX_METHODS(PixelAspectRatioBox);
+struct PixelAspectRatio : Box {
+  DECLARE_BOX_METHODS(PixelAspectRatio);
 
   uint32_t h_spacing;
   uint32_t v_spacing;
@@ -191,7 +197,7 @@ struct VideoSampleEntry : Box {
   uint16_t width;
   uint16_t height;
 
-  PixelAspectRatioBox pixel_aspect;
+  PixelAspectRatio pixel_aspect;
   ProtectionSchemeInfo sinf;
   CodecConfigurationRecord codec_config_record;
 };
@@ -203,8 +209,8 @@ struct ElementaryStreamDescriptor : FullBox {
   ESDescriptor es_descriptor;
 };
 
-struct DTSSpecificBox : Box {
-  DECLARE_BOX_METHODS(DTSSpecificBox);
+struct DTSSpecific : Box {
+  DECLARE_BOX_METHODS(DTSSpecific);
 
   std::vector<uint8_t> data;
 };
@@ -224,7 +230,7 @@ struct AudioSampleEntry : Box {
 
   ProtectionSchemeInfo sinf;
   ElementaryStreamDescriptor esds;
-  DTSSpecificBox ddts;
+  DTSSpecific ddts;
 };
 
 struct SampleDescription : FullBox {
@@ -578,14 +584,9 @@ struct SegmentIndex : FullBox {
   std::vector<SegmentReference> references;
 };
 
-// The actual data is parsed and written separately, so we do not inherit it
-// from Box.
-struct MediaData {
-  MediaData();
-  ~MediaData();
-  void Write(BufferWriter* buffer_writer);
-  uint32_t ComputeSize();
-  FourCC BoxType() const;
+// The actual data is parsed and written separately.
+struct MediaData : Box {
+  DECLARE_BOX_METHODS(MediaData);
 
   uint32_t data_size;
 };

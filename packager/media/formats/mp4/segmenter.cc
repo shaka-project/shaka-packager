@@ -408,7 +408,7 @@ Status Segmenter::FinalizeFragment(bool finalize_segment,
     Fragmenter* fragmenter = fragmenters_[i];
     mdat.data_size =
         fragmenter->aux_data()->Size() + fragmenter->data()->Size();
-    mdat.Write(fragment_buffer_.get());
+    mdat.WriteHeader(fragment_buffer_.get());
     if (fragmenter->aux_data()->Size()) {
       fragment_buffer_->AppendBuffer(*fragmenter->aux_data());
     }

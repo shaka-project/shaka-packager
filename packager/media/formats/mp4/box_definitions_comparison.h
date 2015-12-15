@@ -170,8 +170,8 @@ inline bool operator==(const CodecConfigurationRecord& lhs,
   return lhs.data == rhs.data;
 }
 
-inline bool operator==(const PixelAspectRatioBox& lhs,
-                       const PixelAspectRatioBox& rhs) {
+inline bool operator==(const PixelAspectRatio& lhs,
+                       const PixelAspectRatio& rhs) {
   return lhs.h_spacing == rhs.h_spacing && lhs.v_spacing == rhs.v_spacing;
 }
 
@@ -194,8 +194,8 @@ inline bool operator==(const ElementaryStreamDescriptor& lhs,
   return lhs.es_descriptor == rhs.es_descriptor;
 }
 
-inline bool operator==(const DTSSpecificBox& lhs,
-                       const DTSSpecificBox& rhs) {
+inline bool operator==(const DTSSpecific& lhs,
+                       const DTSSpecific& rhs) {
   return lhs.data == rhs.data;
 }
 

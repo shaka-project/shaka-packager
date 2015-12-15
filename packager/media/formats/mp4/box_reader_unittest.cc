@@ -30,22 +30,22 @@ static const uint8_t kSkipBox[] = {
     0x00};
 
 struct FreeBox : Box {
-  bool ReadWrite(BoxBuffer* buffer) override {
+  FourCC BoxType() const override { return FOURCC_FREE; }
+  bool ReadWriteInternal(BoxBuffer* buffer) override {
     return true;
   }
-  FourCC BoxType() const override { return FOURCC_FREE; }
-  uint32_t ComputeSize() override {
+  uint32_t ComputeSizeInternal() override {
     NOTIMPLEMENTED();
     return 0;
   }
 };
 
 struct PsshBox : Box {
-  bool ReadWrite(BoxBuffer* buffer) override {
+  FourCC BoxType() const override { return FOURCC_PSSH; }
+  bool ReadWriteInternal(BoxBuffer* buffer) override {
     return buffer->ReadWriteUInt32(&val);
   }
-  FourCC BoxType() const override { return FOURCC_PSSH; }
-  uint32_t ComputeSize() override {
+  uint32_t ComputeSizeInternal() override {
     NOTIMPLEMENTED();
     return 0;
   }
@@ -54,8 +54,9 @@ struct PsshBox : Box {
 };
 
 struct SkipBox : FullBox {
-  bool ReadWrite(BoxBuffer* buffer) override {
-    RCHECK(FullBox::ReadWrite(buffer) && buffer->ReadWriteUInt8(&a) &&
+  FourCC BoxType() const override { return FOURCC_SKIP; }
+  bool ReadWriteInternal(BoxBuffer* buffer) override {
+    RCHECK(ReadWriteHeaderInternal(buffer) && buffer->ReadWriteUInt8(&a) &&
            buffer->ReadWriteUInt8(&b) && buffer->ReadWriteUInt16(&c) &&
            buffer->ReadWriteInt32(&d) &&
            buffer->ReadWriteInt64NBytes(&e, sizeof(uint32_t)));
@@ -68,8 +69,7 @@ struct SkipBox : FullBox {
     }
     return buffer->TryReadWriteChild(&empty);
   }
-  FourCC BoxType() const override { return FOURCC_SKIP; }
-  uint32_t ComputeSize() override {
+  uint32_t ComputeSizeInternal() override {
     NOTIMPLEMENTED();
     return 0;
   }

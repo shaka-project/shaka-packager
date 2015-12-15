@@ -267,12 +267,12 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Modify(HandlerReference* hdlr) { hdlr->type = kAudio; }
 
-  void Fill(PixelAspectRatioBox* pasp) {
+  void Fill(PixelAspectRatio* pasp) {
     pasp->h_spacing = 5;
     pasp->v_spacing = 8;
   }
 
-  void Modify(PixelAspectRatioBox* pasp) { pasp->v_spacing *= 8; }
+  void Modify(PixelAspectRatio* pasp) { pasp->v_spacing *= 8; }
 
   void Fill(CodecConfigurationRecord* codec_config_record) {
     const uint8_t kAvccData[] = {
@@ -724,7 +724,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   bool IsOptional(const EditList* box) { return true; }
   bool IsOptional(const Edit* box) { return true; }
   bool IsOptional(const CodecConfigurationRecord* box) { return true; }
-  bool IsOptional(const PixelAspectRatioBox* box) { return true; }
+  bool IsOptional(const PixelAspectRatio* box) { return true; }
   bool IsOptional(const ElementaryStreamDescriptor* box) { return true; }
   bool IsOptional(const CompositionTimeToSample* box) { return true; }
   bool IsOptional(const SyncSample* box) { return true; }
@@ -754,7 +754,7 @@ typedef testing::Types<
     Edit,
     HandlerReference,
     CodecConfigurationRecord,
-    PixelAspectRatioBox,
+    PixelAspectRatio,
     VideoSampleEntry,
     ElementaryStreamDescriptor,
     AudioSampleEntry,
@@ -796,6 +796,15 @@ typedef testing::Types<
     SampleGroupDescription> Boxes2;
 
 TYPED_TEST_CASE_P(BoxDefinitionsTestGeneral);
+
+TYPED_TEST_P(BoxDefinitionsTestGeneral, WriteHeader) {
+  TypeParam box;
+  LOG(INFO) << "Processing " << FourCCToString(box.BoxType());
+  this->Fill(&box);
+  box.WriteHeader(this->buffer_.get());
+  // Box header size should be either 8 bytes or 12 bytes.
+  EXPECT_TRUE(this->buffer_->Size() == 8 || this->buffer_->Size() == 12);
+}
 
 TYPED_TEST_P(BoxDefinitionsTestGeneral, WriteReadbackCompare) {
   TypeParam box;
@@ -840,6 +849,7 @@ TYPED_TEST_P(BoxDefinitionsTestGeneral, Empty) {
 }
 
 REGISTER_TYPED_TEST_CASE_P(BoxDefinitionsTestGeneral,
+                           WriteHeader,
                            WriteReadbackCompare,
                            WriteModifyWrite,
                            Empty);

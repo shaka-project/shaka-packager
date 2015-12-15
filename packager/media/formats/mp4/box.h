@@ -9,7 +9,6 @@
 
 #include <stdint.h>
 
-#include "packager/base/compiler_specific.h"
 #include "packager/media/formats/mp4/fourccs.h"
 
 namespace edash_packager {
@@ -32,24 +31,46 @@ struct Box {
   /// Parse the mp4 box.
   /// @param reader points to a BoxReader object which parses the box.
   bool Parse(BoxReader* reader);
-  /// Write the box to buffer.
-  /// This function calls ComputeSize internally to compute box size.
+  /// Write the box to buffer. This function calls ComputeSize internally to
+  /// compute and update box size.
   /// @param writer points to a BufferWriter object which wraps the buffer for
   ///        writing.
   void Write(BufferWriter* writer);
-  /// Compute the size of this box.
-  /// The calculated size will be saved in |atom_size| for later consumption.
-  virtual uint32_t ComputeSize() = 0;
+  /// Write the box header to buffer. This function calls ComputeSize internally
+  /// to compute and update box size.
+  /// @param writer points to a BufferWriter object which wraps the buffer for
+  ///        writing.
+  void WriteHeader(BufferWriter* writer);
+  /// Compute the size of this box. It will also update box size.
+  /// @return The size of result box including child boxes. A value of 0 should
+  ///         be returned if the box should not be written.
+  uint32_t ComputeSize();
+  /// @return box header size in bytes.
+  virtual uint32_t HeaderSize() const;
+  /// @return box type.
   virtual FourCC BoxType() const = 0;
 
  protected:
-  friend class BoxBuffer;
-  /// Read/write the mp4 box from/to BoxBuffer.
-  virtual bool ReadWrite(BoxBuffer* buffer);
+  /// Read/write mp4 box header. Note that this function expects box size
+  /// updated already.
+  /// @return true on success, false otherwise.
+  virtual bool ReadWriteHeaderInternal(BoxBuffer* buffer);
 
-  /// We don't support 64-bit atom sizes. 32-bit should be large enough for our
-  /// current needs.
+ private:
+  friend class BoxBuffer;
+  // Read/write the mp4 box from/to BoxBuffer. Note that this function expects
+  // box size updated already.
+  virtual bool ReadWriteInternal(BoxBuffer* buffer) = 0;
+  // Compute the size of this box. A value of 0 should be returned if the box
+  // should not be written. Note that this function won't update box size.
+  virtual uint32_t ComputeSizeInternal() = 0;
+
+  // We don't support 64-bit atom sizes. 32-bit should be large enough for our
+  // current needs.
   uint32_t atom_size;
+
+  // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
+  // generated copy constructor and assignment operator.
 };
 
 /// Defines FullBox, the other base ISO BMFF box objects as defined in
@@ -60,11 +81,16 @@ struct FullBox : Box {
   FullBox();
   ~FullBox() override;
 
+  uint32_t HeaderSize() const final;
+
   uint8_t version;
   uint32_t flags;
 
  protected:
-  bool ReadWrite(BoxBuffer* buffer) override;
+  bool ReadWriteHeaderInternal(BoxBuffer* buffer) final;
+
+  // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
+  // generated copy constructor and assignment operator.
 };
 
 }  // namespace mp4

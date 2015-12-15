@@ -146,7 +146,7 @@ class BoxBuffer {
       return reader_->ReadChild(box);
     // The box is mandatory, i.e. the box size should not be 0.
     DCHECK_NE(0u, box->atom_size);
-    CHECK(box->ReadWrite(this));
+    CHECK(box->ReadWriteInternal(this));
     return true;
   }
 
@@ -157,7 +157,7 @@ class BoxBuffer {
       return reader_->TryReadChild(box);
     // The box is optional, i.e. it can be skipped if the box size is 0.
     if (box->atom_size != 0)
-      CHECK(box->ReadWrite(this));
+      CHECK(box->ReadWriteInternal(this));
     return true;
   }
 
