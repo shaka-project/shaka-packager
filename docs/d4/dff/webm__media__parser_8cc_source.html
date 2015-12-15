@@ -271,55 +271,62 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  int64_t duration_in_us = info_parser.duration() * timecode_scale_in_us;</div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;</div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  std::vector&lt;scoped_refptr&lt;StreamInfo&gt;&gt; streams;</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  scoped_refptr&lt;AudioStreamInfo&gt; audio_stream_info =</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;      tracks_parser.audio_stream_info();</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  streams.push_back(tracks_parser.audio_stream_info());</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  streams.back()-&gt;set_duration(duration_in_us);</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  <span class="keywordflow">if</span> (streams.back()-&gt;is_encrypted())</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    OnEncryptedMediaInitData(tracks_parser.audio_encryption_key_id());</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  streams.push_back(tracks_parser.video_stream_info());</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  streams.back()-&gt;set_duration(duration_in_us);</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="keywordflow">if</span> (streams.back()-&gt;is_encrypted())</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    OnEncryptedMediaInitData(tracks_parser.video_encryption_key_id());</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  init_cb_.Run(streams);</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  cluster_parser_.reset(<span class="keyword">new</span> WebMClusterParser(</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;      info_parser.timecode_scale(), tracks_parser.audio_track_num(),</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;      tracks_parser.GetAudioDefaultDuration(timecode_scale_in_us),</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;      tracks_parser.video_track_num(),</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      tracks_parser.GetVideoDefaultDuration(timecode_scale_in_us),</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;      tracks_parser.text_tracks(), tracks_parser.ignored_tracks(),</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;      tracks_parser.audio_encryption_key_id(),</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;      tracks_parser.video_encryption_key_id(), audio_stream_info-&gt;codec(),</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;      new_sample_cb_));</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  <span class="keywordflow">return</span> bytes_parsed;</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;}</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="keywordtype">int</span> WebMMediaParser::ParseCluster(<span class="keyword">const</span> uint8_t* data, <span class="keywordtype">int</span> size) {</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;  <span class="keywordflow">if</span> (!cluster_parser_)</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  AudioCodec audio_codec = kCodecOpus;</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  <span class="keywordflow">if</span> (tracks_parser.audio_stream_info()) {</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    streams.push_back(tracks_parser.audio_stream_info());</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    streams.back()-&gt;set_duration(duration_in_us);</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    <span class="keywordflow">if</span> (streams.back()-&gt;is_encrypted())</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;      OnEncryptedMediaInitData(tracks_parser.audio_encryption_key_id());</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    audio_codec = tracks_parser.audio_stream_info()-&gt;codec();</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    VLOG(1) &lt;&lt; <span class="stringliteral">&quot;No audio track info found.&quot;</span>;</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  }</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  <span class="keywordflow">if</span> (tracks_parser.video_stream_info()) {</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    streams.push_back(tracks_parser.video_stream_info());</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    streams.back()-&gt;set_duration(duration_in_us);</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    <span class="keywordflow">if</span> (streams.back()-&gt;is_encrypted())</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;      OnEncryptedMediaInitData(tracks_parser.video_encryption_key_id());</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    VLOG(1) &lt;&lt; <span class="stringliteral">&quot;No video track info found.&quot;</span>;</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;  }</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  init_cb_.Run(streams);</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  cluster_parser_.reset(<span class="keyword">new</span> WebMClusterParser(</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;      info_parser.timecode_scale(), tracks_parser.audio_track_num(),</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;      tracks_parser.GetAudioDefaultDuration(timecode_scale_in_us),</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;      tracks_parser.video_track_num(),</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;      tracks_parser.GetVideoDefaultDuration(timecode_scale_in_us),</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;      tracks_parser.text_tracks(), tracks_parser.ignored_tracks(),</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;      tracks_parser.audio_encryption_key_id(),</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;      tracks_parser.video_encryption_key_id(), audio_codec, new_sample_cb_));</div>
 <div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  <span class="keywordtype">int</span> bytes_parsed = cluster_parser_-&gt;Parse(data, size);</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  <span class="keywordflow">if</span> (bytes_parsed &lt; 0)</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;    <span class="keywordflow">return</span> bytes_parsed;</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  <span class="keywordtype">bool</span> cluster_ended = cluster_parser_-&gt;cluster_ended();</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;  <span class="keywordflow">if</span> (cluster_ended) {</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    ChangeState(kParsingHeaders);</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  }</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;  <span class="keywordflow">return</span> bytes_parsed;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;}</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;<span class="keywordtype">void</span> WebMMediaParser::OnEncryptedMediaInitData(<span class="keyword">const</span> std::string&amp; key_id) {</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;WebM decryption is not implemented yet.&quot;</span>;</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;}</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;  <span class="keywordflow">return</span> bytes_parsed;</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;}</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<span class="keywordtype">int</span> WebMMediaParser::ParseCluster(<span class="keyword">const</span> uint8_t* data, <span class="keywordtype">int</span> size) {</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;  <span class="keywordflow">if</span> (!cluster_parser_)</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  <span class="keywordtype">int</span> bytes_parsed = cluster_parser_-&gt;Parse(data, size);</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  <span class="keywordflow">if</span> (bytes_parsed &lt; 0)</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;    <span class="keywordflow">return</span> bytes_parsed;</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  <span class="keywordtype">bool</span> cluster_ended = cluster_parser_-&gt;cluster_ended();</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="keywordflow">if</span> (cluster_ended) {</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    ChangeState(kParsingHeaders);</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  }</div>
 <div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  <span class="keywordflow">return</span> bytes_parsed;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;}</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="keywordtype">void</span> WebMMediaParser::OnEncryptedMediaInitData(<span class="keyword">const</span> std::string&amp; key_id) {</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;WebM decryption is not implemented yet.&quot;</span>;</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;}</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1WebMMediaParser_html_a5a95d3879a9a96830fdcf4f866879143"><div class="ttname"><a href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a5a95d3879a9a96830fdcf4f866879143">edash_packager::media::WebMMediaParser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *buf, int size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dff/webm__media__parser_8cc_source.html#l00053">webm_media_parser.cc:53</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1WebMMediaParser_html_a3c0e6fc0e48bb49e6687f566a87e6f12"><div class="ttname"><a href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a3c0e6fc0e48bb49e6687f566a87e6f12">edash_packager::media::WebMMediaParser::Flush</a></div><div class="ttdeci">void Flush() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dff/webm__media__parser_8cc_source.html#l00042">webm_media_parser.cc:42</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1WebMMediaParser_html_a8a85bf527013ebbb0b902dcd56039467"><div class="ttname"><a href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a8a85bf527013ebbb0b902dcd56039467">edash_packager::media::WebMMediaParser::Init</a></div><div class="ttdeci">void Init(const InitCB &amp;init_cb, const NewSampleCB &amp;new_sample_cb, KeySource *decryption_key_source) override</div><div class="ttdoc">StreamParser implementation. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dff/webm__media__parser_8cc_source.html#l00027">webm_media_parser.cc:27</a></div></div>
@@ -332,7 +339,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Dec 15 2015 00:22:29 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Dec 15 2015 20:37:33 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -146,6 +146,10 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a9a4f45dcab338be2b6843e0de87ce8f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79b8b288ff78288bdbb8c62d5dd858e1"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a79b8b288ff78288bdbb8c62d5dd858e1">Copy</a> (const char *from_file_name, const char *to_file_name)</td></tr>
 <tr class="separator:a79b8b288ff78288bdbb8c62d5dd858e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad002a97c623840303bf6934055813196"><td class="memItemLeft" align="right" valign="top">static int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html#ad002a97c623840303bf6934055813196">CopyFile</a> (<a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html">File</a> *source, <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html">File</a> *destination)</td></tr>
+<tr class="separator:ad002a97c623840303bf6934055813196"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a10a83609044850b7f1bba9d3767bfef9"><td class="memItemLeft" align="right" valign="top">static int64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a10a83609044850b7f1bba9d3767bfef9">CopyFile</a> (<a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html">File</a> *source, <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html">File</a> *destination, int64_t max_copy)</td></tr>
+<tr class="separator:a10a83609044850b7f1bba9d3767bfef9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -168,7 +172,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Define an abstract file interface. </p>
 
-<p>Definition at line <a class="el" href="../../d2/d4d/file_8h_source.html#l00022">22</a> of file <a class="el" href="../../d2/d4d/file_8h_source.html">file.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/d4d/file_8h_source.html#l00023">23</a> of file <a class="el" href="../../d2/d4d/file_8h_source.html">file.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="ad1a8b1df388b90def135647a0136b0f7"></a>
 <div class="memitem">
@@ -192,7 +196,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </div><div class="memdoc">
 <p>Do <em>not</em> call the destructor directly (with the "delete" keyword) nor use scoped_ptr; instead use <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a42290da768cd34316d2f4c5fc3976b38">Close()</a>. </p>
 
-<p>Definition at line <a class="el" href="../../d2/d4d/file_8h_source.html#l00117">117</a> of file <a class="el" href="../../d2/d4d/file_8h_source.html">file.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/d4d/file_8h_source.html#l00131">131</a> of file <a class="el" href="../../d2/d4d/file_8h_source.html">file.h</a>.</p>
 
 </div>
 </div>
@@ -265,7 +269,104 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00178">178</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00180">180</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ad002a97c623840303bf6934055813196"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t edash_packager::media::File::CopyFile </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html">File</a> *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html">File</a> *&#160;</td>
+          <td class="paramname"><em>destination</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Copies the contents from source to destination. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>The file to copy from. </td></tr>
+    <tr><td class="paramname">destination</td><td>The file to copy to. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Number of bytes written, or a value &lt; 0 on error. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00210">210</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a10a83609044850b7f1bba9d3767bfef9"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int64_t edash_packager::media::File::CopyFile </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html">File</a> *&#160;</td>
+          <td class="paramname"><em>source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html">File</a> *&#160;</td>
+          <td class="paramname"><em>destination</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int64_t&#160;</td>
+          <td class="paramname"><em>max_copy</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Copies the contents from source to destination. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">source</td><td>The file to copy from. </td></tr>
+    <tr><td class="paramname">destination</td><td>The file to copy to. </td></tr>
+    <tr><td class="paramname">max_copy</td><td>The maximum number of bytes to copy; &lt; 0 to copy to EOF. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Number of bytes written, or a value &lt; 0 on error. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00214">214</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -299,7 +400,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if successful, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00138">138</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00140">140</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -325,7 +426,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The file name. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/d4d/file_8h_source.html#l00089">89</a> of file <a class="el" href="../../d2/d4d/file_8h_source.html">file.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/d4d/file_8h_source.html#l00090">90</a> of file <a class="el" href="../../d2/d4d/file_8h_source.html">file.h</a>.</p>
 
 </div>
 </div>
@@ -379,7 +480,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The size of a file in bytes on success, a value &lt; 0 otherwise. The file will be opened and closed in the process. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00151">151</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00153">153</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -424,7 +525,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html" title="Define an abstract file interface. ">File</a> pointer on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00116">116</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00118">118</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -469,7 +570,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html" title="Define an abstract file interface. ">File</a> pointer on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00127">127</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00129">129</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -559,7 +660,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00160">160</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00162">162</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -709,7 +810,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Dec 15 2015 00:22:29 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Dec 15 2015 20:37:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
