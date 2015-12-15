@@ -12,8 +12,8 @@ var searchData=
   ['clear',['Clear',['../d2/d90/classedash__packager_1_1media_1_1Status.html#a0fbada5284f16152c63ebcdd30c36736',1,'edash_packager::media::Status::Clear()'],['../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#ae8ed4943296a88e5d5356347e63c6a42',1,'edash_packager::media::IoCache::Clear()']]],
   ['close',['Close',['../de/d19/classedash__packager_1_1media_1_1File.html#a42290da768cd34316d2f4c5fc3976b38',1,'edash_packager::media::File::Close()'],['../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a4588dbf505a08da8423b525ce24fee92',1,'edash_packager::media::IoCache::Close()'],['../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#ad8bcb9e07851a62c6440458ef2c31e4f',1,'edash_packager::media::LocalFile::Close()'],['../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a72f8485ab641d5e3b5df89a6959c1209',1,'edash_packager::media::ThreadedIoFile::Close()'],['../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#a10c51a75395ecb97f89124e296a349d9',1,'edash_packager::media::UdpFile::Close()']]],
   ['closed',['closed',['../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a742807639a2983fc05cf058a88bfbe79',1,'edash_packager::media::IoCache']]],
-  ['closurethread',['ClosureThread',['../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html#a8cbb44ca1f4abd7028ba4602af82de0d',1,'edash_packager::media::ClosureThread']]],
   ['closurethread',['ClosureThread',['../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html',1,'edash_packager::media']]],
+  ['closurethread',['ClosureThread',['../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html#a8cbb44ca1f4abd7028ba4602af82de0d',1,'edash_packager::media::ClosureThread']]],
   ['cluster',['Cluster',['../df/d40/classedash__packager_1_1media_1_1Cluster.html',1,'edash_packager::media']]],
   ['cluster_5fended',['cluster_ended',['../db/da0/classedash__packager_1_1media_1_1WebMClusterParser.html#ae62be1971c352525906d6fad2ee831bd',1,'edash_packager::media::WebMClusterParser']]],
   ['clusterbuilder',['ClusterBuilder',['../d3/d69/classedash__packager_1_1media_1_1ClusterBuilder.html',1,'edash_packager::media']]],
@@ -39,5 +39,6 @@ var searchData=
   ['createeosbuffer',['CreateEOSBuffer',['../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html#ae449ca4aeea6cacb8c08a56d9652a64e',1,'edash_packager::media::MediaSample']]],
   ['createfromhexstrings',['CreateFromHexStrings',['../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab05172d89513c0d3627502c9cff4535f',1,'edash_packager::media::KeySource']]],
   ['createsigner',['CreateSigner',['../d8/dcc/classedash__packager_1_1media_1_1AesRequestSigner.html#a1e43c2e7e3ab4f5e07d442ed59fc1278',1,'edash_packager::media::AesRequestSigner::CreateSigner()'],['../dd/da8/classedash__packager_1_1media_1_1RsaRequestSigner.html#a51517907c457f9f991e1a72ce4355183',1,'edash_packager::media::RsaRequestSigner::CreateSigner()']]],
+  ['cue',['Cue',['../df/dda/structedash__packager_1_1media_1_1Cue.html',1,'edash_packager::media']]],
   ['current_5fchunk',['current_chunk',['../d8/d71/classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator.html#ab3a329468f494ff3143d4c43c94d13ba',1,'edash_packager::media::mp4::ChunkInfoIterator']]]
 ];

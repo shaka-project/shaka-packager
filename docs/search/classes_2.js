@@ -14,5 +14,6 @@ var searchData=
   ['compositionoffsetiterator',['CompositionOffsetIterator',['../d4/de5/classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator.html',1,'edash_packager::media::mp4']]],
   ['compositiontimetosample',['CompositionTimeToSample',['../da/d54/structedash__packager_1_1media_1_1mp4_1_1CompositionTimeToSample.html',1,'edash_packager::media::mp4']]],
   ['contentencoding',['ContentEncoding',['../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html',1,'edash_packager::media']]],
-  ['contentprotectionelement',['ContentProtectionElement',['../d0/d96/structedash__packager_1_1ContentProtectionElement.html',1,'edash_packager']]]
+  ['contentprotectionelement',['ContentProtectionElement',['../d0/d96/structedash__packager_1_1ContentProtectionElement.html',1,'edash_packager']]],
+  ['cue',['Cue',['../df/dda/structedash__packager_1_1media_1_1Cue.html',1,'edash_packager::media']]]
 ];

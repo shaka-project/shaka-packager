@@ -4,6 +4,8 @@ var searchData=
   ['tailpos',['TailPos',['../d5/d02/classedash__packager_1_1media_1_1ProducerConsumerQueue.html#a860bb54f9c53a25c27b1510b0e21eac9',1,'edash_packager::media::ProducerConsumerQueue']]],
   ['tell',['Tell',['../de/d19/classedash__packager_1_1media_1_1File.html#a19409dd7d63022f34aee85640460428e',1,'edash_packager::media::File::Tell()'],['../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#a4151ac1c3198e4037292040bb7f2504b',1,'edash_packager::media::LocalFile::Tell()'],['../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#acef8a84a1ec55e42588fec8bc8e0b698',1,'edash_packager::media::ThreadedIoFile::Tell()'],['../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#a32a91da87bda023b44aa7e86c2207c07',1,'edash_packager::media::UdpFile::Tell()']]],
   ['temp_5fdir',['temp_dir',['../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a014464b78ba37f978da8290db2f2414e',1,'edash_packager::media::MuxerOptions']]],
+  ['textstreaminfo',['TextStreamInfo',['../d6/dd7/classedash__packager_1_1media_1_1TextStreamInfo.html',1,'edash_packager::media']]],
+  ['textstreaminfo',['TextStreamInfo',['../d6/dd7/classedash__packager_1_1media_1_1TextStreamInfo.html#a6e9e056a00a0c9aac053aad83f90ff3c',1,'edash_packager::media::TextStreamInfo']]],
   ['texttrack',['TextTrack',['../de/d9e/classedash__packager_1_1media_1_1TextTrack.html',1,'edash_packager::media']]],
   ['texttrackconfig',['TextTrackConfig',['../dd/def/classedash__packager_1_1media_1_1TextTrackConfig.html',1,'edash_packager::media']]],
   ['threadediofile',['ThreadedIoFile',['../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html',1,'edash_packager::media']]],

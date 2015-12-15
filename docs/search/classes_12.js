@@ -10,6 +10,7 @@ var searchData=
   ['webmtracksparser',['WebMTracksParser',['../db/d23/classedash__packager_1_1media_1_1WebMTracksParser.html',1,'edash_packager::media']]],
   ['webmvideoclient',['WebMVideoClient',['../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html',1,'edash_packager::media']]],
   ['webmwebvttparser',['WebMWebVTTParser',['../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html',1,'edash_packager::media']]],
+  ['webvttmediaparser',['WebVttMediaParser',['../d2/d51/classedash__packager_1_1media_1_1WebVttMediaParser.html',1,'edash_packager::media']]],
   ['widevinekeysource',['WidevineKeySource',['../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html',1,'edash_packager::media']]],
   ['wvmmediaparser',['WvmMediaParser',['../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html',1,'edash_packager::media::wvm']]]
 ];

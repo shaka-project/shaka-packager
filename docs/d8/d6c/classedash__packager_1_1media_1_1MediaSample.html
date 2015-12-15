@@ -162,6 +162,12 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_is_encrypted</b> 
 <tr class="memitem:a0047d71c0b645a6f686f46ffe82a63a3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0047d71c0b645a6f686f46ffe82a63a3"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>end_of_stream</b> () const </td></tr>
 <tr class="separator:a0047d71c0b645a6f686f46ffe82a63a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6757467ddc8b3d74176d8df7dbc1dbe5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6757467ddc8b3d74176d8df7dbc1dbe5"></a>
+const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>config_id</b> () const </td></tr>
+<tr class="separator:a6757467ddc8b3d74176d8df7dbc1dbe5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0225b13990eb6cc4400f21aa0efce5bc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0225b13990eb6cc4400f21aa0efce5bc"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_config_id</b> (const std::string &amp;config_id)</td></tr>
+<tr class="separator:a0225b13990eb6cc4400f21aa0efce5bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad68efaffb542c373364794d1c17e3b8c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html#ad68efaffb542c373364794d1c17e3b8c">ToString</a> () const </td></tr>
 <tr class="separator:ad68efaffb542c373364794d1c17e3b8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -171,6 +177,8 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:ac65ec88fbe6d8b72c65b1ff3f68c5b02"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7803f974ab6cdf542be46332598fef56"><td class="memItemLeft" align="right" valign="top">static scoped_refptr&lt; <a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html#a7803f974ab6cdf542be46332598fef56">CopyFrom</a> (const uint8_t *data, size_t size, const uint8_t *side_data, size_t side_data_size, bool is_key_frame)</td></tr>
 <tr class="separator:a7803f974ab6cdf542be46332598fef56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7181e8f5f86235581cba01be701e55b6"><td class="memItemLeft" align="right" valign="top">static scoped_refptr&lt; <a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html#a7181e8f5f86235581cba01be701e55b6">FromMetadata</a> (const uint8_t *metadata, size_t metadata_size)</td></tr>
+<tr class="separator:a7181e8f5f86235581cba01be701e55b6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac30e98c643959047439a3b71baa399ca"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac30e98c643959047439a3b71baa399ca"></a>
 static scoped_refptr&lt; <a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html#ac30e98c643959047439a3b71baa399ca">CreateEmptyMediaSample</a> ()</td></tr>
 <tr class="memdesc:ac30e98c643959047439a3b71baa399ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a <a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html" title="Class to hold a media sample. ">MediaSample</a> object with default members. <br/></td></tr>
@@ -236,7 +244,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>base::RefCountedThre
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00047">47</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00045">45</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
 
 </div>
 </div>
@@ -295,13 +303,13 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>base::RefCountedThre
     <tr><td class="paramname">data</td><td>points to the buffer containing the sample data. Must not be NULL. </td></tr>
     <tr><td class="paramname">side_data</td><td>points to the buffer containing the additional data. Some containers allow additional data to be specified. Must not be NULL. </td></tr>
     <tr><td class="paramname">size</td><td>indicates sample size in bytes. Must not be negative. </td></tr>
-    <tr><td class="paramname">side_data_size</td><td>indicates additional sample data size in bytes. Must not be negative. </td></tr>
+    <tr><td class="paramname">side_data_size</td><td>indicates additional sample data size in bytes. </td></tr>
     <tr><td class="paramname">is_key_frame</td><td>indicates whether the sample is a key frame. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00057">57</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00055">55</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
 
 </div>
 </div>
@@ -327,7 +335,51 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>base::RefCountedThre
 </div><div class="memdoc">
 <p>Create a <a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html" title="Class to hold a media sample. ">MediaSample</a> indicating we've reached end of stream. Calling any method other than end_of_stream() on the resulting buffer is disallowed. </p>
 
-<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00075">75</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00080">80</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a7181e8f5f86235581cba01be701e55b6"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">scoped_refptr&lt; <a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html">MediaSample</a> &gt; edash_packager::media::MediaSample::FromMetadata </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>metadata</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>metadata_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Create a <a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html" title="Class to hold a media sample. ">MediaSample</a> object from metadata. Unlike other factory methods, this cannot be a key frame. It must be only for metadata. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">metadata</td><td>points to the buffer containing metadata. Must not be NULL. </td></tr>
+    <tr><td class="paramname">metadata_size</td><td>is the size of metadata in bytes. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00067">67</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
 
 </div>
 </div>
@@ -345,7 +397,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>base::RefCountedThre
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>a human-readable string describing |*this|. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00079">79</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d0d/media__sample_8cc_source.html#l00084">84</a> of file <a class="el" href="../../d8/d0d/media__sample_8cc_source.html">media_sample.cc</a>.</p>
 
 </div>
 </div>
@@ -356,7 +408,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>base::RefCountedThre
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Dec 11 2015 23:57:37 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Dec 15 2015 00:22:29 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
