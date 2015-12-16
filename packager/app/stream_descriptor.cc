@@ -25,6 +25,7 @@ enum FieldType {
   kSegmentTemplateField,
   kBandwidthField,
   kLanguageField,
+  kOutputFormatField,
 };
 
 struct FieldNameToTypeMapping {
@@ -47,6 +48,8 @@ const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
   { "bitrate", kBandwidthField },
   { "language", kLanguageField },
   { "lang", kLanguageField },
+  { "output_format", kOutputFormatField },
+  { "format", kOutputFormatField },
 };
 
 FieldType GetFieldType(const std::string& field_name) {
@@ -59,7 +62,8 @@ FieldType GetFieldType(const std::string& field_name) {
 
 }  // anonymous namespace
 
-StreamDescriptor::StreamDescriptor() : bandwidth(0) {}
+StreamDescriptor::StreamDescriptor()
+    : bandwidth(0), output_format(CONTAINER_UNKNOWN) {}
 
 StreamDescriptor::~StreamDescriptor() {}
 
@@ -108,6 +112,16 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
         }
         DCHECK_EQ(3u, language.size());
         descriptor.language = language;
+        break;
+      }
+      case kOutputFormatField: {
+        MediaContainerName output_format =
+            DetermineContainerFromFormatName(iter->second);
+        if (output_format == CONTAINER_UNKNOWN) {
+          LOG(ERROR) << "Unrecognized output format " << iter->second;
+          return false;
+        }
+        descriptor.output_format = output_format;
         break;
       }
       default:

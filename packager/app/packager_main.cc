@@ -19,7 +19,6 @@
 #include "packager/base/logging.h"
 #include "packager/base/stl_util.h"
 #include "packager/base/strings/string_split.h"
-#include "packager/base/strings/string_util.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/threading/simple_thread.h"
 #include "packager/base/time/clock.h"
@@ -67,7 +66,10 @@ const char kUsage[] =
     "If not specified, its value may be estimated.\n"
     "  - language (lang): Optional value which contains a user-specified "
     "language tag. If specified, this value overrides any language metadata "
-    "in the input track.\n";
+    "in the input track.\n"
+    "  - output_format (format): Optional value which specifies the format "
+    "of the output files (MP4 or WebM).  If not specified, it will be "
+    "derived from the file extension of the output file.\n";
 
 const char kMediaInfoSuffix[] = ".media_info";
 
@@ -183,22 +185,13 @@ bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
   return true;
 }
 
-scoped_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options) {
-  // TODO(modmaker): Add a config option for output format
-  const std::string& file_name = options.output_file_name;
-  if (base::EndsWith(file_name, ".webm",
-                     base::CompareCase::INSENSITIVE_ASCII)) {
+scoped_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options,
+                                    MediaContainerName container) {
+  if (container == CONTAINER_WEBM) {
     return scoped_ptr<Muxer>(new webm::WebMMuxer(options));
-  } else if (base::EndsWith(file_name, ".mp4",
-                            base::CompareCase::INSENSITIVE_ASCII) ||
-             base::EndsWith(file_name, ".m4a",
-                            base::CompareCase::INSENSITIVE_ASCII) ||
-             base::EndsWith(file_name, ".m4v",
-                            base::CompareCase::INSENSITIVE_ASCII)) {
-    return scoped_ptr<Muxer>(new mp4::MP4Muxer(options));
   } else {
-    LOG(ERROR) << "Unrecognized output format " << file_name;
-    return NULL;
+    DCHECK_EQ(container, CONTAINER_MOV);
+    return scoped_ptr<Muxer>(new mp4::MP4Muxer(options));
   }
 }
 
@@ -282,9 +275,20 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     }
     DCHECK(!remux_jobs->empty());
 
-    scoped_ptr<Muxer> muxer(CreateOutputMuxer(stream_muxer_options));
-    if (!muxer)
-      return false;
+    MediaContainerName output_format = stream_iter->output_format;
+    if (output_format == CONTAINER_UNKNOWN) {
+      output_format =
+          DetermineContainerFromFileName(stream_muxer_options.output_file_name);
+
+      if (output_format == CONTAINER_UNKNOWN) {
+        LOG(ERROR) << "Unable to determine output format for file "
+                   << stream_muxer_options.output_file_name;
+        return false;
+      }
+    }
+
+    scoped_ptr<Muxer> muxer(
+        CreateOutputMuxer(stream_muxer_options, output_format));
     if (FLAGS_use_fake_clock_for_muxer) muxer->set_clock(fake_clock);
 
     if (key_source) {

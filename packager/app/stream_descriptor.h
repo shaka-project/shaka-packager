@@ -12,6 +12,8 @@
 #include <set>
 #include <string>
 
+#include "media/base/container_names.h"
+
 namespace edash_packager {
 namespace media {
 
@@ -27,6 +29,7 @@ struct StreamDescriptor {
   std::string segment_template;
   uint32_t bandwidth;
   std::string language;
+  MediaContainerName output_format;
 };
 
 class StreamDescriptorCompareFn {

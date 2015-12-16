@@ -12,6 +12,7 @@
 #include <limits>
 
 #include "packager/base/logging.h"
+#include "packager/base/strings/string_util.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
@@ -1712,6 +1713,37 @@ MediaContainerName DetermineContainer(const uint8_t* buffer, int buffer_size) {
     return CONTAINER_TTML;
 
   return CONTAINER_UNKNOWN;
+}
+
+MediaContainerName DetermineContainerFromFormatName(
+    const std::string& format_name) {
+  if (base::EqualsCaseInsensitiveASCII(format_name, "webm")) {
+    return CONTAINER_WEBM;
+  } else if (base::EqualsCaseInsensitiveASCII(format_name, "m4a") ||
+             base::EqualsCaseInsensitiveASCII(format_name, "m4v") ||
+             base::EqualsCaseInsensitiveASCII(format_name, "mp4") ||
+             base::EqualsCaseInsensitiveASCII(format_name, "mov")) {
+    return CONTAINER_MOV;
+  } else {
+    return CONTAINER_UNKNOWN;
+  }
+}
+
+MediaContainerName DetermineContainerFromFileName(
+    const std::string& file_name) {
+  if (base::EndsWith(file_name, ".webm",
+                     base::CompareCase::INSENSITIVE_ASCII)) {
+    return CONTAINER_WEBM;
+  } else if (base::EndsWith(file_name, ".mp4",
+                            base::CompareCase::INSENSITIVE_ASCII) ||
+             base::EndsWith(file_name, ".m4a",
+                            base::CompareCase::INSENSITIVE_ASCII) ||
+             base::EndsWith(file_name, ".m4v",
+                            base::CompareCase::INSENSITIVE_ASCII)) {
+    return CONTAINER_MOV;
+  } else {
+    return CONTAINER_UNKNOWN;
+  }
 }
 
 }  // namespace media

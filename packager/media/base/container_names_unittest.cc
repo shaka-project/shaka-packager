@@ -83,6 +83,35 @@ uint8_t kBug263073Buffer[] = {
     0x67, 0x64, 0x00, 0x28, 0xac, 0x2c, 0xa4, 0x01, 0xe0, 0x08, 0x9f,
     0x97, 0x01, 0x52, 0x02, 0x02, 0x02, 0x80, 0x00, 0x01};
 
+TEST(ContainerNamesTest, FromFormatName) {
+  EXPECT_EQ(CONTAINER_WEBM, DetermineContainerFromFormatName("webm"));
+  EXPECT_EQ(CONTAINER_WEBM, DetermineContainerFromFormatName("WeBm"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("m4a"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("m4v"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("M4v"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("mov"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("mp4"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFormatName("Mp4"));
+  EXPECT_EQ(CONTAINER_UNKNOWN, DetermineContainerFromFormatName("cat"));
+  EXPECT_EQ(CONTAINER_UNKNOWN, DetermineContainerFromFormatName("amp4"));
+  EXPECT_EQ(CONTAINER_UNKNOWN, DetermineContainerFromFormatName(" mp4"));
+  EXPECT_EQ(CONTAINER_UNKNOWN, DetermineContainerFromFormatName(""));
+}
+
+TEST(ContainerNamesTest, FromFileName) {
+  EXPECT_EQ(CONTAINER_WEBM, DetermineContainerFromFileName("test.webm"));
+  EXPECT_EQ(CONTAINER_WEBM, DetermineContainerFromFileName("another.wEbM"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFileName("test.m4a"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFileName("file.m4v"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFileName("a file .m4V"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFileName("2_more-files.mp4"));
+  EXPECT_EQ(CONTAINER_MOV, DetermineContainerFromFileName("foo.bar.MP4"));
+  EXPECT_EQ(CONTAINER_UNKNOWN, DetermineContainerFromFileName("a_bad.gif"));
+  EXPECT_EQ(CONTAINER_UNKNOWN, DetermineContainerFromFileName("a bad.m4v-"));
+  EXPECT_EQ(CONTAINER_UNKNOWN, DetermineContainerFromFileName("a.m4v."));
+  EXPECT_EQ(CONTAINER_UNKNOWN, DetermineContainerFromFileName(""));
+}
+
 // Test that containers that start with fixed strings are handled correctly.
 // This is to verify that the TAG matches the first 4 characters of the string.
 TEST(ContainerNamesTest, CheckFixedStrings) {

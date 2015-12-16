@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <string>
+
 namespace edash_packager {
 namespace media {
 
@@ -56,8 +58,17 @@ enum MediaContainerName {
   CONTAINER_MAX               // Must be last
 };
 
-/// Determine the container type.
+/// Determine the container type from input data.
 MediaContainerName DetermineContainer(const uint8_t* buffer, int buffer_size);
+
+/// Determine the container type from the format name.
+/// @param format_name Specifies the format, e.g. 'webm', 'mov', 'mp4'.
+MediaContainerName DetermineContainerFromFormatName(
+    const std::string& format_name);
+
+/// Determine the container type from the file extension.
+/// @param file_name Specifies the file name, e.g. 'file.webm', 'video.mp4'.
+MediaContainerName DetermineContainerFromFileName(const std::string& file_name);
 
 }  // namespace media
 }  // namespace edash_packager
