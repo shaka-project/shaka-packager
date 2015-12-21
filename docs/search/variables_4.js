@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['num_5fsubsegments_5fper_5fsidx',['num_subsegments_per_sidx',['../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a93714f081569ea56ed626eb057c1761f',1,'edash_packager::media::MuxerOptions']]]
+  ['output_5ffile_5fname',['output_file_name',['../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#addd401a47b287f3c18cbdc4bfa1a6963',1,'edash_packager::media::MuxerOptions']]]
 ];

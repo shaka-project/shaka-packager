@@ -11,5 +11,5 @@ var searchData=
   ['decryptorsource',['DecryptorSource',['../dc/df1/classedash__packager_1_1media_1_1DecryptorSource.html',1,'edash_packager::media']]],
   ['demuxer',['Demuxer',['../d5/dce/classedash__packager_1_1media_1_1Demuxer.html',1,'edash_packager::media']]],
   ['demuxstreamidmediasample',['DemuxStreamIdMediaSample',['../d0/dfa/structedash__packager_1_1media_1_1wvm_1_1DemuxStreamIdMediaSample.html',1,'edash_packager::media::wvm']]],
-  ['dtsspecificbox',['DTSSpecificBox',['../dc/dea/structedash__packager_1_1media_1_1mp4_1_1DTSSpecificBox.html',1,'edash_packager::media::mp4']]]
+  ['dtsspecific',['DTSSpecific',['../d0/db7/structedash__packager_1_1media_1_1mp4_1_1DTSSpecific.html',1,'edash_packager::media::mp4']]]
 ];

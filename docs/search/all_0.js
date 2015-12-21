@@ -32,7 +32,6 @@ var searchData=
   ['aesrequestsigner',['AesRequestSigner',['../d8/dcc/classedash__packager_1_1media_1_1AesRequestSigner.html',1,'edash_packager::media']]],
   ['appendint',['AppendInt',['../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115',1,'edash_packager::media::BufferWriter']]],
   ['appendnbytes',['AppendNBytes',['../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#ac929211fc97bc8ec880109775757bb81',1,'edash_packager::media::BufferWriter']]],
-  ['atom_5fsize',['atom_size',['../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a767571cecbc37bedb05d1ea84716a005',1,'edash_packager::media::mp4::Box']]],
   ['audio_5fdescription',['audio_description',['../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a2c58182a77817e4ed4a2860ae3be73df',1,'edash_packager::media::mp4::TrackRunIterator']]],
   ['audio_5fobject_5ftype',['audio_object_type',['../dc/dc6/classedash__packager_1_1media_1_1mp4_1_1AACAudioSpecificConfig.html#a12bcda441f7745bd70cb9b4fdfb4b9b5',1,'edash_packager::media::mp4::AACAudioSpecificConfig']]],
   ['audiosampleentry',['AudioSampleEntry',['../df/d62/structedash__packager_1_1media_1_1mp4_1_1AudioSampleEntry.html',1,'edash_packager::media::mp4']]],
