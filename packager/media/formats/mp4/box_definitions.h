@@ -222,7 +222,41 @@ struct Edit : Box {
 struct HandlerReference : FullBox {
   DECLARE_BOX_METHODS(HandlerReference);
 
-  TrackType type;
+  FourCC handler_type;
+};
+
+struct Language {
+  bool ReadWrite(BoxBuffer* buffer);
+  uint32_t ComputeSize() const;
+
+  std::string code;
+};
+
+/// Implemented per http://id3.org/id3v2.4.0-frames.
+struct PrivFrame {
+  bool ReadWrite(BoxBuffer* buffer);
+  uint32_t ComputeSize() const;
+
+  std::string owner;
+  std::string value;
+};
+
+/// Implemented per http://mp4ra.org/specs.html#id3v2 and
+///                 http://id3.org/id3v2.4.0-structure.
+struct ID3v2 : FullBox {
+  DECLARE_BOX_METHODS(ID3v2);
+
+  Language language;
+
+  /// We only support PrivateFrame in ID3. Other frames are ignored.
+  PrivFrame private_frame;
+};
+
+struct Metadata : FullBox {
+  DECLARE_BOX_METHODS(Metadata);
+
+  HandlerReference handler;
+  ID3v2 id3v2;
 };
 
 struct CodecConfigurationRecord : Box {
@@ -422,8 +456,7 @@ struct MediaHeader : FullBox {
   uint64_t modification_time;
   uint32_t timescale;
   uint64_t duration;
-  // 3-char language code + 1 null terminating char.
-  char language[4];
+  Language language;
 };
 
 struct VideoMediaHeader : FullBox {
@@ -519,6 +552,7 @@ struct Movie : Box {
   DECLARE_BOX_METHODS(Movie);
 
   MovieHeader header;
+  Metadata metadata;  // Used to hold version information.
   MovieExtends extends;
   std::vector<Track> tracks;
   std::vector<ProtectionSystemSpecificHeader> pssh;

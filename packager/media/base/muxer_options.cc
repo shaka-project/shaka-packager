@@ -5,6 +5,7 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include "packager/media/base/muxer_options.h"
+#include "packager/version/version.h"
 
 namespace edash_packager {
 namespace media {
@@ -16,7 +17,8 @@ MuxerOptions::MuxerOptions()
       segment_sap_aligned(false),
       fragment_sap_aligned(false),
       num_subsegments_per_sidx(0),
-      bandwidth(0) {}
+      bandwidth(0),
+      packager_version_string(kPackagerVersion) {}
 MuxerOptions::~MuxerOptions() {}
 
 }  // namespace media

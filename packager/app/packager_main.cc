@@ -36,6 +36,7 @@
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/simple_mpd_notifier.h"
+#include "packager/version/version.h"
 
 DEFINE_bool(use_fake_clock_for_muxer,
             false,
@@ -45,37 +46,36 @@ DEFINE_bool(use_fake_clock_for_muxer,
 
 namespace {
 const char kUsage[] =
-    "Packager driver program. Sample Usage:\n"
+    "Packager driver program. Usage:\n\n"
     "%s [flags] <stream_descriptor> ...\n"
     "stream_descriptor consists of comma separated field_name/value pairs:\n"
     "field_name=value,[field_name=value,]...\n"
     "Supported field names are as follows:\n"
-    "  - input (in): Required input/source media file path or network stream "
-    "URL.\n"
-    "  - stream_selector (stream): Required field with value 'audio', 'video', "
-    "or stream number (zero based).\n"
-    "  - output (out): Required output file (single file) or initialization "
-    "file path (multiple file).\n"
-    "  - segment_template (segment): Optional value which specifies the "
-    "naming  pattern for the segment files, and that the stream should be "
-    "split into multiple files. Its presence should be consistent across "
-    "streams.\n"
-    "  - bandwidth (bw): Optional value which contains a user-specified "
-    "content bit rate for the stream, in bits/sec. If specified, this value is "
-    "propagated to the $Bandwidth$ template parameter for segment names. "
-    "If not specified, its value may be estimated.\n"
-    "  - language (lang): Optional value which contains a user-specified "
-    "language tag. If specified, this value overrides any language metadata "
-    "in the input track.\n"
-    "  - output_format (format): Optional value which specifies the format "
-    "of the output files (MP4 or WebM).  If not specified, it will be "
-    "derived from the file extension of the output file.\n";
+    "  - input (in): Required input/source media file path or network stream\n"
+    "    URL.\n"
+    "  - stream_selector (stream): Required field with value 'audio',\n"
+    "    'video', or stream number (zero based).\n"
+    "  - output (out): Required output file (single file) or initialization\n"
+    "    file path (multiple file).\n"
+    "  - segment_template (segment): Optional value which specifies the\n"
+    "    naming  pattern for the segment files, and that the stream should be\n"
+    "    split into multiple files. Its presence should be consistent across\n"
+    "    streams.\n"
+    "  - bandwidth (bw): Optional value which contains a user-specified\n"
+    "    content bit rate for the stream, in bits/sec. If specified, this\n"
+    "    value is propagated to the $Bandwidth$ template parameter for\n"
+    "    segment names. If not specified, its value may be estimated.\n"
+    "  - language (lang): Optional value which contains a user-specified\n"
+    "    language tag. If specified, this value overrides any language\n"
+    "    metadata in the input track.\n"
+    "  - output_format (format): Optional value which specifies the format\n"
+    "    of the output files (MP4 or WebM).  If not specified, it will be\n"
+    "    derived from the file extension of the output file.\n";
 
 const char kMediaInfoSuffix[] = ".media_info";
 
 enum ExitStatus {
   kSuccess = 0,
-  kNoArgument,
   kArgumentValidationFailed,
   kPackagingFailed,
   kInternalError,
@@ -441,8 +441,10 @@ int PackagerMain(int argc, char** argv) {
   google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
   google::ParseCommandLineFlags(&argc, &argv, true);
   if (argc < 2) {
-    google::ShowUsageWithFlags(argv[0]);
-    return kNoArgument;
+    std::string version_string =
+        base::StringPrintf("edash-packager version %s", kPackagerVersion);
+    google::ShowUsageWithFlags(version_string.c_str());
+    return kSuccess;
   }
 
   if (!ValidateWidevineCryptoFlags() || !ValidateFixedCryptoFlags())

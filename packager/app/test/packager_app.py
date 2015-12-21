@@ -31,6 +31,13 @@ class PackagerApp(object):
     cmd = [self.binary, input_str, '--dump_stream_info']
     return subprocess.check_output(cmd)
 
+  def Version(self):
+    output = subprocess.check_output([self.binary])
+    # The output should of the form:
+    #   edash-packager version xxx: Description...
+    # We consider everything before ':' part of version.
+    return output.split(':')[0]
+
   def Package(self, streams, flags=None):
     if flags is None:
       flags = []

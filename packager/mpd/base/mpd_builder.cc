@@ -494,7 +494,13 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
   }
 
   DCHECK(doc);
-  xmlDocSetRootElement(doc.get(), mpd.Release());
+  std::string version_string =
+      "Generated with https://github.com/google/edash-packager version " +
+      mpd_options_.packager_version_string;
+  xml::scoped_xml_ptr<xmlNode> comment(
+      xmlNewDocComment(doc.get(), BAD_CAST version_string.c_str()));
+  xmlDocSetRootElement(doc.get(), comment.get());
+  xmlAddSibling(comment.release(), mpd.Release());
   return doc.release();
 }
 

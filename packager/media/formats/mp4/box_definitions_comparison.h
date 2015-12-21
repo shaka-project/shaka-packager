@@ -180,7 +180,24 @@ inline bool operator==(const Edit& lhs, const Edit& rhs) {
 
 inline bool operator==(const HandlerReference& lhs,
                        const HandlerReference& rhs) {
-  return lhs.type == rhs.type;
+  return lhs.handler_type == rhs.handler_type;
+}
+
+inline bool operator==(const Language& lhs,
+                       const Language& rhs) {
+  return lhs.code == rhs.code;
+}
+
+inline bool operator==(const PrivFrame& lhs, const PrivFrame& rhs) {
+  return lhs.owner == rhs.owner && lhs.value == rhs.value;
+}
+
+inline bool operator==(const ID3v2& lhs, const ID3v2& rhs) {
+  return lhs.language == rhs.language && lhs.private_frame == rhs.private_frame;
+}
+
+inline bool operator==(const Metadata& lhs, const Metadata& rhs) {
+  return lhs.handler == rhs.handler && lhs.id3v2 == rhs.id3v2;
 }
 
 inline bool operator==(const CodecConfigurationRecord& lhs,
@@ -252,7 +269,7 @@ inline bool operator==(const MediaHeader& lhs, const MediaHeader& rhs) {
   return lhs.creation_time == rhs.creation_time &&
          lhs.modification_time == rhs.modification_time &&
          lhs.timescale == rhs.timescale && lhs.duration == rhs.duration &&
-         strcmp(lhs.language, rhs.language) == 0;
+         lhs.language == rhs.language;
 }
 
 inline bool operator==(const VideoMediaHeader& lhs,

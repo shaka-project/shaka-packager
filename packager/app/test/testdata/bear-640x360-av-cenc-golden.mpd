@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--Generated with https://github.com/google/edash-packager version <tag>-<hash>-<test>-->
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" minBufferTime="PT2S" type="static" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" mediaPresentationDuration="PT2.763174533843994S">
   <Period>
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="30000/1001" subsegmentAlignment="true" par="16:9">
-      <Representation id="0" bandwidth="885151" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" width="640" height="360" frameRate="30000/1001">
+      <Representation id="0" bandwidth="885555" codecs="avc1.64001e" mimeType="video/mp4" sar="1:1" width="640" height="360" frameRate="30000/1001">
         <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
         <ContentProtection schemeIdUri="urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed">
           <cenc:pssh>AAAAMHBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAABAxMjM0NTY3ODkwMTIzNDU2</cenc:pssh>
         </ContentProtection>
         <BaseURL>output_video.mp4</BaseURL>
-        <SegmentBase indexRange="941-1008" timescale="30000">
-          <Initialization range="0-940"/>
+        <SegmentBase indexRange="1079-1146" timescale="30000">
+          <Initialization range="0-1078"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
     <AdaptationSet id="1" contentType="audio" subsegmentAlignment="true">
-      <Representation id="1" bandwidth="128728" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
+      <Representation id="1" bandwidth="129127" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
         <ContentProtection schemeIdUri="urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed">
           <cenc:pssh>AAAAMHBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAABAxMjM0NTY3ODkwMTIzNDU2</cenc:pssh>
         </ContentProtection>
         <BaseURL>output_audio.mp4</BaseURL>
-        <SegmentBase indexRange="817-884" timescale="44100">
-          <Initialization range="0-816"/>
+        <SegmentBase indexRange="955-1022" timescale="44100">
+          <Initialization range="0-954"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

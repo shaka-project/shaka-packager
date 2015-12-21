@@ -13,6 +13,7 @@
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/status.h"
+#include "packager/media/formats/mp4/box_definitions.h"
 
 namespace edash_packager {
 namespace media {
@@ -29,11 +30,6 @@ class ProgressListener;
 namespace mp4 {
 
 class Fragmenter;
-
-struct FileType;
-struct Movie;
-struct MovieFragment;
-struct SegmentIndex;
 
 /// This class defines the Segmenter which is responsible for organizing
 /// fragments into segments/subsegments and package them into a MP4 file.

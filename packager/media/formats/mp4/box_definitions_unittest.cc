@@ -286,11 +286,29 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Modify(Edit* edts) { Modify(&edts->list); }
 
-  void Fill(HandlerReference* hdlr) {
-    hdlr->type = kSampleDescriptionTrackType;
+  void Fill(HandlerReference* hdlr) { hdlr->handler_type = FOURCC_VIDE; }
+
+  void Modify(HandlerReference* hdlr) { hdlr->handler_type = FOURCC_SOUN; }
+
+  void Fill(ID3v2* id3v2) {
+    id3v2->language.code = "eng";
+    id3v2->private_frame.owner = "edash-packager";
+    id3v2->private_frame.value = "version 1.2.0-debug";
   }
 
-  void Modify(HandlerReference* hdlr) { hdlr->type = kAudio; }
+  void Modify(ID3v2* id3v2) {
+    id3v2->language.code = "fre";
+    id3v2->private_frame.value = "version 1.3.1-release";
+  }
+
+  void Fill(Metadata* metadata) {
+    metadata->handler.handler_type = FOURCC_ID32;
+    Fill(&metadata->id3v2);
+  }
+
+  void Modify(Metadata* metadata) {
+    Modify(&metadata->id3v2);
+  }
 
   void Fill(PixelAspectRatio* pasp) {
     pasp->h_spacing = 5;
@@ -517,14 +535,14 @@ class BoxDefinitionsTestGeneral : public testing::Test {
         static_cast<uint64_t>(std::numeric_limits<uint32_t>::max()) + 1;
     mdhd->timescale = 50000;
     mdhd->duration = 250000;
-    strcpy(mdhd->language, "abc");
+    mdhd->language.code = "abc";
     mdhd->version = 1;
   }
 
   void Modify(MediaHeader* mdhd) {
     mdhd->creation_time = 2;
     mdhd->modification_time = std::numeric_limits<uint32_t>::max();
-    strcpy(mdhd->language, "und");
+    mdhd->language.code = "und";
     mdhd->version = 0;
   }
 
@@ -633,6 +651,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Fill(Movie* moov) {
     Fill(&moov->header);
+    Fill(&moov->metadata);
     Fill(&moov->extends);
     moov->tracks.resize(2);
     Fill(&moov->tracks[0]);
@@ -854,6 +873,8 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     Modify(&vttc->cue_payload);
   }
 
+  bool IsOptional(const ID3v2* box) { return true; }
+  bool IsOptional(const Metadata* box) { return true; }
   bool IsOptional(const SampleAuxiliaryInformationOffset* box) { return true; }
   bool IsOptional(const SampleAuxiliaryInformationSize* box) { return true; }
   bool IsOptional(const SampleEncryption* box) { return true; }
@@ -881,76 +902,77 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   scoped_ptr<BufferWriter> buffer_;
 };
 
-typedef testing::Types<
-    FileType,
-    SegmentType,
-    ProtectionSystemSpecificHeader,
-    SampleAuxiliaryInformationOffset,
-    SampleAuxiliaryInformationSize,
-    OriginalFormat,
-    SchemeType,
-    TrackEncryption,
-    SchemeInfo,
-    ProtectionSchemeInfo,
-    MovieHeader,
-    TrackHeader,
-    EditList,
-    Edit,
-    HandlerReference,
-    CodecConfigurationRecord,
-    PixelAspectRatio,
-    VideoSampleEntry,
-    ElementaryStreamDescriptor,
-    AudioSampleEntry,
-    WebVTTConfigurationBox,
-    WebVTTSourceLabelBox,
-    WVTTSampleEntry,
-    SampleDescription,
-    DecodingTimeToSample,
-    CompositionTimeToSample,
-    SampleToChunk,
-    SampleSize,
-    CompactSampleSize,
-    ChunkLargeOffset,
-    ChunkOffset,
-    SyncSample,
-    SampleTable,
-    MediaHeader,
-    VideoMediaHeader,
-    SoundMediaHeader,
-    SubtitleMediaHeader,
-    DataEntryUrl,
-    DataReference,
-    DataInformation,
-    MediaInformation,
-    Media,
-    Track,
-    MovieExtendsHeader,
-    TrackExtends,
-    MovieExtends,
-    Movie,
-    TrackFragmentDecodeTime,
-    MovieFragmentHeader,
-    TrackFragmentHeader> Boxes;
-
 // GTEST support a maximum of 50 types in the template list, so we have to
 // break it into two groups.
-typedef testing::Types<
-    TrackFragmentRun,
-    TrackFragment,
-    MovieFragment,
-    SegmentIndex,
-    SampleToGroup,
-    SampleGroupDescription,
-    CueSourceIDBox,
-    CueTimeBox,
-    CueIDBox,
-    CueSettingsBox,
-    CuePayloadBox,
-    VTTEmptyCueBox,
-    VTTAdditionalTextBox,
-    VTTCueBox,
-    DTSSpecific> Boxes2;
+typedef testing::Types<FileType,
+                       SegmentType,
+                       ProtectionSystemSpecificHeader,
+                       SampleAuxiliaryInformationOffset,
+                       SampleAuxiliaryInformationSize,
+                       OriginalFormat,
+                       SchemeType,
+                       TrackEncryption,
+                       SchemeInfo,
+                       ProtectionSchemeInfo,
+                       MovieHeader,
+                       TrackHeader,
+                       EditList,
+                       Edit,
+                       HandlerReference,
+                       ID3v2,
+                       Metadata,
+                       CodecConfigurationRecord,
+                       PixelAspectRatio,
+                       VideoSampleEntry,
+                       ElementaryStreamDescriptor,
+                       DTSSpecific,
+                       AudioSampleEntry,
+                       WebVTTConfigurationBox,
+                       WebVTTSourceLabelBox,
+                       WVTTSampleEntry,
+                       SampleDescription,
+                       DecodingTimeToSample,
+                       CompositionTimeToSample,
+                       SampleToChunk,
+                       SampleSize,
+                       CompactSampleSize,
+                       ChunkLargeOffset,
+                       ChunkOffset,
+                       SyncSample,
+                       SampleTable>
+    Boxes;
+typedef testing::Types<MediaHeader,
+                       VideoMediaHeader,
+                       SoundMediaHeader,
+                       SubtitleMediaHeader,
+                       DataEntryUrl,
+                       DataReference,
+                       DataInformation,
+                       MediaInformation,
+                       Media,
+                       Track,
+                       MovieExtendsHeader,
+                       TrackExtends,
+                       MovieExtends,
+                       Movie,
+                       TrackFragmentDecodeTime,
+                       MovieFragmentHeader,
+                       TrackFragmentHeader,
+                       TrackFragmentRun,
+                       TrackFragment,
+                       MovieFragment,
+                       SegmentIndex,
+                       SampleToGroup,
+                       SampleGroupDescription,
+                       CueSourceIDBox,
+                       CueTimeBox,
+                       CueIDBox,
+                       CueSettingsBox,
+                       CuePayloadBox,
+                       VTTEmptyCueBox,
+                       VTTAdditionalTextBox,
+                       VTTCueBox>
+    Boxes2;
 
 TYPED_TEST_CASE_P(BoxDefinitionsTestGeneral);
 
@@ -1020,6 +1042,20 @@ INSTANTIATE_TYPED_TEST_CASE_P(BoxDefinitionTypedTests2,
 
 // Test other cases of box input.
 class BoxDefinitionsTest : public BoxDefinitionsTestGeneral<Box> {};
+
+TEST_F(BoxDefinitionsTest, MediaHandlerType) {
+  Media media;
+  Fill(&media);
+  // Clear handler type. When this box is written, it will derive handler type
+  // from sample table description.
+  media.handler.handler_type = FOURCC_NULL;
+  media.information.sample_table.description.type = kVideo;
+  media.Write(this->buffer_.get());
+
+  Media media_readback;
+  ASSERT_TRUE(ReadBack(&media_readback));
+  ASSERT_EQ(FOURCC_VIDE, media_readback.handler.handler_type);
+}
 
 TEST_F(BoxDefinitionsTest, DTSSampleEntry) {
   AudioSampleEntry entry;

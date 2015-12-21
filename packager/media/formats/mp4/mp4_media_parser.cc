@@ -327,7 +327,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
     RCHECK(desc_idx > 0);
     desc_idx -= 1;  // BMFF descriptor index is one-based
 
-    if (track->media.handler.type == kAudio) {
+    if (samp_descr.type == kAudio) {
       RCHECK(!samp_descr.audio_entries.empty());
 
       // It is not uncommon to find otherwise-valid files with incorrect sample
@@ -428,7 +428,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           duration,
           codec,
           AudioStreamInfo::GetCodecString(codec, audio_object_type),
-          track->media.header.language,
+          track->media.header.language.code,
           entry.samplesize,
           num_channels,
           sampling_frequency,
@@ -439,7 +439,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           is_encrypted));
     }
 
-    if (track->media.handler.type == kVideo) {
+    if (samp_descr.type == kVideo) {
       RCHECK(!samp_descr.video_entries.empty());
       if (desc_idx >= samp_descr.video_entries.size())
         desc_idx = 0;
@@ -527,8 +527,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       DVLOG(1) << "is_video_track_encrypted_: " << is_encrypted;
       streams.push_back(new VideoStreamInfo(
           track->header.track_id, timescale, duration, video_codec,
-          codec_string, track->media.header.language, coded_width, coded_height,
-          pixel_width, pixel_height,
+          codec_string, track->media.header.language.code, coded_width,
+          coded_height, pixel_width, pixel_height,
           0,  // trick_play_rate
           nalu_length_size, vector_as_array(&entry.codec_config_record.data),
           entry.codec_config_record.data.size(), is_encrypted));

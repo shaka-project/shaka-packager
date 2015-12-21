@@ -14,6 +14,8 @@ namespace mp4 {
 // TODO(rkuroiwa): Make these case sensitive. e.g. FOURCC_avc1.
 enum FourCC {
   FOURCC_NULL = 0,
+  FOURCC_ID32 = 0x49443332,
+  FOURCC_PRIV = 0x50524956,
   FOURCC_AVC1 = 0x61766331,
   FOURCC_AVCC = 0x61766343,
   FOURCC_BLOC = 0x626C6F63,

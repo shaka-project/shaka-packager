@@ -60,6 +60,7 @@
         '../base/base.gyp:base',
         '../media/file/file.gyp:file',
         '../third_party/libxml/libxml.gyp:libxml',
+        '../version/version.gyp:version',
         'media_info_proto',
       ],
       'export_dependent_settings': [

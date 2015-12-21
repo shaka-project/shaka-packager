@@ -1,4 +1,4 @@
-bandwidth: 885151
+bandwidth: 885555
 video_info {
   codec: "avc1.64001e"
   width: 640
@@ -11,11 +11,11 @@ video_info {
 }
 init_range {
   begin: 0
-  end: 940
+  end: 1078
 }
 index_range {
-  begin: 941
-  end: 1008
+  begin: 1079
+  end: 1146
 }
 media_file_name: "place_holder"
 media_duration_seconds: 2.7360666

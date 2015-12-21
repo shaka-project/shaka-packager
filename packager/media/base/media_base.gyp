@@ -84,6 +84,7 @@
         '../../third_party/boringssl/boringssl.gyp:boringssl',
         '../../third_party/curl/curl.gyp:libcurl',
         '../../third_party/libxml/libxml.gyp:libxml',
+        '../../version/version.gyp:version',
       ],
     },
     {

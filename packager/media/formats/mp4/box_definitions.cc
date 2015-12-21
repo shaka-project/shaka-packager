@@ -63,6 +63,11 @@ bool IsIvSizeValid(size_t iv_size) {
 // bit(5) Reserved // 0
 const uint8_t kDdtsExtraData[] = {0xe4, 0x7c, 0, 4, 0, 0x0f, 0};
 
+// ID3v2 header: http://id3.org/id3v2.4.0-structure
+const uint32_t kID3v2HeaderSize = 10;
+const char kID3v2Identifier[] = "ID3";
+const uint16_t kID3v2Version = 0x0400;  // id3v2.4.0
+
 // Utility functions to check if the 64bit integers can fit in 32bit integer.
 bool IsFitIn32Bits(uint64_t a) {
   return a <= std::numeric_limits<uint32_t>::max();
@@ -88,6 +93,36 @@ bool IsFitIn32Bits(T1 a1, T2 a2, T3 a3) {
 namespace edash_packager {
 namespace media {
 namespace mp4 {
+
+namespace {
+
+TrackType FourCCToTrackType(FourCC fourcc) {
+  switch (fourcc) {
+    case FOURCC_VIDE:
+      return kVideo;
+    case FOURCC_SOUN:
+      return kAudio;
+    case FOURCC_TEXT:
+      return kText;
+    default:
+      return kInvalid;
+  }
+}
+
+FourCC TrackTypeToFourCC(TrackType track_type) {
+  switch (track_type) {
+    case kVideo:
+      return FOURCC_VIDE;
+    case kAudio:
+      return FOURCC_SOUN;
+    case kText:
+      return FOURCC_TEXT;
+    default:
+      return FOURCC_NULL;
+  }
+}
+
+}  // namespace
 
 FileType::FileType() : major_brand(FOURCC_NULL), minor_version(0) {}
 FileType::~FileType() {}
@@ -967,44 +1002,37 @@ uint32_t Edit::ComputeSizeInternal() {
   return HeaderSize() + list.ComputeSize();
 }
 
-HandlerReference::HandlerReference() : type(kInvalid) {}
+HandlerReference::HandlerReference() : handler_type(FOURCC_NULL) {}
 HandlerReference::~HandlerReference() {}
 FourCC HandlerReference::BoxType() const { return FOURCC_HDLR; }
 
 bool HandlerReference::ReadWriteInternal(BoxBuffer* buffer) {
-  FourCC hdlr_type = FOURCC_NULL;
   std::vector<uint8_t> handler_name;
   if (!buffer->Reading()) {
-    if (type == kVideo) {
-      hdlr_type = FOURCC_VIDE;
-      handler_name.assign(kVideoHandlerName,
-                          kVideoHandlerName + arraysize(kVideoHandlerName));
-    } else if (type == kAudio) {
-      hdlr_type = FOURCC_SOUN;
-      handler_name.assign(kAudioHandlerName,
-                          kAudioHandlerName + arraysize(kAudioHandlerName));
-    } else if (type == kText) {
-      hdlr_type = FOURCC_TEXT;
-      handler_name.assign(kTextHandlerName,
-                          kTextHandlerName + arraysize(kTextHandlerName));
-    } else {
-      NOTIMPLEMENTED();
-      return false;
+    switch (handler_type) {
+      case FOURCC_VIDE:
+        handler_name.assign(kVideoHandlerName,
+                            kVideoHandlerName + arraysize(kVideoHandlerName));
+        break;
+      case FOURCC_SOUN:
+        handler_name.assign(kAudioHandlerName,
+                            kAudioHandlerName + arraysize(kAudioHandlerName));
+        break;
+      case FOURCC_TEXT:
+        handler_name.assign(kTextHandlerName,
+                            kTextHandlerName + arraysize(kTextHandlerName));
+        break;
+      case FOURCC_ID32:
+        break;
+      default:
+        NOTIMPLEMENTED();
+        return false;
     }
   }
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->IgnoreBytes(4) &&  // predefined.
-         buffer->ReadWriteFourCC(&hdlr_type));
-  if (buffer->Reading()) {
-    // Note: for reading, remaining fields in box ignored.
-    if (hdlr_type == FOURCC_VIDE) {
-      type = kVideo;
-    } else if (hdlr_type == FOURCC_SOUN) {
-      type = kAudio;
-    } else {
-      type = kInvalid;
-    }
-  } else {
+         buffer->ReadWriteFourCC(&handler_type));
+  if (!buffer->Reading()) {
     RCHECK(buffer->IgnoreBytes(12) &&  // reserved.
            buffer->ReadWriteVector(&handler_name, handler_name.size()));
   }
@@ -1013,14 +1041,159 @@ bool HandlerReference::ReadWriteInternal(BoxBuffer* buffer) {
 
 uint32_t HandlerReference::ComputeSizeInternal() {
   uint32_t box_size = HeaderSize() + kFourCCSize + 16;  // 16 bytes Reserved
-  if (type == kVideo) {
-    box_size += sizeof(kVideoHandlerName);
-  } else if (type == kAudio) {
-    box_size += sizeof(kAudioHandlerName);
-  } else {
-    box_size += sizeof(kTextHandlerName);
+  switch (handler_type) {
+    case FOURCC_VIDE:
+      box_size += sizeof(kVideoHandlerName);
+      break;
+    case FOURCC_SOUN:
+      box_size += sizeof(kAudioHandlerName);
+      break;
+    case FOURCC_TEXT:
+      box_size += sizeof(kTextHandlerName);
+      break;
+    case FOURCC_ID32:
+      break;
+    default:
+      NOTIMPLEMENTED();
   }
   return box_size;
+}
+
+bool Language::ReadWrite(BoxBuffer* buffer) {
+  if (buffer->Reading()) {
+    // Read language codes into temp first then use BitReader to read the
+    // values. ISO-639-2/T language code: unsigned int(5)[3] language (2 bytes).
+    std::vector<uint8_t> temp;
+    RCHECK(buffer->ReadWriteVector(&temp, 2));
+
+    BitReader bit_reader(&temp[0], 2);
+    bit_reader.SkipBits(1);
+    char language[3];
+    for (int i = 0; i < 3; ++i) {
+      CHECK(bit_reader.ReadBits(5, &language[i]));
+      language[i] += 0x60;
+    }
+    code.assign(language, 3);
+  } else {
+    // Set up default language if it is not set.
+    const char kUndefinedLanguage[] = "und";
+    if (code.empty())
+      code = kUndefinedLanguage;
+    DCHECK_EQ(code.size(), 3u);
+
+    // Lang format: bit(1) pad, unsigned int(5)[3] language.
+    uint16_t lang = 0;
+    for (int i = 0; i < 3; ++i)
+      lang |= (code[i] - 0x60) << ((2 - i) * 5);
+    RCHECK(buffer->ReadWriteUInt16(&lang));
+  }
+  return true;
+}
+
+uint32_t Language::ComputeSize() const {
+  // ISO-639-2/T language code: unsigned int(5)[3] language (2 bytes).
+  return 2;
+}
+
+bool PrivFrame::ReadWrite(BoxBuffer* buffer) {
+  FourCC fourcc = FOURCC_PRIV;
+  RCHECK(buffer->ReadWriteFourCC(&fourcc));
+  if (fourcc != FOURCC_PRIV) {
+    VLOG(1) << "Skip unrecognized id3 frame during read: "
+            << FourCCToString(fourcc);
+    return true;
+  }
+
+  uint32_t frame_size = owner.size() + 1 + value.size();
+  // size should be encoded as synchsafe integer, which is not support here.
+  // We don't expect frame_size to be larger than 0x7F. Synchsafe integers less
+  // than 0x7F is encoded in the same way as normal integer.
+  DCHECK_LT(frame_size, 0x7Fu);
+  uint16_t flags = 0;
+  RCHECK(buffer->ReadWriteUInt32(&frame_size) &&
+         buffer->ReadWriteUInt16(&flags));
+
+  if (buffer->Reading()) {
+    std::string str;
+    RCHECK(buffer->ReadWriteString(&str, frame_size));
+    // |owner| is null terminated.
+    size_t pos = str.find('\0');
+    RCHECK(pos < str.size());
+    owner = str.substr(0, pos);
+    value = str.substr(pos + 1);
+  } else {
+    uint8_t byte = 0;  // Null terminating byte between owner and value.
+    RCHECK(buffer->ReadWriteString(&owner, owner.size()) &&
+           buffer->ReadWriteUInt8(&byte) &&
+           buffer->ReadWriteString(&value, value.size()));
+  }
+  return true;
+}
+
+uint32_t PrivFrame::ComputeSize() const {
+  if (owner.empty() && value.empty())
+    return 0;
+  const uint32_t kFourCCSize = 4;
+  return kFourCCSize + sizeof(uint32_t) + sizeof(uint16_t) + owner.size() + 1 +
+         value.size();
+}
+
+ID3v2::ID3v2() {}
+ID3v2::~ID3v2() {}
+
+FourCC ID3v2::BoxType() const { return FOURCC_ID32; }
+
+bool ID3v2::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer) &&
+         language.ReadWrite(buffer));
+
+  // Read/Write ID3v2 header
+  std::string id3v2_identifier = kID3v2Identifier;
+  uint16_t version = kID3v2Version;
+  // We only support PrivateFrame in ID3.
+  uint32_t data_size = private_frame.ComputeSize();
+  // size should be encoded as synchsafe integer, which is not support here.
+  // We don't expect data_size to be larger than 0x7F. Synchsafe integers less
+  // than 0x7F is encoded in the same way as normal integer.
+  DCHECK_LT(data_size, 0x7Fu);
+  uint8_t flags = 0;
+  RCHECK(buffer->ReadWriteString(&id3v2_identifier, id3v2_identifier.size()) &&
+         buffer->ReadWriteUInt16(&version) &&
+         buffer->ReadWriteUInt8(&flags) &&
+         buffer->ReadWriteUInt32(&data_size));
+
+  RCHECK(private_frame.ReadWrite(buffer));
+  return true;
+}
+
+uint32_t ID3v2::ComputeSizeInternal() {
+  uint32_t private_frame_size = private_frame.ComputeSize();
+  // Skip ID3v2 box generation if there is no private frame.
+  return private_frame_size == 0 ? 0 : HeaderSize() + language.ComputeSize() +
+                                           kID3v2HeaderSize +
+                                           private_frame_size;
+}
+
+Metadata::Metadata() {}
+Metadata::~Metadata() {}
+
+FourCC Metadata::BoxType() const {
+  return FOURCC_META;
+}
+
+bool Metadata::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer) &&
+         buffer->PrepareChildren() &&
+         buffer->ReadWriteChild(&handler) &&
+         buffer->TryReadWriteChild(&id3v2));
+  return true;
+}
+
+uint32_t Metadata::ComputeSizeInternal() {
+  uint32_t id3v2_size = id3v2.ComputeSize();
+  // Skip metadata box generation if there is no metadata box.
+  return id3v2_size == 0 ? 0
+                         : HeaderSize() + handler.ComputeSize() + id3v2_size;
 }
 
 CodecConfigurationRecord::CodecConfigurationRecord() : box_type(FOURCC_NULL) {}
@@ -1369,9 +1542,7 @@ uint32_t WVTTSampleEntry::ComputeSizeInternal() {
 }
 
 MediaHeader::MediaHeader()
-    : creation_time(0), modification_time(0), timescale(0), duration(0) {
-  language[0] = 0;
-}
+    : creation_time(0), modification_time(0), timescale(0), duration(0) {}
 MediaHeader::~MediaHeader() {}
 FourCC MediaHeader::BoxType() const { return FOURCC_MDHD; }
 
@@ -1382,43 +1553,17 @@ bool MediaHeader::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(buffer->ReadWriteUInt64NBytes(&creation_time, num_bytes) &&
          buffer->ReadWriteUInt64NBytes(&modification_time, num_bytes) &&
          buffer->ReadWriteUInt32(&timescale) &&
-         buffer->ReadWriteUInt64NBytes(&duration, num_bytes));
-
-  if (buffer->Reading()) {
-    // Read language codes into temp first then use BitReader to read the
-    // values. ISO-639-2/T language code: unsigned int(5)[3] language (2 bytes).
-    std::vector<uint8_t> temp;
-    RCHECK(buffer->ReadWriteVector(&temp, 2));
-
-    BitReader bit_reader(&temp[0], 2);
-    bit_reader.SkipBits(1);
-    for (int i = 0; i < 3; ++i) {
-      CHECK(bit_reader.ReadBits(5, &language[i]));
-      language[i] += 0x60;
-    }
-    language[3] = '\0';
-  } else {
-    // Set up default language if it is not set.
-    const char kUndefinedLanguage[] = "und";
-    if (language[0] == 0)
-      strcpy(language, kUndefinedLanguage);
-
-    // Lang format: bit(1) pad, unsigned int(5)[3] language.
-    uint16_t lang = 0;
-    for (int i = 0; i < 3; ++i)
-      lang |= (language[i] - 0x60) << ((2 - i) * 5);
-    RCHECK(buffer->ReadWriteUInt16(&lang));
-  }
-
-  RCHECK(buffer->IgnoreBytes(2));  // predefined.
+         buffer->ReadWriteUInt64NBytes(&duration, num_bytes) &&
+         language.ReadWrite(buffer) &&
+         buffer->IgnoreBytes(2));  // predefined.
   return true;
 }
 
 uint32_t MediaHeader::ComputeSizeInternal() {
   version = IsFitIn32Bits(creation_time, modification_time, duration) ? 0 : 1;
   return HeaderSize() + sizeof(timescale) +
-         sizeof(uint32_t) * (1 + version) * 3 + 2 +  // 2 bytes language.
-         2;                                          // 2 bytes predefined.
+         sizeof(uint32_t) * (1 + version) * 3 + language.ComputeSize() +
+         2;  // 2 bytes predefined.
 }
 
 VideoMediaHeader::VideoMediaHeader()
@@ -1580,24 +1725,30 @@ FourCC Media::BoxType() const { return FOURCC_MDIA; }
 bool Media::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->PrepareChildren() &&
-         buffer->ReadWriteChild(&header) &&
-         buffer->ReadWriteChild(&handler));
+         buffer->ReadWriteChild(&header));
   if (buffer->Reading()) {
+    RCHECK(buffer->ReadWriteChild(&handler));
     // Maddeningly, the HandlerReference box specifies how to parse the
     // SampleDescription box, making the latter the only box (of those that we
     // support) which cannot be parsed correctly on its own (or even with
     // information from its strict ancestor tree). We thus copy the handler type
     // to the sample description box *before* parsing it to provide this
     // information while parsing.
-    information.sample_table.description.type = handler.type;
+    information.sample_table.description.type =
+        FourCCToTrackType(handler.handler_type);
   } else {
-    DCHECK_EQ(information.sample_table.description.type, handler.type);
+    handler.handler_type =
+        TrackTypeToFourCC(information.sample_table.description.type);
+    RCHECK(handler.handler_type != FOURCC_NULL);
+    RCHECK(buffer->ReadWriteChild(&handler));
   }
   RCHECK(buffer->ReadWriteChild(&information));
   return true;
 }
 
 uint32_t Media::ComputeSizeInternal() {
+  handler.handler_type =
+      TrackTypeToFourCC(information.sample_table.description.type);
   return HeaderSize() + header.ComputeSize() + handler.ComputeSize() +
          information.ComputeSize();
 }
@@ -1702,6 +1853,7 @@ bool Movie::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->PrepareChildren() &&
          buffer->ReadWriteChild(&header) &&
+         buffer->TryReadWriteChild(&metadata) &&
          buffer->TryReadWriteChild(&extends));
   if (buffer->Reading()) {
     BoxReader* reader = buffer->reader();
@@ -1718,8 +1870,8 @@ bool Movie::ReadWriteInternal(BoxBuffer* buffer) {
 }
 
 uint32_t Movie::ComputeSizeInternal() {
-  uint32_t box_size =
-      HeaderSize() + header.ComputeSize() + extends.ComputeSize();
+  uint32_t box_size = HeaderSize() + header.ComputeSize() +
+                      metadata.ComputeSize() + extends.ComputeSize();
   for (uint32_t i = 0; i < tracks.size(); ++i)
     box_size += tracks[i].ComputeSize();
   for (uint32_t i = 0; i < pssh.size(); ++i)

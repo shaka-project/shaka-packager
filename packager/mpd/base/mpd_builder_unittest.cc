@@ -174,6 +174,8 @@ class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
   // current time.
   void SetUp() override {
     mpd_.availability_start_time_ = "2011-12-25T12:30:00";
+    // Override packager version string for testing.
+    mpd_.mpd_options_.packager_version_string = "<tag>-<hash>-<test>";
   }
 
   MpdOptions* mutable_mpd_options() { return &mpd_.mpd_options_; }
@@ -1776,6 +1778,8 @@ TEST_F(StaticMpdBuilderTest, Text) {
 TEST_F(DynamicMpdBuilderTest, CheckMpdAttributes) {
   static const char kExpectedOutput[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+      "<!--Generated with https://github.com/google/edash-packager "
+      "version <tag>-<hash>-<test>-->\n"
       "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" "
       "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
       "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "

@@ -66,6 +66,9 @@ struct MuxerOptions {
   /// User-specified bit rate for the media stream. If zero, the muxer will
   /// attempt to estimate.
   uint32_t bandwidth;
+
+  /// Specify the version string to be embedded in the output files.
+  std::string packager_version_string;
 };
 
 }  // namespace media

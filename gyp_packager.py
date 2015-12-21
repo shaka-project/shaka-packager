@@ -1,35 +1,34 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 #
 # Copyright 2014 Google Inc. All rights reserved.
 #
 # Use of this source code is governed by a BSD-style
 # license that can be found in the LICENSE file or at
 # https://developers.google.com/open-source/licenses/bsd
-#
-# This script is a wrapper for Packager that adds some support for how GYP
-# is invoked by Packager.
-#
-# Build instructions:
-#
-# 1. Setup gyp: ./gyp_packager.py
-#
-# clang is not enabled by default, which can be enabled by overriding
-# GYP_DEFINE environment variable, i.e.
-# "GYP_DEFINES='clang=1' ./gyp_packager.py".
-#
-# Ninja is the default build system. User can also change to make by
-# overriding GYP_GENERATORS to make, i.e.
-# "GYP_GENERATORS='make' ./gyp_packager.py".
-#
-# 2. The first step generates the make files but does not start the
-# build process. Ninja is the default build system. Refer to Ninja
-# manual on how to do the build.
-#
-# Common syntaxes: ninja -C out/{Debug/Release} [Module]
-# Module is optional. If not specified, build everything.
-#
-# Step 1 is only required if there is any gyp file change. Otherwise, you
-# may just run ninja.
+"""This script wraps gyp and sets up build environments.
+
+Build instructions:
+
+1. Setup gyp: ./gyp_packager.py or use gclient runhooks
+
+clang is enabled by default, which can be disabled by overriding
+GYP_DEFINE environment variable, i.e.
+"GYP_DEFINES='clang=0' gclient runhooks".
+
+Ninja is the default build system. User can also change to make by
+overriding GYP_GENERATORS to make, i.e.
+"GYP_GENERATORS='make' gclient runhooks".
+
+2. The first step generates the make files but does not start the
+build process. Ninja is the default build system. Refer to Ninja
+manual on how to do the build.
+
+Common syntaxes: ninja -C out/{Debug/Release} [Module]
+Module is optional. If not specified, build everything.
+
+Step 1 is only required if there is any gyp file change. Otherwise, you
+may just run ninja.
+"""
 
 import os
 import sys
@@ -37,11 +36,14 @@ import sys
 checkout_dir = os.path.dirname(os.path.realpath(__file__))
 src_dir = os.path.join(checkout_dir, 'packager')
 
+# Workaround the dynamic path.
+# pylint: disable=g-import-not-at-top,g-bad-import-order
+
 sys.path.insert(0, os.path.join(src_dir, 'build'))
-import gyp_helper  # Workaround the dynamic path. pylint: disable-msg=F0401
+import gyp_helper
 
 sys.path.insert(0, os.path.join(src_dir, 'tools', 'gyp', 'pylib'))
-import gyp  # Workaround the dynamic path. pylint: disable-msg=F0401
+import gyp
 
 if __name__ == '__main__':
   args = sys.argv[1:]
@@ -58,12 +60,15 @@ if __name__ == '__main__':
   args.extend(['-I' + os.path.join(src_dir, 'build', 'common.gypi')])
 
   # Set these default GYP_DEFINES if user does not set the value explicitly.
-  _DEFAULT_DEFINES = {'test_isolation_mode': 'noop', 'use_glib': 0,
-                      'use_openssl': 1, 'use_x11': 0,
-                      'linux_use_gold_binary': 0, 'linux_use_gold_flags': 0}
+  _DEFAULT_DEFINES = {'test_isolation_mode': 'noop',
+                      'use_glib': 0,
+                      'use_openssl': 1,
+                      'use_x11': 0,
+                      'linux_use_gold_binary': 0,
+                      'linux_use_gold_flags': 0}
 
-  gyp_defines = (os.environ['GYP_DEFINES'] if os.environ.get('GYP_DEFINES')
-                 else '')
+  gyp_defines = (os.environ['GYP_DEFINES'] if os.environ.get('GYP_DEFINES') else
+                 '')
   for key in _DEFAULT_DEFINES:
     if key not in gyp_defines:
       gyp_defines += ' {0}={1}'.format(key, _DEFAULT_DEFINES[key])

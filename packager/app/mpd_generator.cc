@@ -11,6 +11,7 @@
 #include "packager/base/strings/string_split.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/mpd/util/mpd_writer.h"
+#include "packager/version/version.h"
 
 namespace edash_packager {
 namespace {
@@ -88,7 +89,9 @@ int MpdMain(int argc, char** argv) {
 
   ExitStatus status = CheckRequiredFlags();
   if (status != kSuccess) {
-    google::ShowUsageWithFlags(argv[0]);
+    std::string version_string =
+        base::StringPrintf("mpd_generator version %s", kPackagerVersion);
+    google::ShowUsageWithFlags(version_string.c_str());
     return status;
   }
 

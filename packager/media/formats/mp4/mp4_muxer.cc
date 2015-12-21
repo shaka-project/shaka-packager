@@ -187,13 +187,12 @@ void MP4Muxer::InitializeTrak(const StreamInfo* info, Track* trak) {
   trak->media.header.timescale = info->time_scale();
   trak->media.header.duration = 0;
   if (!info->language().empty()) {
-    const size_t language_size = arraysize(trak->media.header.language) - 1;
-    if (info->language().size() != language_size) {
+    // ISO-639-2/T language code should be 3 characters..
+    if (info->language().size() != 3) {
       LOG(WARNING) << "'" << info->language() << "' is not a valid ISO-639-2 "
                    << "language code, ignoring.";
     } else {
-      memcpy(trak->media.header.language, info->language().c_str(),
-             language_size + 1);
+      trak->media.header.language.code = info->language();
     }
   }
 }
@@ -217,8 +216,6 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   trak->header.width = video_info->width() * sample_aspect_ratio * 0x10000;
   trak->header.height = video_info->height() * 0x10000;
 
-  trak->media.handler.type = kVideo;
-
   VideoSampleEntry video;
   video.format = VideoCodecToFourCC(video_info->codec());
   video.width = video_info->width();
@@ -241,7 +238,6 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
   InitializeTrak(audio_info, trak);
 
   trak->header.volume = 0x100;
-  trak->media.handler.type = kAudio;
 
   AudioSampleEntry audio;
   audio.format = AudioCodecToFourCC(audio_info->codec());

@@ -38,6 +38,11 @@ class PackagerAppTest(unittest.TestCase):
   def testBuildingCode(self):
     self.assertEqual(0, self.packager.BuildSrc())
 
+  def testVersion(self):
+    self.assertRegexpMatches(
+        self.packager.Version(), '^edash-packager version '
+        '((?P<tag>[\w\.]+)-)?(?P<hash>[a-f\d]+)-(debug|release)$')
+
   def testDumpStreamInfo(self):
     test_file = os.path.join(self.test_data_dir, 'bear-640x360.mp4')
     stream_info = self.packager.DumpStreamInfo(test_file)
@@ -346,6 +351,10 @@ class PackagerAppTest(unittest.TestCase):
     # Use fake clock, so output can be compared.
     if use_fake_clock:
       flags.append('--use_fake_clock_for_muxer')
+
+    # Override packager version string for testing.
+    flags += ['--override_version_string', '--test_version_string',
+              '<tag>-<hash>-<test>']
     return flags
 
   def _CompareWithGold(self, test_output, golden_file_name):

@@ -238,6 +238,13 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
   // Use the reference stream's time scale as movie time scale.
   moov_->header.timescale = sidx_->timescale;
   moof_->header.sequence_number = 1;
+
+  // Fill in version information.
+  moov_->metadata.handler.handler_type = FOURCC_ID32;
+  moov_->metadata.id3v2.language.code = "eng";
+  moov_->metadata.id3v2.private_frame.owner =
+      "https://github.com/google/edash-packager";
+  moov_->metadata.id3v2.private_frame.value = options_.packager_version_string;
   return DoInitialize();
 }
 
