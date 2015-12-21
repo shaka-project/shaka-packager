@@ -50,24 +50,28 @@ struct Box {
   /// @return box type.
   virtual FourCC BoxType() const = 0;
 
+  /// @return The size of result box including child boxes. Note that this
+  //          function expects that ComputeSize has been invoked already.
+  uint32_t box_size() { return box_size_; }
+
  protected:
-  /// Read/write mp4 box header. Note that this function expects box size
-  /// updated already.
+  /// Read/write mp4 box header. Note that this function expects that
+  /// ComputeSize has been invoked already.
   /// @return true on success, false otherwise.
   virtual bool ReadWriteHeaderInternal(BoxBuffer* buffer);
 
  private:
   friend class BoxBuffer;
   // Read/write the mp4 box from/to BoxBuffer. Note that this function expects
-  // box size updated already.
+  // that ComputeSize has been invoked already.
   virtual bool ReadWriteInternal(BoxBuffer* buffer) = 0;
   // Compute the size of this box. A value of 0 should be returned if the box
   // should not be written. Note that this function won't update box size.
   virtual uint32_t ComputeSizeInternal() = 0;
 
-  // We don't support 64-bit atom sizes. 32-bit should be large enough for our
+  // We don't support 64-bit box sizes. 32-bit should be large enough for our
   // current needs.
-  uint32_t atom_size;
+  uint32_t box_size_;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator.

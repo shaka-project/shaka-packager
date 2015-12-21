@@ -42,7 +42,7 @@ class MP4Muxer : public Muxer {
   Status DoAddSample(const MediaStream* stream,
                      scoped_refptr<MediaSample> sample) override;
 
-  // Generate Audio/Video Track atom.
+  // Generate Audio/Video Track box.
   void InitializeTrak(const StreamInfo* info, Track* trak);
   void GenerateAudioTrak(const AudioStreamInfo* audio_info,
                          Track* trak,

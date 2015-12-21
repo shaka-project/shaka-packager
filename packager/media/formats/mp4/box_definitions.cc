@@ -41,6 +41,12 @@ const char kVpcCompressorName[] = "\012VPC Coding";
 // at once.
 const int kCueSourceIdNotSet = -1;
 
+// According to ISO/IEC FDIS 23001-7: CENC spec, IV should be either
+// 64-bit (8-byte) or 128-bit (16-byte).
+bool IsIvSizeValid(size_t iv_size) {
+  return iv_size == 8 || iv_size == 16;
+}
+
 // Utility functions to check if the 64bit integers can fit in 32bit integer.
 bool IsFitIn32Bits(uint64_t a) {
   return a <= std::numeric_limits<uint32_t>::max();
@@ -181,6 +187,143 @@ uint32_t SampleAuxiliaryInformationSize::ComputeSizeInternal() {
   return HeaderSize() + sizeof(default_sample_info_size) +
          sizeof(sample_count) +
          (default_sample_info_size == 0 ? sample_info_sizes.size() : 0);
+}
+
+SampleEncryptionEntry::SampleEncryptionEntry() {}
+SampleEncryptionEntry::~SampleEncryptionEntry() {}
+
+bool SampleEncryptionEntry::ReadWrite(uint8_t iv_size,
+                                      bool has_subsamples,
+                                      BoxBuffer* buffer) {
+  DCHECK(IsIvSizeValid(iv_size));
+  DCHECK(buffer);
+
+  RCHECK(buffer->ReadWriteVector(&initialization_vector, iv_size));
+
+  if (!has_subsamples) {
+    subsamples.clear();
+    return true;
+  }
+
+  uint16_t subsample_count = subsamples.size();
+  RCHECK(buffer->ReadWriteUInt16(&subsample_count));
+  RCHECK(subsample_count > 0);
+  subsamples.resize(subsample_count);
+  for (auto& subsample : subsamples) {
+    RCHECK(buffer->ReadWriteUInt16(&subsample.clear_bytes) &&
+           buffer->ReadWriteUInt32(&subsample.cipher_bytes));
+  }
+  return true;
+}
+
+bool SampleEncryptionEntry::ParseFromBuffer(uint8_t iv_size,
+                                            bool has_subsamples,
+                                            BufferReader* reader) {
+  DCHECK(IsIvSizeValid(iv_size));
+  DCHECK(reader);
+
+  initialization_vector.resize(iv_size);
+  RCHECK(reader->ReadToVector(&initialization_vector, iv_size));
+
+  if (!has_subsamples) {
+    subsamples.clear();
+    return true;
+  }
+
+  uint16_t subsample_count;
+  RCHECK(reader->Read2(&subsample_count));
+  RCHECK(subsample_count > 0);
+  subsamples.resize(subsample_count);
+  for (auto& subsample : subsamples) {
+    RCHECK(reader->Read2(&subsample.clear_bytes) &&
+           reader->Read4(&subsample.cipher_bytes));
+  }
+  return true;
+}
+
+uint32_t SampleEncryptionEntry::ComputeSize() const {
+  const uint32_t subsample_entry_size = sizeof(uint16_t) + sizeof(uint32_t);
+  const uint16_t subsample_count = subsamples.size();
+  return initialization_vector.size() +
+         (subsample_count > 0 ? (sizeof(subsample_count) +
+                                 subsample_entry_size * subsample_count)
+                              : 0);
+}
+
+uint32_t SampleEncryptionEntry::GetTotalSizeOfSubsamples() const {
+  uint32_t size = 0;
+  for (uint32_t i = 0; i < subsamples.size(); ++i)
+    size += subsamples[i].clear_bytes + subsamples[i].cipher_bytes;
+  return size;
+}
+
+SampleEncryption::SampleEncryption() : iv_size(0) {}
+SampleEncryption::~SampleEncryption() {}
+FourCC SampleEncryption::BoxType() const { return FOURCC_SENC; }
+
+bool SampleEncryption::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+
+  // If we don't know |iv_size|, store sample encryption data to parse later
+  // after we know iv_size.
+  if (buffer->Reading() && iv_size == 0) {
+    RCHECK(buffer->ReadWriteVector(&sample_encryption_data,
+                                   buffer->Size() - buffer->Pos()));
+    return true;
+  }
+
+  if (!IsIvSizeValid(iv_size)) {
+    LOG(ERROR) << "IV_size can only be 8 or 16, but seeing " << iv_size;
+    return false;
+  }
+
+  uint32_t sample_count = sample_encryption_entries.size();
+  RCHECK(buffer->ReadWriteUInt32(&sample_count));
+
+  sample_encryption_entries.resize(sample_count);
+  for (auto& sample_encryption_entry : sample_encryption_entries) {
+    RCHECK(sample_encryption_entry.ReadWrite(
+        iv_size, flags & kUseSubsampleEncryption, buffer));
+  }
+  return true;
+}
+
+uint32_t SampleEncryption::ComputeSizeInternal() {
+  const uint32_t sample_count = sample_encryption_entries.size();
+  if (sample_count == 0) {
+    // Sample encryption box is optional. Skip it if it is empty.
+    return 0;
+  }
+
+  DCHECK(IsIvSizeValid(iv_size));
+  uint32_t box_size = HeaderSize() + sizeof(sample_count);
+  if (flags & kUseSubsampleEncryption) {
+    for (const SampleEncryptionEntry& sample_encryption_entry :
+         sample_encryption_entries) {
+      box_size += sample_encryption_entry.ComputeSize();
+    }
+  } else {
+    box_size += sample_count * iv_size;
+  }
+  return box_size;
+}
+
+bool SampleEncryption::ParseFromSampleEncryptionData(
+    size_t iv_size,
+    std::vector<SampleEncryptionEntry>* sample_encryption_entries) const {
+  DCHECK(IsIvSizeValid(iv_size));
+
+  BufferReader reader(vector_as_array(&sample_encryption_data),
+                      sample_encryption_data.size());
+  uint32_t sample_count = 0;
+  RCHECK(reader.Read4(&sample_count));
+
+  sample_encryption_entries->resize(sample_count);
+  for (auto& sample_encryption_entry : *sample_encryption_entries) {
+    RCHECK(sample_encryption_entry.ParseFromBuffer(
+        iv_size, flags & kUseSubsampleEncryption, &reader));
+  }
+  return true;
 }
 
 OriginalFormat::OriginalFormat() : format(FOURCC_NULL) {}
@@ -1440,7 +1583,8 @@ bool Track::ReadWriteInternal(BoxBuffer* buffer) {
          buffer->PrepareChildren() &&
          buffer->ReadWriteChild(&header) &&
          buffer->ReadWriteChild(&media) &&
-         buffer->TryReadWriteChild(&edit));
+         buffer->TryReadWriteChild(&edit) &&
+         buffer->TryReadWriteChild(&sample_encryption));
   return true;
 }
 
@@ -1921,14 +2065,16 @@ bool TrackFragment::ReadWriteInternal(BoxBuffer* buffer) {
            buffer->TryReadWriteChild(&sample_group_description));
   }
   return buffer->TryReadWriteChild(&auxiliary_size) &&
-         buffer->TryReadWriteChild(&auxiliary_offset);
+         buffer->TryReadWriteChild(&auxiliary_offset) &&
+         buffer->TryReadWriteChild(&sample_encryption);
 }
 
 uint32_t TrackFragment::ComputeSizeInternal() {
   uint32_t box_size =
       HeaderSize() + header.ComputeSize() + decode_time.ComputeSize() +
       sample_to_group.ComputeSize() + sample_group_description.ComputeSize() +
-      auxiliary_size.ComputeSize() + auxiliary_offset.ComputeSize();
+      auxiliary_size.ComputeSize() + auxiliary_offset.ComputeSize() +
+      sample_encryption.ComputeSize();
   for (uint32_t i = 0; i < runs.size(); ++i)
     box_size += runs[i].ComputeSize();
   return box_size;

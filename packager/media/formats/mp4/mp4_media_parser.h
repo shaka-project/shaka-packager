@@ -74,8 +74,8 @@ class MP4MediaParser : public MediaParser {
                            uint8_t* buffer,
                            size_t buffer_size);
 
-  // To retain proper framing, each 'mdat' atom must be read; to limit memory
-  // usage, the atom's data needs to be discarded incrementally as frames are
+  // To retain proper framing, each 'mdat' box must be read; to limit memory
+  // usage, the box's data needs to be discarded incrementally as frames are
   // extracted from the stream. This function discards data from the stream up
   // to |offset|, updating the |mdat_tail_| value so that framing can be
   // retained after all 'mdat' information has been read.

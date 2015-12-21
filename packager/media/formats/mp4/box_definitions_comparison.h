@@ -13,6 +13,12 @@
 
 namespace edash_packager {
 namespace media {
+
+inline bool operator==(const SubsampleEntry& lhs, const SubsampleEntry& rhs) {
+  return lhs.clear_bytes == rhs.clear_bytes &&
+         lhs.cipher_bytes == rhs.cipher_bytes;
+}
+
 namespace mp4 {
 
 inline bool operator==(const FileType& lhs, const FileType& rhs) {
@@ -36,6 +42,18 @@ inline bool operator==(const SampleAuxiliaryInformationSize& lhs,
   return lhs.default_sample_info_size == rhs.default_sample_info_size &&
          lhs.sample_count == rhs.sample_count &&
          lhs.sample_info_sizes == rhs.sample_info_sizes;
+}
+
+inline bool operator==(const SampleEncryptionEntry& lhs,
+                       const SampleEncryptionEntry& rhs) {
+  return lhs.initialization_vector == rhs.initialization_vector &&
+         lhs.subsamples == rhs.subsamples;
+}
+
+inline bool operator==(const SampleEncryption& lhs,
+                       const SampleEncryption& rhs) {
+  return lhs.iv_size == rhs.iv_size &&
+         lhs.sample_encryption_entries == rhs.sample_encryption_entries;
 }
 
 inline bool operator==(const OriginalFormat& lhs, const OriginalFormat& rhs) {
@@ -274,7 +292,7 @@ inline bool operator==(const Media& lhs, const Media& rhs) {
 
 inline bool operator==(const Track& lhs, const Track& rhs) {
   return lhs.header == rhs.header && lhs.media == rhs.media &&
-         lhs.edit == rhs.edit;
+         lhs.edit == rhs.edit && lhs.sample_encryption == rhs.sample_encryption;
 }
 
 inline bool operator==(const MovieExtendsHeader& lhs,
@@ -360,7 +378,8 @@ inline bool operator==(const TrackFragment& lhs, const TrackFragment& rhs) {
   return lhs.header == rhs.header && lhs.runs == rhs.runs &&
          lhs.decode_time == rhs.decode_time &&
          lhs.auxiliary_offset == rhs.auxiliary_offset &&
-         lhs.auxiliary_size == rhs.auxiliary_size;
+         lhs.auxiliary_size == rhs.auxiliary_size &&
+         lhs.sample_encryption == rhs.sample_encryption;
 }
 
 inline bool operator==(const MovieFragment& lhs, const MovieFragment& rhs) {

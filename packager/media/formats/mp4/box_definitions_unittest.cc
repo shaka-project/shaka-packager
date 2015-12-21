@@ -18,6 +18,7 @@ namespace edash_packager {
 namespace media {
 namespace mp4 {
 namespace {
+const uint8_t kData8Bytes[] = {3, 4, 5, 6, 7, 8, 9, 0};
 const uint8_t kData16Bytes[] = {8, 7, 6, 5, 4, 3, 2, 1, 1, 2, 3, 4, 5, 6, 7, 8};
 const uint8_t kData4[] = {1, 5, 4, 3, 15};
 const uint8_t kData8[] = {1, 8, 42, 98, 156};
@@ -159,6 +160,30 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   void Modify(SampleAuxiliaryInformationSize* saiz) {
     saiz->default_sample_info_size = 15;
     saiz->sample_info_sizes.clear();
+  }
+
+  void Fill(SampleEncryption* senc) {
+    senc->iv_size = 8;
+    senc->flags = SampleEncryption::kUseSubsampleEncryption;
+    senc->sample_encryption_entries.resize(2);
+    senc->sample_encryption_entries[0].initialization_vector.assign(
+        kData8Bytes, kData8Bytes + arraysize(kData8Bytes));
+    senc->sample_encryption_entries[0].subsamples.resize(2);
+    senc->sample_encryption_entries[0].subsamples[0].clear_bytes = 17;
+    senc->sample_encryption_entries[0].subsamples[0].cipher_bytes = 3456;
+    senc->sample_encryption_entries[0].subsamples[1].clear_bytes = 1543;
+    senc->sample_encryption_entries[0].subsamples[1].cipher_bytes = 0;
+    senc->sample_encryption_entries[1] = senc->sample_encryption_entries[0];
+    senc->sample_encryption_entries[1].subsamples[0].clear_bytes = 0;
+    senc->sample_encryption_entries[1].subsamples[0].cipher_bytes = 15;
+    senc->sample_encryption_entries[1].subsamples[1].clear_bytes = 1988;
+    senc->sample_encryption_entries[1].subsamples[1].cipher_bytes = 8765;
+  }
+
+  void Modify(SampleEncryption* senc) {
+    senc->flags = 0;
+    senc->sample_encryption_entries.resize(1);
+    senc->sample_encryption_entries[0].subsamples.clear();
   }
 
   void Fill(OriginalFormat* frma) { frma->format = FOURCC_AVC1; }
@@ -817,6 +842,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   bool IsOptional(const SampleAuxiliaryInformationOffset* box) { return true; }
   bool IsOptional(const SampleAuxiliaryInformationSize* box) { return true; }
+  bool IsOptional(const SampleEncryption* box) { return true; }
   bool IsOptional(const ProtectionSchemeInfo* box) { return true; }
   bool IsOptional(const EditList* box) { return true; }
   bool IsOptional(const Edit* box) { return true; }
@@ -1064,6 +1090,48 @@ TEST_F(BoxDefinitionsTest, TrackFragmentRun_NoSampleSize) {
   EXPECT_TRUE(trun_readback.sample_sizes.empty());
   trun.sample_sizes.clear();
   ASSERT_EQ(trun, trun_readback);
+}
+
+TEST_F(BoxDefinitionsTest, SampleEncryptionIsOptional) {
+  SampleEncryption senc;
+  EXPECT_EQ(0u, senc.ComputeSize());
+}
+
+TEST_F(BoxDefinitionsTest, SampleEncryptionWithIvKnownWhenReading) {
+  SampleEncryption senc;
+  Fill(&senc);
+  senc.Write(buffer_.get());
+
+  SampleEncryption senc_readback;
+  senc_readback.iv_size = senc.iv_size;
+
+  ASSERT_TRUE(ReadBack(&senc_readback));
+  EXPECT_EQ(0u, senc_readback.sample_encryption_data.size());
+  EXPECT_NE(0u, senc_readback.sample_encryption_entries.size());
+  ASSERT_EQ(senc, senc_readback);
+
+  Modify(&senc);
+  senc.Write(buffer_.get());
+  ASSERT_TRUE(ReadBack(&senc_readback));
+  ASSERT_EQ(senc, senc_readback);
+}
+
+TEST_F(BoxDefinitionsTest, SampleEncryptionWithIvUnknownWhenReading) {
+  SampleEncryption senc;
+  Fill(&senc);
+  senc.Write(buffer_.get());
+
+  SampleEncryption senc_readback;
+  senc_readback.iv_size = 0;
+
+  ASSERT_TRUE(ReadBack(&senc_readback));
+  EXPECT_NE(0u, senc_readback.sample_encryption_data.size());
+  EXPECT_EQ(0u, senc_readback.sample_encryption_entries.size());
+
+  std::vector<SampleEncryptionEntry> sample_encryption_entries;
+  ASSERT_TRUE(senc_readback.ParseFromSampleEncryptionData(
+      senc.iv_size, &sample_encryption_entries));
+  ASSERT_EQ(senc.sample_encryption_entries, sample_encryption_entries);
 }
 
 }  // namespace mp4

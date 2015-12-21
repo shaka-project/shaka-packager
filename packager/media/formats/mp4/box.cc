@@ -13,7 +13,7 @@ namespace edash_packager {
 namespace media {
 namespace mp4 {
 
-Box::Box() : atom_size(0) {}
+Box::Box() : box_size_(0) {}
 Box::~Box() {}
 
 bool Box::Parse(BoxReader* reader) {
@@ -24,21 +24,21 @@ bool Box::Parse(BoxReader* reader) {
 
 void Box::Write(BufferWriter* writer) {
   DCHECK(writer);
-  // Compute and update atom_size.
+  // Compute and update box size.
   uint32_t size = ComputeSize();
-  DCHECK_EQ(size, this->atom_size);
+  DCHECK_EQ(size, box_size_);
 
   size_t buffer_size_before_write = writer->Size();
   BoxBuffer buffer(writer);
   CHECK(ReadWriteInternal(&buffer));
-  DCHECK_EQ(this->atom_size, writer->Size() - buffer_size_before_write);
+  DCHECK_EQ(box_size_, writer->Size() - buffer_size_before_write);
 }
 
 void Box::WriteHeader(BufferWriter* writer) {
   DCHECK(writer);
-  // Compute and update atom_size.
+  // Compute and update box size.
   uint32_t size = ComputeSize();
-  DCHECK_EQ(size, this->atom_size);
+  DCHECK_EQ(size, box_size_);
 
   size_t buffer_size_before_write = writer->Size();
   BoxBuffer buffer(writer);
@@ -47,8 +47,8 @@ void Box::WriteHeader(BufferWriter* writer) {
 }
 
 uint32_t Box::ComputeSize() {
-  this->atom_size = ComputeSizeInternal();
-  return this->atom_size;
+  box_size_ = ComputeSizeInternal();
+  return box_size_;
 }
 
 uint32_t Box::HeaderSize() const {
@@ -61,7 +61,7 @@ bool Box::ReadWriteHeaderInternal(BoxBuffer* buffer) {
   if (buffer->Reading()) {
     // Skip for read mode, which is handled already in BoxReader.
   } else {
-    CHECK(buffer->ReadWriteUInt32(&this->atom_size));
+    CHECK(buffer->ReadWriteUInt32(&box_size_));
     FourCC fourcc = BoxType();
     CHECK(buffer->ReadWriteFourCC(&fourcc));
   }

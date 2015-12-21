@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "packager/media/base/decrypt_config.h"
 #include "packager/media/formats/mp4/aac_audio_specific_config.h"
 #include "packager/media/formats/mp4/box.h"
 #include "packager/media/formats/mp4/es_descriptor.h"
@@ -73,6 +74,60 @@ struct SampleAuxiliaryInformationSize : FullBox {
   uint8_t default_sample_info_size;
   uint32_t sample_count;
   std::vector<uint8_t> sample_info_sizes;
+};
+
+struct SampleEncryptionEntry {
+  SampleEncryptionEntry();
+  ~SampleEncryptionEntry();
+  /// Read/Write SampleEncryptionEntry.
+  /// @param iv_size specifies the size of initialization vector.
+  /// @param has_subsamples indicates whether this sample encryption entry
+  ///        constains subsamples.
+  /// @param buffer points to the box buffer for reading or writing.
+  /// @return true on success, false otherwise.
+  bool ReadWrite(uint8_t iv_size,
+                 bool has_subsamples,
+                 BoxBuffer* buffer);
+  /// Parse SampleEncryptionEntry from buffer.
+  /// @param iv_size specifies the size of initialization vector.
+  /// @param has_subsamples indicates whether this sample encryption entry
+  ///        constains subsamples.
+  /// @param reader points to the buffer reader. Cannot be NULL.
+  /// @return true on success, false otherwise.
+  bool ParseFromBuffer(uint8_t iv_size,
+                       bool has_subsamples,
+                       BufferReader* reader);
+  /// @return The size of the structure in bytes when it is stored.
+  uint32_t ComputeSize() const;
+  /// @return The accumulated size of subsamples. Returns 0 if there is no
+  ///         subsamples.
+  uint32_t GetTotalSizeOfSubsamples() const;
+
+  std::vector<uint8_t> initialization_vector;
+  std::vector<SubsampleEntry> subsamples;
+};
+
+struct SampleEncryption : FullBox {
+  enum SampleEncryptionFlags {
+    kUseSubsampleEncryption = 2,
+  };
+
+  DECLARE_BOX_METHODS(SampleEncryption);
+  /// Parse from @a sample_encryption_data.
+  /// @param iv_size specifies the size of initialization vector.
+  /// @param[out] sample_encryption_entries receives parsed sample encryption
+  ///             entries.
+  /// @return true on success, false otherwise.
+  bool ParseFromSampleEncryptionData(
+      size_t iv_size,
+      std::vector<SampleEncryptionEntry>* sample_encryption_entries) const;
+
+  /// We may not know @a iv_size before reading this box. In this case, we will
+  /// store sample encryption data for parsing later when @a iv_size is known.
+  std::vector<uint8_t> sample_encryption_data;
+
+  size_t iv_size;
+  std::vector<SampleEncryptionEntry> sample_encryption_entries;
 };
 
 struct OriginalFormat : Box {
@@ -258,6 +313,8 @@ struct SampleDescription : FullBox {
   DECLARE_BOX_METHODS(SampleDescription);
 
   TrackType type;
+  // TODO(kqyang): Clean up the code to have one single member, e.g. by creating
+  // SampleEntry struct, std::vector<SampleEntry> sample_entries.
   std::vector<VideoSampleEntry> video_entries;
   std::vector<AudioSampleEntry> audio_entries;
   std::vector<WVTTSampleEntry> wvtt_entries;
@@ -428,6 +485,7 @@ struct Track : Box {
   TrackHeader header;
   Media media;
   Edit edit;
+  SampleEncryption sample_encryption;
 };
 
 struct MovieExtendsHeader : FullBox {
@@ -569,6 +627,7 @@ struct TrackFragment : Box {
   SampleGroupDescription sample_group_description;
   SampleAuxiliaryInformationSize auxiliary_size;
   SampleAuxiliaryInformationOffset auxiliary_offset;
+  SampleEncryption sample_encryption;
 };
 
 struct MovieFragment : Box {
