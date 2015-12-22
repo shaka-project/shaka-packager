@@ -37,9 +37,9 @@ Status WebMMuxer::Initialize() {
     segmenter_.reset(new TwoPassSingleSegmentSegmenter(options()));
   }
 
-  Status initialized =
-      segmenter_->Initialize(writer.Pass(), streams()[0], progress_listener(),
-                             muxer_listener(), encryption_key_source());
+  Status initialized = segmenter_->Initialize(
+      writer.Pass(), streams()[0]->info().get(), progress_listener(),
+      muxer_listener(), encryption_key_source());
 
   if (!initialized.ok())
     return initialized;

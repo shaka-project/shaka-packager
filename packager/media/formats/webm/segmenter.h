@@ -22,7 +22,7 @@ struct MuxerOptions;
 class AudioStreamInfo;
 class KeySource;
 class MediaSample;
-class MediaStream;
+class StreamInfo;
 class MuxerListener;
 class ProgressListener;
 class StreamInfo;
@@ -39,14 +39,14 @@ class Segmenter {
   /// Calling other public methods of this class without this method returning
   /// Status::OK results in an undefined behavior.
   /// @param writer contains the output file (or init file in multi-segment).
-  /// @param streams contains the MediaStream to be segmented.
+  /// @param info The stream info for the stream being segmented.
   /// @param muxer_listener receives muxer events. Can be NULL.
   /// @param encryption_key_source points to the key source which contains
   ///        the encryption keys. It can be NULL to indicate that no encryption
   ///        is required.
   /// @return OK on success, an error status otherwise.
   Status Initialize(scoped_ptr<MkvWriter> writer,
-                    MediaStream* streams,
+                    StreamInfo* info,
                     ProgressListener* progress_listener,
                     MuxerListener* muxer_listener,
                     KeySource* encryption_key_source);
@@ -94,7 +94,7 @@ class Segmenter {
   mkvmuxer::Cluster* cluster() { return cluster_.get(); }
   mkvmuxer::Cues* cues() { return &cues_; }
   MuxerListener* muxer_listener() { return muxer_listener_; }
-  MediaStream* stream() { return stream_; }
+  StreamInfo* info() { return info_; }
   SeekHead* seek_head() { return &seek_head_; }
 
   int track_id() const { return track_id_; }
@@ -128,7 +128,7 @@ class Segmenter {
   mkvmuxer::SegmentInfo segment_info_;
   mkvmuxer::Tracks tracks_;
 
-  MediaStream* stream_;
+  StreamInfo* info_;
   MuxerListener* muxer_listener_;
   ProgressListener* progress_listener_;
   uint64_t progress_target_;

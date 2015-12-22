@@ -65,8 +65,12 @@
       'sources': [
         'cluster_builder.cc',
         'cluster_builder.h',
+        'multi_segment_segmenter_unittest.cc',
         'opus_packet_builder.cc',
         'opus_packet_builder.h',
+        'segmenter_test_base.cc',
+        'segmenter_test_base.h',
+        'single_segment_segmenter_unittest.cc',
         'tracks_builder.cc',
         'tracks_builder.h',
         'webm_cluster_parser_unittest.cc',
@@ -78,6 +82,7 @@
       'dependencies': [
         '../../../testing/gtest.gyp:gtest',
         '../../../testing/gmock.gyp:gmock',
+        '../../file/file.gyp:file',
         '../../test/media_test.gyp:media_test_support',
         'webm',
       ]

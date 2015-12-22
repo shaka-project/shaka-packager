@@ -49,7 +49,7 @@ Status MultiSegmentSegmenter::FinalizeSegment() {
     const uint64_t start_webm_timecode = cluster()->timecode();
     const uint64_t start_timescale = FromWebMTimecode(start_webm_timecode);
     const uint64_t length = static_cast<uint64_t>(
-        cluster_length_sec() * stream()->info()->time_scale());
+        cluster_length_sec() * info()->time_scale());
     muxer_listener()->OnNewSegment(start_timescale, length, size);
   }
 

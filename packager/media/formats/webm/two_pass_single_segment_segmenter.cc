@@ -75,13 +75,13 @@ Status
 TwoPassSingleSegmentSegmenter::DoInitialize(scoped_ptr<MkvWriter> writer) {
   // Assume the amount of time to copy the temp file as the same amount
   // of time as to make it.
-  set_progress_target(stream()->info()->duration() * 2);
+  set_progress_target(info()->duration() * 2);
 
   real_writer_ = writer.Pass();
 
-  std::string temp_name = TempFileName(options());
+  temp_file_name_ = TempFileName(options());
   scoped_ptr<MkvWriter> temp(new MkvWriter);
-  Status status = temp->Open(temp_name);
+  Status status = temp->Open(temp_file_name_);
   if (!status.ok())
     return status;
 
@@ -105,9 +105,9 @@ Status TwoPassSingleSegmentSegmenter::DoFinalize() {
     return temp;
 
   // Close the temp file and open it for reading.
-  std::string temp_name = writer()->file()->file_name();
   set_writer(scoped_ptr<MkvWriter>());
-  scoped_ptr<File, FileCloser> temp_reader(File::Open(temp_name.c_str(), "r"));
+  scoped_ptr<File, FileCloser> temp_reader(
+      File::Open(temp_file_name_.c_str(), "r"));
   if (!temp_reader)
     return Status(error::FILE_FAILURE, "Error opening temp file.");
 
@@ -123,8 +123,8 @@ Status TwoPassSingleSegmentSegmenter::DoFinalize() {
 
   // Close and delete the temp file.
   temp_reader.reset();
-  if (!File::Delete(temp_name.c_str())) {
-    LOG(WARNING) << "Unable to delete temporary file " << temp_name;
+  if (!File::Delete(temp_file_name_.c_str())) {
+    LOG(WARNING) << "Unable to delete temporary file " << temp_file_name_;
   }
 
   // Set the writer back to the real file so GetIndexRangeStartAndEnd works.

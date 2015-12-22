@@ -21,7 +21,7 @@ namespace media {
 /// testing, since this does not support larger files.
 class MemoryFile : public File {
  public:
-  MemoryFile(const std::string& file_name);
+  MemoryFile(const std::string& file_name, const std::string& mode);
 
   /// @name File implementation overrides.
   /// @{
@@ -47,6 +47,7 @@ class MemoryFile : public File {
   bool Open() override;
 
  private:
+  std::string mode_;
   std::vector<uint8_t>* file_;
   uint64_t position_;
 

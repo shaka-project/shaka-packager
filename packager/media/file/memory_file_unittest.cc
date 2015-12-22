@@ -27,12 +27,14 @@ class MemoryFileTest : public testing::Test {
 
 TEST_F(MemoryFileTest, ModifiesSameFile) {
   scoped_ptr<File, FileCloser> writer(File::Open("memory://file1", "w"));
+  ASSERT_TRUE(writer);
   ASSERT_EQ(kWriteBufferSize, writer->Write(kWriteBuffer, kWriteBufferSize));
 
   // Since File::Open should not create a ThreadedIoFile so there should be
   // no cache.
 
   scoped_ptr<File, FileCloser> reader(File::Open("memory://file1", "r"));
+  ASSERT_TRUE(reader);
 
   uint8_t read_buffer[kWriteBufferSize];
   ASSERT_EQ(kWriteBufferSize, reader->Read(read_buffer, kWriteBufferSize));
@@ -40,15 +42,19 @@ TEST_F(MemoryFileTest, ModifiesSameFile) {
 }
 
 TEST_F(MemoryFileTest, SupportsDifferentFiles) {
-  scoped_ptr<MemoryFile, FileCloser> writer(new MemoryFile("memory://file1"));
-  scoped_ptr<MemoryFile, FileCloser> reader(new MemoryFile("memory://file2"));
+  scoped_ptr<File, FileCloser> writer(File::Open("memory://file1", "w"));
+  scoped_ptr<File, FileCloser> reader(File::Open("memory://file2", "w"));
+  ASSERT_TRUE(writer);
+  ASSERT_TRUE(reader);
 
   ASSERT_EQ(kWriteBufferSize, writer->Write(kWriteBuffer, kWriteBufferSize));
   ASSERT_EQ(0, reader->Size());
 }
 
 TEST_F(MemoryFileTest, SeekAndTell) {
-  scoped_ptr<MemoryFile, FileCloser> file(new MemoryFile("memory://file1"));
+  scoped_ptr<File, FileCloser> file(File::Open("memory://file1", "w"));
+  ASSERT_TRUE(file);
+
   ASSERT_EQ(kWriteBufferSize, file->Write(kWriteBuffer, kWriteBufferSize));
   ASSERT_TRUE(file->Seek(0));
 
@@ -61,7 +67,9 @@ TEST_F(MemoryFileTest, SeekAndTell) {
 }
 
 TEST_F(MemoryFileTest, EndOfFile) {
-  scoped_ptr<MemoryFile, FileCloser> file(new MemoryFile("memory://file1"));
+  scoped_ptr<File, FileCloser> file(File::Open("memory://file1", "w"));
+  ASSERT_TRUE(file);
+
   ASSERT_EQ(kWriteBufferSize, file->Write(kWriteBuffer, kWriteBufferSize));
   ASSERT_TRUE(file->Seek(0));
 
@@ -75,7 +83,8 @@ TEST_F(MemoryFileTest, EndOfFile) {
 }
 
 TEST_F(MemoryFileTest, ExtendsSize) {
-  scoped_ptr<MemoryFile, FileCloser> file(new MemoryFile("memory://file1"));
+  scoped_ptr<File, FileCloser> file(File::Open("memory://file1", "w"));
+  ASSERT_TRUE(file);
   ASSERT_EQ(kWriteBufferSize, file->Write(kWriteBuffer, kWriteBufferSize));
 
   ASSERT_EQ(kWriteBufferSize, file->Size());
@@ -85,6 +94,21 @@ TEST_F(MemoryFileTest, ExtendsSize) {
   uint64_t size;
   ASSERT_TRUE(file->Tell(&size));
   EXPECT_EQ(2 * kWriteBufferSize, static_cast<int64_t>(size));
+}
+
+TEST_F(MemoryFileTest, ReadMissingFileFails) {
+  scoped_ptr<File, FileCloser> file(File::Open("memory://file1", "r"));
+  EXPECT_FALSE(file);
+}
+
+TEST_F(MemoryFileTest, WriteExistingFileDeletes) {
+  scoped_ptr<File, FileCloser> file1(File::Open("memory://file1", "w"));
+  ASSERT_TRUE(file1);
+  ASSERT_EQ(kWriteBufferSize, file1->Write(kWriteBuffer, kWriteBufferSize));
+
+  scoped_ptr<File, FileCloser> file2(File::Open("memory://file1", "w"));
+  ASSERT_TRUE(file2);
+  EXPECT_EQ(0, file2->Size());
 }
 
 }  // namespace media

@@ -32,6 +32,7 @@ Status SingleSegmentSegmenter::DoFinalize() {
 
   // Write the Cues to the end of the file.
   index_start_ = writer_->Position();
+  seek_head()->set_cues_pos(index_start_);
   if (!cues()->Write(writer_.get()))
     return Status(error::FILE_FAILURE, "Error writing Cues data.");
 

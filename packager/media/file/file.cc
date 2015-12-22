@@ -61,7 +61,7 @@ File* CreateUdpFile(const char* file_name, const char* mode) {
 }
 
 File* CreateMemoryFile(const char* file_name, const char* mode) {
-  return new MemoryFile(file_name);
+  return new MemoryFile(file_name, mode);
 }
 
 bool DeleteMemoryFile(const char* file_name) {

@@ -29,6 +29,10 @@ class FileSystem {
     return g_file_system_.get();
   }
 
+  bool Exists(const std::string& file_name) const {
+    return files_.find(file_name) != files_.end();
+  }
+
   std::vector<uint8_t>* GetFile(const std::string& file_name) {
     return &files_[file_name];
   }
@@ -50,10 +54,8 @@ scoped_ptr<FileSystem> FileSystem::g_file_system_;
 
 }  // namespace
 
-MemoryFile::MemoryFile(const std::string& file_name)
-    : File(file_name),
-      file_(FileSystem::Instance()->GetFile(file_name)),
-      position_(0) {}
+MemoryFile::MemoryFile(const std::string& file_name, const std::string& mode)
+    : File(file_name), mode_(mode), file_(NULL), position_(0) {}
 
 MemoryFile::~MemoryFile() {}
 
@@ -86,6 +88,7 @@ int64_t MemoryFile::Write(const void* buffer, uint64_t length) {
 }
 
 int64_t MemoryFile::Size() {
+  DCHECK(file_);
   return file_->size();
 }
 
@@ -107,6 +110,19 @@ bool MemoryFile::Tell(uint64_t* position) {
 }
 
 bool MemoryFile::Open() {
+  FileSystem* file_system = FileSystem::Instance();
+  if (mode_ == "r") {
+    if (!file_system->Exists(file_name()))
+      return false;
+  } else if (mode_ == "w") {
+    file_system->Delete(file_name());
+  } else {
+    NOTIMPLEMENTED() << "File mode " << mode_ << " not supported by MemoryFile";
+    return false;
+  }
+
+  file_ = file_system->GetFile(file_name());
+  DCHECK(file_);
   position_ = 0;
   return true;
 }

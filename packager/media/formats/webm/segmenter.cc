@@ -28,7 +28,7 @@ int64_t kSecondsToNs = 1000000000L;
 
 Segmenter::Segmenter(const MuxerOptions& options)
     : options_(options),
-      stream_(NULL),
+      info_(NULL),
       muxer_listener_(NULL),
       progress_listener_(NULL),
       progress_target_(0),
@@ -43,15 +43,15 @@ Segmenter::Segmenter(const MuxerOptions& options)
 Segmenter::~Segmenter() {}
 
 Status Segmenter::Initialize(scoped_ptr<MkvWriter> writer,
-                             MediaStream* streams,
+                             StreamInfo* info,
                              ProgressListener* progress_listener,
                              MuxerListener* muxer_listener,
                              KeySource* encryption_key_source) {
   muxer_listener_ = muxer_listener;
-  stream_ = streams;
+  info_ = info;
 
   // Use media duration as progress target.
-  progress_target_ = stream_->info()->duration();
+  progress_target_ = info_->duration();
   progress_listener_ = progress_listener;
 
   segment_info_.Init();
@@ -64,18 +64,16 @@ Status Segmenter::Initialize(scoped_ptr<MkvWriter> writer,
 
   // Create the track info.
   Status status;
-  switch (stream_->info()->stream_type()) {
+  switch (info_->stream_type()) {
     case kStreamVideo:
-      status = CreateVideoTrack(
-          static_cast<VideoStreamInfo*>(stream_->info().get()));
+      status = CreateVideoTrack(static_cast<VideoStreamInfo*>(info_));
       break;
     case kStreamAudio:
-      status = CreateAudioTrack(
-          static_cast<AudioStreamInfo*>(stream_->info().get()));
+      status = CreateAudioTrack(static_cast<AudioStreamInfo*>(info_));
       break;
     default:
       NOTIMPLEMENTED() << "Not implemented for stream type: "
-                       << stream_->info()->stream_type();
+                       << info_->stream_type();
       status = Status(error::UNIMPLEMENTED, "Not implemented for stream type");
   }
   if (!status.ok())
@@ -118,14 +116,14 @@ Status Segmenter::AddSample(scoped_refptr<MediaSample> sample) {
     return status;
 
   const int64_t time_ns =
-      sample->pts() * kSecondsToNs / stream_->info()->time_scale();
+      sample->pts() * kSecondsToNs / info_->time_scale();
   if (!cluster_->AddFrame(sample->data(), sample->data_size(), track_id_,
                           time_ns, sample->is_key_frame())) {
     LOG(ERROR) << "Error adding sample to segment.";
     return Status(error::FILE_FAILURE, "Error adding sample to segment.");
   }
   const double duration_sec =
-      static_cast<double>(sample->duration()) / stream_->info()->time_scale();
+      static_cast<double>(sample->duration()) / info_->time_scale();
   cluster_length_sec_ += duration_sec;
   segment_length_sec_ += duration_sec;
   total_duration_ += sample->duration();
@@ -141,14 +139,14 @@ float Segmenter::GetDuration() const {
 uint64_t Segmenter::FromBMFFTimescale(uint64_t time_timescale) {
   // Convert the time from BMFF time_code to WebM timecode scale.
   const int64_t time_ns =
-      kSecondsToNs * time_timescale / stream_->info()->time_scale();
+      kSecondsToNs * time_timescale / info_->time_scale();
   return time_ns / segment_info_.timecode_scale();
 }
 
 uint64_t Segmenter::FromWebMTimecode(uint64_t time_webm_timecode) {
   // Convert the time to BMFF time_code from WebM timecode scale.
   const int64_t time_ns = time_webm_timecode * segment_info_.timecode_scale();
-  return time_ns * stream_->info()->time_scale() / kSecondsToNs;
+  return time_ns * info_->time_scale() / kSecondsToNs;
 }
 
 Status Segmenter::WriteSegmentHeader(uint64_t file_size, MkvWriter* writer) {

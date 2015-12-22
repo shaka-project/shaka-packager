@@ -7,6 +7,8 @@
 #ifndef MEDIA_FORMATS_WEBM_TWO_PASS_SINGLE_SEGMENT_SEGMENTER_H_
 #define MEDIA_FORMATS_WEBM_TWO_PASS_SINGLE_SEGMENT_SEGMENTER_H_
 
+#include <string>
+
 #include "packager/media/formats/webm/single_segment_segmenter.h"
 
 #include "packager/base/memory/scoped_ptr.h"
@@ -41,6 +43,7 @@ class TwoPassSingleSegmentSegmenter : public SingleSegmentSegmenter {
                                   uint64_t last_size);
 
   scoped_ptr<MkvWriter> real_writer_;
+  std::string temp_file_name_;
 
   DISALLOW_COPY_AND_ASSIGN(TwoPassSingleSegmentSegmenter);
 };
