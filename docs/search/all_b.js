@@ -33,8 +33,8 @@ var searchData=
   ['mpdnotifymuxerlistener',['MpdNotifyMuxerListener',['../d3/d0e/classedash__packager_1_1media_1_1MpdNotifyMuxerListener.html#a44cbf87035056284013231b1e29fe3c7',1,'edash_packager::media::MpdNotifyMuxerListener']]],
   ['mpdoptions',['MpdOptions',['../d1/d5d/structedash__packager_1_1MpdOptions.html',1,'edash_packager']]],
   ['mpdwriter',['MpdWriter',['../dc/d81/classedash__packager_1_1MpdWriter.html',1,'edash_packager']]],
-  ['multisegmentsegmenter',['MultiSegmentSegmenter',['../dc/d7a/classedash__packager_1_1media_1_1mp4_1_1MultiSegmentSegmenter.html',1,'edash_packager::media::mp4']]],
   ['multisegmentsegmenter',['MultiSegmentSegmenter',['../df/d4e/classedash__packager_1_1media_1_1webm_1_1MultiSegmentSegmenter.html',1,'edash_packager::media::webm']]],
+  ['multisegmentsegmenter',['MultiSegmentSegmenter',['../dc/d7a/classedash__packager_1_1media_1_1mp4_1_1MultiSegmentSegmenter.html',1,'edash_packager::media::mp4']]],
   ['muxer',['Muxer',['../d4/d1d/classedash__packager_1_1media_1_1Muxer.html',1,'edash_packager::media']]],
   ['muxerlistener',['MuxerListener',['../df/de7/classedash__packager_1_1media_1_1MuxerListener.html',1,'edash_packager::media']]],
   ['muxeroptions',['MuxerOptions',['../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html',1,'edash_packager::media']]]

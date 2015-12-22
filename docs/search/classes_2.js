@@ -15,5 +15,10 @@ var searchData=
   ['compositiontimetosample',['CompositionTimeToSample',['../da/d54/structedash__packager_1_1media_1_1mp4_1_1CompositionTimeToSample.html',1,'edash_packager::media::mp4']]],
   ['contentencoding',['ContentEncoding',['../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html',1,'edash_packager::media']]],
   ['contentprotectionelement',['ContentProtectionElement',['../d0/d96/structedash__packager_1_1ContentProtectionElement.html',1,'edash_packager']]],
-  ['cue',['Cue',['../df/dda/structedash__packager_1_1media_1_1Cue.html',1,'edash_packager::media']]]
+  ['cue',['Cue',['../df/dda/structedash__packager_1_1media_1_1Cue.html',1,'edash_packager::media']]],
+  ['cueidbox',['CueIDBox',['../de/d07/structedash__packager_1_1media_1_1mp4_1_1CueIDBox.html',1,'edash_packager::media::mp4']]],
+  ['cuepayloadbox',['CuePayloadBox',['../d7/d49/structedash__packager_1_1media_1_1mp4_1_1CuePayloadBox.html',1,'edash_packager::media::mp4']]],
+  ['cuesettingsbox',['CueSettingsBox',['../d1/df2/structedash__packager_1_1media_1_1mp4_1_1CueSettingsBox.html',1,'edash_packager::media::mp4']]],
+  ['cuesourceidbox',['CueSourceIDBox',['../d2/df8/structedash__packager_1_1media_1_1mp4_1_1CueSourceIDBox.html',1,'edash_packager::media::mp4']]],
+  ['cuetimebox',['CueTimeBox',['../dd/d12/structedash__packager_1_1media_1_1mp4_1_1CueTimeBox.html',1,'edash_packager::media::mp4']]]
 ];

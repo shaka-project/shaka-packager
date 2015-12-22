@@ -19,14 +19,15 @@ var searchData=
   ['segmentreference',['SegmentReference',['../d4/dce/structedash__packager_1_1media_1_1mp4_1_1SegmentReference.html',1,'edash_packager::media::mp4']]],
   ['segmenttype',['SegmentType',['../dd/da6/structedash__packager_1_1media_1_1mp4_1_1SegmentType.html',1,'edash_packager::media::mp4']]],
   ['simplempdnotifier',['SimpleMpdNotifier',['../db/d56/classedash__packager_1_1SimpleMpdNotifier.html',1,'edash_packager']]],
-  ['singlesegmentsegmenter',['SingleSegmentSegmenter',['../da/d75/classedash__packager_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html',1,'edash_packager::media::mp4']]],
   ['singlesegmentsegmenter',['SingleSegmentSegmenter',['../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html',1,'edash_packager::media::webm']]],
+  ['singlesegmentsegmenter',['SingleSegmentSegmenter',['../da/d75/classedash__packager_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html',1,'edash_packager::media::mp4']]],
   ['soundmediaheader',['SoundMediaHeader',['../da/db0/structedash__packager_1_1media_1_1mp4_1_1SoundMediaHeader.html',1,'edash_packager::media::mp4']]],
   ['status',['Status',['../d2/d90/classedash__packager_1_1media_1_1Status.html',1,'edash_packager::media']]],
   ['streamdescriptor',['StreamDescriptor',['../de/d1f/structedash__packager_1_1media_1_1StreamDescriptor.html',1,'edash_packager::media']]],
   ['streamdescriptorcomparefn',['StreamDescriptorCompareFn',['../da/d7d/classedash__packager_1_1media_1_1StreamDescriptorCompareFn.html',1,'edash_packager::media']]],
   ['streaminfo',['StreamInfo',['../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html',1,'edash_packager::media']]],
   ['subsampleentry',['SubsampleEntry',['../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html',1,'edash_packager::media']]],
+  ['subtitlemediaheader',['SubtitleMediaHeader',['../d1/d86/structedash__packager_1_1media_1_1mp4_1_1SubtitleMediaHeader.html',1,'edash_packager::media::mp4']]],
   ['syncsample',['SyncSample',['../d9/d18/structedash__packager_1_1media_1_1mp4_1_1SyncSample.html',1,'edash_packager::media::mp4']]],
   ['syncsampleiterator',['SyncSampleIterator',['../db/d01/classedash__packager_1_1media_1_1mp4_1_1SyncSampleIterator.html',1,'edash_packager::media::mp4']]]
 ];

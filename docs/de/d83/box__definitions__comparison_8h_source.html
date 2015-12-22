@@ -298,172 +298,233 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;         lhs.ddts == rhs.ddts;</div>
 <div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;}</div>
 <div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> MediaHeader&amp; lhs, <span class="keyword">const</span> MediaHeader&amp; rhs) {</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;  <span class="keywordflow">return</span> lhs.creation_time == rhs.creation_time &amp;&amp;</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;         lhs.modification_time == rhs.modification_time &amp;&amp;</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;         lhs.timescale == rhs.timescale &amp;&amp; lhs.duration == rhs.duration &amp;&amp;</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;         strcmp(lhs.language, rhs.language) == 0;</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;}</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> VideoMediaHeader&amp; lhs,</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;                       <span class="keyword">const</span> VideoMediaHeader&amp; rhs) {</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;  <span class="keywordflow">return</span> lhs.graphicsmode == rhs.graphicsmode &amp;&amp;</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;         lhs.opcolor_red == rhs.opcolor_red &amp;&amp;</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;         lhs.opcolor_green == rhs.opcolor_green &amp;&amp;</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;         lhs.opcolor_blue == rhs.opcolor_blue;</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> WebVTTConfigurationBox&amp; lhs,</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;                       <span class="keyword">const</span> WebVTTConfigurationBox&amp; rhs) {</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  <span class="keywordflow">return</span> lhs.config == rhs.config;</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;}</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> WebVTTSourceLabelBox&amp; lhs,</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;                       <span class="keyword">const</span> WebVTTSourceLabelBox&amp; rhs) {</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;  <span class="keywordflow">return</span> lhs.source_label == rhs.source_label;</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;}</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> WVTTSampleEntry&amp; lhs,</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;                       <span class="keyword">const</span> WVTTSampleEntry&amp; rhs) {</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  <span class="keywordflow">return</span> lhs.config == rhs.config &amp;&amp; lhs.label == rhs.label;</div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;}</div>
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> SoundMediaHeader&amp; lhs,</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;                       <span class="keyword">const</span> SoundMediaHeader&amp; rhs) {</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  <span class="keywordflow">return</span> lhs.balance == rhs.balance;</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;}</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> DataEntryUrl&amp; lhs, <span class="keyword">const</span> DataEntryUrl&amp; rhs) {</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  <span class="keywordflow">return</span> lhs.flags == rhs.flags &amp;&amp; lhs.location == rhs.location;</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;}</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> DataReference&amp; lhs, <span class="keyword">const</span> DataReference&amp; rhs) {</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  <span class="keywordflow">return</span> lhs.data_entry == rhs.data_entry;</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;}</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> DataInformation&amp; lhs, <span class="keyword">const</span> DataInformation&amp; rhs) {</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;  <span class="keywordflow">return</span> lhs.dref == rhs.dref;</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;}</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> MediaInformation&amp; lhs,</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;                       <span class="keyword">const</span> MediaInformation&amp; rhs) {</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;  <span class="keywordflow">return</span> lhs.dinf == rhs.dinf &amp;&amp; lhs.sample_table == rhs.sample_table &amp;&amp;</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;         lhs.vmhd == rhs.vmhd &amp;&amp; lhs.smhd == rhs.smhd;</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;}</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> Media&amp; lhs, <span class="keyword">const</span> Media&amp; rhs) {</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  <span class="keywordflow">return</span> lhs.header == rhs.header &amp;&amp; lhs.handler == rhs.handler &amp;&amp;</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;         lhs.information == rhs.information;</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;}</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> Track&amp; lhs, <span class="keyword">const</span> Track&amp; rhs) {</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;  <span class="keywordflow">return</span> lhs.header == rhs.header &amp;&amp; lhs.media == rhs.media &amp;&amp;</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;         lhs.edit == rhs.edit;</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> MediaHeader&amp; lhs, <span class="keyword">const</span> MediaHeader&amp; rhs) {</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="keywordflow">return</span> lhs.creation_time == rhs.creation_time &amp;&amp;</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;         lhs.modification_time == rhs.modification_time &amp;&amp;</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;         lhs.timescale == rhs.timescale &amp;&amp; lhs.duration == rhs.duration &amp;&amp;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;         strcmp(lhs.language, rhs.language) == 0;</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;}</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> VideoMediaHeader&amp; lhs,</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;                       <span class="keyword">const</span> VideoMediaHeader&amp; rhs) {</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  <span class="keywordflow">return</span> lhs.graphicsmode == rhs.graphicsmode &amp;&amp;</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;         lhs.opcolor_red == rhs.opcolor_red &amp;&amp;</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;         lhs.opcolor_green == rhs.opcolor_green &amp;&amp;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;         lhs.opcolor_blue == rhs.opcolor_blue;</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;}</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> SoundMediaHeader&amp; lhs,</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;                       <span class="keyword">const</span> SoundMediaHeader&amp; rhs) {</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;  <span class="keywordflow">return</span> lhs.balance == rhs.balance;</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;}</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> SubtitleMediaHeader&amp; lhs,</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;                       <span class="keyword">const</span> SubtitleMediaHeader&amp; rhs) {</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;}</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> DataEntryUrl&amp; lhs, <span class="keyword">const</span> DataEntryUrl&amp; rhs) {</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;  <span class="keywordflow">return</span> lhs.flags == rhs.flags &amp;&amp; lhs.location == rhs.location;</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;}</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> DataReference&amp; lhs, <span class="keyword">const</span> DataReference&amp; rhs) {</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;  <span class="keywordflow">return</span> lhs.data_entry == rhs.data_entry;</div>
 <div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;}</div>
 <div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> MovieExtendsHeader&amp; lhs,</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;                       <span class="keyword">const</span> MovieExtendsHeader&amp; rhs) {</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;  <span class="keywordflow">return</span> lhs.fragment_duration == rhs.fragment_duration;</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;}</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> TrackExtends&amp; lhs, <span class="keyword">const</span> TrackExtends&amp; rhs) {</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  <span class="keywordflow">return</span> lhs.track_id == rhs.track_id &amp;&amp;</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;         lhs.default_sample_description_index ==</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;             rhs.default_sample_description_index &amp;&amp;</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;         lhs.default_sample_duration == rhs.default_sample_duration &amp;&amp;</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;         lhs.default_sample_size == rhs.default_sample_size &amp;&amp;</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;         lhs.default_sample_flags == rhs.default_sample_flags;</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;}</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> MovieExtends&amp; lhs, <span class="keyword">const</span> MovieExtends&amp; rhs) {</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  <span class="keywordflow">return</span> lhs.header == rhs.header &amp;&amp; lhs.tracks == rhs.tracks;</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;}</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> Movie&amp; lhs, <span class="keyword">const</span> Movie&amp; rhs) {</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;  <span class="keywordflow">return</span> lhs.header == rhs.header &amp;&amp; lhs.extends == rhs.extends &amp;&amp;</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;         lhs.tracks == rhs.tracks &amp;&amp; lhs.pssh == rhs.pssh;</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;}</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> TrackFragmentDecodeTime&amp; lhs,</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;                       <span class="keyword">const</span> TrackFragmentDecodeTime&amp; rhs) {</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  <span class="keywordflow">return</span> lhs.decode_time == rhs.decode_time;</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;}</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> MovieFragmentHeader&amp; lhs,</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;                       <span class="keyword">const</span> MovieFragmentHeader&amp; rhs) {</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  <span class="keywordflow">return</span> lhs.sequence_number == rhs.sequence_number;</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;}</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> TrackFragmentHeader&amp; lhs,</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;                       <span class="keyword">const</span> TrackFragmentHeader&amp; rhs) {</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  <span class="keywordflow">return</span> lhs.flags == rhs.flags &amp;&amp; lhs.track_id == rhs.track_id &amp;&amp;</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;         lhs.sample_description_index == rhs.sample_description_index &amp;&amp;</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;         lhs.default_sample_duration == rhs.default_sample_duration &amp;&amp;</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;         lhs.default_sample_size == rhs.default_sample_size &amp;&amp;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;         lhs.default_sample_flags == rhs.default_sample_flags;</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;}</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> TrackFragmentRun&amp; lhs,</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;                       <span class="keyword">const</span> TrackFragmentRun&amp; rhs) {</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  <span class="keywordflow">return</span> lhs.flags == rhs.flags &amp;&amp; lhs.sample_count == rhs.sample_count &amp;&amp;</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;         lhs.data_offset == rhs.data_offset &amp;&amp;</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;         lhs.sample_flags == rhs.sample_flags &amp;&amp;</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;         lhs.sample_sizes == rhs.sample_sizes &amp;&amp;</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;         lhs.sample_durations == rhs.sample_durations &amp;&amp;</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;         lhs.sample_composition_time_offsets ==</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;             rhs.sample_composition_time_offsets;</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> DataInformation&amp; lhs, <span class="keyword">const</span> DataInformation&amp; rhs) {</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  <span class="keywordflow">return</span> lhs.dref == rhs.dref;</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;}</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> MediaInformation&amp; lhs,</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;                       <span class="keyword">const</span> MediaInformation&amp; rhs) {</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  <span class="keywordflow">return</span> lhs.dinf == rhs.dinf &amp;&amp; lhs.sample_table == rhs.sample_table &amp;&amp;</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;         lhs.vmhd == rhs.vmhd &amp;&amp; lhs.smhd == rhs.smhd;</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;}</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> Media&amp; lhs, <span class="keyword">const</span> Media&amp; rhs) {</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  <span class="keywordflow">return</span> lhs.header == rhs.header &amp;&amp; lhs.handler == rhs.handler &amp;&amp;</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;         lhs.information == rhs.information;</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;}</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> Track&amp; lhs, <span class="keyword">const</span> Track&amp; rhs) {</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  <span class="keywordflow">return</span> lhs.header == rhs.header &amp;&amp; lhs.media == rhs.media &amp;&amp;</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;         lhs.edit == rhs.edit;</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;}</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> MovieExtendsHeader&amp; lhs,</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;                       <span class="keyword">const</span> MovieExtendsHeader&amp; rhs) {</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  <span class="keywordflow">return</span> lhs.fragment_duration == rhs.fragment_duration;</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;}</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> TrackExtends&amp; lhs, <span class="keyword">const</span> TrackExtends&amp; rhs) {</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;  <span class="keywordflow">return</span> lhs.track_id == rhs.track_id &amp;&amp;</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;         lhs.default_sample_description_index ==</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;             rhs.default_sample_description_index &amp;&amp;</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;         lhs.default_sample_duration == rhs.default_sample_duration &amp;&amp;</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;         lhs.default_sample_size == rhs.default_sample_size &amp;&amp;</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;         lhs.default_sample_flags == rhs.default_sample_flags;</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;}</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> MovieExtends&amp; lhs, <span class="keyword">const</span> MovieExtends&amp; rhs) {</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  <span class="keywordflow">return</span> lhs.header == rhs.header &amp;&amp; lhs.tracks == rhs.tracks;</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;}</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> Movie&amp; lhs, <span class="keyword">const</span> Movie&amp; rhs) {</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  <span class="keywordflow">return</span> lhs.header == rhs.header &amp;&amp; lhs.extends == rhs.extends &amp;&amp;</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;         lhs.tracks == rhs.tracks &amp;&amp; lhs.pssh == rhs.pssh;</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;}</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> TrackFragmentDecodeTime&amp; lhs,</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;                       <span class="keyword">const</span> TrackFragmentDecodeTime&amp; rhs) {</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  <span class="keywordflow">return</span> lhs.decode_time == rhs.decode_time;</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;}</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> MovieFragmentHeader&amp; lhs,</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;                       <span class="keyword">const</span> MovieFragmentHeader&amp; rhs) {</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  <span class="keywordflow">return</span> lhs.sequence_number == rhs.sequence_number;</div>
 <div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;}</div>
 <div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> SampleToGroupEntry&amp; lhs,</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;                       <span class="keyword">const</span> SampleToGroupEntry&amp; rhs) {</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  <span class="keywordflow">return</span> lhs.sample_count == rhs.sample_count &amp;&amp;</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;         lhs.group_description_index == rhs.group_description_index;</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;}</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> SampleToGroup&amp; lhs,</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;                       <span class="keyword">const</span> SampleToGroup&amp; rhs) {</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;  <span class="keywordflow">return</span> lhs.grouping_type == rhs.grouping_type &amp;&amp;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;         lhs.grouping_type_parameter == rhs.grouping_type_parameter &amp;&amp;</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;         lhs.entries == rhs.entries;</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;}</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> CencSampleEncryptionInfoEntry&amp; lhs,</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;                       <span class="keyword">const</span> CencSampleEncryptionInfoEntry&amp; rhs) {</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  <span class="keywordflow">return</span> lhs.is_encrypted == rhs.is_encrypted &amp;&amp;</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;         lhs.iv_size == rhs.iv_size &amp;&amp;</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;         lhs.key_id == rhs.key_id;</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> TrackFragmentHeader&amp; lhs,</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;                       <span class="keyword">const</span> TrackFragmentHeader&amp; rhs) {</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  <span class="keywordflow">return</span> lhs.flags == rhs.flags &amp;&amp; lhs.track_id == rhs.track_id &amp;&amp;</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;         lhs.sample_description_index == rhs.sample_description_index &amp;&amp;</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;         lhs.default_sample_duration == rhs.default_sample_duration &amp;&amp;</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;         lhs.default_sample_size == rhs.default_sample_size &amp;&amp;</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;         lhs.default_sample_flags == rhs.default_sample_flags;</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;}</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> TrackFragmentRun&amp; lhs,</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;                       <span class="keyword">const</span> TrackFragmentRun&amp; rhs) {</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  <span class="keywordflow">return</span> lhs.flags == rhs.flags &amp;&amp; lhs.sample_count == rhs.sample_count &amp;&amp;</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;         lhs.data_offset == rhs.data_offset &amp;&amp;</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;         lhs.sample_flags == rhs.sample_flags &amp;&amp;</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;         lhs.sample_sizes == rhs.sample_sizes &amp;&amp;</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;         lhs.sample_durations == rhs.sample_durations &amp;&amp;</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;         lhs.sample_composition_time_offsets ==</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;             rhs.sample_composition_time_offsets;</div>
 <div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;}</div>
 <div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> SampleGroupDescription&amp; lhs,</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;                       <span class="keyword">const</span> SampleGroupDescription&amp; rhs) {</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;  <span class="keywordflow">return</span> lhs.grouping_type == rhs.grouping_type &amp;&amp;</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;         lhs.entries == rhs.entries;</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> SampleToGroupEntry&amp; lhs,</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;                       <span class="keyword">const</span> SampleToGroupEntry&amp; rhs) {</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;  <span class="keywordflow">return</span> lhs.sample_count == rhs.sample_count &amp;&amp;</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;         lhs.group_description_index == rhs.group_description_index;</div>
 <div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;}</div>
 <div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> TrackFragment&amp; lhs, <span class="keyword">const</span> TrackFragment&amp; rhs) {</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;  <span class="keywordflow">return</span> lhs.header == rhs.header &amp;&amp; lhs.runs == rhs.runs &amp;&amp;</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;         lhs.decode_time == rhs.decode_time &amp;&amp;</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;         lhs.auxiliary_offset == rhs.auxiliary_offset &amp;&amp;</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;         lhs.auxiliary_size == rhs.auxiliary_size;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> SampleToGroup&amp; lhs,</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;                       <span class="keyword">const</span> SampleToGroup&amp; rhs) {</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;  <span class="keywordflow">return</span> lhs.grouping_type == rhs.grouping_type &amp;&amp;</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;         lhs.grouping_type_parameter == rhs.grouping_type_parameter &amp;&amp;</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;         lhs.entries == rhs.entries;</div>
 <div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;}</div>
 <div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> MovieFragment&amp; lhs, <span class="keyword">const</span> MovieFragment&amp; rhs) {</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;  <span class="keywordflow">return</span> lhs.header == rhs.header &amp;&amp; lhs.tracks == rhs.tracks &amp;&amp;</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;         lhs.pssh == rhs.pssh;</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;}</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> SegmentReference&amp; lhs,</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;                       <span class="keyword">const</span> SegmentReference&amp; rhs) {</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;  <span class="keywordflow">return</span> lhs.reference_type == rhs.reference_type &amp;&amp;</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;         lhs.referenced_size == rhs.referenced_size &amp;&amp;</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;         lhs.subsegment_duration == rhs.subsegment_duration &amp;&amp;</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;         lhs.starts_with_sap == rhs.starts_with_sap &amp;&amp;</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;         lhs.sap_type == rhs.sap_type &amp;&amp;</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;         lhs.sap_delta_time == rhs.sap_delta_time;</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;}</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> SegmentIndex&amp; lhs, <span class="keyword">const</span> SegmentIndex&amp; rhs) {</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;  <span class="keywordflow">return</span> lhs.reference_id == rhs.reference_id &amp;&amp;</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;         lhs.timescale == rhs.timescale &amp;&amp;</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;         lhs.earliest_presentation_time == rhs.earliest_presentation_time &amp;&amp;</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;         lhs.first_offset == rhs.first_offset &amp;&amp;</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;         lhs.references == rhs.references;</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;}</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_</span></div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> CencSampleEncryptionInfoEntry&amp; lhs,</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;                       <span class="keyword">const</span> CencSampleEncryptionInfoEntry&amp; rhs) {</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  <span class="keywordflow">return</span> lhs.is_encrypted == rhs.is_encrypted &amp;&amp;</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;         lhs.iv_size == rhs.iv_size &amp;&amp;</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;         lhs.key_id == rhs.key_id;</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;}</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> SampleGroupDescription&amp; lhs,</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;                       <span class="keyword">const</span> SampleGroupDescription&amp; rhs) {</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;  <span class="keywordflow">return</span> lhs.grouping_type == rhs.grouping_type &amp;&amp;</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;         lhs.entries == rhs.entries;</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;}</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> TrackFragment&amp; lhs, <span class="keyword">const</span> TrackFragment&amp; rhs) {</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;  <span class="keywordflow">return</span> lhs.header == rhs.header &amp;&amp; lhs.runs == rhs.runs &amp;&amp;</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;         lhs.decode_time == rhs.decode_time &amp;&amp;</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;         lhs.auxiliary_offset == rhs.auxiliary_offset &amp;&amp;</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;         lhs.auxiliary_size == rhs.auxiliary_size;</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;}</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> MovieFragment&amp; lhs, <span class="keyword">const</span> MovieFragment&amp; rhs) {</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;  <span class="keywordflow">return</span> lhs.header == rhs.header &amp;&amp; lhs.tracks == rhs.tracks &amp;&amp;</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;         lhs.pssh == rhs.pssh;</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;}</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> SegmentReference&amp; lhs,</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;                       <span class="keyword">const</span> SegmentReference&amp; rhs) {</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;  <span class="keywordflow">return</span> lhs.reference_type == rhs.reference_type &amp;&amp;</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;         lhs.referenced_size == rhs.referenced_size &amp;&amp;</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;         lhs.subsegment_duration == rhs.subsegment_duration &amp;&amp;</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;         lhs.starts_with_sap == rhs.starts_with_sap &amp;&amp;</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;         lhs.sap_type == rhs.sap_type &amp;&amp;</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;         lhs.sap_delta_time == rhs.sap_delta_time;</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;}</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> SegmentIndex&amp; lhs, <span class="keyword">const</span> SegmentIndex&amp; rhs) {</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;  <span class="keywordflow">return</span> lhs.reference_id == rhs.reference_id &amp;&amp;</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;         lhs.timescale == rhs.timescale &amp;&amp;</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;         lhs.earliest_presentation_time == rhs.earliest_presentation_time &amp;&amp;</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;         lhs.first_offset == rhs.first_offset &amp;&amp;</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;         lhs.references == rhs.references;</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;}</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> CueSourceIDBox&amp; lhs,</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;                       <span class="keyword">const</span> CueSourceIDBox&amp; rhs) {</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  <span class="keywordflow">return</span> lhs.source_id == rhs.source_id;</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;}</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> CueTimeBox&amp; lhs,</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;                       <span class="keyword">const</span> CueTimeBox&amp; rhs) {</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;  <span class="keywordflow">return</span> lhs.cue_current_time == rhs.cue_current_time;</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;}</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> CueIDBox&amp; lhs,</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;                       <span class="keyword">const</span> CueIDBox&amp; rhs) {</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;  <span class="keywordflow">return</span> lhs.cue_id == rhs.cue_id;</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;}</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> CueSettingsBox&amp; lhs,</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;                       <span class="keyword">const</span> CueSettingsBox&amp; rhs) {</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;  <span class="keywordflow">return</span> lhs.settings == rhs.settings;</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;}</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> CuePayloadBox&amp; lhs,</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;                       <span class="keyword">const</span> CuePayloadBox&amp; rhs) {</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;  <span class="keywordflow">return</span> lhs.cue_text == rhs.cue_text;</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;}</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> VTTEmptyCueBox&amp; lhs, <span class="keyword">const</span> VTTEmptyCueBox&amp; rhs) {</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;}</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> VTTAdditionalTextBox&amp; lhs,</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;                       <span class="keyword">const</span> VTTAdditionalTextBox&amp; rhs) {</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;  <span class="keywordflow">return</span> lhs.cue_additional_text == rhs.cue_additional_text;</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;}</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;<span class="keyword">inline</span> <span class="keywordtype">bool</span> operator==(<span class="keyword">const</span> VTTCueBox&amp; lhs,</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;                       <span class="keyword">const</span> VTTCueBox&amp; rhs) {</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;  <span class="keywordflow">return</span> lhs.cue_source_id == rhs.cue_source_id &amp;&amp; lhs.cue_id == rhs.cue_id &amp;&amp;</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;         lhs.cue_time == rhs.cue_time &amp;&amp; lhs.cue_settings == rhs.cue_settings &amp;&amp;</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;         lhs.cue_payload == rhs.cue_payload;</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;}</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 21 2015 18:49:05 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Dec 22 2015 23:44:19 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

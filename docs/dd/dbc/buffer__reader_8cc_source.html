@@ -142,52 +142,61 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a2b7075e5a47a823b9f66c0ba702f26bf">   56</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a2b7075e5a47a823b9f66c0ba702f26bf">BufferReader::SkipBytes</a>(<span class="keywordtype">size_t</span> num_bytes) {</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a61ac255662b847f0ef25a8228c4ba009">HasBytes</a>(num_bytes))</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  pos_ += num_bytes;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keywordtype">bool</span> BufferReader::Read(T* v) {</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">return</span> ReadNBytes(v, <span class="keyword">sizeof</span>(*v));</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keywordtype">bool</span> BufferReader::ReadNBytes(T* v, <span class="keywordtype">size_t</span> num_bytes) {</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  DCHECK(v != NULL);</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  DCHECK_LE(num_bytes, <span class="keyword">sizeof</span>(*v));</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a61ac255662b847f0ef25a8228c4ba009">HasBytes</a>(num_bytes))</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">// Sign extension is required only if</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">//     |num_bytes| is less than size of T, and</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">//     T is a signed type.</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> sign_extension_required =</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;      num_bytes &lt; sizeof(*v) &amp;&amp; static_cast&lt;T&gt;(-1) &lt; 0;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// Perform sign extension by casting the byte value to int8_t, which will be</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// sign extended automatically when it is implicitly converted to T.</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  T tmp = sign_extension_required ? <span class="keyword">static_cast&lt;</span>int8_t<span class="keyword">&gt;</span>(buf_[pos_++])</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                                  : buf_[pos_++];</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; num_bytes; ++i) {</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    tmp &lt;&lt;= 8;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    tmp |= buf_[pos_++];</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  }</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  *v = tmp;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="keywordtype">bool</span> BufferReader::ReadToString(std::string* str, <span class="keywordtype">size_t</span> size) {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  DCHECK(str);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a61ac255662b847f0ef25a8228c4ba009">HasBytes</a>(size))</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  str-&gt;assign(buf_ + pos_, buf_ + pos_ + size);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  pos_ += size;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;}</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a2b7075e5a47a823b9f66c0ba702f26bf">   65</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a2b7075e5a47a823b9f66c0ba702f26bf">BufferReader::SkipBytes</a>(<span class="keywordtype">size_t</span> num_bytes) {</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a61ac255662b847f0ef25a8228c4ba009">HasBytes</a>(num_bytes))</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  pos_ += num_bytes;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;}</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keywordtype">bool</span> BufferReader::Read(T* v) {</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keywordflow">return</span> ReadNBytes(v, <span class="keyword">sizeof</span>(*v));</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;}</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keyword">template</span> &lt;<span class="keyword">typename</span> T&gt;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="keywordtype">bool</span> BufferReader::ReadNBytes(T* v, <span class="keywordtype">size_t</span> num_bytes) {</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  DCHECK(v != NULL);</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  DCHECK_LE(num_bytes, <span class="keyword">sizeof</span>(*v));</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a61ac255662b847f0ef25a8228c4ba009">HasBytes</a>(num_bytes))</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">// Sign extension is required only if</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="comment">//     |num_bytes| is less than size of T, and</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="comment">//     T is a signed type.</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> sign_extension_required =</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;      num_bytes &lt; sizeof(*v) &amp;&amp; static_cast&lt;T&gt;(-1) &lt; 0;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="comment">// Perform sign extension by casting the byte value to int8_t, which will be</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="comment">// sign extended automatically when it is implicitly converted to T.</span></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  T tmp = sign_extension_required ? <span class="keyword">static_cast&lt;</span>int8_t<span class="keyword">&gt;</span>(buf_[pos_++])</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                                  : buf_[pos_++];</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 1; i &lt; num_bytes; ++i) {</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    tmp &lt;&lt;= 8;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    tmp |= buf_[pos_++];</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  }</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  *v = tmp;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;}</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1BufferReader_html_a0375f4997e9c934783f51203c4d1434f"><div class="ttname"><a href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a0375f4997e9c934783f51203c4d1434f">edash_packager::media::BufferReader::Read1</a></div><div class="ttdeci">bool Read1(uint8_t *v) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbc/buffer__reader_8cc_source.html#l00014">buffer_reader.cc:14</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1BufferReader_html_a2b7075e5a47a823b9f66c0ba702f26bf"><div class="ttname"><a href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a2b7075e5a47a823b9f66c0ba702f26bf">edash_packager::media::BufferReader::SkipBytes</a></div><div class="ttdeci">bool SkipBytes(size_t num_bytes) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbc/buffer__reader_8cc_source.html#l00056">buffer_reader.cc:56</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1BufferReader_html_a2b7075e5a47a823b9f66c0ba702f26bf"><div class="ttname"><a href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a2b7075e5a47a823b9f66c0ba702f26bf">edash_packager::media::BufferReader::SkipBytes</a></div><div class="ttdeci">bool SkipBytes(size_t num_bytes) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbc/buffer__reader_8cc_source.html#l00065">buffer_reader.cc:65</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1BufferReader_html_ac21a2b3a9ed6b2ad20247b6f653d8a02"><div class="ttname"><a href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#ac21a2b3a9ed6b2ad20247b6f653d8a02">edash_packager::media::BufferReader::ReadNBytesInto8</a></div><div class="ttdeci">bool ReadNBytesInto8(uint64_t *v, size_t num_bytes) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbc/buffer__reader_8cc_source.html#l00040">buffer_reader.cc:40</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1BufferReader_html_a61ac255662b847f0ef25a8228c4ba009"><div class="ttname"><a href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a61ac255662b847f0ef25a8228c4ba009">edash_packager::media::BufferReader::HasBytes</a></div><div class="ttdeci">bool HasBytes(size_t count)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d3e/buffer__reader_8h_source.html#l00031">buffer_reader.h:31</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1BufferReader_html_a61ac255662b847f0ef25a8228c4ba009"><div class="ttname"><a href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a61ac255662b847f0ef25a8228c4ba009">edash_packager::media::BufferReader::HasBytes</a></div><div class="ttdeci">bool HasBytes(size_t count)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d3e/buffer__reader_8h_source.html#l00032">buffer_reader.h:32</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Dec 21 2015 18:49:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Dec 22 2015 23:44:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
