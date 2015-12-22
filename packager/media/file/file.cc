@@ -12,6 +12,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/file/local_file.h"
+#include "packager/media/file/memory_file.h"
 #include "packager/media/file/threaded_io_file.h"
 #include "packager/media/file/udp_file.h"
 #include "packager/base/strings/string_util.h"
@@ -29,6 +30,7 @@ namespace media {
 
 const char* kLocalFilePrefix = "file://";
 const char* kUdpFilePrefix = "udp://";
+const char* kMemoryFilePrefix = "memory://";
 
 namespace {
 
@@ -58,6 +60,15 @@ File* CreateUdpFile(const char* file_name, const char* mode) {
   return new UdpFile(file_name);
 }
 
+File* CreateMemoryFile(const char* file_name, const char* mode) {
+  return new MemoryFile(file_name);
+}
+
+bool DeleteMemoryFile(const char* file_name) {
+  MemoryFile::Delete(file_name);
+  return true;
+}
+
 static const SupportedTypeInfo kSupportedTypeInfo[] = {
   {
     kLocalFilePrefix,
@@ -71,6 +82,12 @@ static const SupportedTypeInfo kSupportedTypeInfo[] = {
     &CreateUdpFile,
     NULL
   },
+  {
+    kMemoryFilePrefix,
+    strlen(kMemoryFilePrefix),
+    &CreateMemoryFile,
+    &DeleteMemoryFile
+  },
 };
 
 }  // namespace
@@ -78,6 +95,11 @@ static const SupportedTypeInfo kSupportedTypeInfo[] = {
 File* File::Create(const char* file_name, const char* mode) {
   scoped_ptr<File, FileCloser> internal_file(
       CreateInternalFile(file_name, mode));
+
+  if (!strncmp(file_name, kMemoryFilePrefix, strlen(kMemoryFilePrefix))) {
+    // Disable caching for memory files.
+    return internal_file.release();
+  }
 
   if (FLAGS_io_cache_size) {
     // Enable threaded I/O for "r", "w", and "a" modes only.

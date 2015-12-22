@@ -20,6 +20,8 @@
         'io_cache.h',
         'local_file.cc',
         'local_file.h',
+        'memory_file.cc',
+        'memory_file.h',
         'threaded_io_file.cc',
         'threaded_io_file.h',
         'udp_file.h',
@@ -47,6 +49,7 @@
       'sources': [
         'file_unittest.cc',
         'io_cache_unittest.cc',
+        'memory_file_unittest.cc',
       ],
       'dependencies': [
         '../../testing/gtest.gyp:gtest',
