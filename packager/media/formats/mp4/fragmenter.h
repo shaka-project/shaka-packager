@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "packager/base/logging.h"
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/status.h"

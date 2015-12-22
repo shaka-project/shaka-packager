@@ -7,9 +7,8 @@
 #ifndef MEDIA_BASE_STATUS_H_
 #define MEDIA_BASE_STATUS_H_
 
+#include <iostream>
 #include <string>
-
-#include "packager/base/logging.h"
 
 namespace edash_packager {
 namespace media {
@@ -91,8 +90,8 @@ class Status {
 
   /// @name Some pre-defined Status objects.
   /// @{
-  static const Status& OK;  // Identical to 0-arg constructor.
-  static const Status& UNKNOWN;
+  static const Status OK;  // Identical to 0-arg constructor.
+  static const Status UNKNOWN;
   /// @}
 
   /// Store the specified error in this Status object.
@@ -158,7 +157,7 @@ class Status {
   // generated copy constructor and assignment operator.
 };
 
-extern std::ostream& operator<<(std::ostream& os, const Status& x);
+std::ostream& operator<<(std::ostream& os, const Status& x);
 
 }  // namespace media
 }  // namespace edash_packager
