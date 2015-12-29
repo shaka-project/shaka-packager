@@ -54,6 +54,9 @@ deps = {
   "src/packager/third_party/modp_b64":
     Var("chromium_git") + "/chromium/src/third_party/modp_b64@3a0e3b4ef6c54678a2d14522533df56b33b56119",
 
+  "src/packager/third_party/tcmalloc/chromium":
+    Var("chromium_git") + "/chromium/src/third_party/tcmalloc/chromium@fa1492f75861094061043a17c0f779c3d35780bf",
+
   "src/packager/third_party/webm-tools/src":
     Var("chromium_git") + "/webm/webm-tools@702ff3e4bb462b24464a202f8fcf9f65cc44b6e5",
 

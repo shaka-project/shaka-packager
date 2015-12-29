@@ -47,6 +47,13 @@
         'third_party/boringssl/boringssl.gyp:boringssl',
         'third_party/gflags/gflags.gyp:gflags',
       ],
+      'conditions': [
+        ['profiling==1', {
+          'dependencies': [
+            'base/allocator/allocator.gyp:allocator',
+          ],
+        }],
+      ],
     },
     {
       'target_name': 'mpd_generator',
