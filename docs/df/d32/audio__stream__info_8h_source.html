@@ -155,10 +155,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(num_channels_) * sample_bits_ / 8;</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  }</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keywordtype">void</span> set_sampling_frequency(<span class="keyword">const</span> uint32_t sampling_frequency) {</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    sampling_frequency_ = sampling_frequency;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  }</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keywordtype">void</span> set_codec(AudioCodec codec) { codec_ = codec; }</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordtype">void</span> set_sampling_frequency(<span class="keyword">const</span> uint32_t sampling_frequency) {</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    sampling_frequency_ = sampling_frequency;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  }</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keyword">static</span> std::string <a class="code" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#aa62e486f463c867b8e2f41ebb4ecea34">GetCodecString</a>(AudioCodec codec,</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                                    uint8_t audio_object_type);</div>
@@ -189,7 +189,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Dec 30 2015 02:07:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Dec 30 2015 22:27:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

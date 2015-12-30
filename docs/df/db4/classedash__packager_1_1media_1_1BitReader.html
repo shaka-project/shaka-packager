@@ -108,8 +108,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9a66cdd1013eb535e7e1eec60a91bf8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acacb97d71aaae01796b90d27e7cdca0a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html#acacb97d71aaae01796b90d27e7cdca0a">SkipBits</a> (int num_bits)</td></tr>
 <tr class="separator:acacb97d71aaae01796b90d27e7cdca0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8a7f24cfdc78211fb2c1a0167c8d903e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html#a8a7f24cfdc78211fb2c1a0167c8d903e">SkipBitsConditional</a> (bool condition, int num_bits)</td></tr>
+<tr class="separator:a8a7f24cfdc78211fb2c1a0167c8d903e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a71354dfa435a6c16c598da241f71c8a1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html#a71354dfa435a6c16c598da241f71c8a1">SkipBytes</a> (int num_bytes)</td></tr>
+<tr class="separator:a71354dfa435a6c16c598da241f71c8a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1409a0968749ca5a55ba823cd718065b"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html#a1409a0968749ca5a55ba823cd718065b">bits_available</a> () const </td></tr>
 <tr class="separator:a1409a0968749ca5a55ba823cd718065b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a475ab08957dc2e7147b64f307bfc90ab"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html#a475ab08957dc2e7147b64f307bfc90ab">bit_position</a> () const </td></tr>
+<tr class="separator:a475ab08957dc2e7147b64f307bfc90ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class to read bit streams. </p>
@@ -153,9 +159,38 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="a475ab08957dc2e7147b64f307bfc90ab"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int edash_packager::media::BitReader::bit_position </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The current bit position. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d4/dd3/bit__reader_8h_source.html#l00081">81</a> of file <a class="el" href="../../d4/dd3/bit__reader_8h_source.html">bit_reader.h</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a1409a0968749ca5a55ba823cd718065b"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">int edash_packager::media::BitReader::bits_available </td>
@@ -164,10 +199,15 @@ Public Member Functions</h2></td></tr>
           <td> const</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The number of bits available for reading. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/de0/bit__reader_8cc_source.html#l00053">53</a> of file <a class="el" href="../../d5/de0/bit__reader_8cc_source.html">bit_reader.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/dd3/bit__reader_8h_source.html#l00076">76</a> of file <a class="el" href="../../d4/dd3/bit__reader_8h_source.html">bit_reader.h</a>.</p>
 
 </div>
 </div>
@@ -238,9 +278,80 @@ template&lt;typename T &gt; </div>
   </table>
   </dd>
 </dl>
-<dl class="section return"><dt>Returns</dt><dd>false if the given number of bits cannot be skipped (not enough bits in the stream), true otherwise. When false is returned, the stream will enter a state where further ReadBits/SkipBits operations will always return false unless |num_bits| is 0. </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>false if the given number of bits cannot be skipped (not enough bits in the stream), true otherwise. When false is returned, the stream will enter a state where further ReadXXX/SkipXXX operations will always return false unless |num_bits/bytes| is 0. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/de0/bit__reader_8cc_source.html#l00021">21</a> of file <a class="el" href="../../d5/de0/bit__reader_8cc_source.html">bit_reader.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/de0/bit__reader_8cc_source.html#l00024">24</a> of file <a class="el" href="../../d5/de0/bit__reader_8cc_source.html">bit_reader.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a8a7f24cfdc78211fb2c1a0167c8d903e"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool edash_packager::media::BitReader::SkipBitsConditional </td>
+          <td>(</td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>condition</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>num_bits</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Read one bit then skip the number of bits specified if that bit matches <em>condition</em>. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">condition</td><td>indicates when the number of bits should be skipped. </td></tr>
+    <tr><td class="paramname">num_bits</td><td>specifies the number of bits to be skipped. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>false if the one bit cannot be read (not enough bits in the stream) or if the bit is set but the given number of bits cannot be skipped (not enough bits in the stream), true otherwise. When false is returned, the stream will enter a state where further ReadXXX/SkipXXX operations will always return false. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d4/dd3/bit__reader_8h_source.html#l00060">60</a> of file <a class="el" href="../../d4/dd3/bit__reader_8h_source.html">bit_reader.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a71354dfa435a6c16c598da241f71c8a1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool edash_packager::media::BitReader::SkipBytes </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>num_bytes</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Skip a number of bytes from stream. The current posision should be byte aligned, otherwise a false is returned and bytes are not skipped. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">num_bytes</td><td>specifies the number of bytes to be skipped. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>false if the current position is not byte aligned or if the given number of bytes cannot be skipped (not enough bytes in the stream), true otherwise. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d5/de0/bit__reader_8cc_source.html#l00056">56</a> of file <a class="el" href="../../d5/de0/bit__reader_8cc_source.html">bit_reader.cc</a>.</p>
 
 </div>
 </div>
@@ -251,7 +362,7 @@ template&lt;typename T &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Dec 30 2015 02:07:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Dec 30 2015 22:27:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

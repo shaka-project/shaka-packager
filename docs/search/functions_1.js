@@ -1,6 +1,7 @@
 var searchData=
 [
   ['bandwidthestimator',['BandwidthEstimator',['../d2/d6f/classBandwidthEstimator.html#aaae9573785ee9d62e0927f806537ea97',1,'BandwidthEstimator']]],
+  ['bit_5fposition',['bit_position',['../df/db4/classedash__packager_1_1media_1_1BitReader.html#a475ab08957dc2e7147b64f307bfc90ab',1,'edash_packager::media::BitReader']]],
   ['bitreader',['BitReader',['../df/db4/classedash__packager_1_1media_1_1BitReader.html#a7cfecfaf6169a0c9286d62b24e7b934e',1,'edash_packager::media::BitReader']]],
   ['bits_5favailable',['bits_available',['../df/db4/classedash__packager_1_1media_1_1BitReader.html#a1409a0968749ca5a55ba823cd718065b',1,'edash_packager::media::BitReader']]],
   ['boxbuffer',['BoxBuffer',['../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#aa1144b8d6912a983d65ff97f44ffeb51',1,'edash_packager::media::mp4::BoxBuffer::BoxBuffer(BoxReader *reader)'],['../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a1ecfb419ea348ad684bf3c1556d1570c',1,'edash_packager::media::mp4::BoxBuffer::BoxBuffer(BufferWriter *writer)']]],

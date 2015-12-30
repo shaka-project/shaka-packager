@@ -10,6 +10,7 @@ var searchData=
   ['initializewithrandomiv',['InitializeWithRandomIv',['../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html#a3d1c0717e1310823bd6827299b6050ef',1,'edash_packager::media::AesCtrEncryptor']]],
   ['iocache',['IoCache',['../d3/d6b/classedash__packager_1_1media_1_1IoCache.html',1,'edash_packager::media']]],
   ['isaac',['IsAAC',['../de/db1/classedash__packager_1_1media_1_1mp4_1_1ESDescriptor.html#a94db515fdafb0e007981d3c314b7b717',1,'edash_packager::media::mp4::ESDescriptor']]],
+  ['iskeyframe',['IsKeyframe',['../d5/dce/classedash__packager_1_1media_1_1VP8Parser.html#a4ad8998cac0534124e785f21ccddbf0a',1,'edash_packager::media::VP8Parser::IsKeyframe()'],['../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html#a5d09008aa9c80c28111979479307082c',1,'edash_packager::media::VP9Parser::IsKeyframe()']]],
   ['isparsingcomplete',['IsParsingComplete',['../d6/dd6/classedash__packager_1_1media_1_1WebMListParser.html#aabb9e87d04df9de57d7069a8943a1711',1,'edash_packager::media::WebMListParser']]],
   ['isrunvalid',['IsRunValid',['../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228',1,'edash_packager::media::mp4::TrackRunIterator']]],
   ['issamplevalid',['IsSampleValid',['../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22',1,'edash_packager::media::mp4::TrackRunIterator']]],

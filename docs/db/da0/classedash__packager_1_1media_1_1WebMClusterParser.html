@@ -115,9 +115,9 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a772ae4cd7aa703fb470c07a08a725279"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a772ae4cd7aa703fb470c07a08a725279"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>WebMClusterParser</b> (int64_t timecode_scale, int audio_track_num, int64_t audio_default_duration, int video_track_num, int64_t video_default_duration, const WebMTracksParser::TextTracks &amp;text_tracks, const std::set&lt; int64_t &gt; &amp;ignored_tracks, const std::string &amp;audio_encryption_key_id, const std::string &amp;video_encryption_key_id, const AudioCodec audio_codec, const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a1628c19a91f1b8ae123f7350936bfe32">MediaParser::NewSampleCB</a> &amp;new_sample_cb)</td></tr>
-<tr class="separator:a772ae4cd7aa703fb470c07a08a725279"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a247f394c568e15a4cecfc939ff74863e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a247f394c568e15a4cecfc939ff74863e"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>WebMClusterParser</b> (int64_t timecode_scale, scoped_refptr&lt; <a class="el" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html">AudioStreamInfo</a> &gt; audio_stream_info, scoped_refptr&lt; <a class="el" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a> &gt; video_stream_info, int64_t audio_default_duration, int64_t video_default_duration, const WebMTracksParser::TextTracks &amp;text_tracks, const std::set&lt; int64_t &gt; &amp;ignored_tracks, const std::string &amp;audio_encryption_key_id, const std::string &amp;video_encryption_key_id, const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a1628c19a91f1b8ae123f7350936bfe32">MediaParser::NewSampleCB</a> &amp;new_sample_cb, const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#af5c74c8723a5306faddcdfdcadb4ab4a">MediaParser::InitCB</a> &amp;init_cb)</td></tr>
+<tr class="separator:a247f394c568e15a4cecfc939ff74863e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd772eabfa31927d47dacfb219fca3ad"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afd772eabfa31927d47dacfb219fca3ad"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/da0/classedash__packager_1_1media_1_1WebMClusterParser.html#afd772eabfa31927d47dacfb219fca3ad">Reset</a> ()</td></tr>
 <tr class="memdesc:afd772eabfa31927d47dacfb219fca3ad"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resets the parser state so it can accept a new cluster. <br/></td></tr>
@@ -201,7 +201,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>true if the last <a class="el" href="../../db/da0/classedash__packager_1_1media_1_1WebMClusterParser.html#a060661d4a0bfc01543fa025fb4b09a7d">Parse()</a> call stopped at the end of a cluster. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dc/d3c/webm__cluster__parser_8h_source.html#l00144">144</a> of file <a class="el" href="../../dc/d3c/webm__cluster__parser_8h_source.html">webm_cluster_parser.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d3c/webm__cluster__parser_8h_source.html#l00138">138</a> of file <a class="el" href="../../dc/d3c/webm__cluster__parser_8h_source.html">webm_cluster_parser.h</a>.</p>
 
 </div>
 </div>
@@ -219,7 +219,7 @@ Additional Inherited Members</h2></td></tr>
 </div><div class="memdoc">
 <p>Flush data currently in the parser and reset the parser so it can accept a new cluster. </p>
 
-<p>Definition at line <a class="el" href="../../d5/d8f/webm__cluster__parser_8cc_source.html#l00096">96</a> of file <a class="el" href="../../d5/d8f/webm__cluster__parser_8cc_source.html">webm_cluster_parser.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d8f/webm__cluster__parser_8cc_source.html#l00132">132</a> of file <a class="el" href="../../d5/d8f/webm__cluster__parser_8cc_source.html">webm_cluster_parser.cc</a>.</p>
 
 </div>
 </div>
@@ -253,7 +253,7 @@ Additional Inherited Members</h2></td></tr>
 <dd>
 The number of bytes parsed on success. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/d8f/webm__cluster__parser_8cc_source.html#l00103">103</a> of file <a class="el" href="../../d5/d8f/webm__cluster__parser_8cc_source.html">webm_cluster_parser.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d8f/webm__cluster__parser_8cc_source.html#l00139">139</a> of file <a class="el" href="../../d5/d8f/webm__cluster__parser_8cc_source.html">webm_cluster_parser.cc</a>.</p>
 
 </div>
 </div>
@@ -292,7 +292,7 @@ The number of bytes parsed on success. </dd></dl>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Dec 30 2015 02:07:19 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Dec 30 2015 22:27:19 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

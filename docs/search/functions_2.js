@@ -9,7 +9,7 @@ var searchData=
   ['closed',['closed',['../d3/d6b/classedash__packager_1_1media_1_1IoCache.html#a742807639a2983fc05cf058a88bfbe79',1,'edash_packager::media::IoCache']]],
   ['closurethread',['ClosureThread',['../dd/d2b/classedash__packager_1_1media_1_1ClosureThread.html#a8cbb44ca1f4abd7028ba4602af82de0d',1,'edash_packager::media::ClosureThread']]],
   ['cluster_5fended',['cluster_ended',['../db/da0/classedash__packager_1_1media_1_1WebMClusterParser.html#ae62be1971c352525906d6fad2ee831bd',1,'edash_packager::media::WebMClusterParser']]],
-  ['codec_5fconfig',['codec_config',['../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html#aef742d16d34b6a9480a3f3899e684695',1,'edash_packager::media::VP9Parser']]],
+  ['codec_5fconfig',['codec_config',['../d5/dd2/classedash__packager_1_1media_1_1VPxParser.html#aeb5310b4c24b3daec6ea9bd0f67aa9a9',1,'edash_packager::media::VPxParser']]],
   ['compositionoffsetiterator',['CompositionOffsetIterator',['../d4/de5/classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator.html#ac81770b820bc9b942c8ed9b8a12969b6',1,'edash_packager::media::mp4::CompositionOffsetIterator']]],
   ['computesize',['ComputeSize',['../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9a242fb1434e99256e2a6f4ad294a63d',1,'edash_packager::media::mp4::Box']]],
   ['connect',['Connect',['../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html#a05b7188c263dc71b00635415bbdfd37f',1,'edash_packager::media::MediaStream']]],
