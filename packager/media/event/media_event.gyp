@@ -44,9 +44,9 @@
         '../../mpd/mpd.gyp:mpd_mocks',
         '../../testing/gmock.gyp:gmock',
         '../../testing/gtest.gyp:gtest',
-        '../../testing/gtest.gyp:gtest_main',
         # Depends on full protobuf to read/write with TextFormat.
         '../../third_party/protobuf/protobuf.gyp:protobuf_full_do_not_use',
+        '../test/media_test.gyp:run_all_unittests',
         'media_event',
       ],
     },

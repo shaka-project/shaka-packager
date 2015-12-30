@@ -6,6 +6,7 @@
 
 #include "packager/app/mpd_generator_flags.h"
 #include "packager/app/vlog_flags.h"
+#include "packager/base/at_exit.h"
 #include "packager/base/command_line.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_split.h"
@@ -80,6 +81,7 @@ ExitStatus RunMpdGenerator() {
 }
 
 int MpdMain(int argc, char** argv) {
+  base::AtExitManager exit;
   // Needed to enable VLOG/DVLOG through --vmodule or --v.
   base::CommandLine::Init(argc, argv);
   CHECK(logging::InitLogging(logging::LoggingSettings()));

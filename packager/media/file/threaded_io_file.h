@@ -9,7 +9,6 @@
 
 #include "packager/base/atomicops.h"
 #include "packager/base/memory/scoped_ptr.h"
-#include "packager/base/synchronization/lock.h"
 #include "packager/base/synchronization/waitable_event.h"
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
@@ -17,8 +16,6 @@
 
 namespace edash_packager {
 namespace media {
-
-class ClosureThread;
 
 /// Declaration of class which implements a thread-safe circular buffer.
 class ThreadedIoFile : public File {
@@ -49,21 +46,25 @@ class ThreadedIoFile : public File {
 
   bool Open() override;
 
+ private:
+  // Internal task handler implementation. Will dispatch to either
+  // |RunInInputMode| or |RunInOutputMode| depending on |mode_|.
+  void TaskHandler();
   void RunInInputMode();
   void RunInOutputMode();
 
- private:
   scoped_ptr<File, FileCloser> internal_file_;
   const Mode mode_;
   IoCache cache_;
   std::vector<uint8_t> io_buffer_;
-  scoped_ptr<ClosureThread> thread_;
   uint64_t position_;
   uint64_t size_;
   base::subtle::Atomic32 eof_;
   bool flushing_;
   base::WaitableEvent flush_complete_event_;
   base::subtle::Atomic32 internal_file_error_;
+  // Signalled when thread task exits.
+  base::WaitableEvent task_exit_event_;
 
   DISALLOW_COPY_AND_ASSIGN(ThreadedIoFile);
 };

@@ -8,8 +8,8 @@
 
 #include "packager/base/bind.h"
 #include "packager/base/bind_helpers.h"
-#include "packager/base/threading/platform_thread.h"
-#include "packager/media/base/closure_thread.h"
+#include "packager/base/location.h"
+#include "packager/base/threading/worker_pool.h"
 
 namespace edash_packager {
 namespace media {
@@ -31,7 +31,8 @@ ThreadedIoFile::ThreadedIoFile(scoped_ptr<File, FileCloser> internal_file,
       eof_(false),
       flushing_(false),
       flush_complete_event_(false, false),
-      internal_file_error_(0){
+      internal_file_error_(0),
+      task_exit_event_(false, false) {
   DCHECK(internal_file_);
 }
 
@@ -46,24 +47,20 @@ bool ThreadedIoFile::Open() {
   position_ = 0;
   size_ = internal_file_->Size();
 
-  thread_.reset(new ClosureThread("ThreadedIoFile",
-                                  base::Bind(mode_ == kInputMode ?
-                                             &ThreadedIoFile::RunInInputMode :
-                                             &ThreadedIoFile::RunInOutputMode,
-                                             base::Unretained(this))));
-  thread_->Start();
+  base::WorkerPool::PostTask(FROM_HERE, base::Bind(&ThreadedIoFile::TaskHandler,
+                                                   base::Unretained(this)),
+                             true /* task_is_slow */);
   return true;
 }
 
 bool ThreadedIoFile::Close() {
   DCHECK(internal_file_);
-  DCHECK(thread_);
 
   if (mode_ == kOutputMode)
     Flush();
 
   cache_.Close();
-  thread_->Join();
+  task_exit_event_.Wait();
 
   bool result = internal_file_.release()->Close();
   delete this;
@@ -72,7 +69,6 @@ bool ThreadedIoFile::Close() {
 
 int64_t ThreadedIoFile::Read(void* buffer, uint64_t length) {
   DCHECK(internal_file_);
-  DCHECK(thread_);
   DCHECK_EQ(kInputMode, mode_);
 
   if (NoBarrier_Load(&eof_) && !cache_.BytesCached())
@@ -90,7 +86,6 @@ int64_t ThreadedIoFile::Read(void* buffer, uint64_t length) {
 
 int64_t ThreadedIoFile::Write(const void* buffer, uint64_t length) {
   DCHECK(internal_file_);
-  DCHECK(thread_);
   DCHECK_EQ(kOutputMode, mode_);
 
   if (NoBarrier_Load(&internal_file_error_))
@@ -106,14 +101,12 @@ int64_t ThreadedIoFile::Write(const void* buffer, uint64_t length) {
 
 int64_t ThreadedIoFile::Size() {
   DCHECK(internal_file_);
-  DCHECK(thread_);
 
   return size_;
 }
 
 bool ThreadedIoFile::Flush() {
   DCHECK(internal_file_);
-  DCHECK(thread_);
   DCHECK_EQ(kOutputMode, mode_);
 
   flushing_ = true;
@@ -128,10 +121,10 @@ bool ThreadedIoFile::Seek(uint64_t position) {
     if (!Flush()) return false;
     if (!internal_file_->Seek(position)) return false;
   } else {
-    // Reading. Close cache, wait for I/O thread to exit, seek, and restart
-    // I/O thread.
+    // Reading. Close cache, wait for thread task to exit, seek, and re-post
+    // the task.
     cache_.Close();
-    thread_->Join();
+    task_exit_event_.Wait();
     bool result = internal_file_->Seek(position);
     if (!result) {
       // Seek failed. Seek to logical position instead.
@@ -141,10 +134,10 @@ bool ThreadedIoFile::Seek(uint64_t position) {
     }
     cache_.Reopen();
     eof_ = false;
-    thread_.reset(new ClosureThread("ThreadedIoFile",
-                                    base::Bind(&ThreadedIoFile::RunInInputMode,
-                                               base::Unretained(this))));
-    thread_->Start();
+    base::WorkerPool::PostTask(
+        FROM_HERE,
+        base::Bind(&ThreadedIoFile::TaskHandler, base::Unretained(this)),
+        true /* task_is_slow */);
     if (!result) return false;
   }
   position_ = position;
@@ -158,9 +151,16 @@ bool ThreadedIoFile::Tell(uint64_t* position) {
   return true;
 }
 
+void ThreadedIoFile::TaskHandler() {
+  if (mode_ == kInputMode)
+    RunInInputMode();
+  else
+    RunInOutputMode();
+  task_exit_event_.Signal();
+}
+
 void ThreadedIoFile::RunInInputMode() {
   DCHECK(internal_file_);
-  DCHECK(thread_);
   DCHECK_EQ(kInputMode, mode_);
 
   while (true) {
@@ -180,7 +180,6 @@ void ThreadedIoFile::RunInInputMode() {
 
 void ThreadedIoFile::RunInOutputMode() {
   DCHECK(internal_file_);
-  DCHECK(thread_);
   DCHECK_EQ(kOutputMode, mode_);
 
   while (true) {
