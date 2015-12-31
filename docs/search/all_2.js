@@ -24,7 +24,7 @@ var searchData=
   ['compositionoffsetiterator',['CompositionOffsetIterator',['../d4/de5/classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator.html#ac81770b820bc9b942c8ed9b8a12969b6',1,'edash_packager::media::mp4::CompositionOffsetIterator']]],
   ['compositionoffsetiterator',['CompositionOffsetIterator',['../d4/de5/classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator.html',1,'edash_packager::media::mp4']]],
   ['compositiontimetosample',['CompositionTimeToSample',['../da/d54/structedash__packager_1_1media_1_1mp4_1_1CompositionTimeToSample.html',1,'edash_packager::media::mp4']]],
-  ['computesize',['ComputeSize',['../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9a242fb1434e99256e2a6f4ad294a63d',1,'edash_packager::media::mp4::Box']]],
+  ['computesize',['ComputeSize',['../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9a242fb1434e99256e2a6f4ad294a63d',1,'edash_packager::media::mp4::Box::ComputeSize()'],['../d8/de5/structedash__packager_1_1media_1_1mp4_1_1SampleEncryptionEntry.html#ae4f6f92948609b2ad2c0440e9778e5f9',1,'edash_packager::media::mp4::SampleEncryptionEntry::ComputeSize()']]],
   ['connect',['Connect',['../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html#a05b7188c263dc71b00635415bbdfd37f',1,'edash_packager::media::MediaStream']]],
   ['container_5fname',['container_name',['../d5/dce/classedash__packager_1_1media_1_1Demuxer.html#a650a6cfceda9dcd9c05feefbe0773057',1,'edash_packager::media::Demuxer']]],
   ['contentencoding',['ContentEncoding',['../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html',1,'edash_packager::media']]],

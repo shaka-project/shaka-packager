@@ -102,7 +102,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>mp4 {</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;Box::Box() : atom_size(0) {}</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;Box::Box() : box_size_(0) {}</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;Box::~Box() {}</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
 <div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a7b62a3983faafbea54a32486df60ed96">   19</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a7b62a3983faafbea54a32486df60ed96">Box::Parse</a>(<a class="code" href="../../db/d6c/classedash__packager_1_1media_1_1mp4_1_1BoxReader.html">BoxReader</a>* reader) {</div>
@@ -113,21 +113,21 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
 <div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa7a756828b5514fcd3eaf16d86c413c0">   25</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa7a756828b5514fcd3eaf16d86c413c0">Box::Write</a>(<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html">BufferWriter</a>* writer) {</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  DCHECK(writer);</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="comment">// Compute and update atom_size.</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="comment">// Compute and update box size.</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  uint32_t size = <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9a242fb1434e99256e2a6f4ad294a63d">ComputeSize</a>();</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  DCHECK_EQ(size, this-&gt;atom_size);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  DCHECK_EQ(size, box_size_);</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordtype">size_t</span> buffer_size_before_write = writer-&gt;Size();</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html">BoxBuffer</a> buffer(writer);</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  CHECK(ReadWriteInternal(&amp;buffer));</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  DCHECK_EQ(this-&gt;atom_size, writer-&gt;Size() - buffer_size_before_write);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  DCHECK_EQ(box_size_, writer-&gt;Size() - buffer_size_before_write);</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
 <div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a814444b1b4e8b7d4e54d104be788bd6c">   37</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a814444b1b4e8b7d4e54d104be788bd6c">Box::WriteHeader</a>(<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html">BufferWriter</a>* writer) {</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  DCHECK(writer);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="comment">// Compute and update atom_size.</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="comment">// Compute and update box size.</span></div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  uint32_t size = <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9a242fb1434e99256e2a6f4ad294a63d">ComputeSize</a>();</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  DCHECK_EQ(size, this-&gt;atom_size);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  DCHECK_EQ(size, box_size_);</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordtype">size_t</span> buffer_size_before_write = writer-&gt;Size();</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html">BoxBuffer</a> buffer(writer);</div>
@@ -136,8 +136,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;}</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
 <div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9a242fb1434e99256e2a6f4ad294a63d">   49</a></span>&#160;uint32_t <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9a242fb1434e99256e2a6f4ad294a63d">Box::ComputeSize</a>() {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  this-&gt;atom_size = ComputeSizeInternal();</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordflow">return</span> this-&gt;atom_size;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  box_size_ = ComputeSizeInternal();</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordflow">return</span> box_size_;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;}</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
 <div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9fbafc4d6ba2187325349dcd406b490a">   54</a></span>&#160;uint32_t <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9fbafc4d6ba2187325349dcd406b490a">Box::HeaderSize</a>()<span class="keyword"> const </span>{</div>
@@ -150,7 +150,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordflow">if</span> (buffer-&gt;<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a36c0d8448dab759db37f9581ea602807">Reading</a>()) {</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="comment">// Skip for read mode, which is handled already in BoxReader.</span></div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    CHECK(buffer-&gt;ReadWriteUInt32(&amp;this-&gt;atom_size));</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    CHECK(buffer-&gt;ReadWriteUInt32(&amp;box_size_));</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    FourCC fourcc = <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a504e7612c24f7d788748dff9940e46ea">BoxType</a>();</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    CHECK(buffer-&gt;ReadWriteFourCC(&amp;fourcc));</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  }</div>
@@ -199,7 +199,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Dec 30 2015 22:27:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 31 2015 02:07:51 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

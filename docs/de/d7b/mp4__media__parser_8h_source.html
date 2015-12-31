@@ -154,8 +154,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                           uint8_t* buffer,</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                           <span class="keywordtype">size_t</span> buffer_size);</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// To retain proper framing, each &#39;mdat&#39; atom must be read; to limit memory</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// usage, the atom&#39;s data needs to be discarded incrementally as frames are</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// To retain proper framing, each &#39;mdat&#39; box must be read; to limit memory</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// usage, the box&#39;s data needs to be discarded incrementally as frames are</span></div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">// extracted from the stream. This function discards data from the stream up</span></div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// to |offset|, updating the |mdat_tail_| value so that framing can be</span></div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// retained after all &#39;mdat&#39; information has been read.</span></div>
@@ -217,7 +217,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Dec 30 2015 22:27:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 31 2015 02:07:52 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

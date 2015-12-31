@@ -11,6 +11,7 @@ var searchData=
   ['reading',['Reading',['../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a36c0d8448dab759db37f9581ea602807',1,'edash_packager::media::mp4::BoxBuffer']]],
   ['readnbytesinto8',['ReadNBytesInto8',['../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#ac21a2b3a9ed6b2ad20247b6f653d8a02',1,'edash_packager::media::BufferReader']]],
   ['readtoplevelbox',['ReadTopLevelBox',['../db/d6c/classedash__packager_1_1media_1_1mp4_1_1BoxReader.html#a029ef2fe387071143c42f50ffd1a16b5',1,'edash_packager::media::mp4::BoxReader']]],
+  ['readwrite',['ReadWrite',['../d8/de5/structedash__packager_1_1media_1_1mp4_1_1SampleEncryptionEntry.html#a1fab6b704c6a03191e5e7394c97ed98b',1,'edash_packager::media::mp4::SampleEncryptionEntry']]],
   ['readwritechild',['ReadWriteChild',['../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#ae2f4c04bd204e593491db3e24715efd2',1,'edash_packager::media::mp4::BoxBuffer']]],
   ['readwriteheaderinternal',['ReadWriteHeaderInternal',['../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa2a13963677aa8d2bea33d1ed6eec9d6',1,'edash_packager::media::mp4::Box::ReadWriteHeaderInternal()'],['../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a0a8b32da93e6d94198a3f295e72980da',1,'edash_packager::media::mp4::FullBox::ReadWriteHeaderInternal()']]],
   ['readwritestring',['ReadWriteString',['../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#aea04b45daf17a9b2323e80163b800aa8',1,'edash_packager::media::mp4::BoxBuffer']]],

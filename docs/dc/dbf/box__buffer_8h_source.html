@@ -227,7 +227,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    <span class="keywordflow">if</span> (reader_)</div>
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;      <span class="keywordflow">return</span> reader_-&gt;<a class="code" href="../../db/d6c/classedash__packager_1_1media_1_1mp4_1_1BoxReader.html#a480fdd0a597a8b77f7613abb2e8f5629">ReadChild</a>(box);</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    <span class="comment">// The box is mandatory, i.e. the box size should not be 0.</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    DCHECK_NE(0u, box-&gt;atom_size);</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    DCHECK_NE(0u, box-&gt;<a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a6a9392e954db3ae0aa6cc16c87562dc7">box_size</a>());</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    CHECK(box-&gt;ReadWriteInternal(<span class="keyword">this</span>));</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  }</div>
@@ -236,7 +236,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    <span class="keywordflow">if</span> (reader_)</div>
 <div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;      <span class="keywordflow">return</span> reader_-&gt;<a class="code" href="../../db/d6c/classedash__packager_1_1media_1_1mp4_1_1BoxReader.html#ae697ff0b40b4aa9feecb45d303f8f6bc">TryReadChild</a>(box);</div>
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    <span class="comment">// The box is optional, i.e. it can be skipped if the box size is 0.</span></div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    <span class="keywordflow">if</span> (box-&gt;atom_size != 0)</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    <span class="keywordflow">if</span> (box-&gt;<a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a6a9392e954db3ae0aa6cc16c87562dc7">box_size</a>() != 0)</div>
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;      CHECK(box-&gt;ReadWriteInternal(<span class="keyword">this</span>));</div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  }</div>
@@ -272,6 +272,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1BoxBuffer_html_aef7267aa7963866d3dcef4f051f84674"><div class="ttname"><a href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#aef7267aa7963866d3dcef4f051f84674">edash_packager::media::mp4::BoxBuffer::Size</a></div><div class="ttdeci">size_t Size() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/dbf/box__buffer_8h_source.html#l00054">box_buffer.h:54</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1BoxReader_html_ae697ff0b40b4aa9feecb45d303f8f6bc"><div class="ttname"><a href="../../db/d6c/classedash__packager_1_1media_1_1mp4_1_1BoxReader.html#ae697ff0b40b4aa9feecb45d303f8f6bc">edash_packager::media::mp4::BoxReader::TryReadChild</a></div><div class="ttdeci">bool TryReadChild(Box *child) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/df1/box__reader_8cc_source.html#l00140">box_reader.cc:140</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1BoxBuffer_html"><div class="ttname"><a href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html">edash_packager::media::mp4::BoxBuffer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/dbf/box__buffer_8h_source.html#l00025">box_buffer.h:25</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_a6a9392e954db3ae0aa6cc16c87562dc7"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a6a9392e954db3ae0aa6cc16c87562dc7">edash_packager::media::mp4::Box::box_size</a></div><div class="ttdeci">uint32_t box_size()</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d19/box_8h_source.html#l00055">box.h:55</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1BoxBuffer_html_a726ab4970a19fa671137e88098e3cd48"><div class="ttname"><a href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a726ab4970a19fa671137e88098e3cd48">edash_packager::media::mp4::BoxBuffer::ReadWriteUInt64NBytes</a></div><div class="ttdeci">bool ReadWriteUInt64NBytes(uint64_t *v, size_t num_bytes)</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/dbf/box__buffer_8h_source.html#l00117">box_buffer.h:117</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1BoxBuffer_html_a0b34f56b01acc899ae44ab9f4cb0b783"><div class="ttname"><a href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a0b34f56b01acc899ae44ab9f4cb0b783">edash_packager::media::mp4::BoxBuffer::Pos</a></div><div class="ttdeci">size_t Pos() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/dbf/box__buffer_8h_source.html#l00044">box_buffer.h:44</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1BoxReader_html_a6c660acb6864f70ee1125c3f4c809e02"><div class="ttname"><a href="../../db/d6c/classedash__packager_1_1media_1_1mp4_1_1BoxReader.html#a6c660acb6864f70ee1125c3f4c809e02">edash_packager::media::mp4::BoxReader::ScanChildren</a></div><div class="ttdeci">bool ScanChildren() WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/df1/box__reader_8cc_source.html#l00103">box_reader.cc:103</a></div></div>
@@ -293,7 +294,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Dec 30 2015 22:27:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Dec 31 2015 02:07:51 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
