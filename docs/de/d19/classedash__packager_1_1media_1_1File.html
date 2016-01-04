@@ -108,8 +108,9 @@ Inheritance diagram for edash_packager::media::File:</div>
   <img src="../../de/d19/classedash__packager_1_1media_1_1File.png" usemap="#edash_packager::media::File_map" alt=""/>
   <map id="edash_packager::media::File_map" name="edash_packager::media::File_map">
 <area href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html" title="Implement LocalFile which deals with local storage. " alt="edash_packager::media::LocalFile" shape="rect" coords="0,56,236,80"/>
-<area href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html" title="Declaration of class which implements a thread-safe circular buffer. " alt="edash_packager::media::ThreadedIoFile" shape="rect" coords="246,56,482,80"/>
-<area href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html" title="Implements UdpFile, which receives UDP unicast and multicast streams. " alt="edash_packager::media::UdpFile" shape="rect" coords="492,56,728,80"/>
+<area href="../../d3/d81/classedash__packager_1_1media_1_1MemoryFile.html" alt="edash_packager::media::MemoryFile" shape="rect" coords="246,56,482,80"/>
+<area href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html" title="Declaration of class which implements a thread-safe circular buffer. " alt="edash_packager::media::ThreadedIoFile" shape="rect" coords="492,56,728,80"/>
+<area href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html" title="Implements UdpFile, which receives UDP unicast and multicast streams. " alt="edash_packager::media::UdpFile" shape="rect" coords="738,56,974,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -224,7 +225,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 <p><a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html#ace9275a79c572614ee5d068a04c76392">Flush()</a> and de-allocate resources associated with this file, and delete this <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html" title="Define an abstract file interface. ">File</a> object. THIS IS THE ONE TRUE WAY TO DEALLOCATE THIS OBJECT. </p>
 <dl class="section return"><dt>Returns</dt><dd>true on success. For writable files, returning false MAY INDICATE DATA LOSS. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a72f8485ab641d5e3b5df89a6959c1209">edash_packager::media::ThreadedIoFile</a>, <a class="el" href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#ad8bcb9e07851a62c6440458ef2c31e4f">edash_packager::media::LocalFile</a>, and <a class="el" href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#a10c51a75395ecb97f89124e296a349d9">edash_packager::media::UdpFile</a>.</p>
+<p>Implemented in <a class="el" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a72f8485ab641d5e3b5df89a6959c1209">edash_packager::media::ThreadedIoFile</a>, <a class="el" href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#ad8bcb9e07851a62c6440458ef2c31e4f">edash_packager::media::LocalFile</a>, <a class="el" href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#a10c51a75395ecb97f89124e296a349d9">edash_packager::media::UdpFile</a>, and <a class="el" href="../../d3/d81/classedash__packager_1_1media_1_1MemoryFile.html#a194d4a8fa61953e69af1dad79c13f56e">edash_packager::media::MemoryFile</a>.</p>
 
 </div>
 </div>
@@ -269,7 +270,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00180">180</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00202">202</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -314,7 +315,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Number of bytes written, or a value &lt; 0 on error. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00210">210</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00232">232</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -366,7 +367,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Number of bytes written, or a value &lt; 0 on error. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00214">214</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00236">236</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -400,7 +401,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if successful, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00140">140</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00162">162</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -453,7 +454,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 <p>Flush the file so that recently written data will survive an application crash (but not necessarily an OS crash). For instance, in <a class="el" href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html" title="Implement LocalFile which deals with local storage. ">LocalFile</a> the data is flushed into the OS but not necessarily to disk. </p>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7d65b07dd7545b7c6d759884b736ad2d">edash_packager::media::ThreadedIoFile</a>, <a class="el" href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#a4ab0f69a137a370d49005a1c9f13259d">edash_packager::media::LocalFile</a>, and <a class="el" href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#acde300494ef44cdbefac7dbf27b6707f">edash_packager::media::UdpFile</a>.</p>
+<p>Implemented in <a class="el" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7d65b07dd7545b7c6d759884b736ad2d">edash_packager::media::ThreadedIoFile</a>, <a class="el" href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#a4ab0f69a137a370d49005a1c9f13259d">edash_packager::media::LocalFile</a>, <a class="el" href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#acde300494ef44cdbefac7dbf27b6707f">edash_packager::media::UdpFile</a>, and <a class="el" href="../../d3/d81/classedash__packager_1_1media_1_1MemoryFile.html#a87c8553905d4dd7875de1d84156ff50b">edash_packager::media::MemoryFile</a>.</p>
 
 </div>
 </div>
@@ -480,7 +481,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The size of a file in bytes on success, a value &lt; 0 otherwise. The file will be opened and closed in the process. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00153">153</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00175">175</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -525,7 +526,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html" title="Define an abstract file interface. ">File</a> pointer on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00118">118</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00140">140</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -570,7 +571,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html" title="Define an abstract file interface. ">File</a> pointer on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00129">129</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00151">151</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -615,7 +616,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Number of bytes read, or a value &lt; 0 on error. Zero on end-of-file, or if 'length' is zero. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a5075259d07b1b004d8b7985527fa6e63">edash_packager::media::ThreadedIoFile</a>, <a class="el" href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#ab974c5c7fd38d9fe184bf055173fd8cf">edash_packager::media::LocalFile</a>, and <a class="el" href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#aefea0adecf58c67cfde19e095ef027c3">edash_packager::media::UdpFile</a>.</p>
+<p>Implemented in <a class="el" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a5075259d07b1b004d8b7985527fa6e63">edash_packager::media::ThreadedIoFile</a>, <a class="el" href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#ab974c5c7fd38d9fe184bf055173fd8cf">edash_packager::media::LocalFile</a>, <a class="el" href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#aefea0adecf58c67cfde19e095ef027c3">edash_packager::media::UdpFile</a>, and <a class="el" href="../../d3/d81/classedash__packager_1_1media_1_1MemoryFile.html#a937133128bb9d2bf2dfe8eddc8dc33a7">edash_packager::media::MemoryFile</a>.</p>
 
 </div>
 </div>
@@ -660,7 +661,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00162">162</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/dfc/file_8cc_source.html#l00184">184</a> of file <a class="el" href="../../d5/dfc/file_8cc_source.html">file.cc</a>.</p>
 
 </div>
 </div>
@@ -694,7 +695,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a46346ba1ff6a626aedb6f14475bde10d">edash_packager::media::ThreadedIoFile</a>, <a class="el" href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#a31ed97a6c4a45bb9d80f55dc444aba35">edash_packager::media::LocalFile</a>, and <a class="el" href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#a02cd760eab677a8c59af522830c7b1a4">edash_packager::media::UdpFile</a>.</p>
+<p>Implemented in <a class="el" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a46346ba1ff6a626aedb6f14475bde10d">edash_packager::media::ThreadedIoFile</a>, <a class="el" href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#a31ed97a6c4a45bb9d80f55dc444aba35">edash_packager::media::LocalFile</a>, <a class="el" href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#a02cd760eab677a8c59af522830c7b1a4">edash_packager::media::UdpFile</a>, and <a class="el" href="../../d3/d81/classedash__packager_1_1media_1_1MemoryFile.html#a8b10daae4af9290b54af26d0b6b9bfd1">edash_packager::media::MemoryFile</a>.</p>
 
 </div>
 </div>
@@ -720,7 +721,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>Size of the file in bytes. A return value less than zero indicates a problem getting the size. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#af61d3986b87d43e3b5ffd86c86094478">edash_packager::media::ThreadedIoFile</a>, <a class="el" href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#a8984949196dc5230a8ece08c738a9fd3">edash_packager::media::LocalFile</a>, and <a class="el" href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#a8d62376715aee117aa7a225b54be0945">edash_packager::media::UdpFile</a>.</p>
+<p>Implemented in <a class="el" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#af61d3986b87d43e3b5ffd86c86094478">edash_packager::media::ThreadedIoFile</a>, <a class="el" href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#a8984949196dc5230a8ece08c738a9fd3">edash_packager::media::LocalFile</a>, <a class="el" href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#a8d62376715aee117aa7a225b54be0945">edash_packager::media::UdpFile</a>, and <a class="el" href="../../d3/d81/classedash__packager_1_1media_1_1MemoryFile.html#a01c8a932b632f130f02f067171f0f4ff">edash_packager::media::MemoryFile</a>.</p>
 
 </div>
 </div>
@@ -754,7 +755,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on succcess, false otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#acef8a84a1ec55e42588fec8bc8e0b698">edash_packager::media::ThreadedIoFile</a>, <a class="el" href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#a4151ac1c3198e4037292040bb7f2504b">edash_packager::media::LocalFile</a>, and <a class="el" href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#a32a91da87bda023b44aa7e86c2207c07">edash_packager::media::UdpFile</a>.</p>
+<p>Implemented in <a class="el" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#acef8a84a1ec55e42588fec8bc8e0b698">edash_packager::media::ThreadedIoFile</a>, <a class="el" href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#a4151ac1c3198e4037292040bb7f2504b">edash_packager::media::LocalFile</a>, <a class="el" href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#a32a91da87bda023b44aa7e86c2207c07">edash_packager::media::UdpFile</a>, and <a class="el" href="../../d3/d81/classedash__packager_1_1media_1_1MemoryFile.html#ac7ea44ee46b992aef1086ce9a4f123ec">edash_packager::media::MemoryFile</a>.</p>
 
 </div>
 </div>
@@ -799,7 +800,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>Number of bytes written, or a value &lt; 0 on error. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7dc883b5751c9027adabfbb0b9edd876">edash_packager::media::ThreadedIoFile</a>, <a class="el" href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#a3a1ae071948947e9885b8afd4e5eebb4">edash_packager::media::LocalFile</a>, and <a class="el" href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#adc71ee86f3926b7869e088f1f0bae0a4">edash_packager::media::UdpFile</a>.</p>
+<p>Implemented in <a class="el" href="../../dc/dfa/classedash__packager_1_1media_1_1ThreadedIoFile.html#a7dc883b5751c9027adabfbb0b9edd876">edash_packager::media::ThreadedIoFile</a>, <a class="el" href="../../dd/d98/classedash__packager_1_1media_1_1LocalFile.html#a3a1ae071948947e9885b8afd4e5eebb4">edash_packager::media::LocalFile</a>, <a class="el" href="../../d8/dc7/classedash__packager_1_1media_1_1UdpFile.html#adc71ee86f3926b7869e088f1f0bae0a4">edash_packager::media::UdpFile</a>, and <a class="el" href="../../d3/d81/classedash__packager_1_1media_1_1MemoryFile.html#a1b32fff61c64809c8f2e5aa296f96160">edash_packager::media::MemoryFile</a>.</p>
 
 </div>
 </div>
@@ -810,7 +811,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>ThreadedIoFile</b></
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Dec 31 2015 02:07:53 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jan 4 2016 23:24:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
