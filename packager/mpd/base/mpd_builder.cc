@@ -77,12 +77,12 @@ std::string GetMimeType(const std::string& prefix,
 void AddMpdNameSpaceInfo(XmlNode* mpd) {
   DCHECK(mpd);
 
-  static const char kXmlNamespace[] = "urn:mpeg:DASH:schema:MPD:2011";
+  static const char kXmlNamespace[] = "urn:mpeg:dash:schema:mpd:2011";
   static const char kXmlNamespaceXsi[] =
       "http://www.w3.org/2001/XMLSchema-instance";
   static const char kXmlNamespaceXlink[] = "http://www.w3.org/1999/xlink";
   static const char kDashSchemaMpd2011[] =
-      "urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd";
+      "urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd";
   static const char kCencNamespace[] = "urn:mpeg:cenc:2013";
 
   mpd->SetStringAttribute("xmlns", kXmlNamespace);
@@ -780,7 +780,7 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
 
   if (segments_aligned_ == kSegmentAlignmentTrue) {
     adaptation_set.SetStringAttribute(mpd_type_ == MpdBuilder::kStatic
-                                          ? "subSegmentAlignment"
+                                          ? "subsegmentAlignment"
                                           : "segmentAlignment",
                                       "true");
   }
@@ -810,7 +810,7 @@ int AdaptationSet::Group() const {
 
 // Check segmentAlignment for Live here. Storing all start_time and duration
 // will out-of-memory because there's no way of knowing when it will end.
-// VOD subSegmentAlignment check is *not* done here because it is possible
+// VOD subsegmentAlignment check is *not* done here because it is possible
 // that some Representations might not have been added yet (e.g. a thread is
 // assigned per muxer so one might run faster than others).
 // To be clear, for Live, all Representations should be added before a

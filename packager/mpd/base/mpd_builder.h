@@ -449,7 +449,7 @@ class Representation {
                                            const std::string& pssh);
 
   /// Add a media (sub)segment to the representation.
-  /// AdaptationSet@{subSegmentAlignment,segmentAlignment} cannot be set
+  /// AdaptationSet@{subsegmentAlignment,segmentAlignment} cannot be set
   /// if this is not called for all Representations.
   /// @param start_time is the start time for the (sub)segment, in units of the
   ///        stream's time scale.

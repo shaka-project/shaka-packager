@@ -248,10 +248,10 @@ class SegmentTemplateTest : public DynamicMpdBuilderTest {
     // always has segmentAligntment=true.
     const char kOutputTemplate[] =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\" "
+        "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" "
         "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
         "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
-        "xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\" "
+        "xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\" "
         "availabilityStartTime=\"2011-12-25T12:30:00\" minBufferTime=\"PT2S\" "
         "type=\"dynamic\" profiles=\"urn:mpeg:dash:profile:isoff-live:2011\">\n"
         "  <Period start=\"PT0S\">\n"
@@ -333,10 +333,10 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
     // always has segmentAligntment=true.
     const char kOutputTemplate[] =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-        "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\" "
+        "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" "
         "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
         "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
-        "xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\" "
+        "xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\" "
         "availabilityStartTime=\"2011-12-25T12:30:00\" minBufferTime=\"PT2S\" "
         "type=\"dynamic\" profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
         "timeShiftBufferDepth=\"PT%dS\">\n"
@@ -712,10 +712,10 @@ TEST_F(CommonMpdBuilderTest, AdaptationAddRoleElementMain) {
   // MPD without adding any Representations.
   const char kExpectedOutput[] =
      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-     "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\"\n"
+     "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\"\n"
      "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
      "    xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
-     "    xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\"\n"
+     "    xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\"\n"
      "    minBufferTime=\"PT2S\" type=\"static\"\n"
      "    profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\"\n"
      "    mediaPresentationDuration=\"PT0S\">\n"
@@ -755,10 +755,10 @@ TEST_F(CommonMpdBuilderTest, CheckContentProtectionRoleRepresentationOrder) {
   xml::scoped_xml_ptr<xmlNode> adaptation_set_xml(adaptation_set->GetXml());
   const char kExpectedOutput[] =
      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-     "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\"\n"
+     "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\"\n"
      "    xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
      "    xmlns:xlink=\"http://www.w3.org/1999/xlink\"\n"
-     "    xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\"\n"
+     "    xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\"\n"
      "    minBufferTime=\"PT2S\" type=\"static\"\n"
      "    profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\"\n"
      "    mediaPresentationDuration=\"PT0S\">\n"
@@ -1101,11 +1101,11 @@ TEST_F(CommonMpdBuilderTest,
       ExpectAttributeNotSet("frameRate", adaptation_set_xml.get()));
 }
 
-// Verify that subSegmentAlignment is set to true if all the Representations'
+// Verify that subsegmentAlignment is set to true if all the Representations'
 // segments are aligned and the MPD type is static.
 // Also checking that not all Representations have to be added before calling
 // AddNewSegment() on a Representation.
-TEST_F(StaticMpdBuilderTest, SubSegmentAlignment) {
+TEST_F(StaticMpdBuilderTest, subsegmentAlignment) {
   base::AtomicSequenceNumber sequence_counter;
   const char k480pMediaInfo[] =
       "video_info {\n"
@@ -1130,7 +1130,7 @@ TEST_F(StaticMpdBuilderTest, SubSegmentAlignment) {
       "}\n"
       "container_type: 1\n";
 
-  // First use same start time and duration, and verify that subSegmentAlignment
+  // First use same start time and duration, and verify that subsegmentAlignment
   // is set to true.
   const uint64_t kStartTime = 0u;
   const uint64_t kDuration = 10u;
@@ -1151,13 +1151,13 @@ TEST_F(StaticMpdBuilderTest, SubSegmentAlignment) {
 
   xml::scoped_xml_ptr<xmlNode> aligned(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeEqString("subSegmentAlignment", "true", aligned.get()));
+      ExpectAttributeEqString("subsegmentAlignment", "true", aligned.get()));
 
   // Unknown because 480p has an extra subsegments.
   representation_480p->AddNewSegment(11, 20, kAnySize);
   xml::scoped_xml_ptr<xmlNode> alignment_unknown(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeNotSet("subSegmentAlignment", alignment_unknown.get()));
+      ExpectAttributeNotSet("subsegmentAlignment", alignment_unknown.get()));
 
   // Add segments that make them not aligned.
   representation_360p->AddNewSegment(10, 1, kAnySize);
@@ -1165,11 +1165,11 @@ TEST_F(StaticMpdBuilderTest, SubSegmentAlignment) {
 
   xml::scoped_xml_ptr<xmlNode> unaligned(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeNotSet("subSegmentAlignment", unaligned.get()));
+      ExpectAttributeNotSet("subsegmentAlignment", unaligned.get()));
 }
 
-// Verify that subSegmentAlignment can be force set to true.
-TEST_F(StaticMpdBuilderTest, ForceSetSubSegmentAlignment) {
+// Verify that subsegmentAlignment can be force set to true.
+TEST_F(StaticMpdBuilderTest, ForceSetsubsegmentAlignment) {
   base::AtomicSequenceNumber sequence_counter;
   const char k480pMediaInfo[] =
       "video_info {\n"
@@ -1211,13 +1211,13 @@ TEST_F(StaticMpdBuilderTest, ForceSetSubSegmentAlignment) {
   representation_360p->AddNewSegment(kStartTime2, kDuration, kAnySize);
   xml::scoped_xml_ptr<xmlNode> unaligned(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeNotSet("subSegmentAlignment", unaligned.get()));
+      ExpectAttributeNotSet("subsegmentAlignment", unaligned.get()));
 
   // Then force set the segment alignment attribute to true.
   adaptation_set->ForceSetSegmentAlignment(true);
   xml::scoped_xml_ptr<xmlNode> aligned(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeEqString("subSegmentAlignment", "true", aligned.get()));
+      ExpectAttributeEqString("subsegmentAlignment", "true", aligned.get()));
 }
 
 // Verify that segmentAlignment is set to true if all the Representations
@@ -1272,7 +1272,7 @@ TEST_F(DynamicMpdBuilderTest, SegmentAlignment) {
 
   xml::scoped_xml_ptr<xmlNode> unaligned(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
-      ExpectAttributeNotSet("subSegmentAlignment", unaligned.get()));
+      ExpectAttributeNotSet("subsegmentAlignment", unaligned.get()));
 }
 
 // Verify that the width and height attribute are set if all the video
@@ -1429,11 +1429,11 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtectionAndUpdate) {
 
   const char kExpectedOutput1[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\""
+      "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\""
       " xmlns:cenc=\"urn:mpeg:cenc:2013\""
       " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
       " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
-      " xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\""
+      " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
       " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
       " mediaPresentationDuration=\"PT0S\">"
@@ -1459,11 +1459,11 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtectionAndUpdate) {
       "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed", "new pssh value");
   const char kExpectedOutput2[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\""
+      "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\""
       " xmlns:cenc=\"urn:mpeg:cenc:2013\""
       " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
       " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
-      " xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\""
+      " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
       " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
       " mediaPresentationDuration=\"PT0S\">"
@@ -1515,11 +1515,11 @@ TEST_F(CommonMpdBuilderTest, UpdateToRemovePsshElement) {
 
   const char kExpectedOutput1[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\""
+      "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\""
       " xmlns:cenc=\"urn:mpeg:cenc:2013\""
       " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
       " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
-      " xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\""
+      " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
       " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
       " mediaPresentationDuration=\"PT0S\">"
@@ -1545,11 +1545,11 @@ TEST_F(CommonMpdBuilderTest, UpdateToRemovePsshElement) {
       "added pssh value");
   const char kExpectedOutput2[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\""
+      "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\""
       " xmlns:cenc=\"urn:mpeg:cenc:2013\""
       " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
       " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
-      " xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\""
+      " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
       " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
       " mediaPresentationDuration=\"PT0S\">"
@@ -1631,11 +1631,11 @@ TEST_F(StaticMpdBuilderTest, AudioChannelConfigurationWithContentProtection) {
 
   const char kExpectedOutput[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\""
+      "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\""
       " xmlns:cenc=\"urn:mpeg:cenc:2013\""
       " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
       " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
-      " xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\""
+      " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
       " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
       " mediaPresentationDuration=\"PT24.00943374633789S\">"
@@ -1731,11 +1731,11 @@ TEST_F(StaticMpdBuilderTest, Text) {
 
   const char kExpectedOutput[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\""
+      "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\""
       " xmlns:cenc=\"urn:mpeg:cenc:2013\""
       " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\""
       " xmlns:xlink=\"http://www.w3.org/1999/xlink\""
-      " xsi:schemaLocation=\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\""
+      " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
       " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
       " mediaPresentationDuration=\"PT35S\">"
@@ -1770,11 +1770,11 @@ TEST_F(StaticMpdBuilderTest, Text) {
 TEST_F(DynamicMpdBuilderTest, CheckMpdAttributes) {
   static const char kExpectedOutput[] =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
-      "<MPD xmlns=\"urn:mpeg:DASH:schema:MPD:2011\" "
+      "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" "
       "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
       "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
       "xsi:schemaLocation="
-      "\"urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd\" "
+      "\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\" "
       "xmlns:cenc=\"urn:mpeg:cenc:2013\" "
       "minBufferTime=\"PT2S\" "
       "type=\"dynamic\" "
