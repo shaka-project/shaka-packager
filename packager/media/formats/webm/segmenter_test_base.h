@@ -40,7 +40,7 @@ class SegmentTestBase : public ::testing::Test {
     scoped_ptr<S> segmenter(new S(options));
 
     scoped_ptr<MkvWriter> writer(new MkvWriter());
-    ASSERT_OK(writer->Open(this->output_file_name_));
+    ASSERT_OK(writer->Open(options.output_file_name));
     ASSERT_OK(segmenter->Initialize(writer.Pass(), info, NULL, NULL, NULL));
     *result = segmenter.Pass();
   }

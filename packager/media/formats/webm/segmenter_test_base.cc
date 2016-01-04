@@ -63,6 +63,7 @@ MuxerOptions SegmentTestBase::CreateMuxerOptions() const {
   ret.single_segment = single_segment_;
   ret.output_file_name = output_file_name_;
   ret.segment_template = segment_template_;
+  ret.packager_version_string = "test";
   ret.segment_duration = 30;  // seconds
   ret.fragment_duration = 30;  // seconds
   ret.segment_sap_aligned = false;

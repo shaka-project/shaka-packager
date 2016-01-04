@@ -54,8 +54,13 @@ Status Segmenter::Initialize(scoped_ptr<MkvWriter> writer,
   progress_target_ = info_->duration();
   progress_listener_ = progress_listener;
 
+  const std::string version_string =
+      "https://github.com/google/edash-packager version " +
+      options().packager_version_string;
+
   segment_info_.Init();
   segment_info_.set_timecode_scale(kTimecodeScale);
+  segment_info_.set_writing_app(version_string.c_str());
   if (options().single_segment) {
     // Set an initial duration so the duration element is written; will be
     // overwritten at the end.
