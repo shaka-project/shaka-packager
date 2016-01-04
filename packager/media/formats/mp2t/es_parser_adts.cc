@@ -233,6 +233,8 @@ bool EsParserAdts::UpdateAudioConfiguration(const uint8_t* adts_frame,
           kAacSampleSizeBits,
           adts_header.GetNumChannels(),
           extended_samples_per_second,
+          0,
+          0,
           audio_specific_config.data(),
           audio_specific_config.size(),
           false));

@@ -47,6 +47,22 @@ bool IsIvSizeValid(size_t iv_size) {
   return iv_size == 8 || iv_size == 16;
 }
 
+// Default values to construct the following fields in ddts box. Values are set
+// according to FFMPEG.
+// bit(2) FrameDuration; // 3 = 4096
+// bit(5) StreamConstruction; // 18
+// bit(1) CoreLFEPresent; // 0 = none
+// bit(6) CoreLayout; // 31 = ignore core layout
+// bit(14) CoreSize; // 0
+// bit(1) StereoDownmix // 0 = none
+// bit(3) RepresentationType; // 4
+// bit(16) ChannelLayout; // 0xf = 5.1 channel layout.
+// bit(1) MultiAssetFlag // 0 = single asset
+// bit(1) LBRDurationMod // 0 = ignore
+// bit(1) ReservedBoxPresent // 0 = none
+// bit(5) Reserved // 0
+const uint8_t kDdtsExtraData[] = {0xe4, 0x7c, 0, 4, 0, 0x0f, 0};
+
 // Utility functions to check if the 64bit integers can fit in 32bit integer.
 bool IsFitIn32Bits(uint64_t a) {
   return a <= std::numeric_limits<uint32_t>::max();
@@ -1190,27 +1206,40 @@ uint32_t ElementaryStreamDescriptor::ComputeSizeInternal() {
   return HeaderSize() + es_descriptor.ComputeSize();
 }
 
-DTSSpecific::DTSSpecific() {}
+DTSSpecific::DTSSpecific()
+    : sampling_frequency(0),
+      max_bitrate(0),
+      avg_bitrate(0),
+      pcm_sample_depth(0) {}
 DTSSpecific::~DTSSpecific() {}
 FourCC DTSSpecific::BoxType() const { return FOURCC_DDTS; }
 
 bool DTSSpecific::ReadWriteInternal(BoxBuffer* buffer) {
-  RCHECK(ReadWriteHeaderInternal(buffer));
+  RCHECK(ReadWriteHeaderInternal(buffer) &&
+         buffer->ReadWriteUInt32(&sampling_frequency) &&
+         buffer->ReadWriteUInt32(&max_bitrate) &&
+         buffer->ReadWriteUInt32(&avg_bitrate) &&
+         buffer->ReadWriteUInt8(&pcm_sample_depth));
 
   if (buffer->Reading()) {
-    RCHECK(
-        buffer->ReadWriteVector(&data, buffer->Size() - buffer->Pos()));
+    RCHECK(buffer->ReadWriteVector(&extra_data, buffer->Size() - buffer->Pos()));
   } else {
-    RCHECK(buffer->ReadWriteVector(&data, data.size()));
+    if (extra_data.empty()) {
+      extra_data.assign(kDdtsExtraData,
+                        kDdtsExtraData + sizeof(kDdtsExtraData));
+    }
+    RCHECK(buffer->ReadWriteVector(&extra_data, extra_data.size()));
   }
   return true;
 }
 
 uint32_t DTSSpecific::ComputeSizeInternal() {
   // This box is optional. Skip it if not initialized.
-  if (data.size() == 0)
+  if (sampling_frequency == 0)
     return 0;
-  return HeaderSize() + data.size();
+  return HeaderSize() + sizeof(sampling_frequency) + sizeof(max_bitrate) +
+         sizeof(avg_bitrate) + sizeof(pcm_sample_depth) +
+         sizeof(kDdtsExtraData);
 }
 
 AudioSampleEntry::AudioSampleEntry()
@@ -1266,7 +1295,6 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
 
   RCHECK(buffer->TryReadWriteChild(&esds));
   RCHECK(buffer->TryReadWriteChild(&ddts));
-
   return true;
 }
 

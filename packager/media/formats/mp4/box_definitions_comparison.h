@@ -204,6 +204,8 @@ inline bool operator==(const VideoSampleEntry& lhs,
 
 inline bool operator==(const ESDescriptor& lhs, const ESDescriptor& rhs) {
   return lhs.esid() == rhs.esid() && lhs.object_type() == rhs.object_type() &&
+         lhs.max_bitrate() == rhs.max_bitrate() &&
+         lhs.avg_bitrate() == rhs.avg_bitrate() &&
          lhs.decoder_specific_info() == rhs.decoder_specific_info();
 }
 
@@ -214,7 +216,11 @@ inline bool operator==(const ElementaryStreamDescriptor& lhs,
 
 inline bool operator==(const DTSSpecific& lhs,
                        const DTSSpecific& rhs) {
-  return lhs.data == rhs.data;
+  return lhs.sampling_frequency == rhs.sampling_frequency &&
+         lhs.max_bitrate == rhs.max_bitrate &&
+         lhs.avg_bitrate == rhs.avg_bitrate &&
+         lhs.pcm_sample_depth == rhs.pcm_sample_depth &&
+         lhs.extra_data == rhs.extra_data;
 }
 
 inline bool operator==(const AudioSampleEntry& lhs,

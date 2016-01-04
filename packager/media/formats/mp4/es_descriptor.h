@@ -24,6 +24,10 @@ enum ObjectType {
   kForbidden = 0,
   kISO_14496_3 = 0x40,         // MPEG4 AAC
   kISO_13818_7_AAC_LC = 0x67,  // MPEG2 AAC-LC
+  kDTSC = 0xA9,                // DTS Coherent Acoustics audio
+  kDTSE = 0xAC,                // DTS Express low bit rate audio
+  kDTSH = 0xAA,                // DTS-HD High Resolution Audio
+  kDTSL = 0xAB,                // DTS-HD Master Audio
 };
 
 /// This class parses object type and decoder specific information from an
@@ -41,6 +45,12 @@ class ESDescriptor {
   uint16_t esid() const { return esid_; }
   void set_esid(uint16_t esid) { esid_ = esid; }
 
+  uint32_t max_bitrate() const {return max_bitrate_; }
+  void set_max_bitrate(uint32_t max_bitrate) { max_bitrate_ = max_bitrate; }
+
+  uint32_t avg_bitrate() const { return avg_bitrate_; }
+  void set_avg_bitrate(uint32_t avg_bitrate) { avg_bitrate_ = avg_bitrate; }
+
   ObjectType object_type() const { return object_type_; }
   void set_object_type(ObjectType object_type) { object_type_ = object_type; }
 
@@ -57,6 +67,11 @@ class ESDescriptor {
     return object_type_ == kISO_14496_3 || object_type_ == kISO_13818_7_AAC_LC;
   }
 
+  bool IsDTS() const {
+    return object_type_ == kDTSC || object_type_ == kDTSE ||
+           object_type_ == kDTSH || object_type_ == kDTSL;
+  }
+
  private:
   enum Tag {
     kESDescrTag = 0x03,
@@ -70,6 +85,8 @@ class ESDescriptor {
 
   uint16_t esid_;  // Elementary Stream ID.
   ObjectType object_type_;
+  uint32_t max_bitrate_;
+  uint32_t avg_bitrate_;
   std::vector<uint8_t> decoder_specific_info_;
 };
 

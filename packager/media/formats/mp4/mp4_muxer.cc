@@ -40,7 +40,7 @@ void SetStartAndEndFromOffsetAndSize(size_t offset,
   *end = *start + static_cast<uint32_t>(size) - 1;
 }
 
-FourCC CodecToFourCC(VideoCodec codec) {
+FourCC VideoCodecToFourCC(VideoCodec codec) {
   switch (codec) {
     case kCodecH264:
       return FOURCC_AVC1;
@@ -54,6 +54,25 @@ FourCC CodecToFourCC(VideoCodec codec) {
       return FOURCC_VP09;
     case kCodecVP10:
       return FOURCC_VP10;
+    default:
+      return FOURCC_NULL;
+  }
+}
+
+FourCC AudioCodecToFourCC(AudioCodec codec) {
+  switch (codec) {
+    case kCodecAAC:
+      return FOURCC_MP4A;
+    case kCodecDTSC:
+      return FOURCC_DTSC;
+    case kCodecDTSH:
+      return FOURCC_DTSH;
+    case kCodecDTSL:
+      return FOURCC_DTSL;
+    case kCodecDTSE:
+      return FOURCC_DTSE;
+    case kCodecDTSM:
+      return FOURCC_DTSM;
     default:
       return FOURCC_NULL;
   }
@@ -75,7 +94,7 @@ Status MP4Muxer::Initialize() {
   ftyp->compatible_brands.push_back(FOURCC_MP41);
   if (streams().size() == 1 &&
       streams()[0]->info()->stream_type() == kStreamVideo) {
-    const FourCC codec_fourcc = CodecToFourCC(
+    const FourCC codec_fourcc = VideoCodecToFourCC(
         static_cast<VideoStreamInfo*>(streams()[0]->info().get())->codec());
     if (codec_fourcc != FOURCC_NULL)
       ftyp->compatible_brands.push_back(codec_fourcc);
@@ -201,7 +220,7 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   trak->media.handler.type = kVideo;
 
   VideoSampleEntry video;
-  video.format = CodecToFourCC(video_info->codec());
+  video.format = VideoCodecToFourCC(video_info->codec());
   video.width = video_info->width();
   video.height = video_info->height();
   video.codec_config_record.data = video_info->extra_data();
@@ -225,33 +244,26 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
   trak->media.handler.type = kAudio;
 
   AudioSampleEntry audio;
+  audio.format = AudioCodecToFourCC(audio_info->codec());
   switch(audio_info->codec()){
     case kCodecAAC:
-      audio.format = FOURCC_MP4A;
       audio.esds.es_descriptor.set_object_type(kISO_14496_3);  // MPEG4 AAC.
       audio.esds.es_descriptor.set_esid(track_id);
       audio.esds.es_descriptor.set_decoder_specific_info(
           audio_info->extra_data());
+      audio.esds.es_descriptor.set_max_bitrate(audio_info->max_bitrate());
+      audio.esds.es_descriptor.set_avg_bitrate(audio_info->avg_bitrate());
       break;
     case kCodecDTSC:
-      audio.format = FOURCC_DTSC;
-      audio.ddts.data = audio_info->extra_data();
-      break;
     case kCodecDTSH:
-      audio.format = FOURCC_DTSH;
-      audio.ddts.data = audio_info->extra_data();
-      break;
     case kCodecDTSL:
-      audio.format = FOURCC_DTSL;
-      audio.ddts.data = audio_info->extra_data();
-      break;
     case kCodecDTSE:
-      audio.format = FOURCC_DTSE;
-      audio.ddts.data = audio_info->extra_data();
-      break;
     case kCodecDTSM:
-      audio.format = FOURCC_DTSM;
-      audio.ddts.data = audio_info->extra_data();
+      audio.ddts.extra_data = audio_info->extra_data();
+      audio.ddts.max_bitrate = audio_info->max_bitrate();
+      audio.ddts.avg_bitrate = audio_info->avg_bitrate();
+      audio.ddts.sampling_frequency = audio_info->sampling_frequency();
+      audio.ddts.pcm_sample_depth = audio_info->sample_bits();
       break;
     default:
       NOTIMPLEMENTED();

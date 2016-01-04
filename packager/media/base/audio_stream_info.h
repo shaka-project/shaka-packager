@@ -52,6 +52,8 @@ class AudioStreamInfo : public StreamInfo {
                   uint8_t sample_bits,
                   uint8_t num_channels,
                   uint32_t sampling_frequency,
+                  uint32_t max_bitrate,
+                  uint32_t avg_bitrate,
                   const uint8_t* extra_data,
                   size_t extra_data_size,
                   bool is_encrypted);
@@ -70,6 +72,8 @@ class AudioStreamInfo : public StreamInfo {
   uint32_t bytes_per_frame() const {
     return static_cast<uint32_t>(num_channels_) * sample_bits_ / 8;
   }
+  uint32_t max_bitrate() const { return max_bitrate_; }
+  uint32_t avg_bitrate() const { return avg_bitrate_; }
 
   void set_codec(AudioCodec codec) { codec_ = codec; }
   void set_sampling_frequency(const uint32_t sampling_frequency) {
@@ -88,6 +92,8 @@ class AudioStreamInfo : public StreamInfo {
   uint8_t sample_bits_;
   uint8_t num_channels_;
   uint32_t sampling_frequency_;
+  uint32_t max_bitrate_;
+  uint32_t avg_bitrate_;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the extra data is

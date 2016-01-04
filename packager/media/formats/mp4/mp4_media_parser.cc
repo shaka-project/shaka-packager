@@ -81,6 +81,8 @@ AudioCodec FourCCToAudioCodec(FourCC fourcc) {
 }
 
 const char kWidevineKeySystemId[] = "edef8ba979d64acea3c827dcd51d21ed";
+// Default DTS audio number of channels for 5.1 channel layout.
+const uint8_t kDtsAudioNumChannels = 6;
 
 }  // namespace
 
@@ -338,6 +340,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       uint8_t num_channels = 0;
       uint32_t sampling_frequency = 0;
       uint8_t audio_object_type = 0;
+      uint32_t max_bitrate = 0;
+      uint32_t avg_bitrate = 0;
       std::vector<uint8_t> extra_data;
 
       switch (actual_format) {
@@ -353,6 +357,37 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             audio_object_type = aac_audio_specific_config.audio_object_type();
             extra_data = entry.esds.es_descriptor.decoder_specific_info();
             break;
+          } else if (entry.esds.es_descriptor.IsDTS()) {
+            ObjectType audio_type = entry.esds.es_descriptor.object_type();
+            switch (audio_type) {
+              case kDTSC:
+                codec = kCodecDTSC;
+                break;
+              case kDTSE:
+                codec = kCodecDTSE;
+                break;
+              case kDTSH:
+                codec = kCodecDTSH;
+                break;
+              case kDTSL:
+                codec = kCodecDTSL;
+                break;
+              default:
+                LOG(ERROR) << "Unsupported audio type " << audio_type
+                           << " in stsd box.";
+                return false;
+            }
+            num_channels = entry.esds.aac_audio_specific_config.num_channels();
+            // For dts audio in esds, current supported number of channels is 6
+            // as the only supported channel layout is 5.1.
+            if (num_channels != kDtsAudioNumChannels) {
+              LOG(ERROR) << "Unsupported channel count " << num_channels
+                         << " for audio type " << audio_type << ".";
+              return false;
+            }
+            sampling_frequency = entry.samplerate;
+            max_bitrate = entry.esds.es_descriptor.max_bitrate();
+            avg_bitrate = entry.esds.es_descriptor.avg_bitrate();
           } else {
             LOG(ERROR) << "Unsupported audio format 0x" << std::hex
                        << actual_format << " in stsd box.";
@@ -363,7 +398,9 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         case FOURCC_DTSL:
         case FOURCC_DTSE:
         case FOURCC_DTSM:
-          extra_data = entry.ddts.data;
+          extra_data = entry.ddts.extra_data;
+          max_bitrate = entry.ddts.max_bitrate;
+          avg_bitrate = entry.ddts.avg_bitrate;
           num_channels = entry.channelcount;
           sampling_frequency = entry.samplerate;
           break;
@@ -389,7 +426,9 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           entry.samplesize,
           num_channels,
           sampling_frequency,
-          extra_data.size() ? &extra_data[0] : NULL,
+          max_bitrate,
+          avg_bitrate,
+          vector_as_array(&extra_data),
           extra_data.size(),
           is_encrypted));
     }

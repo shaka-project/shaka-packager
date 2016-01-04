@@ -69,7 +69,7 @@ scoped_refptr<AudioStreamInfo> WebMAudioClient::GetAudioStreamInfo(
   return scoped_refptr<AudioStreamInfo>(new AudioStreamInfo(
       track_num, kWebMTimeScale, 0, audio_codec,
       AudioStreamInfo::GetCodecString(audio_codec, 0), language,
-      kSampleSizeInBits, channels_, sampling_frequency, extra_data,
+      kSampleSizeInBits, channels_, sampling_frequency, 0, 0, extra_data,
       extra_data_size, is_encrypted));
 }
 

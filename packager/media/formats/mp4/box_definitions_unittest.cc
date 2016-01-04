@@ -348,6 +348,20 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     esds->es_descriptor.set_esid(2);
   }
 
+  void Fill(DTSSpecific* ddts) {
+    const uint8_t kDdtsExtraData[] = {0xe4, 0x7c, 0, 4, 0, 0x0f, 0};
+    ddts->max_bitrate = 768000;
+    ddts->avg_bitrate = 768000;
+    ddts->sampling_frequency = 48000;
+    ddts->pcm_sample_depth = 16;
+    ddts->extra_data.assign(kDdtsExtraData,
+                            kDdtsExtraData + arraysize(kDdtsExtraData));
+  }
+
+  void Modify(DTSSpecific* ddts) {
+    ddts->pcm_sample_depth = 24;
+  }
+
   void Fill(AudioSampleEntry* enca) {
     enca->format = FOURCC_ENCA;
     enca->data_reference_index = 2;
@@ -861,6 +875,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   bool IsOptional(const CueIDBox* box) { return true; }
   bool IsOptional(const CueTimeBox* box) { return true; }
   bool IsOptional(const CueSettingsBox* box) { return true; }
+  bool IsOptional(const DTSSpecific* box) {return true; }
 
  protected:
   scoped_ptr<BufferWriter> buffer_;
@@ -934,7 +949,8 @@ typedef testing::Types<
     CuePayloadBox,
     VTTEmptyCueBox,
     VTTAdditionalTextBox,
-    VTTCueBox> Boxes2;
+    VTTCueBox,
+    DTSSpecific> Boxes2;
 
 TYPED_TEST_CASE_P(BoxDefinitionsTestGeneral);
 
@@ -1006,17 +1022,13 @@ INSTANTIATE_TYPED_TEST_CASE_P(BoxDefinitionTypedTests2,
 class BoxDefinitionsTest : public BoxDefinitionsTestGeneral<Box> {};
 
 TEST_F(BoxDefinitionsTest, DTSSampleEntry) {
-  const uint8_t kDtseData[] = {0x00, 0x00, 0x00, 0x1c, 0x64, 0x64, 0x74,
-                               0x73, 0x00, 0x00, 0xbb, 0x80, 0x00, 0x03,
-                               0xe4, 0x18, 0x00, 0x03, 0xe4, 0x18, 0x18,
-                               0xe4, 0x7c, 0x00, 0x04, 0x00, 0x0f, 0x00};
   AudioSampleEntry entry;
   entry.format = FOURCC_DTSE;
   entry.data_reference_index = 2;
   entry.channelcount = 5;
   entry.samplesize = 16;
   entry.samplerate = 44100;
-  entry.ddts.data.assign(kDtseData, kDtseData + arraysize(kDtseData));
+  Fill(&entry.ddts);
   entry.Write(this->buffer_.get());
 
   AudioSampleEntry entry_readback;

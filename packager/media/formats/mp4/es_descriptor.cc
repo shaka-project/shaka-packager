@@ -58,12 +58,17 @@ bool ReadESSize(BitReader* reader, uint32_t* size) {
 // multi-bytes size for now).
 const size_t kHeaderSize = 2;
 const size_t kMaxDecoderSpecificInfoSize = 64;
+const uint32_t kUnknownBitrate = 0;
 
 }  // namespace
 
 namespace mp4 {
 
-ESDescriptor::ESDescriptor() : esid_(0), object_type_(kForbidden) {}
+ESDescriptor::ESDescriptor()
+    : esid_(0),
+      object_type_(kForbidden),
+      max_bitrate_(kUnknownBitrate),
+      avg_bitrate_(kUnknownBitrate) {}
 
 ESDescriptor::~ESDescriptor() {}
 
@@ -100,15 +105,16 @@ bool ESDescriptor::Parse(const std::vector<uint8_t>& data) {
 bool ESDescriptor::ParseDecoderConfigDescriptor(BitReader* reader) {
   uint8_t tag;
   uint32_t size;
-  uint64_t dummy;
+  uint32_t dummy;
 
   RCHECK(reader->ReadBits(8, &tag));
   RCHECK(tag == kDecoderConfigDescrTag);
   RCHECK(ReadESSize(reader, &size));
 
   RCHECK(reader->ReadBits(8, &object_type_));
-  RCHECK(reader->ReadBits(64, &dummy));
   RCHECK(reader->ReadBits(32, &dummy));
+  RCHECK(reader->ReadBits(32, &max_bitrate_));
+  RCHECK(reader->ReadBits(32, &avg_bitrate_));
   RCHECK(ParseDecoderSpecificInfo(reader));
 
   return true;
@@ -126,7 +132,6 @@ bool ESDescriptor::ParseDecoderSpecificInfo(BitReader* reader) {
   decoder_specific_info_.resize(size);
   for (uint32_t i = 0; i < size; ++i)
     RCHECK(reader->ReadBits(8, &decoder_specific_info_[i]));
-
   return true;
 }
 
@@ -135,7 +140,6 @@ void ESDescriptor::Write(BufferWriter* writer) const {
   CHECK_LT(decoder_specific_info_.size(), kMaxDecoderSpecificInfoSize);
 
   const std::vector<uint8_t> kEmptyDecodingBufferSize(3, 0);
-  const uint32_t kUnknownBitrate = 0;
   const uint8_t kNoEsFlags = 0;
 
   const uint8_t decoder_specific_info_size = decoder_specific_info_.size();
@@ -162,8 +166,8 @@ void ESDescriptor::Write(BufferWriter* writer) const {
   writer->AppendInt(static_cast<uint8_t>(object_type_));
   writer->AppendInt(stream_type);
   writer->AppendVector(kEmptyDecodingBufferSize);
-  writer->AppendInt(kUnknownBitrate);  // max_bitrate.
-  writer->AppendInt(kUnknownBitrate);  // avg_bitrate.
+  writer->AppendInt(max_bitrate_);
+  writer->AppendInt(avg_bitrate_);
 
   writer->AppendInt(static_cast<uint8_t>(kDecoderSpecificInfoTag));
   writer->AppendInt(decoder_specific_info_size);

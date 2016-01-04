@@ -268,7 +268,11 @@ struct ElementaryStreamDescriptor : FullBox {
 struct DTSSpecific : Box {
   DECLARE_BOX_METHODS(DTSSpecific);
 
-  std::vector<uint8_t> data;
+  uint32_t sampling_frequency;
+  uint32_t max_bitrate;
+  uint32_t avg_bitrate;
+  uint8_t pcm_sample_depth;
+  std::vector<uint8_t> extra_data;
 };
 
 struct AudioSampleEntry : Box {

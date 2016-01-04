@@ -303,6 +303,8 @@ class WebMClusterParserTest : public testing::Test {
                                                kBitsPerSample,
                                                kNumChannels,
                                                kSamplingFrequency,
+                                               0,
+                                               0,
                                                NULL,
                                                kExtraDataSize,
                                                !kEncrypted)),

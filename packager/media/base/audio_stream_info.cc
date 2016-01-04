@@ -71,6 +71,8 @@ AudioStreamInfo::AudioStreamInfo(int track_id,
                                  uint8_t sample_bits,
                                  uint8_t num_channels,
                                  uint32_t sampling_frequency,
+                                 uint32_t max_bitrate,
+                                 uint32_t avg_bitrate,
                                  const uint8_t* extra_data,
                                  size_t extra_data_size,
                                  bool is_encrypted)
@@ -86,8 +88,9 @@ AudioStreamInfo::AudioStreamInfo(int track_id,
       codec_(codec),
       sample_bits_(sample_bits),
       num_channels_(num_channels),
-      sampling_frequency_(sampling_frequency) {
-}
+      sampling_frequency_(sampling_frequency),
+      max_bitrate_(max_bitrate),
+      avg_bitrate_(avg_bitrate) {}
 
 AudioStreamInfo::~AudioStreamInfo() {}
 
