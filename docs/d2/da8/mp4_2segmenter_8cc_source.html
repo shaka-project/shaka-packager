@@ -474,52 +474,54 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;  }</div>
 <div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;</div>
 <div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;  MediaData mdat;</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;  <span class="comment">// Fill in data offsets. Data offset base is moof size + mdat box size.</span></div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;  <span class="comment">// (mdat is still empty, mdat size is the same as mdat box size).</span></div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;  uint64_t base = moof_-&gt;ComputeSize() + mdat.ComputeSize();</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; moof_-&gt;tracks.size(); ++i) {</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;    TrackFragment&amp; traf = moof_-&gt;tracks[i];</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;    Fragmenter* fragmenter = fragmenters_[i];</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;    <span class="keywordflow">if</span> (fragmenter-&gt;aux_data()-&gt;Size() &gt; 0) {</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;      traf.auxiliary_offset.offsets[0] += base;</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;      base += fragmenter-&gt;aux_data()-&gt;Size();</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;    }</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;    traf.runs[0].data_offset += base;</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;    base += fragmenter-&gt;data()-&gt;Size();</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;  }</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;  <span class="comment">// Generate segment reference.</span></div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;  sidx_-&gt;references.resize(sidx_-&gt;references.size() + 1);</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;  fragmenters_[GetReferenceStreamId()]-&gt;GenerateSegmentReference(</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;      &amp;sidx_-&gt;references[sidx_-&gt;references.size() - 1]);</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;  sidx_-&gt;references[sidx_-&gt;references.size() - 1].referenced_size = base;</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;  <span class="comment">// Write the fragment to buffer.</span></div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;  moof_-&gt;Write(fragment_buffer_.get());</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;  <span class="comment">// Data offset relative to &#39;moof&#39;: moof size + mdat header size.</span></div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;  <span class="comment">// The code will also update box sizes for moof_ and its child boxes.</span></div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;  uint64_t data_offset = moof_-&gt;ComputeSize() + mdat.HeaderSize();</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  <span class="comment">// &#39;traf&#39; should follow &#39;mfhd&#39; moof header box.</span></div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;  uint64_t next_traf_position = moof_-&gt;HeaderSize() + moof_-&gt;header.box_size();</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; moof_-&gt;tracks.size(); ++i) {</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;    TrackFragment&amp; traf = moof_-&gt;tracks[i];</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;    <span class="keywordflow">if</span> (traf.auxiliary_offset.offsets.size() &gt; 0) {</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;      DCHECK_EQ(traf.auxiliary_offset.offsets.size(), 1u);</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;      DCHECK(!traf.sample_encryption.sample_encryption_entries.empty());</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;      next_traf_position += traf.box_size();</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;      <span class="comment">// SampleEncryption &#39;senc&#39; box should be the last box in &#39;traf&#39;.</span></div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;      <span class="comment">// |auxiliary_offset| should point to the data of SampleEncryption.</span></div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;      traf.auxiliary_offset.offsets[0] =</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;          next_traf_position - traf.sample_encryption.box_size() +</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;          traf.sample_encryption.HeaderSize() +</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;          <span class="keyword">sizeof</span>(uint32_t);  <span class="comment">// for sample count field in &#39;senc&#39;</span></div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    }</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;    traf.runs[0].data_offset = data_offset + mdat.data_size;</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;    mdat.data_size += fragmenters_[i]-&gt;data()-&gt;Size();</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;  }</div>
 <div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; moof_-&gt;tracks.size(); ++i) {</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    Fragmenter* fragmenter = fragmenters_[i];</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    mdat.data_size =</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;        fragmenter-&gt;aux_data()-&gt;Size() + fragmenter-&gt;data()-&gt;Size();</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;    mdat.WriteHeader(fragment_buffer_.get());</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;    <span class="keywordflow">if</span> (fragmenter-&gt;aux_data()-&gt;Size()) {</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;      fragment_buffer_-&gt;AppendBuffer(*fragmenter-&gt;aux_data());</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;    }</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;    fragment_buffer_-&gt;AppendBuffer(*fragmenter-&gt;data());</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;  }</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;  <span class="comment">// Increase sequence_number for next fragment.</span></div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;  ++moof_-&gt;header.sequence_number;</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;  <span class="keywordflow">if</span> (finalize_segment)</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;    <span class="keywordflow">return</span> FinalizeSegment();</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;}</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;  <span class="comment">// Generate segment reference.</span></div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;  sidx_-&gt;references.resize(sidx_-&gt;references.size() + 1);</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;  fragmenters_[GetReferenceStreamId()]-&gt;GenerateSegmentReference(</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;      &amp;sidx_-&gt;references[sidx_-&gt;references.size() - 1]);</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;  sidx_-&gt;references[sidx_-&gt;references.size() - 1].referenced_size =</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;      data_offset + mdat.data_size;</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;  <span class="comment">// Write the fragment to buffer.</span></div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;  moof_-&gt;Write(fragment_buffer_.get());</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;  mdat.WriteHeader(fragment_buffer_.get());</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;  <span class="keywordflow">for</span> (Fragmenter* fragmenter : fragmenters_)</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;    fragment_buffer_-&gt;AppendBuffer(*fragmenter-&gt;data());</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;  <span class="comment">// Increase sequence_number for next fragment.</span></div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;  ++moof_-&gt;header.sequence_number;</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;  <span class="keywordflow">if</span> (finalize_segment)</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;    <span class="keywordflow">return</span> FinalizeSegment();</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;}</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1webm_1_1Segmenter_html_a6ec4149813741e894a9c5083eaf99689"><div class="ttname"><a href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#a6ec4149813741e894a9c5083eaf99689">edash_packager::media::webm::Segmenter::GetDuration</a></div><div class="ttdeci">float GetDuration() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d53/webm_2segmenter_8cc_source.html#l00136">segmenter.cc:136</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Fragmenter_html"><div class="ttname"><a href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html">edash_packager::media::mp4::Fragmenter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd1/fragmenter_8h_source.html#l00030">fragmenter.h:30</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_a49ccfe7a61c36ac9818482a7892915d3"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a49ccfe7a61c36ac9818482a7892915d3">edash_packager::media::KeySource::GetKey</a></div><div class="ttdeci">virtual Status GetKey(TrackType track_type, EncryptionKey *key)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00046">key_source.cc:46</a></div></div>
@@ -547,7 +549,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jan 5 2016 01:09:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 5 2016 02:37:19 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
