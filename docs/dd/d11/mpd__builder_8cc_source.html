@@ -166,12 +166,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keywordtype">void</span> AddMpdNameSpaceInfo(XmlNode* mpd) {</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  DCHECK(mpd);</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> kXmlNamespace[] = <span class="stringliteral">&quot;urn:mpeg:DASH:schema:MPD:2011&quot;</span>;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> kXmlNamespace[] = <span class="stringliteral">&quot;urn:mpeg:dash:schema:mpd:2011&quot;</span>;</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> kXmlNamespaceXsi[] =</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;      <span class="stringliteral">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span>;</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> kXmlNamespaceXlink[] = <span class="stringliteral">&quot;http://www.w3.org/1999/xlink&quot;</span>;</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> kDashSchemaMpd2011[] =</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;      <span class="stringliteral">&quot;urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd&quot;</span>;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;      <span class="stringliteral">&quot;urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd&quot;</span>;</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">char</span> kCencNamespace[] = <span class="stringliteral">&quot;urn:mpeg:cenc:2013&quot;</span>;</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  mpd-&gt;SetStringAttribute(<span class="stringliteral">&quot;xmlns&quot;</span>, kXmlNamespace);</div>
@@ -869,7 +869,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;</div>
 <div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;  <span class="keywordflow">if</span> (segments_aligned_ == kSegmentAlignmentTrue) {</div>
 <div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;    adaptation_set.SetStringAttribute(mpd_type_ == MpdBuilder::kStatic</div>
-<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;                                          ? <span class="stringliteral">&quot;subSegmentAlignment&quot;</span></div>
+<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;                                          ? <span class="stringliteral">&quot;subsegmentAlignment&quot;</span></div>
 <div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;                                          : <span class="stringliteral">&quot;segmentAlignment&quot;</span>,</div>
 <div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;                                      <span class="stringliteral">&quot;true&quot;</span>);</div>
 <div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;  }</div>
@@ -899,7 +899,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00810"></a><span class="lineno">  810</span>&#160;</div>
 <div class="line"><a name="l00811"></a><span class="lineno">  811</span>&#160;<span class="comment">// Check segmentAlignment for Live here. Storing all start_time and duration</span></div>
 <div class="line"><a name="l00812"></a><span class="lineno">  812</span>&#160;<span class="comment">// will out-of-memory because there&#39;s no way of knowing when it will end.</span></div>
-<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160;<span class="comment">// VOD subSegmentAlignment check is *not* done here because it is possible</span></div>
+<div class="line"><a name="l00813"></a><span class="lineno">  813</span>&#160;<span class="comment">// VOD subsegmentAlignment check is *not* done here because it is possible</span></div>
 <div class="line"><a name="l00814"></a><span class="lineno">  814</span>&#160;<span class="comment">// that some Representations might not have been added yet (e.g. a thread is</span></div>
 <div class="line"><a name="l00815"></a><span class="lineno">  815</span>&#160;<span class="comment">// assigned per muxer so one might run faster than others).</span></div>
 <div class="line"><a name="l00816"></a><span class="lineno">  816</span>&#160;<span class="comment">// To be clear, for Live, all Representations should be added before a</span></div>
@@ -1458,7 +1458,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jan 5 2016 02:37:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jan 5 2016 23:58:07 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
