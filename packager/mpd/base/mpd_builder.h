@@ -414,6 +414,12 @@ class RepresentationStateChangeListener {
 /// well as optional ContentProtection elements for that stream.
 class Representation {
  public:
+  enum SuppressFlag {
+    kSuppressWidth = 1,
+    kSuppressHeight = 2,
+    kSuppressFrameRate = 4,
+  };
+
   virtual ~Representation();
 
   /// Tries to initialize the instance. If this does not succeed, the instance
@@ -469,6 +475,16 @@ class Representation {
 
   /// @return Copy of <Representation>.
   xml::scoped_xml_ptr<xmlNode> GetXml();
+
+  /// By calling this methods, the next time GetXml() is
+  /// called, the corresponding attributes will not be set.
+  /// For example, if SuppressOnce(kSuppressWidth) is called, then GetXml() will
+  /// return a <Representation> element without a @width attribute.
+  /// Note that it only applies to the next call to GetXml(), calling GetXml()
+  /// again without calling this methods will return a <Representation> element
+  /// with the attribute.
+  /// This may be called multiple times to set different (or the same) flags.
+  void SuppressOnce(SuppressFlag flag);
 
   /// @return ID number for <Representation>.
   uint32_t id() const { return id_; }
@@ -539,6 +555,9 @@ class Representation {
   // If this is not null, then Representation is responsible for calling the
   // right methods at right timings.
   scoped_ptr<RepresentationStateChangeListener> state_change_listener_;
+
+  // Bit vector for tracking witch attributes should not be output.
+  int output_suppression_flags_;
 
   DISALLOW_COPY_AND_ASSIGN(Representation);
 };

@@ -215,7 +215,10 @@ RepresentationXmlNode::RepresentationXmlNode()
     : RepresentationBaseXmlNode("Representation") {}
 RepresentationXmlNode::~RepresentationXmlNode() {}
 
-bool RepresentationXmlNode::AddVideoInfo(const VideoInfo& video_info) {
+bool RepresentationXmlNode::AddVideoInfo(const VideoInfo& video_info,
+                                         bool set_width,
+                                         bool set_height,
+                                         bool set_frame_rate) {
   if (!video_info.has_width() || !video_info.has_height()) {
     LOG(ERROR) << "Missing width or height for adding a video info.";
     return false;
@@ -227,11 +230,15 @@ bool RepresentationXmlNode::AddVideoInfo(const VideoInfo& video_info) {
                                   base::IntToString(video_info.pixel_height()));
   }
 
-  SetIntegerAttribute("width", video_info.width());
-  SetIntegerAttribute("height", video_info.height());
-  SetStringAttribute("frameRate",
-                     base::IntToString(video_info.time_scale()) + "/" +
-                         base::IntToString(video_info.frame_duration()));
+  if (set_width)
+    SetIntegerAttribute("width", video_info.width());
+  if (set_height)
+    SetIntegerAttribute("height", video_info.height());
+  if (set_frame_rate) {
+    SetStringAttribute("frameRate",
+                       base::IntToString(video_info.time_scale()) + "/" +
+                           base::IntToString(video_info.frame_duration()));
+  }
   return true;
 }
 

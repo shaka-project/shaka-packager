@@ -132,9 +132,15 @@ class RepresentationXmlNode : public RepresentationBaseXmlNode {
 
   /// Adds video metadata to the MPD.
   /// @param video_info constains the VideoInfo for a Representation.
+  /// @param set_width is a flag for setting the width attribute.
+  /// @param set_height is a flag for setting the height attribute.
+  /// @param set_frame_rate is a flag for setting the frameRate attribute.
   /// @return true if successfully set attributes and children elements (if
   ///         applicable), false otherwise.
-  bool AddVideoInfo(const MediaInfo::VideoInfo& video_info);
+  bool AddVideoInfo(const MediaInfo::VideoInfo& video_info,
+                    bool set_width,
+                    bool set_height,
+                    bool set_frame_rate);
 
   /// Adds audio metadata to the MPD.
   /// @param audio_info constains the AudioInfos for a Representation.

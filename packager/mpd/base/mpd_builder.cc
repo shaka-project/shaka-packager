@@ -39,7 +39,8 @@ namespace {
 
 const int kAdaptationSetGroupNotSet = -1;
 
-AdaptationSet::Role MediaInfoTextTypeToRole(MediaInfo::TextInfo::TextType type) {
+AdaptationSet::Role MediaInfoTextTypeToRole(
+    MediaInfo::TextInfo::TextType type) {
   switch (type) {
     case MediaInfo::TextInfo::UNKNOWN:
       LOG(WARNING) << "Unknown text type, assuming subtitle.";
@@ -731,27 +732,16 @@ void AdaptationSet::AddRole(Role role) {
 
 // Creates a copy of <AdaptationSet> xml element, iterate thru all the
 // <Representation> (child) elements and add them to the copy.
+// Set all the attributes first and then add the children elements so that flags
+// can be passed to Representation to avoid setting redundant attributes. For
+// example, if AdaptationSet@width is set, then Representation@width is
+// redundant and should not be set.
 xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
   AdaptationSetXmlNode adaptation_set;
 
-  if (!adaptation_set.AddContentProtectionElements(
-          content_protection_elements_)) {
-    return xml::scoped_xml_ptr<xmlNode>();
-  }
-  for (std::set<Role>::const_iterator role_it = roles_.begin();
-       role_it != roles_.end(); ++role_it) {
-    adaptation_set.AddRoleElement("urn:mpeg:dash:role:2011",
-                                  RoleToText(*role_it));
-  }
-
-  std::list<Representation*>::iterator representation_it =
-      representations_.begin();
-
-  for (; representation_it != representations_.end(); ++representation_it) {
-    xml::scoped_xml_ptr<xmlNode> child((*representation_it)->GetXml());
-    if (!child || !adaptation_set.AddChild(child.Pass()))
-      return xml::scoped_xml_ptr<xmlNode>();
-  }
+  bool suppress_representation_width = false;
+  bool suppress_representation_height = false;
+  bool suppress_representation_frame_rate = false;
 
   adaptation_set.SetId(id_);
   adaptation_set.SetStringAttribute("contentType", content_type_);
@@ -761,17 +751,20 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
 
   // Note that std::{set,map} are ordered, so the last element is the max value.
   if (video_widths_.size() == 1) {
+    suppress_representation_width = true;
     adaptation_set.SetIntegerAttribute("width", *video_widths_.begin());
   } else if (video_widths_.size() > 1) {
     adaptation_set.SetIntegerAttribute("maxWidth", *video_widths_.rbegin());
   }
   if (video_heights_.size() == 1) {
+    suppress_representation_height = true;
     adaptation_set.SetIntegerAttribute("height", *video_heights_.begin());
   } else if (video_heights_.size() > 1) {
     adaptation_set.SetIntegerAttribute("maxHeight", *video_heights_.rbegin());
   }
 
   if (video_frame_rates_.size() == 1) {
+    suppress_representation_frame_rate = true;
     adaptation_set.SetStringAttribute("frameRate",
                                       video_frame_rates_.begin()->second);
   } else if (video_frame_rates_.size() > 1) {
@@ -779,7 +772,8 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
                                       video_frame_rates_.rbegin()->second);
   }
 
-  // Note: must be checked before checking segments_aligned_ (below).
+  // Note: must be checked before checking segments_aligned_ (below). So that
+  // segments_aligned_ is set before checking below.
   if (mpd_type_ == MpdBuilder::kStatic) {
     CheckVodSegmentAlignment();
   }
@@ -796,6 +790,25 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
 
   if (group_ >= 0)
     adaptation_set.SetIntegerAttribute("group", group_);
+
+  if (!adaptation_set.AddContentProtectionElements(
+          content_protection_elements_)) {
+    return xml::scoped_xml_ptr<xmlNode>();
+  }
+  for (AdaptationSet::Role role : roles_)
+    adaptation_set.AddRoleElement("urn:mpeg:dash:role:2011", RoleToText(role));
+
+  for (Representation* representation : representations_) {
+    if (suppress_representation_width)
+      representation->SuppressOnce(Representation::kSuppressWidth);
+    if (suppress_representation_height)
+      representation->SuppressOnce(Representation::kSuppressHeight);
+    if (suppress_representation_frame_rate)
+      representation->SuppressOnce(Representation::kSuppressFrameRate);
+    xml::scoped_xml_ptr<xmlNode> child(representation->GetXml());
+    if (!child || !adaptation_set.AddChild(child.Pass()))
+      return xml::scoped_xml_ptr<xmlNode>();
+  }
 
   return adaptation_set.PassScopedPtr();
 }
@@ -1009,7 +1022,8 @@ Representation::Representation(
       bandwidth_estimator_(BandwidthEstimator::kUseAllBlocks),
       mpd_options_(mpd_options),
       start_number_(1),
-      state_change_listener_(state_change_listener.Pass()) {}
+      state_change_listener_(state_change_listener.Pass()),
+      output_suppression_flags_(0) {}
 
 Representation::~Representation() {}
 
@@ -1131,7 +1145,11 @@ xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
   const bool has_audio_info = media_info_.has_audio_info();
 
   if (has_video_info &&
-      !representation.AddVideoInfo(media_info_.video_info())) {
+      !representation.AddVideoInfo(
+          media_info_.video_info(),
+          !(output_suppression_flags_ & kSuppressWidth),
+          !(output_suppression_flags_ & kSuppressHeight),
+          !(output_suppression_flags_ & kSuppressFrameRate))) {
     LOG(ERROR) << "Failed to add video info to Representation XML.";
     return xml::scoped_xml_ptr<xmlNode>();
   }
@@ -1162,7 +1180,12 @@ xml::scoped_xml_ptr<xmlNode> Representation::GetXml() {
   // TODO(rkuroiwa): It is likely that all representations have the exact same
   // SegmentTemplate. Optimize and propagate the tag up to AdaptationSet level.
 
+  output_suppression_flags_ = 0;
   return representation.PassScopedPtr();
+}
+
+void Representation::SuppressOnce(SuppressFlag flag) {
+  output_suppression_flags_ |= flag;
 }
 
 bool Representation::HasRequiredMediaInfoFields() {

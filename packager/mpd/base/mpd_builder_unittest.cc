@@ -110,6 +110,8 @@ class MpdBuilderTest : public ::testing::Test {
   }
 
  protected:
+  // Creates a new AdaptationSet and adds a Representation element using
+  // |media_info|.
   void AddRepresentation(const MediaInfo& media_info) {
     AdaptationSet* adaptation_set = mpd_.AddAdaptationSet("");
     ASSERT_TRUE(adaptation_set);
@@ -261,8 +263,7 @@ class SegmentTemplateTest : public DynamicMpdBuilderTest {
         "                   frameRate=\"10/5\" contentType=\"video\""
         "                   par=\"3:2\" segmentAlignment=\"true\">\n"
         "      <Representation id=\"0\" bandwidth=\"%" PRIu64 "\" "
-        "codecs=\"avc1.010101\" mimeType=\"video/mp4\" width=\"720\" "
-        "height=\"480\" frameRate=\"10/5\" sar=\"1:1\">\n"
+        "       codecs=\"avc1.010101\" mimeType=\"video/mp4\" sar=\"1:1\">\n"
         "        <SegmentTemplate timescale=\"1000\" "
         "initialization=\"init.mp4\" media=\"$Time$.mp4\">\n"
         "          <SegmentTimeline>\n%s"
@@ -347,13 +348,12 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
         "                   frameRate=\"10/2\" contentType=\"video\""
         "                   par=\"3:2\" segmentAlignment=\"true\">\n"
         "      <Representation id=\"0\" bandwidth=\"%" PRIu64 "\" "
-        "codecs=\"avc1.010101\" mimeType=\"video/mp4\" width=\"720\" "
-        "height=\"480\" frameRate=\"10/2\" sar=\"1:1\">\n"
+        "       codecs=\"avc1.010101\" mimeType=\"video/mp4\" sar=\"1:1\">\n"
         "        <SegmentTemplate timescale=\"1000\" "
-        "initialization=\"init.mp4\" media=\"$Number$.mp4\" "
-        "startNumber=\"%d\">\n"
+        "         initialization=\"init.mp4\" media=\"$Number$.mp4\" "
+        "         startNumber=\"%d\">\n"
         "          <SegmentTimeline>\n"
-        "              %s\n"
+        "            %s\n"
         "          </SegmentTimeline>\n"
         "        </SegmentTemplate>\n"
         "      </Representation>\n"
@@ -1103,6 +1103,147 @@ TEST_F(CommonMpdBuilderTest,
       ExpectAttributeNotSet("frameRate", adaptation_set_xml.get()));
 }
 
+// Verify that Suppress*() methods work.
+TEST_F(CommonMpdBuilderTest, SuppressRepresentationAttributes) {
+  const char kTestMediaInfo[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 720\n"
+      "  height: 480\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+
+  auto representation =
+      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
+                           kAnyRepresentationId, NoListener());
+
+  representation->SuppressOnce(Representation::kSuppressWidth);
+  xml::scoped_xml_ptr<xmlNode> no_width(representation->GetXml());
+  EXPECT_NO_FATAL_FAILURE(ExpectAttributeNotSet("width", no_width.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("height", "480", no_width.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("frameRate", "10/10", no_width.get()));
+
+  representation->SuppressOnce(Representation::kSuppressHeight);
+  xml::scoped_xml_ptr<xmlNode> no_height(representation->GetXml());
+  EXPECT_NO_FATAL_FAILURE(ExpectAttributeNotSet("height", no_height.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("width", "720", no_height.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("frameRate", "10/10", no_height.get()));
+
+  representation->SuppressOnce(Representation::kSuppressFrameRate);
+  xml::scoped_xml_ptr<xmlNode> no_frame_rate(representation->GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("frameRate", no_frame_rate.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("width", "720", no_frame_rate.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("height", "480", no_frame_rate.get()));
+}
+
+// Attribute values that are common to all the children Representations should
+// propagate up to AdaptationSet. Otherwise, each Representation should have
+// its own values.
+TEST_F(CommonMpdBuilderTest, BubbleUpAttributesToAdaptationSet) {
+  const char k1080p[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1920\n"
+      "  height: 1080\n"
+      "  time_scale: 30\n"
+      "  frame_duration: 1\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+
+  // Different width from the one above.
+  const char kDifferentWidth[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1080\n"
+      "  height: 1080\n"
+      "  time_scale: 30\n"
+      "  frame_duration: 1\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+
+  // Different height from ones above
+  const char kDifferentHeight[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1440\n"
+      "  height: 900\n"
+      "  time_scale: 30\n"
+      "  frame_duration: 1\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+
+  const char kDifferentFrameRate[] =
+      "video_info {\n"
+      "  codec: 'avc1'\n"
+      "  width: 1920\n"
+      "  height: 1080\n"
+      "  time_scale: 15\n"
+      "  frame_duration: 1\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+
+  AdaptationSet* adaptation_set = mpd_.AddAdaptationSet("");
+  ASSERT_TRUE(adaptation_set);
+  ASSERT_TRUE(adaptation_set->AddRepresentation(ConvertToMediaInfo(k1080p)));
+
+  xml::scoped_xml_ptr<xmlNode> all_attributes_on_adaptation_set(
+      adaptation_set->GetXml());
+  EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
+      "width", "1920", all_attributes_on_adaptation_set.get()));
+  EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
+      "height", "1080", all_attributes_on_adaptation_set.get()));
+  EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
+      "frameRate", "30/1", all_attributes_on_adaptation_set.get()));
+
+  ASSERT_TRUE(
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(kDifferentWidth)));
+  xml::scoped_xml_ptr<xmlNode> width_not_set(adaptation_set->GetXml());
+  EXPECT_NO_FATAL_FAILURE(ExpectAttributeNotSet("width", width_not_set.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("height", "1080", width_not_set.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("frameRate", "30/1", width_not_set.get()));
+
+  ASSERT_TRUE(
+      adaptation_set->AddRepresentation(ConvertToMediaInfo(kDifferentHeight)));
+  xml::scoped_xml_ptr<xmlNode> width_height_not_set(adaptation_set->GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("width", width_height_not_set.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("height", width_height_not_set.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("frameRate", "30/1", width_height_not_set.get()));
+
+  ASSERT_TRUE(adaptation_set->AddRepresentation(
+      ConvertToMediaInfo(kDifferentFrameRate)));
+  xml::scoped_xml_ptr<xmlNode> no_common_attributes(adaptation_set->GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("width", no_common_attributes.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("height", no_common_attributes.get()));
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeNotSet("frameRate", no_common_attributes.get()));
+}
+
 // Verify that subsegmentAlignment is set to true if all the Representations'
 // segments are aligned and the MPD type is static.
 // Also checking that not all Representations have to be added before calling
@@ -1454,8 +1595,7 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtectionAndUpdate) {
       "        <cenc:pssh>any value</cenc:pssh>"
       "      </ContentProtection>"
       "      <Representation id=\"0\" bandwidth=\"0\" codecs=\"avc1\""
-      "       mimeType=\"video/mp4\" width=\"1920\" height=\"1080\""
-      "       frameRate=\"3000/100\"/>"
+      "       mimeType=\"video/mp4\"/>"
       "    </AdaptationSet>"
       "  </Period>"
       "</MPD>";
@@ -1487,8 +1627,7 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtectionAndUpdate) {
       //"        <cenc:pssh>new pssh value</cenc:pssh>"
       "      </ContentProtection>"
       "      <Representation id=\"0\" bandwidth=\"0\" codecs=\"avc1\""
-      "       mimeType=\"video/mp4\" width=\"1920\" height=\"1080\""
-      "       frameRate=\"3000/100\"/>"
+      "       mimeType=\"video/mp4\"/>"
       "    </AdaptationSet>"
       "  </Period>"
       "</MPD>";
@@ -1539,8 +1678,7 @@ TEST_F(CommonMpdBuilderTest, UpdateToRemovePsshElement) {
       "       value=\"some value\">"
       "      </ContentProtection>"
       "      <Representation id=\"0\" bandwidth=\"0\" codecs=\"avc1\""
-      "       mimeType=\"video/mp4\" width=\"1920\" height=\"1080\""
-      "       frameRate=\"3000/100\"/>"
+      "       mimeType=\"video/mp4\"/>"
       "    </AdaptationSet>"
       "  </Period>"
       "</MPD>";
@@ -1573,8 +1711,7 @@ TEST_F(CommonMpdBuilderTest, UpdateToRemovePsshElement) {
       //"        <cenc:pssh>added pssh value</cenc:pssh>"
       "      </ContentProtection>"
       "      <Representation id=\"0\" bandwidth=\"0\" codecs=\"avc1\""
-      "       mimeType=\"video/mp4\" width=\"1920\" height=\"1080\""
-      "       frameRate=\"3000/100\"/>"
+      "       mimeType=\"video/mp4\"/>"
       "    </AdaptationSet>"
       "  </Period>"
       "</MPD>";
@@ -1587,6 +1724,18 @@ TEST_F(StaticMpdBuilderTest, Video) {
   MediaInfo video_media_info = GetTestMediaInfo(kFileNameVideoMediaInfo1);
   ASSERT_NO_FATAL_FAILURE(AddRepresentation(video_media_info));
   EXPECT_NO_FATAL_FAILURE(CheckMpd(kFileNameExpectedMpdOutputVideo1));
+}
+
+TEST_F(StaticMpdBuilderTest, TwoVideosWithDifferentResolutions) {
+  AdaptationSet* adaptation_set = mpd_.AddAdaptationSet("");
+
+  MediaInfo media_info1 = GetTestMediaInfo(kFileNameVideoMediaInfo1);
+  ASSERT_TRUE(adaptation_set->AddRepresentation(media_info1));
+
+  MediaInfo media_info2 = GetTestMediaInfo(kFileNameVideoMediaInfo2);
+  ASSERT_TRUE(adaptation_set->AddRepresentation(media_info2));
+
+  EXPECT_NO_FATAL_FAILURE(CheckMpd(kFileNameExpectedMpdOutputVideo1And2));
 }
 
 // Add both video and audio and check the output.
