@@ -43,6 +43,12 @@ const char kLicenseStatusUnknownError[] = "UNKNOWN_ERROR";
 const char kExpectedRequestMessageFormat[] =
     "{\"content_id\":\"%s\",\"drm_types\":[\"WIDEVINE\"],\"policy\":\"%s\","
     "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"AUDIO\"}]}";
+const char kExpectedRequestMessageWithAssetIdFormat[] =
+    "{\"asset_id\":%u,\"drm_types\":[\"WIDEVINE\"],"
+    "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"AUDIO\"}]}";
+const char kExpectedRequestMessageWithPsshFormat[] =
+    "{\"drm_types\":[\"WIDEVINE\"],\"pssh_data\":\"%s\","
+    "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"AUDIO\"}]}";
 const char kExpectedSignedMessageFormat[] =
     "{\"request\":\"%s\",\"signature\":\"%s\",\"signer\":\"%s\"}";
 const char kTrackFormat[] =
@@ -52,7 +58,9 @@ const char kClassicTrackFormat[] = "{\"type\":\"%s\",\"key\":\"%s\"}";
 const char kLicenseResponseFormat[] = "{\"status\":\"%s\",\"tracks\":[%s]}";
 const char kHttpResponseFormat[] = "{\"response\":\"%s\"}";
 const char kRequestPsshData[] = "PSSH data";
-const uint32_t kClassicAssetId = 1234;
+// 32-bit with leading bit set, to verify that big uint32_t can be handled
+// correctly.
+const uint32_t kClassicAssetId = 0x80038cd9;
 
 std::string Base64Encode(const std::string& input) {
   std::string output;
@@ -212,7 +220,8 @@ TEST_F(WidevineKeySourceTest, GenerateSignatureFailure) {
 TEST_F(WidevineKeySourceTest, HttpFetchFailure) {
   std::string expected_message = base::StringPrintf(
       kExpectedRequestMessageFormat, Base64Encode(kContentId).c_str(), kPolicy);
-  EXPECT_CALL(*mock_request_signer_, GenerateSignature(expected_message, _))
+  EXPECT_CALL(*mock_request_signer_,
+              GenerateSignature(StrEq(expected_message), _))
       .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
 
   std::string expected_post_data =
@@ -258,29 +267,43 @@ TEST_F(WidevineKeySourceTest, LicenseStatusCencNotOK) {
 }
 
 TEST_F(WidevineKeySourceTest, LicenseStatusCencWithPsshDataOK) {
+  std::string expected_message =
+      base::StringPrintf(kExpectedRequestMessageWithPsshFormat,
+                         Base64Encode(kRequestPsshData).c_str());
+  EXPECT_CALL(*mock_request_signer_,
+              GenerateSignature(StrEq(expected_message), _))
+      .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
+
   std::string mock_response = base::StringPrintf(
       kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
-
   EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
   CreateWidevineKeySource();
+  widevine_key_source_->set_signer(mock_request_signer_.Pass());
   std::vector<uint8_t> pssh_data(
       reinterpret_cast<const uint8_t*>(kRequestPsshData),
-      reinterpret_cast<const uint8_t*>(kRequestPsshData) + strlen(kContentId));
+      reinterpret_cast<const uint8_t*>(kRequestPsshData) +
+          strlen(kRequestPsshData));
   ASSERT_OK(widevine_key_source_->FetchKeys(pssh_data));
   VerifyKeys(false);
 }
 
 TEST_F(WidevineKeySourceTest, LicenseStatusClassicOK) {
+  std::string expected_message = base::StringPrintf(
+      kExpectedRequestMessageWithAssetIdFormat, kClassicAssetId);
+  EXPECT_CALL(*mock_request_signer_,
+              GenerateSignature(StrEq(expected_message), _))
+      .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
+
   std::string mock_response = base::StringPrintf(
       kHttpResponseFormat, Base64Encode(
           GenerateMockClassicLicenseResponse()).c_str());
-
   EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
   CreateWidevineKeySource();
+  widevine_key_source_->set_signer(mock_request_signer_.Pass());
   ASSERT_OK(widevine_key_source_->FetchKeys(kClassicAssetId));
   VerifyKeys(true);
 }

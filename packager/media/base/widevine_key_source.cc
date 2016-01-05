@@ -184,7 +184,9 @@ Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& pssh_data) {
 Status WidevineKeySource::FetchKeys(uint32_t asset_id) {
   base::AutoLock scoped_lock(lock_);
   request_dict_.Clear();
-  request_dict_.SetInteger("asset_id", asset_id);
+  // Javascript/JSON does not support int64_t or unsigned numbers. Use double
+  // instead as 32-bit integer can be lossless represented using double.
+  request_dict_.SetDouble("asset_id", asset_id);
   return FetchKeysInternal(!kEnableKeyRotation, 0, true);
 }
 
@@ -381,12 +383,18 @@ void WidevineKeySource::FillRequest(bool enable_key_rotation,
 
   // Build key rotation fields.
   if (enable_key_rotation) {
-    request_dict_.SetInteger("first_crypto_period_index",
+    // Javascript/JSON does not support int64_t or unsigned numbers. Use double
+    // instead as 32-bit integer can be lossless represented using double.
+    request_dict_.SetDouble("first_crypto_period_index",
                             first_crypto_period_index);
     request_dict_.SetInteger("crypto_period_count", crypto_period_count_);
   }
 
-  base::JSONWriter::Write(request_dict_, request);
+  base::JSONWriter::WriteWithOptions(
+      request_dict_,
+      // Write doubles that have no fractional part as a normal integer, i.e.
+      // without using exponential notation or appending a '.0'.
+      base::JSONWriter::OPTIONS_OMIT_DOUBLE_TYPE_PRESERVATION, request);
 }
 
 Status WidevineKeySource::GenerateKeyMessage(const std::string& request,
