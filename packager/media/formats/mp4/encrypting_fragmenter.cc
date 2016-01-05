@@ -17,6 +17,7 @@
 namespace {
 // Generate 64bit IV by default.
 const size_t kDefaultIvSize = 8u;
+const size_t kCencBlockSize = 16u;
 }  // namespace
 
 namespace edash_packager {
@@ -156,11 +157,24 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
                               &vpx_frames)) {
         return Status(error::MUXER_FAILURE, "Failed to parse vpx frame.");
       }
+
+      const bool is_superframe = vpx_frames.size() > 1;
       for (const VPxFrameInfo& frame : vpx_frames) {
         SubsampleEntry subsample;
         subsample.clear_bytes = frame.uncompressed_header_size;
         subsample.cipher_bytes =
             frame.frame_size - frame.uncompressed_header_size;
+
+        // "VP Codec ISO Media File Format Binding" document requires that the
+        // encrypted bytes of each frame within the superframe must be block
+        // aligned so that the counter state can be computed for each frame
+        // within the superframe.
+        if (is_superframe) {
+          uint16_t misalign_bytes = subsample.cipher_bytes % kCencBlockSize;
+          subsample.clear_bytes += misalign_bytes;
+          subsample.cipher_bytes -= misalign_bytes;
+        }
+
         sample_encryption_entry.subsamples.push_back(subsample);
         if (subsample.cipher_bytes > 0)
           EncryptBytes(data + subsample.clear_bytes, subsample.cipher_bytes);
