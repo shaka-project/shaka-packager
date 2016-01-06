@@ -7,6 +7,8 @@
 #include "packager/media/base/http_key_fetcher.h"
 
 #include <curl/curl.h>
+
+#include "packager/base/logging.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/synchronization/lock.h"
 

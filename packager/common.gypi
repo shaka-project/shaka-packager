@@ -19,8 +19,7 @@
     'conditions': [
       ['clang==1', {
         'cflags': [
-          # Temporary workaround a gtest bug on ImplicitCast_.
-          '-Wno-pessimizing-move',
+          '-Wimplicit-fallthrough',
         ],
         # Revert the relevant settings in Chromium's common.gypi.
         'cflags!': [

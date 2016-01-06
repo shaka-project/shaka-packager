@@ -13,6 +13,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_split.h"
 #include "packager/base/strings/string_util.h"
+#include "packager/media/base/macros.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/text_stream_info.h"
 
@@ -67,6 +68,7 @@ bool ReadLine(std::string* data, std::string* line) {
 
 bool TimestampToMilliseconds(const std::string& original_str,
                              uint64_t* time_ms) {
+  const size_t kMinimalHoursLength = 2;
   const size_t kMinutesLength = 2;
   const size_t kSecondsLength = 2;
   const size_t kMillisecondsLength = 3;
@@ -90,6 +92,8 @@ bool TimestampToMilliseconds(const std::string& original_str,
     // Check if hours is in the right format, if so get the number.
     // -1 for excluding colon for splitting hours and minutes.
     const size_t hours_length = str.size() - kMinimalLength - 1;
+    if (hours_length < kMinimalHoursLength)
+      return false;
     if (!base::StringToInt(str.substr(0, hours_length), &hours))
       return false;
     str_index += hours_length;
@@ -333,6 +337,7 @@ bool WebVttMediaParser::Parse(const uint8_t* buf, int size) {
         // timing, so fall thru. Setting state_ to kCueTiming so that the state
         // always matches the case.
         state_ = kCueTiming;
+        FALLTHROUGH_INTENDED;
       }
       case kCueTiming: {
         DCHECK(has_arrow);

@@ -90,20 +90,6 @@
       ],
     },
     {
-      'target_name': 'All',
-      'type': 'none',
-      'dependencies': [
-        'media/base/media_base.gyp:*',
-        'media/event/media_event.gyp:*',
-        'media/file/file.gyp:*',
-        'media/formats/mp2t/mp2t.gyp:*',
-        'media/formats/mp4/mp4.gyp:*',
-        'media/formats/webm/webm.gyp:*',
-        'media/formats/wvm/wvm.gyp:*',
-        'mpd/mpd.gyp:*',
-      ],
-    },
-    {
       'target_name': 'packager_builder_tests',
       'type': 'none',
       'dependencies': [
@@ -114,6 +100,7 @@
         'media/formats/mp2t/mp2t.gyp:mp2t_unittest',
         'media/formats/mp4/mp4.gyp:mp4_unittest',
         'media/formats/webm/webm.gyp:webm_unittest',
+        'media/formats/webvtt/webvtt.gyp:webvtt_unittest',
         'media/formats/wvm/wvm.gyp:wvm_unittest',
         'mpd/mpd.gyp:mpd_unittest',
         'packager_test',

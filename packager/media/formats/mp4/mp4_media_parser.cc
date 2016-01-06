@@ -16,6 +16,7 @@
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/decrypt_config.h"
 #include "packager/media/base/key_source.h"
+#include "packager/media/base/macros.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/file/file.h"
@@ -393,10 +394,15 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
                        << actual_format << " in stsd box.";
             return false;
           }
+          break;
         case FOURCC_DTSC:
+          FALLTHROUGH_INTENDED;
         case FOURCC_DTSH:
+          FALLTHROUGH_INTENDED;
         case FOURCC_DTSL:
+          FALLTHROUGH_INTENDED;
         case FOURCC_DTSE:
+          FALLTHROUGH_INTENDED;
         case FOURCC_DTSM:
           extra_data = entry.ddts.extra_data;
           max_bitrate = entry.ddts.max_bitrate;

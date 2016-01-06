@@ -10,6 +10,7 @@
 
 #include "packager/app/validate_flag.h"
 #include "packager/base/logging.h"
+#include "packager/base/strings/string_piece.h"
 #include "packager/base/strings/string_util.h"
 
 DEFINE_bool(enable_widevine_encryption,
@@ -76,7 +77,7 @@ bool ValidateWidevineCryptoFlags() {
     success = false;
   }
   if (widevine_crypto && FLAGS_signer.empty() &&
-      base::StartsWith(FLAGS_key_server_url, "http",
+      base::StartsWith(base::StringPiece(FLAGS_key_server_url), "http",
                        base::CompareCase::INSENSITIVE_ASCII)) {
     LOG(WARNING) << "--signer is likely required with "
                     "--enable_widevine_encryption/decryption.";

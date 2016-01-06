@@ -146,7 +146,7 @@ TEST_F(WebVttMediaParserTest, MalformedHourTimestamp) {
 TEST_F(WebVttMediaParserTest, SpacesInTimestamp) {
   EXPECT_CALL(new_sample_callback_, Call(_, _)).Times(0);
 
-  const char kHourStringTooShort[] =
+  const char kSpacesInTimestamp[] =
       "WEBVTT\n"
       "\n"
       "0:01: 1.004 --> 0 :04:25.092\n"
@@ -154,8 +154,8 @@ TEST_F(WebVttMediaParserTest, SpacesInTimestamp) {
   InitializeParser();
 
   EXPECT_FALSE(
-      parser_.Parse(reinterpret_cast<const uint8_t*>(kHourStringTooShort),
-                    arraysize(kHourStringTooShort) - 1));
+      parser_.Parse(reinterpret_cast<const uint8_t*>(kSpacesInTimestamp),
+                    arraysize(kSpacesInTimestamp) - 1));
 }
 
 MATCHER_P(MatchesPayload, data, "") {

@@ -43,6 +43,7 @@
         'key_source.cc',
         'key_source.h',
         'limits.h',
+        'macros.h',
         'media_parser.h',
         'media_sample.cc',
         'media_sample.h',

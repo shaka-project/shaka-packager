@@ -12,7 +12,7 @@
 #include <set>
 #include <string>
 
-#include "media/base/container_names.h"
+#include "packager/media/base/container_names.h"
 
 namespace edash_packager {
 namespace media {
