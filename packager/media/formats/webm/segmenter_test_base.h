@@ -26,6 +26,16 @@ namespace edash_packager {
 namespace media {
 
 class SegmentTestBase : public ::testing::Test {
+ public:
+  enum KeyFrameFlag {
+    kKeyFrame,
+    kNotKeyFrame,
+  };
+  enum SideDataFlag {
+    kGenerateSideData,
+    kNoSideData,
+  };
+
  protected:
   SegmentTestBase();
 
@@ -46,7 +56,9 @@ class SegmentTestBase : public ::testing::Test {
   }
 
   /// Creates a new media sample.
-  scoped_refptr<MediaSample> CreateSample(bool is_key_frame, uint64_t duration);
+  scoped_refptr<MediaSample> CreateSample(KeyFrameFlag key_frame_flag,
+                                          uint64_t duration,
+                                          SideDataFlag side_data_flag);
   /// Creates a Muxer options object for testing.
   MuxerOptions CreateMuxerOptions() const;
   /// Creates a video stream info object for testing.

@@ -122,11 +122,28 @@ Status Segmenter::AddSample(scoped_refptr<MediaSample> sample) {
 
   const int64_t time_ns =
       sample->pts() * kSecondsToNs / info_->time_scale();
-  if (!cluster_->AddFrame(sample->data(), sample->data_size(), track_id_,
-                          time_ns, sample->is_key_frame())) {
+  bool addframe_result;
+  if (sample->side_data_size() > 0) {
+    uint64_t block_add_id;
+    // First 8 bytes of side_data is the BlockAddID element's value, which is
+    // done to mimic ffmpeg behavior. See webm_cluster_parser.cc for details.
+    CHECK_GT(sample->side_data_size(), sizeof(block_add_id));
+    memcpy(&block_add_id, sample->side_data(), sizeof(block_add_id));
+    addframe_result = cluster_->AddFrameWithAdditional(
+        sample->data(), sample->data_size(),
+        sample->side_data() + sizeof(block_add_id),
+        sample->side_data_size() - sizeof(block_add_id), block_add_id,
+        track_id_, time_ns, sample->is_key_frame());
+  } else {
+    addframe_result =
+        cluster_->AddFrame(sample->data(), sample->data_size(), track_id_,
+                           time_ns, sample->is_key_frame());
+  }
+  if (!addframe_result) {
     LOG(ERROR) << "Error adding sample to segment.";
     return Status(error::FILE_FAILURE, "Error adding sample to segment.");
   }
+
   const double duration_sec =
       static_cast<double>(sample->duration()) / info_->time_scale();
   cluster_length_sec_ += duration_sec;

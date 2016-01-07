@@ -124,7 +124,8 @@ TEST_F(MultiSegmentSegmenterTest, BasicSupport) {
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 5; i++) {
-    scoped_refptr<MediaSample> sample = CreateSample(true, kDuration);
+    scoped_refptr<MediaSample> sample =
+        CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
   ASSERT_OK(segmenter_->Finalize());
@@ -144,7 +145,8 @@ TEST_F(MultiSegmentSegmenterTest, SplitsFilesOnSegmentDuration) {
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
-    scoped_refptr<MediaSample> sample = CreateSample(true, kDuration);
+    scoped_refptr<MediaSample> sample =
+        CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
   ASSERT_OK(segmenter_->Finalize());
@@ -170,7 +172,9 @@ TEST_F(MultiSegmentSegmenterTest, RespectsSegmentSAPAlign) {
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 10; i++) {
-    scoped_refptr<MediaSample> sample = CreateSample(i == 6, kDuration);
+    const KeyFrameFlag key_frame_flag = i == 6 ? kKeyFrame : kNotKeyFrame;
+    scoped_refptr<MediaSample> sample =
+        CreateSample(key_frame_flag, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
   ASSERT_OK(segmenter_->Finalize());
@@ -195,7 +199,8 @@ TEST_F(MultiSegmentSegmenterTest, SplitsClustersOnFragmentDuration) {
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
-    scoped_refptr<MediaSample> sample = CreateSample(true, kDuration);
+    scoped_refptr<MediaSample> sample =
+        CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
   ASSERT_OK(segmenter_->Finalize());
@@ -218,7 +223,9 @@ TEST_F(MultiSegmentSegmenterTest, RespectsFragmentSAPAlign) {
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 10; i++) {
-    scoped_refptr<MediaSample> sample = CreateSample(i == 6, kDuration);
+    const KeyFrameFlag key_frame_flag = i == 6 ? kKeyFrame : kNotKeyFrame;
+    scoped_refptr<MediaSample> sample =
+        CreateSample(key_frame_flag, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
   ASSERT_OK(segmenter_->Finalize());

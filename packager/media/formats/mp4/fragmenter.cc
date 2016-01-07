@@ -43,6 +43,9 @@ Status Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
       return status;
   }
 
+  if (sample->side_data_size() > 0)
+    LOG(WARNING) << "MP4 samples do not support side data. Side data ignored.";
+
   // Fill in sample parameters. It will be optimized later.
   traf_->runs[0].sample_sizes.push_back(sample->data_size());
   traf_->runs[0].sample_durations.push_back(sample->duration());

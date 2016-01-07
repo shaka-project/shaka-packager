@@ -15,8 +15,11 @@ namespace media {
 namespace {
 
 // The contents of a frame does not mater.
-const uint8_t kTestMediaSampleData[] = {0xDE, 0xAD, 0xBE, 0xEF, 0x00};
-const size_t kTestMediaSampleDataSize = sizeof(kTestMediaSampleData);
+const uint8_t kTestMediaSampleData[] = {0xde, 0xad, 0xbe, 0xef, 0x00};
+const uint8_t kTestMediaSampleSideData[] = {
+    // First 8 bytes of side_data is the BlockAddID element in big endian.
+    0x12, 0x34, 0x56, 0x78, 0x9a, 0x00, 0x00, 0x00,
+    0x73, 0x69, 0x64, 0x65, 0x00};
 
 const int kTrackId = 1;
 const uint32_t kTimeScale = 1000;
@@ -46,10 +49,21 @@ void SegmentTestBase::TearDown() {
   MemoryFile::DeleteAll();
 }
 
-scoped_refptr<MediaSample> SegmentTestBase::CreateSample(bool is_key_frame,
-                                                         uint64_t duration) {
-  scoped_refptr<MediaSample> sample = MediaSample::CopyFrom(
-      kTestMediaSampleData, kTestMediaSampleDataSize, is_key_frame);
+scoped_refptr<MediaSample> SegmentTestBase::CreateSample(
+    KeyFrameFlag key_frame_flag,
+    uint64_t duration,
+    SideDataFlag side_data_flag) {
+  scoped_refptr<MediaSample> sample;
+  const bool is_key_frame = key_frame_flag == kKeyFrame;
+  if (side_data_flag == kGenerateSideData) {
+    sample = MediaSample::CopyFrom(
+        kTestMediaSampleData, sizeof(kTestMediaSampleData),
+        kTestMediaSampleSideData, sizeof(kTestMediaSampleSideData),
+        is_key_frame);
+  } else {
+    sample = MediaSample::CopyFrom(kTestMediaSampleData,
+                                   sizeof(kTestMediaSampleData), is_key_frame);
+  }
   sample->set_dts(cur_time_timescale_);
   sample->set_pts(cur_time_timescale_);
   sample->set_duration(duration);
@@ -170,8 +184,8 @@ bool SegmentTestBase::ClusterParser::OnFloat(int id, double val) {
 bool SegmentTestBase::ClusterParser::OnBinary(int id,
                                              const uint8_t* data,
                                              int size) {
-  if (in_cluster_ && id == kWebMIdSimpleBlock) {
-    cluster_sizes_[cluster_sizes_.size() - 1]++;
+  if (in_cluster_ && (id == kWebMIdSimpleBlock || id == kWebMIdBlock)) {
+    cluster_sizes_.back()++;
   }
 
   return true;

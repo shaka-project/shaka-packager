@@ -33,8 +33,8 @@ const uint8_t kBasicSupportData[] = {
     0x42, 0x87, 0x81, 0x02,
     // DocTypeReadVersion: 2
     0x42, 0x85, 0x81, 0x02,
-  // ID: Segment, Payload Size: 316
-  0x18, 0x53, 0x80, 0x67, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x3c,
+  // ID: Segment, Payload Size: 337
+  0x18, 0x53, 0x80, 0x67, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x51,
     // ID: SeekHead, Payload Size: 30
     0x11, 0x4d, 0x9b, 0x74, 0x9e,
       // ID: Seek, Payload Size: 12
@@ -47,8 +47,8 @@ const uint8_t kBasicSupportData[] = {
       0x4d, 0xbb, 0x8c,
         // SeekID: binary(4) (Cues)
         0x53, 0xab, 0x84, 0x1c, 0x53, 0xbb, 0x6b,
-        // SeekPosition: 346
-        0x53, 0xac, 0x82, 0x01, 0x5a,
+        // SeekPosition: 367
+        0x53, 0xac, 0x82, 0x01, 0x6f,
     // ID: Void, Payload Size: 52
     0xec, 0xb4, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -95,8 +95,8 @@ const uint8_t kBasicSupportData[] = {
           0x54, 0xb0, 0x81, 0x64,
           // DisplayHeight: 100
           0x54, 0xba, 0x81, 0x64,
-    // ID: Cluster, Payload Size: 58
-    0x1f, 0x43, 0xb6, 0x75, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x3a,
+    // ID: Cluster, Payload Size: 79
+    0x1f, 0x43, 0xb6, 0x75, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x4f,
       // Timecode: 0
       0xe7, 0x81, 0x00,
       // ID: SimpleBlock, Payload Size: 9
@@ -105,8 +105,18 @@ const uint8_t kBasicSupportData[] = {
       0xa3, 0x89, 0x81, 0x03, 0xe8, 0x80, 0xde, 0xad, 0xbe, 0xef, 0x00,
       // ID: SimpleBlock, Payload Size: 9
       0xa3, 0x89, 0x81, 0x07, 0xd0, 0x80, 0xde, 0xad, 0xbe, 0xef, 0x00,
-      // ID: SimpleBlock, Payload Size: 9
-      0xa3, 0x89, 0x81, 0x0b, 0xb8, 0x80, 0xde, 0xad, 0xbe, 0xef, 0x00,
+      // ID: BlockGroup, Payload Size: 30
+      0xa0, 0x9e,
+        // ID: Block, Payload Size: 9
+        0xa1, 0x89, 0x81, 0x0b, 0xb8, 0x00, 0xde, 0xad, 0xbe, 0xef, 0x00,
+        // ID: BlockAdditions, Payload Size: 16
+        0x75, 0xa1, 0x90,
+          // ID: BlockMore, Payload Size: 14
+          0xa6, 0x8e,
+            // ID: BlockAddID, Payload Size: 1
+            0xee, 0x85, 0x9a, 0x78, 0x56, 0x34, 0x12,
+            // ID: BlockAdditional, Payload Size: 5
+            0xa5, 0x85, 0x73, 0x69, 0x64, 0x65, 0x00,
       // ID: SimpleBlock, Payload Size: 9
       0xa3, 0x89, 0x81, 0x0f, 0xa0, 0x80, 0xde, 0xad, 0xbe, 0xef, 0x00,
     // ID: Cues, Payload Size: 13
@@ -156,7 +166,10 @@ TEST_P(SingleSegmentSegmenterTest, BasicSupport) {
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 5; i++) {
-    scoped_refptr<MediaSample> sample = CreateSample(true, kDuration);
+    const SideDataFlag side_data_flag =
+        i == 3 ? kGenerateSideData : kNoSideData;
+    scoped_refptr<MediaSample> sample =
+        CreateSample(kKeyFrame, kDuration, side_data_flag);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
   ASSERT_OK(segmenter_->Finalize());
@@ -171,7 +184,8 @@ TEST_P(SingleSegmentSegmenterTest, SplitsClustersOnSegmentDuration) {
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
-    scoped_refptr<MediaSample> sample = CreateSample(true, kDuration);
+    scoped_refptr<MediaSample> sample =
+        CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
   ASSERT_OK(segmenter_->Finalize());
@@ -191,7 +205,8 @@ TEST_P(SingleSegmentSegmenterTest, IgnoresFragmentDuration) {
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 8; i++) {
-    scoped_refptr<MediaSample> sample = CreateSample(true, kDuration);
+    scoped_refptr<MediaSample> sample =
+        CreateSample(kKeyFrame, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
   ASSERT_OK(segmenter_->Finalize());
@@ -211,7 +226,9 @@ TEST_P(SingleSegmentSegmenterTest, RespectsSAPAlign) {
 
   // Write the samples to the Segmenter.
   for (int i = 0; i < 10; i++) {
-    scoped_refptr<MediaSample> sample = CreateSample(i == 6, kDuration);
+    const KeyFrameFlag key_frame_flag = i == 6 ? kKeyFrame : kNotKeyFrame;
+    scoped_refptr<MediaSample> sample =
+        CreateSample(key_frame_flag, kDuration, kNoSideData);
     ASSERT_OK(segmenter_->AddSample(sample));
   }
   ASSERT_OK(segmenter_->Finalize());
