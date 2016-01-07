@@ -25,6 +25,10 @@ SRC_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../..')
 
 # Parse arguments and calculate dynamic global objects and attributes.
 parser = argparse.ArgumentParser()
+
+parser.add_argument('--build_type', default='Debug')
+parser.add_argument('--test_update_golden_files', default=0, type=int)
+
 aes = parser.add_argument_group(
     'aes flags',
     'These flags are required to enable AES signed encryption tests.')
@@ -34,7 +38,6 @@ rsa = parser.add_argument_group(
     'rsa flags',
     'These flags are required to enable RSA signed encryption tests.')
 rsa.add_argument('--rsa_signing_key_path')
-parser.add_argument('--test_update_golden_files', default=0, type=int)
 
 options, args = parser.parse_known_args()
 sys.argv[1:] = args

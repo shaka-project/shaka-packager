@@ -18,13 +18,12 @@ import test_env
 class PackagerApp(object):
   """Main integration class for testing the packager binary."""
 
-  def __init__(self, build_type='Debug'):
-    self.build_dir = os.path.join(test_env.SRC_DIR, 'out', build_type)
+  def __init__(self):
+    self.build_dir = os.path.join(test_env.SRC_DIR, 'out',
+                                  test_env.options.build_type)
     self.binary = os.path.join(self.build_dir, 'packager')
 
-  def BuildSrc(self, clean=False):
-    if clean:
-      return subprocess.call(['ninja', '-C', self.build_dir, '-t', 'clean'])
+  def BuildSrc(self):
     return subprocess.call(['ninja', '-C', self.build_dir])
 
   def DumpStreamInfo(self, stream):
