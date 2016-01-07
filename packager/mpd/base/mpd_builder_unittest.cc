@@ -1105,7 +1105,8 @@ TEST_F(CommonMpdBuilderTest,
 // segments are aligned and the MPD type is static.
 // Also checking that not all Representations have to be added before calling
 // AddNewSegment() on a Representation.
-TEST_F(StaticMpdBuilderTest, subsegmentAlignment) {
+// The output MPD's schema is checked at the very end.
+TEST_F(StaticMpdBuilderTest, SubsegmentAlignment) {
   base::AtomicSequenceNumber sequence_counter;
   const char k480pMediaInfo[] =
       "video_info {\n"
@@ -1136,9 +1137,7 @@ TEST_F(StaticMpdBuilderTest, subsegmentAlignment) {
   const uint64_t kDuration = 10u;
   const uint64_t kAnySize = 19834u;
 
-  auto adaptation_set =
-      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
-                          MpdBuilder::kStatic, &sequence_counter);
+  AdaptationSet* adaptation_set = mpd_.AddAdaptationSet("");
   Representation* representation_480p =
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
   // Add a subsegment immediately before adding the 360p Representation.
@@ -1166,6 +1165,10 @@ TEST_F(StaticMpdBuilderTest, subsegmentAlignment) {
   xml::scoped_xml_ptr<xmlNode> unaligned(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeNotSet("subsegmentAlignment", unaligned.get()));
+
+  std::string mpd_output;
+  ASSERT_TRUE(mpd_.ToString(&mpd_output));
+  ASSERT_TRUE(ValidateMpdSchema(mpd_output));
 }
 
 // Verify that subsegmentAlignment can be force set to true.
@@ -1222,6 +1225,7 @@ TEST_F(StaticMpdBuilderTest, ForceSetsubsegmentAlignment) {
 
 // Verify that segmentAlignment is set to true if all the Representations
 // segments' are aligned and the MPD type is dynamic.
+// The output MPD's schema is checked at the very end.
 TEST_F(DynamicMpdBuilderTest, SegmentAlignment) {
   base::AtomicSequenceNumber sequence_counter;
   const char k480pMediaInfo[] =
@@ -1246,9 +1250,7 @@ TEST_F(DynamicMpdBuilderTest, SegmentAlignment) {
       "  pixel_height: 1\n"
       "}\n"
       "container_type: 1\n";
-  auto adaptation_set =
-      CreateAdaptationSet(kAnyAdaptationSetId, "", MpdOptions(),
-                          MpdBuilder::kDynamic, &sequence_counter);
+  auto adaptation_set = mpd_.AddAdaptationSet("");
   Representation* representation_480p =
       adaptation_set->AddRepresentation(ConvertToMediaInfo(k480pMediaInfo));
   Representation* representation_360p =
@@ -1273,6 +1275,10 @@ TEST_F(DynamicMpdBuilderTest, SegmentAlignment) {
   xml::scoped_xml_ptr<xmlNode> unaligned(adaptation_set->GetXml());
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeNotSet("subsegmentAlignment", unaligned.get()));
+
+  std::string mpd_output;
+  ASSERT_TRUE(mpd_.ToString(&mpd_output));
+  ASSERT_TRUE(ValidateMpdSchema(mpd_output));
 }
 
 // Verify that the width and height attribute are set if all the video
