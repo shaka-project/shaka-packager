@@ -21,7 +21,6 @@
 /packager/third_party/llvm-build/
 /packager/third_party/modp_b64/
 /packager/third_party/tcmalloc/
-/packager/third_party/webm-tools/src/
 /packager/third_party/yasm/source/patched-yasm/
 /packager/third_party/zlib/
 /packager/tools/clang/

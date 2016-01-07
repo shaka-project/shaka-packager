@@ -55,7 +55,7 @@ scoped_refptr<MediaSample> SegmentTestBase::CreateSample(bool is_key_frame,
   sample->set_duration(duration);
 
   cur_time_timescale_ += duration;
-  return sample.Pass();
+  return sample;
 }
 
 MuxerOptions SegmentTestBase::CreateMuxerOptions() const {
