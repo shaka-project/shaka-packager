@@ -109,9 +109,9 @@ Inheritance diagram for edash_packager::media::MemoryFile:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a67144632ecba602a317ea9f4c3e9621e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a67144632ecba602a317ea9f4c3e9621e"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>MemoryFile</b> (const std::string &amp;<a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html#ad736ca7bb8da1cec749f51275a87872c">file_name</a>)</td></tr>
-<tr class="separator:a67144632ecba602a317ea9f4c3e9621e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a080c0232b01dfc0eb3cb6f04f0f334ac"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a080c0232b01dfc0eb3cb6f04f0f334ac"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>MemoryFile</b> (const std::string &amp;<a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html#ad736ca7bb8da1cec749f51275a87872c">file_name</a>, const std::string &amp;mode)</td></tr>
+<tr class="separator:a080c0232b01dfc0eb3cb6f04f0f334ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">File implementation overrides.</div></td></tr>
 <tr class="memitem:a194d4a8fa61953e69af1dad79c13f56e"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d81/classedash__packager_1_1media_1_1MemoryFile.html#a194d4a8fa61953e69af1dad79c13f56e">Close</a> () override</td></tr>
 <tr class="separator:a194d4a8fa61953e69af1dad79c13f56e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -198,7 +198,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 
 <p>Implements <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a42290da768cd34316d2f4c5fc3976b38">edash_packager::media::File</a>.</p>
 
-<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00060">60</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00062">62</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
 
 </div>
 </div>
@@ -225,7 +225,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><div class="memdoc">
 <p>Deletes the memory file data with the given file_name. Any objects open with that file name will be in an undefined state. </p>
 
-<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00118">118</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00134">134</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
 
 </div>
 </div>
@@ -251,7 +251,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><div class="memdoc">
 <p>Deletes all memory file data created. This assumes that there are no <a class="el" href="../../d3/d81/classedash__packager_1_1media_1_1MemoryFile.html">MemoryFile</a> objects alive. Any alive objects will be in an undefined state. </p>
 
-<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00114">114</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00130">130</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
 
 </div>
 </div>
@@ -280,7 +280,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 
 <p>Implements <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html#ace9275a79c572614ee5d068a04c76392">edash_packager::media::File</a>.</p>
 
-<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00092">92</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00095">95</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
 
 </div>
 </div>
@@ -327,7 +327,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 
 <p>Implements <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a663547ead01b035117429c0bc757aab7">edash_packager::media::File</a>.</p>
 
-<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00065">65</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00067">67</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
 
 </div>
 </div>
@@ -363,7 +363,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 
 <p>Implements <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a28da55565be854b866bf223aa4232042">edash_packager::media::File</a>.</p>
 
-<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00096">96</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00099">99</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
 
 </div>
 </div>
@@ -391,7 +391,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 
 <p>Implements <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a1bb2a295cb69b3e51b9cc14969848632">edash_packager::media::File</a>.</p>
 
-<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00088">88</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00090">90</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
 
 </div>
 </div>
@@ -427,7 +427,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 
 <p>Implements <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a19409dd7d63022f34aee85640460428e">edash_packager::media::File</a>.</p>
 
-<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00104">104</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00107">107</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
 
 </div>
 </div>
@@ -474,7 +474,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 
 <p>Implements <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html#ad82196743ff131dd81e8f806735eb818">edash_packager::media::File</a>.</p>
 
-<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00077">77</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d87/memory__file_8cc_source.html#l00079">79</a> of file <a class="el" href="../../dd/d87/memory__file_8cc_source.html">memory_file.cc</a>.</p>
 
 </div>
 </div>
@@ -485,7 +485,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 7 2016 02:49:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 7 2016 17:08:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

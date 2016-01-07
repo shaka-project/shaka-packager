@@ -138,7 +138,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keyword">const</span> uint64_t start_webm_timecode = cluster()-&gt;timecode();</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">const</span> uint64_t start_timescale = FromWebMTimecode(start_webm_timecode);</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">const</span> uint64_t length = <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        cluster_length_sec() * stream()-&gt;info()-&gt;time_scale());</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        cluster_length_sec() * info()-&gt;time_scale());</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    muxer_listener()-&gt;OnNewSegment(start_timescale, length, size);</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  }</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
@@ -183,7 +183,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 7 2016 02:49:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 7 2016 17:08:34 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

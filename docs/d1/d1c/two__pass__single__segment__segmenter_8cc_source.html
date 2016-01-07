@@ -163,13 +163,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;TwoPassSingleSegmentSegmenter::DoInitialize(scoped_ptr&lt;MkvWriter&gt; writer) {</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">// Assume the amount of time to copy the temp file as the same amount</span></div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// of time as to make it.</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  set_progress_target(stream()-&gt;info()-&gt;duration() * 2);</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  set_progress_target(info()-&gt;duration() * 2);</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  real_writer_ = writer.Pass();</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  std::string temp_name = TempFileName(options());</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  temp_file_name_ = TempFileName(options());</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  scoped_ptr&lt;MkvWriter&gt; temp(<span class="keyword">new</span> MkvWriter);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  Status status = temp-&gt;Open(temp_name);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  Status status = temp-&gt;Open(temp_file_name_);</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="keywordflow">return</span> status;</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
@@ -193,9 +193,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordflow">return</span> temp;</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="comment">// Close the temp file and open it for reading.</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  std::string temp_name = writer()-&gt;file()-&gt;file_name();</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  set_writer(scoped_ptr&lt;MkvWriter&gt;());</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  scoped_ptr&lt;File, FileCloser&gt; temp_reader(<a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a0933ccd7df76fcf8fbcfe12c15dbf6c5">File::Open</a>(temp_name.c_str(), <span class="stringliteral">&quot;r&quot;</span>));</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  set_writer(scoped_ptr&lt;MkvWriter&gt;());</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  scoped_ptr&lt;File, FileCloser&gt; temp_reader(</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;      <a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a0933ccd7df76fcf8fbcfe12c15dbf6c5">File::Open</a>(temp_file_name_.c_str(), <span class="stringliteral">&quot;r&quot;</span>));</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordflow">if</span> (!temp_reader)</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Error opening temp file.&quot;</span>);</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
@@ -211,8 +211,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="comment">// Close and delete the temp file.</span></div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  temp_reader.reset();</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a7e0fcd3c439e810e8e17baf32dcc75af">File::Delete</a>(temp_name.c_str())) {</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Unable to delete temporary file &quot;</span> &lt;&lt; temp_name;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a7e0fcd3c439e810e8e17baf32dcc75af">File::Delete</a>(temp_file_name_.c_str())) {</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Unable to delete temporary file &quot;</span> &lt;&lt; temp_file_name_;</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  }</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="comment">// Set the writer back to the real file so GetIndexRangeStartAndEnd works.</span></div>
@@ -275,7 +275,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 7 2016 02:49:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 7 2016 17:08:34 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

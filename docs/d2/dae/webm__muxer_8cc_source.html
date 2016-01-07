@@ -126,9 +126,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    segmenter_.reset(<span class="keyword">new</span> TwoPassSingleSegmentSegmenter(options()));</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  }</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  Status initialized =</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;      segmenter_-&gt;Initialize(writer.Pass(), streams()[0], progress_listener(),</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                             muxer_listener(), encryption_key_source());</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  Status initialized = segmenter_-&gt;Initialize(</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;      writer.Pass(), streams()[0]-&gt;info().get(), progress_listener(),</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      muxer_listener(), encryption_key_source());</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordflow">if</span> (!initialized.ok())</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">return</span> initialized;</div>
@@ -209,7 +209,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 7 2016 02:49:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jan 7 2016 17:08:34 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
