@@ -74,8 +74,8 @@ AudioCodec FourCCToAudioCodec(FourCC fourcc) {
       return kCodecDTSP;
     case FOURCC_DTSM:
       return kCodecDTSM;
-    case FOURCC_EAC3:
-      return kCodecEAC3;
+    case FOURCC_AC3:
+      return kCodecAC3;
     default:
       return kUnknownAudioCodec;
   }
@@ -410,7 +410,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           num_channels = entry.channelcount;
           sampling_frequency = entry.samplerate;
           break;
-        case FOURCC_EAC3:
+        case FOURCC_AC3:
+          extra_data = entry.dac3.data;
           num_channels = entry.channelcount;
           sampling_frequency = entry.samplerate;
           break;

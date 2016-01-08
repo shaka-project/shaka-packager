@@ -380,6 +380,16 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     ddts->pcm_sample_depth = 24;
   }
 
+  void Fill(AC3Specific* dac3) {
+    const uint8_t kAc3Data[] = {0x50, 0x11, 0x60};
+    dac3->data.assign(kAc3Data, kAc3Data + arraysize(kAc3Data));
+  }
+
+  void Modify(AC3Specific* dac3) {
+    const uint8_t kAc3Data[] = {0x50, 0x11, 0x40};
+    dac3->data.assign(kAc3Data, kAc3Data + arraysize(kAc3Data));
+  }
+
   void Fill(AudioSampleEntry* enca) {
     enca->format = FOURCC_ENCA;
     enca->data_reference_index = 2;
@@ -884,6 +894,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   bool IsOptional(const CodecConfigurationRecord* box) { return true; }
   bool IsOptional(const PixelAspectRatio* box) { return true; }
   bool IsOptional(const ElementaryStreamDescriptor* box) { return true; }
+  bool IsOptional(const AC3Specific* box) { return true; }
   // Recommended, but optional.
   bool IsOptional(const WebVTTSourceLabelBox* box) { return true; }
   bool IsOptional(const CompositionTimeToSample* box) { return true; }
@@ -926,6 +937,7 @@ typedef testing::Types<FileType,
                        VideoSampleEntry,
                        ElementaryStreamDescriptor,
                        DTSSpecific,
+                       AC3Specific,
                        AudioSampleEntry,
                        WebVTTConfigurationBox,
                        WebVTTSourceLabelBox,
@@ -1065,6 +1077,21 @@ TEST_F(BoxDefinitionsTest, DTSSampleEntry) {
   entry.samplesize = 16;
   entry.samplerate = 44100;
   Fill(&entry.ddts);
+  entry.Write(this->buffer_.get());
+
+  AudioSampleEntry entry_readback;
+  ASSERT_TRUE(ReadBack(&entry_readback));
+  ASSERT_EQ(entry, entry_readback);
+}
+
+TEST_F(BoxDefinitionsTest, AC3SampleEntry) {
+  AudioSampleEntry entry;
+  entry.format = FOURCC_AC3;
+  entry.data_reference_index = 2;
+  entry.channelcount = 5;
+  entry.samplesize = 16;
+  entry.samplerate = 44100;
+  Fill(&entry.dac3);
   entry.Write(this->buffer_.get());
 
   AudioSampleEntry entry_readback;

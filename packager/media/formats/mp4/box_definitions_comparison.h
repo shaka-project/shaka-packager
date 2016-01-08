@@ -240,14 +240,19 @@ inline bool operator==(const DTSSpecific& lhs,
          lhs.extra_data == rhs.extra_data;
 }
 
+inline bool operator==(const AC3Specific& lhs,
+                       const AC3Specific& rhs) {
+  return lhs.data == rhs.data;
+}
+
 inline bool operator==(const AudioSampleEntry& lhs,
                        const AudioSampleEntry& rhs) {
   return lhs.format == rhs.format &&
          lhs.data_reference_index == rhs.data_reference_index &&
          lhs.channelcount == rhs.channelcount &&
          lhs.samplesize == rhs.samplesize && lhs.samplerate == rhs.samplerate &&
-         lhs.sinf == rhs.sinf && lhs.esds == rhs.esds &&
-         lhs.ddts == rhs.ddts;
+         lhs.sinf == rhs.sinf && lhs.esds == rhs.esds && lhs.ddts == rhs.ddts &&
+         lhs.dac3 == rhs.dac3;
 }
 
 inline bool operator==(const WebVTTConfigurationBox& lhs,

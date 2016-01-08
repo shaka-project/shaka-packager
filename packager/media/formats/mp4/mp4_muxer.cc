@@ -63,6 +63,8 @@ FourCC AudioCodecToFourCC(AudioCodec codec) {
   switch (codec) {
     case kCodecAAC:
       return FOURCC_MP4A;
+    case kCodecAC3:
+      return FOURCC_AC3;
     case kCodecDTSC:
       return FOURCC_DTSC;
     case kCodecDTSH:
@@ -260,6 +262,9 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       audio.ddts.avg_bitrate = audio_info->avg_bitrate();
       audio.ddts.sampling_frequency = audio_info->sampling_frequency();
       audio.ddts.pcm_sample_depth = audio_info->sample_bits();
+      break;
+    case kCodecAC3:
+      audio.dac3.data = audio_info->extra_data();
       break;
     default:
       NOTIMPLEMENTED();

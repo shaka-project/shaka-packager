@@ -19,42 +19,24 @@ std::string AudioCodecToString(AudioCodec audio_codec) {
   switch (audio_codec) {
     case kCodecAAC:
       return "AAC";
-    case kCodecMP3:
-      return "MP3";
-    case kCodecPCM:
-      return "PCM";
-    case kCodecVorbis:
-      return "Vorbis";
-    case kCodecFLAC:
-      return "FLAC";
-    case kCodecAMR_NB:
-      return "AMR_NB";
-    case kCodecAMR_WB:
-      return "AMR_WB";
-    case kCodecPCM_MULAW:
-      return "PCM_MULAW";
-    case kCodecGSM_MS:
-      return "GSM_MS";
-    case kCodecPCM_S16BE:
-      return "PCM_S16BE";
-    case kCodecPCM_S24BE:
-      return "PCM_S24BE";
-    case kCodecOpus:
-      return "Opus";
-    case kCodecEAC3:
-      return "EAC3";
+    case kCodecAC3:
+      return "AC3";
     case kCodecDTSC:
       return "DTSC";
+    case kCodecDTSE:
+      return "DTSE";
     case kCodecDTSH:
       return "DTSH";
     case kCodecDTSL:
       return "DTSL";
-    case kCodecDTSE:
-      return "DTSE";
-    case kCodecDTSP:
-      return "DTS+";
     case kCodecDTSM:
       return "DTS-";
+    case kCodecDTSP:
+      return "DTS+";
+    case kCodecOpus:
+      return "Opus";
+    case kCodecVorbis:
+      return "Vorbis";
     default:
       NOTIMPLEMENTED() << "Unknown Audio Codec: " << audio_codec;
       return "UnknownAudioCodec";
@@ -131,6 +113,8 @@ std::string AudioStreamInfo::GetCodecString(AudioCodec codec,
       return "dts+";
     case kCodecDTSM:
       return "dts-";
+    case kCodecAC3:
+      return "ac-3";
     default:
       NOTIMPLEMENTED() << "Codec: " << codec;
       return "unknown";

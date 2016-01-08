@@ -134,7 +134,8 @@ bool FileType::ReadWriteInternal(BoxBuffer* buffer) {
          buffer->ReadWriteUInt32(&minor_version));
   size_t num_brands;
   if (buffer->Reading()) {
-    num_brands = (buffer->Size() - buffer->Pos()) / sizeof(FourCC);
+    RCHECK(buffer->BytesLeft() % sizeof(FourCC) == 0);
+    num_brands = buffer->BytesLeft() / sizeof(FourCC);
     compatible_brands.resize(num_brands);
   } else {
     num_brands = compatible_brands.size();
@@ -318,8 +319,8 @@ bool SampleEncryption::ReadWriteInternal(BoxBuffer* buffer) {
   // If we don't know |iv_size|, store sample encryption data to parse later
   // after we know iv_size.
   if (buffer->Reading() && iv_size == 0) {
-    RCHECK(buffer->ReadWriteVector(&sample_encryption_data,
-                                   buffer->Size() - buffer->Pos()));
+    RCHECK(
+        buffer->ReadWriteVector(&sample_encryption_data, buffer->BytesLeft()));
     return true;
   }
 
@@ -1395,7 +1396,7 @@ bool DTSSpecific::ReadWriteInternal(BoxBuffer* buffer) {
          buffer->ReadWriteUInt8(&pcm_sample_depth));
 
   if (buffer->Reading()) {
-    RCHECK(buffer->ReadWriteVector(&extra_data, buffer->Size() - buffer->Pos()));
+    RCHECK(buffer->ReadWriteVector(&extra_data, buffer->BytesLeft()));
   } else {
     if (extra_data.empty()) {
       extra_data.assign(kDdtsExtraData,
@@ -1413,6 +1414,25 @@ uint32_t DTSSpecific::ComputeSizeInternal() {
   return HeaderSize() + sizeof(sampling_frequency) + sizeof(max_bitrate) +
          sizeof(avg_bitrate) + sizeof(pcm_sample_depth) +
          sizeof(kDdtsExtraData);
+}
+
+AC3Specific::AC3Specific() {}
+AC3Specific::~AC3Specific() {}
+
+FourCC AC3Specific::BoxType() const { return FOURCC_DAC3; }
+
+bool AC3Specific::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer) &&
+         buffer->ReadWriteVector(
+             &data, buffer->Reading() ? buffer->BytesLeft() : data.size()));
+  return true;
+}
+
+uint32_t AC3Specific::ComputeSizeInternal() {
+  // This box is optional. Skip it if not initialized.
+  if (data.empty())
+    return 0;
+  return HeaderSize() + data.size();
 }
 
 AudioSampleEntry::AudioSampleEntry()
@@ -1468,15 +1488,16 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
 
   RCHECK(buffer->TryReadWriteChild(&esds));
   RCHECK(buffer->TryReadWriteChild(&ddts));
+  RCHECK(buffer->TryReadWriteChild(&dac3));
   return true;
 }
 
 uint32_t AudioSampleEntry::ComputeSizeInternal() {
   return HeaderSize() + sizeof(data_reference_index) + sizeof(channelcount) +
          sizeof(samplesize) + sizeof(samplerate) + sinf.ComputeSize() +
-         esds.ComputeSize() + ddts.ComputeSize() + 6 +
-         8 +  // 6 + 8 bytes reserved.
-         4;   // 4 bytes predefined.
+         esds.ComputeSize() + ddts.ComputeSize() + dac3.ComputeSize() +
+         6 + 8 +  // 6 + 8 bytes reserved.
+         4;       // 4 bytes predefined.
 }
 
 WebVTTConfigurationBox::WebVTTConfigurationBox() {}
@@ -1623,7 +1644,7 @@ FourCC DataEntryUrl::BoxType() const { return FOURCC_URL; }
 bool DataEntryUrl::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
   if (buffer->Reading()) {
-    RCHECK(buffer->ReadWriteVector(&location, buffer->Size() - buffer->Pos()));
+    RCHECK(buffer->ReadWriteVector(&location, buffer->BytesLeft()));
   } else {
     RCHECK(buffer->ReadWriteVector(&location, location.size()));
   }

@@ -309,6 +309,12 @@ struct DTSSpecific : Box {
   std::vector<uint8_t> extra_data;
 };
 
+struct AC3Specific : Box {
+  DECLARE_BOX_METHODS(AC3Specific);
+
+  std::vector<uint8_t> data;
+};
+
 struct AudioSampleEntry : Box {
   DECLARE_BOX_METHODS(AudioSampleEntry);
   // Returns actual format of this sample entry.
@@ -325,6 +331,7 @@ struct AudioSampleEntry : Box {
   ProtectionSchemeInfo sinf;
   ElementaryStreamDescriptor esds;
   DTSSpecific ddts;
+  AC3Specific dac3;
 };
 
 struct WebVTTConfigurationBox : Box {
