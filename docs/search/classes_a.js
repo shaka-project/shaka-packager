@@ -8,6 +8,7 @@ var searchData=
   ['mediasample',['MediaSample',['../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html',1,'edash_packager::media']]],
   ['mediastream',['MediaStream',['../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html',1,'edash_packager::media']]],
   ['memoryfile',['MemoryFile',['../d3/d81/classedash__packager_1_1media_1_1MemoryFile.html',1,'edash_packager::media']]],
+  ['metadata',['Metadata',['../d2/d06/structedash__packager_1_1media_1_1mp4_1_1Metadata.html',1,'edash_packager::media::mp4']]],
   ['mkvwriter',['MkvWriter',['../d4/d8c/classedash__packager_1_1media_1_1MkvWriter.html',1,'edash_packager::media']]],
   ['mockadaptationset',['MockAdaptationSet',['../d8/d78/classedash__packager_1_1MockAdaptationSet.html',1,'edash_packager']]],
   ['mockmpdbuilder',['MockMpdBuilder',['../db/d2e/classedash__packager_1_1MockMpdBuilder.html',1,'edash_packager']]],

@@ -11,6 +11,7 @@ var searchData=
   ['mediastream',['MediaStream',['../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html#ad8d8c3322274fadcbe731f2a2e8dc8ef',1,'edash_packager::media::MediaStream']]],
   ['mediastream',['MediaStream',['../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html',1,'edash_packager::media']]],
   ['memoryfile',['MemoryFile',['../d3/d81/classedash__packager_1_1media_1_1MemoryFile.html',1,'edash_packager::media']]],
+  ['metadata',['Metadata',['../d2/d06/structedash__packager_1_1media_1_1mp4_1_1Metadata.html',1,'edash_packager::media::mp4']]],
   ['mkvwriter',['MkvWriter',['../d4/d8c/classedash__packager_1_1media_1_1MkvWriter.html',1,'edash_packager::media']]],
   ['mockadaptationset',['MockAdaptationSet',['../d8/d78/classedash__packager_1_1MockAdaptationSet.html',1,'edash_packager']]],
   ['mockmpdbuilder',['MockMpdBuilder',['../db/d2e/classedash__packager_1_1MockMpdBuilder.html',1,'edash_packager']]],
@@ -34,8 +35,8 @@ var searchData=
   ['mpdnotifymuxerlistener',['MpdNotifyMuxerListener',['../d3/d0e/classedash__packager_1_1media_1_1MpdNotifyMuxerListener.html',1,'edash_packager::media']]],
   ['mpdoptions',['MpdOptions',['../d1/d5d/structedash__packager_1_1MpdOptions.html',1,'edash_packager']]],
   ['mpdwriter',['MpdWriter',['../dc/d81/classedash__packager_1_1MpdWriter.html',1,'edash_packager']]],
-  ['multisegmentsegmenter',['MultiSegmentSegmenter',['../df/d4e/classedash__packager_1_1media_1_1webm_1_1MultiSegmentSegmenter.html',1,'edash_packager::media::webm']]],
   ['multisegmentsegmenter',['MultiSegmentSegmenter',['../dc/d7a/classedash__packager_1_1media_1_1mp4_1_1MultiSegmentSegmenter.html',1,'edash_packager::media::mp4']]],
+  ['multisegmentsegmenter',['MultiSegmentSegmenter',['../df/d4e/classedash__packager_1_1media_1_1webm_1_1MultiSegmentSegmenter.html',1,'edash_packager::media::webm']]],
   ['muxer',['Muxer',['../d4/d1d/classedash__packager_1_1media_1_1Muxer.html',1,'edash_packager::media']]],
   ['muxerlistener',['MuxerListener',['../df/de7/classedash__packager_1_1media_1_1MuxerListener.html',1,'edash_packager::media']]],
   ['muxeroptions',['MuxerOptions',['../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html',1,'edash_packager::media']]]

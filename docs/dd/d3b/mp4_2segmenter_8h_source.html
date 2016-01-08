@@ -102,128 +102,124 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/ref_counted.h&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/scoped_ptr.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/status.h&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>media {</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">struct </span>MuxerOptions;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">class </span>BufferWriter;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">class </span>KeySource;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">class </span>MediaSample;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">class </span>MediaStream;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">class </span>MuxerListener;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">class </span>ProgressListener;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">namespace </span>mp4 {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keyword">class </span>Fragmenter;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;<span class="keyword">struct </span>FileType;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keyword">struct </span>Movie;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;<span class="keyword">struct </span>MovieFragment;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;<span class="keyword">struct </span>SegmentIndex;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html">   44</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html">Segmenter</a> {</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html">Segmenter</a>(<span class="keyword">const</span> <a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a>&amp; options,</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            scoped_ptr&lt;FileType&gt; ftyp,</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            scoped_ptr&lt;Movie&gt; moov);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html">Segmenter</a>();</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ae977765092cab9a566b4a5a3e9184370">Initialize</a>(<span class="keyword">const</span> std::vector&lt;MediaStream*&gt;&amp; streams,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                    <a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">MuxerListener</a>* muxer_listener,</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                    <a class="code" href="../../d9/d2c/classedash__packager_1_1media_1_1ProgressListener.html">ProgressListener</a>* progress_listener,</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                    <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a>* encryption_key_source,</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                    uint32_t max_sd_pixels,</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                    <span class="keywordtype">double</span> clear_lead_in_seconds,</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                    <span class="keywordtype">double</span> crypto_period_duration_in_seconds);</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box_definitions.h&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>media {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">struct </span>MuxerOptions;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">class </span>BufferWriter;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">class </span>KeySource;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">class </span>MediaSample;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">class </span>MediaStream;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">class </span>MuxerListener;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">class </span>ProgressListener;</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">namespace </span>mp4 {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">class </span>Fragmenter;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html">   40</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html">Segmenter</a> {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html">Segmenter</a>(<span class="keyword">const</span> <a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a>&amp; options,</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;            scoped_ptr&lt;FileType&gt; ftyp,</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;            scoped_ptr&lt;Movie&gt; moov);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html">Segmenter</a>();</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ae977765092cab9a566b4a5a3e9184370">Initialize</a>(<span class="keyword">const</span> std::vector&lt;MediaStream*&gt;&amp; streams,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                    <a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">MuxerListener</a>* muxer_listener,</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                    <a class="code" href="../../d9/d2c/classedash__packager_1_1media_1_1ProgressListener.html">ProgressListener</a>* progress_listener,</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                    <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a>* encryption_key_source,</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                    uint32_t max_sd_pixels,</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                    <span class="keywordtype">double</span> clear_lead_in_seconds,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                    <span class="keywordtype">double</span> crypto_period_duration_in_seconds);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">Finalize</a>();</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">Finalize</a>();</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a5c21059ee9a533caec81491bdb751c57">AddSample</a>(<span class="keyword">const</span> <a class="code" href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html">MediaStream</a>* stream,</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                   scoped_refptr&lt;MediaSample&gt; sample);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a5c21059ee9a533caec81491bdb751c57">AddSample</a>(<span class="keyword">const</span> <a class="code" href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html">MediaStream</a>* stream,</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                   scoped_refptr&lt;MediaSample&gt; sample);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ae2b35481b5fd2a0bbbcfb970bbaddf12">GetInitRange</a>(<span class="keywordtype">size_t</span>* offset, <span class="keywordtype">size_t</span>* size) = 0;</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ae2b35481b5fd2a0bbbcfb970bbaddf12">GetInitRange</a>(<span class="keywordtype">size_t</span>* offset, <span class="keywordtype">size_t</span>* size) = 0;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#acbb0ad06a2e0effee437c9037970c5b2">GetIndexRange</a>(<span class="keywordtype">size_t</span>* offset, <span class="keywordtype">size_t</span>* size) = 0;</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#acbb0ad06a2e0effee437c9037970c5b2">GetIndexRange</a>(<span class="keywordtype">size_t</span>* offset, <span class="keywordtype">size_t</span>* size) = 0;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  uint32_t GetReferenceTimeScale() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="keywordtype">double</span> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a0e5e570d5f82c796ba015ca06c7a676c">GetDuration</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  uint32_t GetReferenceTimeScale() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordtype">double</span> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a0e5e570d5f82c796ba015ca06c7a676c">GetDuration</a>() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
+<div class="line"><a name="l00097"></a><span class="lineno"><a class="line" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ac2883a5eb0bd7abb50bc3968ac417901">   97</a></span>&#160;  uint32_t <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ac2883a5eb0bd7abb50bc3968ac417901">sample_duration</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sample_duration_; }</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno"><a class="line" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ac2883a5eb0bd7abb50bc3968ac417901">  101</a></span>&#160;  uint32_t <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ac2883a5eb0bd7abb50bc3968ac417901">sample_duration</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> sample_duration_; }</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a287d51571c92704274550d9f1d246cf9">UpdateProgress</a>(uint64_t progress);</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a4e58a007d4daafe1b49a70d39e52e339">SetComplete</a>();</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a>&amp; options()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> options_; }</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  FileType* ftyp() { <span class="keywordflow">return</span> ftyp_.get(); }</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  Movie* moov() { <span class="keywordflow">return</span> moov_.get(); }</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  BufferWriter* fragment_buffer() { <span class="keywordflow">return</span> fragment_buffer_.get(); }</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  SegmentIndex* sidx() { <span class="keywordflow">return</span> sidx_.get(); }</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  MuxerListener* muxer_listener() { <span class="keywordflow">return</span> muxer_listener_; }</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  uint64_t progress_target() { <span class="keywordflow">return</span> progress_target_; }</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a287d51571c92704274550d9f1d246cf9">UpdateProgress</a>(uint64_t progress);</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a4e58a007d4daafe1b49a70d39e52e339">SetComplete</a>();</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a>&amp; options()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> options_; }</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  FileType* ftyp() { <span class="keywordflow">return</span> ftyp_.get(); }</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  Movie* moov() { <span class="keywordflow">return</span> moov_.get(); }</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  BufferWriter* fragment_buffer() { <span class="keywordflow">return</span> fragment_buffer_.get(); }</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  SegmentIndex* sidx() { <span class="keywordflow">return</span> sidx_.get(); }</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  MuxerListener* muxer_listener() { <span class="keywordflow">return</span> muxer_listener_; }</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  uint64_t progress_target() { <span class="keywordflow">return</span> progress_target_; }</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="keywordtype">void</span> set_progress_target(uint64_t progress_target) {</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    progress_target_ = progress_target;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  }</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="keywordtype">void</span> set_progress_target(uint64_t progress_target) {</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    progress_target_ = progress_target;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  }</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <span class="keyword">virtual</span> Status DoInitialize() = 0;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keyword">virtual</span> Status DoFinalize() = 0;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="keyword">virtual</span> Status DoFinalizeSegment() = 0;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  Status FinalizeSegment();</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  uint32_t GetReferenceStreamId();</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  Status FinalizeFragment(<span class="keywordtype">bool</span> finalize_segment, Fragmenter* fragment);</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keyword">const</span> MuxerOptions&amp; options_;</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  scoped_ptr&lt;FileType&gt; ftyp_;</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  scoped_ptr&lt;Movie&gt; moov_;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  scoped_ptr&lt;MovieFragment&gt; moof_;</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  scoped_ptr&lt;BufferWriter&gt; fragment_buffer_;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  scoped_ptr&lt;SegmentIndex&gt; sidx_;</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  std::vector&lt;Fragmenter*&gt; fragmenters_;</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;  std::vector&lt;uint64_t&gt; segment_durations_;</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  std::map&lt;const MediaStream*, uint32_t&gt; stream_map_;</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  <span class="keywordtype">bool</span> end_of_segment_;</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  MuxerListener* muxer_listener_;</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  ProgressListener* progress_listener_;</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  uint64_t progress_target_;</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  uint64_t accumulated_progress_;</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  uint32_t sample_duration_;</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  DISALLOW_COPY_AND_ASSIGN(Segmenter);</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;};</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="keyword">virtual</span> Status DoInitialize() = 0;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keyword">virtual</span> Status DoFinalize() = 0;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <span class="keyword">virtual</span> Status DoFinalizeSegment() = 0;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  Status FinalizeSegment();</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  uint32_t GetReferenceStreamId();</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  Status FinalizeFragment(<span class="keywordtype">bool</span> finalize_segment, Fragmenter* fragment);</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="keyword">const</span> MuxerOptions&amp; options_;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  scoped_ptr&lt;FileType&gt; ftyp_;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  scoped_ptr&lt;Movie&gt; moov_;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  scoped_ptr&lt;MovieFragment&gt; moof_;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  scoped_ptr&lt;BufferWriter&gt; fragment_buffer_;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  scoped_ptr&lt;SegmentIndex&gt; sidx_;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  std::vector&lt;Fragmenter*&gt; fragmenters_;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  std::vector&lt;uint64_t&gt; segment_durations_;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  std::map&lt;const MediaStream*, uint32_t&gt; stream_map_;</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  <span class="keywordtype">bool</span> end_of_segment_;</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  MuxerListener* muxer_listener_;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;  ProgressListener* progress_listener_;</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  uint64_t progress_target_;</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  uint64_t accumulated_progress_;</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  uint32_t sample_duration_;</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  DISALLOW_COPY_AND_ASSIGN(Segmenter);</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;};</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_MP4_SEGMENTER_H_</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_a0e5e570d5f82c796ba015ca06c7a676c"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a0e5e570d5f82c796ba015ca06c7a676c">edash_packager::media::mp4::Segmenter::GetDuration</a></div><div class="ttdeci">double GetDuration() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00328">segmenter.cc:328</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_ad1136a3e7c2e796267fbd3879d108c2a"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">edash_packager::media::mp4::Segmenter::Finalize</a></div><div class="ttdeci">Status Finalize()</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00244">segmenter.cc:244</a></div></div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_MP4_SEGMENTER_H_</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_a0e5e570d5f82c796ba015ca06c7a676c"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a0e5e570d5f82c796ba015ca06c7a676c">edash_packager::media::mp4::Segmenter::GetDuration</a></div><div class="ttdeci">double GetDuration() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00335">segmenter.cc:335</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_ad1136a3e7c2e796267fbd3879d108c2a"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">edash_packager::media::mp4::Segmenter::Finalize</a></div><div class="ttdeci">Status Finalize()</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00251">segmenter.cc:251</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1ProgressListener_html"><div class="ttname"><a href="../../d9/d2c/classedash__packager_1_1media_1_1ProgressListener.html">edash_packager::media::ProgressListener</a></div><div class="ttdoc">This class listens to progress updates events. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d9d/progress__listener_8h_source.html#l00020">progress_listener.h:20</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Status_html"><div class="ttname"><a href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">edash_packager::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_a5c21059ee9a533caec81491bdb751c57"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a5c21059ee9a533caec81491bdb751c57">edash_packager::media::mp4::Segmenter::AddSample</a></div><div class="ttdeci">Status AddSample(const MediaStream *stream, scoped_refptr&lt; MediaSample &gt; sample)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00270">segmenter.cc:270</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html">edash_packager::media::mp4::Segmenter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d3b/mp4_2segmenter_8h_source.html#l00044">segmenter.h:44</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_a5c21059ee9a533caec81491bdb751c57"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a5c21059ee9a533caec81491bdb751c57">edash_packager::media::mp4::Segmenter::AddSample</a></div><div class="ttdeci">Status AddSample(const MediaStream *stream, scoped_refptr&lt; MediaSample &gt; sample)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00277">segmenter.cc:277</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html">edash_packager::media::mp4::Segmenter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d3b/mp4_2segmenter_8h_source.html#l00040">segmenter.h:40</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_ae2b35481b5fd2a0bbbcfb970bbaddf12"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ae2b35481b5fd2a0bbbcfb970bbaddf12">edash_packager::media::mp4::Segmenter::GetInitRange</a></div><div class="ttdeci">virtual bool GetInitRange(size_t *offset, size_t *size)=0</div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">edash_packager::media::MuxerListener</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dfa/muxer__listener_8h_source.html#l00029">muxer_listener.h:29</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">edash_packager::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00029">key_source.h:29</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_ac2883a5eb0bd7abb50bc3968ac417901"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ac2883a5eb0bd7abb50bc3968ac417901">edash_packager::media::mp4::Segmenter::sample_duration</a></div><div class="ttdeci">uint32_t sample_duration() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d3b/mp4_2segmenter_8h_source.html#l00101">segmenter.h:101</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_a287d51571c92704274550d9f1d246cf9"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a287d51571c92704274550d9f1d246cf9">edash_packager::media::mp4::Segmenter::UpdateProgress</a></div><div class="ttdeci">void UpdateProgress(uint64_t progress)</div><div class="ttdoc">Update segmentation progress using ProgressListener. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00337">segmenter.cc:337</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_ac2883a5eb0bd7abb50bc3968ac417901"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ac2883a5eb0bd7abb50bc3968ac417901">edash_packager::media::mp4::Segmenter::sample_duration</a></div><div class="ttdeci">uint32_t sample_duration() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d3b/mp4_2segmenter_8h_source.html#l00097">segmenter.h:97</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_a287d51571c92704274550d9f1d246cf9"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a287d51571c92704274550d9f1d246cf9">edash_packager::media::mp4::Segmenter::UpdateProgress</a></div><div class="ttdeci">void UpdateProgress(uint64_t progress)</div><div class="ttdoc">Update segmentation progress using ProgressListener. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00344">segmenter.cc:344</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_ae977765092cab9a566b4a5a3e9184370"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ae977765092cab9a566b4a5a3e9184370">edash_packager::media::mp4::Segmenter::Initialize</a></div><div class="ttdeci">Status Initialize(const std::vector&lt; MediaStream * &gt; &amp;streams, MuxerListener *muxer_listener, ProgressListener *progress_listener, KeySource *encryption_key_source, uint32_t max_sd_pixels, double clear_lead_in_seconds, double crypto_period_duration_in_seconds)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00140">segmenter.cc:140</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_acbb0ad06a2e0effee437c9037970c5b2"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#acbb0ad06a2e0effee437c9037970c5b2">edash_packager::media::mp4::Segmenter::GetIndexRange</a></div><div class="ttdeci">virtual bool GetIndexRange(size_t *offset, size_t *size)=0</div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_a4e58a007d4daafe1b49a70d39e52e339"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a4e58a007d4daafe1b49a70d39e52e339">edash_packager::media::mp4::Segmenter::SetComplete</a></div><div class="ttdeci">void SetComplete()</div><div class="ttdoc">Set progress to 100%. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00353">segmenter.cc:353</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_a4e58a007d4daafe1b49a70d39e52e339"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a4e58a007d4daafe1b49a70d39e52e339">edash_packager::media::mp4::Segmenter::SetComplete</a></div><div class="ttdeci">void SetComplete()</div><div class="ttdoc">Set progress to 100%. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00360">segmenter.cc:360</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">edash_packager::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1MediaStream_html"><div class="ttname"><a href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html">edash_packager::media::MediaStream</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d93/media__stream_8h_source.html#l00026">media_stream.h:26</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 7 2016 21:04:45 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 8 2016 19:17:53 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

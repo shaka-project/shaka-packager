@@ -327,209 +327,217 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;  <span class="comment">// Use the reference stream&#39;s time scale as movie time scale.</span></div>
 <div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  moov_-&gt;header.timescale = sidx_-&gt;timescale;</div>
 <div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  moof_-&gt;header.sequence_number = 1;</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;  <span class="keywordflow">return</span> DoInitialize();</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;}</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;</div>
-<div class="line"><a name="l00244"></a><span class="lineno"><a class="line" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">  244</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#aaa092bb01c45c1d7ec84a8f370978bbb">Segmenter::Finalize</a>() {</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;  <span class="keywordflow">for</span> (std::vector&lt;Fragmenter*&gt;::iterator it = fragmenters_.begin();</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;       it != fragmenters_.end();</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;       ++it) {</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = FinalizeFragment(<span class="keyword">true</span>, *it);</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;      <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  }</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;  <span class="comment">// Set tracks and moov durations.</span></div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;  <span class="comment">// Note that the updated moov box will be written to output file for VOD case</span></div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  <span class="comment">// only.</span></div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;  <span class="keywordflow">for</span> (std::vector&lt;Track&gt;::iterator track = moov_-&gt;tracks.begin();</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;       track != moov_-&gt;tracks.end();</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;       ++track) {</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    track-&gt;header.duration = Rescale(track-&gt;media.header.duration,</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;                                     track-&gt;media.header.timescale,</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;                                     moov_-&gt;header.timescale);</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    <span class="keywordflow">if</span> (track-&gt;header.duration &gt; moov_-&gt;header.duration)</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;      moov_-&gt;header.duration = track-&gt;header.duration;</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;  }</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;  moov_-&gt;extends.header.fragment_duration = moov_-&gt;header.duration;</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  <span class="keywordflow">return</span> DoFinalize();</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;}</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;</div>
-<div class="line"><a name="l00270"></a><span class="lineno"><a class="line" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a5c21059ee9a533caec81491bdb751c57">  270</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#aff9c729f9464540eafc6571d4a42df47">Segmenter::AddSample</a>(<span class="keyword">const</span> <a class="code" href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html">MediaStream</a>* stream,</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;                            scoped_refptr&lt;MediaSample&gt; sample) {</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  <span class="comment">// Find the fragmenter for this stream.</span></div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  DCHECK(stream);</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  DCHECK(stream_map_.find(stream) != stream_map_.end());</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  uint32_t stream_id = stream_map_[stream];</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  <a class="code" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html">Fragmenter</a>* fragmenter = fragmenters_[stream_id];</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  <span class="comment">// Set default sample duration if it has not been set yet.</span></div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;  <span class="keywordflow">if</span> (moov_-&gt;extends.tracks[stream_id].default_sample_duration == 0) {</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    moov_-&gt;extends.tracks[stream_id].default_sample_duration =</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;        sample-&gt;duration();</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  }</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;  <span class="keywordflow">if</span> (fragmenter-&gt;fragment_finalized()) {</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::FRAGMENT_FINALIZED,</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;                  <span class="stringliteral">&quot;Current fragment is finalized already.&quot;</span>);</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  }</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  <span class="keywordtype">bool</span> finalize_fragment = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  <span class="keywordflow">if</span> (fragmenter-&gt;fragment_duration() &gt;=</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;      options_.<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a1754599c00fdf4c474d3072abf71c1de">fragment_duration</a> * stream-&gt;info()-&gt;time_scale()) {</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    <span class="keywordflow">if</span> (sample-&gt;is_key_frame() || !options_.<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#ab70f1d41f9556fa793ec638762d1c584">fragment_sap_aligned</a>) {</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;      finalize_fragment = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    }</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  }</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  <span class="keywordtype">bool</span> finalize_segment = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  <span class="keywordflow">if</span> (segment_durations_[stream_id] &gt;=</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;      options_.<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#ad6f281dfd832bd073f5fb5fc46342f9f">segment_duration</a> * stream-&gt;info()-&gt;time_scale()) {</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    <span class="keywordflow">if</span> (sample-&gt;is_key_frame() || !options_.<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#af0403298bf08392bb3009061cd8de2b0">segment_sap_aligned</a>) {</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;      finalize_segment = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;      finalize_fragment = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    }</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  }</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status;</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  <span class="keywordflow">if</span> (finalize_fragment) {</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    status = FinalizeFragment(finalize_segment, fragmenter);</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;      <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  <span class="comment">// Fill in version information.</span></div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  moov_-&gt;metadata.handler.handler_type = FOURCC_ID32;</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;  moov_-&gt;metadata.id3v2.language.code = <span class="stringliteral">&quot;eng&quot;</span>;</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;  moov_-&gt;metadata.id3v2.private_frame.owner =</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;      <span class="stringliteral">&quot;https://github.com/google/edash-packager&quot;</span>;</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;  moov_-&gt;metadata.id3v2.private_frame.value = options_.<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a71efefea31d61d439c1d09a6563e8948">packager_version_string</a>;</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  <span class="keywordflow">return</span> DoInitialize();</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;}</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;</div>
+<div class="line"><a name="l00251"></a><span class="lineno"><a class="line" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">  251</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#aaa092bb01c45c1d7ec84a8f370978bbb">Segmenter::Finalize</a>() {</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  <span class="keywordflow">for</span> (std::vector&lt;Fragmenter*&gt;::iterator it = fragmenters_.begin();</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;       it != fragmenters_.end();</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;       ++it) {</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = FinalizeFragment(<span class="keyword">true</span>, *it);</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;      <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;  }</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;  <span class="comment">// Set tracks and moov durations.</span></div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  <span class="comment">// Note that the updated moov box will be written to output file for VOD case</span></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;  <span class="comment">// only.</span></div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;  <span class="keywordflow">for</span> (std::vector&lt;Track&gt;::iterator track = moov_-&gt;tracks.begin();</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;       track != moov_-&gt;tracks.end();</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;       ++track) {</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    track-&gt;header.duration = Rescale(track-&gt;media.header.duration,</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;                                     track-&gt;media.header.timescale,</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;                                     moov_-&gt;header.timescale);</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;    <span class="keywordflow">if</span> (track-&gt;header.duration &gt; moov_-&gt;header.duration)</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;      moov_-&gt;header.duration = track-&gt;header.duration;</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  }</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  moov_-&gt;extends.header.fragment_duration = moov_-&gt;header.duration;</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  <span class="keywordflow">return</span> DoFinalize();</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;}</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;</div>
+<div class="line"><a name="l00277"></a><span class="lineno"><a class="line" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a5c21059ee9a533caec81491bdb751c57">  277</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#aff9c729f9464540eafc6571d4a42df47">Segmenter::AddSample</a>(<span class="keyword">const</span> <a class="code" href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html">MediaStream</a>* stream,</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;                            scoped_refptr&lt;MediaSample&gt; sample) {</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;  <span class="comment">// Find the fragmenter for this stream.</span></div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  DCHECK(stream);</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  DCHECK(stream_map_.find(stream) != stream_map_.end());</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  uint32_t stream_id = stream_map_[stream];</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  <a class="code" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html">Fragmenter</a>* fragmenter = fragmenters_[stream_id];</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  <span class="comment">// Set default sample duration if it has not been set yet.</span></div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;  <span class="keywordflow">if</span> (moov_-&gt;extends.tracks[stream_id].default_sample_duration == 0) {</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    moov_-&gt;extends.tracks[stream_id].default_sample_duration =</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;        sample-&gt;duration();</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  }</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  <span class="keywordflow">if</span> (fragmenter-&gt;fragment_finalized()) {</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::FRAGMENT_FINALIZED,</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;                  <span class="stringliteral">&quot;Current fragment is finalized already.&quot;</span>);</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  }</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  <span class="keywordtype">bool</span> finalize_fragment = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  <span class="keywordflow">if</span> (fragmenter-&gt;fragment_duration() &gt;=</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;      options_.<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a1754599c00fdf4c474d3072abf71c1de">fragment_duration</a> * stream-&gt;info()-&gt;time_scale()) {</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;    <span class="keywordflow">if</span> (sample-&gt;is_key_frame() || !options_.<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#ab70f1d41f9556fa793ec638762d1c584">fragment_sap_aligned</a>) {</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;      finalize_fragment = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;    }</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  }</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  <span class="keywordtype">bool</span> finalize_segment = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  <span class="keywordflow">if</span> (segment_durations_[stream_id] &gt;=</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;      options_.<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#ad6f281dfd832bd073f5fb5fc46342f9f">segment_duration</a> * stream-&gt;info()-&gt;time_scale()) {</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    <span class="keywordflow">if</span> (sample-&gt;is_key_frame() || !options_.<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#af0403298bf08392bb3009061cd8de2b0">segment_sap_aligned</a>) {</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;      finalize_segment = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;      finalize_fragment = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;    }</div>
 <div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  }</div>
 <div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;  status = fragmenter-&gt;<a class="code" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#a81d8b1f324bdd2bc9cc2e5a469243926">AddSample</a>(sample);</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  <span class="keywordflow">if</span> (sample_duration_ == 0)</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;    sample_duration_ = sample-&gt;duration();</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;  moov_-&gt;tracks[stream_id].media.header.duration += sample-&gt;duration();</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;  segment_durations_[stream_id] += sample-&gt;duration();</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;  DCHECK_GE(segment_durations_[stream_id], fragmenter-&gt;fragment_duration());</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;}</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;uint32_t Segmenter::GetReferenceTimeScale()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  <span class="keywordflow">return</span> moov_-&gt;header.timescale;</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;}</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;</div>
-<div class="line"><a name="l00328"></a><span class="lineno"><a class="line" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a0e5e570d5f82c796ba015ca06c7a676c">  328</a></span>&#160;<span class="keywordtype">double</span> <a class="code" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#a6ec4149813741e894a9c5083eaf99689">Segmenter::GetDuration</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  <span class="keywordflow">if</span> (moov_-&gt;header.timescale == 0) {</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    <span class="comment">// Handling the case where this is not properly initialized.</span></div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    <span class="keywordflow">return</span> 0.0;</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  }</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(moov_-&gt;header.duration) / moov_-&gt;header.timescale;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;}</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;</div>
-<div class="line"><a name="l00337"></a><span class="lineno"><a class="line" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a287d51571c92704274550d9f1d246cf9">  337</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#af7abae8ef77450c272f6ca6ce98df361">Segmenter::UpdateProgress</a>(uint64_t progress) {</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;  accumulated_progress_ += progress;</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;  <span class="keywordflow">if</span> (!progress_listener_) <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;  <span class="keywordflow">if</span> (progress_target_ == 0) <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  <span class="comment">// It might happen that accumulated progress exceeds progress_target due to</span></div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;  <span class="comment">// computation errors, e.g. rounding error. Cap it so it never reports &gt; 100%</span></div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;  <span class="comment">// progress.</span></div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;  <span class="keywordflow">if</span> (accumulated_progress_ &gt;= progress_target_) {</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    progress_listener_-&gt;<a class="code" href="../../d9/d2c/classedash__packager_1_1media_1_1ProgressListener.html#a2e30994077f8798d56f61ee20fd9a776">OnProgress</a>(1.0);</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;    progress_listener_-&gt;<a class="code" href="../../d9/d2c/classedash__packager_1_1media_1_1ProgressListener.html#a2e30994077f8798d56f61ee20fd9a776">OnProgress</a>(static_cast&lt;double&gt;(accumulated_progress_) /</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;                                   progress_target_);</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  }</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;}</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;</div>
-<div class="line"><a name="l00353"></a><span class="lineno"><a class="line" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a4e58a007d4daafe1b49a70d39e52e339">  353</a></span>&#160;<span class="keywordtype">void</span> Segmenter::SetComplete() {</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;  <span class="keywordflow">if</span> (!progress_listener_) <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;  progress_listener_-&gt;<a class="code" href="../../d9/d2c/classedash__packager_1_1media_1_1ProgressListener.html#a2e30994077f8798d56f61ee20fd9a776">OnProgress</a>(1.0);</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;}</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> Segmenter::FinalizeSegment() {</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = DoFinalizeSegment();</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;  <span class="comment">// Reset segment information to initial state.</span></div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;  sidx_-&gt;references.clear();</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;  std::vector&lt;uint64_t&gt;::iterator it = segment_durations_.begin();</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;  <span class="keywordflow">for</span> (; it != segment_durations_.end(); ++it)</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    *it = 0;</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;  <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;}</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;uint32_t Segmenter::GetReferenceStreamId() {</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;  DCHECK(sidx_);</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;  <span class="keywordflow">return</span> sidx_-&gt;reference_id - 1;</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;}</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;Status Segmenter::FinalizeFragment(<span class="keywordtype">bool</span> finalize_segment,</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;                                   Fragmenter* fragmenter) {</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;  fragmenter-&gt;FinalizeFragment();</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;  <span class="comment">// Check if all tracks are ready for fragmentation.</span></div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;  <span class="keywordflow">for</span> (std::vector&lt;Fragmenter*&gt;::iterator it = fragmenters_.begin();</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;       it != fragmenters_.end();</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;       ++it) {</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;    <span class="keywordflow">if</span> (!(*it)-&gt;fragment_finalized())</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;      <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;  }</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;  MediaData mdat;</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;  <span class="comment">// Data offset relative to &#39;moof&#39;: moof size + mdat header size.</span></div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;  <span class="comment">// The code will also update box sizes for moof_ and its child boxes.</span></div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;  uint64_t data_offset = moof_-&gt;ComputeSize() + mdat.HeaderSize();</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  <span class="comment">// &#39;traf&#39; should follow &#39;mfhd&#39; moof header box.</span></div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;  uint64_t next_traf_position = moof_-&gt;HeaderSize() + moof_-&gt;header.box_size();</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; moof_-&gt;tracks.size(); ++i) {</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;    TrackFragment&amp; traf = moof_-&gt;tracks[i];</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;    <span class="keywordflow">if</span> (traf.auxiliary_offset.offsets.size() &gt; 0) {</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;      DCHECK_EQ(traf.auxiliary_offset.offsets.size(), 1u);</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;      DCHECK(!traf.sample_encryption.sample_encryption_entries.empty());</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;      next_traf_position += traf.box_size();</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;      <span class="comment">// SampleEncryption &#39;senc&#39; box should be the last box in &#39;traf&#39;.</span></div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;      <span class="comment">// |auxiliary_offset| should point to the data of SampleEncryption.</span></div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;      traf.auxiliary_offset.offsets[0] =</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;          next_traf_position - traf.sample_encryption.box_size() +</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;          traf.sample_encryption.HeaderSize() +</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;          <span class="keyword">sizeof</span>(uint32_t);  <span class="comment">// for sample count field in &#39;senc&#39;</span></div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    }</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;    traf.runs[0].data_offset = data_offset + mdat.data_size;</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;    mdat.data_size += fragmenters_[i]-&gt;data()-&gt;Size();</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;  }</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;  <span class="comment">// Generate segment reference.</span></div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;  sidx_-&gt;references.resize(sidx_-&gt;references.size() + 1);</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;  fragmenters_[GetReferenceStreamId()]-&gt;GenerateSegmentReference(</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;      &amp;sidx_-&gt;references[sidx_-&gt;references.size() - 1]);</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;  sidx_-&gt;references[sidx_-&gt;references.size() - 1].referenced_size =</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;      data_offset + mdat.data_size;</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status;</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;  <span class="keywordflow">if</span> (finalize_fragment) {</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    status = FinalizeFragment(finalize_segment, fragmenter);</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;      <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  }</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;  status = fragmenter-&gt;<a class="code" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#a81d8b1f324bdd2bc9cc2e5a469243926">AddSample</a>(sample);</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;  <span class="keywordflow">if</span> (sample_duration_ == 0)</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;    sample_duration_ = sample-&gt;duration();</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  moov_-&gt;tracks[stream_id].media.header.duration += sample-&gt;duration();</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  segment_durations_[stream_id] += sample-&gt;duration();</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  DCHECK_GE(segment_durations_[stream_id], fragmenter-&gt;fragment_duration());</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;}</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;uint32_t Segmenter::GetReferenceTimeScale()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  <span class="keywordflow">return</span> moov_-&gt;header.timescale;</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;}</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;</div>
+<div class="line"><a name="l00335"></a><span class="lineno"><a class="line" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a0e5e570d5f82c796ba015ca06c7a676c">  335</a></span>&#160;<span class="keywordtype">double</span> <a class="code" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#a6ec4149813741e894a9c5083eaf99689">Segmenter::GetDuration</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  <span class="keywordflow">if</span> (moov_-&gt;header.timescale == 0) {</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;    <span class="comment">// Handling the case where this is not properly initialized.</span></div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    <span class="keywordflow">return</span> 0.0;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  }</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(moov_-&gt;header.duration) / moov_-&gt;header.timescale;</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;}</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;</div>
+<div class="line"><a name="l00344"></a><span class="lineno"><a class="line" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a287d51571c92704274550d9f1d246cf9">  344</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#af7abae8ef77450c272f6ca6ce98df361">Segmenter::UpdateProgress</a>(uint64_t progress) {</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;  accumulated_progress_ += progress;</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;  <span class="keywordflow">if</span> (!progress_listener_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  <span class="keywordflow">if</span> (progress_target_ == 0) <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  <span class="comment">// It might happen that accumulated progress exceeds progress_target due to</span></div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  <span class="comment">// computation errors, e.g. rounding error. Cap it so it never reports &gt; 100%</span></div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;  <span class="comment">// progress.</span></div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;  <span class="keywordflow">if</span> (accumulated_progress_ &gt;= progress_target_) {</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    progress_listener_-&gt;<a class="code" href="../../d9/d2c/classedash__packager_1_1media_1_1ProgressListener.html#a2e30994077f8798d56f61ee20fd9a776">OnProgress</a>(1.0);</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;    progress_listener_-&gt;<a class="code" href="../../d9/d2c/classedash__packager_1_1media_1_1ProgressListener.html#a2e30994077f8798d56f61ee20fd9a776">OnProgress</a>(static_cast&lt;double&gt;(accumulated_progress_) /</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;                                   progress_target_);</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;  }</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;}</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;</div>
+<div class="line"><a name="l00360"></a><span class="lineno"><a class="line" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a4e58a007d4daafe1b49a70d39e52e339">  360</a></span>&#160;<span class="keywordtype">void</span> Segmenter::SetComplete() {</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;  <span class="keywordflow">if</span> (!progress_listener_) <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;  progress_listener_-&gt;<a class="code" href="../../d9/d2c/classedash__packager_1_1media_1_1ProgressListener.html#a2e30994077f8798d56f61ee20fd9a776">OnProgress</a>(1.0);</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;}</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> Segmenter::FinalizeSegment() {</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = DoFinalizeSegment();</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;  <span class="comment">// Reset segment information to initial state.</span></div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;  sidx_-&gt;references.clear();</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;  std::vector&lt;uint64_t&gt;::iterator it = segment_durations_.begin();</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;  <span class="keywordflow">for</span> (; it != segment_durations_.end(); ++it)</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    *it = 0;</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;  <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;}</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;uint32_t Segmenter::GetReferenceStreamId() {</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;  DCHECK(sidx_);</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;  <span class="keywordflow">return</span> sidx_-&gt;reference_id - 1;</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;}</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;Status Segmenter::FinalizeFragment(<span class="keywordtype">bool</span> finalize_segment,</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;                                   Fragmenter* fragmenter) {</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;  fragmenter-&gt;FinalizeFragment();</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;  <span class="comment">// Check if all tracks are ready for fragmentation.</span></div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;  <span class="keywordflow">for</span> (std::vector&lt;Fragmenter*&gt;::iterator it = fragmenters_.begin();</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;       it != fragmenters_.end();</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;       ++it) {</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;    <span class="keywordflow">if</span> (!(*it)-&gt;fragment_finalized())</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;      <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;  }</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;  MediaData mdat;</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;  <span class="comment">// Data offset relative to &#39;moof&#39;: moof size + mdat header size.</span></div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;  <span class="comment">// The code will also update box sizes for moof_ and its child boxes.</span></div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;  uint64_t data_offset = moof_-&gt;ComputeSize() + mdat.HeaderSize();</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;  <span class="comment">// &#39;traf&#39; should follow &#39;mfhd&#39; moof header box.</span></div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;  uint64_t next_traf_position = moof_-&gt;HeaderSize() + moof_-&gt;header.box_size();</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; moof_-&gt;tracks.size(); ++i) {</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;    TrackFragment&amp; traf = moof_-&gt;tracks[i];</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;    <span class="keywordflow">if</span> (traf.auxiliary_offset.offsets.size() &gt; 0) {</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;      DCHECK_EQ(traf.auxiliary_offset.offsets.size(), 1u);</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;      DCHECK(!traf.sample_encryption.sample_encryption_entries.empty());</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;      next_traf_position += traf.box_size();</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;      <span class="comment">// SampleEncryption &#39;senc&#39; box should be the last box in &#39;traf&#39;.</span></div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;      <span class="comment">// |auxiliary_offset| should point to the data of SampleEncryption.</span></div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;      traf.auxiliary_offset.offsets[0] =</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;          next_traf_position - traf.sample_encryption.box_size() +</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;          traf.sample_encryption.HeaderSize() +</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;          <span class="keyword">sizeof</span>(uint32_t);  <span class="comment">// for sample count field in &#39;senc&#39;</span></div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    }</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;    traf.runs[0].data_offset = data_offset + mdat.data_size;</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;    mdat.data_size += fragmenters_[i]-&gt;data()-&gt;Size();</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;  }</div>
 <div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;  <span class="comment">// Write the fragment to buffer.</span></div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;  moof_-&gt;Write(fragment_buffer_.get());</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;  mdat.WriteHeader(fragment_buffer_.get());</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;  <span class="keywordflow">for</span> (Fragmenter* fragmenter : fragmenters_)</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;    fragment_buffer_-&gt;AppendBuffer(*fragmenter-&gt;data());</div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;  <span class="comment">// Increase sequence_number for next fragment.</span></div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;  ++moof_-&gt;header.sequence_number;</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;  <span class="keywordflow">if</span> (finalize_segment)</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;    <span class="keywordflow">return</span> FinalizeSegment();</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;}</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;  <span class="comment">// Generate segment reference.</span></div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;  sidx_-&gt;references.resize(sidx_-&gt;references.size() + 1);</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;  fragmenters_[GetReferenceStreamId()]-&gt;GenerateSegmentReference(</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;      &amp;sidx_-&gt;references[sidx_-&gt;references.size() - 1]);</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;  sidx_-&gt;references[sidx_-&gt;references.size() - 1].referenced_size =</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;      data_offset + mdat.data_size;</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;  <span class="comment">// Write the fragment to buffer.</span></div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;  moof_-&gt;Write(fragment_buffer_.get());</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;  mdat.WriteHeader(fragment_buffer_.get());</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;  <span class="keywordflow">for</span> (Fragmenter* fragmenter : fragmenters_)</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;    fragment_buffer_-&gt;AppendBuffer(*fragmenter-&gt;data());</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;  <span class="comment">// Increase sequence_number for next fragment.</span></div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;  ++moof_-&gt;header.sequence_number;</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;  <span class="keywordflow">if</span> (finalize_segment)</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;    <span class="keywordflow">return</span> FinalizeSegment();</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;}</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1webm_1_1Segmenter_html_ad26646a16d8f6bbc899996cbda45baa3"><div class="ttname"><a href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#ad26646a16d8f6bbc899996cbda45baa3">edash_packager::media::webm::Segmenter::Initialize</a></div><div class="ttdeci">Status Initialize(scoped_ptr&lt; MkvWriter &gt; writer, StreamInfo *info, ProgressListener *progress_listener, MuxerListener *muxer_listener, KeySource *encryption_key_source)</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d53/webm_2segmenter_8cc_source.html#l00045">segmenter.cc:45</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1webm_1_1Segmenter_html_a6ec4149813741e894a9c5083eaf99689"><div class="ttname"><a href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#a6ec4149813741e894a9c5083eaf99689">edash_packager::media::webm::Segmenter::GetDuration</a></div><div class="ttdeci">float GetDuration() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d53/webm_2segmenter_8cc_source.html#l00134">segmenter.cc:134</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Fragmenter_html"><div class="ttname"><a href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html">edash_packager::media::mp4::Fragmenter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd1/fragmenter_8h_source.html#l00030">fragmenter.h:30</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_a49ccfe7a61c36ac9818482a7892915d3"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a49ccfe7a61c36ac9818482a7892915d3">edash_packager::media::KeySource::GetKey</a></div><div class="ttdeci">virtual Status GetKey(TrackType track_type, EncryptionKey *key)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00046">key_source.cc:46</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1SampleDescription_html"><div class="ttname"><a href="../../d3/d74/structedash__packager_1_1media_1_1mp4_1_1SampleDescription.html">edash_packager::media::mp4::SampleDescription</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00316">box_definitions.h:316</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1SampleDescription_html"><div class="ttname"><a href="../../d3/d74/structedash__packager_1_1media_1_1mp4_1_1SampleDescription.html">edash_packager::media::mp4::SampleDescription</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00350">box_definitions.h:350</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html_a1754599c00fdf4c474d3072abf71c1de"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a1754599c00fdf4c474d3072abf71c1de">edash_packager::media::MuxerOptions::fragment_duration</a></div><div class="ttdeci">double fragment_duration</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00034">muxer_options.h:34</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html_ab70f1d41f9556fa793ec638762d1c584"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#ab70f1d41f9556fa793ec638762d1c584">edash_packager::media::MuxerOptions::fragment_sap_aligned</a></div><div class="ttdeci">bool fragment_sap_aligned</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00043">muxer_options.h:43</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1EncryptionKey_html"><div class="ttname"><a href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">edash_packager::media::EncryptionKey</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00018">key_source.h:18</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html_a71efefea31d61d439c1d09a6563e8948"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a71efefea31d61d439c1d09a6563e8948">edash_packager::media::MuxerOptions::packager_version_string</a></div><div class="ttdeci">std::string packager_version_string</div><div class="ttdoc">Specify the version string to be embedded in the output files. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00071">muxer_options.h:71</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1ProgressListener_html"><div class="ttname"><a href="../../d9/d2c/classedash__packager_1_1media_1_1ProgressListener.html">edash_packager::media::ProgressListener</a></div><div class="ttdoc">This class listens to progress updates events. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d9d/progress__listener_8h_source.html#l00020">progress_listener.h:20</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html">edash_packager::media::mp4::EncryptingFragmenter</a></div><div class="ttdoc">EncryptingFragmenter generates MP4 fragments with sample encrypted. </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dcb/encrypting__fragmenter_8h_source.html#l00023">encrypting_fragmenter.h:23</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Status_html"><div class="ttname"><a href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">edash_packager::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
@@ -549,7 +557,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 7 2016 21:04:45 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 8 2016 19:17:53 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -416,7 +416,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    RCHECK(desc_idx &gt; 0);</div>
 <div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    desc_idx -= 1;  <span class="comment">// BMFF descriptor index is one-based</span></div>
 <div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    <span class="keywordflow">if</span> (track-&gt;media.handler.type == kAudio) {</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    <span class="keywordflow">if</span> (samp_descr.type == kAudio) {</div>
 <div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;      RCHECK(!samp_descr.audio_entries.empty());</div>
 <div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;</div>
 <div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;      <span class="comment">// It is not uncommon to find otherwise-valid files with incorrect sample</span></div>
@@ -517,7 +517,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;          duration,</div>
 <div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;          codec,</div>
 <div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;          <a class="code" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#aa62e486f463c867b8e2f41ebb4ecea34">AudioStreamInfo::GetCodecString</a>(codec, audio_object_type),</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;          track-&gt;media.header.language,</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;          track-&gt;media.header.language.code,</div>
 <div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;          entry.samplesize,</div>
 <div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;          num_channels,</div>
 <div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;          sampling_frequency,</div>
@@ -528,7 +528,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;          is_encrypted));</div>
 <div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;    }</div>
 <div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;</div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;    <span class="keywordflow">if</span> (track-&gt;media.handler.type == kVideo) {</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;    <span class="keywordflow">if</span> (samp_descr.type == kVideo) {</div>
 <div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;      RCHECK(!samp_descr.video_entries.empty());</div>
 <div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;      <span class="keywordflow">if</span> (desc_idx &gt;= samp_descr.video_entries.size())</div>
 <div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;        desc_idx = 0;</div>
@@ -616,8 +616,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;      DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;is_video_track_encrypted_: &quot;</span> &lt;&lt; is_encrypted;</div>
 <div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;      streams.push_back(<span class="keyword">new</span> VideoStreamInfo(</div>
 <div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;          track-&gt;header.track_id, timescale, duration, video_codec,</div>
-<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;          codec_string, track-&gt;media.header.language, coded_width, coded_height,</div>
-<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;          pixel_width, pixel_height,</div>
+<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;          codec_string, track-&gt;media.header.language.code, coded_width,</div>
+<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;          coded_height, pixel_width, pixel_height,</div>
 <div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;          0,  <span class="comment">// trick_play_rate</span></div>
 <div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;          nalu_length_size, vector_as_array(&amp;entry.codec_config_record.data),</div>
 <div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;          entry.codec_config_record.data.size(), is_encrypted));</div>
@@ -883,7 +883,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 7 2016 21:04:45 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 8 2016 19:17:53 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
