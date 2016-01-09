@@ -87,6 +87,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="../../d8/d74/classedash__packager_1_1Representation-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -105,6 +106,14 @@ Inheritance diagram for edash_packager::Representation:</div>
 </map>
  </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a90c789a4f54324c6fd7ee1c513b515d3"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>SuppressFlag</b> { <b>kSuppressWidth</b> = 1, 
+<b>kSuppressHeight</b> = 2, 
+<b>kSuppressFrameRate</b> = 4
+ }</td></tr>
+<tr class="separator:a90c789a4f54324c6fd7ee1c513b515d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aac7ad6e54e88b4d31196d54ad5fb4a9d"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d15/classedash__packager_1_1Representation.html#aac7ad6e54e88b4d31196d54ad5fb4a9d">Init</a> ()</td></tr>
@@ -126,6 +135,8 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
 <tr class="separator:a4a81a2db7ec245892334ad927621909c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a52225b2a8c588ce52454baede35987a5"><td class="memItemLeft" align="right" valign="top">xml::scoped_xml_ptr&lt; xmlNode &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d15/classedash__packager_1_1Representation.html#a52225b2a8c588ce52454baede35987a5">GetXml</a> ()</td></tr>
 <tr class="separator:a52225b2a8c588ce52454baede35987a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d0e434e410332342d346a7665ffbaac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d15/classedash__packager_1_1Representation.html#a9d0e434e410332342d346a7665ffbaac">SuppressOnce</a> (SuppressFlag flag)</td></tr>
+<tr class="separator:a9d0e434e410332342d346a7665ffbaac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a59920aa8a31f1fb2b30a2ee8cc4e95"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d15/classedash__packager_1_1Representation.html#a0a59920aa8a31f1fb2b30a2ee8cc4e95">id</a> () const </td></tr>
 <tr class="separator:a0a59920aa8a31f1fb2b30a2ee8cc4e95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4fc4d0fd6f240f1c79fac0b68b9d9f0d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d7/d15/classedash__packager_1_1Representation.html#a4fc4d0fd6f240f1c79fac0b68b9d9f0d">Representation</a> (const MediaInfo &amp;media_info, const <a class="el" href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">MpdOptions</a> &amp;mpd_options, uint32_t representation_id, scoped_ptr&lt; <a class="el" href="../../d2/dfa/classedash__packager_1_1RepresentationStateChangeListener.html">RepresentationStateChangeListener</a> &gt; state_change_listener)</td></tr>
@@ -189,7 +200,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l01002">1002</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l01015">1015</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -223,7 +234,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l01058">1058</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l01072">1072</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -274,7 +285,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l01070">1070</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l01084">1084</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -292,7 +303,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>Copy of &lt;Representation&gt;. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l01110">1110</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l01124">1124</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -318,7 +329,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>ID number for &lt;Representation&gt;. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d6/da3/mpd__builder_8h_source.html#l00474">474</a> of file <a class="el" href="../../d6/da3/mpd__builder_8h_source.html">mpd_builder.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/da3/mpd__builder_8h_source.html#l00490">490</a> of file <a class="el" href="../../d6/da3/mpd__builder_8h_source.html">mpd_builder.h</a>.</p>
 
 </div>
 </div>
@@ -337,7 +348,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
 <p>Tries to initialize the instance. If this does not succeed, the instance should not be used. </p>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l01016">1016</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l01030">1030</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -370,7 +381,26 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l01094">1094</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l01108">1108</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a9d0e434e410332342d346a7665ffbaac"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void edash_packager::Representation::SuppressOnce </td>
+          <td>(</td>
+          <td class="paramtype">SuppressFlag&#160;</td>
+          <td class="paramname"><em>flag</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>By calling this methods, the next time <a class="el" href="../../d7/d15/classedash__packager_1_1Representation.html#a52225b2a8c588ce52454baede35987a5">GetXml()</a> is called, the corresponding attributes will not be set. For example, if SuppressOnce(kSuppressWidth) is called, then <a class="el" href="../../d7/d15/classedash__packager_1_1Representation.html#a52225b2a8c588ce52454baede35987a5">GetXml()</a> will return a &lt;Representation&gt; element without a  attribute. Note that it only applies to the next call to <a class="el" href="../../d7/d15/classedash__packager_1_1Representation.html#a52225b2a8c588ce52454baede35987a5">GetXml()</a>, calling <a class="el" href="../../d7/d15/classedash__packager_1_1Representation.html#a52225b2a8c588ce52454baede35987a5">GetXml()</a> again without calling this methods will return a &lt;Representation&gt; element with the attribute. This may be called multiple times to set different (or the same) flags. </p>
+
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l01187">1187</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -415,7 +445,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
 </dl>
 <dl class="section attention"><dt>Attention</dt><dd>This might get removed once DASH IF IOP specification makes a a clear guideline on how to handle key rotation. Also to get this working with shaka-player, this method <em>DOES NOT</em> update the PSSH element. Instead, it removes the element regardless of the content of <em>pssh</em>. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l01064">1064</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html#l01078">1078</a> of file <a class="el" href="../../dd/d11/mpd__builder_8cc_source.html">mpd_builder.cc</a>.</p>
 
 </div>
 </div>
@@ -426,7 +456,7 @@ template&lt;MpdBuilder::MpdType type&gt; </td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jan 8 2016 19:23:37 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Jan 9 2016 01:03:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

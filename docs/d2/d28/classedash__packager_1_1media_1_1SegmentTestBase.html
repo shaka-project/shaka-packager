@@ -88,6 +88,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="../../da/d09/classedash__packager_1_1media_1_1SegmentTestBase-members.html">List of all members</a>  </div>
@@ -109,6 +110,17 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d89/classedash__packager_1_1media_1_1SegmentTestBase_1_1ClusterParser.html">ClusterParser</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a39ccf0963b81a8531b5fbf872e6ba35d"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>KeyFrameFlag</b> { <b>kKeyFrame</b>, 
+<b>kNotKeyFrame</b>
+ }</td></tr>
+<tr class="separator:a39ccf0963b81a8531b5fbf872e6ba35d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0cc4eed8df97da2e55296d7b75ded435"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>SideDataFlag</b> { <b>kGenerateSideData</b>, 
+<b>kNoSideData</b>
+ }</td></tr>
+<tr class="separator:a0cc4eed8df97da2e55296d7b75ded435"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a2f8b4790020f638d0619717a84960b70"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2f8b4790020f638d0619717a84960b70"></a>
@@ -122,10 +134,10 @@ template&lt;typename S &gt; </td></tr>
 <tr class="memitem:a148e000fd19292c8d4103ec2c726da17"><td class="memTemplItemLeft" align="right" valign="top">void&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d2/d28/classedash__packager_1_1media_1_1SegmentTestBase.html#a148e000fd19292c8d4103ec2c726da17">CreateAndInitializeSegmenter</a> (const <a class="el" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;options, <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> *info, scoped_ptr&lt; <a class="el" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html">webm::Segmenter</a> &gt; *result) const </td></tr>
 <tr class="memdesc:a148e000fd19292c8d4103ec2c726da17"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a Segmenter of the given type and initializes it. <br/></td></tr>
 <tr class="separator:a148e000fd19292c8d4103ec2c726da17"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4ec9ded9bc0974f36459aa819cbec75"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae4ec9ded9bc0974f36459aa819cbec75"></a>
-scoped_refptr&lt; <a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d28/classedash__packager_1_1media_1_1SegmentTestBase.html#ae4ec9ded9bc0974f36459aa819cbec75">CreateSample</a> (bool is_key_frame, uint64_t duration)</td></tr>
-<tr class="memdesc:ae4ec9ded9bc0974f36459aa819cbec75"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new media sample. <br/></td></tr>
-<tr class="separator:ae4ec9ded9bc0974f36459aa819cbec75"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d5a6020af6bc81cee269e03998c1fa4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8d5a6020af6bc81cee269e03998c1fa4"></a>
+scoped_refptr&lt; <a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html">MediaSample</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d28/classedash__packager_1_1media_1_1SegmentTestBase.html#a8d5a6020af6bc81cee269e03998c1fa4">CreateSample</a> (KeyFrameFlag key_frame_flag, uint64_t duration, SideDataFlag side_data_flag)</td></tr>
+<tr class="memdesc:a8d5a6020af6bc81cee269e03998c1fa4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a new media sample. <br/></td></tr>
+<tr class="separator:a8d5a6020af6bc81cee269e03998c1fa4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89b635fe86f80e54d4a4dd8cd6e4a1a0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a89b635fe86f80e54d4a4dd8cd6e4a1a0"></a>
 <a class="el" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d28/classedash__packager_1_1media_1_1SegmentTestBase.html#a89b635fe86f80e54d4a4dd8cd6e4a1a0">CreateMuxerOptions</a> () const </td></tr>
 <tr class="memdesc:a89b635fe86f80e54d4a4dd8cd6e4a1a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a <a class="el" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html">Muxer</a> options object for testing. <br/></td></tr>
@@ -168,7 +180,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>single_segment_</b></
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jan 8 2016 19:23:39 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Jan 9 2016 01:03:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -111,8 +111,8 @@ Inheritance diagram for edash_packager::xml::RepresentationXmlNode:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a2b00f576154e002f067849129cff4c4a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html#a2b00f576154e002f067849129cff4c4a">AddVideoInfo</a> (const MediaInfo::VideoInfo &amp;video_info)</td></tr>
-<tr class="separator:a2b00f576154e002f067849129cff4c4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1a3651243d59b29652453ad5d52e4912"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html#a1a3651243d59b29652453ad5d52e4912">AddVideoInfo</a> (const MediaInfo::VideoInfo &amp;video_info, bool set_width, bool set_height, bool set_frame_rate)</td></tr>
+<tr class="separator:a1a3651243d59b29652453ad5d52e4912"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1a3d8d8831e19ae010841704c07238c6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html#a1a3d8d8831e19ae010841704c07238c6">AddAudioInfo</a> (const MediaInfo::AudioInfo &amp;audio_info)</td></tr>
 <tr class="separator:a1a3d8d8831e19ae010841704c07238c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2afa0f4b92900936e2eb97a218d119a2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html#a2afa0f4b92900936e2eb97a218d119a2">AddVODOnlyInfo</a> (const MediaInfo &amp;media_info)</td></tr>
@@ -183,7 +183,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if successfully set attributes and children elements (if applicable), false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00238">238</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00245">245</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
 
 </div>
 </div>
@@ -223,11 +223,11 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00293">293</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00300">300</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a2b00f576154e002f067849129cff4c4a"></a>
+<a class="anchor" id="a1a3651243d59b29652453ad5d52e4912"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -235,8 +235,30 @@ Additional Inherited Members</h2></td></tr>
           <td class="memname">bool edash_packager::xml::RepresentationXmlNode::AddVideoInfo </td>
           <td>(</td>
           <td class="paramtype">const MediaInfo::VideoInfo &amp;&#160;</td>
-          <td class="paramname"><em>video_info</em></td><td>)</td>
+          <td class="paramname"><em>video_info</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>set_width</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>set_height</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>set_frame_rate</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -244,6 +266,9 @@ Additional Inherited Members</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">video_info</td><td>constains the VideoInfo for a <a class="el" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a>. </td></tr>
+    <tr><td class="paramname">set_width</td><td>is a flag for setting the width attribute. </td></tr>
+    <tr><td class="paramname">set_height</td><td>is a flag for setting the height attribute. </td></tr>
+    <tr><td class="paramname">set_frame_rate</td><td>is a flag for setting the frameRate attribute. </td></tr>
   </table>
   </dd>
 </dl>
@@ -275,7 +300,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00246">246</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../df/d96/xml__node_8cc_source.html#l00253">253</a> of file <a class="el" href="../../df/d96/xml__node_8cc_source.html">xml_node.cc</a>.</p>
 
 </div>
 </div>
@@ -286,7 +311,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jan 8 2016 19:23:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Jan 9 2016 01:03:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

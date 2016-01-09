@@ -1,6 +1,7 @@
 var searchData=
 [
   ['aacaudiospecificconfig',['AACAudioSpecificConfig',['../dc/dc6/classedash__packager_1_1media_1_1mp4_1_1AACAudioSpecificConfig.html',1,'edash_packager::media::mp4']]],
+  ['ac3specific',['AC3Specific',['../d0/d65/structedash__packager_1_1media_1_1mp4_1_1AC3Specific.html',1,'edash_packager::media::mp4']]],
   ['adaptationset',['AdaptationSet',['../db/de4/classedash__packager_1_1AdaptationSet.html',1,'edash_packager']]],
   ['adaptationsetxmlnode',['AdaptationSetXmlNode',['../d6/d37/classedash__packager_1_1xml_1_1AdaptationSetXmlNode.html',1,'edash_packager::xml']]],
   ['adtsheader',['AdtsHeader',['../db/d69/classedash__packager_1_1media_1_1mp2t_1_1AdtsHeader.html',1,'edash_packager::media::mp2t']]],
