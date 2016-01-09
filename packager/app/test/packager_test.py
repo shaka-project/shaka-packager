@@ -104,6 +104,24 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffGold(self.output[2], 'subtitle-english-golden.vtt')
     self._DiffGold(self.mpd_output, 'bear-640x360-avt-golden.mpd')
 
+  def testPackageVp8Webm(self):
+    self.packager.Package(
+        self._GetStreams(['video'],
+                         output_format='webm',
+                         test_files=['bear-640x360.webm']),
+        self._GetFlags())
+    self._DiffGold(self.output[0], 'bear-640x360-vp8-golden.webm')
+    self._DiffGold(self.mpd_output, 'bear-640x360-vp8-webm-golden.mpd')
+
+  def testPackageVp9Webm(self):
+    self.packager.Package(
+        self._GetStreams(['video'],
+                         output_format='webm',
+                         test_files=['bear-320x240-vp9.webm']),
+        self._GetFlags())
+    self._DiffGold(self.output[0], 'bear-320x240-vp9-golden.webm')
+    self._DiffGold(self.mpd_output, 'bear-320x240-vp9-webm-golden.mpd')
+
   def testPackageWithEncryption(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video']),
@@ -119,6 +137,24 @@ class PackagerAppTest(unittest.TestCase):
         self._GetFlags(encryption=True))
     self._DiffGold(self.output[0], 'bear-640x360-hevc-v-cenc-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-hevc-v-cenc-golden.mpd')
+
+  def testPackageVp8Mp4WithEncryption(self):
+    self.packager.Package(
+        self._GetStreams(['video'],
+                         output_format='mp4',
+                         test_files=['bear-640x360.webm']),
+        self._GetFlags(encryption=True))
+    self._DiffGold(self.output[0], 'bear-640x360-vp8-cenc-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-vp8-cenc-golden.mpd')
+
+  def testPackageVp9Mp4WithEncryption(self):
+    self.packager.Package(
+        self._GetStreams(['video'],
+                         output_format='mp4',
+                         test_files=['bear-320x240-vp9.webm']),
+        self._GetFlags(encryption=True))
+    self._DiffGold(self.output[0], 'bear-320x240-vp9-cenc-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-320x240-vp9-cenc-golden.mpd')
 
   def testPackageWithEncryptionAndRandomIv(self):
     self.packager.Package(
@@ -277,7 +313,11 @@ class PackagerAppTest(unittest.TestCase):
     self._AssertStreamInfo(self.output[0], 'is_encrypted: true')
     self._AssertStreamInfo(self.output[1], 'is_encrypted: true')
 
-  def _GetStreams(self, stream_descriptors, live=False, test_files=None):
+  def _GetStreams(self,
+                  stream_descriptors,
+                  output_format='mp4',
+                  live=False,
+                  test_files=None):
     if test_files is None:
       test_files = ['bear-640x360.mp4']
     streams = []
@@ -299,18 +339,20 @@ class PackagerAppTest(unittest.TestCase):
                                    output_prefix))
           self.output.append(output_prefix)
         else:
-          output = '%s.%s' % (output_prefix,
-                              self._GetExtension(stream_descriptor))
-          stream = 'input=%s,stream=%s,output=%s'
-          streams.append(stream % (test_file, stream_descriptor, output))
+          output = '%s.%s' % (
+              output_prefix,
+              self._GetExtension(stream_descriptor, output_format))
+          stream = 'input=%s,stream=%s,format=%s,output=%s'
+          streams.append(stream %
+                         (test_file, stream_descriptor, output_format, output))
           self.output.append(output)
     return streams
 
-  def _GetExtension(self, stream_descriptor):
+  def _GetExtension(self, stream_descriptor, output_format):
     # TODO(rkuroiwa): Support ttml.
     if stream_descriptor == 'text':
       return 'vtt'
-    return 'mp4'
+    return output_format
 
   def _GetFlags(self,
                 encryption=False,
@@ -364,7 +406,8 @@ class PackagerAppTest(unittest.TestCase):
   def _DiffGold(self, test_output, golden_file_name):
     golden_file = os.path.join(self.golden_file_dir, golden_file_name)
     if test_env.options.test_update_golden_files:
-      if not filecmp.cmp(test_output, golden_file):
+      if not os.path.exists(golden_file) or not filecmp.cmp(test_output,
+                                                            golden_file):
         print 'Updating golden file: ', golden_file_name
         shutil.copyfile(test_output, golden_file)
     else:
