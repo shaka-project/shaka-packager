@@ -449,18 +449,29 @@ class PackagerAppTest(unittest.TestCase):
       self._DiffGold(test_output_prefix + '-%d.m4s' % i,
                      golden_file_name_prefix + '-%d.m4s' % i)
 
-  # Live mpd contains a current availabilityStartTime, which needs to be
-  # replaced for comparison.
+  # Live mpd contains current availabilityStartTime and publishTime, which
+  # needs to be replaced for comparison.
   def _DiffLiveMpdGold(self, test_output, golden_file_name):
     with open(test_output, 'r') as f:
       content = f.read()
-    # Extract availabilityStartTime
-    m = re.search('(?<=availabilityStartTime=")[^"]+', content)
+
+    # Extract availabilityStartTime.
+    m = re.search('availabilityStartTime="[^"]+"', content)
     self.assertIsNotNone(m)
     availability_start_time = m.group(0)
-    print 'availabilityStartTime: ', availability_start_time
+    print availability_start_time
+
+    # Extract publishTime.
+    m = re.search('publishTime="[^"]+"', content)
+    self.assertIsNotNone(m)
+    publish_time = m.group(0)
+    print publish_time
     with open(test_output, 'w') as f:
-      f.write(content.replace(availability_start_time, 'place_holder'))
+        f.write(content.replace(
+            availability_start_time,
+            'availabilityStartTime="place_holder"').replace(
+                publish_time, 'publishTime="some_publish_time"'))
+
     self._DiffGold(test_output, golden_file_name)
 
   def _AssertStreamInfo(self, stream, info):

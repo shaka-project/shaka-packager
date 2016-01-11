@@ -15,12 +15,14 @@
 #include <string>
 
 #include "packager/base/base64.h"
+#include "packager/base/bind.h"
 #include "packager/base/files/file_path.h"
 #include "packager/base/logging.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/synchronization/lock.h"
+#include "packager/base/time/default_clock.h"
 #include "packager/base/time/time.h"
 #include "packager/media/file/file.h"
 #include "packager/mpd/base/content_protection_element.h"
@@ -121,8 +123,10 @@ bool Positive(double d) {
 
 // Return current time in XML DateTime format. The value is in UTC, so the
 // string ends with a 'Z'.
-std::string XmlDateTimeNowWithOffset(int32_t offset_seconds) {
-  base::Time time = base::Time::Now();
+std::string XmlDateTimeNowWithOffset(
+    int32_t offset_seconds,
+    base::Clock* clock) {
+  base::Time time = clock->Now();
   time += base::TimeDelta::FromSeconds(offset_seconds);
   base::Time::Exploded time_exploded;
   time.UTCExplode(&time_exploded);
@@ -397,7 +401,8 @@ class RepresentationStateChangeListenerImpl
 MpdBuilder::MpdBuilder(MpdType type, const MpdOptions& mpd_options)
     : type_(type),
       mpd_options_(mpd_options),
-      adaptation_sets_deleter_(&adaptation_sets_) {}
+      adaptation_sets_deleter_(&adaptation_sets_),
+      clock_(new base::DefaultClock()) {}
 
 MpdBuilder::~MpdBuilder() {}
 
@@ -454,6 +459,11 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
 
   // Iterate thru AdaptationSets and add them to one big Period element.
   XmlNode period("Period");
+
+  // Always set id=0 for now. Since this class can only generate one Period
+  // at the moment, just use a constant.
+  // Required for 'dynamic' MPDs.
+  period.SetId(0);
   std::list<AdaptationSet*>::iterator adaptation_sets_it =
       adaptation_sets_.begin();
   for (; adaptation_sets_it != adaptation_sets_.end(); ++adaptation_sets_it) {
@@ -539,6 +549,10 @@ void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
   mpd_node->SetStringAttribute("type", kDynamicMpdType);
   mpd_node->SetStringAttribute("profiles", kDynamicMpdProfile);
 
+  // No offset from NOW.
+  mpd_node->SetStringAttribute("publishTime",
+                               XmlDateTimeNowWithOffset(0, clock_.get()));
+
   // 'availabilityStartTime' is required for dynamic profile. Calculate if
   // not already calculated.
   if (availability_start_time_.empty()) {
@@ -546,7 +560,8 @@ void MpdBuilder::AddDynamicMpdInfo(XmlNode* mpd_node) {
     if (GetEarliestTimestamp(&earliest_presentation_time)) {
       availability_start_time_ =
           XmlDateTimeNowWithOffset(mpd_options_.availability_time_offset -
-                                   std::ceil(earliest_presentation_time));
+                                       std::ceil(earliest_presentation_time),
+                                   clock_.get());
     } else {
       LOG(ERROR) << "Could not determine the earliest segment presentation "
                     "time for availabilityStartTime calculation.";

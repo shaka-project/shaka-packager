@@ -9,7 +9,6 @@
 #include <inttypes.h>
 #include <libxml/xmlstring.h>
 
-#include "packager/base/strings/string_piece.h"
 #include "packager/base/files/file_util.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
@@ -36,6 +35,16 @@ const char kSElementTemplate[] =
 const char kSElementTemplateWithoutR[] =
     "<S t=\"%" PRIu64 "\" d=\"%" PRIu64 "\"/>\n";
 const int kDefaultStartNumber = 1;
+
+class TestClock : public base::Clock {
+ public:
+  explicit TestClock(const base::Time& t) : time_(t) {}
+  ~TestClock() override {}
+  base::Time Now() override { return time_; }
+
+ private:
+  base::Time time_;
+};
 
 // Get 'id' attribute from |node|, convert it to std::string and convert it to a
 // number.
@@ -178,9 +187,25 @@ class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
     mpd_.availability_start_time_ = "2011-12-25T12:30:00";
     // Override packager version string for testing.
     mpd_.mpd_options_.packager_version_string = "<tag>-<hash>-<test>";
+    InjectTestClock();
   }
 
   MpdOptions* mutable_mpd_options() { return &mpd_.mpd_options_; }
+
+  // Injects a clock that always returns 2016 Jan 11 15:10:24 in UTC.
+  void InjectTestClock() {
+    base::Time::Exploded test_time = {.year = 2016,
+                                      .month = 1,
+                                      .day_of_week = 1,  // Monday.
+                                      .day_of_month = 11,
+                                      .hour = 15,
+                                      .minute = 10,
+                                      .second = 24,
+                                      .millisecond = 0};
+    ASSERT_TRUE(test_time.HasValidValues());
+    mpd_.InjectClockForTesting(scoped_ptr<base::Clock>(
+        new TestClock(base::Time::FromUTCExploded(test_time))));
+  }
 
   std::string GetDefaultMediaInfo() {
     const char kMediaInfo[] =
@@ -253,12 +278,13 @@ class SegmentTemplateTest : public DynamicMpdBuilderTest {
     const char kOutputTemplate[] =
         "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         "<MPD xmlns=\"urn:mpeg:dash:schema:mpd:2011\" "
-        "xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
-        "xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
-        "xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\" "
-        "availabilityStartTime=\"2011-12-25T12:30:00\" minBufferTime=\"PT2S\" "
-        "type=\"dynamic\" profiles=\"urn:mpeg:dash:profile:isoff-live:2011\">\n"
-        "  <Period start=\"PT0S\">\n"
+        " xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" "
+        " xmlns:xlink=\"http://www.w3.org/1999/xlink\" "
+        " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\" "
+        " availabilityStartTime=\"2011-12-25T12:30:00\" minBufferTime=\"PT2S\" "
+        " type=\"dynamic\" profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
+        " publishTime=\"2016-01-11T15:10:24Z\">\n"
+        "  <Period id=\"0\" start=\"PT0S\">\n"
         "    <AdaptationSet id=\"0\" width=\"720\" height=\"480\""
         "                   frameRate=\"10/5\" contentType=\"video\""
         "                   par=\"3:2\" segmentAlignment=\"true\">\n"
@@ -342,8 +368,9 @@ class TimeShiftBufferDepthTest : public SegmentTemplateTest {
         "xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\" "
         "availabilityStartTime=\"2011-12-25T12:30:00\" minBufferTime=\"PT2S\" "
         "type=\"dynamic\" profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
+        "publishTime=\"2016-01-11T15:10:24Z\" "
         "timeShiftBufferDepth=\"PT%dS\">\n"
-        "  <Period start=\"PT0S\">\n"
+        "  <Period id=\"0\" start=\"PT0S\">\n"
         "    <AdaptationSet id=\"0\" width=\"720\" height=\"480\""
         "                   frameRate=\"10/2\" contentType=\"video\""
         "                   par=\"3:2\" segmentAlignment=\"true\">\n"
@@ -788,7 +815,7 @@ TEST_F(CommonMpdBuilderTest, AdaptationAddRoleElementMain) {
      "    minBufferTime=\"PT2S\" type=\"static\"\n"
      "    profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\"\n"
      "    mediaPresentationDuration=\"PT0S\">\n"
-     "  <Period>\n"
+     "  <Period id=\"0\">\n"
      "    <AdaptationSet id=\"0\" contentType=\"\">\n"
      "      <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>\n"
      "    </AdaptationSet>\n"
@@ -831,7 +858,7 @@ TEST_F(CommonMpdBuilderTest, CheckContentProtectionRoleRepresentationOrder) {
      "    minBufferTime=\"PT2S\" type=\"static\"\n"
      "    profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\"\n"
      "    mediaPresentationDuration=\"PT0S\">\n"
-     "  <Period>\n"
+     "  <Period id=\"0\">\n"
      "    <AdaptationSet id=\"0\" contentType=\"audio\">\n"
      "      <ContentProtection schemeIdUri=\"any_scheme\"/>\n"
      "      <Role schemeIdUri=\"urn:mpeg:dash:role:2011\" value=\"main\"/>\n"
@@ -1653,7 +1680,7 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtectionAndUpdate) {
       " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
       " mediaPresentationDuration=\"PT0S\">"
-      "  <Period>"
+      "  <Period id=\"0\">"
       "    <AdaptationSet id=\"0\" contentType=\"video\" width=\"1920\""
       "     height=\"1080\" frameRate=\"3000/100\">"
       "      <ContentProtection"
@@ -1682,7 +1709,7 @@ TEST_F(CommonMpdBuilderTest, AdaptationSetAddContentProtectionAndUpdate) {
       " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
       " mediaPresentationDuration=\"PT0S\">"
-      "  <Period>"
+      "  <Period id=\"0\">"
       "    <AdaptationSet id=\"0\" contentType=\"video\" width=\"1920\""
       "     height=\"1080\" frameRate=\"3000/100\">"
       "      <ContentProtection"
@@ -1737,7 +1764,7 @@ TEST_F(CommonMpdBuilderTest, UpdateToRemovePsshElement) {
       " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
       " mediaPresentationDuration=\"PT0S\">"
-      "  <Period>"
+      "  <Period id=\"0\">"
       "    <AdaptationSet id=\"0\" contentType=\"video\" width=\"1920\""
       "     height=\"1080\" frameRate=\"3000/100\">"
       "      <ContentProtection"
@@ -1766,7 +1793,7 @@ TEST_F(CommonMpdBuilderTest, UpdateToRemovePsshElement) {
       " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
       " mediaPresentationDuration=\"PT0S\">"
-      "  <Period>"
+      "  <Period id=\"0\">"
       "    <AdaptationSet id=\"0\" contentType=\"video\" width=\"1920\""
       "     height=\"1080\" frameRate=\"3000/100\">"
       "      <ContentProtection"
@@ -1863,7 +1890,7 @@ TEST_F(StaticMpdBuilderTest, AudioChannelConfigurationWithContentProtection) {
       " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
       " mediaPresentationDuration=\"PT24.00943374633789S\">"
-      "  <Period>"
+      "  <Period id=\"0\">"
       "    <AdaptationSet id=\"0\" contentType=\"audio\">"
       "      <Representation id=\"0\" bandwidth=\"195857\" codecs=\"mp4a.40.2\""
       "       mimeType=\"audio/mp4\" audioSamplingRate=\"44100\">"
@@ -1963,7 +1990,7 @@ TEST_F(StaticMpdBuilderTest, Text) {
       " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
       " mediaPresentationDuration=\"PT35S\">"
-      "  <Period>"
+      "  <Period id=\"0\">"
       "    <AdaptationSet id=\"0\" contentType=\"text\" lang=\"en\">"
       "      <Role schemeIdUri=\"urn:mpeg:dash:role:2011\""
       "       value=\"subtitle\"/>\n"
@@ -2005,8 +2032,9 @@ TEST_F(DynamicMpdBuilderTest, CheckMpdAttributes) {
       "minBufferTime=\"PT2S\" "
       "type=\"dynamic\" "
       "profiles=\"urn:mpeg:dash:profile:isoff-live:2011\" "
+      "publishTime=\"2016-01-11T15:10:24Z\" "
       "availabilityStartTime=\"2011-12-25T12:30:00\">\n"
-      "  <Period start=\"PT0S\"/>\n"
+      "  <Period id=\"0\" start=\"PT0S\"/>\n"
       "</MPD>\n";
 
   std::string mpd_doc;

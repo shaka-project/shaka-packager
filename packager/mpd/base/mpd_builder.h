@@ -23,8 +23,11 @@
 #include <string>
 
 #include "packager/base/atomic_sequence_num.h"
+#include "packager/base/callback.h"
 #include "packager/base/gtest_prod_util.h"
 #include "packager/base/stl_util.h"
+#include "packager/base/time/clock.h"
+#include "packager/base/time/time.h"
 #include "packager/mpd/base/bandwidth_estimator.h"
 #include "packager/mpd/base/content_protection_element.h"
 #include "packager/mpd/base/media_info.pb.h"
@@ -97,6 +100,12 @@ class MpdBuilder {
   static void MakePathsRelativeToMpd(const std::string& mpd_path,
                                      MediaInfo* media_info);
 
+  // Inject a |clock| that returns the current time.
+  /// This is for testing.
+  void InjectClockForTesting(scoped_ptr<base::Clock> clock) {
+    clock_ = clock.Pass();
+  }
+
  private:
   // DynamicMpdBuilderTest needs to set availabilityStartTime so that the test
   // doesn't need to depend on current time.
@@ -145,6 +154,10 @@ class MpdBuilder {
 
   base::AtomicSequenceNumber adaptation_set_counter_;
   base::AtomicSequenceNumber representation_counter_;
+
+  // By default, this returns the current time. This can be injected for
+  // testing.
+  scoped_ptr<base::Clock> clock_;
 
   DISALLOW_COPY_AND_ASSIGN(MpdBuilder);
 };
