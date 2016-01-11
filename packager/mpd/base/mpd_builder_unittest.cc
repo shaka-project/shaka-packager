@@ -501,6 +501,73 @@ TEST_F(CommonMpdBuilderTest, CheckVideoInfoReflectedInXml) {
       ExpectAttributeEqString("frameRate", "10/10", node_xml.get()));
 }
 
+TEST_F(CommonMpdBuilderTest, CheckVideoInfoVp8CodecInMp4) {
+  const char kTestMediaInfoCodecVp8[] =
+      "video_info {\n"
+      "  codec: 'vp08.00.00.08.01.01.00.00'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 1\n";
+  auto representation =
+      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfoCodecVp8),
+                           MpdOptions(), kAnyRepresentationId, NoListener());
+  EXPECT_TRUE(representation->Init());
+  xml::scoped_xml_ptr<xmlNode> node_xml(representation->GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("codecs", "vp08.00.00.08.01.01.00.00", node_xml.get()));
+}
+
+// Check that vp8 codec string will be updated for backward compatibility
+// support in webm.
+TEST_F(CommonMpdBuilderTest, CheckVideoInfoVp8CodecInWebm) {
+  const char kTestMediaInfoCodecVp8[] =
+      "video_info {\n"
+      "  codec: 'vp08.00.00.08.01.01.00.00'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 3\n";
+  auto representation =
+      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfoCodecVp8),
+                           MpdOptions(), kAnyRepresentationId, NoListener());
+  EXPECT_TRUE(representation->Init());
+  xml::scoped_xml_ptr<xmlNode> node_xml(representation->GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("codecs", "vp8", node_xml.get()));
+}
+
+// Check that vp9 codec string will be updated for backward compatibility
+// support in webm.
+TEST_F(CommonMpdBuilderTest, CheckVideoInfoVp9CodecInWebm) {
+  const char kTestMediaInfoCodecVp9[] =
+      "video_info {\n"
+      "  codec: 'vp09.00.00.08.01.01.00.00'\n"
+      "  width: 1280\n"
+      "  height: 720\n"
+      "  time_scale: 10\n"
+      "  frame_duration: 10\n"
+      "  pixel_width: 1\n"
+      "  pixel_height: 1\n"
+      "}\n"
+      "container_type: 3\n";
+  auto representation =
+      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfoCodecVp9),
+                           MpdOptions(), kAnyRepresentationId, NoListener());
+  EXPECT_TRUE(representation->Init());
+  xml::scoped_xml_ptr<xmlNode> node_xml(representation->GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("codecs", "vp9", node_xml.get()));
+}
+
 // Make sure RepresentationStateChangeListener::OnNewSegmentForRepresentation()
 // is called.
 TEST_F(CommonMpdBuilderTest,

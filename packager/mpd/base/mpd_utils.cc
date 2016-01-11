@@ -61,8 +61,20 @@ std::string GetCodecs(const MediaInfo& media_info) {
   CHECK(OnlyOneTrue(media_info.has_video_info(), media_info.has_audio_info(),
                     media_info.has_text_info()));
 
-  if (media_info.has_video_info())
+  if (media_info.has_video_info()) {
+    if (media_info.container_type() == MediaInfo::CONTAINER_WEBM) {
+      std::string codec = media_info.video_info().codec().substr(0, 4);
+      // media_info.video_info().codec() contains new revised codec string
+      // specified by "VPx in ISO BMFF" document, which is not compatible to
+      // old codec strings in WebM. Hack it here before all browsers support
+      // new codec strings.
+      if (codec == "vp08")
+        return "vp8";
+      if (codec == "vp09")
+        return "vp9";
+    }
     return media_info.video_info().codec();
+  }
 
   if (media_info.has_audio_info())
     return media_info.audio_info().codec();
