@@ -1,3 +1,28 @@
+## [1.3.0] - 2016-01-15
+### Added
+- Added support for new container format: WebM.
+- Added support for new codecs:
+  - H265 in ISO-BMFF (H265 in other containers will be added later).
+  - VP8, VP9 in WebM and ISO-BMFF (experimental).
+  - Opus and Vorbis in WebM.
+  - DTS in ISO-BMFF.
+- Added Verbose logging through --v or --vmodule command line flags.
+- Added Subtitle support for On-Demand: allowing subtitle inputs in webvtt or
+  ttml. Support for subtitle inputs in media files will be added later.
+- Added version information in generated outputs.
+
+### Changed
+- Store Sample Auxiliary Information in Sample Encryption Information ('senc')
+  box instead of inside Media Data ('mdat') box.
+- Got rid of svn dependencies, now all dependencies are in git repo.
+- Switched to boringssl, replacing openssl.
+
+### Fixed (in addition to fix in 1.2.1)
+- Fixed issue #55 DASH validation (conformance check) problems.
+- Fixed AssetId overflow in classic WVM decryption when AssetId exceeds
+  0x8000000.
+- Fixed a memory leak due to thread object tracking #61.
+
 ## [1.2.1] - 2015-11-18
 ### Fixed
 - Fixed a deadlock in MpdBuilder which could lead to program hang #45
@@ -85,5 +110,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[1.3.0]: https://github.com/google/edash-packager/compare/v1.2.0...v1.3.0
+[1.2.1]: https://github.com/google/edash-packager/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/google/edash-packager/compare/v1.1...v1.2.0
 [1.1.0]: https://github.com/google/edash-packager/compare/v1.0...v1.1

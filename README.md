@@ -2,13 +2,31 @@ Media packaging SDK intended for C++ programmers writing DASH packager applicati
 
 This document provides the information needed to create a DASH packager that is able to remux and encrypt a video into fragmented ISO BMFF format with common encryption (CENC) support. The DASH packaging API is also designed in such a way for easy extension to more source and destination formats.
 
+Current supported codecs:
+
+|      Codecs       |   ISO-BMFF   |     WebM     |   MPEG2-TS   |     WVM     |
+|:-----------------:|:------------:|:------------:|:------------:|:-----------:|
+|    H264 (AVC)     |    I / O     |      I       |       -      |      I      |
+|    H265 (HEVC)    |    I / O     |      -       |       -      |      -      |
+|       VP8         |    I / O     |    I / O     |       -      |      -      |
+|       VP9         |    I / O     |    I / O     |       -      |      -      |
+|       AAC         |    I / O     |      -       |       I      |      I      |
+|       DTS         |    I / O     |      -       |       -      |      -      |
+|       Opus        |      -       |    I / O     |       -      |      -      |
+|      Vorbis       |      -       |    I / O     |       -      |      -      |
+** I for input and O for output.
+** We will update this table once new formats are supported.
+
+Right now this project is supported directly on Linux platform only. One option to run edash-packager on other platforms is using [docker] (#Using docker for testing /development).
+
+
 # Mailing list #
 
 We have a [public mailing list](https://groups.google.com/forum/#!forum/edash-users) for discussion and announcements. To receive notifications about new versions, please join the list. You can also use the list to ask questions or discuss eDash Packager developments.
 
 # Setting up for development #
 
-1. Packager source is managed by Git at https://www.github.com/google/edash-packager. We use gclient tool from Chromium to manage third party libraries. You will need Git (v1.7.5 or above) and Subversion (for third party libraries) installed on your machine to access the source code.
+1. Packager source is managed by Git at https://www.github.com/google/edash-packager. We use gclient tool from Chromium to manage third party libraries. You will need Git (v1.7.5 or above) installed on your machine to access the source code.
 
 2. Install Chromium depot tools which contains gclient and ninja
 
@@ -98,7 +116,7 @@ We have a [public mailing list](https://groups.google.com/forum/#!forum/edash-us
   Outputs are available in your media folder `your_media_path`.
 
 
-#Design overview#
+# Design overview #
 
 Major modules are described below:
 
@@ -112,12 +130,10 @@ Demuxer and Muxer are connected using MediaStream. MediaStream wraps the element
 
 MpdBuilder is responsible for the creation of Media Presentation Description as specified in ISO/IEC 23009-1 DASH MPD spec.
 
-Supported source formats: ISO BMFF (both fragmented and non-fragmented), MPEG-2 TS, IPTV (MPEG-2 TS over UDP), and WVM (Widevine); the only output format supported currently is fragmented ISO BMFF with CENC. Support for more formats will be added soon.
-
-Refer to [Design](DESIGN.md), [API](https://google.github.io/edash-packager/docs) for details.
+Refer to [Design](docs/design.md), [API](https://google.github.io/edash-packager/docs) for details.
 
 
-#DASH-IF IOP Compliance#
+# DASH-IF IOP Compliance #
 
 We try out best to be compliant to [Guidelines for Implementation: DASH-IF Interoperability Points](http://dashif.org/wp-content/uploads/2015/04/DASH-IF-IOP-v3.0.pdf).
 
@@ -134,7 +150,7 @@ Users can enable the flag '--generate_dash_if_iop_compliant_mpd' to have these f
 Please feel free to file a bug or feature request if there are any incompatibilities with DASH-IF IOP or other standards / specifications.
 
 
-#Driver Program Sample Usage#
+# Driver Program Sample Usage #
 
 Sample driver programs **packager** and **mpd_generator** are written using the SDK.
 
@@ -163,6 +179,17 @@ packager \
 --profile on-demand \
 --mpd_output sintel_vod.mpd
 ```
+
+Includes a subtitle input from webvtt:
+```Shell
+packager \
+  input=sintel.mp4,stream=audio,output=sintel_audio.mp4 \
+  input=sintel.mp4,stream=video,output=sintel_video.mp4 \
+  input=sintel_english_input.vtt,stream=text,output=sintel_english.vtt \
+--profile on-demand \
+--mpd_output sintel_vod.mpd
+```
+
 
 You may also generate mpd with live profile. Here is an example with IPTV input streams:
 ```Shell
