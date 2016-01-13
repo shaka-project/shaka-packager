@@ -249,13 +249,14 @@ Status Segmenter::CreateVideoTrack(VideoStreamInfo* info) {
   }
 
   track->set_uid(info->track_id());
+  if (!info->language().empty())
+    track->set_language(info->language().c_str());
   track->set_type(mkvmuxer::Tracks::kVideo);
   track->set_width(info->width());
   track->set_height(info->height());
   track->set_display_height(info->height());
   track->set_display_width(info->width() * info->pixel_width() /
                            info->pixel_height());
-  track->set_language(info->language().c_str());
 
   tracks_.AddTrack(track, info->track_id());
   track_id_ = track->number();
@@ -278,9 +279,15 @@ Status Segmenter::CreateAudioTrack(AudioStreamInfo* info) {
     return Status(error::UNIMPLEMENTED,
                   "Only Vorbis and Opus audio codecs are supported.");
   }
+  if (!track->SetCodecPrivate(info->extra_data().data(),
+                              info->extra_data().size())) {
+    return Status(error::INTERNAL_ERROR,
+                  "Private codec data required for audio streams");
+  }
 
   track->set_uid(info->track_id());
-  track->set_language(info->language().c_str());
+  if (!info->language().empty())
+    track->set_language(info->language().c_str());
   track->set_type(mkvmuxer::Tracks::kAudio);
   track->set_sample_rate(info->sampling_frequency());
   track->set_channels(info->num_channels());

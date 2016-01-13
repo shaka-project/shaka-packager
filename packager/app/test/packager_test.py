@@ -122,6 +122,15 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffGold(self.output[0], 'bear-320x240-vp9-golden.webm')
     self._DiffGold(self.mpd_output, 'bear-320x240-vp9-webm-golden.mpd')
 
+  def testPackageVorbisWebm(self):
+    self.packager.Package(
+        self._GetStreams(['audio'],
+                         output_format='webm',
+                         test_files=['bear-320x240-audio-only.webm']),
+        self._GetFlags())
+    self._DiffGold(self.output[0], 'bear-320x240-vorbis-golden.webm')
+    self._DiffGold(self.mpd_output, 'bear-320x240-vorbis-webm-golden.mpd')
+
   def testPackageWithEncryption(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video']),
