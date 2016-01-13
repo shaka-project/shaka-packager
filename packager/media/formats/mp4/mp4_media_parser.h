@@ -17,15 +17,12 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/decryptor_source.h"
 #include "packager/media/base/media_parser.h"
 #include "packager/media/base/offset_byte_queue.h"
 
 namespace edash_packager {
 namespace media {
-
-class AesCtrEncryptor;
-class DecryptConfig;
-
 namespace mp4 {
 
 class BoxReader;
@@ -70,10 +67,6 @@ class MP4MediaParser : public MediaParser {
   bool FetchKeysIfNecessary(
       const std::vector<ProtectionSystemSpecificHeader>& headers);
 
-  bool DecryptSampleBuffer(const DecryptConfig* decrypt_config,
-                           uint8_t* buffer,
-                           size_t buffer_size);
-
   // To retain proper framing, each 'mdat' box must be read; to limit memory
   // usage, the box's data needs to be discarded incrementally as frames are
   // extracted from the stream. This function discards data from the stream up
@@ -94,6 +87,7 @@ class MP4MediaParser : public MediaParser {
   InitCB init_cb_;
   NewSampleCB new_sample_cb_;
   KeySource* decryption_key_source_;
+  scoped_ptr<DecryptorSource> decryptor_source_;
 
   OffsetByteQueue queue_;
 
@@ -109,9 +103,6 @@ class MP4MediaParser : public MediaParser {
 
   scoped_ptr<Movie> moov_;
   scoped_ptr<TrackRunIterator> runs_;
-
-  typedef std::map<std::vector<uint8_t>, AesCtrEncryptor*> DecryptorMap;
-  DecryptorMap decryptor_map_;
 
   DISALLOW_COPY_AND_ASSIGN(MP4MediaParser);
 };

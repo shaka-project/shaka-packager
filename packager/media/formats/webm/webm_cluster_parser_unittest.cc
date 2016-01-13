@@ -23,6 +23,7 @@
 using ::testing::HasSubstr;
 using ::testing::InSequence;
 using ::testing::Return;
+using ::testing::SetArgPointee;
 using ::testing::StrictMock;
 using ::testing::Mock;
 using ::testing::_;
@@ -137,6 +138,23 @@ const uint8_t kEncryptedFrame[] = {
     // Some dummy encrypted data
     0x01,
 };
+const uint8_t kMockKey[] = {
+    0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+    0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0x00,
+};
+const uint8_t kExpectedDecryptedFrame[] = {
+    0x41,
+};
+
+const uint8_t kClearFrameInEncryptedTrack[] = {
+    // Block is not encrypted
+    0x00,
+    // Some dummy frame data
+    0x01, 0x02, 0x03,
+};
+const uint8_t kExpectedClearFrame[] = {
+    0x01, 0x02, 0x03,
+};
 
 const uint8_t kVP8Frame[] = {
     0x52, 0x04, 0x00, 0x9d, 0x01, 0x2a, 0x40, 0x01, 0xf0, 0x00, 0x00, 0x47,
@@ -151,6 +169,12 @@ const uint8_t kVP9Frame[] = {
     0xfc, 0xa8, 0xef, 0x67, 0xdc, 0xac, 0xf7, 0x3e, 0x31, 0x07, 0xab, 0xc7,
     0x0c, 0x74, 0x48, 0x8b, 0x95, 0x30, 0xc9, 0xf0, 0x37, 0x3b, 0xe6, 0x11,
     0xe1, 0xe6, 0xef, 0xff, 0xfd, 0xf7, 0x4f, 0x0f,
+};
+
+class MockKeySource : public KeySource {
+ public:
+  MOCK_METHOD2(GetKey,
+               Status(const std::vector<uint8_t>& key_id, EncryptionKey* key));
 };
 
 scoped_ptr<Cluster> CreateCluster(int timecode,
@@ -284,10 +308,6 @@ bool VerifyTextBuffers(const BlockInfo* block_info_ptr,
   return true;
 }
 
-void VerifyEncryptedBuffer(scoped_refptr<MediaSample> buffer) {
-  EXPECT_TRUE(buffer->is_encrypted());
-}
-
 }  // namespace
 
 class WebMClusterParserTest : public testing::Test {
@@ -382,7 +402,7 @@ class WebMClusterParserTest : public testing::Test {
         ignored_tracks, audio_encryption_key_id, video_encryption_key_id,
         base::Bind(&WebMClusterParserTest::NewSampleEvent,
                    base::Unretained(this)),
-        init_cb);
+        init_cb, &mock_key_source_);
   }
 
   // Create a default version of the parser for test.
@@ -450,6 +470,7 @@ class WebMClusterParserTest : public testing::Test {
   BufferQueue audio_buffers_;
   BufferQueue video_buffers_;
   TextBufferQueueMap text_buffers_map_;
+  StrictMock<MockKeySource> mock_key_source_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(WebMClusterParserTest);
@@ -806,6 +827,36 @@ TEST_F(WebMClusterParserTest, ParseVP9) {
 }
 
 TEST_F(WebMClusterParserTest, ParseEncryptedBlock) {
+  const std::string video_key_id("video_key_id");
+
+  EncryptionKey encryption_key;
+  encryption_key.key.assign(kMockKey, kMockKey + arraysize(kMockKey));
+  EXPECT_CALL(
+      mock_key_source_,
+      GetKey(std::vector<uint8_t>(video_key_id.begin(), video_key_id.end()), _))
+      .WillOnce(DoAll(SetArgPointee<1>(encryption_key), Return(Status::OK)));
+
+  scoped_ptr<Cluster> cluster(
+      CreateCluster(kEncryptedFrame, arraysize(kEncryptedFrame)));
+
+  parser_.reset(CreateParserWithKeyIdsAndAudioCodec(std::string(), video_key_id,
+                                                    kUnknownAudioCodec));
+
+  int result = parser_->Parse(cluster->data(), cluster->size());
+  EXPECT_EQ(cluster->size(), result);
+  parser_->Flush();
+  ASSERT_EQ(1UL, video_buffers_.size());
+  scoped_refptr<MediaSample> buffer = video_buffers_[0];
+  EXPECT_EQ(std::vector<uint8_t>(
+                kExpectedDecryptedFrame,
+                kExpectedDecryptedFrame + arraysize(kExpectedDecryptedFrame)),
+            std::vector<uint8_t>(buffer->data(),
+                                 buffer->data() + buffer->data_size()));
+}
+
+TEST_F(WebMClusterParserTest, ParseEncryptedBlockGetKeyFailed) {
+  EXPECT_CALL(mock_key_source_, GetKey(_, _)).WillOnce(Return(Status::UNKNOWN));
+
   scoped_ptr<Cluster> cluster(
       CreateCluster(kEncryptedFrame, arraysize(kEncryptedFrame)));
 
@@ -813,11 +864,7 @@ TEST_F(WebMClusterParserTest, ParseEncryptedBlock) {
       std::string(), "video_key_id", kUnknownAudioCodec));
 
   int result = parser_->Parse(cluster->data(), cluster->size());
-  EXPECT_EQ(cluster->size(), result);
-  parser_->Flush();
-  ASSERT_EQ(1UL, video_buffers_.size());
-  scoped_refptr<MediaSample> buffer = video_buffers_[0];
-  VerifyEncryptedBuffer(buffer);
+  EXPECT_EQ(-1, result);
 }
 
 TEST_F(WebMClusterParserTest, ParseBadEncryptedBlock) {
@@ -828,6 +875,25 @@ TEST_F(WebMClusterParserTest, ParseBadEncryptedBlock) {
       std::string(), "video_key_id", kUnknownAudioCodec));
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(-1, result);
+}
+
+TEST_F(WebMClusterParserTest, ParseClearFrameInEncryptedTrack) {
+  scoped_ptr<Cluster> cluster(CreateCluster(
+      kClearFrameInEncryptedTrack, arraysize(kClearFrameInEncryptedTrack)));
+
+  parser_.reset(CreateParserWithKeyIdsAndAudioCodec(
+      std::string(), "video_key_id", kUnknownAudioCodec));
+
+  int result = parser_->Parse(cluster->data(), cluster->size());
+  EXPECT_EQ(cluster->size(), result);
+  parser_->Flush();
+  ASSERT_EQ(1UL, video_buffers_.size());
+  scoped_refptr<MediaSample> buffer = video_buffers_[0];
+  EXPECT_EQ(std::vector<uint8_t>(
+                kExpectedClearFrame,
+                kExpectedClearFrame + arraysize(kExpectedClearFrame)),
+            std::vector<uint8_t>(buffer->data(),
+                                 buffer->data() + buffer->data_size()));
 }
 
 TEST_F(WebMClusterParserTest, ParseInvalidZeroSizedCluster) {

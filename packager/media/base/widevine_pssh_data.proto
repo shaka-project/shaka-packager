@@ -1,0 +1,36 @@
+// Copyright 2016 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+//
+// This file defines Widevine Pssh Data proto format.
+
+syntax = "proto2";
+
+package edash_packager.media;
+
+message WidevinePsshData {
+  enum Algorithm {
+    UNENCRYPTED = 0;
+    AESCTR = 1;
+  };
+  optional Algorithm algorithm = 1;
+  repeated bytes key_id = 2;
+
+  // Content provider name.
+  optional string provider = 3;
+
+  // A content identifier, specified by content provider.
+  optional bytes content_id = 4;
+
+  // The name of a registered policy to be used for this asset.
+  optional string policy = 6;
+
+  // Crypto period index, for media using key rotation.
+  optional uint32 crypto_period_index = 7;
+
+  // Optional protected context for group content. The grouped_license is a
+  // serialized SignedMessage.
+  optional bytes grouped_license = 8;
+}

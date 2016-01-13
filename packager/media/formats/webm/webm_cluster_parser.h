@@ -11,6 +11,7 @@
 #include <string>
 
 #include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/decryptor_source.h"
 #include "packager/media/base/media_parser.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/formats/webm/webm_parser.h"
@@ -93,6 +94,28 @@ class WebMClusterParser : public WebMParserClient {
   typedef std::map<int, Track> TextTrackMap;
 
  public:
+  /// Create a WebMClusterParser from given parameters.
+  /// @param timecode_scale indicates timecode scale for the clusters.
+  /// @param audio_stream_info references audio stream information. It will
+  ///        be NULL if there are no audio tracks available.
+  /// @param video_stream_info references video stream information. It will
+  ///        be NULL if there are no video tracks available.
+  /// @param audio_default_duration indicates default duration for audio
+  ///        samples.
+  /// @param video_default_duration indicates default duration for video
+  ///        samples.
+  /// @param text_tracks contains text track information.
+  /// @param ignored_tracks contains a list of ignored track ids.
+  /// @param audio_encryption_key_id indicates the encryption key id for audio
+  ///        samples if there is an audio stream and the audio stream is
+  ///        encrypted. It is empty otherwise.
+  /// @param video_encryption_key_id indicates the encryption key id for video
+  ///        samples if there is a video stream and the video stream is
+  ///        encrypted. It is empty otherwise.
+  /// @param new_sample_cb is the callback to emit new samples.
+  /// @param init_cb is the callback to initialize streams.
+  /// @param decryption_key_source points to a decryption key source to fetch
+  ///        decryption keys. Should not be NULL if the tracks are encrypted.
   WebMClusterParser(int64_t timecode_scale,
                     scoped_refptr<AudioStreamInfo> audio_stream_info,
                     scoped_refptr<VideoStreamInfo> video_stream_info,
@@ -103,7 +126,8 @@ class WebMClusterParser : public WebMParserClient {
                     const std::string& audio_encryption_key_id,
                     const std::string& video_encryption_key_id,
                     const MediaParser::NewSampleCB& new_sample_cb,
-                    const MediaParser::InitCB& init_cb);
+                    const MediaParser::InitCB& init_cb,
+                    KeySource* decryption_key_source);
   ~WebMClusterParser() override;
 
   /// Resets the parser state so it can accept a new cluster.
@@ -162,6 +186,8 @@ class WebMClusterParser : public WebMParserClient {
   scoped_refptr<AudioStreamInfo> audio_stream_info_;
   scoped_refptr<VideoStreamInfo> video_stream_info_;
   std::set<int64_t> ignored_tracks_;
+
+  scoped_ptr<DecryptorSource> decryptor_source_;
   std::string audio_encryption_key_id_;
   std::string video_encryption_key_id_;
 

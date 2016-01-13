@@ -56,7 +56,7 @@ bool WebMCreateDecryptConfig(const uint8_t* data,
   decrypt_config->reset(new DecryptConfig(
       std::vector<uint8_t>(key_id, key_id + key_id_size),
       std::vector<uint8_t>(counter_block.begin(), counter_block.end()),
-      frame_offset, std::vector<SubsampleEntry>()));
+      std::vector<SubsampleEntry>()));
   *data_offset = frame_offset;
 
   return true;

@@ -56,8 +56,9 @@ class WebMMediaParser : public MediaParser {
   // Returning > 0 indicates success & the number of bytes parsed.
   int ParseCluster(const uint8_t* data, int size);
 
-  // Fire needkey event through the |encrypted_media_init_data_cb_|.
-  void OnEncryptedMediaInitData(const std::string& key_id);
+  // Fetch keys for the input key ids. Returns true on success, false otherwise.
+  bool FetchKeysIfNecessary(const std::string& audio_encryption_key_id,
+                            const std::string& video_encryption_key_id);
 
   State state_;
   InitCB init_cb_;

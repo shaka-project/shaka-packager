@@ -35,6 +35,7 @@
         'demuxer.h',
         'decrypt_config.cc',
         'decrypt_config.h',
+        'decryptor_source.cc',
         'decryptor_source.h',
         'http_key_fetcher.cc',
         'http_key_fetcher.h',
@@ -88,6 +89,19 @@
       ],
     },
     {
+      'target_name': 'widevine_pssh_data_proto',
+      'type': '<(component)',
+      'sources': ['widevine_pssh_data.proto'],
+      'variables': {
+        'proto_in_dir': '.',
+        'proto_out_dir': 'packager/media/base',
+      },
+      'includes': ['../../build/protoc.gypi'],
+      'dependencies': [
+        '../../third_party/protobuf/protobuf.gyp:protobuf_lite',
+      ],
+    },
+    {
       'target_name': 'media_base_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
@@ -97,6 +111,7 @@
         'buffer_writer_unittest.cc',
         'closure_thread_unittest.cc',
         'container_names_unittest.cc',
+        'decryptor_source_unittest.cc',
         'http_key_fetcher_unittest.cc',
         'muxer_util_unittest.cc',
         'offset_byte_queue_unittest.cc',

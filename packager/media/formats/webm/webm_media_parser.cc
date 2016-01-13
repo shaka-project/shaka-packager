@@ -9,7 +9,9 @@
 #include "packager/base/callback.h"
 #include "packager/base/callback_helpers.h"
 #include "packager/base/logging.h"
+#include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/timestamp.h"
+#include "packager/media/base/widevine_pssh_data.pb.h"
 #include "packager/media/formats/webm/webm_cluster_parser.h"
 #include "packager/media/formats/webm/webm_constants.h"
 #include "packager/media/formats/webm/webm_content_encodings.h"
@@ -185,8 +187,6 @@ int WebMMediaParser::ParseInfoAndTracks(const uint8_t* data, int size) {
       tracks_parser.audio_stream_info();
   if (audio_stream_info) {
     audio_stream_info->set_duration(duration_in_us);
-    if (audio_stream_info->is_encrypted())
-      OnEncryptedMediaInitData(tracks_parser.audio_encryption_key_id());
   } else {
     VLOG(1) << "No audio track info found.";
   }
@@ -195,10 +195,13 @@ int WebMMediaParser::ParseInfoAndTracks(const uint8_t* data, int size) {
       tracks_parser.video_stream_info();
   if (video_stream_info) {
     video_stream_info->set_duration(duration_in_us);
-    if (video_stream_info->is_encrypted())
-      OnEncryptedMediaInitData(tracks_parser.video_encryption_key_id());
   } else {
     VLOG(1) << "No video track info found.";
+  }
+
+  if (!FetchKeysIfNecessary(tracks_parser.audio_encryption_key_id(),
+                            tracks_parser.video_encryption_key_id())) {
+    return -1;
   }
 
   cluster_parser_.reset(new WebMClusterParser(
@@ -207,7 +210,8 @@ int WebMMediaParser::ParseInfoAndTracks(const uint8_t* data, int size) {
       tracks_parser.GetVideoDefaultDuration(timecode_scale_in_us),
       tracks_parser.text_tracks(), tracks_parser.ignored_tracks(),
       tracks_parser.audio_encryption_key_id(),
-      tracks_parser.video_encryption_key_id(), new_sample_cb_, init_cb_));
+      tracks_parser.video_encryption_key_id(), new_sample_cb_, init_cb_,
+      decryption_key_source_));
 
   return bytes_parsed;
 }
@@ -228,8 +232,30 @@ int WebMMediaParser::ParseCluster(const uint8_t* data, int size) {
   return bytes_parsed;
 }
 
-void WebMMediaParser::OnEncryptedMediaInitData(const std::string& key_id) {
-  NOTIMPLEMENTED() << "WebM decryption is not implemented yet.";
+bool WebMMediaParser::FetchKeysIfNecessary(
+    const std::string& audio_encryption_key_id,
+    const std::string& video_encryption_key_id) {
+  if (audio_encryption_key_id.empty() && video_encryption_key_id.empty())
+    return true;
+  // An error will be returned later if the samples need to be derypted.
+  if (!decryption_key_source_)
+    return true;
+
+  // Generate WidevinePsshData from key_id.
+  WidevinePsshData widevine_pssh_data;
+  if (!audio_encryption_key_id.empty())
+    widevine_pssh_data.add_key_id(audio_encryption_key_id);
+  if (!video_encryption_key_id.empty())
+    widevine_pssh_data.add_key_id(video_encryption_key_id);
+
+  const std::string serialized_string = widevine_pssh_data.SerializeAsString();
+  Status status = decryption_key_source_->FetchKeys(
+      std::vector<uint8_t>(serialized_string.begin(), serialized_string.end()));
+  if (!status.ok()) {
+    LOG(ERROR) << "Error fetching decryption keys: " << status;
+    return false;
+  }
+  return true;
 }
 
 }  // namespace media

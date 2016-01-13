@@ -38,22 +38,16 @@ class DecryptConfig {
 
   /// @param key_id is the ID that references the decryption key.
   /// @param iv is the initialization vector defined by the encryptor.
-  /// @param data_offset is the amount of data that should be discarded from
-  ///        the head of the sample buffer before applying subsample
-  ///        information. A decrypted buffer will be shorter than an encrypted
-  ///        buffer by this amount.
   /// @param subsamples defines the clear and encrypted portions of the sample
   ///        as described in SubsampleEntry. A decrypted buffer will be equal
   ///        in size to the sum of the subsample sizes.
   DecryptConfig(const std::vector<uint8_t>& key_id,
                 const std::vector<uint8_t>& iv,
-                const int data_offset,
                 const std::vector<SubsampleEntry>& subsamples);
   ~DecryptConfig();
 
   const std::vector<uint8_t>& key_id() const { return key_id_; }
   const std::vector<uint8_t>& iv() const { return iv_; }
-  int data_offset() const { return data_offset_; }
   const std::vector<SubsampleEntry>& subsamples() const { return subsamples_; }
 
  private:
@@ -61,9 +55,6 @@ class DecryptConfig {
 
   // Initialization vector.
   const std::vector<uint8_t> iv_;
-
-  // Amount of data to be discarded before applying subsample information.
-  const int data_offset_;
 
   // Subsample information. May be empty for some formats, meaning entire frame
   // (less data ignored by data_offset_) is encrypted.

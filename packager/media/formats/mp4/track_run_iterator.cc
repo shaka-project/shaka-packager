@@ -600,7 +600,6 @@ scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
   return scoped_ptr<DecryptConfig>(new DecryptConfig(
       track_encryption().default_kid,
       sample_encryption_entry.initialization_vector,
-      0,  // No offset to start of media data in MP4 using CENC.
       sample_encryption_entry.subsamples));
 }
 

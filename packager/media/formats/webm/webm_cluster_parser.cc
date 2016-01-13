@@ -60,7 +60,8 @@ WebMClusterParser::WebMClusterParser(
     const std::string& audio_encryption_key_id,
     const std::string& video_encryption_key_id,
     const MediaParser::NewSampleCB& new_sample_cb,
-    const MediaParser::InitCB& init_cb)
+    const MediaParser::InitCB& init_cb,
+    KeySource* decryption_key_source)
     : timecode_multiplier_(timecode_scale / 1000.0),
       audio_stream_info_(audio_stream_info),
       video_stream_info_(video_stream_info),
@@ -79,6 +80,8 @@ WebMClusterParser::WebMClusterParser(
              true,
              video_default_duration,
              new_sample_cb) {
+  if (decryption_key_source)
+    decryptor_source_.reset(new DecryptorSource(decryption_key_source));
   for (WebMTracksParser::TextTracks::const_iterator it = text_tracks.begin();
        it != text_tracks.end();
        ++it) {
@@ -326,11 +329,12 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
   }
 
   Track* track = NULL;
-  StreamType stream_type = kStreamAudio;
+  StreamType stream_type = kStreamUnknown;
   std::string encryption_key_id;
   if (track_num == audio_.track_num()) {
     track = &audio_;
     encryption_key_id = audio_encryption_key_id_;
+    stream_type = kStreamAudio;
   } else if (track_num == video_.track_num()) {
     track = &video_;
     encryption_key_id = video_encryption_key_id_;
@@ -348,6 +352,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     LOG(ERROR) << "Unexpected track number " << track_num;
     return false;
   }
+  DCHECK_NE(stream_type, kStreamUnknown);
 
   last_block_timecode_ = timecode;
 
@@ -384,9 +389,19 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     buffer = MediaSample::CopyFrom(data + data_offset, size - data_offset,
                                    additional, additional_size, is_keyframe);
 
-    if (decrypt_config) {
-      // TODO(kqyang): Decrypt it if it is encrypted.
-      buffer->set_is_encrypted(true);
+    // An empty iv indicates that this sample is not encrypted.
+    if (decrypt_config && !decrypt_config->iv().empty()) {
+      if (!decryptor_source_) {
+        LOG(ERROR) << "Encrypted media sample encountered, but decryption is "
+                      "not enabled";
+        return false;
+      }
+      if (!decryptor_source_->DecryptSampleBuffer(decrypt_config.get(),
+                                                  buffer->writable_data(),
+                                                  buffer->data_size())) {
+        LOG(ERROR) << "Cannot decrypt samples";
+        return false;
+      }
     }
   } else {
     std::string id, settings, content;

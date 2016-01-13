@@ -11,7 +11,6 @@
 #include "packager/base/logging.h"
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/base/aes_encryptor.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/decrypt_config.h"
@@ -90,11 +89,12 @@ const uint8_t kDtsAudioNumChannels = 6;
 }  // namespace
 
 MP4MediaParser::MP4MediaParser()
-    : state_(kWaitingForInit), moof_head_(0), mdat_tail_(0) {}
+    : state_(kWaitingForInit),
+      decryption_key_source_(NULL),
+      moof_head_(0),
+      mdat_tail_(0) {}
 
-MP4MediaParser::~MP4MediaParser() {
-  STLDeleteValues(&decryptor_map_);
-}
+MP4MediaParser::~MP4MediaParser() {}
 
 void MP4MediaParser::Init(const InitCB& init_cb,
                           const NewSampleCB& new_sample_cb,
@@ -108,6 +108,8 @@ void MP4MediaParser::Init(const InitCB& init_cb,
   init_cb_ = init_cb;
   new_sample_cb_ = new_sample_cb;
   decryption_key_source_ = decryption_key_source;
+  if (decryption_key_source)
+    decryptor_source_.reset(new DecryptorSource(decryption_key_source));
 }
 
 void MP4MediaParser::Reset() {
@@ -652,11 +654,18 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
   scoped_refptr<MediaSample> stream_sample(MediaSample::CopyFrom(
       buf, runs_->sample_size(), runs_->is_keyframe()));
   if (runs_->is_encrypted()) {
+    if (!decryptor_source_) {
+      *err = true;
+      LOG(ERROR) << "Encrypted media sample encountered, but decryption is not "
+                    "enabled";
+      return false;
+    }
+
     scoped_ptr<DecryptConfig> decrypt_config = runs_->GetDecryptConfig();
     if (!decrypt_config ||
-        !DecryptSampleBuffer(decrypt_config.get(),
-                             stream_sample->writable_data(),
-                             stream_sample->data_size())) {
+        !decryptor_source_->DecryptSampleBuffer(decrypt_config.get(),
+                                                stream_sample->writable_data(),
+                                                stream_sample->data_size())) {
       *err = true;
       LOG(ERROR) << "Cannot decrypt samples.";
       return false;
@@ -681,80 +690,6 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
   }
 
   runs_->AdvanceSample();
-  return true;
-}
-
-bool MP4MediaParser::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
-                                         uint8_t* buffer,
-                                         size_t buffer_size) {
-  DCHECK(decrypt_config);
-  DCHECK(buffer);
-
-  if (!decryption_key_source_) {
-    LOG(ERROR) << "Encrypted media sample encountered, but decryption is not "
-                  "enabled";
-    return false;
-  }
-
-  // Get the encryptor object.
-  AesCtrEncryptor* encryptor;
-  DecryptorMap::iterator found = decryptor_map_.find(decrypt_config->key_id());
-  if (found == decryptor_map_.end()) {
-    // Create new AesCtrEncryptor
-    EncryptionKey key;
-    Status status(decryption_key_source_->GetKey(decrypt_config->key_id(),
-                                                 &key));
-    if (!status.ok()) {
-      LOG(ERROR) << "Error retrieving decryption key: " << status;
-      return false;
-    }
-    scoped_ptr<AesCtrEncryptor> new_encryptor(new AesCtrEncryptor);
-    if (!new_encryptor->InitializeWithIv(key.key, decrypt_config->iv())) {
-      LOG(ERROR) << "Failed to initialize AesCtrEncryptor for decryption.";
-      return false;
-    }
-    encryptor = new_encryptor.release();
-    decryptor_map_[decrypt_config->key_id()] = encryptor;
-  } else {
-    encryptor = found->second;
-  }
-  if (!encryptor->SetIv(decrypt_config->iv())) {
-    LOG(ERROR) << "Invalid initialization vector.";
-    return false;
-  }
-
-  if (decrypt_config->subsamples().empty()) {
-    // Sample not encrypted using subsample encryption. Decrypt whole.
-    if (!encryptor->Decrypt(buffer, buffer_size, buffer)) {
-      LOG(ERROR) << "Error during bulk sample decryption.";
-      return false;
-    }
-    return true;
-  }
-
-  // Subsample decryption.
-  const std::vector<SubsampleEntry>& subsamples = decrypt_config->subsamples();
-  uint8_t* current_ptr = buffer;
-  const uint8_t* buffer_end = buffer + buffer_size;
-  current_ptr += decrypt_config->data_offset();
-  if (current_ptr > buffer_end) {
-    LOG(ERROR) << "Subsample data_offset too large.";
-    return false;
-  }
-  for (std::vector<SubsampleEntry>::const_iterator iter = subsamples.begin();
-       iter != subsamples.end();
-       ++iter) {
-    if ((current_ptr + iter->clear_bytes + iter->cipher_bytes) > buffer_end) {
-      LOG(ERROR) << "Subsamples overflow sample buffer.";
-      return false;
-    }
-    current_ptr += iter->clear_bytes;
-    if (!encryptor->Decrypt(current_ptr, iter->cipher_bytes, current_ptr)) {
-      LOG(ERROR) << "Error decrypting subsample buffer.";
-      return false;
-    }
-    current_ptr += iter->cipher_bytes;
-  }
   return true;
 }
 
