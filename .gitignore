@@ -5,7 +5,7 @@
 .pydevproject
 .repo
 .settings
-/out/
+/out*
 /packager/base/
 /packager/build/
 /packager/buildtools/

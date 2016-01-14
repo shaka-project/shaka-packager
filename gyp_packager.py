@@ -91,12 +91,14 @@ if __name__ == '__main__':
   if ['--depth' in arg for arg in args].count(True) == 0:
     args.append('--depth=packager')
 
-  output_dir = os.path.join(checkout_dir, 'out')
-  gyp_generator_flags = 'output_dir="' + output_dir + '"'
-  if os.environ.get('GYP_GENERATOR_FLAGS'):
-    os.environ['GYP_GENERATOR_FLAGS'] += ' ' + gyp_generator_flags
-  else:
-    os.environ['GYP_GENERATOR_FLAGS'] = gyp_generator_flags
+  if (not os.environ.get('GYP_GENERATOR_FLAGS') or
+      ('output_dir=' not in os.environ.get('GYP_GENERATOR_FLAGS'))):
+    output_dir = os.path.join(checkout_dir, 'out')
+    gyp_generator_flags = 'output_dir="' + output_dir + '"'
+    if os.environ.get('GYP_GENERATOR_FLAGS'):
+      os.environ['GYP_GENERATOR_FLAGS'] += ' ' + gyp_generator_flags
+    else:
+      os.environ['GYP_GENERATOR_FLAGS'] = gyp_generator_flags
 
   print 'Updating projects from gyp files...'
   sys.stdout.flush()
