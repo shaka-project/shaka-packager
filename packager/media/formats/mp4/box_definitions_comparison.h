@@ -245,6 +245,11 @@ inline bool operator==(const AC3Specific& lhs,
   return lhs.data == rhs.data;
 }
 
+inline bool operator==(const EC3Specific& lhs,
+                       const EC3Specific& rhs) {
+  return lhs.data == rhs.data;
+}
+
 inline bool operator==(const AudioSampleEntry& lhs,
                        const AudioSampleEntry& rhs) {
   return lhs.format == rhs.format &&
@@ -252,7 +257,7 @@ inline bool operator==(const AudioSampleEntry& lhs,
          lhs.channelcount == rhs.channelcount &&
          lhs.samplesize == rhs.samplesize && lhs.samplerate == rhs.samplerate &&
          lhs.sinf == rhs.sinf && lhs.esds == rhs.esds && lhs.ddts == rhs.ddts &&
-         lhs.dac3 == rhs.dac3;
+         lhs.dac3 == rhs.dac3 && lhs.dec3 == rhs.dec3;
 }
 
 inline bool operator==(const WebVTTConfigurationBox& lhs,

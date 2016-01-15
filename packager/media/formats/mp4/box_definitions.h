@@ -315,6 +315,34 @@ struct AC3Specific : Box {
   std::vector<uint8_t> data;
 };
 
+// Independent substream in EC3Specific box.
+struct IndependentSubstream {
+  uint8_t sample_rate_code;             // fscod: 2 bits
+  uint8_t bit_stream_identification;    // bsid: 5 bits
+  // reserved_1: 1 bit
+  uint8_t audio_service;                // asvc: 1 bit
+  uint8_t bit_stream_mode;              // bsmod: 3 bits
+  uint8_t audio_coding_mode;            // acmod: 3 bits
+  uint8_t lfe_channel_on;               // lfeon: 1 bit
+  // reserved_2: 3 bit
+  uint8_t number_dependent_substreams;  // num_dep_sub: 4 bits.
+  // If num_dep_sub > 0, chan_loc is present and the size is 9 bits.
+  // Otherwise, reserved_3 is present and the size is 1 bit.
+  uint16_t channel_location;            // chan_loc: 9 bits.
+  // reserved_3: 1 bit
+};
+
+struct EC3Specific : Box {
+  DECLARE_BOX_METHODS(EC3Specific);
+
+  // Before we know the number of independent substreams, data in EC3Specific
+  // box is store for parsing later.
+  std::vector<uint8_t> data;
+
+  size_t number_independent_substreams;  // num_id_sub: 3 bits.
+  std::vector<IndependentSubstream> independent_substreams;
+};
+
 struct AudioSampleEntry : Box {
   DECLARE_BOX_METHODS(AudioSampleEntry);
   // Returns actual format of this sample entry.
@@ -329,9 +357,11 @@ struct AudioSampleEntry : Box {
   uint32_t samplerate;
 
   ProtectionSchemeInfo sinf;
+
   ElementaryStreamDescriptor esds;
   DTSSpecific ddts;
   AC3Specific dac3;
+  EC3Specific dec3;
 };
 
 struct WebVTTConfigurationBox : Box {

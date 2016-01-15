@@ -390,6 +390,16 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     dac3->data.assign(kAc3Data, kAc3Data + arraysize(kAc3Data));
   }
 
+  void Fill(EC3Specific* dec3) {
+    const uint8_t kEc3Data[] = {0x08, 0x00, 0x20, 0x0f, 0x00};
+    dec3->data.assign(kEc3Data, kEc3Data + arraysize(kEc3Data));
+  }
+
+  void Modify(EC3Specific* dec3) {
+    const uint8_t kEc3Data[] = {0x07, 0x00, 0x60, 0x04, 0x00};
+    dec3->data.assign(kEc3Data, kEc3Data + arraysize(kEc3Data));
+  }
+
   void Fill(AudioSampleEntry* enca) {
     enca->format = FOURCC_ENCA;
     enca->data_reference_index = 2;
@@ -895,6 +905,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   bool IsOptional(const PixelAspectRatio* box) { return true; }
   bool IsOptional(const ElementaryStreamDescriptor* box) { return true; }
   bool IsOptional(const AC3Specific* box) { return true; }
+  bool IsOptional(const EC3Specific* box) { return true; }
   // Recommended, but optional.
   bool IsOptional(const WebVTTSourceLabelBox* box) { return true; }
   bool IsOptional(const CompositionTimeToSample* box) { return true; }
@@ -938,6 +949,7 @@ typedef testing::Types<FileType,
                        ElementaryStreamDescriptor,
                        DTSSpecific,
                        AC3Specific,
+                       EC3Specific,
                        AudioSampleEntry,
                        WebVTTConfigurationBox,
                        WebVTTSourceLabelBox,
@@ -1078,7 +1090,6 @@ TEST_F(BoxDefinitionsTest, DTSSampleEntry) {
   entry.samplerate = 44100;
   Fill(&entry.ddts);
   entry.Write(this->buffer_.get());
-
   AudioSampleEntry entry_readback;
   ASSERT_TRUE(ReadBack(&entry_readback));
   ASSERT_EQ(entry, entry_readback);
@@ -1092,6 +1103,21 @@ TEST_F(BoxDefinitionsTest, AC3SampleEntry) {
   entry.samplesize = 16;
   entry.samplerate = 44100;
   Fill(&entry.dac3);
+  entry.Write(this->buffer_.get());
+
+  AudioSampleEntry entry_readback;
+  ASSERT_TRUE(ReadBack(&entry_readback));
+  ASSERT_EQ(entry, entry_readback);
+}
+
+TEST_F(BoxDefinitionsTest, EC3SampleEntry) {
+  AudioSampleEntry entry;
+  entry.format = FOURCC_EAC3;
+  entry.data_reference_index = 2;
+  entry.channelcount = 5;
+  entry.samplesize = 16;
+  entry.samplerate = 44100;
+  Fill(&entry.dec3);
   entry.Write(this->buffer_.get());
 
   AudioSampleEntry entry_readback;

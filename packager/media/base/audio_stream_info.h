@@ -24,6 +24,7 @@ enum AudioCodec {
   kCodecDTSL,
   kCodecDTSM,
   kCodecDTSP,
+  kCodecEAC3,
   kCodecOpus,
   kCodecVorbis,
 

@@ -33,6 +33,8 @@ std::string AudioCodecToString(AudioCodec audio_codec) {
       return "DTS-";
     case kCodecDTSP:
       return "DTS+";
+    case kCodecEAC3:
+      return "EAC3";
     case kCodecOpus:
       return "Opus";
     case kCodecVorbis:
@@ -115,6 +117,8 @@ std::string AudioStreamInfo::GetCodecString(AudioCodec codec,
       return "dts-";
     case kCodecAC3:
       return "ac-3";
+    case kCodecEAC3:
+      return "ec-3";
     default:
       NOTIMPLEMENTED() << "Codec: " << codec;
       return "unknown";
