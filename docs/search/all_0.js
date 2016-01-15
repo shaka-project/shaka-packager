@@ -19,6 +19,7 @@ var searchData=
   ['addroleelement',['AddRoleElement',['../d6/d37/classedash__packager_1_1xml_1_1AdaptationSetXmlNode.html#a40c48f2ed2ac0f550bf019d7e650be94',1,'edash_packager::xml::AdaptationSetXmlNode']]],
   ['addsample',['AddSample',['../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#ae8fd13a579fee2167167bcdbb9637dcc',1,'edash_packager::media::mp4::EncryptingFragmenter::AddSample()'],['../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#a81d8b1f324bdd2bc9cc2e5a469243926',1,'edash_packager::media::mp4::Fragmenter::AddSample()'],['../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a5c21059ee9a533caec81491bdb751c57',1,'edash_packager::media::mp4::Segmenter::AddSample()'],['../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#aff9c729f9464540eafc6571d4a42df47',1,'edash_packager::media::webm::Segmenter::AddSample()']]],
   ['addstream',['AddStream',['../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a77c7a214383f64f822d479d226750bf5',1,'edash_packager::media::Muxer']]],
+  ['addtrackinfo',['AddTrackInfo',['../d2/d76/classedash__packager_1_1media_1_1webm_1_1Encryptor.html#a2e485e7ca25f46611916e7f171dd1b8d',1,'edash_packager::media::webm::Encryptor']]],
   ['addvideoinfo',['AddVideoInfo',['../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html#a1a3651243d59b29652453ad5d52e4912',1,'edash_packager::xml::RepresentationXmlNode']]],
   ['addvodonlyinfo',['AddVODOnlyInfo',['../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html#a2afa0f4b92900936e2eb97a218d119a2',1,'edash_packager::xml::RepresentationXmlNode']]],
   ['adtsheader',['AdtsHeader',['../db/d69/classedash__packager_1_1media_1_1mp2t_1_1AdtsHeader.html',1,'edash_packager::media::mp2t']]],
@@ -36,8 +37,8 @@ var searchData=
   ['audio_5fdescription',['audio_description',['../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a2c58182a77817e4ed4a2860ae3be73df',1,'edash_packager::media::mp4::TrackRunIterator']]],
   ['audio_5fobject_5ftype',['audio_object_type',['../dc/dc6/classedash__packager_1_1media_1_1mp4_1_1AACAudioSpecificConfig.html#a12bcda441f7745bd70cb9b4fdfb4b9b5',1,'edash_packager::media::mp4::AACAudioSpecificConfig']]],
   ['audiosampleentry',['AudioSampleEntry',['../df/d62/structedash__packager_1_1media_1_1mp4_1_1AudioSampleEntry.html',1,'edash_packager::media::mp4']]],
-  ['audiostreaminfo',['AudioStreamInfo',['../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a3a75339290a004cc4b2dd232e4561ed8',1,'edash_packager::media::AudioStreamInfo']]],
   ['audiostreaminfo',['AudioStreamInfo',['../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html',1,'edash_packager::media']]],
+  ['audiostreaminfo',['AudioStreamInfo',['../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a3a75339290a004cc4b2dd232e4561ed8',1,'edash_packager::media::AudioStreamInfo']]],
   ['audiotimestamphelper',['AudioTimestampHelper',['../da/de4/classedash__packager_1_1media_1_1AudioTimestampHelper.html',1,'edash_packager::media']]],
   ['auxinfoneedstobecached',['AuxInfoNeedsToBeCached',['../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a3538a0f31238843afd2dfb4e94587f03',1,'edash_packager::media::mp4::TrackRunIterator']]],
   ['avcdecoderconfiguration',['AVCDecoderConfiguration',['../d6/d49/classedash__packager_1_1media_1_1AVCDecoderConfiguration.html',1,'edash_packager::media']]]
