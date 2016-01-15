@@ -40,7 +40,7 @@
       'dependencies': [
         '../../base/base.gyp:base',
         '../../third_party/gflags/gflags.gyp:gflags',
-        '../base/media_base.gyp:base',
+        '../base/media_base.gyp:media_base',
       ],
     },
     {

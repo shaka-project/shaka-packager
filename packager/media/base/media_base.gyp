@@ -10,7 +10,7 @@
   ],
   'targets': [
     {
-      'target_name': 'base',
+      'target_name': 'media_base',
       'type': '<(component)',
       'sources': [
         'aes_encryptor.cc',
@@ -132,7 +132,7 @@
         '../../third_party/boringssl/boringssl.gyp:boringssl',
         '../file/file.gyp:file',
         '../test/media_test.gyp:media_test_support',
-        'base',
+        'media_base',
       ],
     },
   ],

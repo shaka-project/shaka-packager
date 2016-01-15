@@ -18,7 +18,7 @@
       ],
       'dependencies': [
         '../../../base/base.gyp:base',
-        '../../base/media_base.gyp:base',
+        '../../base/media_base.gyp:media_base',
       ],
     },
     {
