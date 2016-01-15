@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['ec3specific',['EC3Specific',['../d3/d43/structedash__packager_1_1media_1_1mp4_1_1EC3Specific.html',1,'edash_packager::media::mp4']]],
   ['edit',['Edit',['../d7/d4f/structedash__packager_1_1media_1_1mp4_1_1Edit.html',1,'edash_packager::media::mp4']]],
   ['editlist',['EditList',['../d8/d4a/structedash__packager_1_1media_1_1mp4_1_1EditList.html',1,'edash_packager::media::mp4']]],
   ['editlistentry',['EditListEntry',['../dc/d0d/structedash__packager_1_1media_1_1mp4_1_1EditListEntry.html',1,'edash_packager::media::mp4']]],
