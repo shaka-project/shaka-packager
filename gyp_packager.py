@@ -74,17 +74,17 @@ if __name__ == '__main__':
       gyp_defines += ' {0}={1}'.format(key, _DEFAULT_DEFINES[key])
   os.environ['GYP_DEFINES'] = gyp_defines.strip()
 
+  # Default to ninja, but only if no generator has explicitly been set.
+  if not os.environ.get('GYP_GENERATORS'):
+    os.environ['GYP_GENERATORS'] = 'ninja'
+
   # There shouldn't be a circular dependency relationship between .gyp files,
   # but in Chromium's .gyp files, on non-Mac platforms, circular relationships
   # currently exist.  The check for circular dependencies is currently
   # bypassed on other platforms, but is left enabled on the Mac, where a
   # violation of the rule causes Xcode to misbehave badly.
-  if sys.platform not in ('darwin',):
+  if 'xcode' not in os.environ['GYP_GENERATORS']:
     args.append('--no-circular-check')
-
-  # Default to ninja, but only if no generator has explicitly been set.
-  if not os.environ.get('GYP_GENERATORS'):
-    os.environ['GYP_GENERATORS'] = 'ninja'
 
   # TODO(kqyang): Find a better way to handle the depth. This workaround works
   # only if this script is executed in 'src' directory.
