@@ -57,7 +57,7 @@
       'dependencies': [
         '../../../third_party/boringssl/boringssl.gyp:boringssl',
         '../../../third_party/libwebm/libwebm.gyp:libwebm',
-        '../../base/media_base.gyp:base',
+        '../../base/media_base.gyp:media_base',
         '../../filters/filters.gyp:filters'
       ],
     },

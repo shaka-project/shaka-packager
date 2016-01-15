@@ -49,7 +49,7 @@
         'vp9_parser_unittest.cc',
       ],
       'dependencies': [
-        '../../media/base/media_base.gyp:base',
+        '../../media/base/media_base.gyp:media_base',
         '../../testing/gmock.gyp:gmock',
         '../../testing/gtest.gyp:gtest',
         '../test/media_test.gyp:media_test_support',

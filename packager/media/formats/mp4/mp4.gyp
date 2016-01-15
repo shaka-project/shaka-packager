@@ -55,7 +55,7 @@
       ],
       'dependencies': [
         '../../../third_party/boringssl/boringssl.gyp:boringssl',
-        '../../base/media_base.gyp:base',
+        '../../base/media_base.gyp:media_base',
         '../../event/media_event.gyp:media_event',
         '../../filters/filters.gyp:filters',
       ],

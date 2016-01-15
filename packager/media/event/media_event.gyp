@@ -25,7 +25,7 @@
         '../../mpd/mpd.gyp:media_info_proto',
         # Depends on full protobuf to read/write with TextFormat.
         '../../third_party/protobuf/protobuf.gyp:protobuf_full_do_not_use',
-        '../base/media_base.gyp:base',
+        '../base/media_base.gyp:media_base',
         '../file/file.gyp:file',
       ],
     },

@@ -34,7 +34,7 @@
         'ts_section_psi.h',
       ],
       'dependencies': [
-        '../../base/media_base.gyp:base',
+        '../../base/media_base.gyp:media_base',
       ],
     },
     {
