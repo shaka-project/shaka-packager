@@ -10,7 +10,7 @@
   ],
   'targets': [
     {
-      'target_name': 'run_all_unittests',
+      'target_name': 'run_tests_with_atexit_manager',
       'type': '<(component)',
       'sources': [
         'run_tests_with_atexit_manager.cc',
@@ -28,7 +28,7 @@
       ],
       'dependencies': [
         '../../base/base.gyp:base',
-        'run_all_unittests',
+        'run_tests_with_atexit_manager',
       ],
     },
   ],
