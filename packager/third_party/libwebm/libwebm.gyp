@@ -9,7 +9,7 @@
   ],
   'targets': [
     {
-      'target_name': 'libwebm',
+      'target_name': 'mkvmuxer',
       'type': 'static_library',
       'sources': [
         'src/mkvmuxer.cpp',
