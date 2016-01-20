@@ -69,8 +69,6 @@
         'cluster_builder.h',
         'encrypted_segmenter_unittest.cc',
         'multi_segment_segmenter_unittest.cc',
-        'opus_packet_builder.cc',
-        'opus_packet_builder.h',
         'segmenter_test_base.cc',
         'segmenter_test_base.h',
         'single_segment_segmenter_unittest.cc',

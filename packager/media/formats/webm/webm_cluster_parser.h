@@ -32,12 +32,6 @@ class WebMClusterParser : public WebMParserClient {
     kDefaultVideoBufferDurationInMs = 63
   };
 
-  /// Opus packets encode the duration and other parameters in the 5 most
-  /// significant bits of the first byte. The index in this array corresponds
-  /// to the duration of each frame of the packet in microseconds. See
-  /// https://tools.ietf.org/html/rfc6716#page-14
-  static const uint16_t kOpusFrameDurationsMu[];
-
  private:
   // Helper class that manages per-track state.
   class Track {
@@ -56,18 +50,15 @@ class WebMClusterParser : public WebMParserClient {
     // duration, saves |buffer| into |last_added_buffer_missing_duration_|.
     bool EmitBuffer(const scoped_refptr<MediaSample>& buffer);
 
-    // If |last_added_buffer_missing_duration_| is set, updates its duration to
-    // be non-kNoTimestamp value of |estimated_next_frame_duration_| or a
-    // hard-coded default, then emits it and unsets
-    // |last_added_buffer_missing_duration_|. (This method helps stream parser
-    // emit all buffers in a media segment before signaling end of segment.)
+    // If |last_added_buffer_missing_duration_| is set, estimate the duration
+    // for this buffer using helper function GetDurationEstimate() then emits it
+    // and unsets |last_added_buffer_missing_duration_| (This method helps
+    // stream parser emit all buffers in a media segment).
     void ApplyDurationEstimateIfNeeded();
 
     // Clears all buffer state, including any possibly held-aside buffer that
     // was missing duration.
     void Reset();
-
-    int64_t default_duration() const { return default_duration_; }
 
    private:
     // Helper that sanity-checks |buffer| duration, updates
@@ -76,28 +67,24 @@ class WebMClusterParser : public WebMParserClient {
     // emitted. Returns true otherwise.
     bool EmitBufferHelp(const scoped_refptr<MediaSample>& buffer);
 
-    // Helper that calculates the buffer duration to use in
+    // Helper function that calculates the buffer duration to use in
     // ApplyDurationEstimateIfNeeded().
     int64_t GetDurationEstimate();
-
-    // Counts the number of estimated durations used in this track. Used to
-    // prevent log spam for LOG()s about estimated duration.
-    int num_duration_estimates_ = 0;
 
     int track_num_;
     bool is_video_;
 
-    // Parsed track buffers, each with duration and in (decode) timestamp order,
-    // that have not yet been emitted. Note that up to one additional buffer
-    // missing duration may be tracked by |last_added_buffer_missing_duration_|.
+    // Holding the sample that is missing duration. The duration will be
+    // computed from the difference in timestamp when next sample arrives; or
+    // estimated if it is the last sample in this track.
     scoped_refptr<MediaSample> last_added_buffer_missing_duration_;
 
     // If kNoTimestamp, then |estimated_next_frame_duration_| will be used.
     int64_t default_duration_;
 
-    // If kNoTimestamp, then a default value will be used. This estimate is the
-    // maximum duration seen so far for this track, and is used only if
-    // |default_duration_| is kNoTimestamp.
+    // If kNoTimestamp, then a hardcoded default value will be used. This
+    // estimate is the maximum duration seen so far for this track, and is used
+    // only if |default_duration_| is kNoTimestamp.
     int64_t estimated_next_frame_duration_;
 
     MediaParser::NewSampleCB new_sample_cb_;
@@ -169,22 +156,9 @@ class WebMClusterParser : public WebMParserClient {
   // if that track num is not a text track.
   Track* FindTextTrack(int track_num);
 
-  // Attempts to read the duration from the encoded audio data, returning as
-  // kNoTimestamp if duration cannot be retrieved.
-  // Avoid calling if encrypted; may produce unexpected output. See
-  // implementation for supported codecs.
-  int64_t TryGetEncodedAudioDuration(const uint8_t* data, int size);
+  // Multiplier used to convert timecodes into microseconds.
+  double timecode_multiplier_;
 
-  // Reads Opus packet header to determine packet duration. Duration returned
-  // as kNoTimestamp upon failure to read duration from packet.
-  int64_t ReadOpusDuration(const uint8_t* data, int size);
-
-  // Tracks the number of LOGs made in process of reading encoded duration.
-  // Useful to prevent log spam.
-  int num_duration_errors_ = 0;
-
-  double timecode_multiplier_;  // Multiplier used to convert timecodes into
-                                // microseconds.
   scoped_refptr<AudioStreamInfo> audio_stream_info_;
   scoped_refptr<VideoStreamInfo> video_stream_info_;
   std::set<int64_t> ignored_tracks_;
@@ -221,7 +195,7 @@ class WebMClusterParser : public WebMParserClient {
   Track video_;
   TextTrackMap text_track_map_;
 
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebMClusterParser);
+  DISALLOW_COPY_AND_ASSIGN(WebMClusterParser);
 };
 
 }  // namespace media

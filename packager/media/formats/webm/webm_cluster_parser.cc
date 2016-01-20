@@ -17,35 +17,11 @@
 #include "packager/media/formats/webm/webm_crypto_helpers.h"
 #include "packager/media/formats/webm/webm_webvtt_parser.h"
 
-// Logs only while |count| < |max|, increments |count| for each log, and warns
-// in the log if |count| has just reached |max|.
-#define LIMITED_LOG(level, count, max)                         \
-  LOG_IF(level, (count) < (max))                               \
-      << (((count) + 1 == (max))                               \
-              ? "(Log limit reached. Further similar entries " \
-                "may be suppressed): "                         \
-              : "")
-#define LIMITED_DLOG(level, count, max)                        \
-  DLOG_IF(level, (count) < (max))                              \
-      << (((count) + 1 == (max))                               \
-              ? "(Log limit reached. Further similar entries " \
-                "may be suppressed): "                         \
-              : "")
-
 namespace edash_packager {
 namespace media {
 namespace {
 
 const int64_t kMicrosecondsPerMillisecond = 1000;
-
-enum {
-  // Limits the number of LOG() calls in the path of reading encoded
-  // duration to avoid spamming for corrupted data.
-  kMaxDurationErrorLogs = 10,
-  // Limits the number of LOG() calls warning the user that buffer
-  // durations have been estimated.
-  kMaxDurationEstimateLogs = 10,
-};
 
 // Helper function used to inspect block data to determine if the
 // block is a keyframe.
@@ -72,11 +48,6 @@ bool IsKeyframe(bool is_video,
 }
 
 }  // namespace
-
-const uint16_t WebMClusterParser::kOpusFrameDurationsMu[] = {
-    10000, 20000, 40000, 60000, 10000, 20000, 40000, 60000, 10000, 20000, 40000,
-    60000, 10000, 20000, 10000, 20000, 2500,  5000,  10000, 20000, 2500,  5000,
-    10000, 20000, 2500,  5000,  10000, 20000, 2500,  5000,  10000, 20000};
 
 WebMClusterParser::WebMClusterParser(
     int64_t timecode_scale,
@@ -167,100 +138,6 @@ int WebMClusterParser::Parse(const uint8_t* buf, int size) {
   }
 
   return result;
-}
-
-int64_t WebMClusterParser::TryGetEncodedAudioDuration(
-    const uint8_t* data,
-    int size) {
-
-  // Duration is currently read assuming the *entire* stream is unencrypted.
-  // The special "Signal Byte" prepended to Blocks in encrypted streams is
-  // assumed to not be present.
-  // TODO: Consider parsing "Signal Byte" for encrypted streams to return
-  // duration for any unencrypted blocks.
-
-  DCHECK(audio_stream_info_);
-  if (audio_stream_info_->codec() == kCodecOpus) {
-    return ReadOpusDuration(data, size);
-  }
-
-  // TODO: Implement duration reading for Vorbis. See motivations in
-  // http://crbug.com/396634.
-
-  return kNoTimestamp;
-}
-
-int64_t WebMClusterParser::ReadOpusDuration(const uint8_t* data, int size) {
-  // Masks and constants for Opus packets. See
-  // https://tools.ietf.org/html/rfc6716#page-14
-  static const uint8_t kTocConfigMask = 0xf8;
-  static const uint8_t kTocFrameCountCodeMask = 0x03;
-  static const uint8_t kFrameCountMask = 0x3f;
-  static const int64_t kPacketDurationMaxMs = 120000;
-
-  if (size < 1) {
-    LIMITED_DLOG(INFO, num_duration_errors_, kMaxDurationErrorLogs)
-        << "Invalid zero-byte Opus packet; demuxed block duration may be "
-           "imprecise.";
-    return kNoTimestamp;
-  }
-
-  // Frame count type described by last 2 bits of Opus TOC byte.
-  int frame_count_type = data[0] & kTocFrameCountCodeMask;
-
-  int frame_count = 0;
-  switch (frame_count_type) {
-    case 0:
-      frame_count = 1;
-      break;
-    case 1:
-    case 2:
-      frame_count = 2;
-      break;
-    case 3:
-      // Type 3 indicates an arbitrary frame count described in the next byte.
-      if (size < 2) {
-        LIMITED_DLOG(INFO, num_duration_errors_, kMaxDurationErrorLogs)
-            << "Second byte missing from 'Code 3' Opus packet; demuxed block "
-               "duration may be imprecise.";
-        return kNoTimestamp;
-      }
-
-      frame_count = data[1] & kFrameCountMask;
-
-      if (frame_count == 0) {
-        LIMITED_DLOG(INFO, num_duration_errors_, kMaxDurationErrorLogs)
-            << "Illegal 'Code 3' Opus packet with frame count zero; demuxed "
-               "block duration may be imprecise.";
-        return kNoTimestamp;
-      }
-
-      break;
-    default:
-      LIMITED_DLOG(INFO, num_duration_errors_, kMaxDurationErrorLogs)
-          << "Unexpected Opus frame count type: " << frame_count_type << "; "
-          << "demuxed block duration may be imprecise.";
-      return kNoTimestamp;
-  }
-
-  int opusConfig = (data[0] & kTocConfigMask) >> 3;
-  CHECK_GE(opusConfig, 0);
-  CHECK_LT(opusConfig, static_cast<int>(arraysize(kOpusFrameDurationsMu)));
-
-  DCHECK_GT(frame_count, 0);
-  int64_t duration = kOpusFrameDurationsMu[opusConfig] * frame_count;
-
-  if (duration > kPacketDurationMaxMs * 1000) {
-    // Intentionally allowing packet to pass through for now. Decoder should
-    // either handle or fail gracefully. LOG as breadcrumbs in case
-    // things go sideways.
-    LIMITED_DLOG(INFO, num_duration_errors_, kMaxDurationErrorLogs)
-        << "Warning, demuxed Opus packet with encoded duration: "
-        << duration / 1000 << "ms. Should be no greater than "
-        << kPacketDurationMaxMs << "ms.";
-  }
-
-  return duration;
 }
 
 WebMParserClient* WebMClusterParser::OnListStart(int id) {
@@ -451,13 +328,9 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
   Track* track = NULL;
   StreamType stream_type = kStreamAudio;
   std::string encryption_key_id;
-  int64_t encoded_duration = kNoTimestamp;
   if (track_num == audio_.track_num()) {
     track = &audio_;
     encryption_key_id = audio_encryption_key_id_;
-    if (encryption_key_id.empty()) {
-      encoded_duration = TryGetEncodedAudioDuration(data, size);
-    }
   } else if (track_num == video_.track_num()) {
     track = &video_;
     encryption_key_id = video_encryption_key_id_;
@@ -529,49 +402,13 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
         &side_data[0], side_data.size(), true);
   }
 
+  buffer->set_dts(timestamp);
   buffer->set_pts(timestamp);
   if (cluster_start_time_ == kNoTimestamp)
     cluster_start_time_ = timestamp;
-
-  int64_t block_duration_time_delta = kNoTimestamp;
-  if (block_duration >= 0) {
-    block_duration_time_delta = block_duration * timecode_multiplier_;
-  }
-
-  // Prefer encoded duration over BlockGroup->BlockDuration or
-  // TrackEntry->DefaultDuration when available. This layering violation is a
-  // workaround for http://crbug.com/396634, decreasing the likelihood of
-  // fall-back to rough estimation techniques for Blocks that lack a
-  // BlockDuration at the end of a cluster. Duration estimation may still apply
-  // in cases of encryption and codecs for which we do not extract encoded
-  // duration. Estimates are applied as Block Timecode deltas, or once the whole
-  // stream is parsed in the case of the last Block in the stream. See
-  // Track::EmitBuffer and ApplyDurationEstimateIfNeeded().
-  if (encoded_duration != kNoTimestamp) {
-    DCHECK(encoded_duration != kInfiniteDuration);
-    DCHECK(encoded_duration > 0);
-    buffer->set_duration(encoded_duration);
-
-    DVLOG(3) << __FUNCTION__ << " : "
-             << "Using encoded duration " << encoded_duration;
-
-    if (block_duration_time_delta != kNoTimestamp) {
-      int64_t duration_difference =
-          block_duration_time_delta - encoded_duration;
-
-      const auto kWarnDurationDiff = timecode_multiplier_ * 2;
-      if (duration_difference > kWarnDurationDiff) {
-        LIMITED_DLOG(INFO, num_duration_errors_, kMaxDurationErrorLogs)
-            << "BlockDuration (" << block_duration_time_delta / 1000
-            << "ms) differs significantly from encoded duration ("
-            << encoded_duration / 1000 << "ms).";
-      }
-    }
-  } else if (block_duration_time_delta != kNoTimestamp) {
-    buffer->set_duration(block_duration_time_delta);
-  } else {
-    buffer->set_duration(track->default_duration());
-  }
+  buffer->set_duration(block_duration > 0
+                           ? (block_duration * timecode_multiplier_)
+                           : kNoTimestamp);
 
   if (!init_cb_.is_null() && !initialized_) {
     std::vector<scoped_refptr<StreamInfo>> streams;
@@ -679,16 +516,14 @@ void WebMClusterParser::Track::ApplyDurationEstimateIfNeeded() {
   int64_t estimated_duration = GetDurationEstimate();
   last_added_buffer_missing_duration_->set_duration(estimated_duration);
 
-  LIMITED_LOG(INFO, num_duration_estimates_, kMaxDurationEstimateLogs)
-      << "Estimating WebM block duration to be " << estimated_duration / 1000
-      << "ms for the last (Simple)Block in the Cluster for this Track. Use "
-         "BlockGroups with BlockDurations at the end of each Track in a "
-         "Cluster to avoid estimation.";
+  VLOG(1) << "Track " << track_num_ << ": Estimating WebM block duration to be "
+          << estimated_duration / 1000
+          << "ms for the last (Simple)Block in the Cluster for this Track. Use "
+             "BlockGroups with BlockDurations at the end of each Track in a "
+             "Cluster to avoid estimation.";
 
-  DVLOG(2) << __FUNCTION__ << " new dur : ts "
-           << last_added_buffer_missing_duration_->pts()
-           << " dur "
-           << last_added_buffer_missing_duration_->duration()
+  DVLOG(2) << " new dur : ts " << last_added_buffer_missing_duration_->pts()
+           << " dur " << last_added_buffer_missing_duration_->duration()
            << " kf " << last_added_buffer_missing_duration_->is_key_frame()
            << " size " << last_added_buffer_missing_duration_->data_size();
 
@@ -701,7 +536,6 @@ void WebMClusterParser::Track::ApplyDurationEstimateIfNeeded() {
 void WebMClusterParser::Track::Reset() {
   last_added_buffer_missing_duration_ = NULL;
 }
-
 
 bool WebMClusterParser::Track::EmitBufferHelp(
     const scoped_refptr<MediaSample>& buffer) {
@@ -739,20 +573,25 @@ bool WebMClusterParser::Track::EmitBufferHelp(
 }
 
 int64_t WebMClusterParser::Track::GetDurationEstimate() {
-  int64_t duration = estimated_next_frame_duration_;
-  if (duration != kNoTimestamp) {
-    DVLOG(3) << __FUNCTION__ << " : using estimated duration";
+  int64_t duration = kNoTimestamp;
+  if (default_duration_ != kNoTimestamp) {
+    duration = default_duration_;
+    DVLOG(3) << __FUNCTION__ << " : using track default duration " << duration;
+  } else if (estimated_next_frame_duration_ != kNoTimestamp) {
+    duration = estimated_next_frame_duration_;
+    DVLOG(3) << __FUNCTION__ << " : using estimated duration " << duration;
   } else {
-    DVLOG(3) << __FUNCTION__ << " : using hardcoded default duration";
     if (is_video_) {
       duration = kDefaultVideoBufferDurationInMs * kMicrosecondsPerMillisecond;
     } else {
       duration = kDefaultAudioBufferDurationInMs * kMicrosecondsPerMillisecond;
     }
+    DVLOG(3) << __FUNCTION__ << " : using hardcoded default duration "
+             << duration;
   }
 
-  DCHECK(duration > 0);
-  DCHECK(duration != kNoTimestamp);
+  DCHECK_GT(duration, 0);
+  DCHECK_NE(duration, kNoTimestamp);
   return duration;
 }
 
