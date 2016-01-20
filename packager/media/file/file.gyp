@@ -54,7 +54,7 @@
       'dependencies': [
         '../../testing/gtest.gyp:gtest',
         '../../third_party/gflags/gflags.gyp:gflags',
-        '../test/media_test.gyp:run_all_unittests',
+        '../test/media_test.gyp:run_tests_with_atexit_manager',
         'file',
       ],
     },

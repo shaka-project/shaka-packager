@@ -100,7 +100,7 @@
       'dependencies': [
         '../base/base.gyp:base',
         '../media/file/file.gyp:file',
-        '../media/test/media_test.gyp:run_all_unittests',
+        '../media/test/media_test.gyp:run_tests_with_atexit_manager',
         '../testing/gmock.gyp:gmock',
         '../testing/gtest.gyp:gtest',
         'mpd_builder',
