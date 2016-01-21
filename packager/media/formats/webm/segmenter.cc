@@ -27,13 +27,14 @@ int64_t kSecondsToNs = 1000000000L;
 }  // namespace
 
 Segmenter::Segmenter(const MuxerOptions& options)
-    : options_(options),
+    : reference_frame_timestamp_(0),
+      options_(options),
       info_(NULL),
       muxer_listener_(NULL),
       progress_listener_(NULL),
       progress_target_(0),
       accumulated_progress_(0),
-      total_duration_(0),
+      first_timestamp_(0),
       sample_duration_(0),
       segment_payload_pos_(0),
       cluster_length_sec_(0),
@@ -66,7 +67,8 @@ Status Segmenter::Initialize(scoped_ptr<MkvWriter> writer,
   segment_info_.set_writing_app(version_string.c_str());
   if (options().single_segment) {
     // Set an initial duration so the duration element is written; will be
-    // overwritten at the end.
+    // overwritten at the end.  This works because this is a float and floats
+    // are always the same size.
     segment_info_.set_duration(1);
   }
 
@@ -97,12 +99,19 @@ Status Segmenter::Initialize(scoped_ptr<MkvWriter> writer,
 }
 
 Status Segmenter::Finalize() {
-  segment_info_.set_duration(FromBMFFTimescale(total_duration_));
+  Status status = WriteFrame(true /* write_duration */);
+  if (!status.ok())
+    return status;
+
+  uint64_t duration =
+      prev_sample_->pts() - first_timestamp_ + prev_sample_->duration();
+  segment_info_.set_duration(FromBMFFTimescale(duration));
   return DoFinalize();
 }
 
 Status Segmenter::AddSample(scoped_refptr<MediaSample> sample) {
   if (sample_duration_ == 0) {
+    first_timestamp_ = sample->pts();
     sample_duration_ = sample->duration();
     if (muxer_listener_)
       muxer_listener_->OnSampleDurationReady(sample_duration_);
@@ -110,21 +119,36 @@ Status Segmenter::AddSample(scoped_refptr<MediaSample> sample) {
 
   UpdateProgress(sample->duration());
 
-  // Create a new cluster if needed.
+  // This writes frames in a delay.  Meaning that the previous frame is written
+  // on this call to AddSample.  The current frame is stored until the next
+  // call.  This is done to determine which frame is the last in a Cluster.
+  // This first block determines if this is a new Cluster and writes the
+  // previous frame first before creating the new Cluster.
+
   Status status;
+  bool wrote_frame = false;
   if (!cluster_) {
     status = NewSegment(sample->pts());
+    // First frame, so no previous frame to write.
+    wrote_frame = true;
   } else if (segment_length_sec_ >= options_.segment_duration) {
     if (sample->is_key_frame() || !options_.segment_sap_aligned) {
-      status = NewSegment(sample->pts());
+      status = WriteFrame(true /* write_duration */);
+      status.Update(NewSegment(sample->pts()));
       segment_length_sec_ = 0;
       cluster_length_sec_ = 0;
+      wrote_frame = true;
     }
   } else if (cluster_length_sec_ >= options_.fragment_duration) {
     if (sample->is_key_frame() || !options_.fragment_sap_aligned) {
-      status = NewSubsegment(sample->pts());
+      status = WriteFrame(true /* write_duration */);
+      status.Update(NewSubsegment(sample->pts()));
       cluster_length_sec_ = 0;
+      wrote_frame = true;
     }
+  }
+  if (!wrote_frame) {
+    status = WriteFrame(false /* write_duration */);
   }
   if (!status.ok())
     return status;
@@ -132,7 +156,8 @@ Status Segmenter::AddSample(scoped_refptr<MediaSample> sample) {
   // Encrypt the frame.
   if (encryptor_) {
     const bool encrypt_frame =
-        static_cast<double>(total_duration_) / info_->time_scale() >=
+        static_cast<double>(sample->pts() - first_timestamp_) /
+            info_->time_scale() >=
         clear_lead_;
     status = encryptor_->EncryptFrame(sample, encrypt_frame);
     if (!status.ok()) {
@@ -141,36 +166,16 @@ Status Segmenter::AddSample(scoped_refptr<MediaSample> sample) {
     }
   }
 
-  const int64_t time_ns =
-      sample->pts() * kSecondsToNs / info_->time_scale();
-  bool addframe_result;
-  if (sample->side_data_size() > 0) {
-    uint64_t block_add_id;
-    // First 8 bytes of side_data is the BlockAddID element's value, which is
-    // done to mimic ffmpeg behavior. See webm_cluster_parser.cc for details.
-    CHECK_GT(sample->side_data_size(), sizeof(block_add_id));
-    memcpy(&block_add_id, sample->side_data(), sizeof(block_add_id));
-    addframe_result = cluster_->AddFrameWithAdditional(
-        sample->data(), sample->data_size(),
-        sample->side_data() + sizeof(block_add_id),
-        sample->side_data_size() - sizeof(block_add_id), block_add_id,
-        track_id_, time_ns, sample->is_key_frame());
-  } else {
-    addframe_result =
-        cluster_->AddFrame(sample->data(), sample->data_size(), track_id_,
-                           time_ns, sample->is_key_frame());
-  }
-  if (!addframe_result) {
-    LOG(ERROR) << "Error adding sample to segment.";
-    return Status(error::FILE_FAILURE, "Error adding sample to segment.");
-  }
 
+  // Add the sample to the durations even though we have not written the frame
+  // yet.  This is needed to make sure we split Clusters at the correct point.
+  // These are only used in this method.
   const double duration_sec =
       static_cast<double>(sample->duration()) / info_->time_scale();
   cluster_length_sec_ += duration_sec;
   segment_length_sec_ += duration_sec;
-  total_duration_ += sample->duration();
 
+  prev_sample_ = sample;
   return Status::OK;
 }
 
@@ -343,6 +348,60 @@ Status Segmenter::InitializeEncryptor(KeySource* key_source,
       // Other streams are not encrypted.
       return Status::OK;
   }
+}
+
+Status Segmenter::WriteFrame(bool write_duration) {
+  // Create a frame manually so we can create non-SimpleBlock frames.  This
+  // is required to allow the frame duration to be added.  If the duration
+  // is not set, then a SimpleBlock will still be written.
+  mkvmuxer::Frame frame;
+
+  if (!frame.Init(prev_sample_->data(), prev_sample_->data_size())) {
+    return Status(error::MUXER_FAILURE,
+                  "Error adding sample to segment: Frame::Init failed");
+  }
+
+  if (write_duration) {
+    const uint64_t duration_ns =
+        prev_sample_->duration() * kSecondsToNs / info_->time_scale();
+    frame.set_duration(duration_ns);
+  }
+  frame.set_is_key(prev_sample_->is_key_frame());
+  frame.set_timestamp(prev_sample_->pts() * kSecondsToNs / info_->time_scale());
+  frame.set_track_number(track_id_);
+
+  if (prev_sample_->side_data_size() > 0) {
+    uint64_t block_add_id;
+    // First 8 bytes of side_data is the BlockAddID element's value, which is
+    // done to mimic ffmpeg behavior. See webm_cluster_parser.cc for details.
+    CHECK_GT(prev_sample_->side_data_size(), sizeof(block_add_id));
+    memcpy(&block_add_id, prev_sample_->side_data(), sizeof(block_add_id));
+    if (!frame.AddAdditionalData(
+            prev_sample_->side_data() + sizeof(block_add_id),
+            prev_sample_->side_data_size() - sizeof(block_add_id),
+            block_add_id)) {
+      return Status(
+          error::MUXER_FAILURE,
+          "Error adding sample to segment: Frame::AddAditionalData Failed");
+    }
+  }
+
+  if (!prev_sample_->is_key_frame() && !frame.CanBeSimpleBlock()) {
+    const int64_t timestamp_ns =
+        reference_frame_timestamp_ * kSecondsToNs / info_->time_scale();
+    frame.set_reference_block_timestamp(timestamp_ns);
+  }
+
+  if (!cluster_->AddFrame(&frame)) {
+    return Status(error::MUXER_FAILURE,
+                  "Error adding sample to segment: Cluster::AddFrame failed");
+  }
+
+  // A reference frame is needed for non-keyframes.  Having a reference to the
+  // previous block is good enough.
+  // See libwebm Segment::AddGenericFrame
+  reference_frame_timestamp_ = prev_sample_->pts();
+  return Status::OK;
 }
 
 }  // namespace webm

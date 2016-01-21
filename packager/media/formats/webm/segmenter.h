@@ -114,6 +114,9 @@ class Segmenter {
   Status CreateAudioTrack(AudioStreamInfo* info);
   Status InitializeEncryptor(KeySource* key_source, uint32_t max_sd_pixels);
 
+  // Writes the previous frame to the file.
+  Status WriteFrame(bool write_duration);
+
   // This is called when there needs to be a new subsegment.  This does nothing
   // in single-segment mode.  In multi-segment mode this creates a new Cluster
   // element.
@@ -122,9 +125,12 @@ class Segmenter {
   // mode, this creates a new Cluster element.  In multi-segment mode this
   // creates a new output file.
   virtual Status NewSegment(uint64_t start_timescale) = 0;
-  // This is called when a segment ends.  This is called right before a call
-  // to NewSegment and at the start of Finalize.
-  Status FinalizeSegment(uint64_t end_timescale);
+
+  // Store the previous sample so we know which one is the last frame.
+  scoped_refptr<MediaSample> prev_sample_;
+  // The reference frame timestamp; used to populate the ReferenceBlock element
+  // when writing non-keyframe BlockGroups.
+  uint64_t reference_frame_timestamp_;
 
   const MuxerOptions& options_;
   scoped_ptr<Encryptor> encryptor_;
@@ -141,8 +147,8 @@ class Segmenter {
   ProgressListener* progress_listener_;
   uint64_t progress_target_;
   uint64_t accumulated_progress_;
-  uint64_t total_duration_;
-  uint64_t sample_duration_;
+  uint64_t first_timestamp_;
+  int64_t sample_duration_;
   // The position (in bytes) of the start of the Segment payload in the init
   // file.  This is also the size of the header before the SeekHead.
   uint64_t segment_payload_pos_;
