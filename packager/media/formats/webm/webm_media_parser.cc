@@ -41,15 +41,17 @@ void WebMMediaParser::Init(const InitCB& init_cb,
   ignore_text_tracks_ = true;
 }
 
-void WebMMediaParser::Flush() {
+bool WebMMediaParser::Flush() {
   DCHECK_NE(state_, kWaitingForInit);
 
   byte_queue_.Reset();
+  bool result = true;
   if (cluster_parser_)
-    cluster_parser_->Flush();
+    result = cluster_parser_->Flush();
   if (state_ == kParsingClusters) {
     ChangeState(kParsingHeaders);
   }
+  return result;
 }
 
 bool WebMMediaParser::Parse(const uint8_t* buf, int size) {

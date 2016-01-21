@@ -166,7 +166,7 @@ void Mp2tMediaParser::Init(
   new_sample_cb_ = new_sample_cb;
 }
 
-void Mp2tMediaParser::Flush() {
+bool Mp2tMediaParser::Flush() {
   DVLOG(1) << "Mp2tMediaParser::Flush";
 
   // Flush the buffers and reset the pids.
@@ -176,12 +176,13 @@ void Mp2tMediaParser::Flush() {
     PidState* pid_state = it->second;
     pid_state->Flush();
   }
-  EmitRemainingSamples();
+  bool result = EmitRemainingSamples();
   STLDeleteValues(&pids_);
 
   // Remove any bytes left in the TS buffer.
   // (i.e. any partial TS packet => less than 188 bytes).
   ts_byte_queue_.Reset();
+  return result;
 }
 
 bool Mp2tMediaParser::Parse(const uint8_t* buf, int size) {

@@ -225,10 +225,10 @@ void WebVttMediaParser::Init(const InitCB& init_cb,
   new_sample_cb_ = new_sample_cb;
 }
 
-void WebVttMediaParser::Flush() {
+bool WebVttMediaParser::Flush() {
   // If not in one of these states just be ready for more data.
   if (state_ != kCuePayload && state_ != kComment)
-    return;
+    return true;
 
   if (!data_.empty()) {
     // If it was in the middle of the payload and the stream finished, then this
@@ -241,9 +241,10 @@ void WebVttMediaParser::Flush() {
     data_.clear();
   }
 
-  new_sample_cb_.Run(kTrackId, CueToMediaSample(current_cue_));
+  bool result = new_sample_cb_.Run(kTrackId, CueToMediaSample(current_cue_));
   current_cue_ = Cue();
   state_ = kCueIdentifierOrTimingOrComment;
+  return result;
 }
 
 bool WebVttMediaParser::Parse(const uint8_t* buf, int size) {
@@ -353,7 +354,10 @@ bool WebVttMediaParser::Parse(const uint8_t* buf, int size) {
       case kCuePayload: {
         if (line.empty()) {
           state_ = kCueIdentifierOrTimingOrComment;
-          new_sample_cb_.Run(kTrackId, CueToMediaSample(current_cue_));
+          if (!new_sample_cb_.Run(kTrackId, CueToMediaSample(current_cue_))) {
+            state_ = kParseError;
+            return false;
+          }
           current_cue_ = Cue();
           break;
         }
@@ -364,7 +368,10 @@ bool WebVttMediaParser::Parse(const uint8_t* buf, int size) {
       case kComment: {
         if (line.empty()) {
           state_ = kCueIdentifierOrTimingOrComment;
-          new_sample_cb_.Run(kTrackId, CueToMediaSample(current_cue_));
+          if (!new_sample_cb_.Run(kTrackId, CueToMediaSample(current_cue_))) {
+            state_ = kParseError;
+            return false;
+          }
           current_cue_ = Cue();
           break;
         }

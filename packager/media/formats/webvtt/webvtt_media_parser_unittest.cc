@@ -61,7 +61,7 @@ TEST_F(WebVttMediaParserTest, ParseOneCue) {
   EXPECT_TRUE(parser_.Parse(reinterpret_cast<const uint8_t*>(kWebVtt),
                             arraysize(kWebVtt) - 1));
 
-  parser_.Flush();
+  EXPECT_TRUE(parser_.Flush());
 }
 
 // Verify that different types of line breaks work.
@@ -78,7 +78,7 @@ TEST_F(WebVttMediaParserTest, DifferentLineBreaks) {
   EXPECT_TRUE(parser_.Parse(reinterpret_cast<const uint8_t*>(kWebVtt),
                             arraysize(kWebVtt) - 1));
 
-  parser_.Flush();
+  EXPECT_TRUE(parser_.Flush());
 }
 
 TEST_F(WebVttMediaParserTest, ParseMultpleCues) {
@@ -99,7 +99,7 @@ TEST_F(WebVttMediaParserTest, ParseMultpleCues) {
   EXPECT_TRUE(parser_.Parse(reinterpret_cast<const uint8_t*>(kWebVtt),
                             arraysize(kWebVtt) - 1));
 
-  parser_.Flush();
+  EXPECT_TRUE(parser_.Flush());
 }
 
 MATCHER_P2(MatchesStartTimeAndDuration, start_time, duration, "") {
@@ -123,7 +123,7 @@ TEST_F(WebVttMediaParserTest, VerifyTimingParsing) {
   EXPECT_TRUE(parser_.Parse(reinterpret_cast<const uint8_t*>(kWebVtt),
                             arraysize(kWebVtt) - 1));
 
-  parser_.Flush();
+  EXPECT_TRUE(parser_.Flush());
 }
 
 // Expect parse failure if hour part of the timestamp is too short.
@@ -192,7 +192,7 @@ TEST_F(WebVttMediaParserTest, VerifyCuePayload) {
   EXPECT_TRUE(parser_.Parse(reinterpret_cast<const uint8_t*>(kWebVtt),
                             arraysize(kWebVtt) - 1));
 
-  parser_.Flush();
+  EXPECT_TRUE(parser_.Flush());
 }
 
 // Verify that a sample can be created from multiple calls to Parse(), i.e. one
@@ -213,7 +213,7 @@ TEST_F(WebVttMediaParserTest, PartialParse) {
   EXPECT_TRUE(parser_.Parse(reinterpret_cast<const uint8_t*>(kWebVtt) + 8,
                             arraysize(kWebVtt) - 1 - 8));
 
-  parser_.Flush();
+  EXPECT_TRUE(parser_.Flush());
 }
 
 // Verify that metadata header with --> is rejected.
@@ -226,7 +226,7 @@ TEST_F(WebVttMediaParserTest, BadMetadataHeader) {
   InitializeParser();
   EXPECT_FALSE(parser_.Parse(reinterpret_cast<const uint8_t*>(kBadWebVtt),
                              arraysize(kBadWebVtt) - 1));
-  parser_.Flush();
+  EXPECT_TRUE(parser_.Flush());
 }
 
 MATCHER_P(MatchesComment, comment, "") {
@@ -253,7 +253,7 @@ TEST_F(WebVttMediaParserTest, Comment) {
   InitializeParser();
   EXPECT_TRUE(parser_.Parse(reinterpret_cast<const uint8_t*>(kWebVtt),
                             arraysize(kWebVtt) - 1));
-  parser_.Flush();
+  EXPECT_TRUE(parser_.Flush());
 }
 
 // Verify that comment with --> is rejected.
@@ -269,7 +269,7 @@ TEST_F(WebVttMediaParserTest, BadComment) {
   InitializeParser();
   EXPECT_FALSE(parser_.Parse(reinterpret_cast<const uint8_t*>(kWebVtt),
                              arraysize(kWebVtt) - 1));
-  parser_.Flush();
+  EXPECT_TRUE(parser_.Flush());
 }
 
 MATCHER_P(HeaderMatches, header, "") {
@@ -295,7 +295,7 @@ TEST_F(WebVttMediaParserTest, Header) {
   InitializeParser();
   EXPECT_TRUE(parser_.Parse(reinterpret_cast<const uint8_t*>(kWebVtt),
                             arraysize(kWebVtt) - 1));
-  parser_.Flush();
+  EXPECT_TRUE(parser_.Flush());
 }
 
 // Verify that if timing is not present after an identifier, the parser errors.
@@ -311,7 +311,7 @@ TEST_F(WebVttMediaParserTest, NoTimingAfterIdentifier) {
   InitializeParser();
   EXPECT_FALSE(parser_.Parse(reinterpret_cast<const uint8_t*>(kWebVtt),
                              arraysize(kWebVtt) - 1));
-  parser_.Flush();
+  EXPECT_TRUE(parser_.Flush());
 }
 
 }  // namespace media

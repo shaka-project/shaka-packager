@@ -7,8 +7,10 @@
 #ifndef MEDIA_BASE_DEMUXER_H_
 #define MEDIA_BASE_DEMUXER_H_
 
+#include <deque>
 #include <vector>
 
+#include "packager/base/compiler_specific.h"
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/container_names.h"
@@ -70,15 +72,30 @@ class Demuxer {
   MediaContainerName container_name() { return container_name_; }
 
  private:
-  // Parser event handlers.
+  struct QueuedSample {
+    QueuedSample(uint32_t track_id, scoped_refptr<MediaSample> sample);
+    ~QueuedSample();
+
+    uint32_t track_id;
+    scoped_refptr<MediaSample> sample;
+  };
+
+  // Parser init event.
   void ParserInitEvent(const std::vector<scoped_refptr<StreamInfo> >& streams);
+  // Parser new sample event handler. Queues the samples if init event has not
+  // been received, otherwise calls PushSample() to push the sample to
+  // corresponding stream.
   bool NewSampleEvent(uint32_t track_id,
                       const scoped_refptr<MediaSample>& sample);
+  // Helper function to push the sample to corresponding stream.
+  bool PushSample(uint32_t track_id, const scoped_refptr<MediaSample>& sample);
 
   std::string file_name_;
   File* media_file_;
   bool init_event_received_;
   Status init_parsing_status_;
+  // Queued samples received in NewSampleEvent() before ParserInitEvent().
+  std::deque<QueuedSample> queued_samples_;
   scoped_ptr<MediaParser> parser_;
   std::vector<MediaStream*> streams_;
   MediaContainerName container_name_;

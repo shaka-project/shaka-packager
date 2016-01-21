@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "packager/base/callback.h"
+#include "packager/base/compiler_specific.h"
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/container_names.h"
@@ -55,11 +56,12 @@ class MediaParser {
 
   /// Flush data currently in the parser and put the parser in a state where it
   /// can receive data for a new seek point.
-  virtual void Flush() = 0;
+  /// @return true if successful, false otherwise.
+  virtual bool Flush() WARN_UNUSED_RESULT = 0;
 
   /// Should be called when there is new data to parse.
   /// @return true if successful.
-  virtual bool Parse(const uint8_t* buf, int size) = 0;
+  virtual bool Parse(const uint8_t* buf, int size) WARN_UNUSED_RESULT = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(MediaParser);

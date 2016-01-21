@@ -10,6 +10,7 @@
 #include <set>
 #include <string>
 
+#include "packager/base/compiler_specific.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/decryptor_source.h"
 #include "packager/media/base/media_parser.h"
@@ -55,7 +56,7 @@ class WebMClusterParser : public WebMParserClient {
     // for this buffer using helper function GetDurationEstimate() then emits it
     // and unsets |last_added_buffer_missing_duration_| (This method helps
     // stream parser emit all buffers in a media segment).
-    void ApplyDurationEstimateIfNeeded();
+    bool ApplyDurationEstimateIfNeeded();
 
     // Clears all buffer state, including any possibly held-aside buffer that
     // was missing duration.
@@ -135,7 +136,8 @@ class WebMClusterParser : public WebMParserClient {
 
   /// Flush data currently in the parser and reset the parser so it can accept a
   /// new cluster.
-  void Flush();
+  /// @return true on success, false otherwise.
+  bool Flush() WARN_UNUSED_RESULT;
 
   /// Parses a WebM cluster element in |buf|.
   /// @return -1 if the parse fails.

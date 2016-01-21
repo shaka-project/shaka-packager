@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "packager/base/compiler_specific.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/media_parser.h"
 #include "packager/media/base/network_util.h"
@@ -52,14 +53,14 @@ class WvmMediaParser : public MediaParser {
   WvmMediaParser();
   ~WvmMediaParser() override;
 
-  // MediaParser implementation overrides.
+  /// @name MediaParser implementation overrides.
+  /// @{
   void Init(const InitCB& init_cb,
             const NewSampleCB& new_sample_cb,
             KeySource* decryption_key_source) override;
-
-  void Flush() override;
-
-  bool Parse(const uint8_t* buf, int size) override;
+  bool Flush() override WARN_UNUSED_RESULT;
+  bool Parse(const uint8_t* buf, int size) override WARN_UNUSED_RESULT;
+  /// @}
 
  private:
   enum Tag {

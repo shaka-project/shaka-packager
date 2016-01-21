@@ -22,9 +22,13 @@
 #include "packager/media/formats/wvm/wvm_media_parser.h"
 
 namespace {
-const size_t kInitBufSize = 0x10000;  // 65KB, sufficient to determine the
-                                      // container and likely all init data.
-const size_t kBufSize = 0x200000;     // 2MB
+// 65KB, sufficient to determine the container and likely all init data.
+const size_t kInitBufSize = 0x10000;
+const size_t kBufSize = 0x200000;  // 2MB
+// Maximum number of allowed queued samples. If we are receiving a lot of
+// samples before seeing init_event, something is not right. The number
+// set here is arbitrary though.
+const size_t kQueuedSamplesLimit = 10000;
 }
 
 namespace edash_packager {
@@ -126,14 +130,40 @@ void Demuxer::ParserInitEvent(
   }
 }
 
+Demuxer::QueuedSample::QueuedSample(uint32_t local_track_id,
+                                      scoped_refptr<MediaSample> local_sample)
+    : track_id(local_track_id), sample(local_sample) {}
+Demuxer::QueuedSample::~QueuedSample() {}
+
 bool Demuxer::NewSampleEvent(uint32_t track_id,
                              const scoped_refptr<MediaSample>& sample) {
+  if (!init_event_received_) {
+    if (queued_samples_.size() >= kQueuedSamplesLimit) {
+      LOG(ERROR) << "Queued samples limit reached: " << kQueuedSamplesLimit;
+      return false;
+    }
+    queued_samples_.push_back(QueuedSample(track_id, sample));
+    return true;
+  }
+  while (!queued_samples_.empty()) {
+    if (!PushSample(queued_samples_.front().track_id,
+                    queued_samples_.front().sample)) {
+      return false;
+    }
+    queued_samples_.pop_front();
+  }
+  return PushSample(track_id, sample);
+}
+
+bool Demuxer::PushSample(uint32_t track_id,
+                         const scoped_refptr<MediaSample>& sample) {
   std::vector<MediaStream*>::iterator it = streams_.begin();
   for (; it != streams_.end(); ++it) {
     if (track_id == (*it)->info()->track_id()) {
       return (*it)->PushSample(sample).ok();
     }
   }
+  LOG(ERROR) << "Track " << track_id << " not found.";
   return false;
 }
 
@@ -183,7 +213,8 @@ Status Demuxer::Parse() {
 
   int64_t bytes_read = media_file_->Read(buffer_.get(), kBufSize);
   if (bytes_read == 0) {
-    parser_->Flush();
+    if (!parser_->Flush())
+      return Status(error::PARSER_FAILURE, "Failed to flush.");
     return Status(error::END_OF_STREAM, "");
   } else if (bytes_read < 0) {
     return Status(error::FILE_FAILURE, "Cannot read file " + file_name_);

@@ -555,7 +555,7 @@ TEST_F(WebMClusterParserTest, TracksWithSampleMissingDuration) {
   // The last audio (5th) and the last video (3rd) are emitted on flush with
   // duration estimated - estimated to be default duration if it is specified,
   // otherwise estimated from earlier frames.
-  parser_->Flush();
+  EXPECT_TRUE(parser_->Flush());
   EXPECT_TRUE(VerifyBuffers(&kExpectedBlockInfo[block_count - 2], 2));
 }
 
@@ -699,7 +699,7 @@ TEST_F(WebMClusterParserTest, IgnoredTracks) {
 
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  parser_->Flush();
+  EXPECT_TRUE(parser_->Flush());
   ASSERT_TRUE(VerifyBuffers(kOutputBlockInfo, output_block_count));
 }
 
@@ -729,7 +729,7 @@ TEST_F(WebMClusterParserTest, ParseTextTracks) {
 
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  parser_->Flush();
+  EXPECT_TRUE(parser_->Flush());
   ASSERT_TRUE(VerifyBuffers(kInputBlockInfo, input_block_count));
 }
 
@@ -844,7 +844,7 @@ TEST_F(WebMClusterParserTest, ParseEncryptedBlock) {
 
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  parser_->Flush();
+  EXPECT_TRUE(parser_->Flush());
   ASSERT_EQ(1UL, video_buffers_.size());
   scoped_refptr<MediaSample> buffer = video_buffers_[0];
   EXPECT_EQ(std::vector<uint8_t>(
@@ -886,7 +886,7 @@ TEST_F(WebMClusterParserTest, ParseClearFrameInEncryptedTrack) {
 
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  parser_->Flush();
+  EXPECT_TRUE(parser_->Flush());
   ASSERT_EQ(1UL, video_buffers_.size());
   scoped_refptr<MediaSample> buffer = video_buffers_[0];
   EXPECT_EQ(std::vector<uint8_t>(
@@ -965,7 +965,7 @@ TEST_F(WebMClusterParserTest, ParseWithDefaultDurationsSimpleBlocks) {
   ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count - 2));
   // The last audio and video are emitted on flush wiht duration estimated -
   // estimated to be default_duration since it is present.
-  parser_->Flush();
+  EXPECT_TRUE(parser_->Flush());
   ASSERT_TRUE(VerifyBuffers(&kBlockInfo[block_count - 2], 2));
 }
 
@@ -1017,7 +1017,7 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsSimpleBlocks) {
   ASSERT_TRUE(VerifyBuffers(&kBlockInfo1[block_count1 - 2], 2));
 
   // Now flush and verify blocks in cluster2 are emitted.
-  parser_->Flush();
+  EXPECT_TRUE(parser_->Flush());
   ASSERT_TRUE(VerifyBuffers(kBlockInfo2, block_count2));
 }
 
@@ -1069,7 +1069,7 @@ TEST_F(WebMClusterParserTest, ParseWithoutAnyDurationsBlockGroups) {
   ASSERT_TRUE(VerifyBuffers(&kBlockInfo1[block_count1 - 2], 2));
 
   // Now flush and verify blocks in cluster2 are emitted.
-  parser_->Flush();
+  EXPECT_TRUE(parser_->Flush());
   ASSERT_TRUE(VerifyBuffers(kBlockInfo2, block_count2));
 }
 
@@ -1093,7 +1093,7 @@ TEST_F(WebMClusterParserTest,
   scoped_ptr<Cluster> cluster(CreateCluster(0, kBlockInfo, block_count));
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  parser_->Flush();
+  EXPECT_TRUE(parser_->Flush());
   ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count));
 }
 
@@ -1110,7 +1110,7 @@ TEST_F(WebMClusterParserTest,
   scoped_ptr<Cluster> cluster(CreateCluster(0, kBlockInfo, block_count));
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
-  parser_->Flush();
+  EXPECT_TRUE(parser_->Flush());
   ASSERT_TRUE(VerifyBuffers(kBlockInfo, block_count));
 }
 

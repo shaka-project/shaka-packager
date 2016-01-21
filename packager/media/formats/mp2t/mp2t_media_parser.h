@@ -8,6 +8,7 @@
 #include <deque>
 #include <map>
 
+#include "packager/base/compiler_specific.h"
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/byte_queue.h"
@@ -32,14 +33,14 @@ class Mp2tMediaParser : public MediaParser {
   Mp2tMediaParser();
   ~Mp2tMediaParser() override;
 
-  // MediaParser implementation overrides.
+  /// @name MediaParser implementation overrides.
+  /// @{
   void Init(const InitCB& init_cb,
             const NewSampleCB& new_sample_cb,
             KeySource* decryption_key_source) override;
-
-  void Flush() override;
-
-  bool Parse(const uint8_t* buf, int size) override;
+  bool Flush() override WARN_UNUSED_RESULT;
+  bool Parse(const uint8_t* buf, int size) override WARN_UNUSED_RESULT;
+  /// @}
 
  private:
   typedef std::map<int, PidState*> PidMap;

@@ -6,6 +6,7 @@
 #define MEDIA_FORMATS_WEBM_WEBM_MEDIA_PARSER_H_
 
 #include "packager/base/callback_forward.h"
+#include "packager/base/compiler_specific.h"
 #include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/byte_queue.h"
 #include "packager/media/base/media_parser.h"
@@ -20,12 +21,14 @@ class WebMMediaParser : public MediaParser {
   WebMMediaParser();
   ~WebMMediaParser() override;
 
-  /// StreamParser implementation.
+  /// @name MediaParser implementation overrides.
+  /// @{
   void Init(const InitCB& init_cb,
             const NewSampleCB& new_sample_cb,
             KeySource* decryption_key_source) override;
-  void Flush() override;
-  bool Parse(const uint8_t* buf, int size) override;
+  bool Flush() override WARN_UNUSED_RESULT;
+  bool Parse(const uint8_t* buf, int size) override WARN_UNUSED_RESULT;
+  /// @}
 
  private:
   enum State {

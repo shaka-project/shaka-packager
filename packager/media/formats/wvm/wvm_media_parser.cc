@@ -469,7 +469,9 @@ bool WvmMediaParser::Parse(const uint8_t* buf, int size) {
         if (!DemuxNextPes(true)) {
           return false;
         }
-        Flush();
+        if (!Flush()) {
+          return false;
+        }
         // Reset.
         dts_ = pts_ = 0;
         parse_state_ = StartCode1;
@@ -515,7 +517,7 @@ bool WvmMediaParser::EmitPendingSamples() {
   return true;
 }
 
-void WvmMediaParser::Flush() {
+bool WvmMediaParser::Flush() {
   // Flush the last audio and video sample for current program.
   // Reset the streamID when successfully emitted.
   if (prev_media_sample_data_.audio_sample != NULL) {
@@ -523,6 +525,7 @@ void WvmMediaParser::Flush() {
                         prev_media_sample_data_.audio_sample)) {
       LOG(ERROR) << "Did not emit last sample for audio stream with ID = "
                  << prev_pes_stream_id_;
+      return false;
     }
   }
   if (prev_media_sample_data_.video_sample != NULL) {
@@ -530,8 +533,10 @@ void WvmMediaParser::Flush() {
                         prev_media_sample_data_.video_sample)) {
       LOG(ERROR) << "Did not emit last sample for video stream with ID = "
                  << prev_pes_stream_id_;
+      return false;
     }
   }
+  return true;
 }
 
 bool WvmMediaParser::ParseIndexEntry() {

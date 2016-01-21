@@ -103,11 +103,12 @@ void WebMClusterParser::Reset() {
   ResetTextTracks();
 }
 
-void WebMClusterParser::Flush() {
+bool WebMClusterParser::Flush() {
   // Estimate the duration of the last frame if necessary.
-  audio_.ApplyDurationEstimateIfNeeded();
-  video_.ApplyDurationEstimateIfNeeded();
+  bool audio_result = audio_.ApplyDurationEstimateIfNeeded();
+  bool video_result = video_.ApplyDurationEstimateIfNeeded();
   Reset();
+  return audio_result && video_result;
 }
 
 int WebMClusterParser::Parse(const uint8_t* buf, int size) {
@@ -524,9 +525,9 @@ bool WebMClusterParser::Track::EmitBuffer(
   return EmitBufferHelp(buffer);
 }
 
-void WebMClusterParser::Track::ApplyDurationEstimateIfNeeded() {
+bool WebMClusterParser::Track::ApplyDurationEstimateIfNeeded() {
   if (!last_added_buffer_missing_duration_.get())
-    return;
+    return true;
 
   int64_t estimated_duration = GetDurationEstimate();
   last_added_buffer_missing_duration_->set_duration(estimated_duration);
@@ -544,8 +545,10 @@ void WebMClusterParser::Track::ApplyDurationEstimateIfNeeded() {
 
   // Don't use the applied duration as a future estimation (don't use
   // EmitBufferHelp() here.)
-  new_sample_cb_.Run(track_num_, last_added_buffer_missing_duration_);
+  if (!new_sample_cb_.Run(track_num_, last_added_buffer_missing_duration_))
+    return false;
   last_added_buffer_missing_duration_ = NULL;
+  return true;
 }
 
 void WebMClusterParser::Track::Reset() {
@@ -583,8 +586,7 @@ bool WebMClusterParser::Track::EmitBufferHelp(
     }
   }
 
-  new_sample_cb_.Run(track_num_, buffer);
-  return true;
+  return new_sample_cb_.Run(track_num_, buffer);
 }
 
 int64_t WebMClusterParser::Track::GetDurationEstimate() {

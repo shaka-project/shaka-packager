@@ -119,10 +119,11 @@ void MP4MediaParser::Reset() {
   mdat_tail_ = 0;
 }
 
-void MP4MediaParser::Flush() {
+bool MP4MediaParser::Flush() {
   DCHECK_NE(state_, kWaitingForInit);
   Reset();
   ChangeState(kParsingBoxes);
+  return true;
 }
 
 bool MP4MediaParser::Parse(const uint8_t* buf, int size) {

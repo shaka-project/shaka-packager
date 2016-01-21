@@ -194,7 +194,7 @@ TEST_F(MP4MediaParserTest, Flush) {
 
   std::vector<uint8_t> buffer = ReadTestDataFile("bear-640x360-av_frag.mp4");
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), 65536, 512));
-  parser_->Flush();
+  EXPECT_TRUE(parser_->Flush());
   EXPECT_EQ(2u, num_streams_);
   EXPECT_NE(0u, num_samples_);
   num_samples_ = 0;
@@ -214,7 +214,7 @@ TEST_F(MP4MediaParserTest, NoMoovAfterFlush) {
 
   std::vector<uint8_t> buffer = ReadTestDataFile("bear-640x360-av_frag.mp4");
   EXPECT_TRUE(AppendDataInPieces(buffer.data(), buffer.size(), 512));
-  parser_->Flush();
+  EXPECT_TRUE(parser_->Flush());
 
   const int kFirstMoofOffset = 1308;
   EXPECT_TRUE(AppendDataInPieces(

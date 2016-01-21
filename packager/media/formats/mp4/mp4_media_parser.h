@@ -40,8 +40,8 @@ class MP4MediaParser : public MediaParser {
   void Init(const InitCB& init_cb,
             const NewSampleCB& new_sample_cb,
             KeySource* decryption_key_source) override;
-  void Flush() override;
-  bool Parse(const uint8_t* buf, int size) override;
+  bool Flush() override WARN_UNUSED_RESULT;
+  bool Parse(const uint8_t* buf, int size) override WARN_UNUSED_RESULT;
   /// @}
 
   /// Handles ISO-BMFF containers which have the 'moov' box trailing the
