@@ -227,18 +227,20 @@ void AddContentProtectionElementsHelperTemplated(
   // (MP4) files.
   const bool is_mp4_container =
       media_info.container_type() == MediaInfo::CONTAINER_MP4;
+  std::string key_id_uuid_format;
+  if (protected_content.has_default_key_id()) {
+    if (!HexToUUID(protected_content.default_key_id(), &key_id_uuid_format)) {
+      LOG(ERROR) << "Failed to convert default key ID into UUID format.";
+    }
+  }
+
   if (is_mp4_container) {
     ContentProtectionElement mp4_content_protection;
     mp4_content_protection.scheme_id_uri = kEncryptedMp4Scheme;
     mp4_content_protection.value = kEncryptedMp4Value;
-    if (protected_content.has_default_key_id()) {
-      std::string key_id_uuid_format;
-      if (HexToUUID(protected_content.default_key_id(), &key_id_uuid_format)) {
-        mp4_content_protection.additional_attributes["cenc:default_KID"] =
-            key_id_uuid_format;
-      } else {
-        LOG(ERROR) << "Failed to convert default key ID into UUID format.";
-      }
+    if (!key_id_uuid_format.empty()) {
+      mp4_content_protection.additional_attributes["cenc:default_KID"] =
+          key_id_uuid_format;
     }
 
     parent->AddContentProtectionElement(mp4_content_protection);
@@ -267,6 +269,11 @@ void AddContentProtectionElementsHelperTemplated(
       cenc_pssh.name = kPsshElementName;
       cenc_pssh.content = base64_encoded_pssh;
       drm_content_protection.subelements.push_back(cenc_pssh);
+    }
+
+    if (!key_id_uuid_format.empty() && !is_mp4_container) {
+      drm_content_protection.additional_attributes["cenc:default_KID"] =
+          key_id_uuid_format;
     }
 
     parent->AddContentProtectionElement(drm_content_protection);

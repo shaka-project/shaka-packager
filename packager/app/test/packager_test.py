@@ -139,6 +139,15 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-golden.mpd')
 
+  def testPackageWebmWithEncryption(self):
+    self.packager.Package(
+        self._GetStreams(['video'],
+                         output_format='webm',
+                         test_files=['bear-640x360.webm']),
+        self._GetFlags(encryption=True))
+    self._DiffGold(self.output[0], 'bear-640x360-vp8-cenc-golden.webm')
+    self._DiffGold(self.mpd_output, 'bear-640x360-vp8-cenc-webm-golden.mpd')
+
   def testPackageHevcWithEncryption(self):
     self.packager.Package(
         self._GetStreams(['video'],
