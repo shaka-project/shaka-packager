@@ -316,76 +316,83 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  <span class="comment">// (MP4) files.</span></div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> is_mp4_container =</div>
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;      media_info.container_type() == MediaInfo::CONTAINER_MP4;</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  <span class="keywordflow">if</span> (is_mp4_container) {</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    ContentProtectionElement mp4_content_protection;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    mp4_content_protection.scheme_id_uri = kEncryptedMp4Scheme;</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    mp4_content_protection.value = kEncryptedMp4Value;</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    <span class="keywordflow">if</span> (protected_content.has_default_key_id()) {</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;      std::string key_id_uuid_format;</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;      <span class="keywordflow">if</span> (<a class="code" href="../../db/d09/namespaceedash__packager.html#a7015ba137f31c7ae734dc7abb254be64">HexToUUID</a>(protected_content.default_key_id(), &amp;key_id_uuid_format)) {</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;        mp4_content_protection.additional_attributes[<span class="stringliteral">&quot;cenc:default_KID&quot;</span>] =</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;            key_id_uuid_format;</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;      } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;        LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to convert default key ID into UUID format.&quot;</span>;</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;      }</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    }</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    parent-&gt;AddContentProtectionElement(mp4_content_protection);</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;  }</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; protected_content.content_protection_entry().size();</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;       ++i) {</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    <span class="keyword">const</span> MediaInfo::ProtectedContent::ContentProtectionEntry&amp; entry =</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;        protected_content.content_protection_entry(i);</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    <span class="keywordflow">if</span> (!entry.has_uuid()) {</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;      LOG(WARNING)</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;ContentProtectionEntry was specified but no UUID is set for &quot;</span></div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;          &lt;&lt; entry.name_version() &lt;&lt; <span class="stringliteral">&quot;, skipping.&quot;</span>;</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    }</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    ContentProtectionElement drm_content_protection;</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    drm_content_protection.scheme_id_uri = <span class="stringliteral">&quot;urn:uuid:&quot;</span> + entry.uuid();</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="keywordflow">if</span> (entry.has_name_version())</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;      drm_content_protection.value = entry.name_version();</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    <span class="keywordflow">if</span> (entry.has_pssh()) {</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;      std::string base64_encoded_pssh;</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;      base::Base64Encode(entry.pssh(), &amp;base64_encoded_pssh);</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;      Element cenc_pssh;</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;      cenc_pssh.name = kPsshElementName;</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;      cenc_pssh.content = base64_encoded_pssh;</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;      drm_content_protection.subelements.push_back(cenc_pssh);</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    }</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;    parent-&gt;AddContentProtectionElement(drm_content_protection);</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  }</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  LOG_IF(WARNING, protected_content.content_protection_entry().size() == 0)</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;The media is encrypted but no content protection specified.&quot;</span>;</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;}</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;}  <span class="comment">// namespace</span></div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;</div>
-<div class="line"><a name="l00280"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">  280</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;                                  <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a>* parent) {</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  AddContentProtectionElementsHelperTemplated(media_info, parent);</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;}</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;</div>
-<div class="line"><a name="l00285"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html#a63896c3ea3c207506f18095624f2ed84">  285</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;                                  <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>* parent) {</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  AddContentProtectionElementsHelperTemplated(media_info, parent);</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;}</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  std::string key_id_uuid_format;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  <span class="keywordflow">if</span> (protected_content.has_default_key_id()) {</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../db/d09/namespaceedash__packager.html#a7015ba137f31c7ae734dc7abb254be64">HexToUUID</a>(protected_content.default_key_id(), &amp;key_id_uuid_format)) {</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to convert default key ID into UUID format.&quot;</span>;</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    }</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  }</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  <span class="keywordflow">if</span> (is_mp4_container) {</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    ContentProtectionElement mp4_content_protection;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    mp4_content_protection.scheme_id_uri = kEncryptedMp4Scheme;</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    mp4_content_protection.value = kEncryptedMp4Value;</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    <span class="keywordflow">if</span> (!key_id_uuid_format.empty()) {</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;      mp4_content_protection.additional_attributes[<span class="stringliteral">&quot;cenc:default_KID&quot;</span>] =</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;          key_id_uuid_format;</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    }</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    parent-&gt;AddContentProtectionElement(mp4_content_protection);</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;  }</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 0; i &lt; protected_content.content_protection_entry().size();</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;       ++i) {</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    <span class="keyword">const</span> MediaInfo::ProtectedContent::ContentProtectionEntry&amp; entry =</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        protected_content.content_protection_entry(i);</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    <span class="keywordflow">if</span> (!entry.has_uuid()) {</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;      LOG(WARNING)</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;          &lt;&lt; <span class="stringliteral">&quot;ContentProtectionEntry was specified but no UUID is set for &quot;</span></div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;          &lt;&lt; entry.name_version() &lt;&lt; <span class="stringliteral">&quot;, skipping.&quot;</span>;</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;    }</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    ContentProtectionElement drm_content_protection;</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    drm_content_protection.scheme_id_uri = <span class="stringliteral">&quot;urn:uuid:&quot;</span> + entry.uuid();</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    <span class="keywordflow">if</span> (entry.has_name_version())</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;      drm_content_protection.value = entry.name_version();</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    <span class="keywordflow">if</span> (entry.has_pssh()) {</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;      std::string base64_encoded_pssh;</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;      base::Base64Encode(entry.pssh(), &amp;base64_encoded_pssh);</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;      Element cenc_pssh;</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;      cenc_pssh.name = kPsshElementName;</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;      cenc_pssh.content = base64_encoded_pssh;</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;      drm_content_protection.subelements.push_back(cenc_pssh);</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;    }</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    <span class="keywordflow">if</span> (!key_id_uuid_format.empty() &amp;&amp; !is_mp4_container) {</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;      drm_content_protection.additional_attributes[<span class="stringliteral">&quot;cenc:default_KID&quot;</span>] =</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;          key_id_uuid_format;</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;    }</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    parent-&gt;AddContentProtectionElement(drm_content_protection);</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  }</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  LOG_IF(WARNING, protected_content.content_protection_entry().size() == 0)</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;The media is encrypted but no content protection specified.&quot;</span>;</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;}</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;}  <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;</div>
+<div class="line"><a name="l00287"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">  287</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;                                  <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a>* parent) {</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  AddContentProtectionElementsHelperTemplated(media_info, parent);</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;}</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;</div>
+<div class="line"><a name="l00292"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html#a63896c3ea3c207506f18095624f2ed84">  292</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;                                  <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>* parent) {</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  AddContentProtectionElementsHelperTemplated(media_info, parent);</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;}</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1Representation_html"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html">edash_packager::Representation</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00428">mpd_builder.h:428</a></div></div>
-<div class="ttc" id="namespaceedash__packager_html_a6f62cefcc7cf1a95f19bbea3b310fbab"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">edash_packager::AddContentProtectionElements</a></div><div class="ttdeci">void AddContentProtectionElements(const MediaInfo &amp;media_info, Representation *parent)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00280">mpd_utils.cc:280</a></div></div>
+<div class="ttc" id="namespaceedash__packager_html_a6f62cefcc7cf1a95f19bbea3b310fbab"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">edash_packager::AddContentProtectionElements</a></div><div class="ttdeci">void AddContentProtectionElements(const MediaInfo &amp;media_info, Representation *parent)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00287">mpd_utils.cc:287</a></div></div>
 <div class="ttc" id="classedash__packager_1_1AdaptationSet_html"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html">edash_packager::AdaptationSet</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00167">mpd_builder.h:167</a></div></div>
 <div class="ttc" id="namespaceedash__packager_html_a7015ba137f31c7ae734dc7abb254be64"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a7015ba137f31c7ae734dc7abb254be64">edash_packager::HexToUUID</a></div><div class="ttdeci">bool HexToUUID(const std::string &amp;data, std::string *uuid_format)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00124">mpd_utils.cc:124</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jan 22 2016 17:33:44 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 22 2016 22:17:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
