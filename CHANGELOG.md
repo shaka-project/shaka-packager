@@ -1,3 +1,17 @@
+## [1.3.1] - 2016-01-22
+This release fixes and improves WebM parsing and packaging.
+### Added
+- Added 'cenc:default_KID' attribute in ContentProtection element for non-MP4,
+  i.e. WebM mpd too #69.
+- Added WebM content decryption support #72.
+
+### Fixed
+- Fixed decoding timestamp always being 0 when trasmuxing from WebM to MP4 #67.
+- Improved sample duration computation for WebM content to get rid of possible
+  gaps due to accumulated errors #68.
+- Fixed possible audio sample loss in WebM parser, which could happen if there
+  are audio blocks before the first video block #71.
+
 ## [1.3.0] - 2016-01-15
 ### Added
 - Added support for new container format: WebM.
@@ -110,6 +124,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[1.3.1]: https://github.com/google/edash-packager/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/google/edash-packager/compare/v1.2.0...v1.3.0
 [1.2.1]: https://github.com/google/edash-packager/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/google/edash-packager/compare/v1.1...v1.2.0
