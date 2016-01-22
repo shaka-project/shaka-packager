@@ -144,30 +144,31 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="comment">// Returning &gt; 0 indicates success &amp; the number of bytes parsed.</span></div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordtype">int</span> ParseCluster(<span class="keyword">const</span> uint8_t* data, <span class="keywordtype">int</span> size);</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="comment">// Fire needkey event through the |encrypted_media_init_data_cb_|.</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordtype">void</span> OnEncryptedMediaInitData(<span class="keyword">const</span> std::string&amp; key_id);</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  State state_;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <a class="code" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#af5c74c8723a5306faddcdfdcadb4ab4a">InitCB</a> init_cb_;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <a class="code" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a1628c19a91f1b8ae123f7350936bfe32">NewSampleCB</a> new_sample_cb_;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a>* decryption_key_source_;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordtype">bool</span> ignore_text_tracks_;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keywordtype">bool</span> unknown_segment_size_;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  scoped_ptr&lt;WebMClusterParser&gt; cluster_parser_;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html">ByteQueue</a> byte_queue_;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html">WebMMediaParser</a>);</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;};</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_WEBM_MEDIA_PARSER_H_</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1WebMMediaParser_html_a5a95d3879a9a96830fdcf4f866879143"><div class="ttname"><a href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a5a95d3879a9a96830fdcf4f866879143">edash_packager::media::WebMMediaParser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *buf, int size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dff/webm__media__parser_8cc_source.html#l00053">webm_media_parser.cc:53</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1WebMMediaParser_html_a3c0e6fc0e48bb49e6687f566a87e6f12"><div class="ttname"><a href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a3c0e6fc0e48bb49e6687f566a87e6f12">edash_packager::media::WebMMediaParser::Flush</a></div><div class="ttdeci">void Flush() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dff/webm__media__parser_8cc_source.html#l00042">webm_media_parser.cc:42</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1WebMMediaParser_html_a8a85bf527013ebbb0b902dcd56039467"><div class="ttname"><a href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a8a85bf527013ebbb0b902dcd56039467">edash_packager::media::WebMMediaParser::Init</a></div><div class="ttdeci">void Init(const InitCB &amp;init_cb, const NewSampleCB &amp;new_sample_cb, KeySource *decryption_key_source) override</div><div class="ttdoc">StreamParser implementation. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dff/webm__media__parser_8cc_source.html#l00027">webm_media_parser.cc:27</a></div></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="comment">// Fetch keys for the input key ids. Returns true on success, false otherwise.</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordtype">bool</span> FetchKeysIfNecessary(<span class="keyword">const</span> std::string&amp; audio_encryption_key_id,</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                            <span class="keyword">const</span> std::string&amp; video_encryption_key_id);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  State state_;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <a class="code" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#af5c74c8723a5306faddcdfdcadb4ab4a">InitCB</a> init_cb_;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <a class="code" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a1628c19a91f1b8ae123f7350936bfe32">NewSampleCB</a> new_sample_cb_;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a>* decryption_key_source_;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordtype">bool</span> ignore_text_tracks_;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordtype">bool</span> unknown_segment_size_;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  scoped_ptr&lt;WebMClusterParser&gt; cluster_parser_;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html">ByteQueue</a> byte_queue_;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html">WebMMediaParser</a>);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;};</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_WEBM_MEDIA_PARSER_H_</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMMediaParser_html_a5a95d3879a9a96830fdcf4f866879143"><div class="ttname"><a href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a5a95d3879a9a96830fdcf4f866879143">edash_packager::media::WebMMediaParser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *buf, int size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dff/webm__media__parser_8cc_source.html#l00055">webm_media_parser.cc:55</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMMediaParser_html_a3c0e6fc0e48bb49e6687f566a87e6f12"><div class="ttname"><a href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a3c0e6fc0e48bb49e6687f566a87e6f12">edash_packager::media::WebMMediaParser::Flush</a></div><div class="ttdeci">void Flush() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dff/webm__media__parser_8cc_source.html#l00044">webm_media_parser.cc:44</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMMediaParser_html_a8a85bf527013ebbb0b902dcd56039467"><div class="ttname"><a href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a8a85bf527013ebbb0b902dcd56039467">edash_packager::media::WebMMediaParser::Init</a></div><div class="ttdeci">void Init(const InitCB &amp;init_cb, const NewSampleCB &amp;new_sample_cb, KeySource *decryption_key_source) override</div><div class="ttdoc">StreamParser implementation. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dff/webm__media__parser_8cc_source.html#l00029">webm_media_parser.cc:29</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1MediaParser_html"><div class="ttname"><a href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html">edash_packager::media::MediaParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d12/media__parser_8h_source.html#l00025">media_parser.h:25</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1WebMMediaParser_html"><div class="ttname"><a href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html">edash_packager::media::WebMMediaParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d58/webm__media__parser_8h_source.html#l00018">webm_media_parser.h:18</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1MediaParser_html_a1628c19a91f1b8ae123f7350936bfe32"><div class="ttname"><a href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a1628c19a91f1b8ae123f7350936bfe32">edash_packager::media::MediaParser::NewSampleCB</a></div><div class="ttdeci">base::Callback&lt; bool(uint32_t track_id, const scoped_refptr&lt; MediaSample &gt; &amp;media_sample)&gt; NewSampleCB</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d12/media__parser_8h_source.html#l00043">media_parser.h:43</a></div></div>
@@ -177,7 +178,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 21 2016 19:33:39 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 22 2016 17:33:44 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

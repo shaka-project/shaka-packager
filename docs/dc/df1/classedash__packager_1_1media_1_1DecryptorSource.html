@@ -90,75 +90,36 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="../../d7/d2a/classedash__packager_1_1media_1_1DecryptorSource-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">edash_packager::media::DecryptorSource Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
+<div class="title">edash_packager::media::DecryptorSource Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p><a class="el" href="../../dc/df1/classedash__packager_1_1media_1_1DecryptorSource.html" title="DecryptorSource is responsible for decryption key acquisition. ">DecryptorSource</a> is responsible for decryption key acquisition.  
+<p><a class="el" href="../../dc/df1/classedash__packager_1_1media_1_1DecryptorSource.html" title="DecryptorSource wraps KeySource and is responsible for decryptor management. ">DecryptorSource</a> wraps <a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html" title="KeySource is responsible for encryption key acquisition. ">KeySource</a> and is responsible for decryptor management.  
  <a href="../../dc/df1/classedash__packager_1_1media_1_1DecryptorSource.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="../../d0/d7d/decryptor__source_8h_source.html">decryptor_source.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a635b0367a1903f3a0afb1ca931f1274a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/df1/classedash__packager_1_1media_1_1DecryptorSource.html#a635b0367a1903f3a0afb1ca931f1274a">OnNeedKey</a> (MediaContainerName container, const std::string &amp;init_data)=0</td></tr>
-<tr class="separator:a635b0367a1903f3a0afb1ca931f1274a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2f77ca7129c9bc373fa94d59972882f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab2f77ca7129c9bc373fa94d59972882f"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>DecryptorSource</b> (<a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a> *key_source)</td></tr>
+<tr class="separator:ab2f77ca7129c9bc373fa94d59972882f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0758c2b2c44431fa5edcad216bde74e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab0758c2b2c44431fa5edcad216bde74e"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>DecryptSampleBuffer</b> (const <a class="el" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html">DecryptConfig</a> *decrypt_config, uint8_t *buffer, size_t buffer_size)</td></tr>
+<tr class="separator:ab0758c2b2c44431fa5edcad216bde74e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p><a class="el" href="../../dc/df1/classedash__packager_1_1media_1_1DecryptorSource.html" title="DecryptorSource is responsible for decryption key acquisition. ">DecryptorSource</a> is responsible for decryption key acquisition. </p>
+<div class="textblock"><p><a class="el" href="../../dc/df1/classedash__packager_1_1media_1_1DecryptorSource.html" title="DecryptorSource wraps KeySource and is responsible for decryptor management. ">DecryptorSource</a> wraps <a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html" title="KeySource is responsible for encryption key acquisition. ">KeySource</a> and is responsible for decryptor management. </p>
 
-<p>Definition at line <a class="el" href="../../d0/d7d/decryptor__source_8h_source.html#l00018">18</a> of file <a class="el" href="../../d0/d7d/decryptor__source_8h_source.html">decryptor_source.h</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a635b0367a1903f3a0afb1ca931f1274a"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::DecryptorSource::OnNeedKey </td>
-          <td>(</td>
-          <td class="paramtype">MediaContainerName&#160;</td>
-          <td class="paramname"><em>container</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>init_data</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>NeedKey event handler. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">container</td><td>indicates the container format. </td></tr>
-    <tr><td class="paramname">init_data</td><td>specifies container dependent initialization data that is used to initialize the decryption key. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>OK on success, an adequate status on error. </dd></dl>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following file:<ul>
+<p>Definition at line <a class="el" href="../../d0/d7d/decryptor__source_8h_source.html#l00021">21</a> of file <a class="el" href="../../d0/d7d/decryptor__source_8h_source.html">decryptor_source.h</a>.</p>
+</div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>media/base/<a class="el" href="../../d0/d7d/decryptor__source_8h_source.html">decryptor_source.h</a></li>
+<li>media/base/<a class="el" href="../../d1/d2a/decryptor__source_8cc_source.html">decryptor_source.cc</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 21 2016 19:33:39 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 22 2016 17:33:45 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

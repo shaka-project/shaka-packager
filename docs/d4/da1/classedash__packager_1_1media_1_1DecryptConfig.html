@@ -99,17 +99,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8241c75bb72af0b2de61ae1e276692ed"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a8241c75bb72af0b2de61ae1e276692ed">DecryptConfig</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const int data_offset, const std::vector&lt; <a class="el" href="../../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a> &gt; &amp;subsamples)</td></tr>
-<tr class="separator:a8241c75bb72af0b2de61ae1e276692ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a271d0e6319a0542e00a2dd7005293bd2"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a271d0e6319a0542e00a2dd7005293bd2">DecryptConfig</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; <a class="el" href="../../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a> &gt; &amp;subsamples)</td></tr>
+<tr class="separator:a271d0e6319a0542e00a2dd7005293bd2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adb78d7f5fe419508b03a41d4a2bc6a68"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adb78d7f5fe419508b03a41d4a2bc6a68"></a>
 const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>key_id</b> () const </td></tr>
 <tr class="separator:adb78d7f5fe419508b03a41d4a2bc6a68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1fa0ac81a37e6c54da3e72c44741413b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1fa0ac81a37e6c54da3e72c44741413b"></a>
 const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>iv</b> () const </td></tr>
 <tr class="separator:a1fa0ac81a37e6c54da3e72c44741413b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3644120fe71ecec7f85a82bcf90981c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa3644120fe71ecec7f85a82bcf90981c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>data_offset</b> () const </td></tr>
-<tr class="separator:aa3644120fe71ecec7f85a82bcf90981c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adae58c3315000f71669b7143308e3dfb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adae58c3315000f71669b7143308e3dfb"></a>
 const std::vector<br class="typebreak"/>
 &lt; <a class="el" href="../../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>subsamples</b> () const </td></tr>
@@ -127,7 +124,7 @@ static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class=
 
 <p>Definition at line <a class="el" href="../../df/dad/decrypt__config_8h_source.html#l00034">34</a> of file <a class="el" href="../../df/dad/decrypt__config_8h_source.html">decrypt_config.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a8241c75bb72af0b2de61ae1e276692ed"></a>
+<a class="anchor" id="a271d0e6319a0542e00a2dd7005293bd2"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -146,12 +143,6 @@ static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class=
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const int&#160;</td>
-          <td class="paramname"><em>data_offset</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
           <td class="paramtype">const std::vector&lt; <a class="el" href="../../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a> &gt; &amp;&#160;</td>
           <td class="paramname"><em>subsamples</em>&#160;</td>
         </tr>
@@ -166,7 +157,6 @@ static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class=
   <table class="params">
     <tr><td class="paramname">key_id</td><td>is the ID that references the decryption key. </td></tr>
     <tr><td class="paramname">iv</td><td>is the initialization vector defined by the encryptor. </td></tr>
-    <tr><td class="paramname">data_offset</td><td>is the amount of data that should be discarded from the head of the sample buffer before applying subsample information. A decrypted buffer will be shorter than an encrypted buffer by this amount. </td></tr>
     <tr><td class="paramname">subsamples</td><td>defines the clear and encrypted portions of the sample as described in <a class="el" href="../../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a>. A decrypted buffer will be equal in size to the sum of the subsample sizes. </td></tr>
   </table>
   </dd>
@@ -183,7 +173,7 @@ static const size_t&#160;</td><td class="memItemRight" valign="bottom"><a class=
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jan 21 2016 19:33:39 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jan 22 2016 17:33:45 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
