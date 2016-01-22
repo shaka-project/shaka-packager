@@ -40,7 +40,7 @@
       'dependencies': [
         '../../base/base.gyp:base',
         '../../third_party/gflags/gflags.gyp:gflags',
-        '../base/media_base.gyp:base',
+        '../base/media_base.gyp:media_base',
       ],
     },
     {
@@ -54,7 +54,7 @@
       'dependencies': [
         '../../testing/gtest.gyp:gtest',
         '../../third_party/gflags/gflags.gyp:gflags',
-        '../test/media_test.gyp:run_all_unittests',
+        '../test/media_test.gyp:run_tests_with_atexit_manager',
         'file',
       ],
     },

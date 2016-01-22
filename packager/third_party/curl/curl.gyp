@@ -43,6 +43,20 @@
             ],
           },
         }],
+        ['OS == "mac"', {
+          'sources': [
+            'config/mac/curl_config.h',
+          ],
+          'direct_dependent_settings': {
+            'defines': [
+              'HAVE_CONFIG_H',
+              'CURL_CA_BUNDLE="<!(config/mac/find_curl_ca_bundle.sh)"',
+            ],
+            'include_dirs': [
+              'config/mac',
+            ],
+          },
+        }],
         ['OS == "win"', {
           'direct_dependent_settings': {
             'link_settings': {
