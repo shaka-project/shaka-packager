@@ -107,10 +107,10 @@ Public Member Functions</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">MediaParser implementation overrides.</div></td></tr>
 <tr class="memitem:a6e678b88894210cd665c1466b0c0fd41"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d51/classedash__packager_1_1media_1_1WebVttMediaParser.html#a6e678b88894210cd665c1466b0c0fd41">Init</a> (const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#af5c74c8723a5306faddcdfdcadb4ab4a">InitCB</a> &amp;init_cb, const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a1628c19a91f1b8ae123f7350936bfe32">NewSampleCB</a> &amp;new_sample_cb, <a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a> *decryption_key_source) override</td></tr>
 <tr class="separator:a6e678b88894210cd665c1466b0c0fd41"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a25bb3bc6c7c444690ade271a0f63b617"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d51/classedash__packager_1_1media_1_1WebVttMediaParser.html#a25bb3bc6c7c444690ade271a0f63b617">Flush</a> () override</td></tr>
-<tr class="separator:a25bb3bc6c7c444690ade271a0f63b617"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8b4da9e7a78f7c34953ce81ec9817a4"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d51/classedash__packager_1_1media_1_1WebVttMediaParser.html#ad8b4da9e7a78f7c34953ce81ec9817a4">Parse</a> (const uint8_t *buf, int size) override</td></tr>
-<tr class="separator:ad8b4da9e7a78f7c34953ce81ec9817a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a258b3dda049d3ae4b03be8f91976dd9b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d51/classedash__packager_1_1media_1_1WebVttMediaParser.html#a258b3dda049d3ae4b03be8f91976dd9b">Flush</a> () override WARN_UNUSED_RESULT</td></tr>
+<tr class="separator:a258b3dda049d3ae4b03be8f91976dd9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adea6973058b03be69e9f07181e4242de"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d51/classedash__packager_1_1media_1_1WebVttMediaParser.html#adea6973058b03be69e9f07181e4242de">Parse</a> (const uint8_t *buf, int size) override WARN_UNUSED_RESULT</td></tr>
+<tr class="separator:adea6973058b03be69e9f07181e4242de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -126,9 +126,9 @@ track_id, const scoped_refptr<br class="typebreak"/>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="../../db/d64/webvtt__media__parser_8h_source.html#l00036">36</a> of file <a class="el" href="../../db/d64/webvtt__media__parser_8h_source.html">webvtt_media_parser.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/d64/webvtt__media__parser_8h_source.html#l00037">37</a> of file <a class="el" href="../../db/d64/webvtt__media__parser_8h_source.html">webvtt_media_parser.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a25bb3bc6c7c444690ade271a0f63b617"></a>
+<a class="anchor" id="a258b3dda049d3ae4b03be8f91976dd9b"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -136,7 +136,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void edash_packager::media::WebVttMediaParser::Flush </td>
+          <td class="memname">bool edash_packager::media::WebVttMediaParser::Flush </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -149,8 +149,9 @@ track_id, const scoped_refptr<br class="typebreak"/>
 </table>
 </div><div class="memdoc">
 <p>Flush data currently in the parser and put the parser in a state where it can receive data for a new seek point. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if successful, false otherwise. </dd></dl>
 
-<p>Implements <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#ad9906a71035190a798a9aa8aed0a92b8">edash_packager::media::MediaParser</a>.</p>
+<p>Implements <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a207f57f06d2ad88052ea7480a068ad1c">edash_packager::media::MediaParser</a>.</p>
 
 <p>Definition at line <a class="el" href="../../d1/d2f/webvtt__media__parser_8cc_source.html#l00228">228</a> of file <a class="el" href="../../d1/d2f/webvtt__media__parser_8cc_source.html">webvtt_media_parser.cc</a>.</p>
 
@@ -193,7 +194,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Initialize the parser with necessary callbacks. Must be called before any data is passed to <a class="el" href="../../d2/d51/classedash__packager_1_1media_1_1WebVttMediaParser.html#ad8b4da9e7a78f7c34953ce81ec9817a4">Parse()</a>. </p>
+<p>Initialize the parser with necessary callbacks. Must be called before any data is passed to <a class="el" href="../../d2/d51/classedash__packager_1_1media_1_1WebVttMediaParser.html#adea6973058b03be69e9f07181e4242de">Parse()</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">init_cb</td><td>will be called once enough data has been parsed to determine the initial stream configurations. </td></tr>
@@ -208,7 +209,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
 
 </div>
 </div>
-<a class="anchor" id="ad8b4da9e7a78f7c34953ce81ec9817a4"></a>
+<a class="anchor" id="adea6973058b03be69e9f07181e4242de"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -242,9 +243,9 @@ track_id, const scoped_refptr<br class="typebreak"/>
 <p>Should be called when there is new data to parse. </p>
 <dl class="section return"><dt>Returns</dt><dd>true if successful. </dd></dl>
 
-<p>Implements <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a6bc31ca2303d340a11a63a6f4bbb8b0a">edash_packager::media::MediaParser</a>.</p>
+<p>Implements <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a3a70d164d75d6ed8f1ce59490d13beb4">edash_packager::media::MediaParser</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d1/d2f/webvtt__media__parser_8cc_source.html#l00249">249</a> of file <a class="el" href="../../d1/d2f/webvtt__media__parser_8cc_source.html">webvtt_media_parser.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/d2f/webvtt__media__parser_8cc_source.html#l00250">250</a> of file <a class="el" href="../../d1/d2f/webvtt__media__parser_8cc_source.html">webvtt_media_parser.cc</a>.</p>
 
 </div>
 </div>
@@ -255,7 +256,7 @@ track_id, const scoped_refptr<br class="typebreak"/>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jan 22 2016 22:17:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Jan 23 2016 02:38:38 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

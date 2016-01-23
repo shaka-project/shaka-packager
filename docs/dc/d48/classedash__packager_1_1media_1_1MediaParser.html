@@ -123,14 +123,14 @@ track_id, const scoped_refptr<br class="typebreak"/>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a7ac1ee5db298922f094920cd564bfb16"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a7ac1ee5db298922f094920cd564bfb16">Init</a> (const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#af5c74c8723a5306faddcdfdcadb4ab4a">InitCB</a> &amp;init_cb, const <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a1628c19a91f1b8ae123f7350936bfe32">NewSampleCB</a> &amp;new_sample_cb, <a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a> *decryption_key_source)=0</td></tr>
 <tr class="separator:a7ac1ee5db298922f094920cd564bfb16"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9906a71035190a798a9aa8aed0a92b8"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#ad9906a71035190a798a9aa8aed0a92b8">Flush</a> ()=0</td></tr>
-<tr class="separator:ad9906a71035190a798a9aa8aed0a92b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6bc31ca2303d340a11a63a6f4bbb8b0a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a6bc31ca2303d340a11a63a6f4bbb8b0a">Parse</a> (const uint8_t *buf, int size)=0</td></tr>
-<tr class="separator:a6bc31ca2303d340a11a63a6f4bbb8b0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a207f57f06d2ad88052ea7480a068ad1c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a207f57f06d2ad88052ea7480a068ad1c">Flush</a> () WARN_UNUSED_RESULT=0</td></tr>
+<tr class="separator:a207f57f06d2ad88052ea7480a068ad1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3a70d164d75d6ed8f1ce59490d13beb4"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a3a70d164d75d6ed8f1ce59490d13beb4">Parse</a> (const uint8_t *buf, int size) WARN_UNUSED_RESULT=0</td></tr>
+<tr class="separator:a3a70d164d75d6ed8f1ce59490d13beb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="../../d7/d12/media__parser_8h_source.html#l00025">25</a> of file <a class="el" href="../../d7/d12/media__parser_8h_source.html">media_parser.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d12/media__parser_8h_source.html#l00026">26</a> of file <a class="el" href="../../d7/d12/media__parser_8h_source.html">media_parser.h</a>.</p>
 </div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a class="anchor" id="af5c74c8723a5306faddcdfdcadb4ab4a"></a>
 <div class="memitem">
@@ -149,7 +149,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d7/d12/media__parser_8h_source.html#l00034">34</a> of file <a class="el" href="../../d7/d12/media__parser_8h_source.html">media_parser.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d12/media__parser_8h_source.html#l00035">35</a> of file <a class="el" href="../../d7/d12/media__parser_8h_source.html">media_parser.h</a>.</p>
 
 </div>
 </div>
@@ -172,12 +172,12 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if the sample is accepted, false if something was wrong with the sample and a parsing error should be signaled. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/d12/media__parser_8h_source.html#l00043">43</a> of file <a class="el" href="../../d7/d12/media__parser_8h_source.html">media_parser.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/d12/media__parser_8h_source.html#l00044">44</a> of file <a class="el" href="../../d7/d12/media__parser_8h_source.html">media_parser.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="ad9906a71035190a798a9aa8aed0a92b8"></a>
+<a class="anchor" id="a207f57f06d2ad88052ea7480a068ad1c"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -185,7 +185,7 @@ Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void edash_packager::media::MediaParser::Flush </td>
+          <td class="memname">virtual bool edash_packager::media::MediaParser::Flush </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -198,8 +198,9 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Flush data currently in the parser and put the parser in a state where it can receive data for a new seek point. </p>
+<dl class="section return"><dt>Returns</dt><dd>true if successful, false otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html#ae9e96b9a9d63c3bc4e8365b0538e89eb">edash_packager::media::wvm::WvmMediaParser</a>, <a class="el" href="../../d2/d51/classedash__packager_1_1media_1_1WebVttMediaParser.html#a25bb3bc6c7c444690ade271a0f63b617">edash_packager::media::WebVttMediaParser</a>, <a class="el" href="../../d8/d0d/classedash__packager_1_1media_1_1mp4_1_1MP4MediaParser.html#a042ad7caecf9ff854029a9b72a9b35b4">edash_packager::media::mp4::MP4MediaParser</a>, <a class="el" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a351806157b3a17e69bf7d06c8259459c">edash_packager::media::mp2t::Mp2tMediaParser</a>, and <a class="el" href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a3c0e6fc0e48bb49e6687f566a87e6f12">edash_packager::media::WebMMediaParser</a>.</p>
+<p>Implemented in <a class="el" href="../../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html#ada8310858959deec97adfa001658edf0">edash_packager::media::wvm::WvmMediaParser</a>, <a class="el" href="../../d2/d51/classedash__packager_1_1media_1_1WebVttMediaParser.html#a258b3dda049d3ae4b03be8f91976dd9b">edash_packager::media::WebVttMediaParser</a>, <a class="el" href="../../d8/d0d/classedash__packager_1_1media_1_1mp4_1_1MP4MediaParser.html#a923b9bdc43e77a0f072c6e637f9af910">edash_packager::media::mp4::MP4MediaParser</a>, <a class="el" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a12cf8261396cfa4753967d7f0acb2587">edash_packager::media::mp2t::Mp2tMediaParser</a>, and <a class="el" href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a9636d22ec12e85f52f34b0b957b42911">edash_packager::media::WebMMediaParser</a>.</p>
 
 </div>
 </div>
@@ -240,7 +241,7 @@ Public Member Functions</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Initialize the parser with necessary callbacks. Must be called before any data is passed to <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a6bc31ca2303d340a11a63a6f4bbb8b0a">Parse()</a>. </p>
+<p>Initialize the parser with necessary callbacks. Must be called before any data is passed to <a class="el" href="../../dc/d48/classedash__packager_1_1media_1_1MediaParser.html#a3a70d164d75d6ed8f1ce59490d13beb4">Parse()</a>. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">init_cb</td><td>will be called once enough data has been parsed to determine the initial stream configurations. </td></tr>
@@ -253,7 +254,7 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a6bc31ca2303d340a11a63a6f4bbb8b0a"></a>
+<a class="anchor" id="a3a70d164d75d6ed8f1ce59490d13beb4"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -287,7 +288,7 @@ Public Member Functions</h2></td></tr>
 <p>Should be called when there is new data to parse. </p>
 <dl class="section return"><dt>Returns</dt><dd>true if successful. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html#af2a6c8b62df30b6515eee30389b271d7">edash_packager::media::wvm::WvmMediaParser</a>, <a class="el" href="../../d2/d51/classedash__packager_1_1media_1_1WebVttMediaParser.html#ad8b4da9e7a78f7c34953ce81ec9817a4">edash_packager::media::WebVttMediaParser</a>, <a class="el" href="../../d8/d0d/classedash__packager_1_1media_1_1mp4_1_1MP4MediaParser.html#ade36e7fd4daf8c6a98c16b6a94bafd28">edash_packager::media::mp4::MP4MediaParser</a>, <a class="el" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a8e01eb8219dfd9a649ee5a153f9bbabb">edash_packager::media::mp2t::Mp2tMediaParser</a>, and <a class="el" href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a5a95d3879a9a96830fdcf4f866879143">edash_packager::media::WebMMediaParser</a>.</p>
+<p>Implemented in <a class="el" href="../../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html#afb93a59f1ed5a174b4c4ef09072667a5">edash_packager::media::wvm::WvmMediaParser</a>, <a class="el" href="../../d2/d51/classedash__packager_1_1media_1_1WebVttMediaParser.html#adea6973058b03be69e9f07181e4242de">edash_packager::media::WebVttMediaParser</a>, <a class="el" href="../../d8/d0d/classedash__packager_1_1media_1_1mp4_1_1MP4MediaParser.html#a2228fd06a2237990b0f9208565f31520">edash_packager::media::mp4::MP4MediaParser</a>, <a class="el" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#afaf26651a1ae06523f0243e0f73f565b">edash_packager::media::mp2t::Mp2tMediaParser</a>, and <a class="el" href="../../dd/d99/classedash__packager_1_1media_1_1WebMMediaParser.html#a41177fc84e98d89cef013cb50b4b44fc">edash_packager::media::WebMMediaParser</a>.</p>
 
 </div>
 </div>
@@ -297,7 +298,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jan 22 2016 22:17:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Jan 23 2016 02:38:37 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

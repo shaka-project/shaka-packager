@@ -255,7 +255,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  new_sample_cb_ = new_sample_cb;</div>
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;}</div>
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
-<div class="line"><a name="l00169"></a><span class="lineno"><a class="line" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a351806157b3a17e69bf7d06c8259459c">  169</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a351806157b3a17e69bf7d06c8259459c">Mp2tMediaParser::Flush</a>() {</div>
+<div class="line"><a name="l00169"></a><span class="lineno"><a class="line" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a12cf8261396cfa4753967d7f0acb2587">  169</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a12cf8261396cfa4753967d7f0acb2587">Mp2tMediaParser::Flush</a>() {</div>
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Mp2tMediaParser::Flush&quot;</span>;</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <span class="comment">// Flush the buffers and reset the pids.</span></div>
@@ -265,270 +265,271 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    PidState* pid_state = it-&gt;second;</div>
 <div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    pid_state-&gt;Flush();</div>
 <div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  }</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  EmitRemainingSamples();</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  <span class="keywordtype">bool</span> result = EmitRemainingSamples();</div>
 <div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  STLDeleteValues(&amp;pids_);</div>
 <div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;</div>
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  <span class="comment">// Remove any bytes left in the TS buffer.</span></div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  <span class="comment">// (i.e. any partial TS packet =&gt; less than 188 bytes).</span></div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  ts_byte_queue_.<a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#a452485879d303d5c8654e1b184bc1235">Reset</a>();</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;}</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;</div>
-<div class="line"><a name="l00187"></a><span class="lineno"><a class="line" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a8e01eb8219dfd9a649ee5a153f9bbabb">  187</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a8e01eb8219dfd9a649ee5a153f9bbabb">Mp2tMediaParser::Parse</a>(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">int</span> size) {</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Mp2tMediaParser::Parse size=&quot;</span> &lt;&lt; size;</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <span class="comment">// Add the data to the parser state.</span></div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  ts_byte_queue_.<a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#afa47d3dc54862cee101d4be8746de6eb">Push</a>(buf, size);</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;    <span class="keyword">const</span> uint8_t* ts_buffer;</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    <span class="keywordtype">int</span> ts_buffer_size;</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    ts_byte_queue_.<a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#a8253df160751462f3b75290a7c525e56">Peek</a>(&amp;ts_buffer, &amp;ts_buffer_size);</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    <span class="keywordflow">if</span> (ts_buffer_size &lt; TsPacket::kPacketSize)</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    <span class="comment">// Synchronization.</span></div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    <span class="keywordtype">int</span> skipped_bytes = TsPacket::Sync(ts_buffer, ts_buffer_size);</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    <span class="keywordflow">if</span> (skipped_bytes &gt; 0) {</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Packet not aligned on a TS syncword:&quot;</span></div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;               &lt;&lt; <span class="stringliteral">&quot; skipped_bytes=&quot;</span> &lt;&lt; skipped_bytes;</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;      ts_byte_queue_.<a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#acac5c7874703c86ba77a50d3be0671d2">Pop</a>(skipped_bytes);</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    }</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    <span class="comment">// Parse the TS header, skipping 1 byte if the header is invalid.</span></div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    scoped_ptr&lt;TsPacket&gt; ts_packet(TsPacket::Parse(ts_buffer, ts_buffer_size));</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    <span class="keywordflow">if</span> (!ts_packet) {</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;      DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Error: invalid TS packet&quot;</span>;</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;      ts_byte_queue_.<a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#acac5c7874703c86ba77a50d3be0671d2">Pop</a>(1);</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;    }</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    DVLOG(LOG_LEVEL_TS)</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;Processing PID=&quot;</span> &lt;&lt; ts_packet-&gt;pid()</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        &lt;&lt; <span class="stringliteral">&quot; start_unit=&quot;</span> &lt;&lt; ts_packet-&gt;payload_unit_start_indicator();</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    <span class="comment">// Parse the section.</span></div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    std::map&lt;int, PidState*&gt;::iterator it = pids_.find(ts_packet-&gt;pid());</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <span class="keywordflow">if</span> (it == pids_.end() &amp;&amp;</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;        ts_packet-&gt;pid() == TsSection::kPidPat) {</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;      <span class="comment">// Create the PAT state here if needed.</span></div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;      scoped_ptr&lt;TsSection&gt; pat_section_parser(</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;          <span class="keyword">new</span> <a class="code" href="../../dd/d0e/classedash__packager_1_1media_1_1mp2t_1_1TsSectionPat.html">TsSectionPat</a>(</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;              base::Bind(&amp;Mp2tMediaParser::RegisterPmt,</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;                         base::Unretained(<span class="keyword">this</span>))));</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;      scoped_ptr&lt;PidState&gt; pat_pid_state(</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;          <span class="keyword">new</span> PidState(ts_packet-&gt;pid(), PidState::kPidPat,</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;                       pat_section_parser.Pass()));</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;      pat_pid_state-&gt;Enable();</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;      it = pids_.insert(</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;          std::pair&lt;int, PidState*&gt;(ts_packet-&gt;pid(),</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;                                    pat_pid_state.release())).first;</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    }</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;    <span class="keywordflow">if</span> (it != pids_.end()) {</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;      <span class="keywordflow">if</span> (!it-&gt;second-&gt;PushTsPacket(*ts_packet))</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;      DVLOG(LOG_LEVEL_TS) &lt;&lt; <span class="stringliteral">&quot;Ignoring TS packet for pid: &quot;</span> &lt;&lt; ts_packet-&gt;pid();</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    }</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="comment">// Go to the next packet.</span></div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    ts_byte_queue_.<a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#acac5c7874703c86ba77a50d3be0671d2">Pop</a>(TsPacket::kPacketSize);</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;  }</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  <span class="comment">// Emit the A/V buffers that kept accumulating during TS parsing.</span></div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  <span class="keywordflow">return</span> EmitRemainingSamples();</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;}</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;<span class="keywordtype">void</span> Mp2tMediaParser::RegisterPmt(<span class="keywordtype">int</span> program_number, <span class="keywordtype">int</span> pmt_pid) {</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;RegisterPmt:&quot;</span></div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;           &lt;&lt; <span class="stringliteral">&quot; program_number=&quot;</span> &lt;&lt; program_number</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;           &lt;&lt; <span class="stringliteral">&quot; pmt_pid=&quot;</span> &lt;&lt; pmt_pid;</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;  <span class="comment">// Only one TS program is allowed. Ignore the incoming program map table,</span></div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;  <span class="comment">// if there is already one registered.</span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;  <span class="keywordflow">for</span> (std::map&lt;int, PidState*&gt;::iterator it = pids_.begin();</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;       it != pids_.end(); ++it) {</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    PidState* pid_state = it-&gt;second;</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    <span class="keywordflow">if</span> (pid_state-&gt;pid_type() == PidState::kPidPmt) {</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;      DVLOG_IF(1, pmt_pid != it-&gt;first) &lt;&lt; <span class="stringliteral">&quot;More than one program is defined&quot;</span>;</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;      <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    }</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  }</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  <span class="comment">// Create the PMT state here if needed.</span></div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Create a new PMT parser&quot;</span>;</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  scoped_ptr&lt;TsSection&gt; pmt_section_parser(</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;      <span class="keyword">new</span> TsSectionPmt(</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;          base::Bind(&amp;Mp2tMediaParser::RegisterPes,</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;                     base::Unretained(<span class="keyword">this</span>), pmt_pid)));</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  scoped_ptr&lt;PidState&gt; pmt_pid_state(</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;      <span class="keyword">new</span> PidState(pmt_pid, PidState::kPidPmt, pmt_section_parser.Pass()));</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  pmt_pid_state-&gt;Enable();</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  pids_.insert(std::pair&lt;int, PidState*&gt;(pmt_pid, pmt_pid_state.release()));</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;}</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;<span class="keywordtype">void</span> Mp2tMediaParser::RegisterPes(<span class="keywordtype">int</span> pmt_pid,</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;                                  <span class="keywordtype">int</span> pes_pid,</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;                                  <span class="keywordtype">int</span> stream_type) {</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;RegisterPes:&quot;</span></div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;           &lt;&lt; <span class="stringliteral">&quot; pes_pid=&quot;</span> &lt;&lt; pes_pid</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;           &lt;&lt; <span class="stringliteral">&quot; stream_type=&quot;</span> &lt;&lt; std::hex &lt;&lt; stream_type &lt;&lt; std::dec;</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  std::map&lt;int, PidState*&gt;::iterator it = pids_.find(pes_pid);</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  <span class="keywordflow">if</span> (it != pids_.end())</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  <span class="comment">// Create a stream parser corresponding to the stream type.</span></div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  <span class="keywordtype">bool</span> is_audio = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  scoped_ptr&lt;EsParser&gt; es_parser;</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  <span class="keywordflow">if</span> (stream_type == kStreamTypeAVC) {</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    es_parser.reset(</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;        <span class="keyword">new</span> EsParserH264(</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;            pes_pid,</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;            base::Bind(&amp;Mp2tMediaParser::OnNewStreamInfo,</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;                       base::Unretained(<span class="keyword">this</span>)),</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;            base::Bind(&amp;Mp2tMediaParser::OnEmitSample,</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;                       base::Unretained(<span class="keyword">this</span>))));</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (stream_type == kStreamTypeAAC) {</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;    es_parser.reset(</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;        <span class="keyword">new</span> EsParserAdts(</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;            pes_pid,</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;            base::Bind(&amp;Mp2tMediaParser::OnNewStreamInfo,</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;                       base::Unretained(<span class="keyword">this</span>)),</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;            base::Bind(&amp;Mp2tMediaParser::OnEmitSample,</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;                       base::Unretained(<span class="keyword">this</span>)),</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;            sbr_in_mimetype_));</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    is_audio = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  }</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  <span class="comment">// Create the PES state here.</span></div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Create a new PES state&quot;</span>;</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;  scoped_ptr&lt;TsSection&gt; pes_section_parser(</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;      <span class="keyword">new</span> TsSectionPes(es_parser.Pass()));</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;  PidState::PidType pid_type =</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;      is_audio ? PidState::kPidAudioPes : PidState::kPidVideoPes;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;  scoped_ptr&lt;PidState&gt; pes_pid_state(</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;      <span class="keyword">new</span> PidState(pes_pid, pid_type, pes_section_parser.Pass()));</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  pes_pid_state-&gt;Enable();</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  pids_.insert(std::pair&lt;int, PidState*&gt;(pes_pid, pes_pid_state.release()));</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;}</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;<span class="keywordtype">void</span> Mp2tMediaParser::OnNewStreamInfo(</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    <span class="keyword">const</span> scoped_refptr&lt;StreamInfo&gt;&amp; new_stream_info) {</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  DCHECK(new_stream_info);</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;OnVideoConfigChanged for pid=&quot;</span> &lt;&lt; new_stream_info-&gt;track_id();</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  PidMap::iterator pid_state = pids_.find(new_stream_info-&gt;track_id());</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  <span class="keywordflow">if</span> (pid_state == pids_.end()) {</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;PID State for new stream not found (pid = &quot;</span></div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;               &lt;&lt; new_stream_info-&gt;track_id() &lt;&lt; <span class="stringliteral">&quot;).&quot;</span>;</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;  }</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;  <span class="comment">// Set the stream configuration information for the PID.</span></div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;  pid_state-&gt;second-&gt;set_config(new_stream_info);</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;  <span class="comment">// Finish initialization if all streams have configs.</span></div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;  FinishInitializationIfNeeded();</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;}</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;<span class="keywordtype">bool</span> Mp2tMediaParser::FinishInitializationIfNeeded() {</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  <span class="comment">// Nothing to be done if already initialized.</span></div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  <span class="keywordflow">if</span> (is_initialized_)</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;  <span class="comment">// Wait for more data to come to finish initialization.</span></div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;  <span class="keywordflow">if</span> (pids_.empty())</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;  std::vector&lt;scoped_refptr&lt;StreamInfo&gt; &gt; all_stream_info;</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;  uint32_t num_es(0);</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;  <span class="keywordflow">for</span> (PidMap::const_iterator iter = pids_.begin(); iter != pids_.end();</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;       ++iter) {</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;    <span class="keywordflow">if</span> (((iter-&gt;second-&gt;pid_type() == PidState::kPidAudioPes) ||</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;         (iter-&gt;second-&gt;pid_type() == PidState::kPidVideoPes))) {</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;      ++num_es;</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;      <span class="keywordflow">if</span> (iter-&gt;second-&gt;config())</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;        all_stream_info.push_back(iter-&gt;second-&gt;config());</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;    }</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;  }</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;  <span class="keywordflow">if</span> (num_es &amp;&amp; (all_stream_info.size() == num_es)) {</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;    <span class="comment">// All stream configurations have been received. Initialization can</span></div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    <span class="comment">// be completed.</span></div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    init_cb_.Run(all_stream_info);</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Mpeg2TS stream parser initialization done&quot;</span>;</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    is_initialized_ = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;  }</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;}</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;<span class="keywordtype">void</span> Mp2tMediaParser::OnEmitSample(</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;    uint32_t pes_pid,</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    <span class="keyword">const</span> scoped_refptr&lt;MediaSample&gt;&amp; new_sample) {</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;  DCHECK(new_sample);</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;  DVLOG(LOG_LEVEL_ES)</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;OnEmitSample: &quot;</span></div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; pid=&quot;</span></div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;      &lt;&lt; pes_pid</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; size=&quot;</span></div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;      &lt;&lt; new_sample-&gt;data_size()</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; dts=&quot;</span></div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;      &lt;&lt; new_sample-&gt;dts()</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; pts=&quot;</span></div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;      &lt;&lt; new_sample-&gt;pts();</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;  <span class="comment">// Add the sample to the appropriate PID sample queue.</span></div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;  PidMap::iterator pid_state = pids_.find(pes_pid);</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;  <span class="keywordflow">if</span> (pid_state == pids_.end()) {</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;PID State for new sample not found (pid = &quot;</span></div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;               &lt;&lt; pes_pid &lt;&lt; <span class="stringliteral">&quot;).&quot;</span>;</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;  }</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;  pid_state-&gt;second-&gt;sample_queue().push_back(new_sample);</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;}</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;<span class="keywordtype">bool</span> Mp2tMediaParser::EmitRemainingSamples() {</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;  DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Mp2tMediaParser::EmitRemainingBuffers&quot;</span>;</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;  <span class="comment">// No buffer should be sent until fully initialized.</span></div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;  <span class="keywordflow">if</span> (!is_initialized_)</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;  <span class="comment">// Buffer emission.</span></div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;  <span class="keywordflow">for</span> (PidMap::const_iterator pid_iter = pids_.begin(); pid_iter != pids_.end();</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;       ++pid_iter) {</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    SampleQueue&amp; sample_queue = pid_iter-&gt;second-&gt;sample_queue();</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    <span class="keywordflow">for</span> (SampleQueue::iterator sample_iter = sample_queue.begin();</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;         sample_iter != sample_queue.end();</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;         ++sample_iter) {</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;      <span class="keywordflow">if</span> (!new_sample_cb_.Run(pid_iter-&gt;first, *sample_iter)) {</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;        <span class="comment">// Error processing sample. Propagate error condition.</span></div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;      }</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;    }</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    sample_queue.clear();</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;  }</div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;}</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;}</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;</div>
+<div class="line"><a name="l00188"></a><span class="lineno"><a class="line" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#afaf26651a1ae06523f0243e0f73f565b">  188</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#afaf26651a1ae06523f0243e0f73f565b">Mp2tMediaParser::Parse</a>(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">int</span> size) {</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Mp2tMediaParser::Parse size=&quot;</span> &lt;&lt; size;</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  <span class="comment">// Add the data to the parser state.</span></div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  ts_byte_queue_.<a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#afa47d3dc54862cee101d4be8746de6eb">Push</a>(buf, size);</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    <span class="keyword">const</span> uint8_t* ts_buffer;</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    <span class="keywordtype">int</span> ts_buffer_size;</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    ts_byte_queue_.<a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#a8253df160751462f3b75290a7c525e56">Peek</a>(&amp;ts_buffer, &amp;ts_buffer_size);</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <span class="keywordflow">if</span> (ts_buffer_size &lt; TsPacket::kPacketSize)</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    <span class="comment">// Synchronization.</span></div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    <span class="keywordtype">int</span> skipped_bytes = TsPacket::Sync(ts_buffer, ts_buffer_size);</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    <span class="keywordflow">if</span> (skipped_bytes &gt; 0) {</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;      DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Packet not aligned on a TS syncword:&quot;</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;               &lt;&lt; <span class="stringliteral">&quot; skipped_bytes=&quot;</span> &lt;&lt; skipped_bytes;</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;      ts_byte_queue_.<a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#acac5c7874703c86ba77a50d3be0671d2">Pop</a>(skipped_bytes);</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;    }</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    <span class="comment">// Parse the TS header, skipping 1 byte if the header is invalid.</span></div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    scoped_ptr&lt;TsPacket&gt; ts_packet(TsPacket::Parse(ts_buffer, ts_buffer_size));</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    <span class="keywordflow">if</span> (!ts_packet) {</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;      DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Error: invalid TS packet&quot;</span>;</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;      ts_byte_queue_.<a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#acac5c7874703c86ba77a50d3be0671d2">Pop</a>(1);</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    }</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    DVLOG(LOG_LEVEL_TS)</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;Processing PID=&quot;</span> &lt;&lt; ts_packet-&gt;pid()</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;        &lt;&lt; <span class="stringliteral">&quot; start_unit=&quot;</span> &lt;&lt; ts_packet-&gt;payload_unit_start_indicator();</div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <span class="comment">// Parse the section.</span></div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    std::map&lt;int, PidState*&gt;::iterator it = pids_.find(ts_packet-&gt;pid());</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;    <span class="keywordflow">if</span> (it == pids_.end() &amp;&amp;</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        ts_packet-&gt;pid() == TsSection::kPidPat) {</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;      <span class="comment">// Create the PAT state here if needed.</span></div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;      scoped_ptr&lt;TsSection&gt; pat_section_parser(</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;          <span class="keyword">new</span> <a class="code" href="../../dd/d0e/classedash__packager_1_1media_1_1mp2t_1_1TsSectionPat.html">TsSectionPat</a>(</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;              base::Bind(&amp;Mp2tMediaParser::RegisterPmt,</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;                         base::Unretained(<span class="keyword">this</span>))));</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;      scoped_ptr&lt;PidState&gt; pat_pid_state(</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;          <span class="keyword">new</span> PidState(ts_packet-&gt;pid(), PidState::kPidPat,</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;                       pat_section_parser.Pass()));</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;      pat_pid_state-&gt;Enable();</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;      it = pids_.insert(</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;          std::pair&lt;int, PidState*&gt;(ts_packet-&gt;pid(),</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;                                    pat_pid_state.release())).first;</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    }</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    <span class="keywordflow">if</span> (it != pids_.end()) {</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;      <span class="keywordflow">if</span> (!it-&gt;second-&gt;PushTsPacket(*ts_packet))</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;      DVLOG(LOG_LEVEL_TS) &lt;&lt; <span class="stringliteral">&quot;Ignoring TS packet for pid: &quot;</span> &lt;&lt; ts_packet-&gt;pid();</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    }</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    <span class="comment">// Go to the next packet.</span></div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    ts_byte_queue_.<a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#acac5c7874703c86ba77a50d3be0671d2">Pop</a>(TsPacket::kPacketSize);</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  }</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  <span class="comment">// Emit the A/V buffers that kept accumulating during TS parsing.</span></div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  <span class="keywordflow">return</span> EmitRemainingSamples();</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;}</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;<span class="keywordtype">void</span> Mp2tMediaParser::RegisterPmt(<span class="keywordtype">int</span> program_number, <span class="keywordtype">int</span> pmt_pid) {</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;RegisterPmt:&quot;</span></div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;           &lt;&lt; <span class="stringliteral">&quot; program_number=&quot;</span> &lt;&lt; program_number</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;           &lt;&lt; <span class="stringliteral">&quot; pmt_pid=&quot;</span> &lt;&lt; pmt_pid;</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;  <span class="comment">// Only one TS program is allowed. Ignore the incoming program map table,</span></div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;  <span class="comment">// if there is already one registered.</span></div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  <span class="keywordflow">for</span> (std::map&lt;int, PidState*&gt;::iterator it = pids_.begin();</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;       it != pids_.end(); ++it) {</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    PidState* pid_state = it-&gt;second;</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    <span class="keywordflow">if</span> (pid_state-&gt;pid_type() == PidState::kPidPmt) {</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;      DVLOG_IF(1, pmt_pid != it-&gt;first) &lt;&lt; <span class="stringliteral">&quot;More than one program is defined&quot;</span>;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;      <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    }</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  }</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  <span class="comment">// Create the PMT state here if needed.</span></div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Create a new PMT parser&quot;</span>;</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  scoped_ptr&lt;TsSection&gt; pmt_section_parser(</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;      <span class="keyword">new</span> TsSectionPmt(</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;          base::Bind(&amp;Mp2tMediaParser::RegisterPes,</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;                     base::Unretained(<span class="keyword">this</span>), pmt_pid)));</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  scoped_ptr&lt;PidState&gt; pmt_pid_state(</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;      <span class="keyword">new</span> PidState(pmt_pid, PidState::kPidPmt, pmt_section_parser.Pass()));</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  pmt_pid_state-&gt;Enable();</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;  pids_.insert(std::pair&lt;int, PidState*&gt;(pmt_pid, pmt_pid_state.release()));</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;}</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;<span class="keywordtype">void</span> Mp2tMediaParser::RegisterPes(<span class="keywordtype">int</span> pmt_pid,</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;                                  <span class="keywordtype">int</span> pes_pid,</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;                                  <span class="keywordtype">int</span> stream_type) {</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;RegisterPes:&quot;</span></div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;           &lt;&lt; <span class="stringliteral">&quot; pes_pid=&quot;</span> &lt;&lt; pes_pid</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;           &lt;&lt; <span class="stringliteral">&quot; stream_type=&quot;</span> &lt;&lt; std::hex &lt;&lt; stream_type &lt;&lt; std::dec;</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  std::map&lt;int, PidState*&gt;::iterator it = pids_.find(pes_pid);</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  <span class="keywordflow">if</span> (it != pids_.end())</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  <span class="comment">// Create a stream parser corresponding to the stream type.</span></div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  <span class="keywordtype">bool</span> is_audio = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  scoped_ptr&lt;EsParser&gt; es_parser;</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  <span class="keywordflow">if</span> (stream_type == kStreamTypeAVC) {</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    es_parser.reset(</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;        <span class="keyword">new</span> EsParserH264(</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;            pes_pid,</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;            base::Bind(&amp;Mp2tMediaParser::OnNewStreamInfo,</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;                       base::Unretained(<span class="keyword">this</span>)),</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;            base::Bind(&amp;Mp2tMediaParser::OnEmitSample,</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;                       base::Unretained(<span class="keyword">this</span>))));</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (stream_type == kStreamTypeAAC) {</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    es_parser.reset(</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;        <span class="keyword">new</span> EsParserAdts(</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;            pes_pid,</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;            base::Bind(&amp;Mp2tMediaParser::OnNewStreamInfo,</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;                       base::Unretained(<span class="keyword">this</span>)),</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;            base::Bind(&amp;Mp2tMediaParser::OnEmitSample,</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;                       base::Unretained(<span class="keyword">this</span>)),</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;            sbr_in_mimetype_));</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    is_audio = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  }</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  <span class="comment">// Create the PES state here.</span></div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Create a new PES state&quot;</span>;</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;  scoped_ptr&lt;TsSection&gt; pes_section_parser(</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;      <span class="keyword">new</span> TsSectionPes(es_parser.Pass()));</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;  PidState::PidType pid_type =</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;      is_audio ? PidState::kPidAudioPes : PidState::kPidVideoPes;</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;  scoped_ptr&lt;PidState&gt; pes_pid_state(</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;      <span class="keyword">new</span> PidState(pes_pid, pid_type, pes_section_parser.Pass()));</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  pes_pid_state-&gt;Enable();</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  pids_.insert(std::pair&lt;int, PidState*&gt;(pes_pid, pes_pid_state.release()));</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;}</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;<span class="keywordtype">void</span> Mp2tMediaParser::OnNewStreamInfo(</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    <span class="keyword">const</span> scoped_refptr&lt;StreamInfo&gt;&amp; new_stream_info) {</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  DCHECK(new_stream_info);</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;OnVideoConfigChanged for pid=&quot;</span> &lt;&lt; new_stream_info-&gt;track_id();</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  PidMap::iterator pid_state = pids_.find(new_stream_info-&gt;track_id());</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;  <span class="keywordflow">if</span> (pid_state == pids_.end()) {</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;PID State for new stream not found (pid = &quot;</span></div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;               &lt;&lt; new_stream_info-&gt;track_id() &lt;&lt; <span class="stringliteral">&quot;).&quot;</span>;</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  }</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;  <span class="comment">// Set the stream configuration information for the PID.</span></div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  pid_state-&gt;second-&gt;set_config(new_stream_info);</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;  <span class="comment">// Finish initialization if all streams have configs.</span></div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;  FinishInitializationIfNeeded();</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;}</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;<span class="keywordtype">bool</span> Mp2tMediaParser::FinishInitializationIfNeeded() {</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  <span class="comment">// Nothing to be done if already initialized.</span></div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  <span class="keywordflow">if</span> (is_initialized_)</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;  <span class="comment">// Wait for more data to come to finish initialization.</span></div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;  <span class="keywordflow">if</span> (pids_.empty())</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;  std::vector&lt;scoped_refptr&lt;StreamInfo&gt; &gt; all_stream_info;</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;  uint32_t num_es(0);</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;  <span class="keywordflow">for</span> (PidMap::const_iterator iter = pids_.begin(); iter != pids_.end();</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;       ++iter) {</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;    <span class="keywordflow">if</span> (((iter-&gt;second-&gt;pid_type() == PidState::kPidAudioPes) ||</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;         (iter-&gt;second-&gt;pid_type() == PidState::kPidVideoPes))) {</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;      ++num_es;</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;      <span class="keywordflow">if</span> (iter-&gt;second-&gt;config())</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;        all_stream_info.push_back(iter-&gt;second-&gt;config());</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;    }</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;  }</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;  <span class="keywordflow">if</span> (num_es &amp;&amp; (all_stream_info.size() == num_es)) {</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;    <span class="comment">// All stream configurations have been received. Initialization can</span></div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;    <span class="comment">// be completed.</span></div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;    init_cb_.Run(all_stream_info);</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;    DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Mpeg2TS stream parser initialization done&quot;</span>;</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;    is_initialized_ = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;  }</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;}</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;<span class="keywordtype">void</span> Mp2tMediaParser::OnEmitSample(</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;    uint32_t pes_pid,</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;    <span class="keyword">const</span> scoped_refptr&lt;MediaSample&gt;&amp; new_sample) {</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;  DCHECK(new_sample);</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;  DVLOG(LOG_LEVEL_ES)</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;OnEmitSample: &quot;</span></div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; pid=&quot;</span></div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;      &lt;&lt; pes_pid</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; size=&quot;</span></div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;      &lt;&lt; new_sample-&gt;data_size()</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; dts=&quot;</span></div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;      &lt;&lt; new_sample-&gt;dts()</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;      &lt;&lt; <span class="stringliteral">&quot; pts=&quot;</span></div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;      &lt;&lt; new_sample-&gt;pts();</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;  <span class="comment">// Add the sample to the appropriate PID sample queue.</span></div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;  PidMap::iterator pid_state = pids_.find(pes_pid);</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;  <span class="keywordflow">if</span> (pid_state == pids_.end()) {</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;PID State for new sample not found (pid = &quot;</span></div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;               &lt;&lt; pes_pid &lt;&lt; <span class="stringliteral">&quot;).&quot;</span>;</div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;  }</div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;  pid_state-&gt;second-&gt;sample_queue().push_back(new_sample);</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;}</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;<span class="keywordtype">bool</span> Mp2tMediaParser::EmitRemainingSamples() {</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;  DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Mp2tMediaParser::EmitRemainingBuffers&quot;</span>;</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;  <span class="comment">// No buffer should be sent until fully initialized.</span></div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;  <span class="keywordflow">if</span> (!is_initialized_)</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;  <span class="comment">// Buffer emission.</span></div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;  <span class="keywordflow">for</span> (PidMap::const_iterator pid_iter = pids_.begin(); pid_iter != pids_.end();</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;       ++pid_iter) {</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;    SampleQueue&amp; sample_queue = pid_iter-&gt;second-&gt;sample_queue();</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;    <span class="keywordflow">for</span> (SampleQueue::iterator sample_iter = sample_queue.begin();</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;         sample_iter != sample_queue.end();</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;         ++sample_iter) {</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;      <span class="keywordflow">if</span> (!new_sample_cb_.Run(pid_iter-&gt;first, *sample_iter)) {</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;        <span class="comment">// Error processing sample. Propagate error condition.</span></div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;      }</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    }</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;    sample_queue.clear();</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;  }</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;}</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser_html_a12cf8261396cfa4753967d7f0acb2587"><div class="ttname"><a href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a12cf8261396cfa4753967d7f0acb2587">edash_packager::media::mp2t::Mp2tMediaParser::Flush</a></div><div class="ttdeci">bool Flush() override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00169">mp2t_media_parser.cc:169</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1ByteQueue_html_afa47d3dc54862cee101d4be8746de6eb"><div class="ttname"><a href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#afa47d3dc54862cee101d4be8746de6eb">edash_packager::media::ByteQueue::Push</a></div><div class="ttdeci">void Push(const uint8_t *data, int size)</div><div class="ttdoc">Append new bytes to the end of the queue. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00029">byte_queue.cc:29</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1ByteQueue_html_acac5c7874703c86ba77a50d3be0671d2"><div class="ttname"><a href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#acac5c7874703c86ba77a50d3be0671d2">edash_packager::media::ByteQueue::Pop</a></div><div class="ttdeci">void Pop(int count)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00070">byte_queue.cc:70</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser_html_a351806157b3a17e69bf7d06c8259459c"><div class="ttname"><a href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a351806157b3a17e69bf7d06c8259459c">edash_packager::media::mp2t::Mp2tMediaParser::Flush</a></div><div class="ttdeci">void Flush() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00169">mp2t_media_parser.cc:169</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsSectionPat_html"><div class="ttname"><a href="../../dd/d0e/classedash__packager_1_1media_1_1mp2t_1_1TsSectionPat.html">edash_packager::media::mp2t::TsSectionPat</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da0/ts__section__pat_8h_source.html#l00016">ts_section_pat.h:16</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser_html_a8e01eb8219dfd9a649ee5a153f9bbabb"><div class="ttname"><a href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#a8e01eb8219dfd9a649ee5a153f9bbabb">edash_packager::media::mp2t::Mp2tMediaParser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *buf, int size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00187">mp2t_media_parser.cc:187</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">edash_packager::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00029">key_source.h:29</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser_html_afaf26651a1ae06523f0243e0f73f565b"><div class="ttname"><a href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#afaf26651a1ae06523f0243e0f73f565b">edash_packager::media::mp2t::Mp2tMediaParser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *buf, int size) override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00188">mp2t_media_parser.cc:188</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1ByteQueue_html_a452485879d303d5c8654e1b184bc1235"><div class="ttname"><a href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#a452485879d303d5c8654e1b184bc1235">edash_packager::media::ByteQueue::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset the queue to the empty state. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00024">byte_queue.cc:24</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser_html_abfcd1be5f00d8091feb044e7199966f5"><div class="ttname"><a href="../../dc/dab/classedash__packager_1_1media_1_1mp2t_1_1Mp2tMediaParser.html#abfcd1be5f00d8091feb044e7199966f5">edash_packager::media::mp2t::Mp2tMediaParser::Init</a></div><div class="ttdeci">void Init(const InitCB &amp;init_cb, const NewSampleCB &amp;new_sample_cb, KeySource *decryption_key_source) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d74/mp2t__media__parser_8cc_source.html#l00156">mp2t_media_parser.cc:156</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1ByteQueue_html_a8253df160751462f3b75290a7c525e56"><div class="ttname"><a href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#a8253df160751462f3b75290a7c525e56">edash_packager::media::ByteQueue::Peek</a></div><div class="ttdeci">void Peek(const uint8_t **data, int *size) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00063">byte_queue.cc:63</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jan 22 2016 22:17:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Jan 23 2016 02:38:36 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

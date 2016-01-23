@@ -87,6 +87,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#nested-classes">Classes</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="../../d6/d80/classedash__packager_1_1media_1_1Demuxer-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -120,7 +121,7 @@ Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../d5/dce/classedash__packager_1_1media_1_1Demuxer.html">Demuxer</a> is responsible for extracting elementary stream samples from a media file, e.g. an ISO BMFF file. </p>
 
-<p>Definition at line <a class="el" href="../../de/dc1/demuxer_8h_source.html#l00030">30</a> of file <a class="el" href="../../de/dc1/demuxer_8h_source.html">demuxer.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/dc1/demuxer_8h_source.html#l00032">32</a> of file <a class="el" href="../../de/dc1/demuxer_8h_source.html">demuxer.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a5305b2b16956b7ab973eeded4232226e"></a>
 <div class="memitem">
@@ -150,7 +151,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d3/dbe/demuxer_8cc_source.html#l00033">33</a> of file <a class="el" href="../../d3/dbe/demuxer_8cc_source.html">demuxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/dbe/demuxer_8cc_source.html#l00037">37</a> of file <a class="el" href="../../d3/dbe/demuxer_8cc_source.html">demuxer.cc</a>.</p>
 
 </div>
 </div>
@@ -169,7 +170,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Cancel a demuxing job in progress. Will cause <em>Run</em> to exit with an error status of type CANCELLED. </p>
 
-<p>Definition at line <a class="el" href="../../d3/dbe/demuxer_8cc_source.html#l00198">198</a> of file <a class="el" href="../../d3/dbe/demuxer_8cc_source.html">demuxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/dbe/demuxer_8cc_source.html#l00229">229</a> of file <a class="el" href="../../d3/dbe/demuxer_8cc_source.html">demuxer.cc</a>.</p>
 
 </div>
 </div>
@@ -195,7 +196,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>Container name (type). Value is CONTAINER_UNKNOWN if the demuxer is not initialized. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/dc1/demuxer_8h_source.html#l00070">70</a> of file <a class="el" href="../../de/dc1/demuxer_8h_source.html">demuxer.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/dc1/demuxer_8h_source.html#l00072">72</a> of file <a class="el" href="../../de/dc1/demuxer_8h_source.html">demuxer.h</a>.</p>
 
 </div>
 </div>
@@ -214,7 +215,7 @@ Public Member Functions</h2></td></tr>
 <p>Initialize the <a class="el" href="../../d5/dce/classedash__packager_1_1media_1_1Demuxer.html">Demuxer</a>. Calling other public methods of this class without this method returning OK, results in an undefined behavior. This method primes the demuxer by parsing portions of the media file to extract stream information. </p>
 <dl class="section return"><dt>Returns</dt><dd>OK on success. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d3/dbe/demuxer_8cc_source.html#l00052">52</a> of file <a class="el" href="../../d3/dbe/demuxer_8cc_source.html">demuxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/dbe/demuxer_8cc_source.html#l00056">56</a> of file <a class="el" href="../../d3/dbe/demuxer_8cc_source.html">demuxer.cc</a>.</p>
 
 </div>
 </div>
@@ -232,7 +233,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Drive the remuxing from demuxer side (push). Read the file and push the Data to <a class="el" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html">Muxer</a> until Eof. </p>
 
-<p>Definition at line <a class="el" href="../../d3/dbe/demuxer_8cc_source.html#l00140">140</a> of file <a class="el" href="../../d3/dbe/demuxer_8cc_source.html">demuxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/dbe/demuxer_8cc_source.html#l00170">170</a> of file <a class="el" href="../../d3/dbe/demuxer_8cc_source.html">demuxer.cc</a>.</p>
 
 </div>
 </div>
@@ -257,7 +258,7 @@ Public Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d3/dbe/demuxer_8cc_source.html#l00048">48</a> of file <a class="el" href="../../d3/dbe/demuxer_8cc_source.html">demuxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d3/dbe/demuxer_8cc_source.html#l00052">52</a> of file <a class="el" href="../../d3/dbe/demuxer_8cc_source.html">demuxer.cc</a>.</p>
 
 </div>
 </div>
@@ -283,7 +284,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>Streams in the media container being demuxed. The caller cannot add or remove streams from the returned vector, but the caller is allowed to change the internal state of the streams in the vector through <a class="el" href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html">MediaStream</a> APIs. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/dc1/demuxer_8h_source.html#l00066">66</a> of file <a class="el" href="../../de/dc1/demuxer_8h_source.html">demuxer.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/dc1/demuxer_8h_source.html#l00068">68</a> of file <a class="el" href="../../de/dc1/demuxer_8h_source.html">demuxer.h</a>.</p>
 
 </div>
 </div>
@@ -294,7 +295,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jan 22 2016 22:17:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sat Jan 23 2016 02:38:37 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
