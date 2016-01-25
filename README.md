@@ -17,7 +17,7 @@ Current supported codecs:
 ** I for input and O for output.
 ** We will update this table once new formats are supported.
 
-Right now this project is supported directly on Linux platform only. One option to run edash-packager on other platforms is using [docker] (#Using docker for testing /development).
+Right now this project is supported directly on Linux and MacOSX platforms only. One option to run edash-packager on other platforms is using [docker] (#Using docker for testing /development).
 
 
 # Mailing list #
