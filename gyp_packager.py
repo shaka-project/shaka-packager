@@ -40,6 +40,7 @@ src_dir = os.path.join(checkout_dir, 'packager')
 # pylint: disable=g-import-not-at-top,g-bad-import-order
 
 sys.path.insert(0, os.path.join(src_dir, 'build'))
+import detect_host_arch
 import gyp_helper
 
 sys.path.insert(0, os.path.join(src_dir, 'tools', 'gyp', 'pylib'))
@@ -66,6 +67,10 @@ if __name__ == '__main__':
                       'use_x11': 0,
                       'linux_use_gold_binary': 0,
                       'linux_use_gold_flags': 0}
+
+  # Disable clang on 32 bit systems by default, which is not supported.
+  if detect_host_arch.HostArch() == 'ia32':
+    _DEFAULT_DEFINES['clang'] = 0
 
   gyp_defines = (os.environ['GYP_DEFINES'] if os.environ.get('GYP_DEFINES') else
                  '')
