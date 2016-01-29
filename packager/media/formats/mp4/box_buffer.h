@@ -130,7 +130,7 @@ class BoxBuffer {
     if (reader_)
       return reader_->ReadToVector(vector, count);
     DCHECK_EQ(vector->size(), count);
-    writer_->AppendArray(vector_as_array(vector), count);
+    writer_->AppendArray(vector->data(), count);
     return true;
   }
 

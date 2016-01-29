@@ -5,7 +5,6 @@
 #include <gtest/gtest.h>
 
 #include "packager/base/logging.h"
-#include "packager/base/stl_util.h"
 #include "packager/media/test/test_data_util.h"
 #include "packager/media/filters/h264_parser.h"
 
@@ -19,8 +18,7 @@ TEST(H264ParserTest, StreamFileParsing) {
   int num_nalus = 759;
 
   H264Parser parser;
-  NaluReader reader(kIsAnnexbByteStream, vector_as_array(&buffer),
-                    buffer.size());
+  NaluReader reader(kIsAnnexbByteStream, buffer.data(), buffer.size());
 
   // Parse until the end of stream/unsupported stream/error in stream is found.
   int num_parsed_nalus = 0;

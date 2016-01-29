@@ -5,7 +5,6 @@
 #include <gtest/gtest.h>
 
 #include "packager/base/files/file_util.h"
-#include "packager/base/stl_util.h"
 #include "packager/media/base/container_names.h"
 #include "packager/media/test/test_data_util.h"
 
@@ -186,10 +185,9 @@ TEST(ContainerNamesTest, WebVtt) {
       webvtt_with_utf8_byte_order_mark.end(), kWebVtt,
       kWebVtt + arraysize(kWebVtt));
 
-  EXPECT_EQ(
-      CONTAINER_WEBVTT,
-      DetermineContainer(vector_as_array(&webvtt_with_utf8_byte_order_mark),
-                         webvtt_with_utf8_byte_order_mark.size()));
+  EXPECT_EQ(CONTAINER_WEBVTT,
+            DetermineContainer(webvtt_with_utf8_byte_order_mark.data(),
+                               webvtt_with_utf8_byte_order_mark.size()));
 }
 
 TEST(ContainerNamesTest, FileCheckOGG) {

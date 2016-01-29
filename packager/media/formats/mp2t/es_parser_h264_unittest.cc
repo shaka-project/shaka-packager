@@ -9,7 +9,6 @@
 
 #include "packager/base/bind.h"
 #include "packager/base/logging.h"
-#include "packager/base/stl_util.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/timestamp.h"
 #include "packager/media/base/video_stream_info.h"
@@ -157,12 +156,9 @@ void EsParserH264Test::LoadStream(const char* filename) {
 
   // The input file does not have AUDs.
   std::vector<Packet> access_units_without_aud =
-      GetAccessUnits(vector_as_array(&buffer), buffer.size());
+      GetAccessUnits(buffer.data(), buffer.size());
   ASSERT_GT(access_units_without_aud.size(), 0u);
-  AppendAUD(vector_as_array(&buffer),
-            buffer.size(),
-            access_units_without_aud,
-            stream_,
+  AppendAUD(buffer.data(), buffer.size(), access_units_without_aud, stream_,
             access_units_);
 }
 

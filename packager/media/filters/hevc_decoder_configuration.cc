@@ -6,7 +6,6 @@
 
 #include "packager/media/filters/hevc_decoder_configuration.h"
 
-#include "packager/base/stl_util.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/media/base/buffer_reader.h"
@@ -86,7 +85,7 @@ HEVCDecoderConfiguration::HEVCDecoderConfiguration()
 HEVCDecoderConfiguration::~HEVCDecoderConfiguration() {}
 
 bool HEVCDecoderConfiguration::Parse(const std::vector<uint8_t>& data) {
-  BufferReader reader(vector_as_array(&data), data.size());
+  BufferReader reader(data.data(), data.size());
 
   uint8_t profile_indication = 0;
   uint8_t length_size_minus_one = 0;

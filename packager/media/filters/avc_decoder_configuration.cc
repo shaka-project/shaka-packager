@@ -6,7 +6,6 @@
 
 #include "packager/media/filters/avc_decoder_configuration.h"
 
-#include "packager/base/stl_util.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/media/base/buffer_reader.h"
@@ -26,7 +25,7 @@ AVCDecoderConfiguration::AVCDecoderConfiguration()
 AVCDecoderConfiguration::~AVCDecoderConfiguration() {}
 
 bool AVCDecoderConfiguration::Parse(const std::vector<uint8_t>& data) {
-  BufferReader reader(vector_as_array(&data), data.size());
+  BufferReader reader(data.data(), data.size());
   RCHECK(reader.Read1(&version_) && version_ == 1 &&
          reader.Read1(&profile_indication_) &&
          reader.Read1(&profile_compatibility_) && reader.Read1(&avc_level_));

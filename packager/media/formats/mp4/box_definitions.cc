@@ -366,7 +366,7 @@ bool SampleEncryption::ParseFromSampleEncryptionData(
     std::vector<SampleEncryptionEntry>* sample_encryption_entries) const {
   DCHECK(IsIvSizeValid(iv_size));
 
-  BufferReader reader(vector_as_array(&sample_encryption_data),
+  BufferReader reader(sample_encryption_data.data(),
                       sample_encryption_data.size());
   uint32_t sample_count = 0;
   RCHECK(reader.Read4(&sample_count));

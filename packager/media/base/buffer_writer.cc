@@ -6,6 +6,7 @@
 
 #include "packager/media/base/buffer_writer.h"
 
+#include "packager/base/logging.h"
 #include "packager/base/sys_byteorder.h"
 #include "packager/media/file/file.h"
 

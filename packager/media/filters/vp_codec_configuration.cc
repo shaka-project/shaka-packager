@@ -63,7 +63,7 @@ VPCodecConfiguration::VPCodecConfiguration(
 VPCodecConfiguration::~VPCodecConfiguration(){};
 
 bool VPCodecConfiguration::Parse(const std::vector<uint8_t>& data) {
-  BitReader reader(vector_as_array(&data), data.size());
+  BitReader reader(data.data(), data.size());
   RCHECK(reader.ReadBits(8, &profile_));
   RCHECK(reader.ReadBits(8, &level_));
   RCHECK(reader.ReadBits(4, &bit_depth_));

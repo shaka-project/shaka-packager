@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "packager/base/stl_util.h"
+#include "packager/base/macros.h"
 #include "packager/media/base/status.h"
 
 namespace edash_packager {
@@ -56,7 +56,7 @@ class BufferWriter {
   void Clear() { buf_.clear(); }
   size_t Size() const { return buf_.size(); }
   /// @return Underlying buffer. Behavior is undefined if the buffer size is 0.
-  const uint8_t* Buffer() const { return vector_as_array(&buf_); }
+  const uint8_t* Buffer() const { return buf_.data(); }
 
   /// Write the buffer to file. The internal buffer will be cleared after
   /// writing.

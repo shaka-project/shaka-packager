@@ -445,7 +445,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           sampling_frequency,
           max_bitrate,
           avg_bitrate,
-          vector_as_array(&extra_data),
+          extra_data.data(),
           extra_data.size(),
           is_encrypted));
     }
@@ -541,7 +541,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           codec_string, track->media.header.language.code, coded_width,
           coded_height, pixel_width, pixel_height,
           0,  // trick_play_rate
-          nalu_length_size, vector_as_array(&entry.codec_config_record.data),
+          nalu_length_size, entry.codec_config_record.data.data(),
           entry.codec_config_record.data.size(), is_encrypted));
     }
   }

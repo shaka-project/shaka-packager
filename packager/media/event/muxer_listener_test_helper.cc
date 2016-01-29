@@ -8,8 +8,6 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/base/stl_util.h"
-
 namespace edash_packager {
 namespace media {
 
@@ -31,7 +29,7 @@ scoped_refptr<StreamInfo> CreateVideoStreamInfo(
                           param.pixel_height,
                           0,  // trick_play_rate
                           param.nalu_length_size,
-                          vector_as_array(&param.extra_data),
+                          param.extra_data.data(),
                           param.extra_data.size(),
                           param.is_encrypted));
 }

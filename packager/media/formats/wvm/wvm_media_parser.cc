@@ -8,7 +8,6 @@
 #include <sstream>
 #include <vector>
 
-#include "packager/base/stl_util.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/aes_encryptor.h"
 #include "packager/media/base/audio_stream_info.h"
@@ -550,7 +549,7 @@ bool WvmMediaParser::ParseIndexEntry() {
     return false;
   }
 
-  const uint8_t* read_ptr = vector_as_array(&index_data_);
+  const uint8_t* read_ptr = index_data_.data();
   if (ntohlFromBuffer(read_ptr) != kIndexMagic) {
     index_data_.clear();
     return false;
@@ -737,16 +736,15 @@ bool WvmMediaParser::ParseIndexEntry() {
       index_metadata_max_size -= length;
     }
     // End Index metadata
-    index_size = read_ptr - vector_as_array(&index_data_);
+    index_size = read_ptr - index_data_.data();
 
     if (has_video) {
       VideoCodec video_codec = kCodecH264;
       stream_infos_.push_back(new VideoStreamInfo(
           stream_id_count_, time_scale, track_duration, video_codec,
-          std::string(), std::string(), video_width, video_height,
-          pixel_width, pixel_height, trick_play_rate, nalu_length_size,
-          vector_as_array(&video_codec_config), video_codec_config.size(),
-          true));
+          std::string(), std::string(), video_width, video_height, pixel_width,
+          pixel_height, trick_play_rate, nalu_length_size,
+          video_codec_config.data(), video_codec_config.size(), true));
       program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
                                 base::UintToString(video_pes_stream_id ?
                                                    video_pes_stream_id :
@@ -759,7 +757,7 @@ bool WvmMediaParser::ParseIndexEntry() {
       stream_infos_.push_back(new AudioStreamInfo(
           stream_id_count_, time_scale, track_duration, audio_codec,
           std::string(), std::string(), kAacSampleSizeBits, num_channels,
-          sampling_frequency, 0, 0, vector_as_array(&audio_codec_config),
+          sampling_frequency, 0, 0, audio_codec_config.data(),
           audio_codec_config.size(), true));
       program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
                                 base::UintToString(audio_pes_stream_id ?
@@ -813,16 +811,14 @@ void WvmMediaParser::StartMediaSampleDemux() {
 
 bool WvmMediaParser::Output(bool output_encrypted_sample) {
   if (output_encrypted_sample) {
-    media_sample_->set_data(vector_as_array(&sample_data_),
-                            sample_data_.size());
+    media_sample_->set_data(sample_data_.data(), sample_data_.size());
     media_sample_->set_is_encrypted(true);
   } else {
     if ((prev_pes_stream_id_ & kPesStreamIdVideoMask) == kPesStreamIdVideo) {
       // Convert video stream to unit stream and get config.
       std::vector<uint8_t> nal_unit_stream;
       if (!byte_to_unit_stream_converter_.ConvertByteStreamToNalUnitStream(
-              vector_as_array(&sample_data_), sample_data_.size(),
-              &nal_unit_stream)) {
+              sample_data_.data(), sample_data_.size(), &nal_unit_stream)) {
         LOG(ERROR) << "Could not convert h.264 byte stream sample";
         return false;
       }
@@ -898,9 +894,9 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
         kPesStreamIdAudio) {
       // Set data on the audio stream.
       int frame_size = media::mp2t::AdtsHeader::GetAdtsFrameSize(
-          vector_as_array(&sample_data_), kAdtsHeaderMinSize);
+          sample_data_.data(), kAdtsHeaderMinSize);
       media::mp2t::AdtsHeader adts_header;
-      const uint8_t* frame_ptr = vector_as_array(&sample_data_);
+      const uint8_t* frame_ptr = sample_data_.data();
       if (!adts_header.Parse(frame_ptr, frame_size)) {
         LOG(ERROR) << "Could not parse ADTS header";
         return false;
@@ -1128,8 +1124,8 @@ bool WvmMediaParser::ProcessEcm() {
       kEcmFlagsSizeBytes + kEcmContentKeySizeBytes +
       kEcmPaddingSizeBytes;  // flags + contentKey + padding.
   std::vector<uint8_t> content_key_buffer(content_key_buffer_size);
-  asset_decryptor.Decrypt(
-      ecm_data, content_key_buffer_size, vector_as_array(&content_key_buffer));
+  asset_decryptor.Decrypt(ecm_data, content_key_buffer_size,
+                          content_key_buffer.data());
 
   std::vector<uint8_t> decrypted_content_key_vec(
       content_key_buffer.begin() + 4,

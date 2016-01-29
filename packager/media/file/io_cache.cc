@@ -11,7 +11,6 @@
 #include <algorithm>
 
 #include "packager/base/logging.h"
-#include "packager/base/stl_util.h"
 
 namespace edash_packager {
 
@@ -28,8 +27,8 @@ IoCache::IoCache(uint64_t cache_size)
       // condition r_ptr == w_ptr is unambiguous (buffer empty).
       circular_buffer_(cache_size + 1),
       end_ptr_(&circular_buffer_[0] + cache_size + 1),
-      r_ptr_(vector_as_array(&circular_buffer_)),
-      w_ptr_(vector_as_array(&circular_buffer_)),
+      r_ptr_(circular_buffer_.data()),
+      w_ptr_(circular_buffer_.data()),
       closed_(false) {}
 
 IoCache::~IoCache() {
@@ -102,7 +101,7 @@ uint64_t IoCache::Write(const void* buffer, uint64_t size) {
 
 void IoCache::Clear() {
   AutoLock lock(lock_);
-  r_ptr_ = w_ptr_ = vector_as_array(&circular_buffer_);
+  r_ptr_ = w_ptr_ = circular_buffer_.data();
   // Let any writers know that there is room in the cache.
   read_event_.Signal();
 }
@@ -117,7 +116,7 @@ void IoCache::Close() {
 void IoCache::Reopen() {
   AutoLock lock(lock_);
   CHECK(closed_);
-  r_ptr_ = w_ptr_ = vector_as_array(&circular_buffer_);
+  r_ptr_ = w_ptr_ = circular_buffer_.data();
   closed_ = false;
   read_event_.Reset();
   write_event_.Reset();
@@ -134,9 +133,9 @@ uint64_t IoCache::BytesFree() {
 }
 
 uint64_t IoCache::BytesCachedInternal() {
-  return (r_ptr_ <= w_ptr_) ?
-      w_ptr_ - r_ptr_ :
-      (end_ptr_ - r_ptr_) + (w_ptr_ - vector_as_array(&circular_buffer_));
+  return (r_ptr_ <= w_ptr_)
+             ? w_ptr_ - r_ptr_
+             : (end_ptr_ - r_ptr_) + (w_ptr_ - circular_buffer_.data());
 }
 
 uint64_t IoCache::BytesFreeInternal() {
