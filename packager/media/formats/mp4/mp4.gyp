@@ -52,6 +52,8 @@
         'sync_sample_iterator.h',
         'track_run_iterator.cc',
         'track_run_iterator.h',
+        'video_slice_header_parser.cc',
+        'video_slice_header_parser.h',
       ],
       'dependencies': [
         '../../../third_party/boringssl/boringssl.gyp:boringssl',
@@ -74,6 +76,7 @@
         'mp4_media_parser_unittest.cc',
         'sync_sample_iterator_unittest.cc',
         'track_run_iterator_unittest.cc',
+        'video_slice_header_parser_unittest.cc',
       ],
       'dependencies': [
         '../../../testing/gtest.gyp:gtest',

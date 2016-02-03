@@ -6,6 +6,8 @@
 
 #include "packager/media/formats/mp4/encrypting_fragmenter.h"
 
+#include <limits>
+
 #include "packager/media/base/aes_encryptor.h"
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/key_source.h"
@@ -15,33 +17,59 @@
 #include "packager/media/filters/vp9_parser.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 
-namespace {
-// Generate 64bit IV by default.
-const size_t kDefaultIvSize = 8u;
-const size_t kCencBlockSize = 16u;
-}  // namespace
-
 namespace edash_packager {
 namespace media {
 namespace mp4 {
 
+namespace {
+// Generate 64bit IV by default.
+const size_t kDefaultIvSize = 8u;
+const size_t kCencBlockSize = 16u;
+
+// Adds one or more subsamples to |*subsamples|.  This may add more than one
+// if one of the values overflows the integer in the subsample.
+void AddSubsamples(uint64_t clear_bytes,
+                   uint64_t cipher_bytes,
+                   std::vector<SubsampleEntry>* subsamples) {
+  CHECK_LT(cipher_bytes, std::numeric_limits<uint32_t>::max());
+  const uint64_t kUInt16Max = std::numeric_limits<uint16_t>::max();
+  while (clear_bytes > kUInt16Max) {
+    subsamples->push_back(SubsampleEntry(kUInt16Max, 0));
+    clear_bytes -= kUInt16Max;
+  }
+
+  if (clear_bytes > 0 || cipher_bytes > 0)
+    subsamples->push_back(SubsampleEntry(clear_bytes, cipher_bytes));
+}
+
+VideoCodec GetVideoCodec(const StreamInfo& stream_info) {
+  if (stream_info.stream_type() != kStreamVideo)
+    return kUnknownVideoCodec;
+  const VideoStreamInfo& video_stream_info =
+      static_cast<const VideoStreamInfo&>(stream_info);
+  return video_stream_info.codec();
+}
+}  // namespace
+
 EncryptingFragmenter::EncryptingFragmenter(
+    scoped_refptr<StreamInfo> info,
     TrackFragment* traf,
     scoped_ptr<EncryptionKey> encryption_key,
-    int64_t clear_time,
-    VideoCodec video_codec,
-    uint8_t nalu_length_size)
+    int64_t clear_time)
     : Fragmenter(traf),
+      info_(info),
       encryption_key_(encryption_key.Pass()),
-      video_codec_(video_codec),
-      nalu_length_size_(nalu_length_size),
       clear_time_(clear_time) {
   DCHECK(encryption_key_);
+  VideoCodec video_codec = GetVideoCodec(*info);
   if (video_codec == kCodecVP8) {
     vpx_parser_.reset(new VP8Parser);
   } else if (video_codec == kCodecVP9) {
     vpx_parser_.reset(new VP9Parser);
+  } else if (video_codec == kCodecH264) {
+    header_parser_.reset(new H264VideoSliceHeaderParser);
   }
+  // TODO(modmaker): Support H.265.
 }
 
 EncryptingFragmenter::~EncryptingFragmenter() {}
@@ -65,6 +93,9 @@ Status EncryptingFragmenter::InitializeFragment(int64_t first_sample_dts) {
   Status status = Fragmenter::InitializeFragment(first_sample_dts);
   if (!status.ok())
     return status;
+
+  if (header_parser_ && !header_parser_->Initialize(info_->extra_data()))
+    return Status(error::MUXER_FAILURE, "Fail to read SPS and PPS data.");
 
   traf()->auxiliary_size.sample_info_sizes.clear();
   traf()->auxiliary_offset.offsets.clear();
@@ -182,21 +213,43 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
         data += frame.frame_size;
       }
     } else {
-      NaluReader reader(nalu_length_size_, data, sample->data_size());
+      NaluReader reader(GetNaluLengthSize(), data, sample->data_size());
+
+      // Store the current length of clear data.  This is used to squash
+      // multiple unencrypted NAL units into fewer subsample entries.
+      uint64_t accumulated_clear_bytes = 0;
 
       Nalu nalu;
       NaluReader::Result result;
       while ((result = reader.Advance(&nalu)) == NaluReader::kOk) {
-        SubsampleEntry subsample;
-        subsample.clear_bytes = nalu.header_size();
-        subsample.cipher_bytes = nalu.data_size();
-        sample_encryption_entry.subsamples.push_back(subsample);
+        if (nalu.is_video_slice()) {
+          // For video-slice NAL units, encrypt the video slice.  This skips
+          // the frame header.  If this is an unrecognized codec (e.g. H.265),
+          // the whole NAL unit will be encrypted.
+          const int64_t video_slice_header_size =
+              header_parser_ ? header_parser_->GetHeaderSize(nalu) : 0;
+          if (video_slice_header_size < 0)
+            return Status(error::MUXER_FAILURE, "Failed to read slice header.");
 
-        EncryptBytes(const_cast<uint8_t*>(nalu.data() + nalu.header_size()),
-                     subsample.cipher_bytes);
+          const uint64_t current_clear_bytes =
+              nalu.header_size() + video_slice_header_size;
+          const uint64_t cipher_bytes =
+              nalu.data_size() - video_slice_header_size;
+          const uint8_t* nalu_data = nalu.data() + current_clear_bytes;
+          EncryptBytes(const_cast<uint8_t*>(nalu_data), cipher_bytes);
+
+          AddSubsamples(accumulated_clear_bytes + current_clear_bytes,
+                        cipher_bytes, &sample_encryption_entry.subsamples);
+          accumulated_clear_bytes = 0;
+        } else {
+          // For non-video-slice NAL units, don't encrypt.
+          accumulated_clear_bytes += nalu.header_size() + nalu.data_size();
+        }
       }
       if (result != NaluReader::kEOStream)
         return Status(error::MUXER_FAILURE, "Failed to parse NAL units.");
+      AddSubsamples(accumulated_clear_bytes, 0,
+                    &sample_encryption_entry.subsamples);
     }
 
     // The length of per-sample auxiliary datum, defined in CENC ch. 7.
@@ -210,6 +263,19 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
       sample_encryption_entry);
   encryptor_->UpdateIv();
   return Status::OK;
+}
+
+uint8_t EncryptingFragmenter::GetNaluLengthSize() {
+  if (info_->stream_type() != kStreamVideo)
+    return 0;
+
+  const VideoStreamInfo& video_stream_info =
+      static_cast<const VideoStreamInfo&>(*info_);
+  return video_stream_info.nalu_length_size();
+}
+
+bool EncryptingFragmenter::IsSubsampleEncryptionRequired() {
+  return vpx_parser_ || GetNaluLengthSize() != 0;
 }
 
 }  // namespace mp4

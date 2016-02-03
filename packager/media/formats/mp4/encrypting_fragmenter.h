@@ -7,14 +7,17 @@
 #ifndef MEDIA_FORMATS_MP4_ENCRYPTING_FRAGMENTER_H_
 #define MEDIA_FORMATS_MP4_ENCRYPTING_FRAGMENTER_H_
 
+#include "packager/base/memory/ref_counted.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/filters/vpx_parser.h"
 #include "packager/media/formats/mp4/fragmenter.h"
+#include "packager/media/formats/mp4/video_slice_header_parser.h"
 
 namespace edash_packager {
 namespace media {
 
 class AesCtrEncryptor;
+class StreamInfo;
 struct EncryptionKey;
 
 namespace mp4 {
@@ -26,16 +29,10 @@ class EncryptingFragmenter : public Fragmenter {
   /// @param encryption_key contains the encryption parameters.
   /// @param clear_time specifies clear lead duration in units of the current
   ///        track's timescale.
-  /// @param video_codec specifies the codec if input is a video stream; it
-  ///        should be set to kUnknownVideoCodec for audio stream. This
-  ///        parameter is used for proper subsample encryption.
-  /// @param nalu_length_size specifies the size of NAL unit length, in bytes,
-  ///        for subsample encryption.
-  EncryptingFragmenter(TrackFragment* traf,
+  EncryptingFragmenter(scoped_refptr<StreamInfo> info,
+                       TrackFragment* traf,
                        scoped_ptr<EncryptionKey> encryption_key,
-                       int64_t clear_time,
-                       VideoCodec video_codec,
-                       uint8_t nalu_length_size);
+                       int64_t clear_time);
 
   ~EncryptingFragmenter() override;
 
@@ -69,23 +66,20 @@ class EncryptingFragmenter : public Fragmenter {
   void EncryptBytes(uint8_t* data, uint32_t size);
   Status EncryptSample(scoped_refptr<MediaSample> sample);
 
+  // If this stream contains AVC, subsample encryption specifies that the size
+  // and type of NAL units remain unencrypted. This function returns the size of
+  // the size field in bytes. Can be 1, 2 or 4 bytes.
+  uint8_t GetNaluLengthSize();
   // Should we enable subsample encryption?
-  bool IsSubsampleEncryptionRequired() {
-    return vpx_parser_ || nalu_length_size_ != 0;
-  }
+  bool IsSubsampleEncryptionRequired();
 
+  scoped_refptr<StreamInfo> info_;
   scoped_ptr<EncryptionKey> encryption_key_;
   scoped_ptr<AesCtrEncryptor> encryptor_;
-  // For VP8/VP9, uncompressed_header should not be encrypted; for AVC/HEVC,
-  // the size and type NAL units should not be encrypted.
-  VideoCodec video_codec_;
-  // If this stream contains AVC, subsample encryption specifies that the size
-  // and type of NAL units remain unencrypted. This field specifies the size of
-  // the size field. Can be 1, 2 or 4 bytes.
-  const uint8_t nalu_length_size_;
   int64_t clear_time_;
 
   scoped_ptr<VPxParser> vpx_parser_;
+  scoped_ptr<VideoSliceHeaderParser> header_parser_;
 
   DISALLOW_COPY_AND_ASSIGN(EncryptingFragmenter);
 };

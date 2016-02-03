@@ -18,19 +18,17 @@ const bool kInitialEncryptionInfo = false;
 }  // namespace
 
 KeyRotationFragmenter::KeyRotationFragmenter(MovieFragment* moof,
+                                             scoped_refptr<StreamInfo> info,
                                              TrackFragment* traf,
                                              KeySource* encryption_key_source,
                                              KeySource::TrackType track_type,
                                              int64_t crypto_period_duration,
                                              int64_t clear_time,
-                                             VideoCodec video_codec,
-                                             uint8_t nalu_length_size,
                                              MuxerListener* muxer_listener)
-    : EncryptingFragmenter(traf,
+    : EncryptingFragmenter(info,
+                           traf,
                            scoped_ptr<EncryptionKey>(new EncryptionKey()),
-                           clear_time,
-                           video_codec,
-                           nalu_length_size),
+                           clear_time),
       moof_(moof),
       encryption_key_source_(encryption_key_source),
       track_type_(track_type),
