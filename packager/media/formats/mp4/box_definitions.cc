@@ -586,7 +586,7 @@ bool SampleDescription::ReadWriteInternal(BoxBuffer* buffer) {
       count = audio_entries.size();
       break;
     case kText:
-      count = wvtt_entries.size();
+      count = text_entries.size();
       break;
     default:
       NOTIMPLEMENTED() << "SampleDecryption type " << type
@@ -609,8 +609,8 @@ bool SampleDescription::ReadWriteInternal(BoxBuffer* buffer) {
       RCHECK(reader->ReadAllChildren(&audio_entries));
       RCHECK(audio_entries.size() == count);
     } else if (type == kText) {
-      RCHECK(reader->ReadAllChildren(&wvtt_entries));
-      RCHECK(wvtt_entries.size() == count);
+      RCHECK(reader->ReadAllChildren(&text_entries));
+      RCHECK(text_entries.size() == count);
     }
   } else {
     DCHECK_LT(0u, count);
@@ -622,7 +622,7 @@ bool SampleDescription::ReadWriteInternal(BoxBuffer* buffer) {
         RCHECK(buffer->ReadWriteChild(&audio_entries[i]));
     } else if (type == kText) {
       for (uint32_t i = 0; i < count; ++i)
-        RCHECK(buffer->ReadWriteChild(&wvtt_entries[i]));
+        RCHECK(buffer->ReadWriteChild(&text_entries[i]));
     } else {
       NOTIMPLEMENTED();
     }
@@ -638,6 +638,9 @@ uint32_t SampleDescription::ComputeSizeInternal() {
   } else if (type == kAudio) {
     for (uint32_t i = 0; i < audio_entries.size(); ++i)
       box_size += audio_entries[i].ComputeSize();
+  } else if (type == kText) {
+    for (uint32_t i = 0; i < text_entries.size(); ++i)
+      box_size += text_entries[i].ComputeSize();
   }
   return box_size;
 }
@@ -1589,25 +1592,37 @@ uint32_t WebVTTSourceLabelBox::ComputeSizeInternal() {
   return HeaderSize() + source_label.size();
 }
 
-WVTTSampleEntry::WVTTSampleEntry() {}
-WVTTSampleEntry::~WVTTSampleEntry() {}
+TextSampleEntry::TextSampleEntry() : format(FOURCC_NULL) {}
+TextSampleEntry::~TextSampleEntry() {}
 
-FourCC WVTTSampleEntry::BoxType() const {
-  return FOURCC_wvtt;
+FourCC TextSampleEntry::BoxType() const {
+  if (format == FOURCC_NULL) {
+    LOG(ERROR) << "TextSampleEntry should be parsed according to the "
+               << "handler type recovered in its Media ancestor.";
+  }
+  return format;
 }
 
-bool WVTTSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
-  // TODO(rkuroiwa): Handle the optional MPEG4BitRateBox.
-  RCHECK(ReadWriteHeaderInternal(buffer) &&
-         buffer->IgnoreBytes(6) &&  // reserved for SampleEntry.
-         buffer->ReadWriteUInt16(&data_reference_index) &&
-         buffer->PrepareChildren() &&
-         buffer->ReadWriteChild(&config) &&
-         buffer->ReadWriteChild(&label));
+bool TextSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
+  if (buffer->Reading()) {
+    DCHECK(buffer->reader());
+    format = buffer->reader()->type();
+  } else {
+    RCHECK(ReadWriteHeaderInternal(buffer));
+  }
+  RCHECK(buffer->IgnoreBytes(6) &&  // reserved for SampleEntry.
+         buffer->ReadWriteUInt16(&data_reference_index));
+
+  if (format == FOURCC_wvtt) {
+    // TODO(rkuroiwa): Handle the optional MPEG4BitRateBox.
+    RCHECK(buffer->PrepareChildren() &&
+           buffer->ReadWriteChild(&config) &&
+           buffer->ReadWriteChild(&label));
+  }
   return true;
 }
 
-uint32_t WVTTSampleEntry::ComputeSizeInternal() {
+uint32_t TextSampleEntry::ComputeSizeInternal() {
   // 6 for the (anonymous) reserved bytes for SampleEntry class.
   return HeaderSize() + 6 + sizeof(data_reference_index) +
          config.ComputeSize() + label.ComputeSize();
@@ -1762,7 +1777,7 @@ bool MediaInformation::ReadWriteInternal(BoxBuffer* buffer) {
       RCHECK(buffer->ReadWriteChild(&smhd));
       break;
     case kText:
-      RCHECK(buffer->ReadWriteChild(&sthd));
+      RCHECK(buffer->TryReadWriteChild(&sthd));
       break;
     default:
       NOTIMPLEMENTED();

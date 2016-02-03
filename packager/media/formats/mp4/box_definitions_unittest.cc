@@ -54,7 +54,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     return true;
   }
 
-  // FourCC for VideoSampleEntry is not a constant, e.g. could be avc1, or encv.
+  // FourCC for VideoSampleEntry is fixed, e.g. could be avc1, or encv.
   bool ReadBack(VideoSampleEntry* video) {
     scoped_ptr<BoxReader> reader(CreateReader());
     std::vector<VideoSampleEntry> video_entries;
@@ -64,13 +64,23 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     return true;
   }
 
-  // FourCC for AudioSampleEntry is not a constant, e.g. could be mp4a, or enca.
+  // FourCC for AudioSampleEntry is fixed, e.g. could be mp4a, or enca.
   bool ReadBack(AudioSampleEntry* audio) {
     scoped_ptr<BoxReader> reader(CreateReader());
     std::vector<AudioSampleEntry> audio_entries;
     RCHECK(reader->ReadAllChildren(&audio_entries));
     RCHECK(audio_entries.size() == 1);
     *audio = audio_entries[0];
+    return true;
+  }
+
+  // FourCC for TextSampleEntry is fixed, e.g. could be text, or wvtt.
+  bool ReadBack(TextSampleEntry* text) {
+    scoped_ptr<BoxReader> reader(CreateReader());
+    std::vector<TextSampleEntry> text_entries;
+    RCHECK(reader->ReadAllChildren(&text_entries));
+    RCHECK(text_entries.size() == 1);
+    *text = text_entries[0];
     return true;
   }
 
@@ -429,12 +439,13 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     vlab->source_label = "another_label";
   }
 
-  void Fill(WVTTSampleEntry* wvtt) {
+  void Fill(TextSampleEntry* wvtt) {
+    wvtt->format = FOURCC_wvtt;
     Fill(&wvtt->config);
     Fill(&wvtt->label);
   }
 
-  void Modify(WVTTSampleEntry* wvtt) {
+  void Modify(TextSampleEntry* wvtt) {
     Modify(&wvtt->config);
     Modify(&wvtt->label);
   }
@@ -953,7 +964,7 @@ typedef testing::Types<FileType,
                        AudioSampleEntry,
                        WebVTTConfigurationBox,
                        WebVTTSourceLabelBox,
-                       WVTTSampleEntry,
+                       TextSampleEntry,
                        SampleDescription,
                        DecodingTimeToSample,
                        CompositionTimeToSample,

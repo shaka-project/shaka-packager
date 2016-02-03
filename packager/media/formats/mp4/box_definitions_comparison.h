@@ -270,8 +270,7 @@ inline bool operator==(const WebVTTSourceLabelBox& lhs,
   return lhs.source_label == rhs.source_label;
 }
 
-inline bool operator==(const WVTTSampleEntry& lhs,
-                       const WVTTSampleEntry& rhs) {
+inline bool operator==(const TextSampleEntry& lhs, const TextSampleEntry& rhs) {
   return lhs.config == rhs.config && lhs.label == rhs.label;
 }
 

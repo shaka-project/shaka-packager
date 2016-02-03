@@ -374,11 +374,16 @@ struct WebVTTSourceLabelBox : Box {
   std::string source_label;
 };
 
-struct WVTTSampleEntry : Box {
-  DECLARE_BOX_METHODS(WVTTSampleEntry);
+struct TextSampleEntry : Box {
+  DECLARE_BOX_METHODS(TextSampleEntry);
 
+  // Specifies fourcc of this sample entry. It needs to be set on write, e.g.
+  // set to 'wvtt' to write WVTTSampleEntry; On read, it is recovered from box
+  // header.
+  FourCC format;
   uint16_t data_reference_index;
 
+  // Sub boxes for wvtt text sample entry.
   WebVTTConfigurationBox config;
   WebVTTSourceLabelBox label;
   // Optional MPEG4BitRateBox.
@@ -392,7 +397,7 @@ struct SampleDescription : FullBox {
   // SampleEntry struct, std::vector<SampleEntry> sample_entries.
   std::vector<VideoSampleEntry> video_entries;
   std::vector<AudioSampleEntry> audio_entries;
-  std::vector<WVTTSampleEntry> wvtt_entries;
+  std::vector<TextSampleEntry> text_entries;
 };
 
 struct DecodingTime {
