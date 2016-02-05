@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['textsampleentry',['TextSampleEntry',['../dd/d7d/structedash__packager_1_1media_1_1mp4_1_1TextSampleEntry.html',1,'edash_packager::media::mp4']]],
   ['textstreaminfo',['TextStreamInfo',['../d6/dd7/classedash__packager_1_1media_1_1TextStreamInfo.html',1,'edash_packager::media']]],
   ['texttrack',['TextTrack',['../de/d9e/classedash__packager_1_1media_1_1TextTrack.html',1,'edash_packager::media']]],
   ['texttrackconfig',['TextTrackConfig',['../dd/def/classedash__packager_1_1media_1_1TextTrackConfig.html',1,'edash_packager::media']]],

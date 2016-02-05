@@ -15,6 +15,5 @@ var searchData=
   ['webvttmediaparser',['WebVttMediaParser',['../d2/d51/classedash__packager_1_1media_1_1WebVttMediaParser.html',1,'edash_packager::media']]],
   ['webvttsourcelabelbox',['WebVTTSourceLabelBox',['../df/da9/structedash__packager_1_1media_1_1mp4_1_1WebVTTSourceLabelBox.html',1,'edash_packager::media::mp4']]],
   ['widevinekeysource',['WidevineKeySource',['../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html',1,'edash_packager::media']]],
-  ['wvmmediaparser',['WvmMediaParser',['../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html',1,'edash_packager::media::wvm']]],
-  ['wvttsampleentry',['WVTTSampleEntry',['../dc/d0e/structedash__packager_1_1media_1_1mp4_1_1WVTTSampleEntry.html',1,'edash_packager::media::mp4']]]
+  ['wvmmediaparser',['WvmMediaParser',['../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html',1,'edash_packager::media::wvm']]]
 ];
