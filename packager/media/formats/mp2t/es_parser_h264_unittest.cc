@@ -56,9 +56,9 @@ std::vector<Packet> GetAccessUnits(const uint8_t* stream, size_t stream_size) {
   size_t offset = 0;
   while (true) {
     // Find the next start code.
-    off_t relative_offset = 0;
-    off_t start_code_size = 0;
-    bool success = H264Parser::FindStartCode(
+    uint64_t relative_offset = 0;
+    uint8_t start_code_size = 0;
+    bool success = NaluReader::FindStartCode(
         &stream[offset], stream_size - offset,
         &relative_offset, &start_code_size);
     if (!success)
@@ -79,8 +79,8 @@ std::vector<Packet> GetAccessUnits(const uint8_t* stream, size_t stream_size) {
     int nal_unit_type = stream[offset] & 0x1f;
 
     // We assume there is only one slice per access unit.
-    if (nal_unit_type == H264NALU::kIDRSlice ||
-        nal_unit_type == H264NALU::kNonIDRSlice) {
+    if (nal_unit_type == Nalu::H264_IDRSlice ||
+        nal_unit_type == Nalu::H264_NonIDRSlice) {
       start_access_unit = true;
     }
   }

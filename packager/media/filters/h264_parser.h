@@ -13,6 +13,7 @@
 #include <map>
 
 #include "packager/media/filters/h264_bit_reader.h"
+#include "packager/media/filters/nalu_reader.h"
 
 namespace edash_packager {
 namespace media {
@@ -26,33 +27,6 @@ bool ExtractResolutionFromSps(const H264SPS& sps,
                               uint32_t* coded_height,
                               uint32_t* pixel_width,
                               uint32_t* pixel_height);
-
-// For explanations of each struct and its members, see H.264 specification
-// at http://www.itu.int/rec/T-REC-H.264.
-struct H264NALU {
-  H264NALU();
-
-  enum Type {
-    kUnspecified = 0,
-    kNonIDRSlice = 1,
-    kIDRSlice = 5,
-    kSEIMessage = 6,
-    kSPS = 7,
-    kPPS = 8,
-    kAUD = 9,
-    kEOSeq = 10,
-    kEOStream = 11,
-    kCodedSliceExtension = 20,
-  };
-
-  // After (without) start code; we don't own the underlying memory
-  // and a shallow copy should be made when copying this struct.
-  const uint8_t* data;
-  off_t size;  // From after start code to start code of next NALU (or EOS).
-
-  int nal_ref_idc;
-  int nal_unit_type;
-};
 
 enum {
   kH264ScalingList4x4Length = 16,
@@ -276,40 +250,10 @@ class H264Parser {
     kEOStream,           // end of stream
   };
 
-  // Find offset from start of data to next NALU start code
-  // and size of found start code (3 or 4 bytes).
-  // If no start code is found, offset is pointing to the first unprocessed byte
-  // (i.e. the first byte that was not considered as a possible start of a start
-  // code) and |*start_code_size| is set to 0.
-  // Preconditions:
-  // - |data_size| >= 0
-  // Postconditions:
-  // - |*offset| is between 0 and |data_size| included.
-  //   It is strictly less than |data_size| if |data_size| > 0.
-  // - |*start_code_size| is either 0, 3 or 4.
-  static bool FindStartCode(const uint8_t* data,
-                            off_t data_size,
-                            off_t* offset,
-                            off_t* start_code_size);
-
   H264Parser();
   ~H264Parser();
 
-  void Reset();
-  // Set current stream pointer to |stream| of |stream_size| in bytes,
-  // |stream| owned by caller.
-  void SetStream(const uint8_t* stream, off_t stream_size);
-
-  // Read the stream to find the next NALU, identify it and return
-  // that information in |*nalu|. This advances the stream to the beginning
-  // of this NALU, but not past it, so subsequent calls to NALU-specific
-  // parsing functions (ParseSPS, etc.)  will parse this NALU.
-  // If the caller wishes to skip the current NALU, it can call this function
-  // again, instead of any NALU-type specific parse functions below.
-  Result AdvanceToNextNALU(H264NALU* nalu);
-
   // NALU-specific parsing functions.
-  // These should be called after AdvanceToNextNALU().
 
   // SPSes and PPSes are owned by the parser class and the memory for their
   // structures is managed here, not by the caller, as they are reused
@@ -319,15 +263,8 @@ class H264Parser {
   // of the parsed structure in |*pps_id|/|*sps_id|.
   // To get a pointer to a given SPS/PPS structure, use GetSPS()/GetPPS(),
   // passing the returned |*sps_id|/|*pps_id| as parameter.
-  // methods with a scoped_ptr and adding an AtEOS() function to check for EOS
-  // if Parse*() return NULL.
-  Result ParseSPS(int* sps_id);
-  Result ParsePPS(int* pps_id);
-
-  // Samme as ParseSPS but instead uses |sps_data|.
-  Result ParseSPSFromArray(const uint8_t* sps_data,
-                           size_t sps_data_size,
-                           int* sps_id);
+  Result ParseSPS(const Nalu& nalu, int* sps_id);
+  Result ParsePPS(const Nalu& nalu, int* pps_id);
 
   // Return a pointer to SPS/PPS with given |sps_id|/|pps_id| or NULL if not
   // present.
@@ -341,64 +278,57 @@ class H264Parser {
 
   // Parse a slice header, returning it in |*shdr|. |*nalu| must be set to
   // the NALU returned from AdvanceToNextNALU() and corresponding to |*shdr|.
-  Result ParseSliceHeader(const H264NALU& nalu, H264SliceHeader* shdr);
+  Result ParseSliceHeader(const Nalu& nalu, H264SliceHeader* shdr);
 
   // Parse a SEI message, returning it in |*sei_msg|, provided and managed
   // by the caller.
-  Result ParseSEI(H264SEIMessage* sei_msg);
+  Result ParseSEI(const Nalu& nalu, H264SEIMessage* sei_msg);
 
  private:
-  // Move the stream pointer to the beginning of the next NALU,
-  // i.e. pointing at the next start code.
-  // Return true if a NALU has been found.
-  // If a NALU is found:
-  // - its size in bytes is returned in |*nalu_size| and includes
-  //   the start code as well as the trailing zero bits.
-  // - the size in bytes of the start code is returned in |*start_code_size|.
-  bool LocateNALU(off_t* nalu_size, off_t* start_code_size);
-
   // Exp-Golomb code parsing as specified in chapter 9.1 of the spec.
   // Read one unsigned exp-Golomb code from the stream and return in |*val|.
-  Result ReadUE(int* val);
+  Result ReadUE(H264BitReader* br, int* val);
 
   // Read one signed exp-Golomb code from the stream and return in |*val|.
-  Result ReadSE(int* val);
+  Result ReadSE(H264BitReader* br, int* val);
 
   // Parse scaling lists (see spec).
-  Result ParseScalingList(int size, int* scaling_list, bool* use_default);
-  Result ParseSPSScalingLists(H264SPS* sps);
-  Result ParsePPSScalingLists(const H264SPS& sps, H264PPS* pps);
+  Result ParseScalingList(H264BitReader* br,
+                          int size,
+                          int* scaling_list,
+                          bool* use_default);
+  Result ParseSPSScalingLists(H264BitReader* br, H264SPS* sps);
+  Result ParsePPSScalingLists(H264BitReader* br,
+                              const H264SPS& sps,
+                              H264PPS* pps);
 
   // Parse optional VUI parameters in SPS (see spec).
-  Result ParseVUIParameters(H264SPS* sps);
+  Result ParseVUIParameters(H264BitReader* br, H264SPS* sps);
   // Set |hrd_parameters_present| to true only if they are present.
-  Result ParseAndIgnoreHRDParameters(bool* hrd_parameters_present);
+  Result ParseAndIgnoreHRDParameters(H264BitReader* br,
+                                     bool* hrd_parameters_present);
 
   // Parse reference picture lists' modifications (see spec).
-  Result ParseRefPicListModifications(H264SliceHeader* shdr);
-  Result ParseRefPicListModification(int num_ref_idx_active_minus1,
+  Result ParseRefPicListModifications(H264BitReader* br, H264SliceHeader* shdr);
+  Result ParseRefPicListModification(H264BitReader* br,
+                                     int num_ref_idx_active_minus1,
                                      H264ModificationOfPicNum* ref_list_mods);
 
   // Parse prediction weight table (see spec).
-  Result ParsePredWeightTable(const H264SPS& sps, H264SliceHeader* shdr);
+  Result ParsePredWeightTable(H264BitReader* br,
+                              const H264SPS& sps,
+                              H264SliceHeader* shdr);
 
   // Parse weighting factors (see spec).
-  Result ParseWeightingFactors(int num_ref_idx_active_minus1,
+  Result ParseWeightingFactors(H264BitReader* br,
+                               int num_ref_idx_active_minus1,
                                int chroma_array_type,
                                int luma_log2_weight_denom,
                                int chroma_log2_weight_denom,
                                H264WeightingFactors* w_facts);
 
   // Parse decoded reference picture marking information (see spec).
-  Result ParseDecRefPicMarking(H264SliceHeader* shdr);
-
-  // Pointer to the current NALU in the stream.
-  const uint8_t* stream_;
-
-  // Bytes left in the stream after the current NALU.
-  off_t bytes_left_;
-
-  H264BitReader br_;
+  Result ParseDecRefPicMarking(H264BitReader* br, H264SliceHeader* shdr);
 
   // PPSes and SPSes stored for future reference.
   typedef std::map<int, H264SPS*> SPSById;

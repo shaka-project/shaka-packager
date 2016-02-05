@@ -16,6 +16,7 @@ namespace edash_packager {
 namespace media {
 
 class BufferWriter;
+class Nalu;
 
 /// Class which converts H.264 byte streams (as specified in ISO/IEC 14496-10
 /// Annex B) into H.264 NAL unit streams (as specified in ISO/IEC 14496-15).
@@ -46,8 +47,7 @@ class H264ByteToUnitStreamConverter {
   bool GetAVCDecoderConfigurationRecord(std::vector<uint8_t>* decoder_config);
 
  private:
-  void ProcessNalu(const uint8_t* nalu_ptr,
-                   size_t nalu_size,
+  void ProcessNalu(const Nalu& nalu,
                    BufferWriter* output_buffer);
 
   std::vector<uint8_t> last_sps_;

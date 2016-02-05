@@ -12,6 +12,12 @@
 namespace edash_packager {
 namespace media {
 
+namespace {
+// The test data does not include a start code, the start of the data is the
+// NALU header.
+const uint8_t kStartCodeSize = 0;
+}
+
 TEST(H264ParserTest, StreamFileParsing) {
   std::vector<uint8_t> buffer = ReadTestDataFile("test-25fps.h264");
 
@@ -19,42 +25,43 @@ TEST(H264ParserTest, StreamFileParsing) {
   int num_nalus = 759;
 
   H264Parser parser;
-  parser.SetStream(vector_as_array(&buffer), buffer.size());
+  NaluReader reader(kIsAnnexbByteStream, vector_as_array(&buffer),
+                    buffer.size());
 
   // Parse until the end of stream/unsupported stream/error in stream is found.
   int num_parsed_nalus = 0;
   while (true) {
     H264SliceHeader shdr;
     H264SEIMessage sei_msg;
-    H264NALU nalu;
-    H264Parser::Result res = parser.AdvanceToNextNALU(&nalu);
-    if (res == H264Parser::kEOStream) {
+    Nalu nalu;
+    NaluReader::Result res = reader.Advance(&nalu);
+    if (res == NaluReader::kEOStream) {
       DVLOG(1) << "Number of successfully parsed NALUs before EOS: "
                << num_parsed_nalus;
       ASSERT_EQ(num_nalus, num_parsed_nalus);
       return;
     }
-    ASSERT_EQ(res, H264Parser::kOk);
+    ASSERT_EQ(res, NaluReader::kOk);
 
     ++num_parsed_nalus;
 
     int id;
-    switch (nalu.nal_unit_type) {
-      case H264NALU::kIDRSlice:
-      case H264NALU::kNonIDRSlice:
+    switch (nalu.type()) {
+      case Nalu::H264_IDRSlice:
+      case Nalu::H264_NonIDRSlice:
         ASSERT_EQ(parser.ParseSliceHeader(nalu, &shdr), H264Parser::kOk);
         break;
 
-      case H264NALU::kSPS:
-        ASSERT_EQ(parser.ParseSPS(&id), H264Parser::kOk);
+      case Nalu::H264_SPS:
+        ASSERT_EQ(parser.ParseSPS(nalu, &id), H264Parser::kOk);
         break;
 
-      case H264NALU::kPPS:
-        ASSERT_EQ(parser.ParsePPS(&id), H264Parser::kOk);
+      case Nalu::H264_PPS:
+        ASSERT_EQ(parser.ParsePPS(nalu, &id), H264Parser::kOk);
         break;
 
-      case H264NALU::kSEIMessage:
-        ASSERT_EQ(parser.ParseSEI(&sei_msg), H264Parser::kOk);
+      case Nalu::H264_SEIMessage:
+        ASSERT_EQ(parser.ParseSEI(nalu, &sei_msg), H264Parser::kOk);
         break;
 
       default:
@@ -73,8 +80,9 @@ TEST(H264ParserTest, ExtractResolutionFromSpsData) {
 
   H264Parser parser;
   int sps_id = 0;
-  ASSERT_EQ(H264Parser::kOk,
-            parser.ParseSPSFromArray(kSps, arraysize(kSps), &sps_id));
+  Nalu nalu;
+  ASSERT_TRUE(nalu.InitializeFromH264(kSps, arraysize(kSps), kStartCodeSize));
+  ASSERT_EQ(H264Parser::kOk, parser.ParseSPS(nalu, &sps_id));
 
   uint32_t coded_width = 0;
   uint32_t coded_height = 0;
@@ -97,8 +105,9 @@ TEST(H264ParserTest, ExtractResolutionFromSpsDataWithCropping) {
 
   H264Parser parser;
   int sps_id = 0;
-  ASSERT_EQ(H264Parser::kOk,
-            parser.ParseSPSFromArray(kSps, arraysize(kSps), &sps_id));
+  Nalu nalu;
+  ASSERT_TRUE(nalu.InitializeFromH264(kSps, arraysize(kSps), kStartCodeSize));
+  ASSERT_EQ(H264Parser::kOk, parser.ParseSPS(nalu, &sps_id));
 
   uint32_t coded_width = 0;
   uint32_t coded_height = 0;

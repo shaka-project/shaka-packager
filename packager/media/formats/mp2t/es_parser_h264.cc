@@ -118,21 +118,23 @@ bool EsParserH264::FindAUD(int64_t* stream_pos) {
     es_queue_->PeekAt(*stream_pos, &es, &size);
 
     // Find a start code and move the stream to the start code parser position.
-    off_t start_code_offset;
-    off_t start_code_size;
-    bool start_code_found = H264Parser::FindStartCode(
+    uint64_t start_code_offset;
+    uint8_t start_code_size;
+    bool start_code_found = NaluReader::FindStartCode(
         es, size, &start_code_offset, &start_code_size);
     *stream_pos += start_code_offset;
 
     // No H264 start code found or NALU type not available yet.
-    if (!start_code_found || start_code_offset + start_code_size >= size)
+    if (!start_code_found ||
+        start_code_offset + start_code_size >= static_cast<uint64_t>(size)) {
       return false;
+    }
 
     // Exit the parser loop when an AUD is found.
     // Note: NALU header for an AUD:
-    // - nal_ref_idc must be 0
-    // - nal_unit_type must be H264NALU::kAUD
-    if (es[start_code_offset + start_code_size] == H264NALU::kAUD)
+    // - ref_idc must be 0
+    // - type must be Nalu::H264_AUD
+    if (es[start_code_offset + start_code_size] == Nalu::H264_AUD)
       break;
 
     // The current NALU is not an AUD, skip the start code
@@ -180,41 +182,40 @@ bool EsParserH264::ParseInternal() {
   int access_unit_size = base::checked_cast<int, int64_t>(
       next_access_unit_pos_ - current_access_unit_pos_);
   DCHECK_LE(access_unit_size, size);
-  h264_parser_->SetStream(es, access_unit_size);
+  NaluReader reader(kIsAnnexbByteStream, es, access_unit_size);
 
   while (true) {
+    Nalu nalu;
     bool is_eos = false;
-    H264NALU nalu;
-    switch (h264_parser_->AdvanceToNextNALU(&nalu)) {
-      case H264Parser::kOk:
+    switch (reader.Advance(&nalu)) {
+      case NaluReader::kOk:
         break;
-      case H264Parser::kInvalidStream:
-      case H264Parser::kUnsupportedStream:
-        return false;
-      case H264Parser::kEOStream:
+      case NaluReader::kEOStream:
         is_eos = true;
         break;
+      default:
+        return false;
     }
     if (is_eos)
       break;
 
-    switch (nalu.nal_unit_type) {
-      case H264NALU::kAUD: {
-        DVLOG(LOG_LEVEL_ES) << "NALU: AUD";
+    switch (nalu.type()) {
+      case Nalu::H264_AUD: {
+        DVLOG(LOG_LEVEL_ES) << "Nalu: AUD";
         break;
       }
-      case H264NALU::kSPS: {
-        DVLOG(LOG_LEVEL_ES) << "NALU: SPS";
+      case Nalu::H264_SPS: {
+        DVLOG(LOG_LEVEL_ES) << "Nalu: SPS";
         int sps_id;
-        if (h264_parser_->ParseSPS(&sps_id) != H264Parser::kOk)
+        if (h264_parser_->ParseSPS(nalu, &sps_id) != H264Parser::kOk)
           return false;
         decoder_config_check_pending_ = true;
         break;
       }
-      case H264NALU::kPPS: {
-        DVLOG(LOG_LEVEL_ES) << "NALU: PPS";
+      case Nalu::H264_PPS: {
+        DVLOG(LOG_LEVEL_ES) << "Nalu: PPS";
         int pps_id;
-        if (h264_parser_->ParsePPS(&pps_id) != H264Parser::kOk) {
+        if (h264_parser_->ParsePPS(nalu, &pps_id) != H264Parser::kOk) {
           // Allow PPS parsing to fail if waiting for SPS.
           if (last_video_decoder_config_)
             return false;
@@ -223,10 +224,10 @@ bool EsParserH264::ParseInternal() {
         }
         break;
       }
-      case H264NALU::kIDRSlice:
-      case H264NALU::kNonIDRSlice: {
-        is_key_frame = (nalu.nal_unit_type == H264NALU::kIDRSlice);
-        DVLOG(LOG_LEVEL_ES) << "NALU: slice IDR=" << is_key_frame;
+      case Nalu::H264_IDRSlice:
+      case Nalu::H264_NonIDRSlice: {
+        is_key_frame = (nalu.type() == Nalu::H264_IDRSlice);
+        DVLOG(LOG_LEVEL_ES) << "Nalu: slice IDR=" << is_key_frame;
         H264SliceHeader shdr;
         if (h264_parser_->ParseSliceHeader(nalu, &shdr) != H264Parser::kOk) {
           // Only accept an invalid SPS/PPS at the beginning when the stream
@@ -239,7 +240,7 @@ bool EsParserH264::ParseInternal() {
         break;
       }
       default: {
-        DVLOG(LOG_LEVEL_ES) << "NALU: " << nalu.nal_unit_type;
+        DVLOG(LOG_LEVEL_ES) << "Nalu: " << nalu.type();
       }
     }
   }

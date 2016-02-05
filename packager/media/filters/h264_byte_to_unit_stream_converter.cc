@@ -6,6 +6,8 @@
 
 #include "packager/media/filters/h264_byte_to_unit_stream_converter.h"
 
+#include <limits>
+
 #include "packager/base/logging.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/filters/h264_parser.h"
@@ -32,58 +34,50 @@ bool H264ByteToUnitStreamConverter::ConvertByteStreamToNalUnitStream(
 
   BufferWriter output_buffer(input_frame_size + kStreamConversionOverhead);
 
-  const uint8_t* input_ptr(input_frame);
-  const uint8_t* input_end(input_ptr + input_frame_size);
-  off_t next_start_code_offset;
-  off_t next_start_code_size;
   bool first_nalu(true);
-  while (H264Parser::FindStartCode(input_ptr,
-                                   input_end - input_ptr,
-                                   &next_start_code_offset,
-                                   &next_start_code_size)) {
+  Nalu nalu;
+  NaluReader reader(kIsAnnexbByteStream, input_frame, input_frame_size);
+  while (reader.Advance(&nalu) == NaluReader::kOk) {
     if (first_nalu) {
-      if (next_start_code_offset != 0) {
+      if (nalu.data() != input_frame) {
         LOG(ERROR) << "H.264 byte stream frame did not begin with start code.";
         return false;
       }
       first_nalu = false;
-    } else {
-      ProcessNalu(input_ptr, next_start_code_offset, &output_buffer);
     }
-    input_ptr += next_start_code_offset + next_start_code_size;
+
+    ProcessNalu(nalu, &output_buffer);
   }
 
   if (first_nalu) {
     LOG(ERROR) << "H.264 byte stream frame did not contain start codes.";
     return false;
-  } else {
-    ProcessNalu(input_ptr, input_end - input_ptr, &output_buffer);
   }
 
   output_buffer.SwapBuffer(output_frame);
   return true;
 }
 
-void H264ByteToUnitStreamConverter::ProcessNalu(const uint8_t* nalu_ptr,
-                                                size_t nalu_size,
+void H264ByteToUnitStreamConverter::ProcessNalu(const Nalu& nalu,
                                                 BufferWriter* output_buffer) {
-  DCHECK(nalu_ptr);
+  DCHECK(nalu.data());
   DCHECK(output_buffer);
 
-  if (!nalu_size)
-    return;  // Edge case.
+  // Skip the start code, but keep the 1-byte NALU type.
+  const uint8_t* nalu_ptr = nalu.data() + nalu.header_size() - 1;
+  const uint64_t nalu_size = nalu.data_size() + 1;
+  DCHECK_LE(nalu_size, std::numeric_limits<uint32_t>::max());
 
-  uint8_t nalu_type = *nalu_ptr & 0x0f;
-  switch (nalu_type) {
-    case H264NALU::kSPS:
+  switch (nalu.type()) {
+    case Nalu::H264_SPS:
       // Grab SPS NALU.
       last_sps_.assign(nalu_ptr, nalu_ptr + nalu_size);
       return;
-    case H264NALU::kPPS:
+    case Nalu::H264_PPS:
       // Grab PPS NALU.
       last_pps_.assign(nalu_ptr, nalu_ptr + nalu_size);
       return;
-    case H264NALU::kAUD:
+    case Nalu::H264_AUD:
       // Ignore AUD NALU.
       return;
     default:

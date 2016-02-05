@@ -10,6 +10,7 @@
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
+#include "packager/media/filters/nalu_reader.h"
 #include "packager/media/filters/vp8_parser.h"
 #include "packager/media/filters/vp9_parser.h"
 #include "packager/media/formats/mp4/box_definitions.h"
@@ -181,25 +182,21 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
         data += frame.frame_size;
       }
     } else {
-      BufferReader reader(data, sample->data_size());
-      while (reader.HasBytes(1)) {
-        uint64_t nalu_length;
-        if (!reader.ReadNBytesInto8(&nalu_length, nalu_length_size_))
-          return Status(error::MUXER_FAILURE, "Fail to read nalu_length.");
+      NaluReader reader(nalu_length_size_, data, sample->data_size());
 
-        if (!reader.SkipBytes(nalu_length)) {
-          return Status(error::MUXER_FAILURE,
-                        "Sample size does not match nalu_length.");
-        }
-
+      Nalu nalu;
+      NaluReader::Result result;
+      while ((result = reader.Advance(&nalu)) == NaluReader::kOk) {
         SubsampleEntry subsample;
-        subsample.clear_bytes = nalu_length_size_ + 1;
-        subsample.cipher_bytes = nalu_length - 1;
+        subsample.clear_bytes = nalu.header_size();
+        subsample.cipher_bytes = nalu.data_size();
         sample_encryption_entry.subsamples.push_back(subsample);
 
-        EncryptBytes(data + subsample.clear_bytes, subsample.cipher_bytes);
-        data += nalu_length_size_ + nalu_length;
+        EncryptBytes(const_cast<uint8_t*>(nalu.data() + nalu.header_size()),
+                     subsample.cipher_bytes);
       }
+      if (result != NaluReader::kEOStream)
+        return Status(error::MUXER_FAILURE, "Failed to parse NAL units.");
     }
 
     // The length of per-sample auxiliary datum, defined in CENC ch. 7.
