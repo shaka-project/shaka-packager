@@ -217,6 +217,24 @@ TEST_F(RepresentationTest, AddContentProtectionElements) {
       doc.get()));
 }
 
+TEST_F(RepresentationTest, AddEC3AudioInfo) {
+  MediaInfo::AudioInfo audio_info;
+  audio_info.set_codec("ec-3");
+  audio_info.set_sampling_frequency(44100);
+  audio_info.mutable_codec_specific_data()->set_ec3_channel_map(0xF801);
+  representation_.AddAudioInfo(audio_info);
+  scoped_xml_ptr<xmlDoc> doc(MakeDoc(representation_.PassScopedPtr()));
+
+  ASSERT_TRUE(XmlEqual(
+      "<Representation audioSamplingRate=\"44100\">\n"
+      "  <AudioChannelConfiguration\n"
+      "   schemeIdUri=\n"
+      "    \"tag:dolby.com,2014:dash:audio_channel_configuration:2011\"\n"
+      "   value=\"F801\"/>\n"
+      "</Representation>\n",
+      doc.get()));
+}
+
 // Some template names cannot be used for init segment name.
 TEST_F(RepresentationTest, InvalidLiveInitSegmentName) {
   MediaInfo media_info;

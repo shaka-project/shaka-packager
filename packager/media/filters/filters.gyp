@@ -15,6 +15,8 @@
       'sources': [
         'avc_decoder_configuration.cc',
         'avc_decoder_configuration.h',
+        'ec3_audio_util.cc',
+        'ec3_audio_util.h',
         'hevc_decoder_configuration.cc',
         'hevc_decoder_configuration.h',
         'h264_bit_reader.cc',
@@ -40,6 +42,7 @@
       'type': '<(gtest_target_type)',
       'sources': [
         'avc_decoder_configuration_unittest.cc',
+        'ec3_audio_util_unittest.cc',
         'h264_bit_reader_unittest.cc',
         'h264_byte_to_unit_stream_converter_unittest.cc',
         'h264_parser_unittest.cc',

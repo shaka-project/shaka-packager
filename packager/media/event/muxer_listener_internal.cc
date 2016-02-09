@@ -12,6 +12,7 @@
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/filters/ec3_audio_util.h"
 #include "packager/mpd/base/media_info.pb.h"
 
 namespace edash_packager {
@@ -117,6 +118,16 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
   const std::vector<uint8_t>& extra_data = audio_stream_info->extra_data();
   if (!extra_data.empty()) {
     audio_info->set_decoder_config(&extra_data[0], extra_data.size());
+  }
+
+  if (audio_stream_info->codec_string() == "ec-3") {
+    uint32_t ec3_channel_map;
+    if (!CalculateEC3ChannelMap(extra_data, &ec3_channel_map)) {
+      LOG(ERROR) << "Failed to calculate EC3 channel map.";
+      return;
+    }
+    audio_info->mutable_codec_specific_data()->set_ec3_channel_map(
+        ec3_channel_map);
   }
 }
 

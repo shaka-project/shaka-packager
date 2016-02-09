@@ -1439,7 +1439,7 @@ uint32_t AC3Specific::ComputeSizeInternal() {
   return HeaderSize() + data.size();
 }
 
-EC3Specific::EC3Specific() : number_independent_substreams(0) {}
+EC3Specific::EC3Specific() {}
 EC3Specific::~EC3Specific() {}
 
 FourCC EC3Specific::BoxType() const { return FOURCC_DEC3; }
@@ -1448,35 +1448,6 @@ bool EC3Specific::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
   uint32_t size = buffer->Reading() ? buffer->BytesLeft() : data.size();
   RCHECK(buffer->ReadWriteVector(&data, size));
-
-  // Skip data rate, read number of independent substreams and parse the
-  // independent substreams.
-  BitReader bit_reader(&data[0], size);
-  RCHECK(bit_reader.SkipBits(13) &&
-         bit_reader.ReadBits(3, &number_independent_substreams));
-
-  // The value of this field is one less than the number of independent
-  // substreams present.
-  ++number_independent_substreams;
-  IndependentSubstream substream;
-  for (size_t i = 0; i < number_independent_substreams; ++i) {
-    RCHECK(bit_reader.ReadBits(2, &substream.sample_rate_code));
-    RCHECK(bit_reader.ReadBits(5, &substream.bit_stream_identification));
-    RCHECK(bit_reader.SkipBits(1));
-    RCHECK(bit_reader.ReadBits(1, &substream.audio_service));
-    RCHECK(bit_reader.ReadBits(3, &substream.bit_stream_mode));
-    RCHECK(bit_reader.ReadBits(3, &substream.audio_coding_mode));
-    RCHECK(bit_reader.ReadBits(1, &substream.lfe_channel_on));
-    RCHECK(bit_reader.SkipBits(3));
-    RCHECK(bit_reader.ReadBits(4, &substream.number_dependent_substreams));
-    if (substream.number_dependent_substreams > 0) {
-      RCHECK(bit_reader.ReadBits(9, &substream.channel_location));
-    } else {
-      RCHECK(bit_reader.SkipBits(1));
-    }
-    independent_substreams.push_back(substream);
-  }
-
   return true;
 }
 

@@ -12,6 +12,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/macros.h"
 #include "packager/base/stl_util.h"
+#include "packager/base/sys_byteorder.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/segment_info.h"
@@ -27,6 +28,7 @@ typedef ContentProtectionXml::AttributeNameValuePair AttributeNameValuePair;
 namespace edash_packager {
 
 namespace {
+const char kEC3Codec[] = "ec-3";
 
 std::string RangeToString(const Range& range) {
   return base::Uint64ToString(range.begin()) + "-" +
@@ -343,13 +345,28 @@ bool RepresentationXmlNode::AddLiveOnlyInfo(
 }
 
 bool RepresentationXmlNode::AddAudioChannelInfo(const AudioInfo& audio_info) {
-  const uint32_t num_channels = audio_info.num_channels();
+  std::string audio_channel_config_scheme;
+  std::string audio_channel_config_value;
+
+  if (audio_info.codec() == kEC3Codec) {
+    // Convert EC3 channel map into string of hexadecimal digits. Spec: DASH-IF
+    // Interoperability Points v3.0 9.2.1.2.
+    const uint16_t ec3_channel_map =
+        base::HostToNet16(audio_info.codec_specific_data().ec3_channel_map());
+    audio_channel_config_value =
+        base::HexEncode(&ec3_channel_map, sizeof(ec3_channel_map));
+    audio_channel_config_scheme =
+        "tag:dolby.com,2014:dash:audio_channel_configuration:2011";
+  } else {
+    audio_channel_config_value = base::UintToString(audio_info.num_channels());
+    audio_channel_config_scheme =
+        "urn:mpeg:dash:23003:3:audio_channel_configuration:2011";
+  }
+
   XmlNode audio_channel_config("AudioChannelConfiguration");
-  const char kAudioChannelConfigScheme[] =
-      "urn:mpeg:dash:23003:3:audio_channel_configuration:2011";
   audio_channel_config.SetStringAttribute("schemeIdUri",
-                                          kAudioChannelConfigScheme);
-  audio_channel_config.SetIntegerAttribute("value", num_channels);
+                                          audio_channel_config_scheme);
+  audio_channel_config.SetStringAttribute("value", audio_channel_config_value);
 
   return AddChild(audio_channel_config.PassScopedPtr());
 }
