@@ -9,6 +9,7 @@
 #include <limits>
 
 #include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/box_definitions_comparison.h"
@@ -25,6 +26,9 @@ const uint8_t kData8[] = {1, 8, 42, 98, 156};
 const uint16_t kData16[] = {1, 15, 45, 768, 60000};
 const uint32_t kData32[] = {1, 24, 99, 1234, 9000000};
 const uint64_t kData64[] = {1, 9000000, 12345678901234ULL, 56780909090900ULL};
+const uint8_t kPsshBox[] = {0, 0, 0, 0x22, 'p', 's', 's', 'h', 0,    0,   0, 0,
+                            0, 0, 0, 0,    0,   0,   0,   0,   0,    0,   0, 0,
+                            0, 0, 0, 0,    0,   0,   0,   2,   0xf0, 0x00};
 const TrackType kSampleDescriptionTrackType = kVideo;
 
 // 4-byte FourCC + 4-bytes size.
@@ -143,14 +147,11 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Fill(ProtectionSystemSpecificHeader* pssh) {
-    pssh->system_id.assign(kData16Bytes,
-                           kData16Bytes + arraysize(kData16Bytes));
-    pssh->data.assign(kData8, kData8 + arraysize(kData8));
+    pssh->raw_box.assign(kPsshBox, kPsshBox + arraysize(kPsshBox));
   }
 
   void Modify(ProtectionSystemSpecificHeader* pssh) {
-    pssh->system_id[2] *= 3;
-    pssh->data.assign(kData4, kData4 + arraysize(kData4));
+    pssh->raw_box[32] *= 3;
   }
 
   void Fill(SampleAuxiliaryInformationOffset* saio) {
@@ -918,6 +919,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   bool IsOptional(const AC3Specific* box) { return true; }
   bool IsOptional(const EC3Specific* box) { return true; }
   // Recommended, but optional.
+  bool IsOptional(const ProtectionSystemSpecificHeader* box) { return true; }
   bool IsOptional(const WebVTTSourceLabelBox* box) { return true; }
   bool IsOptional(const CompositionTimeToSample* box) { return true; }
   bool IsOptional(const SyncSample* box) { return true; }
@@ -1134,26 +1136,6 @@ TEST_F(BoxDefinitionsTest, EC3SampleEntry) {
   AudioSampleEntry entry_readback;
   ASSERT_TRUE(ReadBack(&entry_readback));
   ASSERT_EQ(entry, entry_readback);
-}
-
-TEST_F(BoxDefinitionsTest, ProtectionSystemSpecificHeader) {
-  ProtectionSystemSpecificHeader pssh;
-  Fill(&pssh);
-  pssh.Write(this->buffer_.get());
-
-  ProtectionSystemSpecificHeader pssh_readback;
-  ASSERT_TRUE(ReadBack(&pssh_readback));
-  ASSERT_EQ(pssh, pssh_readback);
-
-  pssh_readback.raw_box[15] += 1;
-  pssh_readback.Write(this->buffer_.get());
-
-  ProtectionSystemSpecificHeader pssh_readback2;
-  ASSERT_TRUE(ReadBack(&pssh_readback2));
-
-  // If raw_box is set, raw_box will be written instead.
-  ASSERT_FALSE(pssh_readback == pssh_readback2);
-  ASSERT_EQ(pssh_readback.raw_box, pssh_readback2.raw_box);
 }
 
 TEST_F(BoxDefinitionsTest, CompactSampleSize_FieldSize16) {

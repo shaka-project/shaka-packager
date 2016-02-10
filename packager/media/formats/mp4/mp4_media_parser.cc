@@ -17,6 +17,7 @@
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/macros.h"
 #include "packager/media/base/media_sample.h"
+#include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
@@ -584,8 +585,10 @@ bool MP4MediaParser::FetchKeysIfNecessary(
   base::HexStringToBytes(kWidevineKeySystemId, &widevine_system_id);
   for (std::vector<ProtectionSystemSpecificHeader>::const_iterator iter =
            headers.begin(); iter != headers.end(); ++iter) {
-    if (iter->system_id == widevine_system_id) {
-      Status status = decryption_key_source_->FetchKeys(iter->data);
+    ProtectionSystemSpecificInfo info;
+    RCHECK(info.Parse(iter->raw_box.data(), iter->raw_box.size()));
+    if (info.system_id() == widevine_system_id) {
+      Status status = decryption_key_source_->FetchKeys(info.pssh_data());
       if (!status.ok()) {
         LOG(ERROR) << "Error fetching decryption keys: " << status;
         return false;

@@ -57,8 +57,6 @@ struct SegmentType : FileType {
 struct ProtectionSystemSpecificHeader : FullBox {
   DECLARE_BOX_METHODS(ProtectionSystemSpecificHeader);
 
-  std::vector<uint8_t> system_id;
-  std::vector<uint8_t> data;
   std::vector<uint8_t> raw_box;
 };
 

@@ -29,7 +29,7 @@ inline bool operator==(const FileType& lhs, const FileType& rhs) {
 
 inline bool operator==(const ProtectionSystemSpecificHeader& lhs,
                        const ProtectionSystemSpecificHeader& rhs) {
-  return lhs.system_id == rhs.system_id && lhs.data == rhs.data;
+  return lhs.raw_box == rhs.raw_box;
 }
 
 inline bool operator==(const SampleAuxiliaryInformationOffset& lhs,

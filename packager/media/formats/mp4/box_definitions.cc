@@ -158,35 +158,20 @@ ProtectionSystemSpecificHeader::~ProtectionSystemSpecificHeader() {}
 FourCC ProtectionSystemSpecificHeader::BoxType() const { return FOURCC_PSSH; }
 
 bool ProtectionSystemSpecificHeader::ReadWriteInternal(BoxBuffer* buffer) {
-  if (!buffer->Reading() && !raw_box.empty()) {
-    // Write the raw box directly.
-    buffer->writer()->AppendVector(raw_box);
-    return true;
-  }
-
-  uint32_t size = data.size();
-  RCHECK(ReadWriteHeaderInternal(buffer) &&
-         buffer->ReadWriteVector(&system_id, 16) &&
-         buffer->ReadWriteUInt32(&size) &&
-         buffer->ReadWriteVector(&data, size));
-
   if (buffer->Reading()) {
-    // Copy the entire box, including the header, for passing to EME as
-    // initData.
-    DCHECK(raw_box.empty());
     BoxReader* reader = buffer->reader();
     DCHECK(reader);
     raw_box.assign(reader->data(), reader->data() + reader->size());
+  } else {
+    DCHECK(!raw_box.empty());
+    buffer->writer()->AppendVector(raw_box);
   }
+
   return true;
 }
 
 uint32_t ProtectionSystemSpecificHeader::ComputeSizeInternal() {
-  if (!raw_box.empty()) {
-    return raw_box.size();
-  } else {
-    return HeaderSize() + system_id.size() + sizeof(uint32_t) + data.size();
-  }
+  return raw_box.size();
 }
 
 SampleAuxiliaryInformationOffset::SampleAuxiliaryInformationOffset() {}

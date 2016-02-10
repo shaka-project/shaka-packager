@@ -24,7 +24,6 @@ namespace mp4 {
 class Segmenter;
 
 struct ProtectionSchemeInfo;
-struct ProtectionSystemSpecificHeader;
 struct Track;
 
 /// Implements MP4 Muxer for ISO-BMFF. Please refer to ISO/IEC 14496-12: ISO
