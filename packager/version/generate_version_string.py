@@ -30,10 +30,22 @@ if 'check_output' not in dir(subprocess):
   subprocess.check_output = check_output_implementation
 
 if __name__ == '__main__':
-  version_tag = subprocess.check_output(['git', 'tag', '--points-at', 'HEAD'
-                                        ]).rstrip()
-  version_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD'
-                                         ]).rstrip()
+  try:
+    version_tag = subprocess.check_output(
+        ['git', 'tag', '--points-at', 'HEAD'],
+        stderr=subprocess.STDOUT).rstrip()
+  except subprocess.CalledProcessError as e:
+    # git tag --points-at is not supported in old versions of git. Just ignore
+    # version_tag in this case.
+    version_tag = None
+
+  try:
+    version_hash = subprocess.check_output(
+        ['git', 'rev-parse', '--short', 'HEAD'],
+        stderr=subprocess.STDOUT).rstrip()
+  except subprocess.CalledProcessError as e:
+    version_hash = 'unknown-version'
+
   if version_tag:
     print '{0}-{1}'.format(version_tag, version_hash)
   else:
