@@ -60,6 +60,9 @@ if __name__ == '__main__':
   # Always include common.gypi.
   args.extend(['-I' + os.path.join(src_dir, 'build', 'common.gypi')])
 
+  # Allow overriding settings from Chromium's common.gypi
+  args.extend(['-I' + os.path.join(src_dir, 'common_overrides.gypi')])
+
   # Set these default GYP_DEFINES if user does not set the value explicitly.
   _DEFAULT_DEFINES = {'test_isolation_mode': 'noop',
                       'use_glib': 0,
