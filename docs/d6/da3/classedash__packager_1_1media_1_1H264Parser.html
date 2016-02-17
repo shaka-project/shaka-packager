@@ -89,7 +89,6 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="../../d0/d7d/classedash__packager_1_1media_1_1H264Parser-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">edash_packager::media::H264Parser Class Reference</div>  </div>
@@ -107,46 +106,28 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af016b1958a1d7b8e0c0a54618c3200b2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af016b1958a1d7b8e0c0a54618c3200b2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>Reset</b> ()</td></tr>
-<tr class="separator:af016b1958a1d7b8e0c0a54618c3200b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8686a2331d877533c074329a9d16ba83"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8686a2331d877533c074329a9d16ba83"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>SetStream</b> (const uint8_t *stream, off_t stream_size)</td></tr>
-<tr class="separator:a8686a2331d877533c074329a9d16ba83"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad1aecd05bf4c9f10eaa3ceb47b0eeba7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad1aecd05bf4c9f10eaa3ceb47b0eeba7"></a>
-Result&#160;</td><td class="memItemRight" valign="bottom"><b>AdvanceToNextNALU</b> (<a class="el" href="../../dd/d41/structedash__packager_1_1media_1_1H264NALU.html">H264NALU</a> *nalu)</td></tr>
-<tr class="separator:ad1aecd05bf4c9f10eaa3ceb47b0eeba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2fdfba454084a4e10c3ace397f990b3c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2fdfba454084a4e10c3ace397f990b3c"></a>
-Result&#160;</td><td class="memItemRight" valign="bottom"><b>ParseSPS</b> (int *sps_id)</td></tr>
-<tr class="separator:a2fdfba454084a4e10c3ace397f990b3c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa23e40eb76b34d8be7cba4193c715908"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa23e40eb76b34d8be7cba4193c715908"></a>
-Result&#160;</td><td class="memItemRight" valign="bottom"><b>ParsePPS</b> (int *pps_id)</td></tr>
-<tr class="separator:aa23e40eb76b34d8be7cba4193c715908"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18b49aba559cc5732017ab151c348db4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a18b49aba559cc5732017ab151c348db4"></a>
-Result&#160;</td><td class="memItemRight" valign="bottom"><b>ParseSPSFromArray</b> (const uint8_t *sps_data, size_t sps_data_size, int *sps_id)</td></tr>
-<tr class="separator:a18b49aba559cc5732017ab151c348db4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:add337eb57fe2aa3f648708dc77d0a1f2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="add337eb57fe2aa3f648708dc77d0a1f2"></a>
+Result&#160;</td><td class="memItemRight" valign="bottom"><b>ParseSPS</b> (const <a class="el" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a> &amp;nalu, int *sps_id)</td></tr>
+<tr class="separator:add337eb57fe2aa3f648708dc77d0a1f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afe4cea74be205204a377796b8931c354"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afe4cea74be205204a377796b8931c354"></a>
+Result&#160;</td><td class="memItemRight" valign="bottom"><b>ParsePPS</b> (const <a class="el" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a> &amp;nalu, int *pps_id)</td></tr>
+<tr class="separator:afe4cea74be205204a377796b8931c354"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62e7b8ae2383c6c873c700ba2a369224"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a62e7b8ae2383c6c873c700ba2a369224"></a>
 const <a class="el" href="../../d8/db0/structedash__packager_1_1media_1_1H264SPS.html">H264SPS</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>GetSPS</b> (int sps_id)</td></tr>
 <tr class="separator:a62e7b8ae2383c6c873c700ba2a369224"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af34d4c4e774fc3120b3cba91157fd5fd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af34d4c4e774fc3120b3cba91157fd5fd"></a>
 const <a class="el" href="../../dd/dcf/structedash__packager_1_1media_1_1H264PPS.html">H264PPS</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>GetPPS</b> (int pps_id)</td></tr>
 <tr class="separator:af34d4c4e774fc3120b3cba91157fd5fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a324035e3c7d1337c653dfb20e3e0e95c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a324035e3c7d1337c653dfb20e3e0e95c"></a>
-Result&#160;</td><td class="memItemRight" valign="bottom"><b>ParseSliceHeader</b> (const <a class="el" href="../../dd/d41/structedash__packager_1_1media_1_1H264NALU.html">H264NALU</a> &amp;nalu, <a class="el" href="../../de/d8d/structedash__packager_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a> *shdr)</td></tr>
-<tr class="separator:a324035e3c7d1337c653dfb20e3e0e95c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b160d5b25c3f93ca95a42d8796f607d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7b160d5b25c3f93ca95a42d8796f607d"></a>
-Result&#160;</td><td class="memItemRight" valign="bottom"><b>ParseSEI</b> (<a class="el" href="../../d4/d93/structedash__packager_1_1media_1_1H264SEIMessage.html">H264SEIMessage</a> *sei_msg)</td></tr>
-<tr class="separator:a7b160d5b25c3f93ca95a42d8796f607d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ad30cba1b58ae13211aa926d929902641"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad30cba1b58ae13211aa926d929902641"></a>
-static bool&#160;</td><td class="memItemRight" valign="bottom"><b>FindStartCode</b> (const uint8_t *data, off_t data_size, off_t *offset, off_t *start_code_size)</td></tr>
-<tr class="separator:ad30cba1b58ae13211aa926d929902641"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5bf6dd2d8f0997e528ff8b9c151e03f5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5bf6dd2d8f0997e528ff8b9c151e03f5"></a>
+Result&#160;</td><td class="memItemRight" valign="bottom"><b>ParseSliceHeader</b> (const <a class="el" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a> &amp;nalu, <a class="el" href="../../de/d8d/structedash__packager_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a> *shdr)</td></tr>
+<tr class="separator:a5bf6dd2d8f0997e528ff8b9c151e03f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa5f87f89949f77dcd348898f5dc3a38f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa5f87f89949f77dcd348898f5dc3a38f"></a>
+Result&#160;</td><td class="memItemRight" valign="bottom"><b>ParseSEI</b> (const <a class="el" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a> &amp;nalu, <a class="el" href="../../d4/d93/structedash__packager_1_1media_1_1H264SEIMessage.html">H264SEIMessage</a> *sei_msg)</td></tr>
+<tr class="separator:aa5f87f89949f77dcd348898f5dc3a38f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="../../d6/d9b/h264__parser_8h_source.html#l00270">270</a> of file <a class="el" href="../../d6/d9b/h264__parser_8h_source.html">h264_parser.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d9b/h264__parser_8h_source.html#l00244">244</a> of file <a class="el" href="../../d6/d9b/h264__parser_8h_source.html">h264_parser.h</a>.</p>
 </div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>media/filters/<a class="el" href="../../d6/d9b/h264__parser_8h_source.html">h264_parser.h</a></li>
 <li>media/filters/<a class="el" href="../../dc/d7b/h264__parser_8cc_source.html">h264_parser.cc</a></li>
@@ -154,7 +135,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>FindStartCode<
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Sat Feb 13 2016 00:38:46 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Feb 17 2016 01:09:44 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
