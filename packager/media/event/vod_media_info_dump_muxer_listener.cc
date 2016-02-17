@@ -11,6 +11,7 @@
 #include "packager/base/logging.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/stream_info.h"
+#include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/event/muxer_listener_internal.h"
 #include "packager/media/file/file.h"
 #include "packager/mpd/base/media_info.pb.h"
@@ -24,24 +25,15 @@ VodMediaInfoDumpMuxerListener::VodMediaInfoDumpMuxerListener(
 
 VodMediaInfoDumpMuxerListener::~VodMediaInfoDumpMuxerListener() {}
 
-void VodMediaInfoDumpMuxerListener::SetContentProtectionSchemeIdUri(
-    const std::string& scheme_id_uri) {
-  scheme_id_uri_ = scheme_id_uri;
-}
-
 void VodMediaInfoDumpMuxerListener::OnEncryptionInfoReady(
     bool is_initial_encryption_info,
-    const std::string& content_protection_uuid,
-    const std::string& content_protection_name_version,
     const std::vector<uint8_t>& default_key_id,
-    const std::vector<uint8_t>& pssh) {
+    const std::vector<ProtectionSystemSpecificInfo>& key_system_info) {
   LOG_IF(WARNING, !is_initial_encryption_info)
       << "Updating (non initial) encryption info is not supported by "
          "this module.";
-  content_protection_uuid_ = content_protection_uuid;
-  content_protection_name_version_ = content_protection_name_version;
   default_key_id_.assign(default_key_id.begin(), default_key_id.end());
-  pssh_.assign(pssh.begin(), pssh.end());
+  key_system_info_ = key_system_info;
   is_encrypted_ = true;
 }
 
@@ -63,8 +55,7 @@ void VodMediaInfoDumpMuxerListener::OnMediaStart(
 
   if (is_encrypted_) {
     internal::SetContentProtectionFields(
-        content_protection_uuid_, content_protection_name_version_,
-        default_key_id_, pssh_, media_info_.get());
+        default_key_id_, key_system_info_, media_info_.get());
   }
 }
 

@@ -165,11 +165,11 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
           kKeyRotationDefaultKeyId + arraysize(kKeyRotationDefaultKeyId));
       GenerateEncryptedSampleEntry(encryption_key, clear_lead_in_seconds,
                                    &description);
+
       if (muxer_listener_) {
         muxer_listener_->OnEncryptionInfoReady(
-            kInitialEncryptionInfo, encryption_key_source->UUID(),
-            encryption_key_source->SystemName(), encryption_key.key_id,
-            std::vector<uint8_t>());
+            kInitialEncryptionInfo, encryption_key.key_id,
+            encryption_key.key_system_info);
       }
 
       fragmenters_[i] = new KeyRotationFragmenter(
@@ -190,17 +190,16 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
     GenerateEncryptedSampleEntry(*encryption_key, clear_lead_in_seconds,
                                  &description);
 
-    // One and only one pssh box is needed.
     if (moov_->pssh.empty()) {
-      moov_->pssh.resize(1);
-      moov_->pssh[0].raw_box = encryption_key->pssh;
+      moov_->pssh.resize(encryption_key->key_system_info.size());
+      for (size_t i = 0; i < encryption_key->key_system_info.size(); i++) {
+        moov_->pssh[i].raw_box = encryption_key->key_system_info[i].CreateBox();
+      }
 
-      // Also only one default key id.
       if (muxer_listener_) {
-        muxer_listener_->OnEncryptionInfoReady(
-            kInitialEncryptionInfo,
-            encryption_key_source->UUID(), encryption_key_source->SystemName(),
-            encryption_key->key_id, encryption_key->pssh);
+        muxer_listener_->OnEncryptionInfoReady(kInitialEncryptionInfo,
+                                               encryption_key->key_id,
+                                               encryption_key->key_system_info);
       }
     }
 

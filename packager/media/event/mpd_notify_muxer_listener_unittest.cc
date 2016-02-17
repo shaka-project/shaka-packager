@@ -29,10 +29,7 @@ namespace {
 
 // Can be any string, we just want to check that it is preserved in the
 // protobuf.
-const char kTestUUID[] = "somebogusuuid";
-const char kDrmName[] = "drmname";
 const char kDefaultKeyId[] = "defaultkeyid";
-const char kPssh[] = "pssh";
 const bool kInitialEncryptionInfo = true;
 const bool kNonInitialEncryptionInfo = false;
 
@@ -152,22 +149,20 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
 
   const std::vector<uint8_t> default_key_id(
       kDefaultKeyId, kDefaultKeyId + arraysize(kDefaultKeyId) - 1);
-  const std::vector<uint8_t> pssh(kPssh, kPssh + arraysize(kPssh) - 1);
 
   const std::string kExpectedMediaInfo =
       std::string(kExpectedDefaultMediaInfo) +
       "protected_content {\n"
       "  content_protection_entry {\n"
-      "    uuid: 'somebogusuuid'\n"
-      "    name_version: 'drmname'\n"
-      "    pssh: 'pssh'\n"
+      "    uuid: 'edef8ba9-79d6-4ace-a3c8-27dcd51d21ed'\n"
+      "    pssh: '" + std::string(kExpectedDefaultPsshBox) + "'\n"
       "  }\n"
       "  default_key_id: 'defaultkeyid'\n"
       "}\n";
 
   EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
-  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, kTestUUID, kDrmName,
-                                   default_key_id, pssh);
+  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo,
+                                   default_key_id, GetDefaultKeySystemInfo());
 
   listener_->OnMediaStart(muxer_options, *video_stream_info,
                           kDefaultReferenceTimeScale,
@@ -275,7 +270,7 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
   scoped_refptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
 
-  const char kExpectedMediaInfo[] =
+  const std::string kExpectedMediaInfo =
       "video_info {\n"
       "  codec: \"avc1.010101\"\n"
       "  width: 720\n"
@@ -291,9 +286,8 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
       "protected_content {\n"
       "  default_key_id: \"defaultkeyid\"\n"
       "  content_protection_entry {\n"
-      "    uuid: \"somebogusuuid\"\n"
-      "    name_version: \"drmname\"\n"
-      "    pssh: \"pssh\"\n"
+      "    uuid: 'edef8ba9-79d6-4ace-a3c8-27dcd51d21ed'\n"
+      "    pssh: \"" + std::string(kExpectedDefaultPsshBox) + "\"\n"
       "  }\n"
       "}\n";
 
@@ -305,7 +299,6 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
   const uint64_t kSegmentFileSize2 = 83743u;
   const std::vector<uint8_t> default_key_id(
       kDefaultKeyId, kDefaultKeyId + arraysize(kDefaultKeyId) - 1);
-  const std::vector<uint8_t> pssh(kPssh, kPssh + arraysize(kPssh) - 1);
 
   InSequence s;
   EXPECT_CALL(*notifier_, NotifyEncryptionUpdate(_, _, _, _)).Times(0);
@@ -319,8 +312,8 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
               NotifyNewSegment(_, kStartTime2, kDuration2, kSegmentFileSize2));
   EXPECT_CALL(*notifier_, Flush());
 
-  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, kTestUUID, kDrmName,
-                                   default_key_id, pssh);
+  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo,
+                                   default_key_id, GetDefaultKeySystemInfo());
   listener_->OnMediaStart(muxer_options, *video_stream_info,
                           kDefaultReferenceTimeScale,
                           MuxerListener::kContainerMp4);
@@ -368,7 +361,6 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
   const uint64_t kSegmentFileSize2 = 83743u;
   const std::vector<uint8_t> default_key_id(
       kDefaultKeyId, kDefaultKeyId + arraysize(kDefaultKeyId) - 1);
-  const std::vector<uint8_t> pssh(kPssh, kPssh + arraysize(kPssh) - 1);
 
   InSequence s;
   EXPECT_CALL(*notifier_,
@@ -382,13 +374,14 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
               NotifyNewSegment(_, kStartTime2, kDuration2, kSegmentFileSize2));
   EXPECT_CALL(*notifier_, Flush());
 
-  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, "", "",
-                                   default_key_id, std::vector<uint8_t>());
+  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, default_key_id,
+                                   std::vector<ProtectionSystemSpecificInfo>());
   listener_->OnMediaStart(muxer_options, *video_stream_info,
                           kDefaultReferenceTimeScale,
                           MuxerListener::kContainerMp4);
-  listener_->OnEncryptionInfoReady(kNonInitialEncryptionInfo, kTestUUID,
-                                   kDrmName, std::vector<uint8_t>(), pssh);
+  listener_->OnEncryptionInfoReady(kNonInitialEncryptionInfo,
+                                   std::vector<uint8_t>(),
+                                   GetDefaultKeySystemInfo());
   listener_->OnNewSegment(kStartTime1, kDuration1, kSegmentFileSize1);
   listener_->OnNewSegment(kStartTime2, kDuration2, kSegmentFileSize2);
   ::testing::Mock::VerifyAndClearExpectations(notifier_.get());

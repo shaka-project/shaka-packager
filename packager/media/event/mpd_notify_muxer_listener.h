@@ -31,17 +31,12 @@ class MpdNotifyMuxerListener : public MuxerListener {
   explicit MpdNotifyMuxerListener(MpdNotifier* mpd_notifier);
   ~MpdNotifyMuxerListener() override;
 
-  /// If the stream is encrypted use this as 'schemeIdUri' attribute for
-  /// ContentProtection element.
-  void SetContentProtectionSchemeIdUri(const std::string& scheme_id_uri);
-
   /// @name MuxerListener implementation overrides.
   /// @{
   void OnEncryptionInfoReady(bool is_initial_encryption_info,
-                             const std::string& content_protection_uuid,
-                             const std::string& content_protection_name_version,
                              const std::vector<uint8_t>& key_id,
-                             const std::vector<uint8_t>& pssh) override;
+                             const std::vector<ProtectionSystemSpecificInfo>&
+                                 key_system_info) override;
   void OnMediaStart(const MuxerOptions& muxer_options,
                     const StreamInfo& stream_info,
                     uint32_t time_scale,
@@ -71,14 +66,11 @@ class MpdNotifyMuxerListener : public MuxerListener {
   MpdNotifier* const mpd_notifier_;
   uint32_t notification_id_;
   scoped_ptr<MediaInfo> media_info_;
-  std::string scheme_id_uri_;
 
   bool is_encrypted_;
   // Storage for values passed to OnEncryptionInfoReady().
-  std::string content_protection_uuid_;
-  std::string content_protection_name_version_;
   std::string default_key_id_;
-  std::string pssh_;
+  std::vector<ProtectionSystemSpecificInfo> key_system_info_;
 
   // Saves all the subsegment information for VOD. This should be used to call
   // MpdNotifier::NotifyNewSegment() after NotifyNewSegment() is called

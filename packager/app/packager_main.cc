@@ -307,15 +307,11 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       scoped_ptr<VodMediaInfoDumpMuxerListener>
           vod_media_info_dump_muxer_listener(
               new VodMediaInfoDumpMuxerListener(output_media_info_file_name));
-      vod_media_info_dump_muxer_listener->SetContentProtectionSchemeIdUri(
-          FLAGS_scheme_id_uri);
       muxer_listener = vod_media_info_dump_muxer_listener.Pass();
     }
     if (mpd_notifier) {
       scoped_ptr<MpdNotifyMuxerListener> mpd_notify_muxer_listener(
           new MpdNotifyMuxerListener(mpd_notifier));
-      mpd_notify_muxer_listener->SetContentProtectionSchemeIdUri(
-          FLAGS_scheme_id_uri);
       muxer_listener = mpd_notify_muxer_listener.Pass();
     }
 

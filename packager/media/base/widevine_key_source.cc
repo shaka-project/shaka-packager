@@ -279,10 +279,6 @@ Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
   return GetKeyInternal(crypto_period_index, track_type, key);
 }
 
-std::string WidevineKeySource::UUID() {
-  return "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed";
-}
-
 void WidevineKeySource::set_signer(scoped_ptr<RequestSigner> signer) {
   signer_ = signer.Pass();
 }
@@ -557,14 +553,23 @@ bool WidevineKeySource::ExtractEncryptionKey(
       if (!GetKeyIdFromTrack(*track_dict, &encryption_key->key_id))
         return false;
 
+      ProtectionSystemSpecificInfo info;
+      info.add_key_id(encryption_key->key_id);
+      info.set_system_id(kWidevineSystemId, arraysize(kWidevineSystemId));
+      info.set_pssh_box_version(0);
+
       std::vector<uint8_t> pssh_data;
       if (!GetPsshDataFromTrack(*track_dict, &pssh_data))
         return false;
-      encryption_key->pssh = PsshBoxFromPsshData(pssh_data);
+      info.set_pssh_data(pssh_data);
+
+      encryption_key->key_system_info.push_back(info);
     }
     encryption_key_map[track_type] = encryption_key.release();
   }
 
+  // NOTE: To support version 1 pssh, update ProtectionSystemSpecificInfo to
+  // include all key IDs in |encryption_key_map|.
   DCHECK(!encryption_key_map.empty());
   if (!enable_key_rotation) {
     encryption_key_map_ = encryption_key_map;

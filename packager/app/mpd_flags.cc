@@ -17,14 +17,6 @@ DEFINE_bool(output_media_info,
             "'.media_info'. Exclusive with --mpd_output.");
 DEFINE_string(mpd_output, "",
               "MPD output file name. Exclusive with --output_media_info.");
-DEFINE_string(scheme_id_uri,
-              "urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed",
-              "This flag only applies if output_media_info is true. This value "
-              "will be set in MediaInfo if the stream is encrypted. "
-              "If the stream is encrypted, MPD requires a <ContentProtection> "
-              "element which requires the schemeIdUri attribute. "
-              "Default value is Widevine PSSH system ID, and it is valid only "
-              "for ISO BMFF.");
 DEFINE_string(base_urls,
               "",
               "Comma separated BaseURLs for the MPD. The values will be added "

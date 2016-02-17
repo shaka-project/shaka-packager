@@ -119,9 +119,9 @@ Status Encryptor::CreateEncryptor(MuxerListener* muxer_listener,
 
   if (muxer_listener) {
     const bool kInitialEncryptionInfo = true;
-    muxer_listener->OnEncryptionInfoReady(
-        kInitialEncryptionInfo, key_source->UUID(), key_source->SystemName(),
-        encryption_key->key_id, encryption_key->pssh);
+    muxer_listener->OnEncryptionInfoReady(kInitialEncryptionInfo,
+                                          encryption_key->key_id,
+                                          encryption_key->key_system_info);
   }
 
   key_ = encryption_key.Pass();

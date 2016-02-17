@@ -10,12 +10,6 @@
 #include "packager/media/base/aes_encryptor.h"
 #include "packager/media/base/buffer_writer.h"
 
-namespace {
-// TODO(kqyang): Consider making it configurable.
-const char kDefaultUUID[] = "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed";
-const char kDefaultSystemName[] = "";
-}  // namespace
-
 namespace edash_packager {
 namespace media {
 
@@ -81,22 +75,26 @@ Status KeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
   std::rotate(key->key.begin(),
               key->key.begin() + (crypto_period_index % key->key.size()),
               key->key.end());
-  const size_t kPsshHeaderSize = 32u;
-  std::vector<uint8_t> pssh_data(key->pssh.begin() + kPsshHeaderSize,
-                                 key->pssh.end());
+
+  std::vector<uint8_t> pssh_data(
+      key->key_system_info[0].pssh_data().begin(),
+      key->key_system_info[0].pssh_data().end());
   std::rotate(pssh_data.begin(),
               pssh_data.begin() + (crypto_period_index % pssh_data.size()),
               pssh_data.end());
-  key->pssh = PsshBoxFromPsshData(pssh_data);
+
+  // Since this should only be used for testing, use the Widevine system id.
+  // TODO(modmaker): Change to FixedKeySource
+  ProtectionSystemSpecificInfo info;
+  info.add_key_id(key->key_id);
+  info.set_system_id(kWidevineSystemId, arraysize(kWidevineSystemId));
+  info.set_pssh_box_version(0);
+  info.set_pssh_data(pssh_data);
+
+  key->key_system_info.clear();
+  key->key_system_info.push_back(info);
+
   return Status::OK;
-}
-
-std::string KeySource::UUID() {
-  return kDefaultUUID;
-}
-
-std::string KeySource::SystemName() {
-  return kDefaultSystemName;
 }
 
 scoped_ptr<KeySource> KeySource::CreateFromHexStrings(
@@ -130,9 +128,15 @@ scoped_ptr<KeySource> KeySource::CreateFromHexStrings(
     }
   }
 
-  encryption_key->pssh = PsshBoxFromPsshData(pssh_data);
-  return scoped_ptr<KeySource>(
-      new KeySource(encryption_key.Pass()));
+  // TODO(modmaker): Change to FixedKeySource
+  ProtectionSystemSpecificInfo info;
+  info.add_key_id(encryption_key->key_id);
+  info.set_system_id(kWidevineSystemId, arraysize(kWidevineSystemId));
+  info.set_pssh_box_version(0);
+  info.set_pssh_data(pssh_data);
+
+  encryption_key->key_system_info.push_back(info);
+  return scoped_ptr<KeySource>(new KeySource(encryption_key.Pass()));
 }
 
 KeySource::TrackType KeySource::GetTrackTypeFromString(
@@ -161,26 +165,6 @@ std::string KeySource::TrackTypeToString(TrackType track_type) {
       NOTIMPLEMENTED() << "Unknown track type: " << track_type;
       return "UNKNOWN";
   }
-}
-
-std::vector<uint8_t> KeySource::PsshBoxFromPsshData(
-    const std::vector<uint8_t>& pssh_data) {
-  const uint8_t kPsshFourCC[] = {'p', 's', 's', 'h'};
-  const uint32_t kVersionAndFlags = 0;
-
-  const uint32_t pssh_data_size = pssh_data.size();
-  const uint32_t total_size =
-      sizeof(total_size) + sizeof(kPsshFourCC) + sizeof(kVersionAndFlags) +
-      sizeof(kWidevineSystemId) + sizeof(pssh_data_size) + pssh_data_size;
-
-  BufferWriter writer;
-  writer.AppendInt(total_size);
-  writer.AppendArray(kPsshFourCC, sizeof(kPsshFourCC));
-  writer.AppendInt(kVersionAndFlags);
-  writer.AppendArray(kWidevineSystemId, sizeof(kWidevineSystemId));
-  writer.AppendInt(pssh_data_size);
-  writer.AppendVector(pssh_data);
-  return std::vector<uint8_t>(writer.Buffer(), writer.Buffer() + writer.Size());
 }
 
 KeySource::KeySource() {}

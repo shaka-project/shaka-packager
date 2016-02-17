@@ -81,7 +81,10 @@ std::string ToString(const std::vector<uint8_t> v) {
 }
 
 std::string GetMockKeyId(const std::string& track_type) {
-  return "MockKeyId" + track_type;
+  // Key ID must be 16 characters.
+  std::string key_id = "MockKeyId" + track_type;
+  key_id.resize(16, '~');
+  return key_id;
 }
 
 std::string GetMockKey(const std::string& track_type) {
@@ -120,12 +123,6 @@ std::string GenerateMockClassicLicenseResponse() {
         Base64Encode(GetMockKey(kTrackTypes[i])).c_str());
   }
   return base::StringPrintf(kLicenseResponseFormat, "OK", tracks.c_str());
-}
-
-std::string GetPsshDataFromPsshBox(const std::string& pssh_box) {
-  const size_t kPsshDataOffset = 32u;
-  DCHECK_LT(kPsshDataOffset, pssh_box.size());
-  return pssh_box.substr(kPsshDataOffset);
 }
 
 }  // namespace
@@ -186,10 +183,11 @@ class WidevineKeySourceTest : public ::testing::Test {
           &encryption_key));
       EXPECT_EQ(GetMockKey(kTrackTypes[i]), ToString(encryption_key.key));
       if (!classic) {
+        ASSERT_EQ(1u, encryption_key.key_system_info.size());
         EXPECT_EQ(GetMockKeyId(kTrackTypes[i]),
                   ToString(encryption_key.key_id));
         EXPECT_EQ(GetMockPsshData(kTrackTypes[i]),
-                  GetPsshDataFromPsshBox(ToString(encryption_key.pssh)));
+                  ToString(encryption_key.key_system_info[0].pssh_data()));
       }
     }
   }
@@ -395,7 +393,7 @@ const char kCryptoPeriodRequestMessageFormat[] =
     "\"tracks\":[{\"type\":\"SD\"},{\"type\":\"HD\"},{\"type\":\"AUDIO\"}]}";
 
 const char kCryptoPeriodTrackFormat[] =
-    "{\"type\":\"%s\",\"key_id\":\"\",\"key\":"
+    "{\"type\":\"%s\",\"key_id\":\"%s\",\"key\":"
     "\"%s\",\"pssh\":[{\"drm_type\":\"WIDEVINE\",\"data\":\"\"}], "
     "\"crypto_period_index\":%u}";
 
@@ -417,6 +415,7 @@ std::string GenerateMockKeyRotationLicenseResponse(
       tracks += base::StringPrintf(
           kCryptoPeriodTrackFormat,
           kTrackTypes[i].c_str(),
+          Base64Encode(GetMockKeyId(kTrackTypes[i])).c_str(),
           Base64Encode(GetMockKey(kTrackTypes[i], index)).c_str(),
           index);
     }

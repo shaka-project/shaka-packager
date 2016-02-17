@@ -268,7 +268,7 @@ TEST_P(SimpleMpdNotifierTest, UpdateEncryption) {
       "  content_protection_entry {\n"
       "    uuid: 'myuuid'\n"
       "    name_version: 'MyContentProtection version 1'\n"
-      "    pssh: 'pssh1'\n"
+      "    pssh: 'psshsomethingelse'\n"
       "  }\n"
       "  default_key_id: '_default_key_id_'\n"
       "}\n"

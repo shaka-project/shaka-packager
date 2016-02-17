@@ -9,8 +9,11 @@
 #include <math.h>
 
 #include "packager/base/logging.h"
+#include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/strings/string_util.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/muxer_options.h"
+#include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/filters/ec3_audio_util.h"
 #include "packager/mpd/base/media_info.pb.h"
@@ -213,10 +216,8 @@ bool SetVodInformation(bool has_init_range,
 }
 
 void SetContentProtectionFields(
-    const std::string& content_protection_uuid,
-    const std::string& content_protection_name_version,
     const std::string& default_key_id,
-    const std::string& pssh,
+    const std::vector<ProtectionSystemSpecificInfo>& key_system_info,
     MediaInfo* media_info) {
   DCHECK(media_info);
   MediaInfo::ProtectedContent* protected_content =
@@ -225,21 +226,26 @@ void SetContentProtectionFields(
   if (!default_key_id.empty())
     protected_content->set_default_key_id(default_key_id);
 
-  if (content_protection_uuid.empty() &&
-      content_protection_name_version.empty() && pssh.empty()) {
-    return;
+  for (const ProtectionSystemSpecificInfo& info : key_system_info) {
+    MediaInfo::ProtectedContent::ContentProtectionEntry* entry =
+        protected_content->add_content_protection_entry();
+    if (!info.system_id().empty())
+      entry->set_uuid(CreateUUIDString(info.system_id()));
+
+    const std::vector<uint8_t> pssh = info.CreateBox();
+    entry->set_pssh(pssh.data(), pssh.size());
   }
+}
 
-  MediaInfo::ProtectedContent::ContentProtectionEntry* entry =
-      protected_content->add_content_protection_entry();
-  if (!content_protection_uuid.empty())
-    entry->set_uuid(content_protection_uuid);
-
-  if (!content_protection_name_version.empty())
-    entry->set_name_version(content_protection_name_version);
-
-  if (!pssh.empty())
-    entry->set_pssh(pssh);
+std::string CreateUUIDString(const std::vector<uint8_t>& data) {
+  DCHECK_EQ(16u, data.size());
+  std::string uuid = base::HexEncode(data.data(), data.size());
+  base::StringToLowerASCII(&uuid);
+  uuid.insert(20, "-");
+  uuid.insert(16, "-");
+  uuid.insert(12, "-");
+  uuid.insert(8, "-");
+  return uuid;
 }
 
 }  // namespace internal

@@ -94,6 +94,20 @@ void SetDefaultMuxerOptionsValues(MuxerOptions* muxer_options) {
   muxer_options->temp_dir.clear();
 }
 
+std::vector<ProtectionSystemSpecificInfo> GetDefaultKeySystemInfo() {
+  const uint8_t kPsshData[] = {'p', 's', 's', 'h'};
+
+  ProtectionSystemSpecificInfo info;
+  info.set_system_id(kWidevineSystemId, arraysize(kWidevineSystemId));
+  info.set_pssh_data(
+      std::vector<uint8_t>(kPsshData, kPsshData + arraysize(kPsshData)));
+  info.set_pssh_box_version(0);
+
+  std::vector<ProtectionSystemSpecificInfo> key_system_info;
+  key_system_info.push_back(info);
+  return key_system_info;
+}
+
 void ExpectMediaInfoEqual(const MediaInfo& expect, const MediaInfo& actual) {
   ASSERT_TRUE(MediaInfoEqual(expect, actual));
 }

@@ -11,6 +11,7 @@
 #include "packager/base/logging.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/event/muxer_listener_internal.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_notifier.h"
@@ -27,31 +28,26 @@ MpdNotifyMuxerListener::MpdNotifyMuxerListener(MpdNotifier* mpd_notifier)
 
 MpdNotifyMuxerListener::~MpdNotifyMuxerListener() {}
 
-void MpdNotifyMuxerListener::SetContentProtectionSchemeIdUri(
-    const std::string& scheme_id_uri) {
-  scheme_id_uri_ = scheme_id_uri;
-}
-
 void MpdNotifyMuxerListener::OnEncryptionInfoReady(
     bool is_initial_encryption_info,
-    const std::string& content_protection_uuid,
-    const std::string& content_protection_name_version,
     const std::vector<uint8_t>& key_id,
-    const std::vector<uint8_t>& pssh) {
+    const std::vector<ProtectionSystemSpecificInfo>& key_system_info) {
   if (is_initial_encryption_info) {
     LOG_IF(WARNING, is_encrypted_)
         << "Updating initial encryption information.";
-    content_protection_uuid_ = content_protection_uuid;
-    content_protection_name_version_ = content_protection_name_version;
     default_key_id_.assign(key_id.begin(), key_id.end());
-    pssh_.assign(pssh.begin(), pssh.end());
+    key_system_info_ = key_system_info;
     is_encrypted_ = true;
     return;
   }
 
-  bool updated = mpd_notifier_->NotifyEncryptionUpdate(
-      notification_id_, content_protection_uuid, key_id, pssh);
-  LOG_IF(WARNING, !updated) << "Failed to update encryption info.";
+  for (const ProtectionSystemSpecificInfo& info : key_system_info) {
+    std::string drm_uuid = internal::CreateUUIDString(info.system_id());
+    std::vector<uint8_t> new_pssh = info.CreateBox();
+    bool updated = mpd_notifier_->NotifyEncryptionUpdate(
+        notification_id_, drm_uuid, key_id, new_pssh);
+    LOG_IF(WARNING, !updated) << "Failed to update encryption info.";
+  }
 }
 
 void MpdNotifyMuxerListener::OnMediaStart(
@@ -70,9 +66,8 @@ void MpdNotifyMuxerListener::OnMediaStart(
   }
 
   if (is_encrypted_) {
-    internal::SetContentProtectionFields(
-        content_protection_uuid_, content_protection_name_version_,
-        default_key_id_, pssh_, media_info.get());
+    internal::SetContentProtectionFields(default_key_id_, key_system_info_,
+                                         media_info.get());
   }
 
   if (mpd_notifier_->dash_profile() == kLiveProfile) {

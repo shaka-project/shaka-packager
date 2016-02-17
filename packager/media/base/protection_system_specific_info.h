@@ -36,18 +36,18 @@ class ProtectionSystemSpecificInfo {
   /// Creates a PSSH box for the current data.
   std::vector<uint8_t> CreateBox() const;
 
-  uint8_t version() const { return version_; }
+  uint8_t pssh_box_version() const { return version_; }
   const std::vector<uint8_t>& system_id() const { return system_id_; }
   const std::vector<std::vector<uint8_t>>& key_ids() const { return key_ids_; }
   const std::vector<uint8_t>& pssh_data() const { return pssh_data_; }
 
-  void set_version(uint8_t version) {
+  void set_pssh_box_version(uint8_t version) {
     DCHECK_LT(version, 2);
     version_ = version;
   }
-  void set_system_id(const std::vector<uint8_t>& system_id) {
-    DCHECK_EQ(16u, system_id.size());
-    system_id_ = system_id;
+  void set_system_id(const uint8_t* system_id, size_t system_id_size) {
+    DCHECK_EQ(16u, system_id_size);
+    system_id_.assign(system_id, system_id + system_id_size);
   }
   void add_key_id(const std::vector<uint8_t>& key_id) {
     DCHECK_EQ(16u, key_id.size());

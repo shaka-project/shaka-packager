@@ -72,7 +72,7 @@ TEST_F(PsshTest, ParseBoxes_SupportsV0) {
   ASSERT_EQ(0u, info[0].key_ids().size());
   EXPECT_EQ(test_system_id_, info[0].system_id());
   EXPECT_EQ(test_pssh_data_, info[0].pssh_data());
-  EXPECT_EQ(0, info[0].version());
+  EXPECT_EQ(0, info[0].pssh_box_version());
 }
 
 TEST_F(PsshTest, ParseBoxes_SupportsV1) {
@@ -85,7 +85,7 @@ TEST_F(PsshTest, ParseBoxes_SupportsV1) {
   EXPECT_EQ(test_system_id_, info[0].system_id());
   EXPECT_EQ(test_key_id_, info[0].key_ids()[0]);
   EXPECT_EQ(test_pssh_data_, info[0].pssh_data());
-  EXPECT_EQ(1, info[0].version());
+  EXPECT_EQ(1, info[0].pssh_box_version());
 }
 
 TEST_F(PsshTest, ParseBoxes_SupportsConcatenatedBoxes) {
@@ -103,25 +103,25 @@ TEST_F(PsshTest, ParseBoxes_SupportsConcatenatedBoxes) {
   EXPECT_EQ(test_system_id_, info[0].system_id());
   EXPECT_EQ(test_key_id_, info[0].key_ids()[0]);
   EXPECT_EQ(test_pssh_data_, info[0].pssh_data());
-  EXPECT_EQ(1, info[0].version());
+  EXPECT_EQ(1, info[0].pssh_box_version());
 
   ASSERT_EQ(0u, info[1].key_ids().size());
   EXPECT_EQ(test_system_id_, info[1].system_id());
   EXPECT_EQ(test_pssh_data_, info[1].pssh_data());
-  EXPECT_EQ(0, info[1].version());
+  EXPECT_EQ(0, info[1].pssh_box_version());
 
   ASSERT_EQ(1u, info[2].key_ids().size());
   EXPECT_EQ(test_system_id_, info[2].system_id());
   EXPECT_EQ(test_key_id_, info[2].key_ids()[0]);
   EXPECT_EQ(test_pssh_data_, info[2].pssh_data());
-  EXPECT_EQ(1, info[2].version());
+  EXPECT_EQ(1, info[2].pssh_box_version());
 }
 
 TEST_F(PsshTest, CreateBox_MakesV0Boxes) {
   ProtectionSystemSpecificInfo info;
-  info.set_system_id(test_system_id_);
+  info.set_system_id(kTestSystemIdArray, arraysize(kTestSystemIdArray));
   info.set_pssh_data(test_pssh_data_);
-  info.set_version(0);
+  info.set_pssh_box_version(0);
 
   EXPECT_EQ(v0_box_, info.CreateBox());
 }
@@ -129,9 +129,9 @@ TEST_F(PsshTest, CreateBox_MakesV0Boxes) {
 TEST_F(PsshTest, CreateBox_MakesV1Boxes) {
   ProtectionSystemSpecificInfo info;
   info.add_key_id(test_key_id_);
-  info.set_system_id(test_system_id_);
+  info.set_system_id(kTestSystemIdArray, arraysize(kTestSystemIdArray));
   info.set_pssh_data(test_pssh_data_);
-  info.set_version(1);
+  info.set_pssh_box_version(1);
 
   EXPECT_EQ(v1_box_, info.CreateBox());
 }

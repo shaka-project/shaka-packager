@@ -7,9 +7,11 @@
 #ifndef MEDIA_BASE_KEY_SOURCE_H_
 #define MEDIA_BASE_KEY_SOURCE_H_
 
+#include <string>
 #include <vector>
 
 #include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/status.h"
 
 namespace edash_packager {
@@ -23,9 +25,9 @@ struct EncryptionKey {
   EncryptionKey();
   ~EncryptionKey();
 
+  std::vector<ProtectionSystemSpecificInfo> key_system_info;
   std::vector<uint8_t> key_id;
   std::vector<uint8_t> key;
-  std::vector<uint8_t> pssh;
   std::vector<uint8_t> iv;
 };
 
@@ -91,19 +93,6 @@ class KeySource {
                                     TrackType track_type,
                                     EncryptionKey* key);
 
-  /// Returns the UUID of the key source in human readable form.
-  /// UUIDs are listed here:
-  /// http://dashif.org/identifiers/protection/
-  /// @return UUID of the key source, empty string if not specified.
-  virtual std::string UUID();
-
-  /// Returns the name, and possibly with a version number, of the key source.
-  /// (This would be the ContentProtection@value attribute in the MPD. DASH-IF-
-  /// IOP v3.0 recommends this to be the DRM system and version name in human
-  /// readable from.)
-  /// @return the name of the key source, empty string if not specified.
-  virtual std::string SystemName();
-
   /// Create KeySource object from hex strings.
   /// @param key_id_hex is the key id in hex string.
   /// @param key_hex is the key in hex string.
@@ -126,11 +115,6 @@ class KeySource {
 
  protected:
   KeySource();
-
-  /// @return the raw bytes of the pssh box with system ID and box header
-  ///         included.
-  static std::vector<uint8_t> PsshBoxFromPsshData(
-      const std::vector<uint8_t>& pssh_data);
 
  private:
   explicit KeySource(scoped_ptr<EncryptionKey> encryption_key);

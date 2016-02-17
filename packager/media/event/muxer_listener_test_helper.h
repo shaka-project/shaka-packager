@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "packager/base/memory/ref_counted.h"
+#include "packager/media/base/key_source.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/video_stream_info.h"
@@ -20,6 +21,12 @@ namespace edash_packager {
 
 namespace media {
 
+// A string containing the escaped PSSH box (for use with a MediaInfo proto).
+// This is a full v0 PSSH box with the Widevine system ID and the PSSH data
+// 'pssh'
+const char kExpectedDefaultPsshBox[] =
+    "\\000\\000\\000$pssh\\000\\000\\000\\000\\355\\357\\213\\251y\\326J\\316"
+    "\\243\\310\\'\\334\\325\\035!\\355\\000\\000\\000\\4pssh";
 const char kExpectedDefaultMediaInfo[] =
     "bandwidth: 7620\n"
     "video_info {\n"
@@ -86,6 +93,9 @@ VideoStreamInfoParameters GetDefaultVideoStreamInfoParams();
 
 // Returns the "default" values for OnMediaEnd().
 OnMediaEndParameters GetDefaultOnMediaEndParams();
+
+// Returns the "default" ProtectionSystemSpecificInfo for testing.
+std::vector<ProtectionSystemSpecificInfo> GetDefaultKeySystemInfo();
 
 // Sets "default" values for muxer_options for testing.
 void SetDefaultMuxerOptionsValues(MuxerOptions* muxer_options);

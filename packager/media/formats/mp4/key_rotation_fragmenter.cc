@@ -14,7 +14,7 @@ namespace media {
 namespace mp4 {
 
 namespace {
-const bool kInitialEncryptionInfo = false;
+const bool kInitialEncryptionInfo = true;
 }  // namespace
 
 KeyRotationFragmenter::KeyRotationFragmenter(MovieFragment* moof,
@@ -58,17 +58,18 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption(
     need_to_refresh_encryptor = true;
   }
 
-  // One and only one 'pssh' box is needed.
-  if (moof_->pssh.empty())
-    moof_->pssh.resize(1);
   DCHECK(encryption_key());
-  moof_->pssh[0].raw_box = encryption_key()->pssh;
+  const std::vector<ProtectionSystemSpecificInfo>& system_info =
+      encryption_key()->key_system_info;
+  moof_->pssh.resize(system_info.size());
+  for (size_t i = 0; i < system_info.size(); i++) {
+    moof_->pssh[i].raw_box = system_info[i].CreateBox();
+  }
 
   if (muxer_listener_) {
-    muxer_listener_->OnEncryptionInfoReady(
-        !kInitialEncryptionInfo,
-        encryption_key_source_->UUID(), encryption_key_source_->SystemName(),
-        encryption_key()->key_id, encryption_key()->pssh);
+    muxer_listener_->OnEncryptionInfoReady(!kInitialEncryptionInfo,
+                                           encryption_key()->key_id,
+                                           encryption_key()->key_system_info);
   }
 
   // Skip the following steps if the current fragment is not going to be

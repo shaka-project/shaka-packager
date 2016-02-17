@@ -13,7 +13,6 @@
 
 DECLARE_bool(output_media_info);
 DECLARE_string(mpd_output);
-DECLARE_string(scheme_id_uri);
 DECLARE_string(base_urls);
 DECLARE_double(availability_time_offset);
 DECLARE_double(minimum_update_period);

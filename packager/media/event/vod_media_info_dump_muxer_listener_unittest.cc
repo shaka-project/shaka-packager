@@ -24,15 +24,7 @@ const bool kEnableEncryption = true;
 const uint8_t kBogusDefaultKeyId[] = {0x5f, 0x64, 0x65, 0x66, 0x61, 0x75,
                                       0x6c, 0x74, 0x5f, 0x6b, 0x65, 0x79,
                                       0x5f, 0x69, 0x64, 0x5f};
-// 'pssh'. Not a valid pssh box.
-const uint8_t kInvalidPssh[] = {
-  0x70, 0x73, 0x73, 0x68
-};
 
-// This should be in the uuid field of the protobuf. This is not a valid UUID
-// format but the protobof generation shouldn't care.
-const char kTestUUID[] = "myuuid";
-const char kTestContentProtectionName[] = "MyContentProtection version 1";
 const bool kInitialEncryptionInfo = true;
 }  // namespace
 
@@ -85,14 +77,9 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
           kBogusDefaultKeyId,
           kBogusDefaultKeyId + arraysize(kBogusDefaultKeyId));
 
-      // This isn't a valid pssh box but the MediaInfo protobuf creator
-      // shouldn't worry about it.
-      std::vector<uint8_t> invalid_pssh(kInvalidPssh,
-                                        kInvalidPssh + arraysize(kInvalidPssh));
-
-      listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, kTestUUID,
-                                       kTestContentProtectionName,
-                                       bogus_default_key_id, invalid_pssh);
+      listener_->OnEncryptionInfoReady(kInitialEncryptionInfo,
+                                       bogus_default_key_id,
+                                       GetDefaultKeySystemInfo());
     }
     listener_->OnMediaStart(muxer_options, stream_info, kReferenceTimeScale,
                             MuxerListener::kContainerMp4);
@@ -162,15 +149,13 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, UnencryptedStream_Normal) {
 }
 
 TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
-  listener_->SetContentProtectionSchemeIdUri("http://foo.com/bar");
-
   scoped_refptr<StreamInfo> stream_info =
       CreateVideoStreamInfo(GetDefaultVideoStreamInfoParams());
   FireOnMediaStartWithDefaultMuxerOptions(*stream_info, kEnableEncryption);
   OnMediaEndParameters media_end_param = GetDefaultOnMediaEndParams();
   FireOnMediaEndWithParams(media_end_param);
 
-  const char kExpectedProtobufOutput[] =
+  const std::string kExpectedProtobufOutput =
       "bandwidth: 7620\n"
       "video_info {\n"
       "  codec: 'avc1.010101'\n"
@@ -194,9 +179,8 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
       "media_duration_seconds: 10.5\n"
       "protected_content {\n"
       "  content_protection_entry {\n"
-      "    uuid: 'myuuid'\n"
-      "    name_version: 'MyContentProtection version 1'\n"
-      "    pssh: 'pssh'\n"
+      "    uuid: 'edef8ba9-79d6-4ace-a3c8-27dcd51d21ed'\n"
+      "    pssh: '" + std::string(kExpectedDefaultPsshBox) + "'\n"
       "  }\n"
       "  default_key_id: '_default_key_id_'\n"
       "}\n";
