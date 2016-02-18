@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/google/edash-packager.svg?branch=master)](https://travis-ci.org/google/edash-packager)
+
 Media packaging SDK intended for C++ programmers writing DASH packager applications with common encryption support, Widevine DRM support, Live, and Video-On-Demand.
 
 This document provides the information needed to create a DASH packager that is able to remux and encrypt a video into fragmented ISO BMFF format with common encryption (CENC) support. The DASH packaging API is also designed in such a way for easy extension to more source and destination formats.

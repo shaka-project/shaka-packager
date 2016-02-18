@@ -1,0 +1,35 @@
+language: cpp
+
+os:
+  - linux
+  - osx
+
+env:
+  - BUILD_TYPE=Debug
+  - BUILD_TYPE=Release
+
+before_install:
+  - test -n $CC  && unset CC
+  - test -n $CXX && unset CXX
+
+install:
+  - git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git ../depot_tools/
+  - export PATH="$PATH:$PWD/../depot_tools"
+
+before_script:
+  - mkdir src
+  - shopt -s extglob dotglob
+  - mv !(src) src
+  - gclient config https://widevine-internal.googlesource.com/packager.git --name=src --unmanaged
+  - gclient sync
+  - cd src
+  - ninja -C out/${BUILD_TYPE}
+
+script:
+  - ( find out/${BUILD_TYPE} -name "*_*test" | while read i ; do $i || exit ; done )
+  - packager/app/test/packager_test.py -v --build_type ${BUILD_TYPE}
+
+branches:
+  only:
+    - master
+    - "/^v\\d+\\./"
