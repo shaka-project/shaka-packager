@@ -14,7 +14,9 @@
 #include "packager/base/stl_util.h"
 #include "packager/media/base/http_key_fetcher.h"
 #include "packager/media/base/producer_consumer_queue.h"
+#include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/request_signer.h"
+#include "packager/media/base/widevine_pssh_data.pb.h"
 
 #define RCHECK(x)                                       \
   do {                                                  \
@@ -172,10 +174,49 @@ Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& content_id,
   return FetchKeysInternal(!kEnableKeyRotation, 0, false);
 }
 
-Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& pssh_data) {
+Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& pssh_box) {
+  const std::vector<uint8_t> widevine_system_id(
+      kWidevineSystemId, kWidevineSystemId + arraysize(kWidevineSystemId));
+
+  ProtectionSystemSpecificInfo info;
+  if (!info.Parse(pssh_box.data(), pssh_box.size()))
+    return Status(error::PARSER_FAILURE, "Error parsing the PSSH box.");
+
+  if (info.system_id() == widevine_system_id) {
+    base::AutoLock scoped_lock(lock_);
+    request_dict_.Clear();
+    std::string pssh_data_base64_string;
+
+    BytesToBase64String(info.pssh_data(), &pssh_data_base64_string);
+    request_dict_.SetString("pssh_data", pssh_data_base64_string);
+    return FetchKeysInternal(!kEnableKeyRotation, 0, false);
+  } else if (!info.key_ids().empty()) {
+    // This is not a Widevine PSSH box.  Try making the request for the key-IDs.
+    // Even if this is a different key-system, it should still work.  Either
+    // the server will not recognize it and return an error, or it will
+    // recognize it and the key must be correct (or the content is bad).
+    return FetchKeys(info.key_ids());
+  } else {
+    return Status(error::NOT_FOUND, "No key IDs given in PSSH box.");
+  }
+}
+
+Status WidevineKeySource::FetchKeys(
+    const std::vector<std::vector<uint8_t>>& key_ids) {
   base::AutoLock scoped_lock(lock_);
   request_dict_.Clear();
   std::string pssh_data_base64_string;
+
+  // Generate Widevine PSSH data from the key-IDs.
+  WidevinePsshData widevine_pssh_data;
+  for (size_t i = 0; i < key_ids.size(); i++) {
+    widevine_pssh_data.add_key_id(key_ids[i].data(), key_ids[i].size());
+  }
+
+  const std::string serialized_string = widevine_pssh_data.SerializeAsString();
+  std::vector<uint8_t> pssh_data(serialized_string.begin(),
+                                 serialized_string.end());
+
   BytesToBase64String(pssh_data, &pssh_data_base64_string);
   request_dict_.SetString("pssh_data", pssh_data_base64_string);
   return FetchKeysInternal(!kEnableKeyRotation, 0, false);

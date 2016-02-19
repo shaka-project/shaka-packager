@@ -15,6 +15,10 @@
 namespace edash_packager {
 namespace media {
 
+const uint8_t kWidevineSystemId[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,
+                                     0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc,
+                                     0xd5, 0x1d, 0x21, 0xed};
+
 struct EncryptionKey {
   EncryptionKey();
   ~EncryptionKey();
@@ -47,10 +51,14 @@ class KeySource {
                            const std::string& policy);
 
   /// Fetch keys for CENC from the key server.
-  /// @param pssh_data is the Data portion of the PSSH box for the content
-  /// to be decrypted.
+  /// @param pssh_box The entire PSSH box for the content to be decrypted
   /// @return OK on success, an error status otherwise.
-  virtual Status FetchKeys(const std::vector<uint8_t>& pssh_data);
+  virtual Status FetchKeys(const std::vector<uint8_t>& pssh_box);
+
+  /// Fetch keys for CENC from the key server.
+  /// @param key_ids the key IDs for the keys to fetch from the server.
+  /// @return OK on success, an error status otherwise.
+  virtual Status FetchKeys(const std::vector<std::vector<uint8_t>>& key_ids);
 
   /// Fetch keys for WVM decryption from the key server.
   /// @param asset_id is the Widevine Classic asset ID for the content to be

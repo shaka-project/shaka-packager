@@ -83,6 +83,7 @@
         'widevine_key_source.h',
       ],
       'dependencies': [
+        'widevine_pssh_data_proto',
         '../../base/base.gyp:base',
         '../../third_party/boringssl/boringssl.gyp:boringssl',
         '../../third_party/curl/curl.gyp:libcurl',

@@ -57,7 +57,15 @@ const char kTrackFormat[] =
 const char kClassicTrackFormat[] = "{\"type\":\"%s\",\"key\":\"%s\"}";
 const char kLicenseResponseFormat[] = "{\"status\":\"%s\",\"tracks\":[%s]}";
 const char kHttpResponseFormat[] = "{\"response\":\"%s\"}";
+const uint8_t kRequestPsshBox[] = {
+    0,    0,    0,    41,   'p',  's',  's',  'h',  0,    0,    0,
+    0,    0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6, 0x4a, 0xce, 0xa3, 0xc8,
+    0x27, 0xdc, 0xd5, 0x1d, 0x21, 0xed, 0,    0,    0,    0x09, 'P',
+    'S',  'S',  'H',  ' ',  'd',  'a',  't',  'a'};
 const char kRequestPsshData[] = "PSSH data";
+const uint8_t kRequestPsshDataFromKeyIds[] = {0x12, 0x06, 0x00, 0x01,
+                                              0x02, 0x03, 0x04, 0x05};
+const uint8_t kRequestKeyId[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05};
 // 32-bit with leading bit set, to verify that big uint32_t can be handled
 // correctly.
 const uint32_t kClassicAssetId = 0x80038cd9;
@@ -266,7 +274,7 @@ TEST_F(WidevineKeySourceTest, LicenseStatusCencNotOK) {
             .error_code());
 }
 
-TEST_F(WidevineKeySourceTest, LicenseStatusCencWithPsshDataOK) {
+TEST_F(WidevineKeySourceTest, LicenseStatusCencWithPsshBoxOK) {
   std::string expected_message =
       base::StringPrintf(kExpectedRequestMessageWithPsshFormat,
                          Base64Encode(kRequestPsshData).c_str());
@@ -281,11 +289,34 @@ TEST_F(WidevineKeySourceTest, LicenseStatusCencWithPsshDataOK) {
 
   CreateWidevineKeySource();
   widevine_key_source_->set_signer(mock_request_signer_.Pass());
-  std::vector<uint8_t> pssh_data(
-      reinterpret_cast<const uint8_t*>(kRequestPsshData),
-      reinterpret_cast<const uint8_t*>(kRequestPsshData) +
-          strlen(kRequestPsshData));
-  ASSERT_OK(widevine_key_source_->FetchKeys(pssh_data));
+  std::vector<uint8_t> pssh_box(kRequestPsshBox,
+                                kRequestPsshBox + arraysize(kRequestPsshBox));
+  ASSERT_OK(widevine_key_source_->FetchKeys(pssh_box));
+  VerifyKeys(false);
+}
+
+TEST_F(WidevineKeySourceTest, LicenseStatusCencWithKeyIdsOK) {
+  std::string expected_pssh_data(
+      kRequestPsshDataFromKeyIds,
+      kRequestPsshDataFromKeyIds + arraysize(kRequestPsshDataFromKeyIds));
+  std::string expected_message =
+      base::StringPrintf(kExpectedRequestMessageWithPsshFormat,
+                         Base64Encode(expected_pssh_data).c_str());
+  EXPECT_CALL(*mock_request_signer_,
+              GenerateSignature(StrEq(expected_message), _))
+      .WillOnce(DoAll(SetArgPointee<1>(kMockSignature), Return(true)));
+
+  std::string mock_response = base::StringPrintf(
+      kHttpResponseFormat, Base64Encode(GenerateMockLicenseResponse()).c_str());
+  EXPECT_CALL(*mock_key_fetcher_, FetchKeys(_, _, _))
+      .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
+
+  CreateWidevineKeySource();
+  widevine_key_source_->set_signer(mock_request_signer_.Pass());
+  std::vector<std::vector<uint8_t>> key_ids;
+  key_ids.push_back(std::vector<uint8_t>(
+      kRequestKeyId, kRequestKeyId + arraysize(kRequestKeyId)));
+  ASSERT_OK(widevine_key_source_->FetchKeys(key_ids));
   VerifyKeys(false);
 }
 

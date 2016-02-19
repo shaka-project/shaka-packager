@@ -11,9 +11,6 @@
 #include "packager/media/base/buffer_writer.h"
 
 namespace {
-const uint8_t kWidevineSystemId[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,
-                                     0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc,
-                                     0xd5, 0x1d, 0x21, 0xed};
 // TODO(kqyang): Consider making it configurable.
 const char kDefaultUUID[] = "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed";
 const char kDefaultSystemName[] = "";
@@ -33,7 +30,12 @@ Status KeySource::FetchKeys(const std::vector<uint8_t>& content_id,
   return Status::OK;
 }
 
-Status KeySource::FetchKeys(const std::vector<uint8_t>& pssh_data) {
+Status KeySource::FetchKeys(const std::vector<uint8_t>& pssh_box) {
+  // Do nothing for fixed key encryption/decryption.
+  return Status::OK;
+}
+
+Status KeySource::FetchKeys(const std::vector<std::vector<uint8_t>>& key_ids) {
   // Do nothing for fixed key encryption/decryption.
   return Status::OK;
 }

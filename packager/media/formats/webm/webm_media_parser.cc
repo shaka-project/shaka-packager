@@ -11,7 +11,6 @@
 #include "packager/base/logging.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/timestamp.h"
-#include "packager/media/base/widevine_pssh_data.pb.h"
 #include "packager/media/formats/webm/webm_cluster_parser.h"
 #include "packager/media/formats/webm/webm_constants.h"
 #include "packager/media/formats/webm/webm_content_encodings.h"
@@ -239,20 +238,21 @@ bool WebMMediaParser::FetchKeysIfNecessary(
     const std::string& video_encryption_key_id) {
   if (audio_encryption_key_id.empty() && video_encryption_key_id.empty())
     return true;
-  // An error will be returned later if the samples need to be derypted.
+  // An error will be returned later if the samples need to be decrypted.
   if (!decryption_key_source_)
     return true;
 
-  // Generate WidevinePsshData from key_id.
-  WidevinePsshData widevine_pssh_data;
-  if (!audio_encryption_key_id.empty())
-    widevine_pssh_data.add_key_id(audio_encryption_key_id);
-  if (!video_encryption_key_id.empty())
-    widevine_pssh_data.add_key_id(video_encryption_key_id);
+  std::vector<std::vector<uint8_t>> key_ids;
+  if (!audio_encryption_key_id.empty()) {
+    key_ids.push_back(std::vector<uint8_t>(audio_encryption_key_id.begin(),
+                                           audio_encryption_key_id.end()));
+  }
+  if (!video_encryption_key_id.empty()) {
+    key_ids.push_back(std::vector<uint8_t>(video_encryption_key_id.begin(),
+                                           video_encryption_key_id.end()));
+  }
 
-  const std::string serialized_string = widevine_pssh_data.SerializeAsString();
-  Status status = decryption_key_source_->FetchKeys(
-      std::vector<uint8_t>(serialized_string.begin(), serialized_string.end()));
+  Status status = decryption_key_source_->FetchKeys(key_ids);
   if (!status.ok()) {
     LOG(ERROR) << "Error fetching decryption keys: " << status;
     return false;

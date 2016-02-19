@@ -17,7 +17,6 @@
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/macros.h"
 #include "packager/media/base/media_sample.h"
-#include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
@@ -83,7 +82,6 @@ AudioCodec FourCCToAudioCodec(FourCC fourcc) {
   }
 }
 
-const char kWidevineKeySystemId[] = "edef8ba979d64acea3c827dcd51d21ed";
 // Default DTS audio number of channels for 5.1 channel layout.
 const uint8_t kDtsAudioNumChannels = 6;
 
@@ -579,22 +577,23 @@ bool MP4MediaParser::FetchKeysIfNecessary(
   if (!decryption_key_source_)
     return true;
 
-  // TODO(tinskip): Pass in raw 'pssh' boxes to FetchKeys. This will allow
-  // supporting multiple keysystems. Move this to KeySource.
-  std::vector<uint8_t> widevine_system_id;
-  base::HexStringToBytes(kWidevineKeySystemId, &widevine_system_id);
+  Status status;
   for (std::vector<ProtectionSystemSpecificHeader>::const_iterator iter =
            headers.begin(); iter != headers.end(); ++iter) {
-    ProtectionSystemSpecificInfo info;
-    RCHECK(info.Parse(iter->raw_box.data(), iter->raw_box.size()));
-    if (info.system_id() == widevine_system_id) {
-      Status status = decryption_key_source_->FetchKeys(info.pssh_data());
-      if (!status.ok()) {
-        LOG(ERROR) << "Error fetching decryption keys: " << status;
-        return false;
-      }
-      return true;
+    status = decryption_key_source_->FetchKeys(iter->raw_box);
+    if (!status.ok()) {
+      // If there is an error, try using the next PSSH box and report if none
+      // work.
+      VLOG(1) << "Unable to fetch decryption keys: " << status
+              << ", trying the next PSSH box";
+      continue;
     }
+    return true;
+  }
+
+  if (!status.ok()) {
+    LOG(ERROR) << "Error fetching decryption keys: " << status;
+    return false;
   }
 
   LOG(ERROR) << "No viable 'pssh' box found for content decryption.";
