@@ -22,7 +22,11 @@ DEFINE_string(iv,
               "",
               "Iv in hex string format. If not specified, a random iv will be "
               "generated. This flag should only be used for testing.");
-DEFINE_string(pssh, "", "PSSH in hex string format.");
+DEFINE_string(pssh,
+              "",
+              "One or more PSSH boxes in hex string format.  If not specified, "
+              "will generate a v1 common PSSH box according to "
+              "https://goo.gl/507mKp.");
 
 namespace edash_packager {
 
@@ -51,7 +55,7 @@ bool ValidateFixedCryptoFlags() {
   if (!ValidateFlag("pssh",
                     FLAGS_pssh,
                     FLAGS_enable_fixed_key_encryption,
-                    false,
+                    true,
                     "--enable_fixed_key_encryption")) {
     success = false;
   }

@@ -96,9 +96,12 @@ void SetDefaultMuxerOptionsValues(MuxerOptions* muxer_options) {
 
 std::vector<ProtectionSystemSpecificInfo> GetDefaultKeySystemInfo() {
   const uint8_t kPsshData[] = {'p', 's', 's', 'h'};
+  const uint8_t kTestSystemId[] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05,
+                                   0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b,
+                                   0x0c, 0x0d, 0x0e, 0x0f};
 
   ProtectionSystemSpecificInfo info;
-  info.set_system_id(kWidevineSystemId, arraysize(kWidevineSystemId));
+  info.set_system_id(kTestSystemId, arraysize(kTestSystemId));
   info.set_pssh_data(
       std::vector<uint8_t>(kPsshData, kPsshData + arraysize(kPsshData)));
   info.set_pssh_box_version(0);

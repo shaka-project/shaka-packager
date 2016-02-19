@@ -9,7 +9,7 @@
 
 #include "packager/base/bind.h"
 #include "packager/base/logging.h"
-#include "packager/media/base/key_source.h"
+#include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/video_stream_info.h"
@@ -29,7 +29,7 @@ const char kKey[] =
     "\xeb\xdd\x62\xf1\x68\x14\xd2\x7b\x68\xef\x12\x2a\xfc\xe4\xae\x3c";
 const char kKeyId[] = "0123456789012345";
 
-class MockKeySource : public KeySource {
+class MockKeySource : public FixedKeySource {
  public:
   MOCK_METHOD1(FetchKeys, Status(const std::vector<uint8_t>& pssh_data));
   MOCK_METHOD2(GetKey,

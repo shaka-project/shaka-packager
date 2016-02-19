@@ -389,10 +389,14 @@ class PackagerAppTest(unittest.TestCase):
                 '--key_server_url=' + widevine_server_url,
                 '--content_id=3031323334353637', '--signer=widevine_test']
     elif encryption:
+      pssh_box = ('000000307073736800000000'  # PSSH header
+                 'edef8ba979d64acea3c827dcd51d21ed'  # Widevine system ID
+                 '00000010'  # Data size
+                 '31323334353637383930313233343536')  # Data
       flags += ['--enable_fixed_key_encryption',
                 '--key_id=31323334353637383930313233343536',
                 '--key=32333435363738393021323334353637',
-                '--pssh=31323334353637383930313233343536', '--clear_lead=1']
+                '--pssh=' + pssh_box, '--clear_lead=1']
       if not random_iv:
         flags.append('--iv=3334353637383930')
     if key_rotation:

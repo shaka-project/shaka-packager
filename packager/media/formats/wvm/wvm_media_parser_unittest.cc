@@ -13,12 +13,12 @@
 #include "packager/base/logging.h"
 #include "packager/base/memory/ref_counted.h"
 #include "packager/media/base/audio_stream_info.h"
+#include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/timestamp.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/base/key_source.h"
 #include "packager/media/formats/wvm/wvm_media_parser.h"
 #include "packager/media/test/test_data_util.h"
 
@@ -49,7 +49,7 @@ using ::testing::SetArgPointee;
 namespace edash_packager {
 namespace media {
 
-class MockKeySource : public KeySource {
+class MockKeySource : public FixedKeySource {
  public:
   MockKeySource() {}
   ~MockKeySource() override {}

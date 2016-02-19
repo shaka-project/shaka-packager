@@ -12,7 +12,7 @@
 #include "packager/base/time/clock.h"
 #include "packager/media/base/demuxer.h"
 #include "packager/media/base/encryption_modes.h"
-#include "packager/media/base/key_source.h"
+#include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer.h"
 #include "packager/media/base/stream_info.h"
@@ -54,10 +54,6 @@ const char kNoLanguageOverride[] = "";
 // Encryption constants.
 const char kKeyIdHex[] = "e5007e6e9dcd5ac095202ed3758382cd";
 const char kKeyHex[] = "6fc96fe628a265b13aeddec0bc421f4d";
-const char kPsshHex[] =
-    "08011210e5007e6e9dcd5ac095202ed3"
-    "758382cd1a0d7769646576696e655f746573742211544553545f"
-    "434f4e54454e545f49445f312a025344";
 const double kClearLeadInSeconds = 1.5;
 const double kCryptoDurationInSeconds = 0;  // Key rotation is disabled.
 
@@ -160,8 +156,7 @@ void PackagerTestBasic::Remux(const std::string& input,
   ASSERT_OK(demuxer.Initialize());
 
   scoped_ptr<KeySource> encryption_key_source(
-      KeySource::CreateFromHexStrings(
-          kKeyIdHex, kKeyHex, kPsshHex, ""));
+      FixedKeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex, "", ""));
   DCHECK(encryption_key_source);
 
   scoped_ptr<Muxer> muxer_video;
@@ -219,7 +214,7 @@ void PackagerTestBasic::Decrypt(const std::string& input,
 
   Demuxer demuxer(GetFullPath(input));
   scoped_ptr<KeySource> decryption_key_source(
-      KeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex, "", ""));
+      FixedKeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex, "", ""));
   ASSERT_TRUE(decryption_key_source);
   demuxer.SetKeySource(decryption_key_source.Pass());
   ASSERT_OK(demuxer.Initialize());

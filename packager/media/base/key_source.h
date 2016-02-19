@@ -17,10 +17,6 @@
 namespace edash_packager {
 namespace media {
 
-const uint8_t kWidevineSystemId[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,
-                                     0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc,
-                                     0xd5, 0x1d, 0x21, 0xed};
-
 struct EncryptionKey {
   EncryptionKey();
   ~EncryptionKey();
@@ -43,44 +39,40 @@ class KeySource {
     NUM_VALID_TRACK_TYPES = 4
   };
 
+  KeySource();
   virtual ~KeySource();
-
-  /// Fetch keys for CENC from the key server.
-  /// @param content_id the unique id identify the content.
-  /// @param policy specifies the DRM content rights.
-  /// @return OK on success, an error status otherwise.
-  virtual Status FetchKeys(const std::vector<uint8_t>& content_id,
-                           const std::string& policy);
 
   /// Fetch keys for CENC from the key server.
   /// @param pssh_box The entire PSSH box for the content to be decrypted
   /// @return OK on success, an error status otherwise.
-  virtual Status FetchKeys(const std::vector<uint8_t>& pssh_box);
+  virtual Status FetchKeys(const std::vector<uint8_t>& pssh_box) = 0;
 
   /// Fetch keys for CENC from the key server.
   /// @param key_ids the key IDs for the keys to fetch from the server.
   /// @return OK on success, an error status otherwise.
-  virtual Status FetchKeys(const std::vector<std::vector<uint8_t>>& key_ids);
+  virtual Status FetchKeys(
+      const std::vector<std::vector<uint8_t>>& key_ids) = 0;
 
   /// Fetch keys for WVM decryption from the key server.
   /// @param asset_id is the Widevine Classic asset ID for the content to be
   /// decrypted.
   /// @return OK on success, an error status otherwise.
-  virtual Status FetchKeys(uint32_t asset_id);
+  virtual Status FetchKeys(uint32_t asset_id) = 0;
 
   /// Get encryption key of the specified track type.
   /// @param track_type is the type of track for which retrieving the key.
   /// @param key is a pointer to the EncryptionKey which will hold the retrieved
   ///        key. Owner retains ownership, and may not be NULL.
   /// @return OK on success, an error status otherwise.
-  virtual Status GetKey(TrackType track_type, EncryptionKey* key);
+  virtual Status GetKey(TrackType track_type, EncryptionKey* key) = 0;
 
   /// Get the encryption key specified by the CENC key ID.
   /// @param key_id is the unique identifier for the key being retreived.
   /// @param key is a pointer to the EncryptionKey which will hold the retrieved
   ///        key. Owner retains ownership, and may not be NULL.
   /// @return OK on success, or an error status otherwise.
-  virtual Status GetKey(const std::vector<uint8_t>& key_id, EncryptionKey* key);
+  virtual Status GetKey(const std::vector<uint8_t>& key_id,
+                        EncryptionKey* key) = 0;
 
   /// Get encryption key of the specified track type at the specified index.
   /// @param crypto_period_index is the sequence number of the key rotation
@@ -91,21 +83,7 @@ class KeySource {
   /// @return OK on success, an error status otherwise.
   virtual Status GetCryptoPeriodKey(uint32_t crypto_period_index,
                                     TrackType track_type,
-                                    EncryptionKey* key);
-
-  /// Create KeySource object from hex strings.
-  /// @param key_id_hex is the key id in hex string.
-  /// @param key_hex is the key in hex string.
-  /// @param pssh_data_hex is the pssh_data in hex string.
-  /// @param iv_hex is the IV in hex string. If not specified, a randomly
-  ///        generated IV with the default length will be used.
-  /// Note: GetKey on the created key source will always return the same key
-  ///       for all track types.
-  static scoped_ptr<KeySource> CreateFromHexStrings(
-      const std::string& key_id_hex,
-      const std::string& key_hex,
-      const std::string& pssh_data_hex,
-      const std::string& iv_hex);
+                                    EncryptionKey* key) = 0;
 
   /// Convert string representation of track type to enum representation.
   static TrackType GetTrackTypeFromString(const std::string& track_type_string);
@@ -113,14 +91,7 @@ class KeySource {
   /// Convert TrackType to string.
   static std::string TrackTypeToString(TrackType track_type);
 
- protected:
-  KeySource();
-
  private:
-  explicit KeySource(scoped_ptr<EncryptionKey> encryption_key);
-
-  scoped_ptr<EncryptionKey> encryption_key_;
-
   DISALLOW_COPY_AND_ASSIGN(KeySource);
 };
 

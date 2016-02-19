@@ -25,8 +25,8 @@ namespace media {
 // This is a full v0 PSSH box with the Widevine system ID and the PSSH data
 // 'pssh'
 const char kExpectedDefaultPsshBox[] =
-    "\\000\\000\\000$pssh\\000\\000\\000\\000\\355\\357\\213\\251y\\326J\\316"
-    "\\243\\310\\'\\334\\325\\035!\\355\\000\\000\\000\\4pssh";
+  "\\000\\000\\000$pssh\\000\\000\\000\\000\\000\\001\\002\\003\\004\\005"
+  "\\006\\007\\010\\t\\n\\013\\014\\r\\016\\017\\000\\000\\000\\004pssh";
 const char kExpectedDefaultMediaInfo[] =
     "bandwidth: 7620\n"
     "video_info {\n"

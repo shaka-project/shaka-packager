@@ -8,6 +8,7 @@
 #include <gtest/gtest.h>
 
 #include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/fixed_key_source.h"
 #include "packager/media/formats/webm/segmenter_test_base.h"
 
 namespace edash_packager {
@@ -189,7 +190,8 @@ class EncrypedSegmenterTest : public SegmentTestBase {
 
  protected:
   void InitializeSegmenter(const MuxerOptions& options) {
-    key_source_ = KeySource::CreateFromHexStrings(kKeyId, kKey, kPsshData, kIv);
+    key_source_ =
+        FixedKeySource::CreateFromHexStrings(kKeyId, kKey, kPsshData, kIv);
     ASSERT_NO_FATAL_FAILURE(
         CreateAndInitializeSegmenter<webm::SingleSegmentSegmenter>(
             options, info_.get(), key_source_.get(), &segmenter_));

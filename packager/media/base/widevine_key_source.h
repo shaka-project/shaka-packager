@@ -32,8 +32,6 @@ class WidevineKeySource : public KeySource {
 
   /// @name KeySource implementation overrides.
   /// @{
-  Status FetchKeys(const std::vector<uint8_t>& content_id,
-                   const std::string& policy) override;
   Status FetchKeys(const std::vector<uint8_t>& pssh_box) override;
   Status FetchKeys(const std::vector<std::vector<uint8_t>>& key_ids) override;
   Status FetchKeys(uint32_t asset_id) override;
@@ -45,6 +43,13 @@ class WidevineKeySource : public KeySource {
                             TrackType track_type,
                             EncryptionKey* key) override;
   /// @}
+
+  /// Fetch keys for CENC from the key server.
+  /// @param content_id the unique id identify the content.
+  /// @param policy specifies the DRM content rights.
+  /// @return OK on success, an error status otherwise.
+  Status FetchKeys(const std::vector<uint8_t>& content_id,
+                   const std::string& policy);
 
   /// Set signer for the key source.
   /// @param signer signs the request message.

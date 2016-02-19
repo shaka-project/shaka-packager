@@ -47,6 +47,10 @@ const int kDefaultCryptoPeriodCount = 10;
 const int kGetKeyTimeoutInSeconds = 5 * 60;  // 5 minutes.
 const int kKeyFetchTimeoutInSeconds = 60;  // 1 minute.
 
+const uint8_t kWidevineSystemId[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,
+                                     0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc,
+                                     0xd5, 0x1d, 0x21, 0xed};
+
 bool Base64StringToBytes(const std::string& base64_string,
                          std::vector<uint8_t>* bytes) {
   DCHECK(bytes);

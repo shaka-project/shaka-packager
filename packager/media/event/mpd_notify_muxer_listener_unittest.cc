@@ -154,7 +154,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
       std::string(kExpectedDefaultMediaInfo) +
       "protected_content {\n"
       "  content_protection_entry {\n"
-      "    uuid: 'edef8ba9-79d6-4ace-a3c8-27dcd51d21ed'\n"
+      "    uuid: '00010203-0405-0607-0809-0a0b0c0d0e0f'\n"
       "    pssh: '" + std::string(kExpectedDefaultPsshBox) + "'\n"
       "  }\n"
       "  default_key_id: 'defaultkeyid'\n"
@@ -286,7 +286,7 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
       "protected_content {\n"
       "  default_key_id: \"defaultkeyid\"\n"
       "  content_protection_entry {\n"
-      "    uuid: 'edef8ba9-79d6-4ace-a3c8-27dcd51d21ed'\n"
+      "    uuid: '00010203-0405-0607-0809-0a0b0c0d0e0f'\n"
       "    pssh: \"" + std::string(kExpectedDefaultPsshBox) + "\"\n"
       "  }\n"
       "}\n";

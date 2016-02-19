@@ -10,6 +10,7 @@
 #include <gtest/gtest.h>
 
 #include "packager/base/macros.h"
+#include "packager/media/base/fixed_key_source.h"
 
 using ::testing::Return;
 using ::testing::SetArgPointee;
@@ -50,7 +51,7 @@ const uint8_t kBuffer2[] = {0x05, 0x02};
 // Expected decrypted buffer with the above kMockKey and kIv2.
 const uint8_t kExpectedDecryptedBuffer2[] = {0x20, 0x62};
 
-class MockKeySource : public KeySource {
+class MockKeySource : public FixedKeySource {
  public:
   MOCK_METHOD2(GetKey,
                Status(const std::vector<uint8_t>& key_id, EncryptionKey* key));

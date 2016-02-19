@@ -15,6 +15,7 @@
 #include "packager/app/widevine_encryption_flags.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer.h"
 #include "packager/media/base/muxer_options.h"
@@ -100,7 +101,7 @@ scoped_ptr<KeySource> CreateEncryptionKeySource() {
     }
     encryption_key_source = widevine_key_source.Pass();
   } else if (FLAGS_enable_fixed_key_encryption) {
-    encryption_key_source = KeySource::CreateFromHexStrings(
+    encryption_key_source = FixedKeySource::CreateFromHexStrings(
         FLAGS_key_id, FLAGS_key, FLAGS_pssh, FLAGS_iv);
   }
   return encryption_key_source.Pass();
@@ -120,8 +121,10 @@ scoped_ptr<KeySource> CreateDecryptionKeySource() {
 
     decryption_key_source = widevine_key_source.Pass();
   } else if (FLAGS_enable_fixed_key_decryption) {
-    decryption_key_source =
-        KeySource::CreateFromHexStrings(FLAGS_key_id, FLAGS_key, "", "");
+    const char kNoPssh[] = "";
+    const char kNoIv[] = "";
+    decryption_key_source = FixedKeySource::CreateFromHexStrings(
+        FLAGS_key_id, FLAGS_key, kNoPssh, kNoIv);
   }
   return decryption_key_source.Pass();
 }
