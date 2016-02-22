@@ -86,6 +86,18 @@ bool H26xBitReader::ReadBits(int num_bits, int* out) {
   return true;
 }
 
+bool H26xBitReader::SkipBits(int num_bits) {
+  int bits_left = num_bits;
+  while (num_remaining_bits_in_curr_byte_ < bits_left) {
+    bits_left -= num_remaining_bits_in_curr_byte_;
+    if (!UpdateCurrByte())
+      return false;
+  }
+
+  num_remaining_bits_in_curr_byte_ -= bits_left;
+  return true;
+}
+
 bool H26xBitReader::ReadUE(int* val) {
   int num_bits = -1;
   int bit;

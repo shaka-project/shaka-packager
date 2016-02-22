@@ -11,6 +11,7 @@
 
 #include "packager/media/base/macros.h"
 #include "packager/media/filters/h264_parser.h"
+#include "packager/media/filters/h265_parser.h"
 
 namespace edash_packager {
 namespace media {
@@ -50,7 +51,22 @@ class H264VideoSliceHeaderParser : public VideoSliceHeaderParser {
   DISALLOW_COPY_AND_ASSIGN(H264VideoSliceHeaderParser);
 };
 
-// TODO(modmaker): Add H.265 parser.
+class H265VideoSliceHeaderParser : public VideoSliceHeaderParser {
+ public:
+  H265VideoSliceHeaderParser();
+  ~H265VideoSliceHeaderParser() override;
+
+  /// @name VideoSliceHeaderParser implementation overrides.
+  /// @{
+  bool Initialize(const std::vector<uint8_t>& decoder_configuration) override;
+  int64_t GetHeaderSize(const Nalu& nalu) override;
+  /// @}
+
+ private:
+  H265Parser parser_;
+
+  DISALLOW_COPY_AND_ASSIGN(H265VideoSliceHeaderParser);
+};
 
 }  // namespace mp4
 }  // namespace media

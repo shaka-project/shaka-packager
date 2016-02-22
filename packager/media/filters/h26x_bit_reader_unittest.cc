@@ -57,6 +57,46 @@ TEST(H26xBitReaderTest, SingleByteStream) {
   EXPECT_FALSE(reader.HasMoreRBSPData());
 }
 
+TEST(H26xBitReaderTest, ReadBool) {
+  H26xBitReader reader;
+  const unsigned char rbsp[] = {0xc5};
+  bool dummy = false;
+
+  EXPECT_TRUE(reader.Initialize(rbsp, sizeof(rbsp)));
+  EXPECT_EQ(reader.NumBitsLeft(), 8);
+
+  EXPECT_TRUE(reader.ReadBool(&dummy));
+  EXPECT_TRUE(dummy);
+  EXPECT_TRUE(reader.ReadBool(&dummy));
+  EXPECT_TRUE(dummy);
+  EXPECT_TRUE(reader.ReadBool(&dummy));
+  EXPECT_FALSE(dummy);
+  EXPECT_TRUE(reader.ReadBool(&dummy));
+  EXPECT_FALSE(dummy);
+
+  EXPECT_EQ(reader.NumBitsLeft(), 4);
+}
+
+TEST(H26xBitReaderTest, SkipBits) {
+  H26xBitReader reader;
+  const unsigned char rbsp[] = {0xc5, 0x41, 0x51};
+  int dummy;
+
+  EXPECT_TRUE(reader.Initialize(rbsp, sizeof(rbsp)));
+  EXPECT_EQ(reader.NumBitsLeft(), 24);
+
+  EXPECT_TRUE(reader.SkipBits(3));
+  EXPECT_EQ(21, reader.NumBitsLeft());
+  EXPECT_TRUE(reader.ReadBits(4, &dummy));
+  EXPECT_EQ(0x2, dummy);
+  EXPECT_TRUE(reader.SkipBits(8));
+  EXPECT_EQ(9, reader.NumBitsLeft());
+  EXPECT_TRUE(reader.ReadBits(5, &dummy));
+  EXPECT_EQ(0x15, dummy);
+  EXPECT_EQ(4, reader.NumBitsLeft());
+  EXPECT_FALSE(reader.SkipBits(5));
+}
+
 TEST(H26xBitReaderTest, StopBitOccupyFullByte) {
   H26xBitReader reader;
   const unsigned char rbsp[] = {0xab, 0x80};

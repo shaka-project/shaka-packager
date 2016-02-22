@@ -15,7 +15,7 @@
 namespace edash_packager {
 namespace media {
 
-// A class to provide bit-granularity reading of H.264 streams.
+// A class to provide bit-granularity reading of H.264/H.265 streams.
 // This is not a generic bit reader class, as it takes into account
 // H.264 stream-specific constraints, such as skipping emulation-prevention
 // bytes and stop bits. See spec for more details.
@@ -35,6 +35,21 @@ class H26xBitReader {
   // Return false if the given number of bits cannot be read (not enough
   // bits in the stream), true otherwise.
   bool ReadBits(int num_bits, int* out);
+
+  // Read a single bit and return in |*out|.
+  // Return false if the bit cannot be read (not enough bits in the stream),
+  // true otherwise.
+  bool ReadBool(bool* out) {
+    int value;
+    if (!ReadBits(1, &value))
+      return false;
+    *out = (value != 0);
+    return true;
+  }
+
+  // Skips the given number of bits (does not have to be less than 32 bits).
+  // Return false if there aren't enough bits in the stream, true otherwise.
+  bool SkipBits(int num_bits);
 
   // Exp-Golomb code parsing as specified in chapter 9.1 of the spec.
   // Read one unsigned exp-Golomb code from the stream and return in |*val|.

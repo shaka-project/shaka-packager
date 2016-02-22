@@ -80,8 +80,12 @@ EncryptingFragmenter::EncryptingFragmenter(
     vpx_parser_.reset(new VP9Parser);
   } else if (video_codec_ == kCodecH264) {
     header_parser_.reset(new H264VideoSliceHeaderParser);
+  } else if (video_codec_ == kCodecHVC1 || video_codec_ == kCodecHEV1) {
+    header_parser_.reset(new H265VideoSliceHeaderParser);
+  } else if (nalu_length_size_ > 0) {
+    LOG(WARNING) << "Unknown video codec '" << video_codec_
+                 << "', whole subsamples will be encrypted.";
   }
-  // TODO(modmaker): Support H.265.
 }
 
 EncryptingFragmenter::~EncryptingFragmenter() {}
