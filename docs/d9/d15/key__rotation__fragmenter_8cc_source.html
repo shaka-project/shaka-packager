@@ -106,131 +106,129 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">const</span> <span class="keywordtype">bool</span> kInitialEncryptionInfo = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;}  <span class="comment">// namespace</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a970fbc82214256788fbcf76809de2488">   20</a></span>&#160;<a class="code" href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a970fbc82214256788fbcf76809de2488">KeyRotationFragmenter::KeyRotationFragmenter</a>(<a class="code" href="../../dd/da2/structedash__packager_1_1media_1_1mp4_1_1MovieFragment.html">MovieFragment</a>* moof,</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                                             <a class="code" href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a>* traf,</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                                             <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a>* encryption_key_source,</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                                             KeySource::TrackType track_type,</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                                             int64_t crypto_period_duration,</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                             int64_t clear_time,</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                                             VideoCodec video_codec,</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                                             uint8_t nalu_length_size,</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                                             <a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">MuxerListener</a>* muxer_listener)</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    : <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html">EncryptingFragmenter</a>(traf,</div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a87edb5bb2ee55f9272fa1feab812beb9">   20</a></span>&#160;<a class="code" href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a87edb5bb2ee55f9272fa1feab812beb9">KeyRotationFragmenter::KeyRotationFragmenter</a>(<a class="code" href="../../dd/da2/structedash__packager_1_1media_1_1mp4_1_1MovieFragment.html">MovieFragment</a>* moof,</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                                             scoped_refptr&lt;StreamInfo&gt; info,</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                                             <a class="code" href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a>* traf,</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                                             <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a>* encryption_key_source,</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                                             KeySource::TrackType track_type,</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                             int64_t crypto_period_duration,</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                                             int64_t clear_time,</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;                                             <a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">MuxerListener</a>* muxer_listener)</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    : <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html">EncryptingFragmenter</a>(info,</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                           traf,</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                           scoped_ptr&lt;<a class="code" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a>&gt;(new <a class="code" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a>()),</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                           clear_time,</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                           video_codec,</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                           nalu_length_size),</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      moof_(moof),</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      encryption_key_source_(encryption_key_source),</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      track_type_(track_type),</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      crypto_period_duration_(crypto_period_duration),</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      prev_crypto_period_index_(-1),</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      muxer_listener_(muxer_listener) {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  DCHECK(moof);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  DCHECK(encryption_key_source);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;}</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                           clear_time),</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;      moof_(moof),</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;      encryption_key_source_(encryption_key_source),</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      track_type_(track_type),</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      crypto_period_duration_(crypto_period_duration),</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      prev_crypto_period_index_(-1),</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      muxer_listener_(muxer_listener) {</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  DCHECK(moof);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  DCHECK(encryption_key_source);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;KeyRotationFragmenter::~KeyRotationFragmenter() {}</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;KeyRotationFragmenter::~KeyRotationFragmenter() {}</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a8c526a2a3f0555be9030f87ef1015bd8">   46</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a8c526a2a3f0555be9030f87ef1015bd8">KeyRotationFragmenter::PrepareFragmentForEncryption</a>(</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordtype">bool</span> enable_encryption) {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keywordtype">bool</span> need_to_refresh_encryptor = !encryptor();</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordtype">size_t</span> current_crypto_period_index =</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      traf()-&gt;decode_time.decode_time / crypto_period_duration_;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordflow">if</span> (current_crypto_period_index != prev_crypto_period_index_) {</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    scoped_ptr&lt;EncryptionKey&gt; encryption_key(<span class="keyword">new</span> <a class="code" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a>());</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = encryption_key_source_-&gt;<a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a349381b866a37df15a931980636621ac">GetCryptoPeriodKey</a>(</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;        current_crypto_period_index, track_type_, encryption_key.get());</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    set_encryption_key(encryption_key.Pass());</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    prev_crypto_period_index_ = current_crypto_period_index;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    need_to_refresh_encryptor = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  }</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="comment">// One and only one &#39;pssh&#39; box is needed.</span></div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordflow">if</span> (moof_-&gt;pssh.empty())</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    moof_-&gt;pssh.resize(1);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  DCHECK(encryption_key());</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  moof_-&gt;pssh[0].raw_box = encryption_key()-&gt;pssh;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordflow">if</span> (muxer_listener_) {</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    muxer_listener_-&gt;OnEncryptionInfoReady(</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        !kInitialEncryptionInfo,</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;        encryption_key_source_-&gt;<a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#afbb7d084395a1426eb0143ae8357b2fc">UUID</a>(), encryption_key_source_-&gt;<a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#aa73dacef997e7700b8669bb2db5f8f31">SystemName</a>(),</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        encryption_key()-&gt;key_id, encryption_key()-&gt;pssh);</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  }</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">// Skip the following steps if the current fragment is not going to be</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// encrypted. &#39;pssh&#39; box needs to be included in the fragment, which is</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// performed above, regardless of whether the fragment is encrypted. This is</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">// necessary for two reasons: 1) Requesting keys before reaching encrypted</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// content avoids playback delay due to license requests; 2) In Chrome, CDM</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// must be initialized before starting the playback and CDM can only be</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// initialized with a valid &#39;pssh&#39;.</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordflow">if</span> (!enable_encryption) {</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    DCHECK(!encryptor());</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  }</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordflow">if</span> (need_to_refresh_encryptor) {</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a5ed5486f22438e20d0d41524a47f4dd3">CreateEncryptor</a>();</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  }</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  DCHECK(encryptor());</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="comment">// Key rotation happens in fragment boundary only in this implementation,</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="comment">// i.e. there is at most one key for the fragment. So there should be only</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="comment">// one entry in SampleGroupDescription box and one entry in SampleToGroup box.</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="comment">// Fill in SampleGroupDescription box information.</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  traf()-&gt;sample_group_description.grouping_type = FOURCC_SEIG;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  traf()-&gt;sample_group_description.entries.resize(1);</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  traf()-&gt;sample_group_description.entries[0].is_encrypted = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  traf()-&gt;sample_group_description.entries[0].iv_size =</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;      encryptor()-&gt;iv().size();</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  traf()-&gt;sample_group_description.entries[0].key_id = encryption_key()-&gt;key_id;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="comment">// Fill in SampleToGroup box information.</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  traf()-&gt;sample_to_group.grouping_type = FOURCC_SEIG;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  traf()-&gt;sample_to_group.entries.resize(1);</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="comment">// sample_count is adjusted in |FinalizeFragment| later.</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  traf()-&gt;sample_to_group.entries[0].group_description_index =</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;      SampleToGroupEntry::kTrackFragmentGroupDescriptionIndexBase + 1;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;}</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
-<div class="line"><a name="l00116"></a><span class="lineno"><a class="line" href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a9a89e103f4bcb483d882e5dc62060cdc">  116</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a9a89e103f4bcb483d882e5dc62060cdc">KeyRotationFragmenter::FinalizeFragmentForEncryption</a>() {</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a0184deccbe7e99ea7a685cf0de2f9156">EncryptingFragmenter::FinalizeFragmentForEncryption</a>();</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  DCHECK_EQ(1u, traf()-&gt;sample_to_group.entries.size());</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  traf()-&gt;sample_to_group.entries[0].sample_count =</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;      traf()-&gt;auxiliary_size.sample_count;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;}</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a8c526a2a3f0555be9030f87ef1015bd8">   44</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a8c526a2a3f0555be9030f87ef1015bd8">KeyRotationFragmenter::PrepareFragmentForEncryption</a>(</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordtype">bool</span> enable_encryption) {</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keywordtype">bool</span> need_to_refresh_encryptor = !encryptor();</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keywordtype">size_t</span> current_crypto_period_index =</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      traf()-&gt;decode_time.decode_time / crypto_period_duration_;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordflow">if</span> (current_crypto_period_index != prev_crypto_period_index_) {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    scoped_ptr&lt;EncryptionKey&gt; encryption_key(<span class="keyword">new</span> <a class="code" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a>());</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = encryption_key_source_-&gt;<a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a349381b866a37df15a931980636621ac">GetCryptoPeriodKey</a>(</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;        current_crypto_period_index, track_type_, encryption_key.get());</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    set_encryption_key(encryption_key.Pass());</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    prev_crypto_period_index_ = current_crypto_period_index;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    need_to_refresh_encryptor = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  }</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="comment">// One and only one &#39;pssh&#39; box is needed.</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordflow">if</span> (moof_-&gt;pssh.empty())</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    moof_-&gt;pssh.resize(1);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  DCHECK(encryption_key());</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  moof_-&gt;pssh[0].raw_box = encryption_key()-&gt;pssh;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordflow">if</span> (muxer_listener_) {</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    muxer_listener_-&gt;OnEncryptionInfoReady(</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;        !kInitialEncryptionInfo,</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        encryption_key_source_-&gt;<a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#afbb7d084395a1426eb0143ae8357b2fc">UUID</a>(), encryption_key_source_-&gt;<a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#aa73dacef997e7700b8669bb2db5f8f31">SystemName</a>(),</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;        encryption_key()-&gt;key_id, encryption_key()-&gt;pssh);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  }</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="comment">// Skip the following steps if the current fragment is not going to be</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">// encrypted. &#39;pssh&#39; box needs to be included in the fragment, which is</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">// performed above, regardless of whether the fragment is encrypted. This is</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// necessary for two reasons: 1) Requesting keys before reaching encrypted</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// content avoids playback delay due to license requests; 2) In Chrome, CDM</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">// must be initialized before starting the playback and CDM can only be</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// initialized with a valid &#39;pssh&#39;.</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordflow">if</span> (!enable_encryption) {</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    DCHECK(!encryptor());</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  }</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keywordflow">if</span> (need_to_refresh_encryptor) {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a5ed5486f22438e20d0d41524a47f4dd3">CreateEncryptor</a>();</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;      <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  }</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  DCHECK(encryptor());</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="comment">// Key rotation happens in fragment boundary only in this implementation,</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="comment">// i.e. there is at most one key for the fragment. So there should be only</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="comment">// one entry in SampleGroupDescription box and one entry in SampleToGroup box.</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="comment">// Fill in SampleGroupDescription box information.</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  traf()-&gt;sample_group_description.grouping_type = FOURCC_SEIG;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  traf()-&gt;sample_group_description.entries.resize(1);</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  traf()-&gt;sample_group_description.entries[0].is_encrypted = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  traf()-&gt;sample_group_description.entries[0].iv_size =</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;      encryptor()-&gt;iv().size();</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  traf()-&gt;sample_group_description.entries[0].key_id = encryption_key()-&gt;key_id;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="comment">// Fill in SampleToGroup box information.</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  traf()-&gt;sample_to_group.grouping_type = FOURCC_SEIG;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  traf()-&gt;sample_to_group.entries.resize(1);</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="comment">// sample_count is adjusted in |FinalizeFragment| later.</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  traf()-&gt;sample_to_group.entries[0].group_description_index =</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      SampleToGroupEntry::kTrackFragmentGroupDescriptionIndexBase + 1;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;}</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
+<div class="line"><a name="l00114"></a><span class="lineno"><a class="line" href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a9a89e103f4bcb483d882e5dc62060cdc">  114</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a9a89e103f4bcb483d882e5dc62060cdc">KeyRotationFragmenter::FinalizeFragmentForEncryption</a>() {</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a0184deccbe7e99ea7a685cf0de2f9156">EncryptingFragmenter::FinalizeFragmentForEncryption</a>();</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  DCHECK_EQ(1u, traf()-&gt;sample_to_group.entries.size());</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  traf()-&gt;sample_to_group.entries[0].sample_count =</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      traf()-&gt;auxiliary_size.sample_count;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;}</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_a349381b866a37df15a931980636621ac"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a349381b866a37df15a931980636621ac">edash_packager::media::KeySource::GetCryptoPeriodKey</a></div><div class="ttdeci">virtual Status GetCryptoPeriodKey(uint32_t crypto_period_index, TrackType track_type, EncryptionKey *key)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00066">key_source.cc:66</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter_html_a9a89e103f4bcb483d882e5dc62060cdc"><div class="ttname"><a href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a9a89e103f4bcb483d882e5dc62060cdc">edash_packager::media::mp4::KeyRotationFragmenter::FinalizeFragmentForEncryption</a></div><div class="ttdeci">void FinalizeFragmentForEncryption() override</div><div class="ttdoc">Finalize current fragment for encryption. </div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d15/key__rotation__fragmenter_8cc_source.html#l00116">key_rotation_fragmenter.cc:116</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter_html_a9a89e103f4bcb483d882e5dc62060cdc"><div class="ttname"><a href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a9a89e103f4bcb483d882e5dc62060cdc">edash_packager::media::mp4::KeyRotationFragmenter::FinalizeFragmentForEncryption</a></div><div class="ttdeci">void FinalizeFragmentForEncryption() override</div><div class="ttdoc">Finalize current fragment for encryption. </div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d15/key__rotation__fragmenter_8cc_source.html#l00114">key_rotation_fragmenter.cc:114</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1EncryptionKey_html"><div class="ttname"><a href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">edash_packager::media::EncryptionKey</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00018">key_source.h:18</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a5ed5486f22438e20d0d41524a47f4dd3"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a5ed5486f22438e20d0d41524a47f4dd3">edash_packager::media::mp4::EncryptingFragmenter::CreateEncryptor</a></div><div class="ttdeci">Status CreateEncryptor()</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00128">encrypting_fragmenter.cc:128</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html">edash_packager::media::mp4::EncryptingFragmenter</a></div><div class="ttdoc">EncryptingFragmenter generates MP4 fragments with sample encrypted. </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dcb/encrypting__fragmenter_8h_source.html#l00023">encrypting_fragmenter.h:23</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a5ed5486f22438e20d0d41524a47f4dd3"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a5ed5486f22438e20d0d41524a47f4dd3">edash_packager::media::mp4::EncryptingFragmenter::CreateEncryptor</a></div><div class="ttdeci">Status CreateEncryptor()</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00159">encrypting_fragmenter.cc:159</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html">edash_packager::media::mp4::EncryptingFragmenter</a></div><div class="ttdoc">EncryptingFragmenter generates MP4 fragments with sample encrypted. </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dcb/encrypting__fragmenter_8h_source.html#l00026">encrypting_fragmenter.h:26</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Status_html"><div class="ttname"><a href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">edash_packager::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter_html_a8c526a2a3f0555be9030f87ef1015bd8"><div class="ttname"><a href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a8c526a2a3f0555be9030f87ef1015bd8">edash_packager::media::mp4::KeyRotationFragmenter::PrepareFragmentForEncryption</a></div><div class="ttdeci">Status PrepareFragmentForEncryption(bool enable_encryption) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d15/key__rotation__fragmenter_8cc_source.html#l00046">key_rotation_fragmenter.cc:46</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter_html_a8c526a2a3f0555be9030f87ef1015bd8"><div class="ttname"><a href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a8c526a2a3f0555be9030f87ef1015bd8">edash_packager::media::mp4::KeyRotationFragmenter::PrepareFragmentForEncryption</a></div><div class="ttdeci">Status PrepareFragmentForEncryption(bool enable_encryption) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d15/key__rotation__fragmenter_8cc_source.html#l00044">key_rotation_fragmenter.cc:44</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter_html_a87edb5bb2ee55f9272fa1feab812beb9"><div class="ttname"><a href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a87edb5bb2ee55f9272fa1feab812beb9">edash_packager::media::mp4::KeyRotationFragmenter::KeyRotationFragmenter</a></div><div class="ttdeci">KeyRotationFragmenter(MovieFragment *moof, scoped_refptr&lt; StreamInfo &gt; info, TrackFragment *traf, KeySource *encryption_key_source, KeySource::TrackType track_type, int64_t crypto_period_duration, int64_t clear_time, MuxerListener *muxer_listener)</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d15/key__rotation__fragmenter_8cc_source.html#l00020">key_rotation_fragmenter.cc:20</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_afbb7d084395a1426eb0143ae8357b2fc"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#afbb7d084395a1426eb0143ae8357b2fc">edash_packager::media::KeySource::UUID</a></div><div class="ttdeci">virtual std::string UUID()</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00092">key_source.cc:92</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">edash_packager::media::MuxerListener</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dfa/muxer__listener_8h_source.html#l00029">muxer_listener.h:29</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">edash_packager::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00029">key_source.h:29</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1MovieFragment_html"><div class="ttname"><a href="../../dd/da2/structedash__packager_1_1media_1_1mp4_1_1MovieFragment.html">edash_packager::media::mp4::MovieFragment</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00691">box_definitions.h:691</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1TrackFragment_html"><div class="ttname"><a href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">edash_packager::media::mp4::TrackFragment</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00677">box_definitions.h:677</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter_html_a970fbc82214256788fbcf76809de2488"><div class="ttname"><a href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a970fbc82214256788fbcf76809de2488">edash_packager::media::mp4::KeyRotationFragmenter::KeyRotationFragmenter</a></div><div class="ttdeci">KeyRotationFragmenter(MovieFragment *moof, TrackFragment *traf, KeySource *encryption_key_source, KeySource::TrackType track_type, int64_t crypto_period_duration, int64_t clear_time, VideoCodec video_codec, uint8_t nalu_length_size, MuxerListener *muxer_listener)</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d15/key__rotation__fragmenter_8cc_source.html#l00020">key_rotation_fragmenter.cc:20</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_aa73dacef997e7700b8669bb2db5f8f31"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#aa73dacef997e7700b8669bb2db5f8f31">edash_packager::media::KeySource::SystemName</a></div><div class="ttdeci">virtual std::string SystemName()</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00096">key_source.cc:96</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a0184deccbe7e99ea7a685cf0de2f9156"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a0184deccbe7e99ea7a685cf0de2f9156">edash_packager::media::mp4::EncryptingFragmenter::FinalizeFragmentForEncryption</a></div><div class="ttdeci">virtual void FinalizeFragmentForEncryption()</div><div class="ttdoc">Finalize current fragment for encryption. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00107">encrypting_fragmenter.cc:107</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a0184deccbe7e99ea7a685cf0de2f9156"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a0184deccbe7e99ea7a685cf0de2f9156">edash_packager::media::mp4::EncryptingFragmenter::FinalizeFragmentForEncryption</a></div><div class="ttdeci">virtual void FinalizeFragmentForEncryption()</div><div class="ttdoc">Finalize current fragment for encryption. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00138">encrypting_fragmenter.cc:138</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Feb 18 2016 23:27:54 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Feb 22 2016 21:58:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -7,6 +7,7 @@ var searchData=
   ['video_5fdescription',['video_description',['../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a981f52a2e185f5b9f0bf7bb17ff6f3d8',1,'edash_packager::media::mp4::TrackRunIterator']]],
   ['videomediaheader',['VideoMediaHeader',['../db/df7/structedash__packager_1_1media_1_1mp4_1_1VideoMediaHeader.html',1,'edash_packager::media::mp4']]],
   ['videosampleentry',['VideoSampleEntry',['../df/d6a/structedash__packager_1_1media_1_1mp4_1_1VideoSampleEntry.html',1,'edash_packager::media::mp4']]],
+  ['videosliceheaderparser',['VideoSliceHeaderParser',['../d1/dd0/classedash__packager_1_1media_1_1mp4_1_1VideoSliceHeaderParser.html',1,'edash_packager::media::mp4']]],
   ['videostreaminfo',['VideoStreamInfo',['../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html#a75ccfbc06b8458390e1672968eb9bd96',1,'edash_packager::media::VideoStreamInfo']]],
   ['videostreaminfo',['VideoStreamInfo',['../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html',1,'edash_packager::media']]],
   ['videostreaminfoparameters',['VideoStreamInfoParameters',['../d2/dd9/structedash__packager_1_1media_1_1VideoStreamInfoParameters.html',1,'edash_packager::media']]],
