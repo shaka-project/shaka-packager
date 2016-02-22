@@ -27,18 +27,16 @@ Nalu::Nalu()
       type_(0),
       is_video_slice_(false) {}
 
-bool Nalu::InitializeFromH264(const uint8_t* data,
-                              uint64_t size,
-                              uint8_t start_code_size) {
+bool Nalu::InitializeFromH264(const uint8_t* data, uint64_t size) {
   DCHECK(data);
-  DCHECK_GT(size, start_code_size);
-  uint8_t header = data[start_code_size];
+  DCHECK_GT(size, 0u);
+  uint8_t header = data[0];
   if ((header & 0x80) != 0)
     return false;
 
   data_ = data;
-  header_size_ = start_code_size + 1;
-  data_size_ = size - start_code_size - 1;
+  header_size_ = 1;
+  data_size_ = size - 1;
   ref_idc_ = (header >> 5) & 0x3;
   type_ = header & 0x1F;
   is_video_slice_ = (type_ >= Nalu::H264_NonIDRSlice &&
@@ -63,9 +61,10 @@ NaluReader::Result NaluReader::Advance(Nalu* nalu) {
     return NaluReader::kEOStream;
 
   uint8_t nalu_length_size_or_start_code_size;
-  uint64_t nalu_length_with_header;
+  uint64_t nalu_length;
   if (format_ == kAnnexbByteStreamFormat) {
     // This will move |stream_| to the start code.
+    uint64_t nalu_length_with_header;
     if (!LocateNaluByStartCode(&nalu_length_with_header,
                                &nalu_length_size_or_start_code_size)) {
       LOG(ERROR) << "Could not find next NALU, bytes left in stream: "
@@ -75,8 +74,8 @@ NaluReader::Result NaluReader::Advance(Nalu* nalu) {
       // and there are no start codes in the stream.
       return NaluReader::kInvalidStream;
     }
+    nalu_length = nalu_length_with_header - nalu_length_size_or_start_code_size;
   } else {
-    uint64_t nalu_length;
     BufferReader reader(stream_, stream_size_);
     if (!reader.ReadNBytesInto8(&nalu_length, nalu_length_size_))
       return NaluReader::kInvalidStream;
@@ -91,17 +90,16 @@ NaluReader::Result NaluReader::Advance(Nalu* nalu) {
       LOG(ERROR) << "NALU size 0";
       return NaluReader::kInvalidStream;
     }
-    nalu_length_with_header = nalu_length + nalu_length_size_;
   }
 
-  if (!nalu->InitializeFromH264(stream_, nalu_length_with_header,
-                                nalu_length_size_or_start_code_size))
+  const uint8_t* nalu_data = stream_ + nalu_length_size_or_start_code_size;
+  if (!nalu->InitializeFromH264(nalu_data, nalu_length))
     return NaluReader::kInvalidStream;
 
   // Move parser state to after this NALU, so next time Advance
   // is called, we will effectively be skipping it.
-  stream_ += nalu_length_with_header;
-  stream_size_ -= nalu_length_with_header;
+  stream_ += nalu_length_size_or_start_code_size + nalu_length;
+  stream_size_ -= nalu_length_size_or_start_code_size + nalu_length;
 
   DVLOG(4) << "NALU type: " << static_cast<int>(nalu->type())
            << " at: " << reinterpret_cast<const void*>(nalu->data())
@@ -109,6 +107,18 @@ NaluReader::Result NaluReader::Advance(Nalu* nalu) {
            << " ref: " << static_cast<int>(nalu->ref_idc());
 
   return NaluReader::kOk;
+}
+
+bool NaluReader::StartsWithStartCode() {
+  if (stream_size_ >= 3) {
+    if (IsStartCode(stream_))
+      return true;
+  }
+  if (stream_size_ >= 4) {
+    if (stream_[0] == 0x00 && IsStartCode(stream_ + 1))
+      return true;
+  }
+  return false;
 }
 
 // static

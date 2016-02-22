@@ -13,10 +13,6 @@ namespace edash_packager {
 namespace media {
 namespace mp4 {
 
-namespace {
-const uint8_t kStartCodeSize = 0;
-}
-
 H264VideoSliceHeaderParser::H264VideoSliceHeaderParser() {}
 H264VideoSliceHeaderParser::~H264VideoSliceHeaderParser() {}
 
@@ -39,7 +35,7 @@ bool H264VideoSliceHeaderParser::Initialize(
 
     int id;
     Nalu nalu;
-    RCHECK(nalu.InitializeFromH264(data, size, kStartCodeSize));
+    RCHECK(nalu.InitializeFromH264(data, size));
     RCHECK(parser_.ParseSPS(nalu, &id) == H264Parser::kOk);
   }
 
@@ -53,7 +49,7 @@ bool H264VideoSliceHeaderParser::Initialize(
 
     int id;
     Nalu nalu;
-    RCHECK(nalu.InitializeFromH264(data, size, kStartCodeSize));
+    RCHECK(nalu.InitializeFromH264(data, size));
     RCHECK(parser_.ParsePPS(nalu, &id) == H264Parser::kOk);
   }
 

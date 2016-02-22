@@ -31,7 +31,6 @@ TEST(H264VideoSliceHeaderParserTest, BasicSupport) {
     0x00, 0x06,  // Size
     0x68, 0xeb, 0xe3, 0xcb, 0x22, 0xc0
   };
-  const uint8_t kStartCodeSize = 0;
   const uint8_t kData[] = {
     // Incomplete data, but we only care about the header size.
     0x65, 0x88, 0x84, 0x00, 0x21, 0xff, 0xcf, 0x73, 0xc7, 0x24,
@@ -44,7 +43,7 @@ TEST(H264VideoSliceHeaderParserTest, BasicSupport) {
   ASSERT_TRUE(parser.Initialize(extra_data));
 
   Nalu nalu;
-  ASSERT_TRUE(nalu.InitializeFromH264(kData, arraysize(kData), kStartCodeSize));
+  ASSERT_TRUE(nalu.InitializeFromH264(kData, arraysize(kData)));
   // Real header size is 34 bits, but we round up to 5 bytes.
   EXPECT_EQ(5, parser.GetHeaderSize(nalu));
 }

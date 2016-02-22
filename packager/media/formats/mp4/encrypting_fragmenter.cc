@@ -49,6 +49,15 @@ VideoCodec GetVideoCodec(const StreamInfo& stream_info) {
       static_cast<const VideoStreamInfo&>(stream_info);
   return video_stream_info.codec();
 }
+
+uint8_t GetNaluLengthSize(const StreamInfo& stream_info) {
+  if (stream_info.stream_type() != kStreamVideo)
+    return 0;
+
+  const VideoStreamInfo& video_stream_info =
+      static_cast<const VideoStreamInfo&>(stream_info);
+  return video_stream_info.nalu_length_size();
+}
 }  // namespace
 
 EncryptingFragmenter::EncryptingFragmenter(
@@ -59,6 +68,7 @@ EncryptingFragmenter::EncryptingFragmenter(
     : Fragmenter(traf),
       info_(info),
       encryption_key_(encryption_key.Pass()),
+      nalu_length_size_(GetNaluLengthSize(*info)),
       clear_time_(clear_time) {
   DCHECK(encryption_key_);
   VideoCodec video_codec = GetVideoCodec(*info);
@@ -213,7 +223,7 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
         data += frame.frame_size;
       }
     } else {
-      NaluReader reader(GetNaluLengthSize(), data, sample->data_size());
+      NaluReader reader(nalu_length_size_, data, sample->data_size());
 
       // Store the current length of clear data.  This is used to squash
       // multiple unencrypted NAL units into fewer subsample entries.
@@ -231,15 +241,16 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
           if (video_slice_header_size < 0)
             return Status(error::MUXER_FAILURE, "Failed to read slice header.");
 
-          const uint64_t current_clear_bytes =
-              nalu.header_size() + video_slice_header_size;
+          const uint64_t current_clear_bytes = nalu.header_size() +
+                                               video_slice_header_size;
           const uint64_t cipher_bytes =
               nalu.data_size() - video_slice_header_size;
           const uint8_t* nalu_data = nalu.data() + current_clear_bytes;
           EncryptBytes(const_cast<uint8_t*>(nalu_data), cipher_bytes);
 
-          AddSubsamples(accumulated_clear_bytes + current_clear_bytes,
-                        cipher_bytes, &sample_encryption_entry.subsamples);
+          AddSubsamples(
+              accumulated_clear_bytes + nalu_length_size_ + current_clear_bytes,
+              cipher_bytes, &sample_encryption_entry.subsamples);
           accumulated_clear_bytes = 0;
         } else {
           // For non-video-slice NAL units, don't encrypt.
@@ -265,17 +276,8 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
   return Status::OK;
 }
 
-uint8_t EncryptingFragmenter::GetNaluLengthSize() {
-  if (info_->stream_type() != kStreamVideo)
-    return 0;
-
-  const VideoStreamInfo& video_stream_info =
-      static_cast<const VideoStreamInfo&>(*info_);
-  return video_stream_info.nalu_length_size();
-}
-
 bool EncryptingFragmenter::IsSubsampleEncryptionRequired() {
-  return vpx_parser_ || GetNaluLengthSize() != 0;
+  return vpx_parser_ || nalu_length_size_ != 0;
 }
 
 }  // namespace mp4

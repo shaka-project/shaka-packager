@@ -40,8 +40,7 @@ class Nalu {
   Nalu();
 
   bool InitializeFromH264(const uint8_t* data,
-                          uint64_t size,
-                          uint8_t start_code_size) WARN_UNUSED_RESULT;
+                          uint64_t size) WARN_UNUSED_RESULT;
 
   const uint8_t* data() const { return data_; }
   uint64_t data_size() const { return data_size_; }
@@ -104,6 +103,9 @@ class NaluReader {
   /// @return kOk if a NALU is read; kEOStream if the stream is at the
   ///         end-of-stream; kInvalidStream on error.
   Result Advance(Nalu* nalu);
+
+  /// @returns true if the current position points to a start code.
+  bool StartsWithStartCode();
 
  private:
   enum Format {

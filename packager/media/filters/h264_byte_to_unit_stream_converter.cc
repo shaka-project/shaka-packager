@@ -34,24 +34,14 @@ bool H264ByteToUnitStreamConverter::ConvertByteStreamToNalUnitStream(
 
   BufferWriter output_buffer(input_frame_size + kStreamConversionOverhead);
 
-  bool first_nalu(true);
   Nalu nalu;
   NaluReader reader(kIsAnnexbByteStream, input_frame, input_frame_size);
-  while (reader.Advance(&nalu) == NaluReader::kOk) {
-    if (first_nalu) {
-      if (nalu.data() != input_frame) {
-        LOG(ERROR) << "H.264 byte stream frame did not begin with start code.";
-        return false;
-      }
-      first_nalu = false;
-    }
-
-    ProcessNalu(nalu, &output_buffer);
-  }
-
-  if (first_nalu) {
-    LOG(ERROR) << "H.264 byte stream frame did not contain start codes.";
+  if (!reader.StartsWithStartCode()) {
+    LOG(ERROR) << "H.264 byte stream frame did not begin with start code.";
     return false;
+  }
+  while (reader.Advance(&nalu) == NaluReader::kOk) {
+    ProcessNalu(nalu, &output_buffer);
   }
 
   output_buffer.SwapBuffer(output_frame);

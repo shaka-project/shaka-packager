@@ -24,16 +24,16 @@ TEST(NaluReaderTest, StartCodeSearch) {
 
   Nalu nalu;
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
-  EXPECT_EQ(kNaluData + 6, nalu.data());
+  EXPECT_EQ(kNaluData + 9, nalu.data());
   EXPECT_EQ(3u, nalu.data_size());
-  EXPECT_EQ(4u, nalu.header_size());
+  EXPECT_EQ(1u, nalu.header_size());
   EXPECT_EQ(0, nalu.ref_idc());
   EXPECT_EQ(0x12, nalu.type());
 
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
-  EXPECT_EQ(kNaluData + 13, nalu.data());
+  EXPECT_EQ(kNaluData + 17, nalu.data());
   EXPECT_EQ(3u, nalu.data_size());
-  EXPECT_EQ(5u, nalu.header_size());
+  EXPECT_EQ(1u, nalu.header_size());
   EXPECT_EQ(3, nalu.ref_idc());
   EXPECT_EQ(7, nalu.type());
 
@@ -52,44 +52,44 @@ TEST(NaluReaderTest, OneByteNaluLength) {
 
   Nalu nalu;
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
-  EXPECT_EQ(kNaluData, nalu.data());
+  EXPECT_EQ(kNaluData + 1, nalu.data());
   EXPECT_EQ(4u, nalu.data_size());
-  EXPECT_EQ(2u, nalu.header_size());
+  EXPECT_EQ(1u, nalu.header_size());
   EXPECT_EQ(0, nalu.ref_idc());
   EXPECT_EQ(8, nalu.type());
 
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
-  EXPECT_EQ(kNaluData + 6, nalu.data());
+  EXPECT_EQ(kNaluData + 7, nalu.data());
   EXPECT_EQ(5u, nalu.data_size());
-  EXPECT_EQ(2u, nalu.header_size());
+  EXPECT_EQ(1u, nalu.header_size());
   EXPECT_EQ(3, nalu.ref_idc());
   EXPECT_EQ(7, nalu.type());
 
   EXPECT_EQ(NaluReader::kEOStream, reader.Advance(&nalu));
 }
 
-TEST(NaluReaderTest, ThreeByteNaluLength) {
+TEST(NaluReaderTest, FourByteNaluLength) {
   const uint8_t kNaluData[] = {
     // First NALU
-    0x00, 0x00, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+    0x00, 0x00, 0x00, 0x07, 0x08, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
     // Second NALU
-    0x00, 0x00, 0x03, 0x67, 0x0a, 0x0b
+    0x00, 0x00, 0x00, 0x03, 0x67, 0x0a, 0x0b
   };
 
-  NaluReader reader(3, kNaluData, arraysize(kNaluData));
+  NaluReader reader(4, kNaluData, arraysize(kNaluData));
 
   Nalu nalu;
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
-  EXPECT_EQ(kNaluData, nalu.data());
+  EXPECT_EQ(kNaluData + 4, nalu.data());
   EXPECT_EQ(6u, nalu.data_size());
-  EXPECT_EQ(4u, nalu.header_size());
+  EXPECT_EQ(1u, nalu.header_size());
   EXPECT_EQ(0, nalu.ref_idc());
   EXPECT_EQ(8, nalu.type());
 
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
-  EXPECT_EQ(kNaluData + 10, nalu.data());
+  EXPECT_EQ(kNaluData + 15, nalu.data());
   EXPECT_EQ(2u, nalu.data_size());
-  EXPECT_EQ(4u, nalu.header_size());
+  EXPECT_EQ(1u, nalu.header_size());
   EXPECT_EQ(3, nalu.ref_idc());
   EXPECT_EQ(7, nalu.type());
 

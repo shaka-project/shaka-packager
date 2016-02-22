@@ -49,7 +49,7 @@ bool AVCDecoderConfiguration::Parse(const std::vector<uint8_t>& data) {
   H264Parser parser;
   int sps_id = 0;
   Nalu nalu;
-  RCHECK(nalu.InitializeFromH264(reader.data() + reader.pos(), sps_length, 0));
+  RCHECK(nalu.InitializeFromH264(reader.data() + reader.pos(), sps_length));
   RCHECK(parser.ParseSPS(nalu, &sps_id) == H264Parser::kOk);
   return ExtractResolutionFromSps(*parser.GetSPS(sps_id), &coded_width_,
                                   &coded_height_, &pixel_width_,

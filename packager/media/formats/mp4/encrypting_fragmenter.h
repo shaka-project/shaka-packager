@@ -66,16 +66,16 @@ class EncryptingFragmenter : public Fragmenter {
   void EncryptBytes(uint8_t* data, uint32_t size);
   Status EncryptSample(scoped_refptr<MediaSample> sample);
 
-  // If this stream contains AVC, subsample encryption specifies that the size
-  // and type of NAL units remain unencrypted. This function returns the size of
-  // the size field in bytes. Can be 1, 2 or 4 bytes.
-  uint8_t GetNaluLengthSize();
   // Should we enable subsample encryption?
   bool IsSubsampleEncryptionRequired();
 
   scoped_refptr<StreamInfo> info_;
   scoped_ptr<EncryptionKey> encryption_key_;
   scoped_ptr<AesCtrEncryptor> encryptor_;
+  // If this stream contains AVC, subsample encryption specifies that the size
+  // and type of NAL units remain unencrypted. This function returns the size of
+  // the size field in bytes. Can be 1, 2 or 4 bytes.
+  const uint8_t nalu_length_size_;
   int64_t clear_time_;
 
   scoped_ptr<VPxParser> vpx_parser_;

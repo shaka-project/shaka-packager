@@ -12,12 +12,6 @@
 namespace edash_packager {
 namespace media {
 
-namespace {
-// The test data does not include a start code, the start of the data is the
-// NALU header.
-const uint8_t kStartCodeSize = 0;
-}
-
 TEST(H264ParserTest, StreamFileParsing) {
   std::vector<uint8_t> buffer = ReadTestDataFile("test-25fps.h264");
 
@@ -81,7 +75,7 @@ TEST(H264ParserTest, ExtractResolutionFromSpsData) {
   H264Parser parser;
   int sps_id = 0;
   Nalu nalu;
-  ASSERT_TRUE(nalu.InitializeFromH264(kSps, arraysize(kSps), kStartCodeSize));
+  ASSERT_TRUE(nalu.InitializeFromH264(kSps, arraysize(kSps)));
   ASSERT_EQ(H264Parser::kOk, parser.ParseSPS(nalu, &sps_id));
 
   uint32_t coded_width = 0;
@@ -106,7 +100,7 @@ TEST(H264ParserTest, ExtractResolutionFromSpsDataWithCropping) {
   H264Parser parser;
   int sps_id = 0;
   Nalu nalu;
-  ASSERT_TRUE(nalu.InitializeFromH264(kSps, arraysize(kSps), kStartCodeSize));
+  ASSERT_TRUE(nalu.InitializeFromH264(kSps, arraysize(kSps)));
   ASSERT_EQ(H264Parser::kOk, parser.ParseSPS(nalu, &sps_id));
 
   uint32_t coded_width = 0;
