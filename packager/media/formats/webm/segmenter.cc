@@ -392,6 +392,18 @@ Status Segmenter::WriteFrame(bool write_duration) {
     frame.set_reference_block_timestamp(timestamp_ns);
   }
 
+  // GetRelativeTimecode will return -1 if the relative timecode is too large
+  // to fit in the frame.
+  if (cluster_->GetRelativeTimecode(frame.timestamp() /
+                                    cluster_->timecode_scale()) < 0) {
+    const double segment_duration =
+        static_cast<double>(frame.timestamp()) / kSecondsToNs;
+    LOG(ERROR) << "Error adding sample to segment: segment too large, "
+               << segment_duration << " seconds.";
+    return Status(error::MUXER_FAILURE,
+                  "Error adding sample to segment: segment too large");
+  }
+
   if (!cluster_->AddFrame(&frame)) {
     return Status(error::MUXER_FAILURE,
                   "Error adding sample to segment: Cluster::AddFrame failed");
