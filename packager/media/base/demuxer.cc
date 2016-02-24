@@ -160,7 +160,10 @@ bool Demuxer::PushSample(uint32_t track_id,
   std::vector<MediaStream*>::iterator it = streams_.begin();
   for (; it != streams_.end(); ++it) {
     if (track_id == (*it)->info()->track_id()) {
-      return (*it)->PushSample(sample).ok();
+      Status status = (*it)->PushSample(sample);
+      if (!status.ok())
+        LOG(ERROR) << "Demuxer::PushSample failed with " << status;
+      return status.ok();
     }
   }
   LOG(ERROR) << "Track " << track_id << " not found.";
