@@ -13,27 +13,23 @@
 
 #include "packager/base/macros.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/filters/decoder_configuration.h"
 
 namespace edash_packager {
 namespace media {
 
 /// Class for parsing HEVC decoder configuration.
-class HEVCDecoderConfiguration {
+class HEVCDecoderConfiguration : public DecoderConfiguration {
  public:
   HEVCDecoderConfiguration();
-  ~HEVCDecoderConfiguration();
-
-  /// Parses input to extract HEVC decoder configuration data.
-  /// @return false if there is parsing errors.
-  bool Parse(const std::vector<uint8_t>& data);
+  ~HEVCDecoderConfiguration() override;
 
   /// @return The codec string.
   std::string GetCodecString(VideoCodec codec) const;
 
-  /// @return The size of the NAL unit length field.
-  uint8_t length_size() { return length_size_; }
-
  private:
+  bool ParseInternal() override;
+
   uint8_t version_;
   uint8_t general_profile_space_;
   bool general_tier_flag_;
@@ -41,7 +37,6 @@ class HEVCDecoderConfiguration {
   uint32_t general_profile_compatibility_flags_;
   std::vector<uint8_t> general_constraint_indicator_flags_;
   uint8_t general_level_idc_;
-  uint8_t length_size_;
 
   DISALLOW_COPY_AND_ASSIGN(HEVCDecoderConfiguration);
 };

@@ -18,7 +18,8 @@ TEST(H264ParserTest, StreamFileParsing) {
   int num_nalus = 759;
 
   H264Parser parser;
-  NaluReader reader(kIsAnnexbByteStream, buffer.data(), buffer.size());
+  NaluReader reader(NaluReader::kH264, kIsAnnexbByteStream, buffer.data(),
+                    buffer.size());
 
   // Parse until the end of stream/unsupported stream/error in stream is found.
   int num_parsed_nalus = 0;

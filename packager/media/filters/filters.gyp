@@ -15,6 +15,8 @@
       'sources': [
         'avc_decoder_configuration.cc',
         'avc_decoder_configuration.h',
+        'decoder_configuration.cc',
+        'decoder_configuration.h',
         'ec3_audio_util.cc',
         'ec3_audio_util.h',
         'hevc_decoder_configuration.cc',

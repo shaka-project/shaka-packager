@@ -24,19 +24,22 @@ Nalu::Nalu()
       header_size_(0),
       payload_size_(0),
       ref_idc_(0),
+      nuh_layer_id_(0),
+      nuh_temporal_id_(0),
       type_(0),
       is_video_slice_(false) {}
 
 bool Nalu::InitializeFromH264(const uint8_t* data, uint64_t size) {
   DCHECK(data);
-  DCHECK_GT(size, 0u);
+  if (size == 0)
+    return false;
   uint8_t header = data[0];
   if ((header & 0x80) != 0)
     return false;
 
   data_ = data;
   header_size_ = 1;
-  payload_size_ = size - 1;
+  payload_size_ = size - header_size_;
   ref_idc_ = (header >> 5) & 0x3;
   type_ = header & 0x1F;
   is_video_slice_ = (type_ >= Nalu::H264_NonIDRSlice &&
@@ -44,11 +47,36 @@ bool Nalu::InitializeFromH264(const uint8_t* data, uint64_t size) {
   return true;
 }
 
-NaluReader::NaluReader(uint8_t nal_length_size,
+bool Nalu::InitializeFromH265(const uint8_t* data, uint64_t size) {
+  DCHECK(data);
+  if (size < 2)
+    return false;
+  uint16_t header = (data[0] << 8) | data[1];
+  if ((header & 0x8000) != 0)
+    return false;
+
+  data_ = data;
+  header_size_ = 2;
+  payload_size_ = size - header_size_;
+
+  type_ = (header >> 9) & 0x3F;
+  nuh_layer_id_ = (header >> 3) & 0x3F;
+  nuh_temporal_id_ = (header & 0x7) - 1;
+
+  // Don't treat reserved VCL types as video slices since we cannot parse them.
+  is_video_slice_ =
+      (type_ >= Nalu::H265_TRAIL_N && type_ <= Nalu::H265_RASL_R) ||
+      (type_ >= Nalu::H265_BLA_W_LP && type_ <= Nalu::H265_CRA_NUT);
+  return true;
+}
+
+NaluReader::NaluReader(NaluType type,
+                       uint8_t nal_length_size,
                        const uint8_t* stream,
                        uint64_t stream_size)
     : stream_(stream),
       stream_size_(stream_size),
+      nalu_type_(type),
       nalu_length_size_(nal_length_size),
       format_(nal_length_size == 0 ? kAnnexbByteStreamFormat
                                    : kNalUnitStreamFormat) {
@@ -93,8 +121,14 @@ NaluReader::Result NaluReader::Advance(Nalu* nalu) {
   }
 
   const uint8_t* nalu_data = stream_ + nalu_length_size_or_start_code_size;
-  if (!nalu->InitializeFromH264(nalu_data, nalu_length))
-    return NaluReader::kInvalidStream;
+  if (nalu_type_ == kH264) {
+    if (!nalu->InitializeFromH264(nalu_data, nalu_length))
+      return NaluReader::kInvalidStream;
+  } else {
+    DCHECK_EQ(kH265, nalu_type_);
+    if (!nalu->InitializeFromH265(nalu_data, nalu_length))
+      return NaluReader::kInvalidStream;
+  }
 
   // Move parser state to after this NALU, so next time Advance
   // is called, we will effectively be skipping it.

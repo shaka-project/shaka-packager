@@ -15,7 +15,7 @@ namespace mp4 {
 TEST(H264VideoSliceHeaderParserTest, BasicSupport) {
   // Taken from bear-640x360.mp4 (video)
   const uint8_t kExtraData[] = {
-    // Header (ignored)
+    // Header
     0x01, 0x64, 0x00, 0x1e, 0xff,
     // SPS count (ignore top three bits)
     0xe1,
@@ -50,8 +50,8 @@ TEST(H264VideoSliceHeaderParserTest, BasicSupport) {
 
 TEST(H264VideoSliceHeaderParserTest, SupportsMultipleEntriesInExtraData) {
   const uint8_t kExtraData[] = {
-    // Header (ignored)
-    0xfe, 0xed, 0xf0, 0x0d, 0x00,
+    // Header
+    0x01, 0xed, 0xf0, 0x0d, 0x00,
     // SPS count (ignore top three bits)
     0xe3,
     // SPS
@@ -93,10 +93,16 @@ TEST(H264VideoSliceHeaderParserTest, SupportsMultipleEntriesInExtraData) {
 
 TEST(H264VideoSliceHeaderParserTest, IgnoresExtraDataAtEnd) {
   const uint8_t kExtraData[] = {
-    // Header (ignored)
-    0xfe, 0xed, 0xf0, 0x0d, 0x00,
-    // SPS count
-    0x00,
+    // Header
+    0x01, 0xed, 0xf0, 0x0d, 0x00,
+    // SPS count (ignore top three bits)
+    0xe1,
+    // SPS
+    0x00, 0x19,  // Size
+    0x67, 0x64, 0x00, 0x1e, 0xac, 0xd9, 0x40, 0xa0,
+    0x2f, 0xf9, 0x70, 0x11, 0x00, 0x00, 0x03, 0x03,
+    0xe9, 0x00, 0x00, 0xea, 0x60, 0x0f, 0x16, 0x2d,
+    0x96,
     // PPS count
     0x00,
     // Extra data
@@ -111,8 +117,8 @@ TEST(H264VideoSliceHeaderParserTest, IgnoresExtraDataAtEnd) {
 
 TEST(H264VideoSliceHeaderParserTest, ErrorsForEOSAfterEntry) {
   const uint8_t kExtraData[] = {
-    // Header (ignored)
-    0xfe, 0xed, 0xf0, 0x0d, 0x00,
+    // Header
+    0x01, 0xed, 0xf0, 0x0d, 0x00,
     // SPS count (ignore top three bits)
     0xe3,
     // SPS
@@ -131,8 +137,8 @@ TEST(H264VideoSliceHeaderParserTest, ErrorsForEOSAfterEntry) {
 
 TEST(H264VideoSliceHeaderParserTest, ErrorsForEOSWithinEntry) {
   const uint8_t kExtraData[] = {
-    // Header (ignored)
-    0xfe, 0xed, 0xf0, 0x0d, 0x00,
+    // Header
+    0x01, 0xed, 0xf0, 0x0d, 0x00,
     // SPS count (ignore top three bits)
     0xe3,
     // SPS

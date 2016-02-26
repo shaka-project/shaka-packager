@@ -12,19 +12,16 @@
 #include <vector>
 
 #include "packager/base/macros.h"
+#include "packager/media/filters/decoder_configuration.h"
 
 namespace edash_packager {
 namespace media {
 
 /// Class for parsing AVC decoder configuration.
-class AVCDecoderConfiguration {
+class AVCDecoderConfiguration : public DecoderConfiguration {
  public:
   AVCDecoderConfiguration();
-  ~AVCDecoderConfiguration();
-
-  /// Parses input to extract AVC decoder configuration data.
-  /// @return false if there is parsing errors.
-  bool Parse(const std::vector<uint8_t>& data);
+  ~AVCDecoderConfiguration() override;
 
   /// @return The codec string.
   std::string GetCodecString() const;
@@ -33,7 +30,6 @@ class AVCDecoderConfiguration {
   uint8_t profile_indication() const { return profile_indication_; }
   uint8_t profile_compatibility() const { return profile_compatibility_; }
   uint8_t avc_level() const { return avc_level_; }
-  uint8_t length_size() const { return length_size_; }
   uint32_t coded_width() const { return coded_width_; }
   uint32_t coded_height() const { return coded_height_; }
   uint32_t pixel_width() const { return pixel_width_; }
@@ -46,11 +42,12 @@ class AVCDecoderConfiguration {
                                     uint8_t avc_level);
 
  private:
+  bool ParseInternal() override;
+
   uint8_t version_;
   uint8_t profile_indication_;
   uint8_t profile_compatibility_;
   uint8_t avc_level_;
-  uint8_t length_size_;
 
   // Extracted from SPS.
   uint32_t coded_width_;

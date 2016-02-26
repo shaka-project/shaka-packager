@@ -6,8 +6,8 @@
 
 #include "packager/media/formats/mp4/video_slice_header_parser.h"
 
+#include "packager/media/filters/avc_decoder_configuration.h"
 #include "packager/media/formats/mp4/rcheck.h"
-#include "packager/media/base/buffer_reader.h"
 
 namespace edash_packager {
 namespace media {
@@ -18,39 +18,18 @@ H264VideoSliceHeaderParser::~H264VideoSliceHeaderParser() {}
 
 bool H264VideoSliceHeaderParser::Initialize(
     const std::vector<uint8_t>& decoder_configuration) {
-  // See ISO 14496-15 sec 5.3.3.1.2
-  BufferReader reader(decoder_configuration.data(),
-                      decoder_configuration.size());
-  RCHECK(reader.SkipBytes(5));
+  AVCDecoderConfiguration config;
+  RCHECK(config.Parse(decoder_configuration));
 
-  uint8_t sps_count;
-  RCHECK(reader.Read1(&sps_count));
-  sps_count = sps_count & 0x1f;
-
-  for (size_t i = 0; i < sps_count; i++) {
-    uint16_t size;
-    RCHECK(reader.Read2(&size));
-    const uint8_t* data = reader.data() + reader.pos();
-    RCHECK(reader.SkipBytes(size));
-
+  for (size_t i = 0; i < config.nalu_count(); i++) {
     int id;
-    Nalu nalu;
-    RCHECK(nalu.InitializeFromH264(data, size));
-    RCHECK(parser_.ParseSPS(nalu, &id) == H264Parser::kOk);
-  }
-
-  uint8_t pps_count;
-  RCHECK(reader.Read1(&pps_count));
-  for (size_t i = 0; i < pps_count; i++) {
-    uint16_t size;
-    RCHECK(reader.Read2(&size));
-    const uint8_t* data = reader.data() + reader.pos();
-    RCHECK(reader.SkipBytes(size));
-
-    int id;
-    Nalu nalu;
-    RCHECK(nalu.InitializeFromH264(data, size));
-    RCHECK(parser_.ParsePPS(nalu, &id) == H264Parser::kOk);
+    const Nalu& nalu = config.nalu(i);
+    if (nalu.type() == Nalu::H264_SPS) {
+      RCHECK(parser_.ParseSPS(nalu, &id) == H264Parser::kOk);
+    } else {
+      DCHECK_EQ(Nalu::H264_PPS, nalu.type());
+      RCHECK(parser_.ParsePPS(nalu, &id) == H264Parser::kOk);
+    }
   }
 
   return true;

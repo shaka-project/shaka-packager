@@ -79,13 +79,12 @@ HEVCDecoderConfiguration::HEVCDecoderConfiguration()
       general_tier_flag_(false),
       general_profile_idc_(0),
       general_profile_compatibility_flags_(0),
-      general_level_idc_(0),
-      length_size_(0) {}
+      general_level_idc_(0) {}
 
 HEVCDecoderConfiguration::~HEVCDecoderConfiguration() {}
 
-bool HEVCDecoderConfiguration::Parse(const std::vector<uint8_t>& data) {
-  BufferReader reader(data.data(), data.size());
+bool HEVCDecoderConfiguration::ParseInternal() {
+  BufferReader reader(data(), data_size());
 
   uint8_t profile_indication = 0;
   uint8_t length_size_minus_one = 0;
@@ -104,7 +103,30 @@ bool HEVCDecoderConfiguration::Parse(const std::vector<uint8_t>& data) {
   general_tier_flag_ = ((profile_indication >> 5) & 1) == 1;
   general_profile_idc_ = profile_indication & 0x1f;
 
-  length_size_ = (length_size_minus_one & 0x3) + 1;
+  if ((length_size_minus_one & 0x3) == 2) {
+    LOG(ERROR) << "Invalid NALU length size.";
+    return false;
+  }
+  set_nalu_length_size((length_size_minus_one & 0x3) + 1);
+
+  for (int i = 0; i < num_of_arrays; i++) {
+    uint8_t nal_unit_type;
+    uint16_t num_nalus;
+    RCHECK(reader.Read1(&nal_unit_type));
+    nal_unit_type &= 0x3f;
+    RCHECK(reader.Read2(&num_nalus));
+    for (int j = 0; j < num_nalus; j++) {
+      uint16_t nalu_length;
+      RCHECK(reader.Read2(&nalu_length));
+      uint64_t nalu_offset = reader.pos();
+      RCHECK(reader.SkipBytes(nalu_length));
+
+      Nalu nalu;
+      RCHECK(nalu.InitializeFromH265(data() + nalu_offset, nalu_length));
+      RCHECK(nalu.type() == nal_unit_type);
+      AddNalu(nalu);
+    }
+  }
 
   // TODO(kqyang): Parse SPS to get resolutions.
   return true;

@@ -477,7 +477,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             return false;
           }
           codec_string = avc_config.GetCodecString();
-          nalu_length_size = avc_config.length_size();
+          nalu_length_size = avc_config.nalu_length_size();
 
           if (coded_width != avc_config.coded_width() ||
               coded_height != avc_config.coded_height()) {
@@ -514,7 +514,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             return false;
           }
           codec_string = hevc_config.GetCodecString(video_codec);
-          nalu_length_size = hevc_config.length_size();
+          nalu_length_size = hevc_config.nalu_length_size();
           break;
         }
         case FOURCC_VP08:

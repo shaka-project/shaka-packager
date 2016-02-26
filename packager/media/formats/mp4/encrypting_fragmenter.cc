@@ -223,7 +223,10 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
         data += frame.frame_size;
       }
     } else {
-      NaluReader reader(nalu_length_size_, data, sample->data_size());
+      // TODO(modmaker): Support H.265.
+      const NaluReader::NaluType nalu_type = NaluReader::kH264;
+      NaluReader reader(nalu_type, nalu_length_size_, data,
+                        sample->data_size());
 
       // Store the current length of clear data.  This is used to squash
       // multiple unencrypted NAL units into fewer subsample entries.

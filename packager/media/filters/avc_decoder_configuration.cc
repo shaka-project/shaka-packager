@@ -19,20 +19,25 @@ AVCDecoderConfiguration::AVCDecoderConfiguration()
     : version_(0),
       profile_indication_(0),
       profile_compatibility_(0),
-      avc_level_(0),
-      length_size_(0) {}
+      avc_level_(0) {}
 
 AVCDecoderConfiguration::~AVCDecoderConfiguration() {}
 
-bool AVCDecoderConfiguration::Parse(const std::vector<uint8_t>& data) {
-  BufferReader reader(data.data(), data.size());
+bool AVCDecoderConfiguration::ParseInternal() {
+  // See ISO 14496-15 sec 5.3.3.1.2
+  BufferReader reader(data(), data_size());
+
   RCHECK(reader.Read1(&version_) && version_ == 1 &&
          reader.Read1(&profile_indication_) &&
          reader.Read1(&profile_compatibility_) && reader.Read1(&avc_level_));
 
   uint8_t length_size_minus_one;
   RCHECK(reader.Read1(&length_size_minus_one));
-  length_size_ = (length_size_minus_one & 0x3) + 1;
+  if ((length_size_minus_one & 0x3) == 2) {
+    LOG(ERROR) << "Invalid NALU length size.";
+    return false;
+  }
+  set_nalu_length_size((length_size_minus_one & 0x3) + 1);
 
   uint8_t num_sps;
   RCHECK(reader.Read1(&num_sps));
@@ -42,20 +47,45 @@ bool AVCDecoderConfiguration::Parse(const std::vector<uint8_t>& data) {
     return false;
   }
 
-  uint16_t sps_length = 0;
-  RCHECK(reader.Read2(&sps_length));
+  for (uint8_t i = 0; i < num_sps; i++) {
+    uint16_t size = 0;
+    RCHECK(reader.Read2(&size));
+    const uint8_t* nalu_data = reader.data() + reader.pos();
+    RCHECK(reader.SkipBytes(size));
 
-  H264Parser parser;
-  int sps_id = 0;
-  Nalu nalu;
-  RCHECK(nalu.InitializeFromH264(reader.data() + reader.pos(), sps_length));
-  RCHECK(parser.ParseSPS(nalu, &sps_id) == H264Parser::kOk);
-  return ExtractResolutionFromSps(*parser.GetSPS(sps_id), &coded_width_,
-                                  &coded_height_, &pixel_width_,
-                                  &pixel_height_);
-  // It is unlikely to have more than one SPS in practice. Also there's
-  // no way to change the {coded,pixel}_{width,height} dynamically from
-  // VideoStreamInfo. So skip the rest (if there are any).
+    Nalu nalu;
+    RCHECK(nalu.InitializeFromH264(nalu_data, size));
+    RCHECK(nalu.type() == Nalu::H264_SPS);
+    AddNalu(nalu);
+
+    if (i == 0) {
+      // It is unlikely to have more than one SPS in practice. Also there's
+      // no way to change the {coded,pixel}_{width,height} dynamically from
+      // VideoStreamInfo.
+      int sps_id = 0;
+      H264Parser parser;
+      RCHECK(parser.ParseSPS(nalu, &sps_id) == H264Parser::kOk);
+      RCHECK(ExtractResolutionFromSps(*parser.GetSPS(sps_id), &coded_width_,
+                                      &coded_height_, &pixel_width_,
+                                      &pixel_height_));
+    }
+  }
+
+  uint8_t pps_count;
+  RCHECK(reader.Read1(&pps_count));
+  for (uint8_t i = 0; i < pps_count; i++) {
+    uint16_t size = 0;
+    RCHECK(reader.Read2(&size));
+    const uint8_t* nalu_data = reader.data() + reader.pos();
+    RCHECK(reader.SkipBytes(size));
+
+    Nalu nalu;
+    RCHECK(nalu.InitializeFromH264(nalu_data, size));
+    RCHECK(nalu.type() == Nalu::H264_PPS);
+    AddNalu(nalu);
+  }
+
+  return true;
 }
 
 std::string AVCDecoderConfiguration::GetCodecString() const {

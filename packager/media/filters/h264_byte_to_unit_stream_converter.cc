@@ -35,7 +35,8 @@ bool H264ByteToUnitStreamConverter::ConvertByteStreamToNalUnitStream(
   BufferWriter output_buffer(input_frame_size + kStreamConversionOverhead);
 
   Nalu nalu;
-  NaluReader reader(kIsAnnexbByteStream, input_frame, input_frame_size);
+  NaluReader reader(NaluReader::kH264, kIsAnnexbByteStream, input_frame,
+                    input_frame_size);
   if (!reader.StartsWithStartCode()) {
     LOG(ERROR) << "H.264 byte stream frame did not begin with start code.";
     return false;

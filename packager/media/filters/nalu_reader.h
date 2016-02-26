@@ -36,17 +36,41 @@ class Nalu {
     H264_EOSeq = 10,
     H264_CodedSliceExtension = 20,
   };
+  enum H265NaluType {
+    H265_TRAIL_N = 0,
+    H265_RASL_R = 9,
+
+    H265_BLA_W_LP = 16,
+    H265_IDR_W_RADL = 19,
+    H265_IDR_N_LP = 20,
+    H265_CRA_NUT = 21,
+    H265_RSV_IRAP_VCL23 = 23,
+
+    H265_VPS = 32,
+    H265_SPS = 33,
+    H265_PPS = 34,
+    H265_AUD = 35,
+  };
 
   Nalu();
 
   bool InitializeFromH264(const uint8_t* data,
                           uint64_t size) WARN_UNUSED_RESULT;
 
+  bool InitializeFromH265(const uint8_t* data,
+                          uint64_t size) WARN_UNUSED_RESULT;
+
   const uint8_t* data() const { return data_; }
   uint64_t header_size() const { return header_size_; }
   uint64_t payload_size() const { return payload_size_; }
 
+  // H.264 Specific:
   int ref_idc() const { return ref_idc_; }
+
+  // H.265 Specific:
+  int nuh_layer_id() const { return nuh_layer_id_; }
+  int nuh_temporal_id() const { return nuh_temporal_id_; }
+
   int type() const { return type_; }
   bool is_video_slice() const { return is_video_slice_; }
 
@@ -61,10 +85,13 @@ class Nalu {
   uint64_t payload_size_;
 
   int ref_idc_;
+  int nuh_layer_id_;
+  int nuh_temporal_id_;
   int type_;
   bool is_video_slice_;
 
-  DISALLOW_COPY_AND_ASSIGN(Nalu);
+  // Don't use DISALLOW_COPY_AND_ASSIGN since it is just numbers and a pointer
+  // it does not own.  This allows Nalus to be stored in a vector.
 };
 
 /// Helper class used to read NAL units based on several formats:
@@ -77,11 +104,16 @@ class NaluReader {
     kInvalidStream,      // error in stream
     kEOStream,           // end of stream
   };
+  enum NaluType {
+    kH264,
+    kH265,
+  };
 
   /// @param nalu_length_size should be set to 0 for AnnexB byte streams;
   ///        otherwise, it indicates the size of NAL unit length for the NAL
   ///        unit stream.
-  NaluReader(uint8_t nal_length_size,
+  NaluReader(NaluType type,
+             uint8_t nal_length_size,
              const uint8_t* stream,
              uint64_t stream_size);
   ~NaluReader();
@@ -129,6 +161,8 @@ class NaluReader {
   const uint8_t* stream_;
   // The remaining size of the stream.
   uint64_t stream_size_;
+  // The type of NALU being read.
+  NaluType nalu_type_;
   // The number of bytes the prefix length is; only valid if format is
   // kAnnexbByteStreamFormat.
   uint8_t nalu_length_size_;
