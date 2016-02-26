@@ -244,7 +244,7 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
           const uint64_t current_clear_bytes = nalu.header_size() +
                                                video_slice_header_size;
           const uint64_t cipher_bytes =
-              nalu.data_size() - video_slice_header_size;
+              nalu.payload_size() - video_slice_header_size;
           const uint8_t* nalu_data = nalu.data() + current_clear_bytes;
           EncryptBytes(const_cast<uint8_t*>(nalu_data), cipher_bytes);
 
@@ -254,7 +254,7 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
           accumulated_clear_bytes = 0;
         } else {
           // For non-video-slice NAL units, don't encrypt.
-          accumulated_clear_bytes += nalu.header_size() + nalu.data_size();
+          accumulated_clear_bytes += nalu.header_size() + nalu.payload_size();
         }
       }
       if (result != NaluReader::kEOStream)

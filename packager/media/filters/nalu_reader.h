@@ -43,8 +43,8 @@ class Nalu {
                           uint64_t size) WARN_UNUSED_RESULT;
 
   const uint8_t* data() const { return data_; }
-  uint64_t data_size() const { return data_size_; }
   uint64_t header_size() const { return header_size_; }
+  uint64_t payload_size() const { return payload_size_; }
 
   int ref_idc() const { return ref_idc_; }
   int type() const { return type_; }
@@ -54,8 +54,11 @@ class Nalu {
   // A pointer to the NALU (i.e. points to the header).  This pointer is not
   // owned by this instance.
   const uint8_t* data_;
-  uint64_t data_size_;
+  // NALU header size (e.g. 1 byte for H.264).  Note that it does not include
+  // header extension data in some NAL units.
   uint64_t header_size_;
+  // Size of data after the header.
+  uint64_t payload_size_;
 
   int ref_idc_;
   int type_;

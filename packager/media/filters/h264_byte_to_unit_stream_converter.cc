@@ -54,8 +54,8 @@ void H264ByteToUnitStreamConverter::ProcessNalu(const Nalu& nalu,
   DCHECK(output_buffer);
 
   // Skip the start code, but keep the 1-byte NALU type.
-  const uint8_t* nalu_ptr = nalu.data() + nalu.header_size() - 1;
-  const uint64_t nalu_size = nalu.data_size() + 1;
+  const uint8_t* nalu_ptr = nalu.data();
+  const uint64_t nalu_size = nalu.payload_size() + nalu.header_size();
   DCHECK_LE(nalu_size, std::numeric_limits<uint32_t>::max());
 
   switch (nalu.type()) {

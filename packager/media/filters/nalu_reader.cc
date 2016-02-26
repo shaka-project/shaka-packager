@@ -21,8 +21,8 @@ inline bool IsStartCode(const uint8_t* data) {
 
 Nalu::Nalu()
     : data_(nullptr),
-      data_size_(0),
       header_size_(0),
+      payload_size_(0),
       ref_idc_(0),
       type_(0),
       is_video_slice_(false) {}
@@ -36,7 +36,7 @@ bool Nalu::InitializeFromH264(const uint8_t* data, uint64_t size) {
 
   data_ = data;
   header_size_ = 1;
-  data_size_ = size - 1;
+  payload_size_ = size - 1;
   ref_idc_ = (header >> 5) & 0x3;
   type_ = header & 0x1F;
   is_video_slice_ = (type_ >= Nalu::H264_NonIDRSlice &&
@@ -103,7 +103,7 @@ NaluReader::Result NaluReader::Advance(Nalu* nalu) {
 
   DVLOG(4) << "NALU type: " << static_cast<int>(nalu->type())
            << " at: " << reinterpret_cast<const void*>(nalu->data())
-           << " data size: " << nalu->data_size()
+           << " data size: " << nalu->payload_size()
            << " ref: " << static_cast<int>(nalu->ref_idc());
 
   return NaluReader::kOk;

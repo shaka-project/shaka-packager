@@ -635,7 +635,7 @@ H264Parser::Result H264Parser::ParseSPS(const Nalu& nalu, int* sps_id) {
   int data;
   Result res;
   H264BitReader reader;
-  reader.Initialize(nalu.data() + nalu.header_size(), nalu.data_size());
+  reader.Initialize(nalu.data() + nalu.header_size(), nalu.payload_size());
   H264BitReader* br = &reader;
 
   *sps_id = -1;
@@ -760,7 +760,7 @@ H264Parser::Result H264Parser::ParsePPS(const Nalu& nalu, int* pps_id) {
   const H264SPS* sps;
   Result res;
   H264BitReader reader;
-  reader.Initialize(nalu.data() + nalu.header_size(), nalu.data_size());
+  reader.Initialize(nalu.data() + nalu.header_size(), nalu.payload_size());
   H264BitReader* br = &reader;
 
   *pps_id = -1;
@@ -1031,7 +1031,7 @@ H264Parser::Result H264Parser::ParseSliceHeader(const Nalu& nalu,
   const H264PPS* pps;
   Result res;
   H264BitReader reader;
-  reader.Initialize(nalu.data() + nalu.header_size(), nalu.data_size());
+  reader.Initialize(nalu.data() + nalu.header_size(), nalu.payload_size());
   H264BitReader* br = &reader;
 
   memset(shdr, 0, sizeof(*shdr));
@@ -1039,7 +1039,7 @@ H264Parser::Result H264Parser::ParseSliceHeader(const Nalu& nalu,
   shdr->idr_pic_flag = (nalu.type() == 5);
   shdr->nal_ref_idc = nalu.ref_idc();
   shdr->nalu_data = nalu.data() + nalu.header_size();
-  shdr->nalu_size = nalu.data_size();
+  shdr->nalu_size = nalu.payload_size();
 
   READ_UE_OR_RETURN(&shdr->first_mb_in_slice);
   READ_UE_OR_RETURN(&shdr->slice_type);
@@ -1179,7 +1179,7 @@ H264Parser::Result H264Parser::ParseSEI(const Nalu& nalu,
                                         H264SEIMessage* sei_msg) {
   int byte;
   H264BitReader reader;
-  reader.Initialize(nalu.data() + nalu.header_size(), nalu.data_size());
+  reader.Initialize(nalu.data() + nalu.header_size(), nalu.payload_size());
   H264BitReader* br = &reader;
 
   memset(sei_msg, 0, sizeof(*sei_msg));
