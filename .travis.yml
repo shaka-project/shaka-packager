@@ -29,6 +29,19 @@ script:
   - ( find out/${BUILD_TYPE} -name "*_*test" | while read i ; do $i || exit ; done )
   - packager/app/test/packager_test.py -v --build_type ${BUILD_TYPE}
 
+before_deploy:
+  - mv out/${BUILD_TYPE}/packager out/${BUILD_TYPE}/packager-${TRAVIS_OS_NAME}
+
+deploy:
+  provider: releases
+  api_key:
+    secure: PbhquzRnY1BkGkM/6LmVSZjhUd8jWnj77QjxAKA8REnFhbAuzqwDYuytRmUsBFMtgatUEgTuh/1duZaIl0yXGvRZdNeGk7BgtguUy6vraWObjjNUSlQ6Njm4y/hMgaUIOhA9I2b8gokWU1PA0sDJOF/FoZaAxFpKXcW4d8Z2C0s=
+  file: out/${BUILD_TYPE}/packager-${TRAVIS_OS_NAME}
+  skip_cleanup: true
+  on:
+    tags: true
+    condition: ${BUILD_TYPE} = Release
+
 branches:
   only:
     - master
