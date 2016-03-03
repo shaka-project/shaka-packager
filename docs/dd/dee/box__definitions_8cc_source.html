@@ -455,7 +455,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;    std::vector&lt;SampleEncryptionEntry&gt;* sample_encryption_entries)<span class="keyword"> const </span>{</div>
 <div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;  DCHECK(IsIvSizeValid(iv_size));</div>
 <div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;  <a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html">BufferReader</a> reader(vector_as_array(&amp;<a class="code" href="../../d5/d78/structedash__packager_1_1media_1_1mp4_1_1SampleEncryption.html#ad241dc7c7acb0ff200444636b6881800">sample_encryption_data</a>),</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;  <a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html">BufferReader</a> reader(<a class="code" href="../../d5/d78/structedash__packager_1_1media_1_1mp4_1_1SampleEncryption.html#ad241dc7c7acb0ff200444636b6881800">sample_encryption_data</a>.data(),</div>
 <div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;                      <a class="code" href="../../d5/d78/structedash__packager_1_1media_1_1mp4_1_1SampleEncryption.html#ad241dc7c7acb0ff200444636b6881800">sample_encryption_data</a>.size());</div>
 <div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;  uint32_t sample_count = 0;</div>
 <div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;  RCHECK(reader.Read4(&amp;sample_count));</div>
@@ -2766,7 +2766,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 2 2016 18:02:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 3 2016 22:48:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

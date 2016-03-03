@@ -534,7 +534,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;          sampling_frequency,</div>
 <div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;          max_bitrate,</div>
 <div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;          avg_bitrate,</div>
-<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;          vector_as_array(&amp;extra_data),</div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;          extra_data.data(),</div>
 <div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;          extra_data.size(),</div>
 <div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;          is_encrypted));</div>
 <div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;    }</div>
@@ -630,7 +630,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;          codec_string, track-&gt;media.header.language.code, coded_width,</div>
 <div class="line"><a name="l00542"></a><span class="lineno">  542</span>&#160;          coded_height, pixel_width, pixel_height,</div>
 <div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;          0,  <span class="comment">// trick_play_rate</span></div>
-<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;          nalu_length_size, vector_as_array(&amp;entry.codec_config_record.data),</div>
+<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;          nalu_length_size, entry.codec_config_record.data.data(),</div>
 <div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;          entry.codec_config_record.data.size(), is_encrypted));</div>
 <div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;    }</div>
 <div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;  }</div>
@@ -827,7 +827,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 2 2016 18:02:55 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 3 2016 22:48:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
