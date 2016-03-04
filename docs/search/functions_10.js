@@ -11,6 +11,7 @@ var searchData=
   ['seekable',['Seekable',['../d4/d8c/classedash__packager_1_1media_1_1MkvWriter.html#a12cd17b2abad09764d3358534c7dcb5a',1,'edash_packager::media::MkvWriter']]],
   ['set_5fclock',['set_clock',['../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#ae22512b48793cb5c91186bc698966bfa',1,'edash_packager::media::Muxer']]],
   ['set_5fkey_5ffetcher',['set_key_fetcher',['../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#ab483fd321e0f8681c232ac4fbaacb00c',1,'edash_packager::media::WidevineKeySource']]],
+  ['set_5fnalu_5flength_5fsize',['set_nalu_length_size',['../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a7f93b527e9c1bd1034f98861ca4f57f7',1,'edash_packager::media::DecoderConfiguration']]],
   ['set_5fsigner',['set_signer',['../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a60554ce4bf32572d8be08d2bc4c63a9b',1,'edash_packager::media::WidevineKeySource']]],
   ['setcluster',['SetCluster',['../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#a09262ba6f2bbbebdde798ba0ea4d9854',1,'edash_packager::media::webm::Segmenter']]],
   ['setcomplete',['SetComplete',['../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a4e58a007d4daafe1b49a70d39e52e339',1,'edash_packager::media::mp4::Segmenter']]],

@@ -95,8 +95,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/video_slice_header_parser.h&quot;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/rcheck.h&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/buffer_reader.h&quot;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/avc_decoder_configuration.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/rcheck.h&quot;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>media {</div>
@@ -107,67 +107,49 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
 <div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="../../d6/dc2/classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser.html#a611fcfffaa2954dd432d421b991ebbf6">   19</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d6/dc2/classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser.html#a611fcfffaa2954dd432d421b991ebbf6">H264VideoSliceHeaderParser::Initialize</a>(</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; decoder_configuration) {</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="comment">// See ISO 14496-15 sec 5.3.3.1.2</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html">BufferReader</a> reader(decoder_configuration.data(),</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                      decoder_configuration.size());</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  RCHECK(reader.SkipBytes(5));</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  uint8_t sps_count;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  RCHECK(reader.Read1(&amp;sps_count));</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  sps_count = sps_count &amp; 0x1f;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; sps_count; i++) {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    uint16_t size;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    RCHECK(reader.Read2(&amp;size));</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">const</span> uint8_t* data = reader.data() + reader.pos();</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    RCHECK(reader.SkipBytes(size));</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    <span class="keywordtype">int</span> id;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <a class="code" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a> nalu;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    RCHECK(nalu.InitializeFromH264(data, size));</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    RCHECK(parser_.ParseSPS(nalu, &amp;<span class="keywordtype">id</span>) == H264Parser::kOk);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  }</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  uint8_t pps_count;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  RCHECK(reader.Read1(&amp;pps_count));</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; pps_count; i++) {</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    uint16_t size;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    RCHECK(reader.Read2(&amp;size));</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keyword">const</span> uint8_t* data = reader.data() + reader.pos();</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    RCHECK(reader.SkipBytes(size));</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordtype">int</span> id;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <a class="code" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a> nalu;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    RCHECK(nalu.InitializeFromH264(data, size));</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    RCHECK(parser_.ParsePPS(nalu, &amp;<span class="keywordtype">id</span>) == H264Parser::kOk);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  }</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;}</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="../../d6/dc2/classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser.html#adc952a8ad287591122445d7a7450268c">   59</a></span>&#160;int64_t <a class="code" href="../../d6/dc2/classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser.html#adc952a8ad287591122445d7a7450268c">H264VideoSliceHeaderParser::GetHeaderSize</a>(<span class="keyword">const</span> <a class="code" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu) {</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  DCHECK(nalu.is_video_slice());</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <a class="code" href="../../de/d8d/structedash__packager_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a> slice_header;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordflow">if</span> (parser_.ParseSliceHeader(nalu, &amp;slice_header) != H264Parser::kOk)</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="comment">// Round-up to bytes.</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordflow">return</span> (slice_header.header_bit_size - 1) / 8 + 1;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <a class="code" href="../../d6/d49/classedash__packager_1_1media_1_1AVCDecoderConfiguration.html">AVCDecoderConfiguration</a> config;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  RCHECK(config.<a class="code" href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a22574190ccc29f66cb79a6ee68640dc5">Parse</a>(decoder_configuration));</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; config.<a class="code" href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a86ff42b376de43256704b6eaaeabf9a7">nalu_count</a>(); i++) {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    <span class="keywordtype">int</span> id;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu = config.<a class="code" href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a7e8ebb71676d606bc8690c3ede399629">nalu</a>(i);</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    <span class="keywordflow">if</span> (nalu.type() == Nalu::H264_SPS) {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      RCHECK(parser_.ParseSPS(nalu, &amp;<span class="keywordtype">id</span>) == H264Parser::kOk);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;      DCHECK_EQ(Nalu::H264_PPS, nalu.type());</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;      RCHECK(parser_.ParsePPS(nalu, &amp;<span class="keywordtype">id</span>) == H264Parser::kOk);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    }</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  }</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="../../d6/dc2/classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser.html#adc952a8ad287591122445d7a7450268c">   38</a></span>&#160;int64_t <a class="code" href="../../d6/dc2/classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser.html#adc952a8ad287591122445d7a7450268c">H264VideoSliceHeaderParser::GetHeaderSize</a>(<span class="keyword">const</span> <a class="code" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu) {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  DCHECK(nalu.is_video_slice());</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <a class="code" href="../../de/d8d/structedash__packager_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a> slice_header;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordflow">if</span> (parser_.ParseSliceHeader(nalu, &amp;slice_header) != H264Parser::kOk)</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="comment">// Round-up to bytes.</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keywordflow">return</span> (slice_header.header_bit_size - 1) / 8 + 1;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;}</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="ttc" id="classedash__packager_1_1media_1_1DecoderConfiguration_html_a86ff42b376de43256704b6eaaeabf9a7"><div class="ttname"><a href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a86ff42b376de43256704b6eaaeabf9a7">edash_packager::media::DecoderConfiguration::nalu_count</a></div><div class="ttdeci">size_t nalu_count() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d09/decoder__configuration_8h_source.html#l00040">decoder_configuration.h:40</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Nalu_html"><div class="ttname"><a href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">edash_packager::media::Nalu</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00026">nalu_reader.h:26</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1DecoderConfiguration_html_a7e8ebb71676d606bc8690c3ede399629"><div class="ttname"><a href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a7e8ebb71676d606bc8690c3ede399629">edash_packager::media::DecoderConfiguration::nalu</a></div><div class="ttdeci">const Nalu &amp; nalu(size_t i) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d09/decoder__configuration_8h_source.html#l00044">decoder_configuration.h:44</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1H264SliceHeader_html"><div class="ttname"><a href="../../de/d8d/structedash__packager_1_1media_1_1H264SliceHeader.html">edash_packager::media::H264SliceHeader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d9b/h264__parser_8h_source.html#l00143">h264_parser.h:143</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1BufferReader_html"><div class="ttname"><a href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html">edash_packager::media::BufferReader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/d3e/buffer__reader_8h_source.html#l00023">buffer_reader.h:23</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AVCDecoderConfiguration_html"><div class="ttname"><a href="../../d6/d49/classedash__packager_1_1media_1_1AVCDecoderConfiguration.html">edash_packager::media::AVCDecoderConfiguration</a></div><div class="ttdoc">Class for parsing AVC decoder configuration. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d98/avc__decoder__configuration_8h_source.html#l00021">avc_decoder_configuration.h:21</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1DecoderConfiguration_html_a22574190ccc29f66cb79a6ee68640dc5"><div class="ttname"><a href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a22574190ccc29f66cb79a6ee68640dc5">edash_packager::media::DecoderConfiguration::Parse</a></div><div class="ttdeci">bool Parse(const std::vector&lt; uint8_t &gt; &amp;data)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d09/decoder__configuration_8h_source.html#l00027">decoder_configuration.h:27</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser_html_a611fcfffaa2954dd432d421b991ebbf6"><div class="ttname"><a href="../../d6/dc2/classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser.html#a611fcfffaa2954dd432d421b991ebbf6">edash_packager::media::mp4::H264VideoSliceHeaderParser::Initialize</a></div><div class="ttdeci">bool Initialize(const std::vector&lt; uint8_t &gt; &amp;decoder_configuration) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d35/video__slice__header__parser_8cc_source.html#l00019">video_slice_header_parser.cc:19</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser_html_adc952a8ad287591122445d7a7450268c"><div class="ttname"><a href="../../d6/dc2/classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser.html#adc952a8ad287591122445d7a7450268c">edash_packager::media::mp4::H264VideoSliceHeaderParser::GetHeaderSize</a></div><div class="ttdeci">int64_t GetHeaderSize(const Nalu &amp;nalu) override</div><div class="ttdoc">Gets the header size of the given NALU. Returns &lt; 0 on error. </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d35/video__slice__header__parser_8cc_source.html#l00059">video_slice_header_parser.cc:59</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser_html_adc952a8ad287591122445d7a7450268c"><div class="ttname"><a href="../../d6/dc2/classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser.html#adc952a8ad287591122445d7a7450268c">edash_packager::media::mp4::H264VideoSliceHeaderParser::GetHeaderSize</a></div><div class="ttdeci">int64_t GetHeaderSize(const Nalu &amp;nalu) override</div><div class="ttdoc">Gets the header size of the given NALU. Returns &lt; 0 on error. </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d35/video__slice__header__parser_8cc_source.html#l00038">video_slice_header_parser.cc:38</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 4 2016 18:32:38 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 4 2016 18:42:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

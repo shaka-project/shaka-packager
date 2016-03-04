@@ -105,11 +105,15 @@ Public Types</h2></td></tr>
 <b>kEOStream</b>
  }</td></tr>
 <tr class="separator:a5a45861bb0f201f7df8cfa87233b6d64"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c2f255811d6700f87aefd203fbc88a7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>NaluType</b> { <b>kH264</b>, 
+<b>kH265</b>
+ }</td></tr>
+<tr class="separator:a1c2f255811d6700f87aefd203fbc88a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5f09b39b0943708f7eb54f75906dc816"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#a5f09b39b0943708f7eb54f75906dc816">NaluReader</a> (uint8_t nal_length_size, const uint8_t *stream, uint64_t stream_size)</td></tr>
-<tr class="separator:a5f09b39b0943708f7eb54f75906dc816"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a47c6d8fa9d49494cf015a32ebecbb35c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#a47c6d8fa9d49494cf015a32ebecbb35c">NaluReader</a> (NaluType type, uint8_t nal_length_size, const uint8_t *stream, uint64_t stream_size)</td></tr>
+<tr class="separator:a47c6d8fa9d49494cf015a32ebecbb35c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9382cd46f2f4d22636f7f5513e8df1d"><td class="memItemLeft" align="right" valign="top">Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#af9382cd46f2f4d22636f7f5513e8df1d">Advance</a> (<a class="el" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a> *nalu)</td></tr>
 <tr class="separator:af9382cd46f2f4d22636f7f5513e8df1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f700b8bc3163065111b77d6a37a92db"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#a0f700b8bc3163065111b77d6a37a92db">StartsWithStartCode</a> ()</td></tr>
@@ -128,15 +132,21 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>FindStartCode<
 <li>NAL Unit Stream </li>
 </ul>
 
-<p>Definition at line <a class="el" href="../../d4/d87/nalu__reader_8h_source.html#l00073">73</a> of file <a class="el" href="../../d4/d87/nalu__reader_8h_source.html">nalu_reader.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/d87/nalu__reader_8h_source.html#l00100">100</a> of file <a class="el" href="../../d4/d87/nalu__reader_8h_source.html">nalu_reader.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a5f09b39b0943708f7eb54f75906dc816"></a>
+<a class="anchor" id="a47c6d8fa9d49494cf015a32ebecbb35c"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">edash_packager::media::NaluReader::NaluReader </td>
           <td>(</td>
+          <td class="paramtype">NaluType&#160;</td>
+          <td class="paramname"><em>type</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>nal_length_size</em>, </td>
         </tr>
@@ -166,7 +176,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>FindStartCode<
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html#l00047">47</a> of file <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html">nalu_reader.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html#l00073">73</a> of file <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html">nalu_reader.cc</a>.</p>
 
 </div>
 </div>
@@ -193,7 +203,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>FindStartCode<
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>kOk if a NALU is read; kEOStream if the stream is at the end-of-stream; kInvalidStream on error. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html#l00059">59</a> of file <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html">nalu_reader.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html#l00087">87</a> of file <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html">nalu_reader.cc</a>.</p>
 
 </div>
 </div>
@@ -211,7 +221,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>FindStartCode<
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>true if the current position points to a start code. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html#l00112">112</a> of file <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html">nalu_reader.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html#l00146">146</a> of file <a class="el" href="../../d1/df5/nalu__reader_8cc_source.html">nalu_reader.cc</a>.</p>
 
 </div>
 </div>
@@ -222,7 +232,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>FindStartCode<
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 4 2016 18:32:39 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 4 2016 18:42:49 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
