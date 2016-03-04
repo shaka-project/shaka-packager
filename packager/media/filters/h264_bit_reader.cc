@@ -86,6 +86,48 @@ bool H264BitReader::ReadBits(int num_bits, int* out) {
   return true;
 }
 
+bool H264BitReader::ReadUE(int* val) {
+  int num_bits = -1;
+  int bit;
+  int rest;
+
+  // Count the number of contiguous zero bits.
+  do {
+    if (!ReadBits(1, &bit))
+      return false;
+    num_bits++;
+  } while (bit == 0);
+
+  if (num_bits > 31)
+    return false;
+
+  // Calculate exp-Golomb code value of size num_bits.
+  *val = (1 << num_bits) - 1;
+
+  if (num_bits > 0) {
+    if (!ReadBits(num_bits, &rest))
+      return false;
+    *val += rest;
+  }
+
+  return true;
+}
+
+bool H264BitReader::ReadSE(int* val) {
+  int ue;
+
+  // See Chapter 9 in the spec.
+  if (!ReadUE(&ue))
+    return false;
+
+  if (ue % 2 == 0)
+    *val = -(ue / 2);
+  else
+    *val = ue / 2 + 1;
+
+  return true;
+}
+
 off_t H264BitReader::NumBitsLeft() {
   return (num_remaining_bits_in_curr_byte_ + bytes_left_ * 8);
 }

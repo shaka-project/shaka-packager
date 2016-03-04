@@ -137,8 +137,7 @@ NaluReader::Result NaluReader::Advance(Nalu* nalu) {
 
   DVLOG(4) << "NALU type: " << static_cast<int>(nalu->type())
            << " at: " << reinterpret_cast<const void*>(nalu->data())
-           << " data size: " << nalu->payload_size()
-           << " ref: " << static_cast<int>(nalu->ref_idc());
+           << " data size: " << nalu->payload_size();
 
   return NaluReader::kOk;
 }

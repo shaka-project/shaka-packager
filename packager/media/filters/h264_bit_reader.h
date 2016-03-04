@@ -36,6 +36,13 @@ class H264BitReader {
   // bits in the stream), true otherwise.
   bool ReadBits(int num_bits, int* out);
 
+  // Exp-Golomb code parsing as specified in chapter 9.1 of the spec.
+  // Read one unsigned exp-Golomb code from the stream and return in |*val|.
+  bool ReadUE(int* val);
+
+  // Read one signed exp-Golomb code from the stream and return in |*val|.
+  bool ReadSE(int* val);
+
   // Return the number of bits left in the stream.
   off_t NumBitsLeft();
 

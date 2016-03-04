@@ -115,13 +115,11 @@ H264SEIMessage::H264SEIMessage() {
 
 #define READ_BITS_OR_RETURN(num_bits, out)                                 \
   do {                                                                     \
-    int _out;                                                              \
-    if (!br->ReadBits(num_bits, &_out)) {                                  \
+    if (!br->ReadBits(num_bits, (out))) {                                  \
       DVLOG(1)                                                             \
           << "Error in stream: unexpected EOS while trying to read " #out; \
       return kInvalidStream;                                               \
     }                                                                      \
-    *out = _out;                                                           \
   } while (0)
 
 #define READ_BOOL_OR_RETURN(out)                                           \
@@ -132,12 +130,12 @@ H264SEIMessage::H264SEIMessage() {
           << "Error in stream: unexpected EOS while trying to read " #out; \
       return kInvalidStream;                                               \
     }                                                                      \
-    *out = _out != 0;                                                      \
+    *(out) = _out != 0;                                                    \
   } while (0)
 
 #define READ_UE_OR_RETURN(out)                                                 \
   do {                                                                         \
-    if (ReadUE(br, out) != kOk) {                                              \
+    if (!br->ReadUE(out)) {                                                    \
       DVLOG(1) << "Error in stream: invalid value while trying to read " #out; \
       return kInvalidStream;                                                   \
     }                                                                          \
@@ -145,7 +143,7 @@ H264SEIMessage::H264SEIMessage() {
 
 #define READ_SE_OR_RETURN(out)                                                 \
   do {                                                                         \
-    if (ReadSE(br, out) != kOk) {                                              \
+    if (!br->ReadSE(out)) {                                                    \
       DVLOG(1) << "Error in stream: invalid value while trying to read " #out; \
       return kInvalidStream;                                                   \
     }                                                                          \
@@ -197,48 +195,6 @@ const H264PPS* H264Parser::GetPPS(int pps_id) {
 
 const H264SPS* H264Parser::GetSPS(int sps_id) {
   return active_SPSes_[sps_id];
-}
-
-H264Parser::Result H264Parser::ReadUE(H264BitReader* br, int* val) {
-  int num_bits = -1;
-  int bit;
-  int rest;
-
-  // Count the number of contiguous zero bits.
-  do {
-    READ_BITS_OR_RETURN(1, &bit);
-    num_bits++;
-  } while (bit == 0);
-
-  if (num_bits > 31)
-    return kInvalidStream;
-
-  // Calculate exp-Golomb code value of size num_bits.
-  *val = (1 << num_bits) - 1;
-
-  if (num_bits > 0) {
-    READ_BITS_OR_RETURN(num_bits, &rest);
-    *val += rest;
-  }
-
-  return kOk;
-}
-
-H264Parser::Result H264Parser::ReadSE(H264BitReader* br, int* val) {
-  int ue;
-  Result res;
-
-  // See Chapter 9 in the spec.
-  res = ReadUE(br, &ue);
-  if (res != kOk)
-    return res;
-
-  if (ue % 2 == 0)
-    *val = -(ue / 2);
-  else
-    *val = ue / 2 + 1;
-
-  return kOk;
 }
 
 // Default scaling lists (per spec).

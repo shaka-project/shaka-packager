@@ -285,13 +285,6 @@ class H264Parser {
   Result ParseSEI(const Nalu& nalu, H264SEIMessage* sei_msg);
 
  private:
-  // Exp-Golomb code parsing as specified in chapter 9.1 of the spec.
-  // Read one unsigned exp-Golomb code from the stream and return in |*val|.
-  Result ReadUE(H264BitReader* br, int* val);
-
-  // Read one signed exp-Golomb code from the stream and return in |*val|.
-  Result ReadSE(H264BitReader* br, int* val);
-
   // Parse scaling lists (see spec).
   Result ParseScalingList(H264BitReader* br,
                           int size,
