@@ -374,64 +374,57 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  Result ParseSEI(<span class="keyword">const</span> <a class="code" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu, <a class="code" href="../../d4/d93/structedash__packager_1_1media_1_1H264SEIMessage.html">H264SEIMessage</a>* sei_msg);</div>
 <div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;</div>
 <div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  <span class="comment">// Exp-Golomb code parsing as specified in chapter 9.1 of the spec.</span></div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  <span class="comment">// Read one unsigned exp-Golomb code from the stream and return in |*val|.</span></div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  Result ReadUE(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br, <span class="keywordtype">int</span>* val);</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  <span class="comment">// Read one signed exp-Golomb code from the stream and return in |*val|.</span></div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  Result ReadSE(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br, <span class="keywordtype">int</span>* val);</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  <span class="comment">// Parse scaling lists (see spec).</span></div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;  Result ParseScalingList(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br,</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;                          <span class="keywordtype">int</span> size,</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;                          <span class="keywordtype">int</span>* scaling_list,</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;                          <span class="keywordtype">bool</span>* use_default);</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  Result ParseSPSScalingLists(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br, <a class="code" href="../../d8/db0/structedash__packager_1_1media_1_1H264SPS.html">H264SPS</a>* sps);</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  Result ParsePPSScalingLists(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br,</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;                              <span class="keyword">const</span> <a class="code" href="../../d8/db0/structedash__packager_1_1media_1_1H264SPS.html">H264SPS</a>&amp; sps,</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;                              <a class="code" href="../../dd/dcf/structedash__packager_1_1media_1_1H264PPS.html">H264PPS</a>* pps);</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  <span class="comment">// Parse optional VUI parameters in SPS (see spec).</span></div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  Result ParseVUIParameters(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br, <a class="code" href="../../d8/db0/structedash__packager_1_1media_1_1H264SPS.html">H264SPS</a>* sps);</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;  <span class="comment">// Set |hrd_parameters_present| to true only if they are present.</span></div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  Result ParseAndIgnoreHRDParameters(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br,</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;                                     <span class="keywordtype">bool</span>* hrd_parameters_present);</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;  <span class="comment">// Parse reference picture lists&#39; modifications (see spec).</span></div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;  Result ParseRefPicListModifications(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br, <a class="code" href="../../de/d8d/structedash__packager_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a>* shdr);</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;  Result ParseRefPicListModification(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br,</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;                                     <span class="keywordtype">int</span> num_ref_idx_active_minus1,</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;                                     <a class="code" href="../../d9/d76/structedash__packager_1_1media_1_1H264ModificationOfPicNum.html">H264ModificationOfPicNum</a>* ref_list_mods);</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  <span class="comment">// Parse prediction weight table (see spec).</span></div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;  Result ParsePredWeightTable(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br,</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;                              <span class="keyword">const</span> <a class="code" href="../../d8/db0/structedash__packager_1_1media_1_1H264SPS.html">H264SPS</a>&amp; sps,</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;                              <a class="code" href="../../de/d8d/structedash__packager_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a>* shdr);</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;  <span class="comment">// Parse weighting factors (see spec).</span></div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;  Result ParseWeightingFactors(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br,</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;                               <span class="keywordtype">int</span> num_ref_idx_active_minus1,</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;                               <span class="keywordtype">int</span> chroma_array_type,</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;                               <span class="keywordtype">int</span> luma_log2_weight_denom,</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;                               <span class="keywordtype">int</span> chroma_log2_weight_denom,</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;                               <a class="code" href="../../d3/dbc/structedash__packager_1_1media_1_1H264WeightingFactors.html">H264WeightingFactors</a>* w_facts);</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  <span class="comment">// Parse decoded reference picture marking information (see spec).</span></div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  Result ParseDecRefPicMarking(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br, <a class="code" href="../../de/d8d/structedash__packager_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a>* shdr);</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  <span class="comment">// PPSes and SPSes stored for future reference.</span></div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  <span class="keyword">typedef</span> std::map&lt;int, H264SPS*&gt; SPSById;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;  <span class="keyword">typedef</span> std::map&lt;int, H264PPS*&gt; PPSById;</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  SPSById active_SPSes_;</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  PPSById active_PPSes_;</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d6/da3/classedash__packager_1_1media_1_1H264Parser.html">H264Parser</a>);</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;};</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;<span class="preprocessor">#endif  // MEDIA_FILTERS_H264_PARSER_H_</span></div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  <span class="comment">// Parse scaling lists (see spec).</span></div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  Result ParseScalingList(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br,</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;                          <span class="keywordtype">int</span> size,</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;                          <span class="keywordtype">int</span>* scaling_list,</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;                          <span class="keywordtype">bool</span>* use_default);</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  Result ParseSPSScalingLists(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br, <a class="code" href="../../d8/db0/structedash__packager_1_1media_1_1H264SPS.html">H264SPS</a>* sps);</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  Result ParsePPSScalingLists(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br,</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;                              <span class="keyword">const</span> <a class="code" href="../../d8/db0/structedash__packager_1_1media_1_1H264SPS.html">H264SPS</a>&amp; sps,</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;                              <a class="code" href="../../dd/dcf/structedash__packager_1_1media_1_1H264PPS.html">H264PPS</a>* pps);</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  <span class="comment">// Parse optional VUI parameters in SPS (see spec).</span></div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  Result ParseVUIParameters(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br, <a class="code" href="../../d8/db0/structedash__packager_1_1media_1_1H264SPS.html">H264SPS</a>* sps);</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  <span class="comment">// Set |hrd_parameters_present| to true only if they are present.</span></div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  Result ParseAndIgnoreHRDParameters(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br,</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;                                     <span class="keywordtype">bool</span>* hrd_parameters_present);</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  <span class="comment">// Parse reference picture lists&#39; modifications (see spec).</span></div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  Result ParseRefPicListModifications(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br, <a class="code" href="../../de/d8d/structedash__packager_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a>* shdr);</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  Result ParseRefPicListModification(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br,</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;                                     <span class="keywordtype">int</span> num_ref_idx_active_minus1,</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;                                     <a class="code" href="../../d9/d76/structedash__packager_1_1media_1_1H264ModificationOfPicNum.html">H264ModificationOfPicNum</a>* ref_list_mods);</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  <span class="comment">// Parse prediction weight table (see spec).</span></div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;  Result ParsePredWeightTable(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br,</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;                              <span class="keyword">const</span> <a class="code" href="../../d8/db0/structedash__packager_1_1media_1_1H264SPS.html">H264SPS</a>&amp; sps,</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;                              <a class="code" href="../../de/d8d/structedash__packager_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a>* shdr);</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  <span class="comment">// Parse weighting factors (see spec).</span></div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  Result ParseWeightingFactors(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br,</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;                               <span class="keywordtype">int</span> num_ref_idx_active_minus1,</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;                               <span class="keywordtype">int</span> chroma_array_type,</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;                               <span class="keywordtype">int</span> luma_log2_weight_denom,</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;                               <span class="keywordtype">int</span> chroma_log2_weight_denom,</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;                               <a class="code" href="../../d3/dbc/structedash__packager_1_1media_1_1H264WeightingFactors.html">H264WeightingFactors</a>* w_facts);</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;  <span class="comment">// Parse decoded reference picture marking information (see spec).</span></div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  Result ParseDecRefPicMarking(<a class="code" href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">H264BitReader</a>* br, <a class="code" href="../../de/d8d/structedash__packager_1_1media_1_1H264SliceHeader.html">H264SliceHeader</a>* shdr);</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  <span class="comment">// PPSes and SPSes stored for future reference.</span></div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  <span class="keyword">typedef</span> std::map&lt;int, H264SPS*&gt; SPSById;</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  <span class="keyword">typedef</span> std::map&lt;int, H264PPS*&gt; PPSById;</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  SPSById active_SPSes_;</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  PPSById active_PPSes_;</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d6/da3/classedash__packager_1_1media_1_1H264Parser.html">H264Parser</a>);</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;};</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;<span class="preprocessor">#endif  // MEDIA_FILTERS_H264_PARSER_H_</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Nalu_html"><div class="ttname"><a href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">edash_packager::media::Nalu</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00026">nalu_reader.h:26</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1H264BitReader_html"><div class="ttname"><a href="../../d4/d55/classedash__packager_1_1media_1_1H264BitReader.html">edash_packager::media::H264BitReader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d91/h264__bit__reader_8h_source.html#l00022">h264_bit_reader.h:22</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1H264SliceHeader_html"><div class="ttname"><a href="../../de/d8d/structedash__packager_1_1media_1_1H264SliceHeader.html">edash_packager::media::H264SliceHeader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d9b/h264__parser_8h_source.html#l00143">h264_parser.h:143</a></div></div>
@@ -446,7 +439,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 4 2016 18:42:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Mar 7 2016 18:17:51 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
