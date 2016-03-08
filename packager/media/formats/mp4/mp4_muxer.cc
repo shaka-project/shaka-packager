@@ -191,12 +191,19 @@ void MP4Muxer::InitializeTrak(const StreamInfo* info, Track* trak) {
   trak->media.header.timescale = info->time_scale();
   trak->media.header.duration = 0;
   if (!info->language().empty()) {
-    // ISO-639-2/T language code should be 3 characters..
-    if (info->language().size() != 3) {
-      LOG(WARNING) << "'" << info->language() << "' is not a valid ISO-639-2 "
+    // Strip off the subtag, if any.
+    std::string main_language = info->language();
+    size_t dash = main_language.find('-');
+    if (dash != std::string::npos) {
+      main_language.erase(dash);
+    }
+
+    // ISO-639-2/T main language code should be 3 characters.
+    if (main_language.size() != 3) {
+      LOG(WARNING) << "'" << main_language << "' is not a valid ISO-639-2 "
                    << "language code, ignoring.";
     } else {
-      trak->media.header.language.code = info->language();
+      trak->media.header.language.code = main_language;
     }
   }
 }

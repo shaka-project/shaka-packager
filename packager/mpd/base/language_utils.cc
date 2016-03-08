@@ -70,42 +70,62 @@ const LanguageMapPairType kLanguageMap[] = {
   { "yor", "yo" }, { "zha", "za" }, { "zho", "zh" }, { "zul", "zu" },
 };
 
+void SplitLanguageTag(const std::string& tag,
+                      std::string* main_language, std::string* subtag) {
+  // Split the main language from its subtag (if any).
+  *main_language = tag;
+  subtag->clear();
+  size_t dash = main_language->find('-');
+  if (dash != std::string::npos) {
+    *subtag = main_language->substr(dash);
+    main_language->erase(dash);
+  }
+}
+
 }  // namespace
 
 namespace edash_packager {
 
 std::string LanguageToShortestForm(const std::string& language) {
-  if (language.size() == 2) {
+  std::string main_language;
+  std::string subtag;
+  SplitLanguageTag(language, &main_language, &subtag);
+
+  if (main_language.size() == 2) {
     // Presumably already a valid ISO-639-1 code, and therefore conforms to
     // BCP-47's requirement to use the shortest possible code.
-    return language;
+    return main_language + subtag;
   }
 
   for (size_t i = 0; i < arraysize(kLanguageMap); ++i) {
-    if (language == kLanguageMap[i].iso_639_2) {
-      return kLanguageMap[i].iso_639_1;
+    if (main_language == kLanguageMap[i].iso_639_2) {
+      return kLanguageMap[i].iso_639_1 + subtag;
     }
   }
 
   // This could happen legitimately for languages which have no 2-letter code,
   // but that would imply that the input language code is a 3-letter code.
-  DCHECK_EQ(3u, language.size());
-  return language;
+  DCHECK_EQ(3u, main_language.size());
+  return main_language + subtag;
 }
 
 std::string LanguageToISO_639_2(const std::string& language) {
-  if (language.size() == 3) {
+  std::string main_language;
+  std::string subtag;
+  SplitLanguageTag(language, &main_language, &subtag);
+
+  if (main_language.size() == 3) {
     // Presumably already a valid ISO-639-2 code.
-    return language;
+    return main_language + subtag;
   }
 
   for (size_t i = 0; i < arraysize(kLanguageMap); ++i) {
-    if (language == kLanguageMap[i].iso_639_1) {
-      return kLanguageMap[i].iso_639_2;
+    if (main_language == kLanguageMap[i].iso_639_1) {
+      return kLanguageMap[i].iso_639_2 + subtag;
     }
   }
 
-  LOG(WARNING) << "No equivalent 3-letter language code for " << language;
+  LOG(WARNING) << "No equivalent 3-letter language code for " << main_language;
   // This is probably a mistake on the part of the user and should be treated
   // as invalid input.
   return "und";

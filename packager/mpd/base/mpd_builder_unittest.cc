@@ -788,6 +788,28 @@ TEST_F(CommonMpdBuilderTest, CheckLanguageAttributeSet) {
       ExpectAttributeEqString("lang", "en", node_xml.get()));
 }
 
+// Verify that language tags with subtags can still be converted.
+TEST_F(CommonMpdBuilderTest, CheckConvertLanguageWithSubtag) {
+  base::AtomicSequenceNumber sequence_counter;
+  // The media info doesn't really matter as long as it is valid.
+  const char kTextMediaInfo[] =
+      "text_info {\n"
+      "  format: 'ttml'\n"
+      "}\n"
+      "container_type: CONTAINER_TEXT\n";
+
+  // "por-BR" is the long tag for Brazillian Portuguese.  The short tag
+  // is "pt-BR", which is what should appear in the manifest.
+  auto adaptation_set =
+      CreateAdaptationSet(kAnyAdaptationSetId, "por-BR", MpdOptions(),
+                          MpdBuilder::kStatic, &sequence_counter);
+  adaptation_set->AddRepresentation(ConvertToMediaInfo(kTextMediaInfo));
+
+  xml::scoped_xml_ptr<xmlNode> node_xml(adaptation_set->GetXml());
+  EXPECT_NO_FATAL_FAILURE(
+      ExpectAttributeEqString("lang", "pt-BR", node_xml.get()));
+}
+
 TEST_F(CommonMpdBuilderTest, CheckAdaptationSetId) {
   base::AtomicSequenceNumber sequence_counter;
   const uint32_t kAdaptationSetId = 42;
