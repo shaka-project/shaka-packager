@@ -129,8 +129,10 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a4020839c22a550bf71d891bf55087e0b"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a4020839c22a550bf71d891bf55087e0b">FetchKeys</a> (const std::vector&lt; uint8_t &gt; &amp;content_id, const std::string &amp;policy)</td></tr>
 <tr class="separator:a4020839c22a550bf71d891bf55087e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aff319f4d17ed480243469eb8af5fa915"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#aff319f4d17ed480243469eb8af5fa915">FetchKeys</a> (const std::vector&lt; uint8_t &gt; &amp;pssh_data)</td></tr>
-<tr class="separator:aff319f4d17ed480243469eb8af5fa915"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8c834c4d9b4babc7761d569420786d82"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a8c834c4d9b4babc7761d569420786d82">FetchKeys</a> (const std::vector&lt; uint8_t &gt; &amp;pssh_box)</td></tr>
+<tr class="separator:a8c834c4d9b4babc7761d569420786d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a88116562e805499cd054918bee68672c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a88116562e805499cd054918bee68672c">FetchKeys</a> (const std::vector&lt; std::vector&lt; uint8_t &gt;&gt; &amp;key_ids)</td></tr>
+<tr class="separator:a88116562e805499cd054918bee68672c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68de1e9682273c2dc9b8db04718d426c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a68de1e9682273c2dc9b8db04718d426c">FetchKeys</a> (uint32_t asset_id)</td></tr>
 <tr class="separator:a68de1e9682273c2dc9b8db04718d426c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a49ccfe7a61c36ac9818482a7892915d3"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a49ccfe7a61c36ac9818482a7892915d3">GetKey</a> (TrackType track_type, <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)</td></tr>
@@ -165,7 +167,7 @@ Static Protected Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html" title="KeySource is responsible for encryption key acquisition. ">KeySource</a> is responsible for encryption key acquisition. </p>
 
-<p>Definition at line <a class="el" href="../../dc/d3f/key__source_8h_source.html#l00029">29</a> of file <a class="el" href="../../dc/d3f/key__source_8h_source.html">key_source.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d3f/key__source_8h_source.html#l00033">33</a> of file <a class="el" href="../../dc/d3f/key__source_8h_source.html">key_source.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="ab05172d89513c0d3627502c9cff4535f"></a>
 <div class="memitem">
@@ -221,7 +223,7 @@ Static Protected Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00100">100</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00102">102</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -268,11 +270,11 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a59b0688cd8c8ad9a3100f3bce8cb340c">edash_packager::media::WidevineKeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00030">30</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00027">27</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="aff319f4d17ed480243469eb8af5fa915"></a>
+<a class="anchor" id="a8c834c4d9b4babc7761d569420786d82"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -283,7 +285,7 @@ Static Protected Member Functions</h2></td></tr>
           <td class="memname"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::KeySource::FetchKeys </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
-          <td class="paramname"><em>pssh_data</em></td><td>)</td>
+          <td class="paramname"><em>pssh_box</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -296,15 +298,51 @@ Static Protected Member Functions</h2></td></tr>
 <p>Fetch keys for CENC from the key server. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">pssh_data</td><td>is the Data portion of the PSSH box for the content to be decrypted. </td></tr>
+    <tr><td class="paramname">pssh_box</td><td>The entire PSSH box for the content to be decrypted </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#af2984003ec87712623024c22075e9359">edash_packager::media::WidevineKeySource</a>.</p>
+<p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a22e0c28e069abe7836eb6dc17c6f948b">edash_packager::media::WidevineKeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00036">36</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00033">33</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a88116562e805499cd054918bee68672c"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::KeySource::FetchKeys </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; std::vector&lt; uint8_t &gt;&gt; &amp;&#160;</td>
+          <td class="paramname"><em>key_ids</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Fetch keys for CENC from the key server. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">key_ids</td><td>the key IDs for the keys to fetch from the server. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
+
+<p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a4ac5c6324bb9fabd3461a4fb87bb312d">edash_packager::media::WidevineKeySource</a>.</p>
+
+<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00038">38</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -340,7 +378,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#abc2c55f49f2c93a76dee393938869f24">edash_packager::media::WidevineKeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00041">41</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00043">43</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -394,7 +432,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a35023c0b18a2db012027d4cf22c7bf1b">edash_packager::media::WidevineKeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00066">66</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00068">68</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -441,7 +479,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#ac1e7cae9bd5f008f20ca1d1603588441">edash_packager::media::WidevineKeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00046">46</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00048">48</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -488,7 +526,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a7b65c5c7b65d7e304956c86f5c058c1a">edash_packager::media::WidevineKeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00053">53</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00055">55</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -515,7 +553,7 @@ Static Protected Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>the raw bytes of the pssh box with system ID and box header included. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00164">164</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00166">166</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -542,7 +580,7 @@ Static Protected Member Functions</h2></td></tr>
 <p>Returns the name, and possibly with a version number, of the key source. (This would be the ContentProtection attribute in the MPD. DASH-IF- IOP v3.0 recommends this to be the DRM system and version name in human readable from.) </p>
 <dl class="section return"><dt>Returns</dt><dd>the name of the key source, empty string if not specified. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00096">96</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00098">98</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -571,7 +609,7 @@ Static Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a7e87401178d0b2841a9c550fb8aea9d1">edash_packager::media::WidevineKeySource</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00092">92</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00094">94</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
 
 </div>
 </div>
@@ -582,7 +620,7 @@ Static Protected Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 8 2016 07:48:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Mar 8 2016 21:50:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

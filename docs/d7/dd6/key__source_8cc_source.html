@@ -100,203 +100,205 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/buffer_writer.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>{</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">const</span> uint8_t kWidevineSystemId[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;                                     0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc,</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;                                     0xd5, 0x1d, 0x21, 0xed};</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="comment">// TODO(kqyang): Consider making it configurable.</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">const</span> <span class="keywordtype">char</span> kDefaultUUID[] = <span class="stringliteral">&quot;edef8ba9-79d6-4ace-a3c8-27dcd51d21ed&quot;</span>;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">const</span> <span class="keywordtype">char</span> kDefaultSystemName[] = <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;}  <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="comment">// TODO(kqyang): Consider making it configurable.</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">const</span> <span class="keywordtype">char</span> kDefaultUUID[] = <span class="stringliteral">&quot;edef8ba9-79d6-4ace-a3c8-27dcd51d21ed&quot;</span>;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">const</span> <span class="keywordtype">char</span> kDefaultSystemName[] = <span class="stringliteral">&quot;&quot;</span>;</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;}  <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">namespace </span>media {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;EncryptionKey::EncryptionKey() {}</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;EncryptionKey::~EncryptionKey() {}</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;EncryptionKey::EncryptionKey() {}</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;EncryptionKey::~EncryptionKey() {}</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;KeySource::~KeySource() {}</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a4020839c22a550bf71d891bf55087e0b">   30</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a4020839c22a550bf71d891bf55087e0b">KeySource::FetchKeys</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; content_id,</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                            <span class="keyword">const</span> std::string&amp; policy) {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="comment">// Do nothing for fixed key encryption/decryption.</span></div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#aff319f4d17ed480243469eb8af5fa915">   36</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a4020839c22a550bf71d891bf55087e0b">KeySource::FetchKeys</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; pssh_data) {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="comment">// Do nothing for fixed key encryption/decryption.</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a68de1e9682273c2dc9b8db04718d426c">   41</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a4020839c22a550bf71d891bf55087e0b">KeySource::FetchKeys</a>(uint32_t asset_id) {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="comment">// Do nothing for fixed key encryption/decryption.</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;}</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a49ccfe7a61c36ac9818482a7892915d3">   46</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a49ccfe7a61c36ac9818482a7892915d3">KeySource::GetKey</a>(TrackType track_type, <a class="code" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  DCHECK(key);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  DCHECK(encryption_key_);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  *key = *encryption_key_;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a2d44267b238a221bb8a7d2bc1bf68ea2">   53</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a49ccfe7a61c36ac9818482a7892915d3">KeySource::GetKey</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                         <a class="code" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) {</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  DCHECK(key);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  DCHECK(encryption_key_);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordflow">if</span> (key_id != encryption_key_-&gt;key_id) {</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::NOT_FOUND, std::string(<span class="stringliteral">&quot;Key for key ID &quot;</span>) +</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                  base::HexEncode(&amp;key_id[0], key_id.size()) +</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                  <span class="stringliteral">&quot; was not found.&quot;</span>);</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  }</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  *key = *encryption_key_;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;}</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a349381b866a37df15a931980636621ac">   66</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a349381b866a37df15a931980636621ac">KeySource::GetCryptoPeriodKey</a>(uint32_t crypto_period_index,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                                     TrackType track_type,</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                                     <a class="code" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) {</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  *key = *encryption_key_;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="comment">// A naive key rotation algorithm is implemented here by left rotating the</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="comment">// key, key_id and pssh. Note that this implementation is only intended for</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="comment">// testing purpose. The actual key rotation algorithm can be much more</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="comment">// complicated.</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  LOG(WARNING)</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;This naive key rotation algorithm should not be used in production.&quot;</span>;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  std::rotate(key-&gt;key_id.begin(),</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;              key-&gt;key_id.begin() + (crypto_period_index % key-&gt;key_id.size()),</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;              key-&gt;key_id.end());</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  std::rotate(key-&gt;key.begin(),</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;              key-&gt;key.begin() + (crypto_period_index % key-&gt;key.size()),</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;              key-&gt;key.end());</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> kPsshHeaderSize = 32u;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  std::vector&lt;uint8_t&gt; pssh_data(key-&gt;pssh.begin() + kPsshHeaderSize,</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                                 key-&gt;pssh.end());</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  std::rotate(pssh_data.begin(),</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;              pssh_data.begin() + (crypto_period_index % pssh_data.size()),</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;              pssh_data.end());</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  key-&gt;pssh = <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab5478505cfdb660fa6c680819f17f239">PsshBoxFromPsshData</a>(pssh_data);</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#afbb7d084395a1426eb0143ae8357b2fc">   92</a></span>&#160;std::string <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#afbb7d084395a1426eb0143ae8357b2fc">KeySource::UUID</a>() {</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordflow">return</span> kDefaultUUID;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#aa73dacef997e7700b8669bb2db5f8f31">   96</a></span>&#160;std::string <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#aa73dacef997e7700b8669bb2db5f8f31">KeySource::SystemName</a>() {</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="keywordflow">return</span> kDefaultSystemName;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;}</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab05172d89513c0d3627502c9cff4535f">  100</a></span>&#160;scoped_ptr&lt;KeySource&gt; <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab05172d89513c0d3627502c9cff4535f">KeySource::CreateFromHexStrings</a>(</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keyword">const</span> std::string&amp; key_id_hex,</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    <span class="keyword">const</span> std::string&amp; key_hex,</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keyword">const</span> std::string&amp; pssh_data_hex,</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keyword">const</span> std::string&amp; iv_hex) {</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  scoped_ptr&lt;EncryptionKey&gt; encryption_key(<span class="keyword">new</span> <a class="code" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a>());</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordflow">if</span> (!base::HexStringToBytes(key_id_hex, &amp;encryption_key-&gt;key_id)) {</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot parse key_id_hex &quot;</span> &lt;&lt; key_id_hex;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keywordflow">return</span> scoped_ptr&lt;KeySource&gt;();</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  }</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keywordflow">if</span> (!base::HexStringToBytes(key_hex, &amp;encryption_key-&gt;key)) {</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot parse key_hex &quot;</span> &lt;&lt; key_hex;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    <span class="keywordflow">return</span> scoped_ptr&lt;KeySource&gt;();</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  }</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  std::vector&lt;uint8_t&gt; pssh_data;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="keywordflow">if</span> (!pssh_data_hex.empty() &amp;&amp;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;      !base::HexStringToBytes(pssh_data_hex, &amp;pssh_data)) {</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot parse pssh_hex &quot;</span> &lt;&lt; pssh_data_hex;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keywordflow">return</span> scoped_ptr&lt;KeySource&gt;();</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  }</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="keywordflow">if</span> (!iv_hex.empty()) {</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    <span class="keywordflow">if</span> (!base::HexStringToBytes(iv_hex, &amp;encryption_key-&gt;iv)) {</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot parse iv_hex &quot;</span> &lt;&lt; iv_hex;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;      <span class="keywordflow">return</span> scoped_ptr&lt;KeySource&gt;();</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    }</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  }</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  encryption_key-&gt;pssh = <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab5478505cfdb660fa6c680819f17f239">PsshBoxFromPsshData</a>(pssh_data);</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordflow">return</span> scoped_ptr&lt;KeySource&gt;(</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;      <span class="keyword">new</span> <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a>(encryption_key.Pass()));</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;}</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
-<div class="line"><a name="l00136"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab15ba8121f76e0945d4f10d722da5cc8">  136</a></span>&#160;KeySource::TrackType <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab15ba8121f76e0945d4f10d722da5cc8">KeySource::GetTrackTypeFromString</a>(</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    <span class="keyword">const</span> std::string&amp; track_type_string) {</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;  <span class="keywordflow">if</span> (track_type_string == <span class="stringliteral">&quot;SD&quot;</span>)</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_SD;</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  <span class="keywordflow">if</span> (track_type_string == <span class="stringliteral">&quot;HD&quot;</span>)</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_HD;</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  <span class="keywordflow">if</span> (track_type_string == <span class="stringliteral">&quot;AUDIO&quot;</span>)</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_AUDIO;</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <span class="keywordflow">if</span> (track_type_string == <span class="stringliteral">&quot;UNSPECIFIED&quot;</span>)</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_UNSPECIFIED;</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Unexpected track type: &quot;</span> &lt;&lt; track_type_string;</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  <span class="keywordflow">return</span> TRACK_TYPE_UNKNOWN;</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;}</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
-<div class="line"><a name="l00150"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a8bab239dd17b01ed607c483c536d1321">  150</a></span>&#160;std::string <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a8bab239dd17b01ed607c483c536d1321">KeySource::TrackTypeToString</a>(TrackType track_type) {</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  <span class="keywordflow">switch</span> (track_type) {</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    <span class="keywordflow">case</span> TRACK_TYPE_SD:</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;SD&quot;</span>;</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    <span class="keywordflow">case</span> TRACK_TYPE_HD:</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;HD&quot;</span>;</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    <span class="keywordflow">case</span> TRACK_TYPE_AUDIO:</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;AUDIO&quot;</span>;</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;      NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;Unknown track type: &quot;</span> &lt;&lt; track_type;</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;UNKNOWN&quot;</span>;</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  }</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;}</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;</div>
-<div class="line"><a name="l00164"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab5478505cfdb660fa6c680819f17f239">  164</a></span>&#160;std::vector&lt;uint8_t&gt; <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab5478505cfdb660fa6c680819f17f239">KeySource::PsshBoxFromPsshData</a>(</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; pssh_data) {</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  <span class="keyword">const</span> uint8_t kPsshFourCC[] = {<span class="charliteral">&#39;p&#39;</span>, <span class="charliteral">&#39;s&#39;</span>, <span class="charliteral">&#39;s&#39;</span>, <span class="charliteral">&#39;h&#39;</span>};</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <span class="keyword">const</span> uint32_t kVersionAndFlags = 0;</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  <span class="keyword">const</span> uint32_t pssh_data_size = pssh_data.size();</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  <span class="keyword">const</span> uint32_t total_size =</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;      <span class="keyword">sizeof</span>(total_size) + <span class="keyword">sizeof</span>(kPsshFourCC) + <span class="keyword">sizeof</span>(kVersionAndFlags) +</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;      <span class="keyword">sizeof</span>(kWidevineSystemId) + <span class="keyword">sizeof</span>(pssh_data_size) + pssh_data_size;</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html">BufferWriter</a> writer;</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  writer.<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">AppendInt</a>(total_size);</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  writer.AppendArray(kPsshFourCC, <span class="keyword">sizeof</span>(kPsshFourCC));</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  writer.<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">AppendInt</a>(kVersionAndFlags);</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  writer.AppendArray(kWidevineSystemId, <span class="keyword">sizeof</span>(kWidevineSystemId));</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  writer.<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">AppendInt</a>(pssh_data_size);</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  writer.AppendVector(pssh_data);</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  <span class="keywordflow">return</span> std::vector&lt;uint8_t&gt;(writer.<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#a8849c495e9e5cb0c33d7633fecbe0643">Buffer</a>(), writer.<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#a8849c495e9e5cb0c33d7633fecbe0643">Buffer</a>() + writer.Size());</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;}</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;KeySource::KeySource() {}</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;KeySource::KeySource(scoped_ptr&lt;EncryptionKey&gt; encryption_key)</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    : encryption_key_(encryption_key.Pass()) {</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  DCHECK(encryption_key_);</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;}</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_a49ccfe7a61c36ac9818482a7892915d3"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a49ccfe7a61c36ac9818482a7892915d3">edash_packager::media::KeySource::GetKey</a></div><div class="ttdeci">virtual Status GetKey(TrackType track_type, EncryptionKey *key)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00046">key_source.cc:46</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_a349381b866a37df15a931980636621ac"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a349381b866a37df15a931980636621ac">edash_packager::media::KeySource::GetCryptoPeriodKey</a></div><div class="ttdeci">virtual Status GetCryptoPeriodKey(uint32_t crypto_period_index, TrackType track_type, EncryptionKey *key)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00066">key_source.cc:66</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1EncryptionKey_html"><div class="ttname"><a href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">edash_packager::media::EncryptionKey</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00018">key_source.h:18</a></div></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;KeySource::~KeySource() {}</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a4020839c22a550bf71d891bf55087e0b">   27</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a4020839c22a550bf71d891bf55087e0b">KeySource::FetchKeys</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; content_id,</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;                            <span class="keyword">const</span> std::string&amp; policy) {</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="comment">// Do nothing for fixed key encryption/decryption.</span></div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;}</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a8c834c4d9b4babc7761d569420786d82">   33</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a4020839c22a550bf71d891bf55087e0b">KeySource::FetchKeys</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; pssh_box) {</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="comment">// Do nothing for fixed key encryption/decryption.</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a88116562e805499cd054918bee68672c">   38</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a4020839c22a550bf71d891bf55087e0b">KeySource::FetchKeys</a>(<span class="keyword">const</span> std::vector&lt;std::vector&lt;uint8_t&gt;&gt;&amp; key_ids) {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="comment">// Do nothing for fixed key encryption/decryption.</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;}</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a68de1e9682273c2dc9b8db04718d426c">   43</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a4020839c22a550bf71d891bf55087e0b">KeySource::FetchKeys</a>(uint32_t asset_id) {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="comment">// Do nothing for fixed key encryption/decryption.</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;}</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a49ccfe7a61c36ac9818482a7892915d3">   48</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a49ccfe7a61c36ac9818482a7892915d3">KeySource::GetKey</a>(TrackType track_type, <a class="code" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  DCHECK(key);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  DCHECK(encryption_key_);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  *key = *encryption_key_;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a2d44267b238a221bb8a7d2bc1bf68ea2">   55</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a49ccfe7a61c36ac9818482a7892915d3">KeySource::GetKey</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                         <a class="code" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  DCHECK(key);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  DCHECK(encryption_key_);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordflow">if</span> (key_id != encryption_key_-&gt;key_id) {</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::NOT_FOUND, std::string(<span class="stringliteral">&quot;Key for key ID &quot;</span>) +</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                  base::HexEncode(&amp;key_id[0], key_id.size()) +</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                  <span class="stringliteral">&quot; was not found.&quot;</span>);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  }</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  *key = *encryption_key_;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a349381b866a37df15a931980636621ac">   68</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a349381b866a37df15a931980636621ac">KeySource::GetCryptoPeriodKey</a>(uint32_t crypto_period_index,</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                                     TrackType track_type,</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                                     <a class="code" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  *key = *encryption_key_;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="comment">// A naive key rotation algorithm is implemented here by left rotating the</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="comment">// key, key_id and pssh. Note that this implementation is only intended for</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="comment">// testing purpose. The actual key rotation algorithm can be much more</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">// complicated.</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  LOG(WARNING)</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;This naive key rotation algorithm should not be used in production.&quot;</span>;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  std::rotate(key-&gt;key_id.begin(),</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;              key-&gt;key_id.begin() + (crypto_period_index % key-&gt;key_id.size()),</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;              key-&gt;key_id.end());</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  std::rotate(key-&gt;key.begin(),</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;              key-&gt;key.begin() + (crypto_period_index % key-&gt;key.size()),</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;              key-&gt;key.end());</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> kPsshHeaderSize = 32u;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  std::vector&lt;uint8_t&gt; pssh_data(key-&gt;pssh.begin() + kPsshHeaderSize,</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                                 key-&gt;pssh.end());</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  std::rotate(pssh_data.begin(),</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;              pssh_data.begin() + (crypto_period_index % pssh_data.size()),</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;              pssh_data.end());</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  key-&gt;pssh = <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab5478505cfdb660fa6c680819f17f239">PsshBoxFromPsshData</a>(pssh_data);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#afbb7d084395a1426eb0143ae8357b2fc">   94</a></span>&#160;std::string <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#afbb7d084395a1426eb0143ae8357b2fc">KeySource::UUID</a>() {</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keywordflow">return</span> kDefaultUUID;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;}</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#aa73dacef997e7700b8669bb2db5f8f31">   98</a></span>&#160;std::string <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#aa73dacef997e7700b8669bb2db5f8f31">KeySource::SystemName</a>() {</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keywordflow">return</span> kDefaultSystemName;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;}</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
+<div class="line"><a name="l00102"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab05172d89513c0d3627502c9cff4535f">  102</a></span>&#160;scoped_ptr&lt;KeySource&gt; <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab05172d89513c0d3627502c9cff4535f">KeySource::CreateFromHexStrings</a>(</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keyword">const</span> std::string&amp; key_id_hex,</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keyword">const</span> std::string&amp; key_hex,</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keyword">const</span> std::string&amp; pssh_data_hex,</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keyword">const</span> std::string&amp; iv_hex) {</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  scoped_ptr&lt;EncryptionKey&gt; encryption_key(<span class="keyword">new</span> <a class="code" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a>());</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordflow">if</span> (!base::HexStringToBytes(key_id_hex, &amp;encryption_key-&gt;key_id)) {</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot parse key_id_hex &quot;</span> &lt;&lt; key_id_hex;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordflow">return</span> scoped_ptr&lt;KeySource&gt;();</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  }</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="keywordflow">if</span> (!base::HexStringToBytes(key_hex, &amp;encryption_key-&gt;key)) {</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot parse key_hex &quot;</span> &lt;&lt; key_hex;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;    <span class="keywordflow">return</span> scoped_ptr&lt;KeySource&gt;();</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  }</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  std::vector&lt;uint8_t&gt; pssh_data;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <span class="keywordflow">if</span> (!pssh_data_hex.empty() &amp;&amp;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;      !base::HexStringToBytes(pssh_data_hex, &amp;pssh_data)) {</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot parse pssh_hex &quot;</span> &lt;&lt; pssh_data_hex;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="keywordflow">return</span> scoped_ptr&lt;KeySource&gt;();</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  }</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="keywordflow">if</span> (!iv_hex.empty()) {</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="keywordflow">if</span> (!base::HexStringToBytes(iv_hex, &amp;encryption_key-&gt;iv)) {</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot parse iv_hex &quot;</span> &lt;&lt; iv_hex;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;      <span class="keywordflow">return</span> scoped_ptr&lt;KeySource&gt;();</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    }</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  }</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  encryption_key-&gt;pssh = <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab5478505cfdb660fa6c680819f17f239">PsshBoxFromPsshData</a>(pssh_data);</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  <span class="keywordflow">return</span> scoped_ptr&lt;KeySource&gt;(</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;      <span class="keyword">new</span> <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a>(encryption_key.Pass()));</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;}</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;</div>
+<div class="line"><a name="l00138"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab15ba8121f76e0945d4f10d722da5cc8">  138</a></span>&#160;KeySource::TrackType <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab15ba8121f76e0945d4f10d722da5cc8">KeySource::GetTrackTypeFromString</a>(</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    <span class="keyword">const</span> std::string&amp; track_type_string) {</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  <span class="keywordflow">if</span> (track_type_string == <span class="stringliteral">&quot;SD&quot;</span>)</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_SD;</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  <span class="keywordflow">if</span> (track_type_string == <span class="stringliteral">&quot;HD&quot;</span>)</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_HD;</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <span class="keywordflow">if</span> (track_type_string == <span class="stringliteral">&quot;AUDIO&quot;</span>)</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_AUDIO;</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  <span class="keywordflow">if</span> (track_type_string == <span class="stringliteral">&quot;UNSPECIFIED&quot;</span>)</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;    <span class="keywordflow">return</span> TRACK_TYPE_UNSPECIFIED;</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Unexpected track type: &quot;</span> &lt;&lt; track_type_string;</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  <span class="keywordflow">return</span> TRACK_TYPE_UNKNOWN;</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;}</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;</div>
+<div class="line"><a name="l00152"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a8bab239dd17b01ed607c483c536d1321">  152</a></span>&#160;std::string <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a8bab239dd17b01ed607c483c536d1321">KeySource::TrackTypeToString</a>(TrackType track_type) {</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  <span class="keywordflow">switch</span> (track_type) {</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    <span class="keywordflow">case</span> TRACK_TYPE_SD:</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;SD&quot;</span>;</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    <span class="keywordflow">case</span> TRACK_TYPE_HD:</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;HD&quot;</span>;</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    <span class="keywordflow">case</span> TRACK_TYPE_AUDIO:</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;AUDIO&quot;</span>;</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;      NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;Unknown track type: &quot;</span> &lt;&lt; track_type;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;      <span class="keywordflow">return</span> <span class="stringliteral">&quot;UNKNOWN&quot;</span>;</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  }</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;}</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
+<div class="line"><a name="l00166"></a><span class="lineno"><a class="line" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab5478505cfdb660fa6c680819f17f239">  166</a></span>&#160;std::vector&lt;uint8_t&gt; <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab5478505cfdb660fa6c680819f17f239">KeySource::PsshBoxFromPsshData</a>(</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; pssh_data) {</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  <span class="keyword">const</span> uint8_t kPsshFourCC[] = {<span class="charliteral">&#39;p&#39;</span>, <span class="charliteral">&#39;s&#39;</span>, <span class="charliteral">&#39;s&#39;</span>, <span class="charliteral">&#39;h&#39;</span>};</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  <span class="keyword">const</span> uint32_t kVersionAndFlags = 0;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <span class="keyword">const</span> uint32_t pssh_data_size = pssh_data.size();</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <span class="keyword">const</span> uint32_t total_size =</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;      <span class="keyword">sizeof</span>(total_size) + <span class="keyword">sizeof</span>(kPsshFourCC) + <span class="keyword">sizeof</span>(kVersionAndFlags) +</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;      <span class="keyword">sizeof</span>(kWidevineSystemId) + <span class="keyword">sizeof</span>(pssh_data_size) + pssh_data_size;</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  <a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html">BufferWriter</a> writer;</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  writer.<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">AppendInt</a>(total_size);</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  writer.AppendArray(kPsshFourCC, <span class="keyword">sizeof</span>(kPsshFourCC));</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  writer.<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">AppendInt</a>(kVersionAndFlags);</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  writer.AppendArray(kWidevineSystemId, <span class="keyword">sizeof</span>(kWidevineSystemId));</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  writer.<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">AppendInt</a>(pssh_data_size);</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  writer.AppendVector(pssh_data);</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  <span class="keywordflow">return</span> std::vector&lt;uint8_t&gt;(writer.<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#a8849c495e9e5cb0c33d7633fecbe0643">Buffer</a>(), writer.<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#a8849c495e9e5cb0c33d7633fecbe0643">Buffer</a>() + writer.Size());</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;}</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;KeySource::KeySource() {}</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;KeySource::KeySource(scoped_ptr&lt;EncryptionKey&gt; encryption_key)</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    : encryption_key_(encryption_key.Pass()) {</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  DCHECK(encryption_key_);</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;}</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_a49ccfe7a61c36ac9818482a7892915d3"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a49ccfe7a61c36ac9818482a7892915d3">edash_packager::media::KeySource::GetKey</a></div><div class="ttdeci">virtual Status GetKey(TrackType track_type, EncryptionKey *key)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00048">key_source.cc:48</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_a349381b866a37df15a931980636621ac"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a349381b866a37df15a931980636621ac">edash_packager::media::KeySource::GetCryptoPeriodKey</a></div><div class="ttdeci">virtual Status GetCryptoPeriodKey(uint32_t crypto_period_index, TrackType track_type, EncryptionKey *key)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00068">key_source.cc:68</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1EncryptionKey_html"><div class="ttname"><a href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">edash_packager::media::EncryptionKey</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00022">key_source.h:22</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Status_html"><div class="ttname"><a href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">edash_packager::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_a4020839c22a550bf71d891bf55087e0b"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a4020839c22a550bf71d891bf55087e0b">edash_packager::media::KeySource::FetchKeys</a></div><div class="ttdeci">virtual Status FetchKeys(const std::vector&lt; uint8_t &gt; &amp;content_id, const std::string &amp;policy)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00030">key_source.cc:30</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_afbb7d084395a1426eb0143ae8357b2fc"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#afbb7d084395a1426eb0143ae8357b2fc">edash_packager::media::KeySource::UUID</a></div><div class="ttdeci">virtual std::string UUID()</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00092">key_source.cc:92</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">edash_packager::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00029">key_source.h:29</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_a4020839c22a550bf71d891bf55087e0b"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a4020839c22a550bf71d891bf55087e0b">edash_packager::media::KeySource::FetchKeys</a></div><div class="ttdeci">virtual Status FetchKeys(const std::vector&lt; uint8_t &gt; &amp;content_id, const std::string &amp;policy)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00027">key_source.cc:27</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_afbb7d084395a1426eb0143ae8357b2fc"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#afbb7d084395a1426eb0143ae8357b2fc">edash_packager::media::KeySource::UUID</a></div><div class="ttdeci">virtual std::string UUID()</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00094">key_source.cc:94</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">edash_packager::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00033">key_source.h:33</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1BufferWriter_html_afd1449487750c41331a2d91ac417f115"><div class="ttname"><a href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">edash_packager::media::BufferWriter::AppendInt</a></div><div class="ttdeci">void AppendInt(uint8_t v)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd3/buffer__writer_8cc_source.html#l00025">buffer_writer.cc:25</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_ab05172d89513c0d3627502c9cff4535f"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab05172d89513c0d3627502c9cff4535f">edash_packager::media::KeySource::CreateFromHexStrings</a></div><div class="ttdeci">static scoped_ptr&lt; KeySource &gt; CreateFromHexStrings(const std::string &amp;key_id_hex, const std::string &amp;key_hex, const std::string &amp;pssh_data_hex, const std::string &amp;iv_hex)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00100">key_source.cc:100</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_ab05172d89513c0d3627502c9cff4535f"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab05172d89513c0d3627502c9cff4535f">edash_packager::media::KeySource::CreateFromHexStrings</a></div><div class="ttdeci">static scoped_ptr&lt; KeySource &gt; CreateFromHexStrings(const std::string &amp;key_id_hex, const std::string &amp;key_hex, const std::string &amp;pssh_data_hex, const std::string &amp;iv_hex)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00102">key_source.cc:102</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1BufferWriter_html_a8849c495e9e5cb0c33d7633fecbe0643"><div class="ttname"><a href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#a8849c495e9e5cb0c33d7633fecbe0643">edash_packager::media::BufferWriter::Buffer</a></div><div class="ttdeci">const uint8_t * Buffer() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd2/buffer__writer_8h_source.html#l00059">buffer_writer.h:59</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_ab5478505cfdb660fa6c680819f17f239"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab5478505cfdb660fa6c680819f17f239">edash_packager::media::KeySource::PsshBoxFromPsshData</a></div><div class="ttdeci">static std::vector&lt; uint8_t &gt; PsshBoxFromPsshData(const std::vector&lt; uint8_t &gt; &amp;pssh_data)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00164">key_source.cc:164</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_aa73dacef997e7700b8669bb2db5f8f31"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#aa73dacef997e7700b8669bb2db5f8f31">edash_packager::media::KeySource::SystemName</a></div><div class="ttdeci">virtual std::string SystemName()</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00096">key_source.cc:96</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_ab15ba8121f76e0945d4f10d722da5cc8"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab15ba8121f76e0945d4f10d722da5cc8">edash_packager::media::KeySource::GetTrackTypeFromString</a></div><div class="ttdeci">static TrackType GetTrackTypeFromString(const std::string &amp;track_type_string)</div><div class="ttdoc">Convert string representation of track type to enum representation. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00136">key_source.cc:136</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_a8bab239dd17b01ed607c483c536d1321"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a8bab239dd17b01ed607c483c536d1321">edash_packager::media::KeySource::TrackTypeToString</a></div><div class="ttdeci">static std::string TrackTypeToString(TrackType track_type)</div><div class="ttdoc">Convert TrackType to string. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00150">key_source.cc:150</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_ab5478505cfdb660fa6c680819f17f239"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab5478505cfdb660fa6c680819f17f239">edash_packager::media::KeySource::PsshBoxFromPsshData</a></div><div class="ttdeci">static std::vector&lt; uint8_t &gt; PsshBoxFromPsshData(const std::vector&lt; uint8_t &gt; &amp;pssh_data)</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00166">key_source.cc:166</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_aa73dacef997e7700b8669bb2db5f8f31"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#aa73dacef997e7700b8669bb2db5f8f31">edash_packager::media::KeySource::SystemName</a></div><div class="ttdeci">virtual std::string SystemName()</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00098">key_source.cc:98</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_ab15ba8121f76e0945d4f10d722da5cc8"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab15ba8121f76e0945d4f10d722da5cc8">edash_packager::media::KeySource::GetTrackTypeFromString</a></div><div class="ttdeci">static TrackType GetTrackTypeFromString(const std::string &amp;track_type_string)</div><div class="ttdoc">Convert string representation of track type to enum representation. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00138">key_source.cc:138</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_a8bab239dd17b01ed607c483c536d1321"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a8bab239dd17b01ed607c483c536d1321">edash_packager::media::KeySource::TrackTypeToString</a></div><div class="ttdeci">static std::string TrackTypeToString(TrackType track_type)</div><div class="ttdoc">Convert TrackType to string. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dd6/key__source_8cc_source.html#l00152">key_source.cc:152</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1BufferWriter_html"><div class="ttname"><a href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html">edash_packager::media::BufferWriter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd2/buffer__writer_8h_source.html#l00022">buffer_writer.h:22</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 8 2016 07:48:13 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Mar 8 2016 21:50:33 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
