@@ -74,15 +74,8 @@ bool DashIopMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
     return false;
 
   base::AutoLock auto_lock(lock_);
-  std::string lang;
-  if (media_info.has_audio_info()) {
-    lang = media_info.audio_info().language();
-  } else if (media_info.has_text_info()) {
-    lang = media_info.text_info().language();
-  }
-
-  AdaptationSet* adaptation_set =
-      GetAdaptationSetForMediaInfo(media_info, content_type, lang);
+  const std::string key = GetAdaptationSetKey(media_info);
+  AdaptationSet* adaptation_set = GetAdaptationSetForMediaInfo(key, media_info);
   DCHECK(adaptation_set);
   if (media_info.has_text_info()) {
     // IOP requires all AdaptationSets to have (sub)segmentAlignment set to
@@ -100,7 +93,7 @@ bool DashIopMpdNotifier::NotifyNewContainer(const MediaInfo& media_info,
 
   representation_id_to_adaptation_set_[representation->id()] = adaptation_set;
 
-  SetGroupId(content_type, lang, adaptation_set);
+  SetGroupId(key, adaptation_set);
 
   *container_id = representation->id();
   DCHECK(!ContainsKey(representation_map_, representation->id()));
@@ -169,13 +162,11 @@ bool DashIopMpdNotifier::Flush() {
 }
 
 AdaptationSet* DashIopMpdNotifier::GetAdaptationSetForMediaInfo(
-    const MediaInfo& media_info,
-    ContentType content_type,
-    const std::string& language) {
-  std::list<AdaptationSet*>& adaptation_sets =
-      adaptation_set_list_map_[content_type][language];
+    const std::string& key,
+    const MediaInfo& media_info) {
+  std::list<AdaptationSet*>& adaptation_sets = adaptation_set_list_map_[key];
   if (adaptation_sets.empty())
-    return NewAdaptationSet(media_info, language, &adaptation_sets);
+    return NewAdaptationSet(media_info, &adaptation_sets);
 
   const bool has_protected_content = media_info.has_protected_content();
 
@@ -204,13 +195,12 @@ AdaptationSet* DashIopMpdNotifier::GetAdaptationSetForMediaInfo(
 
   // None of the adaptation sets match with the new content protection.
   // Need a new one.
-  return NewAdaptationSet(media_info, language, &adaptation_sets);
+  return NewAdaptationSet(media_info, &adaptation_sets);
 }
 
 // Get all the UUIDs of the AdaptationSet. If another AdaptationSet has the
 // same UUIDs then those should be groupable.
-void DashIopMpdNotifier::SetGroupId(ContentType type,
-                                    const std::string& language,
+void DashIopMpdNotifier::SetGroupId(const std::string& key,
                                     AdaptationSet* adaptation_set) {
   if (adaptation_set->Group() >= 0)  // @group already assigned.
     return;
@@ -230,7 +220,7 @@ void DashIopMpdNotifier::SetGroupId(ContentType type,
       GetUUIDs(protected_content_it->second);
 
   std::list<AdaptationSet*>& same_type_adapatation_sets =
-      adaptation_set_list_map_[type][language];
+      adaptation_set_list_map_[key];
   DCHECK(!same_type_adapatation_sets.empty())
       << "same_type_adapatation_sets should not be null, it should at least "
          "contain adaptation_set";
@@ -270,8 +260,8 @@ void DashIopMpdNotifier::SetGroupId(ContentType type,
 
 AdaptationSet* DashIopMpdNotifier::NewAdaptationSet(
     const MediaInfo& media_info,
-    const std::string& language,
     std::list<AdaptationSet*>* adaptation_sets) {
+  std::string language = GetLanguage(media_info);
   AdaptationSet* new_adaptation_set = mpd_builder_->AddAdaptationSet(language);
   if (media_info.has_protected_content()) {
     DCHECK(!ContainsKey(protected_content_map_, new_adaptation_set->id()));

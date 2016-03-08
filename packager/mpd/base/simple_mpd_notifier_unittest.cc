@@ -308,6 +308,101 @@ TEST_P(SimpleMpdNotifierTest, UpdateEncryption) {
       container_id, "myuuid", std::vector<uint8_t>(), kBogusNewPsshVector));
 }
 
+// Don't put different audio languages or codecs in the same AdaptationSet.
+TEST_P(SimpleMpdNotifierTest, SplitAdaptationSetsByLanguageAndCodec) {
+  // MP4, English
+  const char kAudioContent1[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'eng'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_MP4\n"
+      "media_duration_seconds: 10.5\n";
+
+  // MP4, German
+  const char kAudioContent2[] =
+      "audio_info {\n"
+      "  codec: 'mp4a.40.2'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'ger'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_MP4\n"
+      "media_duration_seconds: 10.5\n";
+
+  // WebM, German
+  const char kAudioContent3[] =
+      "audio_info {\n"
+      "  codec: 'vorbis'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'ger'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_WEBM\n"
+      "media_duration_seconds: 10.5\n";
+
+  // WebM, German again
+  const char kAudioContent4[] =
+      "audio_info {\n"
+      "  codec: 'vorbis'\n"
+      "  sampling_frequency: 44100\n"
+      "  time_scale: 1200\n"
+      "  num_channels: 2\n"
+      "  language: 'ger'\n"
+      "}\n"
+      "reference_time_scale: 50\n"
+      "container_type: CONTAINER_WEBM\n"
+      "media_duration_seconds: 10.5\n";
+
+  SimpleMpdNotifier notifier(kOnDemandProfile, empty_mpd_option_,
+                             empty_base_urls_, output_path_);
+  scoped_ptr<MockMpdBuilder> mock_mpd_builder(StaticMpdBuilderMock());
+
+  scoped_ptr<MockAdaptationSet> adaptation_set1(new MockAdaptationSet(1));
+  scoped_ptr<MockAdaptationSet> adaptation_set2(new MockAdaptationSet(2));
+  scoped_ptr<MockAdaptationSet> adaptation_set3(new MockAdaptationSet(3));
+
+  scoped_ptr<MockRepresentation> representation1(new MockRepresentation(1));
+  scoped_ptr<MockRepresentation> representation2(new MockRepresentation(2));
+  scoped_ptr<MockRepresentation> representation3(new MockRepresentation(3));
+  scoped_ptr<MockRepresentation> representation4(new MockRepresentation(4));
+
+  // We expect three AdaptationSets.
+  EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
+      .WillOnce(Return(adaptation_set1.get()))
+      .WillOnce(Return(adaptation_set2.get()))
+      .WillOnce(Return(adaptation_set3.get()));
+  // The first AdaptationSet should have Eng MP4, one Representation.
+  EXPECT_CALL(*adaptation_set1, AddRepresentation(_))
+      .WillOnce(Return(representation1.get()));
+  // The second AdaptationSet should have Ger MP4, one Representation.
+  EXPECT_CALL(*adaptation_set2, AddRepresentation(_))
+      .WillOnce(Return(representation2.get()));
+  // The third AdaptationSet should have Ger WebM, two Representations.
+  EXPECT_CALL(*adaptation_set3, AddRepresentation(_))
+      .WillOnce(Return(representation3.get()))
+      .WillOnce(Return(representation4.get()));
+
+  uint32_t unused_container_id;
+  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  EXPECT_TRUE(notifier.NotifyNewContainer(
+      ConvertToMediaInfo(kAudioContent1), &unused_container_id));
+  EXPECT_TRUE(notifier.NotifyNewContainer(
+      ConvertToMediaInfo(kAudioContent2), &unused_container_id));
+  EXPECT_TRUE(notifier.NotifyNewContainer(
+      ConvertToMediaInfo(kAudioContent3), &unused_container_id));
+  EXPECT_TRUE(notifier.NotifyNewContainer(
+      ConvertToMediaInfo(kAudioContent4), &unused_container_id));
+}
+
 INSTANTIATE_TEST_CASE_P(StaticAndDynamic,
                         SimpleMpdNotifierTest,
                         ::testing::Values(MpdBuilder::kStatic,

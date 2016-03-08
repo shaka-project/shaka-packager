@@ -57,6 +57,16 @@ void RemoveDuplicateAttributes(
     attributes.erase("schemeIdUri");
 }
 
+std::string GetLanguage(const MediaInfo& media_info) {
+  std::string lang;
+  if (media_info.has_audio_info()) {
+    lang = media_info.audio_info().language();
+  } else if (media_info.has_text_info()) {
+    lang = media_info.text_info().language();
+  }
+  return lang;
+}
+
 std::string GetCodecs(const MediaInfo& media_info) {
   CHECK(OnlyOneTrue(media_info.has_video_info(), media_info.has_audio_info(),
                     media_info.has_text_info()));
@@ -84,6 +94,47 @@ std::string GetCodecs(const MediaInfo& media_info) {
 
   NOTREACHED();
   return "";
+}
+
+std::string GetBaseCodec(const MediaInfo& media_info) {
+  std::string codec;
+  if (media_info.has_video_info()) {
+    codec = media_info.video_info().codec();
+  } else if (media_info.has_audio_info()) {
+    codec = media_info.audio_info().codec();
+  } else if (media_info.has_text_info()) {
+    codec = media_info.text_info().format();
+  }
+  // Convert, for example, "mp4a.40.2" to simply "mp4a".
+  // "mp4a.40.2" and "mp4a.40.5" can exist in the same AdaptationSet.
+  size_t dot = codec.find('.');
+  if (dot != std::string::npos) {
+    codec.erase(dot);
+  }
+  return codec;
+}
+
+std::string GetAdaptationSetKey(const MediaInfo& media_info) {
+  std::string key;
+
+  if (media_info.has_video_info()) {
+    key.append("video:");
+  } else if (media_info.has_audio_info()) {
+    key.append("audio:");
+  } else if (media_info.has_text_info()) {
+    key.append(MediaInfo_TextInfo_TextType_Name(media_info.text_info().type()));
+    key.append(":");
+  } else {
+    key.append("unknown:");
+  }
+
+  key.append(MediaInfo_ContainerType_Name(media_info.container_type()));
+  key.append(":");
+  key.append(GetBaseCodec(media_info));
+  key.append(":");
+  key.append(GetLanguage(media_info));
+
+  return key;
 }
 
 std::string SecondsToXmlDuration(double seconds) {

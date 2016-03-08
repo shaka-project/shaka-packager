@@ -70,22 +70,17 @@ class DashIopMpdNotifier : public MpdNotifier {
   // This does not necessarily return a new AdaptationSet. If
   // media_info.protected_content completely matches with an existing
   // AdaptationSet, then it will return the pointer.
-  AdaptationSet* GetAdaptationSetForMediaInfo(const MediaInfo& media_info,
-                                              ContentType type,
-                                              const std::string& language);
+  AdaptationSet* GetAdaptationSetForMediaInfo(const std::string& key,
+                                              const MediaInfo& media_info);
 
   // Sets a group id for |adaptation_set| if applicable.
   // If a group ID is already assigned, then this returns immediately.
-  // |type| and |language| are the type and language of |adaptation_set|.
-  void SetGroupId(ContentType type,
-                  const std::string& language,
-                  AdaptationSet* adaptation_set);
+  void SetGroupId(const std::string& key, AdaptationSet* adaptation_set);
 
   // Helper function to get a new AdaptationSet; registers the values
   // to the fields (maps) of the instance.
   // If the media is encrypted, registers data to protected_content_map_.
   AdaptationSet* NewAdaptationSet(const MediaInfo& media_info,
-                                  const std::string& language,
                                   std::list<AdaptationSet*>* adaptation_sets);
 
   // Testing only method. Returns a pointer to MpdBuilder.
@@ -98,10 +93,7 @@ class DashIopMpdNotifier : public MpdNotifier {
     mpd_builder_ = mpd_builder.Pass();
   }
 
-  // [type][lang] = list<AdaptationSet>
-  // Note: lang can be empty, e.g. for video.
-  std::map<ContentType, std::map<std::string, std::list<AdaptationSet*> > >
-      adaptation_set_list_map_;
+  std::map<std::string, std::list<AdaptationSet*>> adaptation_set_list_map_;
   RepresentationMap representation_map_;
 
   // Used to check whether a Representation should be added to an AdaptationSet.

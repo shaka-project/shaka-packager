@@ -40,9 +40,19 @@ bool HasLiveOnlyFields(const MediaInfo& media_info);
 void RemoveDuplicateAttributes(
     ContentProtectionElement* content_protection_element);
 
+// Returns a language tag. May be blank for video.
+std::string GetLanguage(const MediaInfo& media_info);
+
 // Returns a 'codecs' string that has all the video and audio codecs joined with
 // comma.
 std::string GetCodecs(const MediaInfo& media_info);
+
+// Returns a codec string without variants. For example, "mp4a" instead of
+// "mp4a.40.2". May return a format for text streams.
+std::string GetBaseCodec(const MediaInfo& media_info);
+
+// Returns a key made from the characteristics that separate AdaptationSets.
+std::string GetAdaptationSetKey(const MediaInfo& media_info);
 
 std::string SecondsToXmlDuration(double seconds);
 

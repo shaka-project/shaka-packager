@@ -74,9 +74,7 @@ class SimpleMpdNotifier : public MpdNotifier {
   scoped_ptr<MpdBuilder> mpd_builder_;
   base::Lock lock_;
 
-  // [type][lang] = AdaptationSet
-  typedef std::map<ContentType, std::map<std::string, AdaptationSet*> >
-      AdaptationSetMap;
+  typedef std::map<std::string, AdaptationSet*> AdaptationSetMap;
   AdaptationSetMap adaptation_set_map_;
 
   typedef std::map<uint32_t, Representation*> RepresentationMap;
