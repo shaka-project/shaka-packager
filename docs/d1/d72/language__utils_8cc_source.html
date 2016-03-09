@@ -159,54 +159,74 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  { <span class="stringliteral">&quot;yor&quot;</span>, <span class="stringliteral">&quot;yo&quot;</span> }, { <span class="stringliteral">&quot;zha&quot;</span>, <span class="stringliteral">&quot;za&quot;</span> }, { <span class="stringliteral">&quot;zho&quot;</span>, <span class="stringliteral">&quot;zh&quot;</span> }, { <span class="stringliteral">&quot;zul&quot;</span>, <span class="stringliteral">&quot;zu&quot;</span> },</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;};</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}  <span class="comment">// namespace</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html#a4f8cf77ef5242943e88811962c2870e5">   77</a></span>&#160;std::string <a class="code" href="../../db/d09/namespaceedash__packager.html#a4f8cf77ef5242943e88811962c2870e5">LanguageToShortestForm</a>(<span class="keyword">const</span> std::string&amp; language) {</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordflow">if</span> (language.size() == 2) {</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="comment">// Presumably already a valid ISO-639-1 code, and therefore conforms to</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="comment">// BCP-47&#39;s requirement to use the shortest possible code.</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordflow">return</span> language;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keywordtype">void</span> SplitLanguageTag(<span class="keyword">const</span> std::string&amp; tag,</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                      std::string* main_language, std::string* subtag) {</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">// Split the main language from its subtag (if any).</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  *main_language = tag;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  subtag-&gt;clear();</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordtype">size_t</span> dash = main_language-&gt;find(<span class="charliteral">&#39;-&#39;</span>);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordflow">if</span> (dash != std::string::npos) {</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    *subtag = main_language-&gt;substr(dash);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    main_language-&gt;erase(dash);</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  }</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; arraysize(kLanguageMap); ++i) {</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordflow">if</span> (language == kLanguageMap[i].iso_639_2) {</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;      <span class="keywordflow">return</span> kLanguageMap[i].iso_639_1;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    }</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  }</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="comment">// This could happen legitimately for languages which have no 2-letter code,</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="comment">// but that would imply that the input language code is a 3-letter code.</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  DCHECK_EQ(3u, language.size());</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordflow">return</span> language;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html#a1082a6ff7615e61946ce7d6616f21dde">   96</a></span>&#160;std::string <a class="code" href="../../db/d09/namespaceedash__packager.html#a1082a6ff7615e61946ce7d6616f21dde">LanguageToISO_639_2</a>(<span class="keyword">const</span> std::string&amp; language) {</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="keywordflow">if</span> (language.size() == 3) {</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="comment">// Presumably already a valid ISO-639-2 code.</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordflow">return</span> language;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  }</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; arraysize(kLanguageMap); ++i) {</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keywordflow">if</span> (language == kLanguageMap[i].iso_639_1) {</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      <span class="keywordflow">return</span> kLanguageMap[i].iso_639_2;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    }</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  }</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;No equivalent 3-letter language code for &quot;</span> &lt;&lt; language;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="comment">// This is probably a mistake on the part of the user and should be treated</span></div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="comment">// as invalid input.</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordflow">return</span> <span class="stringliteral">&quot;und&quot;</span>;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;}</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="namespaceedash__packager_html_a4f8cf77ef5242943e88811962c2870e5"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a4f8cf77ef5242943e88811962c2870e5">edash_packager::LanguageToShortestForm</a></div><div class="ttdeci">std::string LanguageToShortestForm(const std::string &amp;language)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d72/language__utils_8cc_source.html#l00077">language_utils.cc:77</a></div></div>
-<div class="ttc" id="namespaceedash__packager_html_a1082a6ff7615e61946ce7d6616f21dde"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a1082a6ff7615e61946ce7d6616f21dde">edash_packager::LanguageToISO_639_2</a></div><div class="ttdeci">std::string LanguageToISO_639_2(const std::string &amp;language)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d72/language__utils_8cc_source.html#l00096">language_utils.cc:96</a></div></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}  <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html#a4f8cf77ef5242943e88811962c2870e5">   89</a></span>&#160;std::string <a class="code" href="../../db/d09/namespaceedash__packager.html#a4f8cf77ef5242943e88811962c2870e5">LanguageToShortestForm</a>(<span class="keyword">const</span> std::string&amp; language) {</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  std::string main_language;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  std::string subtag;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  SplitLanguageTag(language, &amp;main_language, &amp;subtag);</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="keywordflow">if</span> (main_language.size() == 2) {</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <span class="comment">// Presumably already a valid ISO-639-1 code, and therefore conforms to</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="comment">// BCP-47&#39;s requirement to use the shortest possible code.</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordflow">return</span> main_language + subtag;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  }</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; arraysize(kLanguageMap); ++i) {</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordflow">if</span> (main_language == kLanguageMap[i].iso_639_2) {</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      <span class="keywordflow">return</span> kLanguageMap[i].iso_639_1 + subtag;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    }</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  }</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="comment">// This could happen legitimately for languages which have no 2-letter code,</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="comment">// but that would imply that the input language code is a 3-letter code.</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  DCHECK_EQ(3u, main_language.size());</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordflow">return</span> main_language + subtag;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;}</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00112"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html#a1082a6ff7615e61946ce7d6616f21dde">  112</a></span>&#160;std::string <a class="code" href="../../db/d09/namespaceedash__packager.html#a1082a6ff7615e61946ce7d6616f21dde">LanguageToISO_639_2</a>(<span class="keyword">const</span> std::string&amp; language) {</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  std::string main_language;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  std::string subtag;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  SplitLanguageTag(language, &amp;main_language, &amp;subtag);</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="keywordflow">if</span> (main_language.size() == 3) {</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    <span class="comment">// Presumably already a valid ISO-639-2 code.</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    <span class="keywordflow">return</span> main_language + subtag;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  }</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; arraysize(kLanguageMap); ++i) {</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="keywordflow">if</span> (main_language == kLanguageMap[i].iso_639_1) {</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      <span class="keywordflow">return</span> kLanguageMap[i].iso_639_2 + subtag;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    }</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  }</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;No equivalent 3-letter language code for &quot;</span> &lt;&lt; main_language;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="comment">// This is probably a mistake on the part of the user and should be treated</span></div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="comment">// as invalid input.</span></div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordflow">return</span> <span class="stringliteral">&quot;und&quot;</span>;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;}</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="namespaceedash__packager_html_a4f8cf77ef5242943e88811962c2870e5"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a4f8cf77ef5242943e88811962c2870e5">edash_packager::LanguageToShortestForm</a></div><div class="ttdeci">std::string LanguageToShortestForm(const std::string &amp;language)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d72/language__utils_8cc_source.html#l00089">language_utils.cc:89</a></div></div>
+<div class="ttc" id="namespaceedash__packager_html_a1082a6ff7615e61946ce7d6616f21dde"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a1082a6ff7615e61946ce7d6616f21dde">edash_packager::LanguageToISO_639_2</a></div><div class="ttdeci">std::string LanguageToISO_639_2(const std::string &amp;language)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d72/language__utils_8cc_source.html#l00112">language_utils.cc:112</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 8 2016 21:50:34 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Mar 9 2016 23:47:44 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
