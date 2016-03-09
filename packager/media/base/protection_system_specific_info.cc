@@ -27,6 +27,7 @@ bool ProtectionSystemSpecificInfo::ParseBoxes(
     const uint8_t* data,
     size_t data_size,
     std::vector<ProtectionSystemSpecificInfo>* pssh_boxes) {
+  pssh_boxes->clear();
   BufferReader reader(data, data_size);
   while (reader.HasBytes(1)) {
     size_t start_position = reader.pos();
@@ -34,7 +35,7 @@ bool ProtectionSystemSpecificInfo::ParseBoxes(
     RCHECK(reader.Read4(&size));
     RCHECK(reader.SkipBytes(size - 4));
 
-    pssh_boxes->emplace_back();
+    pssh_boxes->push_back(ProtectionSystemSpecificInfo());
     RCHECK(pssh_boxes->back().Parse(data + start_position, size));
   }
 
