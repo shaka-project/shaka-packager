@@ -108,103 +108,97 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">class </span>StreamInfo;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">struct </span>MuxerOptions;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">   29</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">MuxerListener</a> {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keyword">enum</span> ContainerType {</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    kContainerUnknown = 0,</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    kContainerMp4,</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    kContainerMpeg2ts,</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    kContainerWebM</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  };</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">MuxerListener</a>() {};</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="comment">// Called when the media&#39;s encryption information is ready. This should be</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="comment">// called before OnMediaStart(), if the media is encrypted.</span></div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="comment">// All the parameters may be empty just to notify that the media is encrypted.</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="comment">// |content_protection_uuid| is one of the UUIDs listed here</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="comment">// http://dashif.org/identifiers/protection/. This should be in human</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="comment">// readable form.</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="comment">// |is_initial_encryption_info| is true if this is the first encryption info</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="comment">// for the media.</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="comment">// In general, this flag should always be true for non-key-rotated media and</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="comment">// should be called only once.</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="comment">// |content_protection_name_version| is the DRM system and version name.</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="comment">// |key_id| is the key ID for the media.</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="comment">// The format should be a vector of uint8_t, i.e. not (necessarily) human</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="comment">// readable hex string.</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="comment">// For ISO BMFF (MP4) media:</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="comment">// If |is_initial_encryption_info| is true then |key_id| is the default_KID in</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="comment">// &#39;tenc&#39; box.</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="comment">// If |is_initial_encryption_info| is false then |key_id| is the new key ID</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="comment">// for the for the next crypto period.</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="comment">// |pssh| is the whole &#39;pssh&#39; box.</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> OnEncryptionInfoReady(</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;      <span class="keywordtype">bool</span> is_initial_encryption_info,</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      <span class="keyword">const</span> std::string&amp; content_protection_uuid,</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      <span class="keyword">const</span> std::string&amp; content_protection_name_version,</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;      <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; pssh) = 0;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="comment">// Called when muxing starts.</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="comment">// For MPEG DASH Live profile, the initialization segment information is</span></div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="comment">// available from StreamInfo.</span></div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="comment">// |time_scale| is a reference time scale that overrides the time scale</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="comment">// specified in |stream_info|.</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> OnMediaStart(<span class="keyword">const</span> <a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a>&amp; muxer_options,</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                            <span class="keyword">const</span> <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a>&amp; stream_info,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                            uint32_t time_scale,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                            ContainerType container_type) = 0;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a5626ff553138db438c561db2ca0d05f2">OnSampleDurationReady</a>(uint32_t sample_duration) = 0;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// Called when all files are written out and the muxer object does not output</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// any more files.</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="comment">// Note: This event might not be very interesting to MPEG DASH Live profile.</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">// |init_range_{start,end}| is the byte range of initialization segment, in</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="comment">// the media file. If |has_init_range| is false, these values are ignored.</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="comment">// |index_range_{start,end}| is the byte range of segment index, in the media</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="comment">// file. If |has_index_range| is false, these values are ignored.</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="comment">// Both ranges are inclusive.</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="comment">// Media length of |duration_seconds|.</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="comment">// |file_size| of the media in bytes.</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> OnMediaEnd(<span class="keywordtype">bool</span> has_init_range,</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                          uint64_t init_range_start,</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                          uint64_t init_range_end,</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                          <span class="keywordtype">bool</span> has_index_range,</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                          uint64_t index_range_start,</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                          uint64_t index_range_end,</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                          <span class="keywordtype">float</span> duration_seconds,</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;                          uint64_t file_size) = 0;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="comment">// Called when a segment has been muxed and the file has been written.</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="comment">// Note: For video on demand (VOD), this would be for subsegments.</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">// |start_time| and |duration| are relative to time scale specified</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="comment">// OnMediaStart().</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="comment">// |segment_file_size| in bytes.</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> OnNewSegment(uint64_t start_time,</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                            uint64_t duration,</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;                            uint64_t segment_file_size) = 0;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">MuxerListener</a>() {};</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;};</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor">#endif  // MEDIA_EVENT_MUXER_LISTENER_H_</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">struct </span>MuxerOptions;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">class </span>ProtectionSystemSpecificInfo;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">class </span>StreamInfo;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">   30</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">MuxerListener</a> {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keyword">enum</span> ContainerType {</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    kContainerUnknown = 0,</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    kContainerMp4,</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    kContainerMpeg2ts,</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    kContainerWebM</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  };</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">MuxerListener</a>() {};</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="comment">// Called when the media&#39;s encryption information is ready. This should be</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="comment">// called before OnMediaStart(), if the media is encrypted.</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="comment">// All the parameters may be empty just to notify that the media is encrypted.</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="comment">// |is_initial_encryption_info| is true if this is the first encryption info</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="comment">// for the media.</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="comment">// In general, this flag should always be true for non-key-rotated media and</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="comment">// should be called only once.</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="comment">// |key_id| is the key ID for the media.</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="comment">// The format should be a vector of uint8_t, i.e. not (necessarily) human</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="comment">// readable hex string.</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="comment">// For ISO BMFF (MP4) media:</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="comment">// If |is_initial_encryption_info| is true then |key_id| is the default_KID in</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="comment">// &#39;tenc&#39; box.</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="comment">// If |is_initial_encryption_info| is false then |key_id| is the new key ID</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="comment">// for the for the next crypto period.</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> OnEncryptionInfoReady(</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      <span class="keywordtype">bool</span> is_initial_encryption_info,</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      <span class="keyword">const</span> std::vector&lt;ProtectionSystemSpecificInfo&gt;&amp; key_system_info) = 0;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="comment">// Called when muxing starts.</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="comment">// For MPEG DASH Live profile, the initialization segment information is</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="comment">// available from StreamInfo.</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="comment">// |time_scale| is a reference time scale that overrides the time scale</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="comment">// specified in |stream_info|.</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> OnMediaStart(<span class="keyword">const</span> <a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a>&amp; muxer_options,</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                            <span class="keyword">const</span> <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a>&amp; stream_info,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                            uint32_t time_scale,</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                            ContainerType container_type) = 0;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a5626ff553138db438c561db2ca0d05f2">OnSampleDurationReady</a>(uint32_t sample_duration) = 0;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">// Called when all files are written out and the muxer object does not output</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">// any more files.</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// Note: This event might not be very interesting to MPEG DASH Live profile.</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// |init_range_{start,end}| is the byte range of initialization segment, in</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">// the media file. If |has_init_range| is false, these values are ignored.</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// |index_range_{start,end}| is the byte range of segment index, in the media</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// file. If |has_index_range| is false, these values are ignored.</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// Both ranges are inclusive.</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="comment">// Media length of |duration_seconds|.</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">// |file_size| of the media in bytes.</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> OnMediaEnd(<span class="keywordtype">bool</span> has_init_range,</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                          uint64_t init_range_start,</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                          uint64_t init_range_end,</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                          <span class="keywordtype">bool</span> has_index_range,</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                          uint64_t index_range_start,</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                          uint64_t index_range_end,</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                          <span class="keywordtype">float</span> duration_seconds,</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                          uint64_t file_size) = 0;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="comment">// Called when a segment has been muxed and the file has been written.</span></div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="comment">// Note: For video on demand (VOD), this would be for subsegments.</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="comment">// |start_time| and |duration| are relative to time scale specified</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="comment">// OnMediaStart().</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="comment">// |segment_file_size| in bytes.</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> OnNewSegment(uint64_t start_time,</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;                            uint64_t duration,</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                            uint64_t segment_file_size) = 0;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">MuxerListener</a>() {};</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;};</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;<span class="preprocessor">#endif  // MEDIA_EVENT_MUXER_LISTENER_H_</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">edash_packager::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00026">stream_info.h:26</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">edash_packager::media::MuxerListener</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dfa/muxer__listener_8h_source.html#l00029">muxer_listener.h:29</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">edash_packager::media::MuxerListener</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dfa/muxer__listener_8h_source.html#l00030">muxer_listener.h:30</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">edash_packager::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html_a5626ff553138db438c561db2ca0d05f2"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a5626ff553138db438c561db2ca0d05f2">edash_packager::media::MuxerListener::OnSampleDurationReady</a></div><div class="ttdeci">virtual void OnSampleDurationReady(uint32_t sample_duration)=0</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 11 2016 16:48:46 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 11 2016 18:47:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

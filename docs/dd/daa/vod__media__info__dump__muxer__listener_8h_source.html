@@ -119,66 +119,59 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <a class="code" href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html">VodMediaInfoDumpMuxerListener</a>(<span class="keyword">const</span> std::string&amp; output_file_name);</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  ~<a class="code" href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html">VodMediaInfoDumpMuxerListener</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html#abd5d22401650155842d519bcd17cec5d">SetContentProtectionSchemeIdUri</a>(<span class="keyword">const</span> std::string&amp; scheme_id_uri);</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordtype">void</span> OnEncryptionInfoReady(<span class="keywordtype">bool</span> is_initial_encryption_info,</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                             <span class="keyword">const</span> std::string&amp; content_protection_uuid,</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                             <span class="keyword">const</span> std::string&amp; content_protection_name_version,</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                             <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; default_key_id,</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;                             <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; pssh) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordtype">void</span> OnMediaStart(<span class="keyword">const</span> <a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a>&amp; muxer_options,</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                    <span class="keyword">const</span> <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a>&amp; stream_info,</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                    uint32_t time_scale,</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                    ContainerType container_type) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a2229a8631ae24fc7f253f5a0b1fb6bab">OnSampleDurationReady</a>(uint32_t sample_duration) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordtype">void</span> OnMediaEnd(<span class="keywordtype">bool</span> has_init_range,</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                  uint64_t init_range_start,</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                  uint64_t init_range_end,</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                  <span class="keywordtype">bool</span> has_index_range,</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                  uint64_t index_range_start,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                  uint64_t index_range_end,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                  <span class="keywordtype">float</span> duration_seconds,</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                  uint64_t file_size) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordtype">void</span> OnNewSegment(uint64_t start_time,</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                    uint64_t duration,</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                    uint64_t segment_file_size) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="comment">// TODO(rkuroiwa): Move this to muxer_listener_internal and rename</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="comment">// muxer_listener_internal to muxer_listener_util.</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a4c197fa6ac276f1da4486f33fbd8267a">WriteMediaInfoToFile</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                                   <span class="keyword">const</span> std::string&amp; output_file_path);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordtype">void</span> OnEncryptionInfoReady(<span class="keywordtype">bool</span> is_initial_encryption_info,</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                             <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; default_key_id,</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                             <span class="keyword">const</span> std::vector&lt;ProtectionSystemSpecificInfo&gt;&amp;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                                 key_system_info) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordtype">void</span> OnMediaStart(<span class="keyword">const</span> <a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a>&amp; muxer_options,</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                    <span class="keyword">const</span> <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a>&amp; stream_info,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                    uint32_t time_scale,</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                    ContainerType container_type) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a2229a8631ae24fc7f253f5a0b1fb6bab">OnSampleDurationReady</a>(uint32_t sample_duration) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordtype">void</span> OnMediaEnd(<span class="keywordtype">bool</span> has_init_range,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                  uint64_t init_range_start,</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                  uint64_t init_range_end,</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                  <span class="keywordtype">bool</span> has_index_range,</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                  uint64_t index_range_start,</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                  uint64_t index_range_end,</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                  <span class="keywordtype">float</span> duration_seconds,</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                  uint64_t file_size) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordtype">void</span> OnNewSegment(uint64_t start_time,</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                    uint64_t duration,</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                    uint64_t segment_file_size) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="comment">// TODO(rkuroiwa): Move this to muxer_listener_internal and rename</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="comment">// muxer_listener_internal to muxer_listener_util.</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a4c197fa6ac276f1da4486f33fbd8267a">WriteMediaInfoToFile</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                                   <span class="keyword">const</span> std::string&amp; output_file_path);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  std::string output_file_name_;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  scoped_ptr&lt;MediaInfo&gt; media_info_;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  std::string output_file_name_;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  std::string scheme_id_uri_;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  scoped_ptr&lt;MediaInfo&gt; media_info_;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordtype">bool</span> is_encrypted_;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// Storage for values passed to OnEncryptionInfoReady().</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  std::string content_protection_uuid_;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  std::string content_protection_name_version_;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  std::string default_key_id_;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  std::string pssh_;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html">VodMediaInfoDumpMuxerListener</a>);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;};</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="preprocessor">#endif  // MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordtype">bool</span> is_encrypted_;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="comment">// Storage for values passed to OnEncryptionInfoReady().</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  std::string default_key_id_;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  std::vector&lt;ProtectionSystemSpecificInfo&gt; key_system_info_;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html">VodMediaInfoDumpMuxerListener</a>);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;};</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="preprocessor">#endif  // MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">edash_packager::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00026">stream_info.h:26</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">edash_packager::media::MuxerListener</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dfa/muxer__listener_8h_source.html#l00029">muxer_listener.h:29</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener_html_a4c197fa6ac276f1da4486f33fbd8267a"><div class="ttname"><a href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a4c197fa6ac276f1da4486f33fbd8267a">edash_packager::media::VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile</a></div><div class="ttdeci">static bool WriteMediaInfoToFile(const MediaInfo &amp;media_info, const std::string &amp;output_file_path)</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00109">vod_media_info_dump_muxer_listener.cc:109</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">edash_packager::media::MuxerListener</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dfa/muxer__listener_8h_source.html#l00030">muxer_listener.h:30</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener_html_a4c197fa6ac276f1da4486f33fbd8267a"><div class="ttname"><a href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a4c197fa6ac276f1da4486f33fbd8267a">edash_packager::media::VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile</a></div><div class="ttdeci">static bool WriteMediaInfoToFile(const MediaInfo &amp;media_info, const std::string &amp;output_file_path)</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00100">vod_media_info_dump_muxer_listener.cc:100</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">edash_packager::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener_html_abd5d22401650155842d519bcd17cec5d"><div class="ttname"><a href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html#abd5d22401650155842d519bcd17cec5d">edash_packager::media::VodMediaInfoDumpMuxerListener::SetContentProtectionSchemeIdUri</a></div><div class="ttdeci">void SetContentProtectionSchemeIdUri(const std::string &amp;scheme_id_uri)</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00027">vod_media_info_dump_muxer_listener.cc:27</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener_html"><div class="ttname"><a href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html">edash_packager::media::VodMediaInfoDumpMuxerListener</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/daa/vod__media__info__dump__muxer__listener_8h_source.html#l00028">vod_media_info_dump_muxer_listener.h:28</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener_html_a2229a8631ae24fc7f253f5a0b1fb6bab"><div class="ttname"><a href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a2229a8631ae24fc7f253f5a0b1fb6bab">edash_packager::media::VodMediaInfoDumpMuxerListener::OnSampleDurationReady</a></div><div class="ttdeci">void OnSampleDurationReady(uint32_t sample_duration) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00071">vod_media_info_dump_muxer_listener.cc:71</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener_html_a2229a8631ae24fc7f253f5a0b1fb6bab"><div class="ttname"><a href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a2229a8631ae24fc7f253f5a0b1fb6bab">edash_packager::media::VodMediaInfoDumpMuxerListener::OnSampleDurationReady</a></div><div class="ttdeci">void OnSampleDurationReady(uint32_t sample_duration) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00062">vod_media_info_dump_muxer_listener.cc:62</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 11 2016 16:48:46 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 11 2016 18:47:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

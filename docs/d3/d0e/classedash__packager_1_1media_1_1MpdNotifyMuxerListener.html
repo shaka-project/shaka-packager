@@ -108,12 +108,10 @@ Inheritance diagram for edash_packager::media::MpdNotifyMuxerListener:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a44cbf87035056284013231b1e29fe3c7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0e/classedash__packager_1_1media_1_1MpdNotifyMuxerListener.html#a44cbf87035056284013231b1e29fe3c7">MpdNotifyMuxerListener</a> (<a class="el" href="../../da/d38/classedash__packager_1_1MpdNotifier.html">MpdNotifier</a> *mpd_notifier)</td></tr>
 <tr class="separator:a44cbf87035056284013231b1e29fe3c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4af24c3e145e7219b27de3bf9623a073"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d0e/classedash__packager_1_1media_1_1MpdNotifyMuxerListener.html#a4af24c3e145e7219b27de3bf9623a073">SetContentProtectionSchemeIdUri</a> (const std::string &amp;scheme_id_uri)</td></tr>
-<tr class="separator:a4af24c3e145e7219b27de3bf9623a073"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">MuxerListener implementation overrides.</div></td></tr>
-<tr class="memitem:a57fc2ba8f76eea79c43d5333cd994c87"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a57fc2ba8f76eea79c43d5333cd994c87"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>OnEncryptionInfoReady</b> (bool is_initial_encryption_info, const std::string &amp;content_protection_uuid, const std::string &amp;content_protection_name_version, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;pssh) override</td></tr>
-<tr class="separator:a57fc2ba8f76eea79c43d5333cd994c87"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a56b1c250490e123186447d4530165842"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a56b1c250490e123186447d4530165842"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>OnEncryptionInfoReady</b> (bool is_initial_encryption_info, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; <a class="el" href="../../db/da0/classedash__packager_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;key_system_info) override</td></tr>
+<tr class="separator:a56b1c250490e123186447d4530165842"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad7a00f6505aae4c2282b1a3aec860e9e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad7a00f6505aae4c2282b1a3aec860e9e"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>OnMediaStart</b> (const <a class="el" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;muxer_options, const <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream_info, uint32_t time_scale, ContainerType container_type) override</td></tr>
 <tr class="separator:ad7a00f6505aae4c2282b1a3aec860e9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -168,7 +166,7 @@ Additional Inherited Members</h2></td></tr>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00021">21</a> of file <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html">mpd_notify_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00022">22</a> of file <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html">mpd_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -204,26 +202,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a5626ff553138db438c561db2ca0d05f2">edash_packager::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00088">88</a> of file <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html">mpd_notify_muxer_listener.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a4af24c3e145e7219b27de3bf9623a073"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void edash_packager::media::MpdNotifyMuxerListener::SetContentProtectionSchemeIdUri </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>scheme_id_uri</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>If the stream is encrypted use this as 'schemeIdUri' attribute for ContentProtection element. </p>
-
-<p>Definition at line <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00030">30</a> of file <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html">mpd_notify_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html#l00083">83</a> of file <a class="el" href="../../db/dfc/mpd__notify__muxer__listener_8cc_source.html">mpd_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -234,7 +213,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 11 2016 16:48:48 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 11 2016 18:47:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

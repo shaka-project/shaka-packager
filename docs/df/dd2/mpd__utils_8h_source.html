@@ -129,43 +129,53 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keywordtype">void</span> RemoveDuplicateAttributes(</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    ContentProtectionElement* content_protection_element);</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">// Returns a &#39;codecs&#39; string that has all the video and audio codecs joined with</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="comment">// comma.</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;std::string GetCodecs(<span class="keyword">const</span> MediaInfo&amp; media_info);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;std::string SecondsToXmlDuration(<span class="keywordtype">double</span> seconds);</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="comment">// Tries to get &quot;duration&quot; attribute from |node|. On success |duration| is set.</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="keywordtype">bool</span> GetDurationAttribute(xmlNodePtr node, <span class="keywordtype">float</span>* duration);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keywordtype">bool</span> MoreThanOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="keywordtype">bool</span> AtLeastOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keywordtype">bool</span> OnlyOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3);</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a7015ba137f31c7ae734dc7abb254be64">HexToUUID</a>(<span class="keyword">const</span> std::string&amp; data, std::string* uuid_format);</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;<span class="comment">// Update the &lt;cenc:pssh&gt; element for |drm_uuid| ContentProtection element.</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="comment">// If the element does not exist, this will add one.</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keywordtype">void</span> UpdateContentProtectionPsshHelper(</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keyword">const</span> std::string&amp; drm_uuid,</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keyword">const</span> std::string&amp; pssh,</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    std::list&lt;ContentProtectionElement&gt;* content_protection_elements);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                                  Representation* parent);</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;                                  AdaptationSet* parent);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">// Returns a language tag. May be blank for video.</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;std::string GetLanguage(<span class="keyword">const</span> MediaInfo&amp; media_info);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">// Returns a &#39;codecs&#39; string that has all the video and audio codecs joined with</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">// comma.</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;std::string GetCodecs(<span class="keyword">const</span> MediaInfo&amp; media_info);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="comment">// Returns a codec string without variants. For example, &quot;mp4a&quot; instead of</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="comment">// &quot;mp4a.40.2&quot;. May return a format for text streams.</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;std::string GetBaseCodec(<span class="keyword">const</span> MediaInfo&amp; media_info);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">// Returns a key made from the characteristics that separate AdaptationSets.</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;std::string GetAdaptationSetKey(<span class="keyword">const</span> MediaInfo&amp; media_info);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;std::string SecondsToXmlDuration(<span class="keywordtype">double</span> seconds);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">// Tries to get &quot;duration&quot; attribute from |node|. On success |duration| is set.</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;<span class="keywordtype">bool</span> GetDurationAttribute(xmlNodePtr node, <span class="keywordtype">float</span>* duration);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keywordtype">bool</span> MoreThanOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3);</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keywordtype">bool</span> AtLeastOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="keywordtype">bool</span> OnlyOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a7015ba137f31c7ae734dc7abb254be64">HexToUUID</a>(<span class="keyword">const</span> std::string&amp; data, std::string* uuid_format);</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment">// Update the &lt;cenc:pssh&gt; element for |drm_uuid| ContentProtection element.</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="comment">// If the element does not exist, this will add one.</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keywordtype">void</span> UpdateContentProtectionPsshHelper(</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keyword">const</span> std::string&amp; drm_uuid,</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keyword">const</span> std::string&amp; pssh,</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    std::list&lt;ContentProtectionElement&gt;* content_protection_elements);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;                                  Representation* parent);</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_MPD_UTILS_H_</span></div>
-<div class="ttc" id="namespaceedash__packager_html_a6f62cefcc7cf1a95f19bbea3b310fbab"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">edash_packager::AddContentProtectionElements</a></div><div class="ttdeci">void AddContentProtectionElements(const MediaInfo &amp;media_info, Representation *parent)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00287">mpd_utils.cc:287</a></div></div>
-<div class="ttc" id="namespaceedash__packager_html_a7015ba137f31c7ae734dc7abb254be64"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a7015ba137f31c7ae734dc7abb254be64">edash_packager::HexToUUID</a></div><div class="ttdeci">bool HexToUUID(const std::string &amp;data, std::string *uuid_format)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00124">mpd_utils.cc:124</a></div></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                                  AdaptationSet* parent);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_MPD_UTILS_H_</span></div>
+<div class="ttc" id="namespaceedash__packager_html_a6f62cefcc7cf1a95f19bbea3b310fbab"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">edash_packager::AddContentProtectionElements</a></div><div class="ttdeci">void AddContentProtectionElements(const MediaInfo &amp;media_info, Representation *parent)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00338">mpd_utils.cc:338</a></div></div>
+<div class="ttc" id="namespaceedash__packager_html_a7015ba137f31c7ae734dc7abb254be64"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a7015ba137f31c7ae734dc7abb254be64">edash_packager::HexToUUID</a></div><div class="ttdeci">bool HexToUUID(const std::string &amp;data, std::string *uuid_format)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00175">mpd_utils.cc:175</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 11 2016 16:48:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 11 2016 18:47:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -109,12 +109,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:accff1c00ffbb8e96cfb2ad999f250394"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="accff1c00ffbb8e96cfb2ad999f250394"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>VodMediaInfoDumpMuxerListener</b> (const std::string &amp;output_file_name)</td></tr>
 <tr class="separator:accff1c00ffbb8e96cfb2ad999f250394"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd5d22401650155842d519bcd17cec5d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html#abd5d22401650155842d519bcd17cec5d">SetContentProtectionSchemeIdUri</a> (const std::string &amp;scheme_id_uri)</td></tr>
-<tr class="separator:abd5d22401650155842d519bcd17cec5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">MuxerListener implementation overrides.</div></td></tr>
-<tr class="memitem:aa6bb71097ad48f4de9fb4c688ca2fcd8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa6bb71097ad48f4de9fb4c688ca2fcd8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>OnEncryptionInfoReady</b> (bool is_initial_encryption_info, const std::string &amp;content_protection_uuid, const std::string &amp;content_protection_name_version, const std::vector&lt; uint8_t &gt; &amp;default_key_id, const std::vector&lt; uint8_t &gt; &amp;pssh) override</td></tr>
-<tr class="separator:aa6bb71097ad48f4de9fb4c688ca2fcd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fed0ba2e065e3818170d9657ce24c3d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7fed0ba2e065e3818170d9657ce24c3d"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>OnEncryptionInfoReady</b> (bool is_initial_encryption_info, const std::vector&lt; uint8_t &gt; &amp;default_key_id, const std::vector&lt; <a class="el" href="../../db/da0/classedash__packager_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;key_system_info) override</td></tr>
+<tr class="separator:a7fed0ba2e065e3818170d9657ce24c3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac1c8afb8bc88642242f156e32096bb6b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac1c8afb8bc88642242f156e32096bb6b"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>OnMediaStart</b> (const <a class="el" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;muxer_options, const <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream_info, uint32_t time_scale, ContainerType container_type) override</td></tr>
 <tr class="separator:ac1c8afb8bc88642242f156e32096bb6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -177,26 +175,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a5626ff553138db438c561db2ca0d05f2">edash_packager::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00071">71</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="abd5d22401650155842d519bcd17cec5d"></a>
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void edash_packager::media::VodMediaInfoDumpMuxerListener::SetContentProtectionSchemeIdUri </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>scheme_id_uri</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>If the stream is encrypted use this as 'schemeIdUri' attribute for ContentProtection element. </p>
-
-<p>Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00027">27</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00062">62</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -241,7 +220,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00109">109</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00100">100</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -252,7 +231,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 11 2016 16:48:48 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 11 2016 18:47:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

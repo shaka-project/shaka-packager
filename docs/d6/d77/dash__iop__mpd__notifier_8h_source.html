@@ -149,76 +149,68 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="comment">// This does not necessarily return a new AdaptationSet. If</span></div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="comment">// media_info.protected_content completely matches with an existing</span></div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="comment">// AdaptationSet, then it will return the pointer.</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>* GetAdaptationSetForMediaInfo(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                                              ContentType type,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                                              <span class="keyword">const</span> std::string&amp; language);</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// Sets a group id for |adaptation_set| if applicable.</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// If a group ID is already assigned, then this returns immediately.</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">// |type| and |language| are the type and language of |adaptation_set|.</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordtype">void</span> SetGroupId(ContentType type,</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                  <span class="keyword">const</span> std::string&amp; language,</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                  <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>* adaptation_set);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">// Helper function to get a new AdaptationSet; registers the values</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="comment">// to the fields (maps) of the instance.</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="comment">// If the media is encrypted, registers data to protected_content_map_.</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>* NewAdaptationSet(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                                  <span class="keyword">const</span> std::string&amp; language,</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                                  std::list&lt;AdaptationSet*&gt;* adaptation_sets);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>* GetAdaptationSetForMediaInfo(<span class="keyword">const</span> std::string&amp; key,</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                                              <span class="keyword">const</span> MediaInfo&amp; media_info);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">// Sets a group id for |adaptation_set| if applicable.</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// If a group ID is already assigned, then this returns immediately.</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordtype">void</span> SetGroupId(<span class="keyword">const</span> std::string&amp; key, <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>* adaptation_set);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// Helper function to get a new AdaptationSet; registers the values</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// to the fields (maps) of the instance.</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// If the media is encrypted, registers data to protected_content_map_.</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>* NewAdaptationSet(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                                  std::list&lt;AdaptationSet*&gt;* adaptation_sets);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="comment">// Testing only method. Returns a pointer to MpdBuilder.</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html">MpdBuilder</a>* MpdBuilderForTesting()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordflow">return</span> mpd_builder_.get();</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  }</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="comment">// Testing only method. Returns a pointer to MpdBuilder.</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html">MpdBuilder</a>* MpdBuilderForTesting()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordflow">return</span> mpd_builder_.get();</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="comment">// Testing only method. Sets mpd_builder_.</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordtype">void</span> SetMpdBuilderForTesting(scoped_ptr&lt;MpdBuilder&gt; mpd_builder) {</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    mpd_builder_ = mpd_builder.Pass();</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  }</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="comment">// Testing only method. Sets mpd_builder_.</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="keywordtype">void</span> SetMpdBuilderForTesting(scoped_ptr&lt;MpdBuilder&gt; mpd_builder) {</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    mpd_builder_ = mpd_builder.Pass();</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  }</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="comment">// [type][lang] = list&lt;AdaptationSet&gt;</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">// Note: lang can be empty, e.g. for video.</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  std::map&lt;ContentType, std::map&lt;std::string, std::list&lt;AdaptationSet*&gt; &gt; &gt;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      adaptation_set_list_map_;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  RepresentationMap representation_map_;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  std::map&lt;std::string, std::list&lt;AdaptationSet*&gt;&gt; adaptation_set_list_map_;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  RepresentationMap representation_map_;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="comment">// Used to check whether a Representation should be added to an AdaptationSet.</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  ProtectedContentMap protected_content_map_;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">// MPD output path.</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  std::string output_path_;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  scoped_ptr&lt;MpdBuilder&gt; mpd_builder_;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  base::Lock lock_;</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="comment">// Used to check whether a Representation should be added to an AdaptationSet.</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  ProtectedContentMap protected_content_map_;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="comment">// Next group ID to use for AdapationSets that can be grouped.</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="keywordtype">int</span> next_group_id_;</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="comment">// MPD output path.</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  std::string output_path_;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  scoped_ptr&lt;MpdBuilder&gt; mpd_builder_;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  base::Lock lock_;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <span class="comment">// Next group ID to use for AdapationSets that can be grouped.</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="keywordtype">int</span> next_group_id_;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="comment">// Maps Representation ID to AdaptationSet. This is for updating the PSSH.</span></div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  std::map&lt;uint32_t, AdaptationSet*&gt; representation_id_to_adaptation_set_;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;};</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_DASH_IOP_MPD_NOTIFIER_H_</span></div>
-<div class="ttc" id="classedash__packager_1_1DashIopMpdNotifier_html_aef43fd9875d24547d2434d142aeb9805"><div class="ttname"><a href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#aef43fd9875d24547d2434d142aeb9805">edash_packager::DashIopMpdNotifier::AddContentProtectionElement</a></div><div class="ttdeci">bool AddContentProtectionElement(uint32_t id, const ContentProtectionElement &amp;content_protection_element) override</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d22/dash__iop__mpd__notifier_8cc_source.html#l00156">dash_iop_mpd_notifier.cc:156</a></div></div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="comment">// Maps Representation ID to AdaptationSet. This is for updating the PSSH.</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  std::map&lt;uint32_t, AdaptationSet*&gt; representation_id_to_adaptation_set_;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;};</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_DASH_IOP_MPD_NOTIFIER_H_</span></div>
+<div class="ttc" id="classedash__packager_1_1DashIopMpdNotifier_html_aef43fd9875d24547d2434d142aeb9805"><div class="ttname"><a href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#aef43fd9875d24547d2434d142aeb9805">edash_packager::DashIopMpdNotifier::AddContentProtectionElement</a></div><div class="ttdeci">bool AddContentProtectionElement(uint32_t id, const ContentProtectionElement &amp;content_protection_element) override</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d22/dash__iop__mpd__notifier_8cc_source.html#l00149">dash_iop_mpd_notifier.cc:149</a></div></div>
 <div class="ttc" id="classedash__packager_1_1DashIopMpdNotifier_html"><div class="ttname"><a href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html">edash_packager::DashIopMpdNotifier</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d77/dash__iop__mpd__notifier_8h_source.html#l00030">dash_iop_mpd_notifier.h:30</a></div></div>
 <div class="ttc" id="structedash__packager_1_1MpdOptions_html"><div class="ttname"><a href="../../d1/d5d/structedash__packager_1_1MpdOptions.html">edash_packager::MpdOptions</a></div><div class="ttdoc">Defines Mpd Options. </div><div class="ttdef"><b>Definition:</b> <a href="../../db/d60/mpd__options_8h_source.html#l00017">mpd_options.h:17</a></div></div>
 <div class="ttc" id="classedash__packager_1_1MpdNotifier_html_ad49d92e75fcbb2ad1d5e43cd3d0716f7"><div class="ttname"><a href="../../da/d38/classedash__packager_1_1MpdNotifier.html#ad49d92e75fcbb2ad1d5e43cd3d0716f7">edash_packager::MpdNotifier::dash_profile</a></div><div class="ttdeci">DashProfile dash_profile() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d15/mpd__notifier_8h_source.html#l00108">mpd_notifier.h:108</a></div></div>
 <div class="ttc" id="classedash__packager_1_1MpdBuilder_html"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html">edash_packager::MpdBuilder</a></div><div class="ttdoc">This class generates DASH MPDs (Media Presentation Descriptions). </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00058">mpd_builder.h:58</a></div></div>
-<div class="ttc" id="classedash__packager_1_1DashIopMpdNotifier_html_a74080da948602a4deb88046e56eda79e"><div class="ttname"><a href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a74080da948602a4deb88046e56eda79e">edash_packager::DashIopMpdNotifier::Flush</a></div><div class="ttdeci">bool Flush() override</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d22/dash__iop__mpd__notifier_8cc_source.html#l00166">dash_iop_mpd_notifier.cc:166</a></div></div>
+<div class="ttc" id="classedash__packager_1_1DashIopMpdNotifier_html_a74080da948602a4deb88046e56eda79e"><div class="ttname"><a href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a74080da948602a4deb88046e56eda79e">edash_packager::DashIopMpdNotifier::Flush</a></div><div class="ttdeci">bool Flush() override</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d22/dash__iop__mpd__notifier_8cc_source.html#l00159">dash_iop_mpd_notifier.cc:159</a></div></div>
 <div class="ttc" id="classedash__packager_1_1MpdNotifier_html"><div class="ttname"><a href="../../da/d38/classedash__packager_1_1MpdNotifier.html">edash_packager::MpdNotifier</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d15/mpd__notifier_8h_source.html#l00032">mpd_notifier.h:32</a></div></div>
 <div class="ttc" id="classedash__packager_1_1DashIopMpdNotifier_html_ace93090275f0ef9b33cf62648f854690"><div class="ttname"><a href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#ace93090275f0ef9b33cf62648f854690">edash_packager::DashIopMpdNotifier::Init</a></div><div class="ttdeci">bool Init() override</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d22/dash__iop__mpd__notifier_8cc_source.html#l00064">dash_iop_mpd_notifier.cc:64</a></div></div>
 <div class="ttc" id="structedash__packager_1_1ContentProtectionElement_html"><div class="ttname"><a href="../../d0/d96/structedash__packager_1_1ContentProtectionElement.html">edash_packager::ContentProtectionElement</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dd6/content__protection__element_8h_source.html#l00036">content_protection_element.h:36</a></div></div>
 <div class="ttc" id="classedash__packager_1_1DashIopMpdNotifier_html_a567d501580023d78299923993b8b2532"><div class="ttname"><a href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a567d501580023d78299923993b8b2532">edash_packager::DashIopMpdNotifier::NotifyNewContainer</a></div><div class="ttdeci">bool NotifyNewContainer(const MediaInfo &amp;media_info, uint32_t *id) override</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d22/dash__iop__mpd__notifier_8cc_source.html#l00068">dash_iop_mpd_notifier.cc:68</a></div></div>
 <div class="ttc" id="classedash__packager_1_1AdaptationSet_html"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html">edash_packager::AdaptationSet</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00167">mpd_builder.h:167</a></div></div>
-<div class="ttc" id="classedash__packager_1_1DashIopMpdNotifier_html_a034390af4e3bde792a4479fead594085"><div class="ttname"><a href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a034390af4e3bde792a4479fead594085">edash_packager::DashIopMpdNotifier::NotifyEncryptionUpdate</a></div><div class="ttdeci">bool NotifyEncryptionUpdate(uint32_t container_id, const std::string &amp;drm_uuid, const std::vector&lt; uint8_t &gt; &amp;new_key_id, const std::vector&lt; uint8_t &gt; &amp;new_pssh) override</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d22/dash__iop__mpd__notifier_8cc_source.html#l00137">dash_iop_mpd_notifier.cc:137</a></div></div>
-<div class="ttc" id="classedash__packager_1_1DashIopMpdNotifier_html_ad4b7f7e7106ca200eebfdd2bf4a09a84"><div class="ttname"><a href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#ad4b7f7e7106ca200eebfdd2bf4a09a84">edash_packager::DashIopMpdNotifier::NotifySampleDuration</a></div><div class="ttdeci">bool NotifySampleDuration(uint32_t container_id, uint32_t sample_duration) override</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d22/dash__iop__mpd__notifier_8cc_source.html#l00111">dash_iop_mpd_notifier.cc:111</a></div></div>
-<div class="ttc" id="classedash__packager_1_1DashIopMpdNotifier_html_a61b590c4c9d5b61d3ec0a1335c7daaa5"><div class="ttname"><a href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a61b590c4c9d5b61d3ec0a1335c7daaa5">edash_packager::DashIopMpdNotifier::NotifyNewSegment</a></div><div class="ttdeci">bool NotifyNewSegment(uint32_t id, uint64_t start_time, uint64_t duration, uint64_t size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d22/dash__iop__mpd__notifier_8cc_source.html#l00123">dash_iop_mpd_notifier.cc:123</a></div></div>
+<div class="ttc" id="classedash__packager_1_1DashIopMpdNotifier_html_a034390af4e3bde792a4479fead594085"><div class="ttname"><a href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a034390af4e3bde792a4479fead594085">edash_packager::DashIopMpdNotifier::NotifyEncryptionUpdate</a></div><div class="ttdeci">bool NotifyEncryptionUpdate(uint32_t container_id, const std::string &amp;drm_uuid, const std::vector&lt; uint8_t &gt; &amp;new_key_id, const std::vector&lt; uint8_t &gt; &amp;new_pssh) override</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d22/dash__iop__mpd__notifier_8cc_source.html#l00130">dash_iop_mpd_notifier.cc:130</a></div></div>
+<div class="ttc" id="classedash__packager_1_1DashIopMpdNotifier_html_ad4b7f7e7106ca200eebfdd2bf4a09a84"><div class="ttname"><a href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#ad4b7f7e7106ca200eebfdd2bf4a09a84">edash_packager::DashIopMpdNotifier::NotifySampleDuration</a></div><div class="ttdeci">bool NotifySampleDuration(uint32_t container_id, uint32_t sample_duration) override</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d22/dash__iop__mpd__notifier_8cc_source.html#l00104">dash_iop_mpd_notifier.cc:104</a></div></div>
+<div class="ttc" id="classedash__packager_1_1DashIopMpdNotifier_html_a61b590c4c9d5b61d3ec0a1335c7daaa5"><div class="ttname"><a href="../../da/d49/classedash__packager_1_1DashIopMpdNotifier.html#a61b590c4c9d5b61d3ec0a1335c7daaa5">edash_packager::DashIopMpdNotifier::NotifyNewSegment</a></div><div class="ttdeci">bool NotifyNewSegment(uint32_t id, uint64_t start_time, uint64_t duration, uint64_t size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d22/dash__iop__mpd__notifier_8cc_source.html#l00116">dash_iop_mpd_notifier.cc:116</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 11 2016 16:48:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 11 2016 18:47:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

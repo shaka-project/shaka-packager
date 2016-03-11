@@ -103,9 +103,9 @@ Public Member Functions</h2></td></tr>
 std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/da0/classedash__packager_1_1media_1_1ProtectionSystemSpecificInfo.html#af416386e03f4508e332a7a4334dd52e9">CreateBox</a> () const </td></tr>
 <tr class="memdesc:af416386e03f4508e332a7a4334dd52e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates a PSSH box for the current data. <br/></td></tr>
 <tr class="separator:af416386e03f4508e332a7a4334dd52e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad67d5cc815033f6e0cb497d4f13d75e7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad67d5cc815033f6e0cb497d4f13d75e7"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>version</b> () const </td></tr>
-<tr class="separator:ad67d5cc815033f6e0cb497d4f13d75e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aad48fc193729d12171b699a9fe1cf514"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aad48fc193729d12171b699a9fe1cf514"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>pssh_box_version</b> () const </td></tr>
+<tr class="separator:aad48fc193729d12171b699a9fe1cf514"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6c2a4150ec9a7169addb6a8d7c22f38b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6c2a4150ec9a7169addb6a8d7c22f38b"></a>
 const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>system_id</b> () const </td></tr>
 <tr class="separator:a6c2a4150ec9a7169addb6a8d7c22f38b"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -116,12 +116,12 @@ const std::vector&lt; std::vector<br class="typebreak"/>
 <tr class="memitem:a716ddebb71d4981626e9d582e6a742b1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a716ddebb71d4981626e9d582e6a742b1"></a>
 const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>pssh_data</b> () const </td></tr>
 <tr class="separator:a716ddebb71d4981626e9d582e6a742b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac7476eec4cbd5a369fa0cc96c440e8c3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac7476eec4cbd5a369fa0cc96c440e8c3"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_version</b> (uint8_t version)</td></tr>
-<tr class="separator:ac7476eec4cbd5a369fa0cc96c440e8c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ad9a009899d836c1e7606419a2fd5d2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6ad9a009899d836c1e7606419a2fd5d2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_system_id</b> (const std::vector&lt; uint8_t &gt; &amp;system_id)</td></tr>
-<tr class="separator:a6ad9a009899d836c1e7606419a2fd5d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1119edcd229efa64e23ccfe8394c6b8a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1119edcd229efa64e23ccfe8394c6b8a"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_pssh_box_version</b> (uint8_t version)</td></tr>
+<tr class="separator:a1119edcd229efa64e23ccfe8394c6b8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aae491ae2dd765abb6b4c5d20444765b8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aae491ae2dd765abb6b4c5d20444765b8"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_system_id</b> (const uint8_t *system_id, size_t system_id_size)</td></tr>
+<tr class="separator:aae491ae2dd765abb6b4c5d20444765b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6fb7588659379aef0326c6acb564872"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae6fb7588659379aef0326c6acb564872"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>add_key_id</b> (const std::vector&lt; uint8_t &gt; &amp;key_id)</td></tr>
 <tr class="separator:ae6fb7588659379aef0326c6acb564872"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -222,7 +222,7 @@ Static Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 11 2016 16:48:48 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 11 2016 18:47:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
