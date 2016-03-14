@@ -19,10 +19,10 @@ namespace media {
 // This is not a generic bit reader class, as it takes into account
 // H.264 stream-specific constraints, such as skipping emulation-prevention
 // bytes and stop bits. See spec for more details.
-class H264BitReader {
+class H26xBitReader {
  public:
-  H264BitReader();
-  ~H264BitReader();
+  H26xBitReader();
+  ~H26xBitReader();
 
   // Initialize the reader to start reading at |data|, |size| being size
   // of |data| in bytes.
@@ -77,7 +77,7 @@ class H264BitReader {
   // Number of emulation preventation bytes (0x000003) we met.
   size_t emulation_prevention_bytes_;
 
-  DISALLOW_COPY_AND_ASSIGN(H264BitReader);
+  DISALLOW_COPY_AND_ASSIGN(H26xBitReader);
 };
 
 }  // namespace media

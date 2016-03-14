@@ -320,7 +320,7 @@ static void FallbackScalingList8x8(
   }
 }
 
-H264Parser::Result H264Parser::ParseScalingList(H264BitReader* br,
+H264Parser::Result H264Parser::ParseScalingList(H26xBitReader* br,
                                                 int size,
                                                 int* scaling_list,
                                                 bool* use_default) {
@@ -350,7 +350,7 @@ H264Parser::Result H264Parser::ParseScalingList(H264BitReader* br,
   return kOk;
 }
 
-H264Parser::Result H264Parser::ParseSPSScalingLists(H264BitReader* br,
+H264Parser::Result H264Parser::ParseSPSScalingLists(H26xBitReader* br,
                                                     H264SPS* sps) {
   // See 7.4.2.1.1.
   bool seq_scaling_list_present_flag;
@@ -402,7 +402,7 @@ H264Parser::Result H264Parser::ParseSPSScalingLists(H264BitReader* br,
   return kOk;
 }
 
-H264Parser::Result H264Parser::ParsePPSScalingLists(H264BitReader* br,
+H264Parser::Result H264Parser::ParsePPSScalingLists(H26xBitReader* br,
                                                     const H264SPS& sps,
                                                     H264PPS* pps) {
   // See 7.4.2.2.
@@ -473,7 +473,7 @@ H264Parser::Result H264Parser::ParsePPSScalingLists(H264BitReader* br,
 }
 
 H264Parser::Result H264Parser::ParseAndIgnoreHRDParameters(
-    H264BitReader* br, bool* hrd_parameters_present) {
+    H26xBitReader* br, bool* hrd_parameters_present) {
   int data;
   READ_BOOL_OR_RETURN(&data);  // {nal,vcl}_hrd_parameters_present_flag
   if (!data)
@@ -495,7 +495,7 @@ H264Parser::Result H264Parser::ParseAndIgnoreHRDParameters(
   return kOk;
 }
 
-H264Parser::Result H264Parser::ParseVUIParameters(H264BitReader* br,
+H264Parser::Result H264Parser::ParseVUIParameters(H26xBitReader* br,
                                                   H264SPS* sps) {
   bool aspect_ratio_info_present_flag;
   READ_BOOL_OR_RETURN(&aspect_ratio_info_present_flag);
@@ -590,9 +590,9 @@ H264Parser::Result H264Parser::ParseSPS(const Nalu& nalu, int* sps_id) {
   // See 7.4.2.1.
   int data;
   Result res;
-  H264BitReader reader;
+  H26xBitReader reader;
   reader.Initialize(nalu.data() + nalu.header_size(), nalu.payload_size());
-  H264BitReader* br = &reader;
+  H26xBitReader* br = &reader;
 
   *sps_id = -1;
 
@@ -715,9 +715,9 @@ H264Parser::Result H264Parser::ParsePPS(const Nalu& nalu, int* pps_id) {
   // See 7.4.2.2.
   const H264SPS* sps;
   Result res;
-  H264BitReader reader;
+  H26xBitReader reader;
   reader.Initialize(nalu.data() + nalu.header_size(), nalu.payload_size());
-  H264BitReader* br = &reader;
+  H26xBitReader* br = &reader;
 
   *pps_id = -1;
 
@@ -786,7 +786,7 @@ H264Parser::Result H264Parser::ParsePPS(const Nalu& nalu, int* pps_id) {
 }
 
 H264Parser::Result H264Parser::ParseRefPicListModification(
-    H264BitReader* br,
+    H26xBitReader* br,
     int num_ref_idx_active_minus1,
     H264ModificationOfPicNum* ref_list_mods) {
   H264ModificationOfPicNum* pic_num_mod;
@@ -830,7 +830,7 @@ H264Parser::Result H264Parser::ParseRefPicListModification(
 }
 
 H264Parser::Result H264Parser::ParseRefPicListModifications(
-    H264BitReader* br, H264SliceHeader* shdr) {
+    H26xBitReader* br, H264SliceHeader* shdr) {
   Result res;
 
   if (!shdr->IsISlice() && !shdr->IsSISlice()) {
@@ -857,7 +857,7 @@ H264Parser::Result H264Parser::ParseRefPicListModifications(
 }
 
 H264Parser::Result H264Parser::ParseWeightingFactors(
-    H264BitReader* br,
+    H26xBitReader* br,
     int num_ref_idx_active_minus1,
     int chroma_array_type,
     int luma_log2_weight_denom,
@@ -901,7 +901,7 @@ H264Parser::Result H264Parser::ParseWeightingFactors(
   return kOk;
 }
 
-H264Parser::Result H264Parser::ParsePredWeightTable(H264BitReader* br,
+H264Parser::Result H264Parser::ParsePredWeightTable(H26xBitReader* br,
                                                     const H264SPS& sps,
                                                     H264SliceHeader* shdr) {
   READ_UE_OR_RETURN(&shdr->luma_log2_weight_denom);
@@ -934,7 +934,7 @@ H264Parser::Result H264Parser::ParsePredWeightTable(H264BitReader* br,
   return kOk;
 }
 
-H264Parser::Result H264Parser::ParseDecRefPicMarking(H264BitReader* br,
+H264Parser::Result H264Parser::ParseDecRefPicMarking(H26xBitReader* br,
                                                      H264SliceHeader* shdr) {
   if (shdr->idr_pic_flag) {
     READ_BOOL_OR_RETURN(&shdr->no_output_of_prior_pics_flag);
@@ -986,9 +986,9 @@ H264Parser::Result H264Parser::ParseSliceHeader(const Nalu& nalu,
   const H264SPS* sps;
   const H264PPS* pps;
   Result res;
-  H264BitReader reader;
+  H26xBitReader reader;
   reader.Initialize(nalu.data() + nalu.header_size(), nalu.payload_size());
-  H264BitReader* br = &reader;
+  H26xBitReader* br = &reader;
 
   memset(shdr, 0, sizeof(*shdr));
 
@@ -1134,9 +1134,9 @@ H264Parser::Result H264Parser::ParseSliceHeader(const Nalu& nalu,
 H264Parser::Result H264Parser::ParseSEI(const Nalu& nalu,
                                         H264SEIMessage* sei_msg) {
   int byte;
-  H264BitReader reader;
+  H26xBitReader reader;
   reader.Initialize(nalu.data() + nalu.header_size(), nalu.payload_size());
-  H264BitReader* br = &reader;
+  H26xBitReader* br = &reader;
 
   memset(sei_msg, 0, sizeof(*sei_msg));
 

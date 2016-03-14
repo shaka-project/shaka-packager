@@ -4,13 +4,13 @@
 
 #include <gtest/gtest.h>
 
-#include "packager/media/filters/h264_bit_reader.h"
+#include "packager/media/filters/h26x_bit_reader.h"
 
 namespace edash_packager {
 namespace media {
 
-TEST(H264BitReaderTest, ReadStreamWithoutEscapeAndTrailingZeroBytes) {
-  H264BitReader reader;
+TEST(H26xBitReaderTest, ReadStreamWithoutEscapeAndTrailingZeroBytes) {
+  H26xBitReader reader;
   const unsigned char rbsp[] = {0x01, 0x23, 0x45, 0x67, 0x89, 0xa0};
   int dummy = 0;
 
@@ -42,8 +42,8 @@ TEST(H264BitReaderTest, ReadStreamWithoutEscapeAndTrailingZeroBytes) {
   EXPECT_FALSE(reader.HasMoreRBSPData());
 }
 
-TEST(H264BitReaderTest, SingleByteStream) {
-  H264BitReader reader;
+TEST(H26xBitReaderTest, SingleByteStream) {
+  H26xBitReader reader;
   const unsigned char rbsp[] = {0x18};
   int dummy = 0;
 
@@ -57,8 +57,8 @@ TEST(H264BitReaderTest, SingleByteStream) {
   EXPECT_FALSE(reader.HasMoreRBSPData());
 }
 
-TEST(H264BitReaderTest, StopBitOccupyFullByte) {
-  H264BitReader reader;
+TEST(H26xBitReaderTest, StopBitOccupyFullByte) {
+  H26xBitReader reader;
   const unsigned char rbsp[] = {0xab, 0x80};
   int dummy = 0;
 

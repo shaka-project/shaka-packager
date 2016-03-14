@@ -12,7 +12,7 @@
 
 #include <map>
 
-#include "packager/media/filters/h264_bit_reader.h"
+#include "packager/media/filters/h26x_bit_reader.h"
 #include "packager/media/filters/nalu_reader.h"
 
 namespace edash_packager {
@@ -286,34 +286,34 @@ class H264Parser {
 
  private:
   // Parse scaling lists (see spec).
-  Result ParseScalingList(H264BitReader* br,
+  Result ParseScalingList(H26xBitReader* br,
                           int size,
                           int* scaling_list,
                           bool* use_default);
-  Result ParseSPSScalingLists(H264BitReader* br, H264SPS* sps);
-  Result ParsePPSScalingLists(H264BitReader* br,
+  Result ParseSPSScalingLists(H26xBitReader* br, H264SPS* sps);
+  Result ParsePPSScalingLists(H26xBitReader* br,
                               const H264SPS& sps,
                               H264PPS* pps);
 
   // Parse optional VUI parameters in SPS (see spec).
-  Result ParseVUIParameters(H264BitReader* br, H264SPS* sps);
+  Result ParseVUIParameters(H26xBitReader* br, H264SPS* sps);
   // Set |hrd_parameters_present| to true only if they are present.
-  Result ParseAndIgnoreHRDParameters(H264BitReader* br,
+  Result ParseAndIgnoreHRDParameters(H26xBitReader* br,
                                      bool* hrd_parameters_present);
 
   // Parse reference picture lists' modifications (see spec).
-  Result ParseRefPicListModifications(H264BitReader* br, H264SliceHeader* shdr);
-  Result ParseRefPicListModification(H264BitReader* br,
+  Result ParseRefPicListModifications(H26xBitReader* br, H264SliceHeader* shdr);
+  Result ParseRefPicListModification(H26xBitReader* br,
                                      int num_ref_idx_active_minus1,
                                      H264ModificationOfPicNum* ref_list_mods);
 
   // Parse prediction weight table (see spec).
-  Result ParsePredWeightTable(H264BitReader* br,
+  Result ParsePredWeightTable(H26xBitReader* br,
                               const H264SPS& sps,
                               H264SliceHeader* shdr);
 
   // Parse weighting factors (see spec).
-  Result ParseWeightingFactors(H264BitReader* br,
+  Result ParseWeightingFactors(H26xBitReader* br,
                                int num_ref_idx_active_minus1,
                                int chroma_array_type,
                                int luma_log2_weight_denom,
@@ -321,7 +321,7 @@ class H264Parser {
                                H264WeightingFactors* w_facts);
 
   // Parse decoded reference picture marking information (see spec).
-  Result ParseDecRefPicMarking(H264BitReader* br, H264SliceHeader* shdr);
+  Result ParseDecRefPicMarking(H26xBitReader* br, H264SliceHeader* shdr);
 
   // PPSes and SPSes stored for future reference.
   typedef std::map<int, H264SPS*> SPSById;
