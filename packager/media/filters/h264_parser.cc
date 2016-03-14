@@ -14,7 +14,7 @@ namespace media {
 
 // Implemented according to ISO/IEC 14496-10:2005 7.4.2.1 Sequence parameter set
 // RBSP semantics.
-bool ExtractResolutionFromSps(const H264SPS& sps,
+bool ExtractResolutionFromSps(const H264Sps& sps,
                               uint32_t* coded_width,
                               uint32_t* coded_height,
                               uint32_t* pixel_width,
@@ -97,11 +97,11 @@ bool H264SliceHeader::IsSISlice() const {
   return (slice_type % 5 == kSISlice);
 }
 
-H264SPS::H264SPS() {
+H264Sps::H264Sps() {
   memset(this, 0, sizeof(*this));
 }
 
-H264PPS::H264PPS() {
+H264Pps::H264Pps() {
   memset(this, 0, sizeof(*this));
 }
 
@@ -189,11 +189,11 @@ H264Parser::~H264Parser() {
   STLDeleteValues(&active_PPSes_);
 }
 
-const H264PPS* H264Parser::GetPPS(int pps_id) {
+const H264Pps* H264Parser::GetPps(int pps_id) {
   return active_PPSes_[pps_id];
 }
 
-const H264SPS* H264Parser::GetSPS(int sps_id) {
+const H264Sps* H264Parser::GetSps(int sps_id) {
   return active_SPSes_[sps_id];
 }
 
@@ -350,8 +350,8 @@ H264Parser::Result H264Parser::ParseScalingList(H26xBitReader* br,
   return kOk;
 }
 
-H264Parser::Result H264Parser::ParseSPSScalingLists(H26xBitReader* br,
-                                                    H264SPS* sps) {
+H264Parser::Result H264Parser::ParseSpsScalingLists(H26xBitReader* br,
+                                                    H264Sps* sps) {
   // See 7.4.2.1.1.
   bool seq_scaling_list_present_flag;
   bool use_default;
@@ -402,9 +402,9 @@ H264Parser::Result H264Parser::ParseSPSScalingLists(H26xBitReader* br,
   return kOk;
 }
 
-H264Parser::Result H264Parser::ParsePPSScalingLists(H26xBitReader* br,
-                                                    const H264SPS& sps,
-                                                    H264PPS* pps) {
+H264Parser::Result H264Parser::ParsePpsScalingLists(H26xBitReader* br,
+                                                    const H264Sps& sps,
+                                                    H264Pps* pps) {
   // See 7.4.2.2.
   bool pic_scaling_list_present_flag;
   bool use_default;
@@ -496,7 +496,7 @@ H264Parser::Result H264Parser::ParseAndIgnoreHRDParameters(
 }
 
 H264Parser::Result H264Parser::ParseVUIParameters(H26xBitReader* br,
-                                                  H264SPS* sps) {
+                                                  H264Sps* sps) {
   bool aspect_ratio_info_present_flag;
   READ_BOOL_OR_RETURN(&aspect_ratio_info_present_flag);
   if (aspect_ratio_info_present_flag) {
@@ -576,7 +576,7 @@ H264Parser::Result H264Parser::ParseVUIParameters(H26xBitReader* br,
   return kOk;
 }
 
-static void FillDefaultSeqScalingLists(H264SPS* sps) {
+static void FillDefaultSeqScalingLists(H264Sps* sps) {
   for (int i = 0; i < 6; ++i)
     for (int j = 0; j < kH264ScalingList4x4Length; ++j)
       sps->scaling_list4x4[i][j] = 16;
@@ -586,7 +586,7 @@ static void FillDefaultSeqScalingLists(H264SPS* sps) {
       sps->scaling_list8x8[i][j] = 16;
 }
 
-H264Parser::Result H264Parser::ParseSPS(const Nalu& nalu, int* sps_id) {
+H264Parser::Result H264Parser::ParseSps(const Nalu& nalu, int* sps_id) {
   // See 7.4.2.1.
   int data;
   Result res;
@@ -596,7 +596,7 @@ H264Parser::Result H264Parser::ParseSPS(const Nalu& nalu, int* sps_id) {
 
   *sps_id = -1;
 
-  scoped_ptr<H264SPS> sps(new H264SPS());
+  scoped_ptr<H264Sps> sps(new H264Sps());
 
   READ_BITS_OR_RETURN(8, &sps->profile_idc);
   READ_BOOL_OR_RETURN(&sps->constraint_set0_flag);
@@ -632,7 +632,7 @@ H264Parser::Result H264Parser::ParseSPS(const Nalu& nalu, int* sps_id) {
 
     if (sps->seq_scaling_matrix_present_flag) {
       DVLOG(4) << "Scaling matrix present";
-      res = ParseSPSScalingLists(br, sps.get());
+      res = ParseSpsScalingLists(br, sps.get());
       if (res != kOk)
         return res;
     } else {
@@ -711,9 +711,9 @@ H264Parser::Result H264Parser::ParseSPS(const Nalu& nalu, int* sps_id) {
   return kOk;
 }
 
-H264Parser::Result H264Parser::ParsePPS(const Nalu& nalu, int* pps_id) {
+H264Parser::Result H264Parser::ParsePps(const Nalu& nalu, int* pps_id) {
   // See 7.4.2.2.
-  const H264SPS* sps;
+  const H264Sps* sps;
   Result res;
   H26xBitReader reader;
   reader.Initialize(nalu.data() + nalu.header_size(), nalu.payload_size());
@@ -721,13 +721,13 @@ H264Parser::Result H264Parser::ParsePPS(const Nalu& nalu, int* pps_id) {
 
   *pps_id = -1;
 
-  scoped_ptr<H264PPS> pps(new H264PPS());
+  scoped_ptr<H264Pps> pps(new H264Pps());
 
   READ_UE_OR_RETURN(&pps->pic_parameter_set_id);
   READ_UE_OR_RETURN(&pps->seq_parameter_set_id);
   TRUE_OR_RETURN(pps->seq_parameter_set_id < 32);
 
-  sps = GetSPS(pps->seq_parameter_set_id);
+  sps = GetSps(pps->seq_parameter_set_id);
   TRUE_OR_RETURN(sps);
 
   READ_BOOL_OR_RETURN(&pps->entropy_coding_mode_flag);
@@ -769,7 +769,7 @@ H264Parser::Result H264Parser::ParsePPS(const Nalu& nalu, int* pps_id) {
 
     if (pps->pic_scaling_matrix_present_flag) {
       DVLOG(4) << "Picture scaling matrix present";
-      res = ParsePPSScalingLists(br, *sps, pps.get());
+      res = ParsePpsScalingLists(br, *sps, pps.get());
       if (res != kOk)
         return res;
     }
@@ -902,7 +902,7 @@ H264Parser::Result H264Parser::ParseWeightingFactors(
 }
 
 H264Parser::Result H264Parser::ParsePredWeightTable(H26xBitReader* br,
-                                                    const H264SPS& sps,
+                                                    const H264Sps& sps,
                                                     H264SliceHeader* shdr) {
   READ_UE_OR_RETURN(&shdr->luma_log2_weight_denom);
   TRUE_OR_RETURN(shdr->luma_log2_weight_denom < 8);
@@ -983,8 +983,8 @@ H264Parser::Result H264Parser::ParseDecRefPicMarking(H26xBitReader* br,
 H264Parser::Result H264Parser::ParseSliceHeader(const Nalu& nalu,
                                                 H264SliceHeader* shdr) {
   // See 7.4.3.
-  const H264SPS* sps;
-  const H264PPS* pps;
+  const H264Sps* sps;
+  const H264Pps* pps;
   Result res;
   H26xBitReader reader;
   reader.Initialize(nalu.data() + nalu.header_size(), nalu.payload_size());
@@ -1003,10 +1003,10 @@ H264Parser::Result H264Parser::ParseSliceHeader(const Nalu& nalu,
 
   READ_UE_OR_RETURN(&shdr->pic_parameter_set_id);
 
-  pps = GetPPS(shdr->pic_parameter_set_id);
+  pps = GetPps(shdr->pic_parameter_set_id);
   TRUE_OR_RETURN(pps);
 
-  sps = GetSPS(pps->seq_parameter_set_id);
+  sps = GetSps(pps->seq_parameter_set_id);
   TRUE_OR_RETURN(sps);
 
   if (sps->separate_colour_plane_flag) {

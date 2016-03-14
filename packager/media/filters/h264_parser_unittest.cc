@@ -46,11 +46,11 @@ TEST(H264ParserTest, StreamFileParsing) {
         break;
 
       case Nalu::H264_SPS:
-        ASSERT_EQ(parser.ParseSPS(nalu, &id), H264Parser::kOk);
+        ASSERT_EQ(parser.ParseSps(nalu, &id), H264Parser::kOk);
         break;
 
       case Nalu::H264_PPS:
-        ASSERT_EQ(parser.ParsePPS(nalu, &id), H264Parser::kOk);
+        ASSERT_EQ(parser.ParsePps(nalu, &id), H264Parser::kOk);
         break;
 
       case Nalu::H264_SEIMessage:
@@ -75,13 +75,13 @@ TEST(H264ParserTest, ExtractResolutionFromSpsData) {
   int sps_id = 0;
   Nalu nalu;
   ASSERT_TRUE(nalu.InitializeFromH264(kSps, arraysize(kSps)));
-  ASSERT_EQ(H264Parser::kOk, parser.ParseSPS(nalu, &sps_id));
+  ASSERT_EQ(H264Parser::kOk, parser.ParseSps(nalu, &sps_id));
 
   uint32_t coded_width = 0;
   uint32_t coded_height = 0;
   uint32_t pixel_width = 0;
   uint32_t pixel_height = 0;
-  ASSERT_TRUE(ExtractResolutionFromSps(*parser.GetSPS(sps_id), &coded_width,
+  ASSERT_TRUE(ExtractResolutionFromSps(*parser.GetSps(sps_id), &coded_width,
                                        &coded_height, &pixel_width,
                                        &pixel_height));
   EXPECT_EQ(720u, coded_width);
@@ -100,13 +100,13 @@ TEST(H264ParserTest, ExtractResolutionFromSpsDataWithCropping) {
   int sps_id = 0;
   Nalu nalu;
   ASSERT_TRUE(nalu.InitializeFromH264(kSps, arraysize(kSps)));
-  ASSERT_EQ(H264Parser::kOk, parser.ParseSPS(nalu, &sps_id));
+  ASSERT_EQ(H264Parser::kOk, parser.ParseSps(nalu, &sps_id));
 
   uint32_t coded_width = 0;
   uint32_t coded_height = 0;
   uint32_t pixel_width = 0;
   uint32_t pixel_height = 0;
-  ASSERT_TRUE(ExtractResolutionFromSps(*parser.GetSPS(sps_id), &coded_width,
+  ASSERT_TRUE(ExtractResolutionFromSps(*parser.GetSps(sps_id), &coded_width,
                                        &coded_height, &pixel_width,
                                        &pixel_height));
   EXPECT_EQ(320u, coded_width);

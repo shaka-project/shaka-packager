@@ -25,10 +25,10 @@ bool H264VideoSliceHeaderParser::Initialize(
     int id;
     const Nalu& nalu = config.nalu(i);
     if (nalu.type() == Nalu::H264_SPS) {
-      RCHECK(parser_.ParseSPS(nalu, &id) == H264Parser::kOk);
+      RCHECK(parser_.ParseSps(nalu, &id) == H264Parser::kOk);
     } else {
       DCHECK_EQ(Nalu::H264_PPS, nalu.type());
-      RCHECK(parser_.ParsePPS(nalu, &id) == H264Parser::kOk);
+      RCHECK(parser_.ParsePps(nalu, &id) == H264Parser::kOk);
     }
   }
 

@@ -208,7 +208,7 @@ bool EsParserH264::ParseInternal() {
       case Nalu::H264_SPS: {
         DVLOG(LOG_LEVEL_ES) << "Nalu: SPS";
         int sps_id;
-        if (h264_parser_->ParseSPS(nalu, &sps_id) != H264Parser::kOk)
+        if (h264_parser_->ParseSps(nalu, &sps_id) != H264Parser::kOk)
           return false;
         decoder_config_check_pending_ = true;
         break;
@@ -216,7 +216,7 @@ bool EsParserH264::ParseInternal() {
       case Nalu::H264_PPS: {
         DVLOG(LOG_LEVEL_ES) << "Nalu: PPS";
         int pps_id;
-        if (h264_parser_->ParsePPS(nalu, &pps_id) != H264Parser::kOk) {
+        if (h264_parser_->ParsePps(nalu, &pps_id) != H264Parser::kOk) {
           // Allow PPS parsing to fail if waiting for SPS.
           if (last_video_decoder_config_)
             return false;
@@ -292,7 +292,7 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
 
   if (decoder_config_check_pending_) {
     // Update the video decoder configuration if needed.
-    const H264PPS* pps = h264_parser_->GetPPS(pps_id);
+    const H264Pps* pps = h264_parser_->GetPps(pps_id);
     if (!pps) {
       // Only accept an invalid PPS at the beginning when the stream
       // does not necessarily start with an SPS/PPS/IDR.
@@ -302,7 +302,7 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
       if (last_video_decoder_config_)
         return false;
     } else {
-      const H264SPS* sps = h264_parser_->GetSPS(pps->seq_parameter_set_id);
+      const H264Sps* sps = h264_parser_->GetSps(pps->seq_parameter_set_id);
       if (!sps)
         return false;
       RCHECK(UpdateVideoDecoderConfig(sps));
@@ -327,7 +327,7 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
   return true;
 }
 
-bool EsParserH264::UpdateVideoDecoderConfig(const H264SPS* sps) {
+bool EsParserH264::UpdateVideoDecoderConfig(const H264Sps* sps) {
   std::vector<uint8_t> decoder_config_record;
   if (!stream_converter_->GetAVCDecoderConfigurationRecord(
           &decoder_config_record)) {

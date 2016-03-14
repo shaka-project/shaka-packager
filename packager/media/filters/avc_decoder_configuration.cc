@@ -64,8 +64,8 @@ bool AVCDecoderConfiguration::ParseInternal() {
       // VideoStreamInfo.
       int sps_id = 0;
       H264Parser parser;
-      RCHECK(parser.ParseSPS(nalu, &sps_id) == H264Parser::kOk);
-      RCHECK(ExtractResolutionFromSps(*parser.GetSPS(sps_id), &coded_width_,
+      RCHECK(parser.ParseSps(nalu, &sps_id) == H264Parser::kOk);
+      RCHECK(ExtractResolutionFromSps(*parser.GetSps(sps_id), &coded_width_,
                                       &coded_height_, &pixel_width_,
                                       &pixel_height_));
     }

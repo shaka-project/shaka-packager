@@ -21,7 +21,7 @@ namespace media {
 class H264ByteToUnitStreamConverter;
 class H264Parser;
 class OffsetByteQueue;
-struct H264SPS;
+struct H264Sps;
 
 namespace mp2t {
 
@@ -68,7 +68,7 @@ class EsParserH264 : public EsParser {
 
   // Update the video decoder config based on an H264 SPS.
   // Return true if successful.
-  bool UpdateVideoDecoderConfig(const H264SPS* sps);
+  bool UpdateVideoDecoderConfig(const H264Sps* sps);
 
   // Callbacks to pass the stream configuration and the frames.
   NewStreamInfoCB new_stream_info_cb_;

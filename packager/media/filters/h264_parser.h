@@ -21,8 +21,8 @@ namespace media {
 // On success, |coded_width| and |coded_height| contains coded resolution after
 // cropping; |pixel_width:pixel_height| contains pixel aspect ratio, 1:1 is
 // assigned if it is not present in SPS.
-struct H264SPS;
-bool ExtractResolutionFromSps(const H264SPS& sps,
+struct H264Sps;
+bool ExtractResolutionFromSps(const H264Sps& sps,
                               uint32_t* coded_width,
                               uint32_t* coded_height,
                               uint32_t* pixel_width,
@@ -33,8 +33,8 @@ enum {
   kH264ScalingList8x8Length = 64,
 };
 
-struct H264SPS {
-  H264SPS();
+struct H264Sps {
+  H264Sps();
 
   int profile_idc;
   bool constraint_set0_flag;
@@ -88,8 +88,8 @@ struct H264SPS {
   int chroma_array_type;
 };
 
-struct H264PPS {
-  H264PPS();
+struct H264Pps {
+  H264Pps();
 
   int pic_parameter_set_id;
   int seq_parameter_set_id;
@@ -261,15 +261,15 @@ class H264Parser {
   //
   // Parse an SPS/PPS NALU and save their data in the parser, returning id
   // of the parsed structure in |*pps_id|/|*sps_id|.
-  // To get a pointer to a given SPS/PPS structure, use GetSPS()/GetPPS(),
+  // To get a pointer to a given SPS/PPS structure, use GetSps()/GetPps(),
   // passing the returned |*sps_id|/|*pps_id| as parameter.
-  Result ParseSPS(const Nalu& nalu, int* sps_id);
-  Result ParsePPS(const Nalu& nalu, int* pps_id);
+  Result ParseSps(const Nalu& nalu, int* sps_id);
+  Result ParsePps(const Nalu& nalu, int* pps_id);
 
   // Return a pointer to SPS/PPS with given |sps_id|/|pps_id| or NULL if not
   // present.
-  const H264SPS* GetSPS(int sps_id);
-  const H264PPS* GetPPS(int pps_id);
+  const H264Sps* GetSps(int sps_id);
+  const H264Pps* GetPps(int pps_id);
 
   // Slice headers and SEI messages are not used across NALUs by the parser
   // and can be discarded after current NALU, so the parser does not store
@@ -290,13 +290,13 @@ class H264Parser {
                           int size,
                           int* scaling_list,
                           bool* use_default);
-  Result ParseSPSScalingLists(H26xBitReader* br, H264SPS* sps);
-  Result ParsePPSScalingLists(H26xBitReader* br,
-                              const H264SPS& sps,
-                              H264PPS* pps);
+  Result ParseSpsScalingLists(H26xBitReader* br, H264Sps* sps);
+  Result ParsePpsScalingLists(H26xBitReader* br,
+                              const H264Sps& sps,
+                              H264Pps* pps);
 
   // Parse optional VUI parameters in SPS (see spec).
-  Result ParseVUIParameters(H26xBitReader* br, H264SPS* sps);
+  Result ParseVUIParameters(H26xBitReader* br, H264Sps* sps);
   // Set |hrd_parameters_present| to true only if they are present.
   Result ParseAndIgnoreHRDParameters(H26xBitReader* br,
                                      bool* hrd_parameters_present);
@@ -309,7 +309,7 @@ class H264Parser {
 
   // Parse prediction weight table (see spec).
   Result ParsePredWeightTable(H26xBitReader* br,
-                              const H264SPS& sps,
+                              const H264Sps& sps,
                               H264SliceHeader* shdr);
 
   // Parse weighting factors (see spec).
@@ -324,10 +324,10 @@ class H264Parser {
   Result ParseDecRefPicMarking(H26xBitReader* br, H264SliceHeader* shdr);
 
   // PPSes and SPSes stored for future reference.
-  typedef std::map<int, H264SPS*> SPSById;
-  typedef std::map<int, H264PPS*> PPSById;
-  SPSById active_SPSes_;
-  PPSById active_PPSes_;
+  typedef std::map<int, H264Sps*> SpsById;
+  typedef std::map<int, H264Pps*> PpsById;
+  SpsById active_SPSes_;
+  PpsById active_PPSes_;
 
   DISALLOW_COPY_AND_ASSIGN(H264Parser);
 };
