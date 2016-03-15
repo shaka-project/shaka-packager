@@ -257,7 +257,8 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
           accumulated_clear_bytes = 0;
         } else {
           // For non-video-slice NAL units, don't encrypt.
-          accumulated_clear_bytes += nalu.header_size() + nalu.payload_size();
+          accumulated_clear_bytes +=
+              nalu_length_size_ + nalu.header_size() + nalu.payload_size();
         }
       }
       if (result != NaluReader::kEOStream)
