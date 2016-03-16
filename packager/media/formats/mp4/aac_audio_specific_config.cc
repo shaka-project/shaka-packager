@@ -127,6 +127,31 @@ bool AACAudioSpecificConfig::Parse(const std::vector<uint8_t>& data) {
          channel_config_ <= 7;
 }
 
+bool AACAudioSpecificConfig::ConvertToADTS(std::vector<uint8_t>* buffer) const {
+  size_t size = buffer->size() + kADTSHeaderSize;
+
+  DCHECK(audio_object_type_ >= 1 && audio_object_type_ <= 4 &&
+         frequency_index_ != 0xf && channel_config_ <= 7);
+
+  // ADTS header uses 13 bits for packet size.
+  if (size >= (1 << 13))
+    return false;
+
+  std::vector<uint8_t>& adts = *buffer;
+
+  adts.insert(buffer->begin(), kADTSHeaderSize, 0);
+  adts[0] = 0xff;
+  adts[1] = 0xf1;
+  adts[2] = ((audio_object_type_ - 1) << 6) + (frequency_index_ << 2) +
+      (channel_config_ >> 2);
+  adts[3] = ((channel_config_ & 0x3) << 6) + (size >> 11);
+  adts[4] = (size & 0x7ff) >> 3;
+  adts[5] = ((size & 7) << 5) + 0x1f;
+  adts[6] = 0xfc;
+
+  return true;
+}
+
 uint32_t AACAudioSpecificConfig::GetOutputSamplesPerSecond(
     bool sbr_in_mimetype) const {
   if (extension_frequency_ > 0)
@@ -154,31 +179,6 @@ uint8_t AACAudioSpecificConfig::GetNumChannels(bool sbr_in_mimetype) const {
     return 2;  // CHANNEL_LAYOUT_STEREO
 
   return num_channels_;
-}
-
-bool AACAudioSpecificConfig::ConvertToADTS(std::vector<uint8_t>* buffer) const {
-  size_t size = buffer->size() + kADTSHeaderSize;
-
-  DCHECK(audio_object_type_ >= 1 && audio_object_type_ <= 4 &&
-         frequency_index_ != 0xf && channel_config_ <= 7);
-
-  // ADTS header uses 13 bits for packet size.
-  if (size >= (1 << 13))
-    return false;
-
-  std::vector<uint8_t>& adts = *buffer;
-
-  adts.insert(buffer->begin(), kADTSHeaderSize, 0);
-  adts[0] = 0xff;
-  adts[1] = 0xf1;
-  adts[2] = ((audio_object_type_ - 1) << 6) + (frequency_index_ << 2) +
-      (channel_config_ >> 2);
-  adts[3] = ((channel_config_ & 0x3) << 6) + (size >> 11);
-  adts[4] = (size & 0x7ff) >> 3;
-  adts[5] = ((size & 7) << 5) + 0x1f;
-  adts[6] = 0xfc;
-
-  return true;
 }
 
 // Currently this function only support GASpecificConfig defined in

@@ -15,13 +15,17 @@
       'sources': [
         'adts_header.cc',
         'adts_header.h',
-        'es_parser.h',
         'es_parser_adts.cc',
         'es_parser_adts.h',
         'es_parser_h264.cc',
         'es_parser_h264.h',
+        'es_parser.h',
         'mp2t_media_parser.cc',
         'mp2t_media_parser.h',
+        'pes_packet_generator.cc',
+        'pes_packet_generator.h',
+        'pes_packet.cc',
+        'pes_packet.h',
         'ts_packet.cc',
         'ts_packet.h',
         'ts_section_pat.cc',
@@ -35,6 +39,9 @@
       ],
       'dependencies': [
         '../../base/media_base.gyp:media_base',
+        # TODO(rkuroiwa): AACAudioSpecificConfig is used to create ADTS.
+        # Break this dependency on mp4 by moving it to media/filters.
+        '../../formats/mp4/mp4.gyp:mp4',
       ],
     },
     {
@@ -44,6 +51,7 @@
         'adts_header_unittest.cc',
         'es_parser_h264_unittest.cc',
         'mp2t_media_parser_unittest.cc',
+        'pes_packet_generator_unittest.cc',
       ],
       'dependencies': [
         '../../../testing/gtest.gyp:gtest',

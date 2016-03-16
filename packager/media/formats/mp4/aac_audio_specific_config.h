@@ -17,6 +17,7 @@ class BitReader;
 
 namespace mp4 {
 
+// Methods are virtual for mocking.
 /// This class parses the AAC information from decoder specific information
 /// embedded in the @b esds box in an ISO BMFF file.
 /// Please refer to ISO 14496 Part 3 Table 1.13 - Syntax of AudioSpecificConfig
@@ -24,7 +25,7 @@ namespace mp4 {
 class AACAudioSpecificConfig {
  public:
   AACAudioSpecificConfig();
-  ~AACAudioSpecificConfig();
+  virtual ~AACAudioSpecificConfig();
 
   /// Parse the AAC config from decoder specific information embedded in an @b
   /// esds box. The function will parse the data and get the
@@ -32,7 +33,14 @@ class AACAudioSpecificConfig {
   /// ElementaryStreamDescriptor to get audio stream configurations.
   /// @param data contains decoder specific information from an @b esds box.
   /// @return true if successful, false otherwise.
-  bool Parse(const std::vector<uint8_t>& data);
+  virtual bool Parse(const std::vector<uint8_t>& data);
+
+  /// Convert a raw AAC frame into an AAC frame with an ADTS header.
+  /// @param[in,out] buffer contains the raw AAC frame on input, and the
+  ///                converted frame on output if successful; it is untouched
+  ///                on failure.
+  /// @return true on success, false otherwise.
+  virtual bool ConvertToADTS(std::vector<uint8_t>* buffer) const;
 
   /// @param sbr_in_mimetype indicates whether SBR mode is specified in the
   ///        mimetype, i.e. codecs parameter contains mp4a.40.5.
@@ -43,13 +51,6 @@ class AACAudioSpecificConfig {
   ///        mimetype, i.e. codecs parameter contains mp4a.40.5.
   /// @return Number of channels for the AAC stream.
   uint8_t GetNumChannels(bool sbr_in_mimetype) const;
-
-  /// Convert a raw AAC frame into an AAC frame with an ADTS header.
-  /// @param[in,out] buffer contains the raw AAC frame on input, and the
-  ///                converted frame on output if successful; it is untouched
-  ///                on failure.
-  /// @return true on success, false otherwise.
-  bool ConvertToADTS(std::vector<uint8_t>* buffer) const;
 
   /// @return The audio object type for this AAC config.
   uint8_t audio_object_type() const { return audio_object_type_; }

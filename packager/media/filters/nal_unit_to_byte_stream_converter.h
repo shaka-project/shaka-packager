@@ -18,10 +18,11 @@ namespace media {
 
 class VideoStreamInfo;
 
+// Methods are virtual for mocking.
 class NalUnitToByteStreamConverter {
  public:
   NalUnitToByteStreamConverter();
-  ~NalUnitToByteStreamConverter();
+  virtual ~NalUnitToByteStreamConverter();
 
   /// This must be called before calling other methods.
   /// @param decoder_configuration_data is the pointer to a decoder config data.
@@ -31,9 +32,9 @@ class NalUnitToByteStreamConverter {
   ///        passed to ConvertUnitToByteStream() should be escaped with
   ///        emulation prevention byte.
   /// @return true on success, false otherwise.
-  bool Initialize(const uint8_t* decoder_configuration_data,
-                  size_t decoder_configuration_data_size,
-                  bool escape_data);
+  virtual bool Initialize(const uint8_t* decoder_configuration_data,
+                          size_t decoder_configuration_data_size,
+                          bool escape_data);
 
   /// Converts unit stream to byte stream using the data passed to Initialize().
   /// The method will function correctly even if @a sample is encrypted using
@@ -42,9 +43,10 @@ class NalUnitToByteStreamConverter {
   /// @param sample_size is the size of @a sample.
   /// @param output is set to the the converted sample, on success.
   /// @return true on success, false otherwise.
-  bool ConvertUnitToByteStream(const uint8_t* sample, size_t sample_size,
-                               bool is_key_frame,
-                               std::vector<uint8_t>* output);
+  virtual bool ConvertUnitToByteStream(const uint8_t* sample,
+                                       size_t sample_size,
+                                       bool is_key_frame,
+                                       std::vector<uint8_t>* output);
 
  private:
   friend class NalUnitToByteStreamConverterTest;
