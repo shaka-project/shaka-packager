@@ -14,6 +14,7 @@
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/time/clock.h"
+#include "packager/media/base/encryption_modes.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/status.h"
 #include "packager/media/event/muxer_listener.h"
@@ -47,7 +48,8 @@ class Muxer {
   void SetKeySource(KeySource* encryption_key_source,
                     uint32_t max_sd_pixels,
                     double clear_lead_in_seconds,
-                    double crypto_period_duration_in_seconds);
+                    double crypto_period_duration_in_seconds,
+                    EncryptionMode encryption_mode);
 
   /// Add video/audio stream.
   void AddStream(MediaStream* stream);
@@ -92,6 +94,7 @@ class Muxer {
   MuxerListener* muxer_listener() { return muxer_listener_.get(); }
   ProgressListener* progress_listener() { return progress_listener_.get(); }
   base::Clock* clock() { return clock_; }
+  EncryptionMode encryption_mode() const { return encryption_mode_; }
 
  private:
   friend class MediaStream;  // Needed to access AddSample.
@@ -117,6 +120,7 @@ class Muxer {
   uint32_t max_sd_pixels_;
   double clear_lead_in_seconds_;
   double crypto_period_duration_in_seconds_;
+  EncryptionMode encryption_mode_;
   bool cancelled_;
 
   scoped_ptr<MuxerListener> muxer_listener_;

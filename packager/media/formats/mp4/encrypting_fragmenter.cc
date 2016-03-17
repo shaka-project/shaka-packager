@@ -64,12 +64,14 @@ EncryptingFragmenter::EncryptingFragmenter(
     scoped_refptr<StreamInfo> info,
     TrackFragment* traf,
     scoped_ptr<EncryptionKey> encryption_key,
-    int64_t clear_time)
+    int64_t clear_time,
+    EncryptionMode encryption_mode)
     : Fragmenter(traf),
       info_(info),
       encryption_key_(encryption_key.Pass()),
       nalu_length_size_(GetNaluLengthSize(*info)),
-      clear_time_(clear_time) {
+      clear_time_(clear_time),
+      encryption_mode_(encryption_mode) {
   DCHECK(encryption_key_);
   VideoCodec video_codec = GetVideoCodec(*info);
   if (video_codec == kCodecVP8) {
@@ -168,8 +170,14 @@ void EncryptingFragmenter::FinalizeFragmentForEncryption() {
 
 Status EncryptingFragmenter::CreateEncryptor() {
   DCHECK(encryption_key_);
-
-  scoped_ptr<AesCtrEncryptor> encryptor(new AesCtrEncryptor());
+  scoped_ptr<AesEncryptor> encryptor;
+  if (encryption_mode_ == kEncryptionModeAesCtr) {
+    encryptor.reset(new AesCtrEncryptor);
+  } else if (encryption_mode_ == kEncryptionModeAesCbc) {
+    encryptor.reset(new AesCbcPkcs5Encryptor);
+  } else {
+    return Status(error::MUXER_FAILURE, "Unsupported encryption mode.");
+  }
   const bool initialized = encryption_key_->iv.empty()
                                ? encryptor->InitializeWithRandomIv(
                                      encryption_key_->key, kDefaultIvSize)
@@ -183,7 +191,7 @@ Status EncryptingFragmenter::CreateEncryptor() {
 
 void EncryptingFragmenter::EncryptBytes(uint8_t* data, uint32_t size) {
   DCHECK(encryptor_);
-  CHECK(encryptor_->Encrypt(data, size, data));
+  CHECK(encryptor_->EncryptData(data, size, data));
 }
 
 Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {

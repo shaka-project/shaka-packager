@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/base/aes_encryptor.h"
+#include "packager/media/base/aes_decryptor.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"

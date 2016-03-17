@@ -22,6 +22,7 @@ DECLARE_string(aes_signing_key);
 DECLARE_string(aes_signing_iv);
 DECLARE_string(rsa_signing_key_path);
 DECLARE_int32(crypto_period_duration);
+DECLARE_string(protection_scheme);
 
 namespace edash_packager {
 

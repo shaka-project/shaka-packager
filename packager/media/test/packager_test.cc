@@ -11,6 +11,7 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/time/clock.h"
 #include "packager/media/base/demuxer.h"
+#include "packager/media/base/encryption_modes.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer.h"
@@ -180,7 +181,8 @@ void PackagerTestBasic::Remux(const std::string& input,
       muxer_video->SetKeySource(encryption_key_source.get(),
                                 KeySource::TRACK_TYPE_SD,
                                 kClearLeadInSeconds,
-                                kCryptoDurationInSeconds);
+                                kCryptoDurationInSeconds,
+                                kEncryptionModeAesCtr);
     }
   }
 
@@ -201,7 +203,8 @@ void PackagerTestBasic::Remux(const std::string& input,
       muxer_audio->SetKeySource(encryption_key_source.get(),
                                 KeySource::TRACK_TYPE_SD,
                                 kClearLeadInSeconds,
-                                kCryptoDurationInSeconds);
+                                kCryptoDurationInSeconds,
+                                kEncryptionModeAesCtr);
     }
   }
 

@@ -40,6 +40,37 @@ const uint32_t kCencKeySize = 16;
 namespace edash_packager {
 namespace media {
 
+AesEncryptor::AesEncryptor() {}
+AesEncryptor::~AesEncryptor() {}
+
+bool AesEncryptor::InitializeWithRandomIv(
+    const std::vector<uint8_t>& key,
+    uint8_t iv_size) {
+  std::vector<uint8_t> iv(iv_size, 0);
+  if (RAND_bytes(&iv[0], iv_size) != 1) {
+    LOG(ERROR) << "RAND_bytes failed with error: "
+               << ERR_error_string(ERR_get_error(), NULL);
+    return false;
+  }
+  return InitializeWithIv(key, iv);
+}
+
+bool AesEncryptor::Encrypt(const std::vector<uint8_t>& plaintext,
+                           std::vector<uint8_t>* ciphertext) {
+  if (plaintext.empty())
+    return true;
+  ciphertext->resize(plaintext.size() + NumPaddingBytes(plaintext.size()));
+  return EncryptData(plaintext.data(), plaintext.size(), ciphertext->data());
+}
+
+bool AesEncryptor::Encrypt(const std::string& plaintext,
+                           std::string* ciphertext) {
+  ciphertext->resize(plaintext.size() + NumPaddingBytes(plaintext.size()));
+  return EncryptData(reinterpret_cast<const uint8_t*>(plaintext.data()),
+                     plaintext.size(),
+                     reinterpret_cast<uint8_t*>(string_as_array(ciphertext)));
+}
+
 AesCtrEncryptor::AesCtrEncryptor()
     : block_offset_(0),
       encrypted_counter_(AES_BLOCK_SIZE, 0),
@@ -49,17 +80,6 @@ AesCtrEncryptor::AesCtrEncryptor()
 }
 
 AesCtrEncryptor::~AesCtrEncryptor() {}
-
-bool AesCtrEncryptor::InitializeWithRandomIv(const std::vector<uint8_t>& key,
-                                             uint8_t iv_size) {
-  std::vector<uint8_t> iv(iv_size, 0);
-  if (RAND_bytes(&iv[0], iv_size) != 1) {
-    LOG(ERROR) << "RAND_bytes failed with error: "
-               << ERR_error_string(ERR_get_error(), NULL);
-    return false;
-  }
-  return InitializeWithIv(key, iv);
-}
 
 bool AesCtrEncryptor::InitializeWithIv(const std::vector<uint8_t>& key,
                                        const std::vector<uint8_t>& iv) {
@@ -77,9 +97,13 @@ bool AesCtrEncryptor::InitializeWithIv(const std::vector<uint8_t>& key,
   return SetIv(iv);
 }
 
-bool AesCtrEncryptor::Encrypt(const uint8_t* plaintext,
-                              size_t plaintext_size,
-                              uint8_t* ciphertext) {
+size_t AesCtrEncryptor::NumPaddingBytes(size_t size) {
+  return 0;
+}
+
+bool AesCtrEncryptor::EncryptData(const uint8_t* plaintext,
+                                  size_t plaintext_size,
+                                  uint8_t* ciphertext) {
   DCHECK(plaintext);
   DCHECK(ciphertext);
   DCHECK(aes_key_);
@@ -156,96 +180,41 @@ bool AesCbcPkcs5Encryptor::InitializeWithIv(const std::vector<uint8_t>& key,
     return false;
   }
 
-  encrypt_key_.reset(new AES_KEY());
-  CHECK_EQ(AES_set_encrypt_key(&key[0], key.size() * 8, encrypt_key_.get()), 0);
+  aes_key_.reset(new AES_KEY());
+  CHECK_EQ(AES_set_encrypt_key(&key[0], key.size() * 8, aes_key_.get()), 0);
 
   iv_ = iv;
   return true;
 }
 
-void AesCbcPkcs5Encryptor::Encrypt(const std::string& plaintext,
-                                   std::string* ciphertext) {
+size_t AesCbcPkcs5Encryptor::NumPaddingBytes(size_t size) {
+  return AES_BLOCK_SIZE - (size % AES_BLOCK_SIZE);
+}
+
+bool AesCbcPkcs5Encryptor::EncryptData(const uint8_t* plaintext,
+                                       size_t plaintext_size,
+                                       uint8_t* ciphertext) {
   DCHECK(ciphertext);
-  DCHECK(encrypt_key_);
+  DCHECK(aes_key_);
 
   // Pad the input with PKCS5 padding.
-  const size_t num_padding_bytes =
-      AES_BLOCK_SIZE - (plaintext.size() % AES_BLOCK_SIZE);
-  std::string padded_text = plaintext;
-  padded_text.append(num_padding_bytes, static_cast<char>(num_padding_bytes));
+  // TODO(kqyang): Consider more efficient implementation.
+  memcpy(ciphertext, plaintext, plaintext_size);
+  for (size_t i = plaintext_size;
+       i < plaintext_size + NumPaddingBytes(plaintext_size); ++i) {
+    ciphertext[i] = NumPaddingBytes(plaintext_size);
+  }
 
-  ciphertext->resize(padded_text.size());
   std::vector<uint8_t> iv(iv_);
-  AES_cbc_encrypt(reinterpret_cast<const uint8_t*>(padded_text.data()),
-                  reinterpret_cast<uint8_t*>(string_as_array(ciphertext)),
-                  padded_text.size(),
-                  encrypt_key_.get(),
-                  &iv[0],
-                  AES_ENCRYPT);
+  AES_cbc_encrypt(ciphertext, ciphertext,
+                  plaintext_size + NumPaddingBytes(plaintext_size),
+                  aes_key_.get(), &iv[0], AES_ENCRYPT);
+  return true;
 }
+
+void AesCbcPkcs5Encryptor::UpdateIv() {}
 
 bool AesCbcPkcs5Encryptor::SetIv(const std::vector<uint8_t>& iv) {
-  if (iv.size() != AES_BLOCK_SIZE) {
-    LOG(ERROR) << "Invalid IV size: " << iv.size();
-    return false;
-  }
-
-  iv_ = iv;
-  return true;
-}
-
-AesCbcPkcs5Decryptor::AesCbcPkcs5Decryptor() {}
-AesCbcPkcs5Decryptor::~AesCbcPkcs5Decryptor() {}
-
-bool AesCbcPkcs5Decryptor::InitializeWithIv(const std::vector<uint8_t>& key,
-                                            const std::vector<uint8_t>& iv) {
-  if (!IsKeySizeValidForAes(key.size())) {
-    LOG(ERROR) << "Invalid AES key size: " << key.size();
-    return false;
-  }
-  if (iv.size() != AES_BLOCK_SIZE) {
-    LOG(ERROR) << "Invalid IV size: " << iv.size();
-    return false;
-  }
-
-  decrypt_key_.reset(new AES_KEY());
-  CHECK_EQ(AES_set_decrypt_key(&key[0], key.size() * 8, decrypt_key_.get()), 0);
-
-  iv_ = iv;
-  return true;
-}
-
-bool AesCbcPkcs5Decryptor::Decrypt(const std::string& ciphertext,
-                                   std::string* plaintext) {
-  if ((ciphertext.size() % AES_BLOCK_SIZE) != 0) {
-    LOG(ERROR) << "Expecting cipher text size to be multiple of "
-               << AES_BLOCK_SIZE << ", got " << ciphertext.size();
-    return false;
-  }
-
-  DCHECK(plaintext);
-  DCHECK(decrypt_key_);
-
-  plaintext->resize(ciphertext.size());
-  AES_cbc_encrypt(reinterpret_cast<const uint8_t*>(ciphertext.data()),
-                  reinterpret_cast<uint8_t*>(string_as_array(plaintext)),
-                  ciphertext.size(),
-                  decrypt_key_.get(),
-                  &iv_[0],
-                  AES_DECRYPT);
-
-  // Strip off PKCS5 padding bytes.
-  const uint8_t num_padding_bytes = (*plaintext)[plaintext->size() - 1];
-  if (num_padding_bytes > AES_BLOCK_SIZE) {
-    LOG(ERROR) << "Padding length is too large : "
-               << static_cast<int>(num_padding_bytes);
-    return false;
-  }
-  plaintext->resize(plaintext->size() - num_padding_bytes);
-  return true;
-}
-
-bool AesCbcPkcs5Decryptor::SetIv(const std::vector<uint8_t>& iv) {
   if (iv.size() != AES_BLOCK_SIZE) {
     LOG(ERROR) << "Invalid IV size: " << iv.size();
     return false;
@@ -269,23 +238,27 @@ bool AesCbcCtsEncryptor::InitializeWithIv(const std::vector<uint8_t>& key,
     return false;
   }
 
-  encrypt_key_.reset(new AES_KEY());
-  CHECK_EQ(AES_set_encrypt_key(&key[0], key.size() * 8, encrypt_key_.get()), 0);
+  aes_key_.reset(new AES_KEY());
+  CHECK_EQ(AES_set_encrypt_key(&key[0], key.size() * 8, aes_key_.get()), 0);
 
   iv_ = iv;
   return true;
 }
 
-void AesCbcCtsEncryptor::Encrypt(const uint8_t* plaintext,
-                                 size_t size,
-                                 uint8_t* ciphertext) {
+size_t AesCbcCtsEncryptor::NumPaddingBytes(size_t size) {
+  return 0;
+}
+
+bool AesCbcCtsEncryptor::EncryptData(const uint8_t* plaintext,
+                                     size_t size,
+                                     uint8_t* ciphertext) {
   DCHECK(plaintext);
   DCHECK(ciphertext);
 
   if (size < AES_BLOCK_SIZE) {
     // Don't have a full block, leave unencrypted.
     memcpy(ciphertext, plaintext, size);
-    return;
+    return true;
   }
 
   std::vector<uint8_t> iv(iv_);
@@ -296,12 +269,12 @@ void AesCbcCtsEncryptor::Encrypt(const uint8_t* plaintext,
   AES_cbc_encrypt(plaintext,
                   ciphertext,
                   cbc_size,
-                  encrypt_key_.get(),
+                  aes_key_.get(),
                   &iv[0],
                   AES_ENCRYPT);
   if (residual_block_size == 0) {
     // No residual block. No need to do ciphertext stealing.
-    return;
+    return true;
   }
 
   // Zero-pad the residual block and encrypt using CBC.
@@ -311,7 +284,7 @@ void AesCbcCtsEncryptor::Encrypt(const uint8_t* plaintext,
   AES_cbc_encrypt(&residual_block[0],
                   &residual_block[0],
                   AES_BLOCK_SIZE,
-                  encrypt_key_.get(),
+                  aes_key_.get(),
                   &iv[0],
                   AES_ENCRYPT);
 
@@ -327,144 +300,12 @@ void AesCbcCtsEncryptor::Encrypt(const uint8_t* plaintext,
   memcpy(residual_ciphertext_block - AES_BLOCK_SIZE,
          residual_block.data(),
          AES_BLOCK_SIZE);
+  return true;
 }
 
-void AesCbcCtsEncryptor::Encrypt(const std::vector<uint8_t>& plaintext,
-                                 std::vector<uint8_t>* ciphertext) {
-  DCHECK(ciphertext);
-
-  ciphertext->resize(plaintext.size(), 0);
-  if (plaintext.empty())
-    return;
-
-  Encrypt(plaintext.data(), plaintext.size(), &(*ciphertext)[0]);
-}
+void AesCbcCtsEncryptor::UpdateIv() {}
 
 bool AesCbcCtsEncryptor::SetIv(const std::vector<uint8_t>& iv) {
-  if (iv.size() != AES_BLOCK_SIZE) {
-    LOG(ERROR) << "Invalid IV size: " << iv.size();
-    return false;
-  }
-
-  iv_ = iv;
-  return true;
-}
-
-AesCbcCtsDecryptor::AesCbcCtsDecryptor() {}
-AesCbcCtsDecryptor::~AesCbcCtsDecryptor() {}
-
-bool AesCbcCtsDecryptor::InitializeWithIv(const std::vector<uint8_t>& key,
-                                          const std::vector<uint8_t>& iv) {
-  if (!IsKeySizeValidForAes(key.size())) {
-    LOG(ERROR) << "Invalid AES key size: " << key.size();
-    return false;
-  }
-  if (iv.size() != AES_BLOCK_SIZE) {
-    LOG(ERROR) << "Invalid IV size: " << iv.size();
-    return false;
-  }
-
-  decrypt_key_.reset(new AES_KEY());
-  CHECK_EQ(AES_set_decrypt_key(&key[0], key.size() * 8, decrypt_key_.get()), 0);
-
-  iv_ = iv;
-  return true;
-}
-
-void AesCbcCtsDecryptor::Decrypt(const uint8_t* ciphertext,
-                                 size_t size,
-                                 uint8_t* plaintext) {
-  DCHECK(ciphertext);
-  DCHECK(plaintext);
-
-  if (size < AES_BLOCK_SIZE) {
-    // Don't have a full block, leave unencrypted.
-    memcpy(plaintext, ciphertext, size);
-    return;
-  }
-
-  std::vector<uint8_t> iv(iv_);
-  size_t residual_block_size = size % AES_BLOCK_SIZE;
-
-  if (residual_block_size == 0) {
-    // No residual block. No need to do ciphertext stealing.
-    AES_cbc_encrypt(ciphertext,
-                    plaintext,
-                    size,
-                    decrypt_key_.get(),
-                    &iv[0],
-                    AES_DECRYPT);
-    return;
-  }
-
-  // AES-CBC decrypt everything up to the next-to-last full block.
-  size_t cbc_size = size - residual_block_size;
-  if (cbc_size > AES_BLOCK_SIZE) {
-    AES_cbc_encrypt(ciphertext,
-                    plaintext,
-                    cbc_size - AES_BLOCK_SIZE,
-                    decrypt_key_.get(),
-                    &iv[0],
-                    AES_DECRYPT);
-  }
-
-  // Determine what the last IV should be so that we can "skip ahead" in the
-  // CBC decryption.
-  std::vector<uint8_t> last_iv(ciphertext + size - residual_block_size,
-                               ciphertext + size);
-  last_iv.resize(AES_BLOCK_SIZE, 0);
-
-  // Decrypt the next-to-last block using the IV determined above. This decrypts
-  // the residual block bits.
-  AES_cbc_encrypt(ciphertext + size - residual_block_size - AES_BLOCK_SIZE,
-                  plaintext + size - residual_block_size - AES_BLOCK_SIZE,
-                  AES_BLOCK_SIZE,
-                  decrypt_key_.get(),
-                  &last_iv[0],
-                  AES_DECRYPT);
-
-  // Swap back the residual block bits and the next-to-last full block.
-  if (plaintext == ciphertext) {
-    uint8_t* ptr1 = plaintext + size - residual_block_size;
-    uint8_t* ptr2 = plaintext + size - residual_block_size - AES_BLOCK_SIZE;
-    for (size_t i = 0; i < residual_block_size; ++i) {
-      uint8_t temp = *ptr1;
-      *ptr1 = *ptr2;
-      *ptr2 = temp;
-      ++ptr1;
-      ++ptr2;
-    }
-  } else {
-    uint8_t* residual_plaintext_block = plaintext + size - residual_block_size;
-    memcpy(residual_plaintext_block,
-           residual_plaintext_block - AES_BLOCK_SIZE,
-           residual_block_size);
-    memcpy(residual_plaintext_block - AES_BLOCK_SIZE,
-           ciphertext + size - residual_block_size,
-           residual_block_size);
-  }
-
-  // Decrypt the last full block.
-  AES_cbc_encrypt(plaintext + size - residual_block_size - AES_BLOCK_SIZE,
-                  plaintext + size - residual_block_size - AES_BLOCK_SIZE,
-                  AES_BLOCK_SIZE,
-                  decrypt_key_.get(),
-                  &iv[0],
-                  AES_DECRYPT);
-}
-
-void AesCbcCtsDecryptor::Decrypt(const std::vector<uint8_t>& ciphertext,
-                                 std::vector<uint8_t>* plaintext) {
-  DCHECK(plaintext);
-
-  plaintext->resize(ciphertext.size(), 0);
-  if (ciphertext.empty())
-    return;
-
-  Decrypt(ciphertext.data(), ciphertext.size(), &(*plaintext)[0]);
-}
-
-bool AesCbcCtsDecryptor::SetIv(const std::vector<uint8_t>& iv) {
   if (iv.size() != AES_BLOCK_SIZE) {
     LOG(ERROR) << "Invalid IV size: " << iv.size();
     return false;

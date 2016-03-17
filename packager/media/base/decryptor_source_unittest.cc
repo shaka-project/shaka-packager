@@ -80,7 +80,8 @@ TEST_F(DecryptorSourceTest, FullSampleDecryption) {
 
   DecryptConfig decrypt_config(key_id_,
                                std::vector<uint8_t>(kIv, kIv + arraysize(kIv)),
-                               std::vector<SubsampleEntry>());
+                               std::vector<SubsampleEntry>(),
+                               kEncryptionModeAesCtr);
   ASSERT_TRUE(decryptor_source_.DecryptSampleBuffer(&decrypt_config, &buffer_[0],
                                                     buffer_.size()));
   EXPECT_EQ(std::vector<uint8_t>(
@@ -93,7 +94,7 @@ TEST_F(DecryptorSourceTest, FullSampleDecryption) {
   buffer_.assign(kBuffer2, kBuffer2 + arraysize(kBuffer2));
   DecryptConfig decrypt_config2(
       key_id_, std::vector<uint8_t>(kIv2, kIv2 + arraysize(kIv2)),
-      std::vector<SubsampleEntry>());
+      std::vector<SubsampleEntry>(), kEncryptionModeAesCtr);
   ASSERT_TRUE(decryptor_source_.DecryptSampleBuffer(
       &decrypt_config2, &buffer_[0], buffer_.size()));
   EXPECT_EQ(std::vector<uint8_t>(kExpectedDecryptedBuffer2,
@@ -128,7 +129,8 @@ TEST_F(DecryptorSourceTest, SubsampleDecryption) {
   DecryptConfig decrypt_config(
       key_id_, std::vector<uint8_t>(kIv, kIv + arraysize(kIv)),
       std::vector<SubsampleEntry>(kSubsamples,
-                                  kSubsamples + arraysize(kSubsamples)));
+                                  kSubsamples + arraysize(kSubsamples)),
+      kEncryptionModeAesCtr);
   ASSERT_TRUE(decryptor_source_.DecryptSampleBuffer(
       &decrypt_config, &buffer_[0], buffer_.size()));
   EXPECT_EQ(std::vector<uint8_t>(
@@ -152,7 +154,8 @@ TEST_F(DecryptorSourceTest, SubsampleDecryptionSizeValidation) {
   DecryptConfig decrypt_config(
       key_id_, std::vector<uint8_t>(kIv, kIv + arraysize(kIv)),
       std::vector<SubsampleEntry>(kSubsamples,
-                                  kSubsamples + arraysize(kSubsamples)));
+                                  kSubsamples + arraysize(kSubsamples)),
+      kEncryptionModeAesCtr);
   ASSERT_FALSE(decryptor_source_.DecryptSampleBuffer(
       &decrypt_config, &buffer_[0], buffer_.size()));
 }
@@ -163,7 +166,8 @@ TEST_F(DecryptorSourceTest, DecryptFailedIfGetKeyFailed) {
 
   DecryptConfig decrypt_config(key_id_,
                                std::vector<uint8_t>(kIv, kIv + arraysize(kIv)),
-                               std::vector<SubsampleEntry>());
+                               std::vector<SubsampleEntry>(),
+                               kEncryptionModeAesCtr);
   ASSERT_FALSE(decryptor_source_.DecryptSampleBuffer(
       &decrypt_config, &buffer_[0], buffer_.size()));
 }

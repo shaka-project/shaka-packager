@@ -8,6 +8,7 @@
 #include <limits>
 
 #include "packager/media/base/buffer_reader.h"
+#include "packager/media/base/encryption_modes.h"
 #include "packager/media/formats/mp4/chunk_info_iterator.h"
 #include "packager/media/formats/mp4/composition_offset_iterator.h"
 #include "packager/media/formats/mp4/decoding_time_iterator.h"
@@ -597,10 +598,26 @@ scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
     return scoped_ptr<DecryptConfig>();
   }
 
+  FourCC protection_scheme = is_audio() ? audio_description().sinf.type.type
+                                        : video_description().sinf.type.type;
+  EncryptionMode decryption_mode;
+  switch (protection_scheme) {
+    case FOURCC_CENC:
+      decryption_mode = kEncryptionModeAesCtr;
+      break;
+    case FOURCC_CBC1:
+      decryption_mode = kEncryptionModeAesCbc;
+      break;
+    default:
+      LOG(ERROR) << "Unsupported protection scheme.";
+      return scoped_ptr<DecryptConfig>();
+  }
+
   return scoped_ptr<DecryptConfig>(new DecryptConfig(
       track_encryption().default_kid,
       sample_encryption_entry.initialization_vector,
-      sample_encryption_entry.subsamples));
+      sample_encryption_entry.subsamples,
+      decryption_mode));
 }
 
 }  // namespace mp4

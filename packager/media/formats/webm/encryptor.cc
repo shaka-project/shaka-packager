@@ -78,7 +78,7 @@ Status Encryptor::EncryptFrame(scoped_refptr<MediaSample> sample,
     uint8_t* sample_data = sample->writable_data();
 
     // Encrypt the data in-place.
-    if (!encryptor_->Encrypt(sample_data, sample_size, sample_data)) {
+    if (!encryptor_->EncryptData(sample_data, sample_size, sample_data)) {
       return Status(error::MUXER_FAILURE, "Failed to encrypt the frame.");
     }
 

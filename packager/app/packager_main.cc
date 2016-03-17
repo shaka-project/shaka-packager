@@ -25,6 +25,7 @@
 #include "packager/base/time/clock.h"
 #include "packager/media/base/container_names.h"
 #include "packager/media/base/demuxer.h"
+#include "packager/media/base/encryption_modes.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
@@ -102,6 +103,18 @@ std::string DetermineTextFileFormat(const std::string& file) {
   }
 
   return "";
+}
+
+edash_packager::media::EncryptionMode GetEncryptionMode(
+    const std::string& protection_scheme) {
+  if (protection_scheme == "cenc") {
+    return edash_packager::media::kEncryptionModeAesCtr;
+  } else if (protection_scheme == "cbc1") {
+    return edash_packager::media::kEncryptionModeAesCbc;
+  } else {
+    LOG(ERROR) << "Protection scheme is unknown.";
+    return edash_packager::media::kEncryptionModeUnknown;
+  }
 }
 
 }  // namespace
@@ -296,7 +309,8 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       muxer->SetKeySource(key_source,
                           FLAGS_max_sd_pixels,
                           FLAGS_clear_lead,
-                          FLAGS_crypto_period_duration);
+                          FLAGS_crypto_period_duration,
+                          GetEncryptionMode(FLAGS_protection_scheme));
     }
 
     scoped_ptr<MuxerListener> muxer_listener;
@@ -360,6 +374,10 @@ Status RunRemuxJobs(const std::vector<RemuxJob*>& remux_jobs) {
 }
 
 bool RunPackager(const StreamDescriptorList& stream_descriptors) {
+  EncryptionMode encryption_mode = GetEncryptionMode(FLAGS_protection_scheme);
+  if (encryption_mode == kEncryptionModeUnknown)
+    return false;
+
   if (!AssignFlagsFromProfile())
     return false;
 

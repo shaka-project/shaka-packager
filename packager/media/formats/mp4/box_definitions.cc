@@ -450,7 +450,7 @@ bool ProtectionSchemeInfo::ReadWriteInternal(BoxBuffer* buffer) {
          buffer->PrepareChildren() &&
          buffer->ReadWriteChild(&format) &&
          buffer->ReadWriteChild(&type));
-  if (type.type == FOURCC_CENC)
+  if (type.type == FOURCC_CENC || type.type == FOURCC_CBC1)
     RCHECK(buffer->ReadWriteChild(&info));
   // Other protection schemes are silently ignored. Since the protection scheme
   // type can't be determined until this box is opened, we return 'true' for
@@ -1300,7 +1300,7 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
     if (buffer->Reading()) {
       // Continue scanning until a recognized protection scheme is found,
       // or until we run out of protection schemes.
-      while (sinf.type.type != FOURCC_CENC) {
+      while (sinf.type.type != FOURCC_CENC && sinf.type.type != FOURCC_CBC1) {
         if (!buffer->ReadWriteChild(&sinf))
           return false;
       }
@@ -1485,7 +1485,7 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
     if (buffer->Reading()) {
       // Continue scanning until a recognized protection scheme is found,
       // or until we run out of protection schemes.
-      while (sinf.type.type != FOURCC_CENC) {
+      while (sinf.type.type != FOURCC_CENC && sinf.type.type != FOURCC_CBC1) {
         if (!buffer->ReadWriteChild(&sinf))
           return false;
       }

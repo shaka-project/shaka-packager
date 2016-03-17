@@ -27,22 +27,36 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
   DCHECK(buffer);
 
   // Get the decryptor object.
-  AesCtrEncryptor* decryptor;
+  AesDecryptor* decryptor;
   auto found = decryptor_map_.find(decrypt_config->key_id());
   if (found == decryptor_map_.end()) {
-    // Create new AesCtrEncryptor
+    // Create new AesDecryptor based on decryption mode.
     EncryptionKey key;
     Status status(key_source_->GetKey(decrypt_config->key_id(), &key));
     if (!status.ok()) {
       LOG(ERROR) << "Error retrieving decryption key: " << status;
       return false;
     }
-    scoped_ptr<AesCtrEncryptor> aes_ctr_encryptor(new AesCtrEncryptor);
-    if (!aes_ctr_encryptor->InitializeWithIv(key.key, decrypt_config->iv())) {
-      LOG(ERROR) << "Failed to initialize AesCtrEncryptor for decryption.";
+
+    scoped_ptr<AesDecryptor> aes_decryptor;
+    switch (decrypt_config->decryption_mode()) {
+      case kEncryptionModeAesCtr:
+        aes_decryptor.reset(new AesCtrDecryptor);
+        break;
+      case kEncryptionModeAesCbc:
+        aes_decryptor.reset(new AesCbcPkcs5Decryptor);
+        break;
+      default:
+        LOG(ERROR) << "Unsupported Decryption Mode: "
+                   << decrypt_config->decryption_mode();
+        return false;
+    }
+
+    if (!aes_decryptor->InitializeWithIv(key.key, decrypt_config->iv())) {
+      LOG(ERROR) << "Failed to initialize AesDecryptor for decryption.";
       return false;
     }
-    decryptor = aes_ctr_encryptor.release();
+    decryptor = aes_decryptor.release();
     decryptor_map_[decrypt_config->key_id()] = decryptor;
   } else {
     decryptor = found->second;

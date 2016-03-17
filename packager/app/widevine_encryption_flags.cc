@@ -50,6 +50,10 @@ DEFINE_int32(crypto_period_duration,
              0,
              "Crypto period duration in seconds. If it is non-zero, key "
              "rotation is enabled.");
+DEFINE_string(protection_scheme,
+              "cenc",
+              "Choose protection scheme. Currently support cenc and cbc1. "
+              "Default is cenc.");
 
 namespace edash_packager {
 

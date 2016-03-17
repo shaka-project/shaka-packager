@@ -154,7 +154,8 @@ Status MP4Muxer::Initialize() {
                              encryption_key_source(),
                              max_sd_pixels(),
                              clear_lead_in_seconds(),
-                             crypto_period_duration_in_seconds());
+                             crypto_period_duration_in_seconds(),
+                             encryption_mode());
 
   if (!segmenter_initialized.ok())
     return segmenter_initialized;

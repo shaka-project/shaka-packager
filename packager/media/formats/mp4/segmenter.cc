@@ -38,6 +38,7 @@ const uint8_t kKeyRotationDefaultKeyId[] = {
   0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0
 };
+
 COMPILE_ASSERT(arraysize(kKeyRotationDefaultKeyId) == kCencKeyIdSize,
                cenc_key_id_must_be_size_16);
 
@@ -49,9 +50,16 @@ uint64_t Rescale(uint64_t time_in_old_scale,
 
 void GenerateSinf(const EncryptionKey& encryption_key,
                   FourCC old_type,
+                  EncryptionMode encryption_mode,
                   ProtectionSchemeInfo* sinf) {
   sinf->format.format = old_type;
-  sinf->type.type = FOURCC_CENC;
+
+  if (encryption_mode == kEncryptionModeAesCtr){
+    sinf->type.type = FOURCC_CENC;
+  } else if (encryption_mode == kEncryptionModeAesCbc) {
+    sinf->type.type = FOURCC_CBC1;
+  }
+
   sinf->type.version = kCencSchemeVersion;
   sinf->info.track_encryption.is_encrypted = true;
   sinf->info.track_encryption.default_iv_size =
@@ -61,6 +69,7 @@ void GenerateSinf(const EncryptionKey& encryption_key,
 
 void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
                                   double clear_lead_in_seconds,
+                                  EncryptionMode encryption_mode,
                                   SampleDescription* description) {
   DCHECK(description);
   if (description->type == kVideo) {
@@ -72,7 +81,7 @@ void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
 
     // Convert the first entry to an encrypted entry.
     VideoSampleEntry& entry = description->video_entries[0];
-    GenerateSinf(encryption_key, entry.format, &entry.sinf);
+    GenerateSinf(encryption_key, entry.format, encryption_mode, &entry.sinf);
     entry.format = FOURCC_ENCV;
   } else {
     DCHECK_EQ(kAudio, description->type);
@@ -84,7 +93,7 @@ void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
 
     // Convert the first entry to an encrypted entry.
     AudioSampleEntry& entry = description->audio_entries[0];
-    GenerateSinf(encryption_key, entry.format, &entry.sinf);
+    GenerateSinf(encryption_key, entry.format, encryption_mode, &entry.sinf);
     entry.format = FOURCC_ENCA;
   }
 }
@@ -127,7 +136,8 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
                              KeySource* encryption_key_source,
                              uint32_t max_sd_pixels,
                              double clear_lead_in_seconds,
-                             double crypto_period_duration_in_seconds) {
+                             double crypto_period_duration_in_seconds,
+                             EncryptionMode encryption_mode) {
   DCHECK_LT(0u, streams.size());
   muxer_listener_ = muxer_listener;
   progress_listener_ = progress_listener;
@@ -164,8 +174,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
           kKeyRotationDefaultKeyId,
           kKeyRotationDefaultKeyId + arraysize(kKeyRotationDefaultKeyId));
       GenerateEncryptedSampleEntry(encryption_key, clear_lead_in_seconds,
-                                   &description);
-
+                                   encryption_mode, &description);
       if (muxer_listener_) {
         muxer_listener_->OnEncryptionInfoReady(
             kInitialEncryptionInfo, encryption_key.key_id,
@@ -177,7 +186,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
           encryption_key_source, track_type,
           crypto_period_duration_in_seconds * streams[i]->info()->time_scale(),
           clear_lead_in_seconds * streams[i]->info()->time_scale(),
-          muxer_listener_);
+          muxer_listener_, encryption_mode);
       continue;
     }
 
@@ -188,7 +197,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
       return status;
 
     GenerateEncryptedSampleEntry(*encryption_key, clear_lead_in_seconds,
-                                 &description);
+                                 encryption_mode, &description);
 
     if (moov_->pssh.empty()) {
       moov_->pssh.resize(encryption_key->key_system_info.size());
@@ -205,7 +214,8 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
 
     fragmenters_[i] = new EncryptingFragmenter(
         streams[i]->info(), &moof_->tracks[i], encryption_key.Pass(),
-        clear_lead_in_seconds * streams[i]->info()->time_scale());
+        clear_lead_in_seconds * streams[i]->info()->time_scale(),
+        encryption_mode);
   }
 
   // Choose the first stream if there is no VIDEO.

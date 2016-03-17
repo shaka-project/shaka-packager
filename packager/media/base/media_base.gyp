@@ -13,6 +13,8 @@
       'target_name': 'media_base',
       'type': '<(component)',
       'sources': [
+        'aes_decryptor.cc',
+        'aes_decryptor.h',
         'aes_encryptor.cc',
         'aes_encryptor.h',
         'audio_stream_info.cc',
@@ -37,6 +39,7 @@
         'decrypt_config.h',
         'decryptor_source.cc',
         'decryptor_source.h',
+        'encryption_modes.h',
         'http_key_fetcher.cc',
         'http_key_fetcher.h',
         'key_fetcher.cc',

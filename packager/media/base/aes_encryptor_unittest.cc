@@ -10,6 +10,7 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/aes_encryptor.h"
+#include "packager/media/base/aes_decryptor.h"
 
 namespace {
 
@@ -144,6 +145,7 @@ class AesCtrEncryptorTest : public testing::Test {
                        kAesCtrCiphertext + arraysize(kAesCtrCiphertext));
 
     ASSERT_TRUE(encryptor_.InitializeWithIv(key_, iv_));
+    ASSERT_TRUE(decryptor_.InitializeWithIv(key_, iv_));
   }
 
  protected:
@@ -152,6 +154,7 @@ class AesCtrEncryptorTest : public testing::Test {
   std::vector<uint8_t> plaintext_;
   std::vector<uint8_t> ciphertext_;
   AesCtrEncryptor encryptor_;
+  AesCtrDecryptor decryptor_;
 };
 
 TEST_F(AesCtrEncryptorTest, NistTestCase) {
@@ -159,19 +162,19 @@ TEST_F(AesCtrEncryptorTest, NistTestCase) {
   EXPECT_TRUE(encryptor_.Encrypt(plaintext_, &encrypted));
   EXPECT_EQ(ciphertext_, encrypted);
 
-  EXPECT_TRUE(encryptor_.SetIv(iv_));
+  EXPECT_TRUE(decryptor_.SetIv(iv_));
   std::vector<uint8_t> decrypted;
-  EXPECT_TRUE(encryptor_.Decrypt(encrypted, &decrypted));
+  EXPECT_TRUE(decryptor_.Decrypt(encrypted, &decrypted));
   EXPECT_EQ(plaintext_, decrypted);
 }
 
 TEST_F(AesCtrEncryptorTest, NistTestCaseInplaceEncryptionDecryption) {
   std::vector<uint8_t> buffer = plaintext_;
-  EXPECT_TRUE(encryptor_.Encrypt(&buffer[0], buffer.size(), &buffer[0]));
+  EXPECT_TRUE(encryptor_.EncryptData(&buffer[0], buffer.size(), &buffer[0]));
   EXPECT_EQ(ciphertext_, buffer);
 
-  EXPECT_TRUE(encryptor_.SetIv(iv_));
-  EXPECT_TRUE(encryptor_.Decrypt(&buffer[0], buffer.size(), &buffer[0]));
+  EXPECT_TRUE(decryptor_.SetIv(iv_));
+  EXPECT_TRUE(decryptor_.Decrypt(&buffer[0], buffer.size(), &buffer[0]));
   EXPECT_EQ(plaintext_, buffer);
 }
 
@@ -186,8 +189,8 @@ TEST_F(AesCtrEncryptorTest, EncryptDecryptString) {
             base::HexEncode(ciphertext.data(), ciphertext.size()));
 
   std::string decrypted;
-  EXPECT_TRUE(encryptor_.SetIv(iv_));
-  EXPECT_TRUE(encryptor_.Decrypt(ciphertext, &decrypted));
+  EXPECT_TRUE(decryptor_.SetIv(iv_));
+  EXPECT_TRUE(decryptor_.Decrypt(ciphertext, &decrypted));
   EXPECT_EQ(kPlaintext, decrypted);
 }
 
@@ -208,13 +211,13 @@ TEST_F(AesCtrEncryptorTest, 128BitIVBoundaryCaseEncryption) {
 
   ASSERT_TRUE(encryptor_.InitializeWithIv(key_, iv_max64));
   std::vector<uint8_t> encrypted_verify(plaintext_.size(), 0);
-  EXPECT_TRUE(
-      encryptor_.Encrypt(&plaintext_[0], kAesBlockSize, &encrypted_verify[0]));
+  EXPECT_TRUE(encryptor_.EncryptData(&plaintext_[0], kAesBlockSize,
+                                     &encrypted_verify[0]));
   std::vector<uint8_t> iv_zero(kIv128Zero, kIv128Zero + arraysize(kIv128Zero));
   ASSERT_TRUE(encryptor_.InitializeWithIv(key_, iv_zero));
-  EXPECT_TRUE(encryptor_.Encrypt(&plaintext_[kAesBlockSize],
-                                 kAesBlockSize * 3,
-                                 &encrypted_verify[kAesBlockSize]));
+  EXPECT_TRUE(encryptor_.EncryptData(&plaintext_[kAesBlockSize],
+                                     kAesBlockSize * 3,
+                                     &encrypted_verify[kAesBlockSize]));
   EXPECT_EQ(encrypted, encrypted_verify);
 }
 
@@ -251,20 +254,20 @@ TEST_P(AesCtrEncryptorSubsampleTest, NistTestCaseSubsamples) {
   for (uint32_t i = 0, offset = 0; i < test_case->subsample_count; ++i) {
     uint32_t len = test_case->subsample_sizes[i];
     EXPECT_TRUE(
-        encryptor_.Encrypt(&plaintext_[offset], len, &encrypted[offset]));
+        encryptor_.EncryptData(&plaintext_[offset], len, &encrypted[offset]));
     offset += len;
     EXPECT_EQ(offset % kAesBlockSize, encryptor_.block_offset());
   }
   EXPECT_EQ(ciphertext_, encrypted);
 
-  EXPECT_TRUE(encryptor_.SetIv(iv_));
+  EXPECT_TRUE(decryptor_.SetIv(iv_));
   std::vector<uint8_t> decrypted(encrypted.size(), 0);
   for (uint32_t i = 0, offset = 0; i < test_case->subsample_count; ++i) {
     uint32_t len = test_case->subsample_sizes[i];
     EXPECT_TRUE(
-        encryptor_.Decrypt(&encrypted[offset], len, &decrypted[offset]));
+        decryptor_.Decrypt(&encrypted[offset], len, &decrypted[offset]));
     offset += len;
-    EXPECT_EQ(offset % kAesBlockSize, encryptor_.block_offset());
+    EXPECT_EQ(offset % kAesBlockSize, decryptor_.block_offset());
   }
   EXPECT_EQ(plaintext_, decrypted);
 }

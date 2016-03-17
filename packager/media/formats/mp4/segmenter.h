@@ -12,6 +12,7 @@
 
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/encryption_modes.h"
 #include "packager/media/base/status.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 
@@ -65,7 +66,8 @@ class Segmenter {
                     KeySource* encryption_key_source,
                     uint32_t max_sd_pixels,
                     double clear_lead_in_seconds,
-                    double crypto_period_duration_in_seconds);
+                    double crypto_period_duration_in_seconds,
+                    EncryptionMode encryption_mode);
 
   /// Finalize the segmenter.
   /// @return OK on success, an error status otherwise.

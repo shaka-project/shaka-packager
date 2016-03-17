@@ -9,6 +9,7 @@
 
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/encryption_modes.h"
 #include "packager/media/filters/vpx_parser.h"
 #include "packager/media/formats/mp4/fragmenter.h"
 #include "packager/media/formats/mp4/video_slice_header_parser.h"
@@ -16,7 +17,7 @@
 namespace edash_packager {
 namespace media {
 
-class AesCtrEncryptor;
+class AesEncryptor;
 class StreamInfo;
 struct EncryptionKey;
 
@@ -32,7 +33,8 @@ class EncryptingFragmenter : public Fragmenter {
   EncryptingFragmenter(scoped_refptr<StreamInfo> info,
                        TrackFragment* traf,
                        scoped_ptr<EncryptionKey> encryption_key,
-                       int64_t clear_time);
+                       int64_t clear_time,
+                       EncryptionMode encryption_mode);
 
   ~EncryptingFragmenter() override;
 
@@ -56,7 +58,7 @@ class EncryptingFragmenter : public Fragmenter {
   Status CreateEncryptor();
 
   EncryptionKey* encryption_key() { return encryption_key_.get(); }
-  AesCtrEncryptor* encryptor() { return encryptor_.get(); }
+  AesEncryptor* encryptor() { return encryptor_.get(); }
 
   void set_encryption_key(scoped_ptr<EncryptionKey> encryption_key) {
     encryption_key_ = encryption_key.Pass();
@@ -71,12 +73,13 @@ class EncryptingFragmenter : public Fragmenter {
 
   scoped_refptr<StreamInfo> info_;
   scoped_ptr<EncryptionKey> encryption_key_;
-  scoped_ptr<AesCtrEncryptor> encryptor_;
+  scoped_ptr<AesEncryptor> encryptor_;
   // If this stream contains AVC, subsample encryption specifies that the size
   // and type of NAL units remain unencrypted. This function returns the size of
   // the size field in bytes. Can be 1, 2 or 4 bytes.
   const uint8_t nalu_length_size_;
   int64_t clear_time_;
+  EncryptionMode encryption_mode_;
 
   scoped_ptr<VPxParser> vpx_parser_;
   scoped_ptr<VideoSliceHeaderParser> header_parser_;

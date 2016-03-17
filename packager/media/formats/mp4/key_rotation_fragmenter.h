@@ -7,6 +7,7 @@
 #ifndef MEDIA_FORMATS_MP4_KEY_ROTATION_FRAGMENTER_H_
 #define MEDIA_FORMATS_MP4_KEY_ROTATION_FRAGMENTER_H_
 
+#include "packager/media/base/encryption_modes.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/event/muxer_listener.h"
 #include "packager/media/formats/mp4/encrypting_fragmenter.h"
@@ -40,7 +41,8 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
                         KeySource::TrackType track_type,
                         int64_t crypto_period_duration,
                         int64_t clear_time,
-                        MuxerListener* muxer_listener);
+                        MuxerListener* muxer_listener,
+                        EncryptionMode encryption_mode);
   ~KeyRotationFragmenter() override;
 
  protected:

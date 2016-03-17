@@ -10,7 +10,7 @@
 #include <map>
 #include <vector>
 
-#include "packager/media/base/aes_encryptor.h"
+#include "packager/media/base/aes_decryptor.h"
 #include "packager/media/base/decrypt_config.h"
 #include "packager/media/base/key_source.h"
 
@@ -29,7 +29,7 @@ class DecryptorSource {
 
  private:
   KeySource* key_source_;
-  std::map<std::vector<uint8_t>, AesCtrEncryptor*> decryptor_map_;
+  std::map<std::vector<uint8_t>, AesDecryptor*> decryptor_map_;
 
   DISALLOW_COPY_AND_ASSIGN(DecryptorSource);
 };
