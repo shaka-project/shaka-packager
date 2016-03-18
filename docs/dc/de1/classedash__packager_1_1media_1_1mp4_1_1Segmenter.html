@@ -112,8 +112,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a4094698322158c0b2e0cc735b55fc1f5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4094698322158c0b2e0cc735b55fc1f5"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Segmenter</b> (const <a class="el" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;options, scoped_ptr&lt; <a class="el" href="../../d1/dcd/structedash__packager_1_1media_1_1mp4_1_1FileType.html">FileType</a> &gt; ftyp, scoped_ptr&lt; <a class="el" href="../../d6/dec/structedash__packager_1_1media_1_1mp4_1_1Movie.html">Movie</a> &gt; moov)</td></tr>
 <tr class="separator:a4094698322158c0b2e0cc735b55fc1f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae977765092cab9a566b4a5a3e9184370"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ae977765092cab9a566b4a5a3e9184370">Initialize</a> (const std::vector&lt; <a class="el" href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html">MediaStream</a> * &gt; &amp;streams, <a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">MuxerListener</a> *muxer_listener, <a class="el" href="../../d9/d2c/classedash__packager_1_1media_1_1ProgressListener.html">ProgressListener</a> *progress_listener, <a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a> *encryption_key_source, uint32_t max_sd_pixels, double clear_lead_in_seconds, double crypto_period_duration_in_seconds)</td></tr>
-<tr class="separator:ae977765092cab9a566b4a5a3e9184370"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae35266f50e16bef0443aa909223bd3d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ae35266f50e16bef0443aa909223bd3d1">Initialize</a> (const std::vector&lt; <a class="el" href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html">MediaStream</a> * &gt; &amp;streams, <a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">MuxerListener</a> *muxer_listener, <a class="el" href="../../d9/d2c/classedash__packager_1_1media_1_1ProgressListener.html">ProgressListener</a> *progress_listener, <a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a> *encryption_key_source, uint32_t max_sd_pixels, double clear_lead_in_seconds, double crypto_period_duration_in_seconds, EncryptionMode encryption_mode)</td></tr>
+<tr class="separator:ae35266f50e16bef0443aa909223bd3d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad1136a3e7c2e796267fbd3879d108c2a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">Finalize</a> ()</td></tr>
 <tr class="separator:ad1136a3e7c2e796267fbd3879d108c2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c21059ee9a533caec81491bdb751c57"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a5c21059ee9a533caec81491bdb751c57">AddSample</a> (const <a class="el" href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html">MediaStream</a> *stream, scoped_refptr&lt; <a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
@@ -168,7 +168,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This class defines the <a class="el" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html">Segmenter</a> which is responsible for organizing fragments into segments/subsegments and package them into a MP4 file. Inherited by <a class="el" href="../../dc/d7a/classedash__packager_1_1media_1_1mp4_1_1MultiSegmentSegmenter.html">MultiSegmentSegmenter</a> and <a class="el" href="../../da/d75/classedash__packager_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html">SingleSegmentSegmenter</a>. <a class="el" href="../../da/d75/classedash__packager_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html">SingleSegmentSegmenter</a> defines the <a class="el" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html">Segmenter</a> for DASH Video-On-Demand with a single segment for each media presentation while <a class="el" href="../../dc/d7a/classedash__packager_1_1media_1_1mp4_1_1MultiSegmentSegmenter.html">MultiSegmentSegmenter</a> handles all other cases including DASH live profile. </p>
 
-<p>Definition at line <a class="el" href="../../dd/d3b/mp4_2segmenter_8h_source.html#l00040">40</a> of file <a class="el" href="../../dd/d3b/mp4_2segmenter_8h_source.html">segmenter.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d3b/mp4_2segmenter_8h_source.html#l00041">41</a> of file <a class="el" href="../../dd/d3b/mp4_2segmenter_8h_source.html">segmenter.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a5c21059ee9a533caec81491bdb751c57"></a>
 <div class="memitem">
@@ -203,7 +203,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00258">258</a> of file <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00268">268</a> of file <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -222,7 +222,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 <p>Finalize the segmenter. </p>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00232">232</a> of file <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00242">242</a> of file <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -240,7 +240,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The total length, in seconds, of segmented media files. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00316">316</a> of file <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00326">326</a> of file <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -318,7 +318,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 
 </div>
 </div>
-<a class="anchor" id="ae977765092cab9a566b4a5a3e9184370"></a>
+<a class="anchor" id="ae35266f50e16bef0443aa909223bd3d1"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -362,7 +362,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>crypto_period_duration_in_seconds</em>&#160;</td>
+          <td class="paramname"><em>crypto_period_duration_in_seconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">EncryptionMode&#160;</td>
+          <td class="paramname"><em>encryption_mode</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -386,7 +392,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00124">124</a> of file <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00133">133</a> of file <a class="el" href="../../d2/da8/mp4_2segmenter_8cc_source.html">segmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -412,7 +418,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The sample duration in the timescale of the media. Returns 0 if no samples are added yet. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../dd/d3b/mp4_2segmenter_8h_source.html#l00097">97</a> of file <a class="el" href="../../dd/d3b/mp4_2segmenter_8h_source.html">segmenter.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d3b/mp4_2segmenter_8h_source.html#l00099">99</a> of file <a class="el" href="../../dd/d3b/mp4_2segmenter_8h_source.html">segmenter.h</a>.</p>
 
 </div>
 </div>
@@ -423,7 +429,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_progress_target</
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 15 2016 17:38:15 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 18 2016 05:18:27 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

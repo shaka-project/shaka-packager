@@ -112,8 +112,8 @@ Inheritance diagram for edash_packager::media::mp4::EncryptingFragmenter:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a35e714ce7885037ea4299f0836e0d058"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a35e714ce7885037ea4299f0836e0d058">EncryptingFragmenter</a> (scoped_refptr&lt; <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; info, <a class="el" href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a> *traf, scoped_ptr&lt; <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt; encryption_key, int64_t clear_time)</td></tr>
-<tr class="separator:a35e714ce7885037ea4299f0836e0d058"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6ab7ed1ca842bc5618f03971911c2457"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a6ab7ed1ca842bc5618f03971911c2457">EncryptingFragmenter</a> (scoped_refptr&lt; <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; info, <a class="el" href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a> *traf, scoped_ptr&lt; <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt; encryption_key, int64_t clear_time, EncryptionMode encryption_mode)</td></tr>
+<tr class="separator:a6ab7ed1ca842bc5618f03971911c2457"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Fragmenter implementation overrides.</div></td></tr>
 <tr class="memitem:ae8fd13a579fee2167167bcdbb9637dcc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#ae8fd13a579fee2167167bcdbb9637dcc">AddSample</a> (scoped_refptr&lt; <a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample) override</td></tr>
 <tr class="separator:ae8fd13a579fee2167167bcdbb9637dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -162,9 +162,9 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr class="memitem:a6b012a3968b32811c84520689a3e90d1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6b012a3968b32811c84520689a3e90d1"></a>
 <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>encryption_key</b> ()</td></tr>
 <tr class="separator:a6b012a3968b32811c84520689a3e90d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c7c2f06c60d3e77958f6ad13fccb4ed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3c7c2f06c60d3e77958f6ad13fccb4ed"></a>
-<a class="el" href="../../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html">AesCtrEncryptor</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>encryptor</b> ()</td></tr>
-<tr class="separator:a3c7c2f06c60d3e77958f6ad13fccb4ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1129a1f857940af71d0a029ea30857e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac1129a1f857940af71d0a029ea30857e"></a>
+<a class="el" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html">AesEncryptor</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>encryptor</b> ()</td></tr>
+<tr class="separator:ac1129a1f857940af71d0a029ea30857e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9eef04c1a1d9777bfcc087300a3c9cea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9eef04c1a1d9777bfcc087300a3c9cea"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b> (scoped_ptr&lt; <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt; encryption_key)</td></tr>
 <tr class="separator:a9eef04c1a1d9777bfcc087300a3c9cea"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -179,9 +179,9 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html" title="EncryptingFragmenter generates MP4 fragments with sample encrypted. ">EncryptingFragmenter</a> generates MP4 fragments with sample encrypted. </p>
 
-<p>Definition at line <a class="el" href="../../d1/dcb/encrypting__fragmenter_8h_source.html#l00026">26</a> of file <a class="el" href="../../d1/dcb/encrypting__fragmenter_8h_source.html">encrypting_fragmenter.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d1/dcb/encrypting__fragmenter_8h_source.html#l00027">27</a> of file <a class="el" href="../../d1/dcb/encrypting__fragmenter_8h_source.html">encrypting_fragmenter.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a35e714ce7885037ea4299f0836e0d058"></a>
+<a class="anchor" id="a6ab7ed1ca842bc5618f03971911c2457"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -207,7 +207,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">int64_t&#160;</td>
-          <td class="paramname"><em>clear_time</em>&#160;</td>
+          <td class="paramname"><em>clear_time</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">EncryptionMode&#160;</td>
+          <td class="paramname"><em>encryption_mode</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -262,7 +268,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 
 <p>Reimplemented from <a class="el" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#a81d8b1f324bdd2bc9cc2e5a469243926">edash_packager::media::mp4::Fragmenter</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00087">87</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00089">89</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -289,7 +295,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 <p>Create the encryptor for the internal encryption key. The existing encryptor will be reset if it is not NULL. </p>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00169">169</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00171">171</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -325,7 +331,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 
 <p>Reimplemented from <a class="el" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#ab55cbcb40b4c1308d70052a4b8ccd6af">edash_packager::media::mp4::Fragmenter</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00102">102</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00104">104</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -355,7 +361,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 
 <p>Reimplemented in <a class="el" href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a8c526a2a3f0555be9030f87ef1015bd8">edash_packager::media::mp4::KeyRotationFragmenter</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00143">143</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00145">145</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -366,7 +372,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 15 2016 17:38:15 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 18 2016 05:18:27 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

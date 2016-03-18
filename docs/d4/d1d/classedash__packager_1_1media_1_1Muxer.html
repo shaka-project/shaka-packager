@@ -113,8 +113,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a91ab5baeda2a5113254a2c101cd54332"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a91ab5baeda2a5113254a2c101cd54332"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>Muxer</b> (const <a class="el" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;options)</td></tr>
 <tr class="separator:a91ab5baeda2a5113254a2c101cd54332"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5452ae82c2f8a0df8f855fc35e717f04"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a5452ae82c2f8a0df8f855fc35e717f04">SetKeySource</a> (<a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a> *encryption_key_source, uint32_t max_sd_pixels, double clear_lead_in_seconds, double crypto_period_duration_in_seconds)</td></tr>
-<tr class="separator:a5452ae82c2f8a0df8f855fc35e717f04"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8376a54357dc92777cc1837b5090bac6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a8376a54357dc92777cc1837b5090bac6">SetKeySource</a> (<a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a> *encryption_key_source, uint32_t max_sd_pixels, double clear_lead_in_seconds, double crypto_period_duration_in_seconds, EncryptionMode encryption_mode)</td></tr>
+<tr class="separator:a8376a54357dc92777cc1837b5090bac6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77c7a214383f64f822d479d226750bf5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a77c7a214383f64f822d479d226750bf5"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a77c7a214383f64f822d479d226750bf5">AddStream</a> (<a class="el" href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html">MediaStream</a> *stream)</td></tr>
 <tr class="memdesc:a77c7a214383f64f822d479d226750bf5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Add video/audio stream. <br/></td></tr>
@@ -161,6 +161,9 @@ double&#160;</td><td class="memItemRight" valign="bottom"><b>crypto_period_durat
 <tr class="memitem:a427ed6d02bac9504767abd04828b5a00"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a427ed6d02bac9504767abd04828b5a00"></a>
 base::Clock *&#160;</td><td class="memItemRight" valign="bottom"><b>clock</b> ()</td></tr>
 <tr class="separator:a427ed6d02bac9504767abd04828b5a00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7e067f19905cadb2bf44a076b4feae92"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7e067f19905cadb2bf44a076b4feae92"></a>
+EncryptionMode&#160;</td><td class="memItemRight" valign="bottom"><b>encryption_mode</b> () const </td></tr>
+<tr class="separator:a7e067f19905cadb2bf44a076b4feae92"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
 Friends</h2></td></tr>
@@ -171,7 +174,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html">Muxer</a> is responsible for taking elementary stream samples and producing media containers. An optional <a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html" title="KeySource is responsible for encryption key acquisition. ">KeySource</a> can be provided to <a class="el" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html">Muxer</a> to generate encrypted outputs. </p>
 
-<p>Definition at line <a class="el" href="../../db/df6/muxer_8h_source.html#l00032">32</a> of file <a class="el" href="../../db/df6/muxer_8h_source.html">muxer.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/df6/muxer_8h_source.html#l00033">33</a> of file <a class="el" href="../../db/df6/muxer_8h_source.html">muxer.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="abecb4fbe4bcd5257857e397f7f3d096b"></a>
 <div class="memitem">
@@ -187,7 +190,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
 </div><div class="memdoc">
 <p>Cancel a muxing job in progress. Will cause <em>Run</em> to exit with an error status of type CANCELLED. </p>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00078">78</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00081">81</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
@@ -220,11 +223,11 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../db/df6/muxer_8h_source.html#l00078">78</a> of file <a class="el" href="../../db/df6/muxer_8h_source.html">muxer.h</a>.</p>
+<p>Definition at line <a class="el" href="../../db/df6/muxer_8h_source.html#l00080">80</a> of file <a class="el" href="../../db/df6/muxer_8h_source.html">muxer.h</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a5452ae82c2f8a0df8f855fc35e717f04"></a>
+<a class="anchor" id="a8376a54357dc92777cc1837b5090bac6"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -250,7 +253,13 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double&#160;</td>
-          <td class="paramname"><em>crypto_period_duration_in_seconds</em>&#160;</td>
+          <td class="paramname"><em>crypto_period_duration_in_seconds</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">EncryptionMode&#160;</td>
+          <td class="paramname"><em>encryption_mode</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -270,7 +279,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00027">27</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00028">28</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
@@ -295,7 +304,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00082">82</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00085">85</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
@@ -320,7 +329,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00086">86</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00089">89</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
@@ -331,7 +340,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 15 2016 17:38:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 18 2016 05:18:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -539,7 +539,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;         buffer-&gt;<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a2e46c4812ac9c48288a8461c230a375b">PrepareChildren</a>() &amp;&amp;</div>
 <div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;         buffer-&gt;<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#ae2f4c04bd204e593491db3e24715efd2">ReadWriteChild</a>(&amp;format) &amp;&amp;</div>
 <div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;         buffer-&gt;<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#ae2f4c04bd204e593491db3e24715efd2">ReadWriteChild</a>(&amp;type));</div>
-<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;  <span class="keywordflow">if</span> (type.type == FOURCC_CENC)</div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;  <span class="keywordflow">if</span> (type.type == FOURCC_CENC || type.type == FOURCC_CBC1)</div>
 <div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;    RCHECK(buffer-&gt;<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#ae2f4c04bd204e593491db3e24715efd2">ReadWriteChild</a>(&amp;info));</div>
 <div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;  <span class="comment">// Other protection schemes are silently ignored. Since the protection scheme</span></div>
 <div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;  <span class="comment">// type can&#39;t be determined until this box is opened, we return &#39;true&#39; for</span></div>
@@ -1389,7 +1389,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01300"></a><span class="lineno"> 1300</span>&#160;    <span class="keywordflow">if</span> (buffer-&gt;<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a36c0d8448dab759db37f9581ea602807">Reading</a>()) {</div>
 <div class="line"><a name="l01301"></a><span class="lineno"> 1301</span>&#160;      <span class="comment">// Continue scanning until a recognized protection scheme is found,</span></div>
 <div class="line"><a name="l01302"></a><span class="lineno"> 1302</span>&#160;      <span class="comment">// or until we run out of protection schemes.</span></div>
-<div class="line"><a name="l01303"></a><span class="lineno"> 1303</span>&#160;      <span class="keywordflow">while</span> (sinf.type.type != FOURCC_CENC) {</div>
+<div class="line"><a name="l01303"></a><span class="lineno"> 1303</span>&#160;      <span class="keywordflow">while</span> (sinf.type.type != FOURCC_CENC &amp;&amp; sinf.type.type != FOURCC_CBC1) {</div>
 <div class="line"><a name="l01304"></a><span class="lineno"> 1304</span>&#160;        <span class="keywordflow">if</span> (!buffer-&gt;<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#ae2f4c04bd204e593491db3e24715efd2">ReadWriteChild</a>(&amp;sinf))</div>
 <div class="line"><a name="l01305"></a><span class="lineno"> 1305</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l01306"></a><span class="lineno"> 1306</span>&#160;      }</div>
@@ -1574,7 +1574,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01485"></a><span class="lineno"> 1485</span>&#160;    <span class="keywordflow">if</span> (buffer-&gt;<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a36c0d8448dab759db37f9581ea602807">Reading</a>()) {</div>
 <div class="line"><a name="l01486"></a><span class="lineno"> 1486</span>&#160;      <span class="comment">// Continue scanning until a recognized protection scheme is found,</span></div>
 <div class="line"><a name="l01487"></a><span class="lineno"> 1487</span>&#160;      <span class="comment">// or until we run out of protection schemes.</span></div>
-<div class="line"><a name="l01488"></a><span class="lineno"> 1488</span>&#160;      <span class="keywordflow">while</span> (sinf.type.type != FOURCC_CENC) {</div>
+<div class="line"><a name="l01488"></a><span class="lineno"> 1488</span>&#160;      <span class="keywordflow">while</span> (sinf.type.type != FOURCC_CENC &amp;&amp; sinf.type.type != FOURCC_CBC1) {</div>
 <div class="line"><a name="l01489"></a><span class="lineno"> 1489</span>&#160;        <span class="keywordflow">if</span> (!buffer-&gt;<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#ae2f4c04bd204e593491db3e24715efd2">ReadWriteChild</a>(&amp;sinf))</div>
 <div class="line"><a name="l01490"></a><span class="lineno"> 1490</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l01491"></a><span class="lineno"> 1491</span>&#160;      }</div>
@@ -2751,7 +2751,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 15 2016 17:38:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 18 2016 05:18:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

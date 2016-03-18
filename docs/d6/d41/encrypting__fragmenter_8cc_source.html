@@ -149,256 +149,265 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;}</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}  <span class="comment">// namespace</span></div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a35e714ce7885037ea4299f0836e0d058">   63</a></span>&#160;<a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a35e714ce7885037ea4299f0836e0d058">EncryptingFragmenter::EncryptingFragmenter</a>(</div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a6ab7ed1ca842bc5618f03971911c2457">   63</a></span>&#160;<a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a6ab7ed1ca842bc5618f03971911c2457">EncryptingFragmenter::EncryptingFragmenter</a>(</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    scoped_refptr&lt;StreamInfo&gt; info,</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <a class="code" href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a>* traf,</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    scoped_ptr&lt;EncryptionKey&gt; encryption_key,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    int64_t clear_time)</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    : <a class="code" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html">Fragmenter</a>(traf),</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      info_(info),</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      encryption_key_(encryption_key.Pass()),</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      nalu_length_size_(GetNaluLengthSize(*info)),</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      clear_time_(clear_time) {</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  DCHECK(encryption_key_);</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  VideoCodec video_codec = GetVideoCodec(*info);</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordflow">if</span> (video_codec == kCodecVP8) {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    vpx_parser_.reset(<span class="keyword">new</span> <a class="code" href="../../d5/dce/classedash__packager_1_1media_1_1VP8Parser.html">VP8Parser</a>);</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (video_codec == kCodecVP9) {</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    vpx_parser_.reset(<span class="keyword">new</span> <a class="code" href="../../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html">VP9Parser</a>);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (video_codec == kCodecH264) {</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    header_parser_.reset(<span class="keyword">new</span> <a class="code" href="../../d6/dc2/classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser.html">H264VideoSliceHeaderParser</a>);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  }</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// TODO(modmaker): Support H.265.</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;EncryptingFragmenter::~EncryptingFragmenter() {}</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    int64_t clear_time,</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    EncryptionMode encryption_mode)</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    : <a class="code" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html">Fragmenter</a>(traf),</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      info_(info),</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      encryption_key_(encryption_key.Pass()),</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      nalu_length_size_(GetNaluLengthSize(*info)),</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      clear_time_(clear_time),</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      encryption_mode_(encryption_mode) {</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  DCHECK(encryption_key_);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  VideoCodec video_codec = GetVideoCodec(*info);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordflow">if</span> (video_codec == kCodecVP8) {</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    vpx_parser_.reset(<span class="keyword">new</span> <a class="code" href="../../d5/dce/classedash__packager_1_1media_1_1VP8Parser.html">VP8Parser</a>);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (video_codec == kCodecVP9) {</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    vpx_parser_.reset(<span class="keyword">new</span> <a class="code" href="../../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html">VP9Parser</a>);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (video_codec == kCodecH264) {</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    header_parser_.reset(<span class="keyword">new</span> <a class="code" href="../../d6/dc2/classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser.html">H264VideoSliceHeaderParser</a>);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  }</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">// TODO(modmaker): Support H.265.</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno"><a class="line" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#ae8fd13a579fee2167167bcdbb9637dcc">   87</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#ae8fd13a579fee2167167bcdbb9637dcc">EncryptingFragmenter::AddSample</a>(scoped_refptr&lt;MediaSample&gt; sample) {</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  DCHECK(sample);</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordflow">if</span> (!fragment_initialized()) {</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3159dcc8d0f02da113715a97d096afef">InitializeFragment</a>(sample-&gt;dts());</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;      <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  }</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="keywordflow">if</span> (encryptor_) {</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = EncryptSample(sample);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;      <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  }</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#a81d8b1f324bdd2bc9cc2e5a469243926">Fragmenter::AddSample</a>(sample);</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;}</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
-<div class="line"><a name="l00102"></a><span class="lineno"><a class="line" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3159dcc8d0f02da113715a97d096afef">  102</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3159dcc8d0f02da113715a97d096afef">EncryptingFragmenter::InitializeFragment</a>(int64_t first_sample_dts) {</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = <a class="code" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#ab55cbcb40b4c1308d70052a4b8ccd6af">Fragmenter::InitializeFragment</a>(first_sample_dts);</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordflow">if</span> (header_parser_ &amp;&amp; !header_parser_-&gt;Initialize(info_-&gt;extra_data()))</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::MUXER_FAILURE, <span class="stringliteral">&quot;Fail to read SPS and PPS data.&quot;</span>);</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  traf()-&gt;auxiliary_size.sample_info_sizes.clear();</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  traf()-&gt;auxiliary_offset.offsets.clear();</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keywordflow">if</span> (IsSubsampleEncryptionRequired()) {</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    traf()-&gt;sample_encryption.flags |=</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;        SampleEncryption::kUseSubsampleEncryption;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  }</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  traf()-&gt;sample_encryption.sample_encryption_entries.clear();</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> enable_encryption = clear_time_ &lt;= 0;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keywordflow">if</span> (!enable_encryption) {</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="comment">// This fragment should be in clear text.</span></div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="comment">// At most two sample description entries, an encrypted entry and a clear</span></div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <span class="comment">// entry, are generated. The 1-based clear entry index is always 2.</span></div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="keyword">const</span> uint32_t kClearSampleDescriptionIndex = 2;</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    traf()-&gt;header.flags |=</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;        TrackFragmentHeader::kSampleDescriptionIndexPresentMask;</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    traf()-&gt;header.sample_description_index = kClearSampleDescriptionIndex;</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  }</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3e66313de4ecb51f23fe438758e0153b">PrepareFragmentForEncryption</a>(enable_encryption);</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;}</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;</div>
-<div class="line"><a name="l00132"></a><span class="lineno"><a class="line" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a7917221a0f5093ad6770926ee0ae0ce2">  132</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a7917221a0f5093ad6770926ee0ae0ce2">EncryptingFragmenter::FinalizeFragment</a>() {</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  <span class="keywordflow">if</span> (encryptor_) {</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    DCHECK_LE(clear_time_, 0);</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a0184deccbe7e99ea7a685cf0de2f9156">FinalizeFragmentForEncryption</a>();</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    DCHECK_GT(clear_time_, 0);</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    clear_time_ -= fragment_duration();</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  }</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  <a class="code" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#a5f346308fec8fa24cf47cf7ffd21d741">Fragmenter::FinalizeFragment</a>();</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;}</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;</div>
-<div class="line"><a name="l00143"></a><span class="lineno"><a class="line" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3e66313de4ecb51f23fe438758e0153b">  143</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3e66313de4ecb51f23fe438758e0153b">EncryptingFragmenter::PrepareFragmentForEncryption</a>(</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    <span class="keywordtype">bool</span> enable_encryption) {</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  <span class="keywordflow">return</span> (!enable_encryption || encryptor_) ? Status::OK : <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a5ed5486f22438e20d0d41524a47f4dd3">CreateEncryptor</a>();</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;}</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;</div>
-<div class="line"><a name="l00148"></a><span class="lineno"><a class="line" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a0184deccbe7e99ea7a685cf0de2f9156">  148</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a0184deccbe7e99ea7a685cf0de2f9156">EncryptingFragmenter::FinalizeFragmentForEncryption</a>() {</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  <span class="comment">// The offset will be adjusted in Segmenter after knowing moof size.</span></div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  traf()-&gt;auxiliary_offset.offsets.push_back(0);</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  <span class="comment">// Optimize saiz box.</span></div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  <a class="code" href="../../d2/d51/structedash__packager_1_1media_1_1mp4_1_1SampleAuxiliaryInformationSize.html">SampleAuxiliaryInformationSize</a>&amp; saiz = traf()-&gt;auxiliary_size;</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  saiz.sample_count = traf()-&gt;runs[0].sample_sizes.size();</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  <span class="keywordflow">if</span> (!saiz.sample_info_sizes.empty()) {</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#ae51bbd5482783890e9843fd3ca61f2bb">OptimizeSampleEntries</a>(&amp;saiz.sample_info_sizes,</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;                               &amp;saiz.default_sample_info_size)) {</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      saiz.default_sample_info_size = 0;</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    }</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    <span class="comment">// |sample_info_sizes| table is filled in only for subsample encryption,</span></div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    <span class="comment">// otherwise |sample_info_size| is just the IV size.</span></div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    DCHECK(!IsSubsampleEncryptionRequired());</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    saiz.default_sample_info_size = encryptor_-&gt;iv().size();</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  }</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  traf()-&gt;sample_encryption.iv_size = encryptor_-&gt;iv().size();</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;}</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
-<div class="line"><a name="l00169"></a><span class="lineno"><a class="line" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a5ed5486f22438e20d0d41524a47f4dd3">  169</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a5ed5486f22438e20d0d41524a47f4dd3">EncryptingFragmenter::CreateEncryptor</a>() {</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  DCHECK(encryption_key_);</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  scoped_ptr&lt;AesCtrEncryptor&gt; encryptor(<span class="keyword">new</span> <a class="code" href="../../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html">AesCtrEncryptor</a>());</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> initialized = encryption_key_-&gt;iv.empty()</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;                               ? encryptor-&gt;InitializeWithRandomIv(</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;                                     encryption_key_-&gt;key, kDefaultIvSize)</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;                               : encryptor-&gt;InitializeWithIv(</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;                                     encryption_key_-&gt;key, encryption_key_-&gt;iv);</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  <span class="keywordflow">if</span> (!initialized)</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to create the encryptor.&quot;</span>);</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  encryptor_ = encryptor.Pass();</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;}</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="keywordtype">void</span> EncryptingFragmenter::EncryptBytes(uint8_t* data, uint32_t size) {</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  DCHECK(encryptor_);</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  CHECK(encryptor_-&gt;Encrypt(data, size, data));</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;}</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> EncryptingFragmenter::EncryptSample(scoped_refptr&lt;MediaSample&gt; sample) {</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  DCHECK(encryptor_);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;EncryptingFragmenter::~EncryptingFragmenter() {}</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
+<div class="line"><a name="l00089"></a><span class="lineno"><a class="line" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#ae8fd13a579fee2167167bcdbb9637dcc">   89</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#ae8fd13a579fee2167167bcdbb9637dcc">EncryptingFragmenter::AddSample</a>(scoped_refptr&lt;MediaSample&gt; sample) {</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  DCHECK(sample);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordflow">if</span> (!fragment_initialized()) {</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3159dcc8d0f02da113715a97d096afef">InitializeFragment</a>(sample-&gt;dts());</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;      <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  }</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keywordflow">if</span> (encryptor_) {</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = EncryptSample(sample);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;      <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  }</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#a81d8b1f324bdd2bc9cc2e5a469243926">Fragmenter::AddSample</a>(sample);</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;}</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
+<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3159dcc8d0f02da113715a97d096afef">  104</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3159dcc8d0f02da113715a97d096afef">EncryptingFragmenter::InitializeFragment</a>(int64_t first_sample_dts) {</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = <a class="code" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#ab55cbcb40b4c1308d70052a4b8ccd6af">Fragmenter::InitializeFragment</a>(first_sample_dts);</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordflow">if</span> (header_parser_ &amp;&amp; !header_parser_-&gt;Initialize(info_-&gt;extra_data()))</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::MUXER_FAILURE, <span class="stringliteral">&quot;Fail to read SPS and PPS data.&quot;</span>);</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  traf()-&gt;auxiliary_size.sample_info_sizes.clear();</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  traf()-&gt;auxiliary_offset.offsets.clear();</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="keywordflow">if</span> (IsSubsampleEncryptionRequired()) {</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    traf()-&gt;sample_encryption.flags |=</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;        SampleEncryption::kUseSubsampleEncryption;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  }</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  traf()-&gt;sample_encryption.sample_encryption_entries.clear();</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> enable_encryption = clear_time_ &lt;= 0;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="keywordflow">if</span> (!enable_encryption) {</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <span class="comment">// This fragment should be in clear text.</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="comment">// At most two sample description entries, an encrypted entry and a clear</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="comment">// entry, are generated. The 1-based clear entry index is always 2.</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    <span class="keyword">const</span> uint32_t kClearSampleDescriptionIndex = 2;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    traf()-&gt;header.flags |=</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;        TrackFragmentHeader::kSampleDescriptionIndexPresentMask;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    traf()-&gt;header.sample_description_index = kClearSampleDescriptionIndex;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  }</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3e66313de4ecb51f23fe438758e0153b">PrepareFragmentForEncryption</a>(enable_encryption);</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;}</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
+<div class="line"><a name="l00134"></a><span class="lineno"><a class="line" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a7917221a0f5093ad6770926ee0ae0ce2">  134</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a7917221a0f5093ad6770926ee0ae0ce2">EncryptingFragmenter::FinalizeFragment</a>() {</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  <span class="keywordflow">if</span> (encryptor_) {</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    DCHECK_LE(clear_time_, 0);</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a0184deccbe7e99ea7a685cf0de2f9156">FinalizeFragmentForEncryption</a>();</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    DCHECK_GT(clear_time_, 0);</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    clear_time_ -= fragment_duration();</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  }</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  <a class="code" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#a5f346308fec8fa24cf47cf7ffd21d741">Fragmenter::FinalizeFragment</a>();</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;}</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;</div>
+<div class="line"><a name="l00145"></a><span class="lineno"><a class="line" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3e66313de4ecb51f23fe438758e0153b">  145</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3e66313de4ecb51f23fe438758e0153b">EncryptingFragmenter::PrepareFragmentForEncryption</a>(</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    <span class="keywordtype">bool</span> enable_encryption) {</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  <span class="keywordflow">return</span> (!enable_encryption || encryptor_) ? Status::OK : <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a5ed5486f22438e20d0d41524a47f4dd3">CreateEncryptor</a>();</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;}</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
+<div class="line"><a name="l00150"></a><span class="lineno"><a class="line" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a0184deccbe7e99ea7a685cf0de2f9156">  150</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a0184deccbe7e99ea7a685cf0de2f9156">EncryptingFragmenter::FinalizeFragmentForEncryption</a>() {</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  <span class="comment">// The offset will be adjusted in Segmenter after knowing moof size.</span></div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  traf()-&gt;auxiliary_offset.offsets.push_back(0);</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  <span class="comment">// Optimize saiz box.</span></div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  <a class="code" href="../../d2/d51/structedash__packager_1_1media_1_1mp4_1_1SampleAuxiliaryInformationSize.html">SampleAuxiliaryInformationSize</a>&amp; saiz = traf()-&gt;auxiliary_size;</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  saiz.sample_count = traf()-&gt;runs[0].sample_sizes.size();</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  <span class="keywordflow">if</span> (!saiz.sample_info_sizes.empty()) {</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#ae51bbd5482783890e9843fd3ca61f2bb">OptimizeSampleEntries</a>(&amp;saiz.sample_info_sizes,</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;                               &amp;saiz.default_sample_info_size)) {</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;      saiz.default_sample_info_size = 0;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    }</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    <span class="comment">// |sample_info_sizes| table is filled in only for subsample encryption,</span></div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    <span class="comment">// otherwise |sample_info_size| is just the IV size.</span></div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    DCHECK(!IsSubsampleEncryptionRequired());</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    saiz.default_sample_info_size = encryptor_-&gt;iv().size();</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  }</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  traf()-&gt;sample_encryption.iv_size = encryptor_-&gt;iv().size();</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;}</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;</div>
+<div class="line"><a name="l00171"></a><span class="lineno"><a class="line" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a5ed5486f22438e20d0d41524a47f4dd3">  171</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a5ed5486f22438e20d0d41524a47f4dd3">EncryptingFragmenter::CreateEncryptor</a>() {</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  DCHECK(encryption_key_);</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  scoped_ptr&lt;AesEncryptor&gt; encryptor;</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <span class="keywordflow">if</span> (encryption_mode_ == kEncryptionModeAesCtr) {</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    encryptor.reset(<span class="keyword">new</span> <a class="code" href="../../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html">AesCtrEncryptor</a>);</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (encryption_mode_ == kEncryptionModeAesCbc) {</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    encryptor.reset(<span class="keyword">new</span> <a class="code" href="../../d6/dc4/classedash__packager_1_1media_1_1AesCbcPkcs5Encryptor.html">AesCbcPkcs5Encryptor</a>);</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::MUXER_FAILURE, <span class="stringliteral">&quot;Unsupported encryption mode.&quot;</span>);</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  }</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> initialized = encryption_key_-&gt;iv.empty()</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;                               ? encryptor-&gt;InitializeWithRandomIv(</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;                                     encryption_key_-&gt;key, kDefaultIvSize)</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;                               : encryptor-&gt;InitializeWithIv(</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;                                     encryption_key_-&gt;key, encryption_key_-&gt;iv);</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  <span class="keywordflow">if</span> (!initialized)</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to create the encryptor.&quot;</span>);</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  encryptor_ = encryptor.Pass();</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;}</div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  SampleEncryptionEntry sample_encryption_entry;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  sample_encryption_entry.initialization_vector = encryptor_-&gt;iv();</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  uint8_t* data = sample-&gt;writable_data();</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  <span class="keywordflow">if</span> (IsSubsampleEncryptionRequired()) {</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    <span class="keywordflow">if</span> (vpx_parser_) {</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;      std::vector&lt;VPxFrameInfo&gt; vpx_frames;</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;      <span class="keywordflow">if</span> (!vpx_parser_-&gt;Parse(sample-&gt;data(), sample-&gt;data_size(),</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;                              &amp;vpx_frames)) {</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to parse vpx frame.&quot;</span>);</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;      }</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      <span class="keyword">const</span> <span class="keywordtype">bool</span> is_superframe = vpx_frames.size() &gt; 1;</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;      <span class="keywordflow">for</span> (<span class="keyword">const</span> VPxFrameInfo&amp; frame : vpx_frames) {</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        SubsampleEntry subsample;</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        subsample.clear_bytes = frame.uncompressed_header_size;</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;        subsample.cipher_bytes =</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;            frame.frame_size - frame.uncompressed_header_size;</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;        <span class="comment">// &quot;VP Codec ISO Media File Format Binding&quot; document requires that the</span></div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;        <span class="comment">// encrypted bytes of each frame within the superframe must be block</span></div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;        <span class="comment">// aligned so that the counter state can be computed for each frame</span></div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;        <span class="comment">// within the superframe.</span></div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;        <span class="keywordflow">if</span> (is_superframe) {</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;          uint16_t misalign_bytes = subsample.cipher_bytes % kCencBlockSize;</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;          subsample.clear_bytes += misalign_bytes;</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;          subsample.cipher_bytes -= misalign_bytes;</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        }</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;        sample_encryption_entry.subsamples.push_back(subsample);</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;        <span class="keywordflow">if</span> (subsample.cipher_bytes &gt; 0)</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;          EncryptBytes(data + subsample.clear_bytes, subsample.cipher_bytes);</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;        data += frame.frame_size;</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;      }</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;      <span class="comment">// TODO(modmaker): Support H.265.</span></div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;      <span class="keyword">const</span> NaluReader::NaluType nalu_type = NaluReader::kH264;</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;      NaluReader reader(nalu_type, nalu_length_size_, data,</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;                        sample-&gt;data_size());</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;      <span class="comment">// Store the current length of clear data.  This is used to squash</span></div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;      <span class="comment">// multiple unencrypted NAL units into fewer subsample entries.</span></div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;      uint64_t accumulated_clear_bytes = 0;</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;      Nalu nalu;</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;      NaluReader::Result result;</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;      <span class="keywordflow">while</span> ((result = reader.Advance(&amp;nalu)) == NaluReader::kOk) {</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;        <span class="keywordflow">if</span> (nalu.is_video_slice()) {</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;          <span class="comment">// For video-slice NAL units, encrypt the video slice.  This skips</span></div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;          <span class="comment">// the frame header.  If this is an unrecognized codec (e.g. H.265),</span></div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;          <span class="comment">// the whole NAL unit will be encrypted.</span></div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;          <span class="keyword">const</span> int64_t video_slice_header_size =</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;              header_parser_ ? header_parser_-&gt;GetHeaderSize(nalu) : 0;</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;          <span class="keywordflow">if</span> (video_slice_header_size &lt; 0)</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;            <span class="keywordflow">return</span> Status(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to read slice header.&quot;</span>);</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;          <span class="keyword">const</span> uint64_t current_clear_bytes = nalu.header_size() +</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;                                               video_slice_header_size;</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;          <span class="keyword">const</span> uint64_t cipher_bytes =</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;              nalu.payload_size() - video_slice_header_size;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;          <span class="keyword">const</span> uint8_t* nalu_data = nalu.data() + current_clear_bytes;</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;          EncryptBytes(const_cast&lt;uint8_t*&gt;(nalu_data), cipher_bytes);</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;          AddSubsamples(</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;              accumulated_clear_bytes + nalu_length_size_ + current_clear_bytes,</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;              cipher_bytes, &amp;sample_encryption_entry.subsamples);</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;          accumulated_clear_bytes = 0;</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;          <span class="comment">// For non-video-slice NAL units, don&#39;t encrypt.</span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;          accumulated_clear_bytes +=</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;              nalu_length_size_ + nalu.header_size() + nalu.payload_size();</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        }</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;      }</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;      <span class="keywordflow">if</span> (result != NaluReader::kEOStream)</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;        <span class="keywordflow">return</span> Status(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to parse NAL units.&quot;</span>);</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;      AddSubsamples(accumulated_clear_bytes, 0,</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;                    &amp;sample_encryption_entry.subsamples);</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    }</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    <span class="comment">// The length of per-sample auxiliary datum, defined in CENC ch. 7.</span></div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    traf()-&gt;auxiliary_size.sample_info_sizes.push_back(</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;        sample_encryption_entry.ComputeSize());</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    EncryptBytes(data, sample-&gt;data_size());</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  }</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  traf()-&gt;sample_encryption.sample_encryption_entries.push_back(</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;      sample_encryption_entry);</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;  encryptor_-&gt;UpdateIv();</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;}</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;<span class="keywordtype">bool</span> EncryptingFragmenter::IsSubsampleEncryptionRequired() {</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;  <span class="keywordflow">return</span> vpx_parser_ || nalu_length_size_ != 0;</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;}</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;<span class="keywordtype">void</span> EncryptingFragmenter::EncryptBytes(uint8_t* data, uint32_t size) {</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  DCHECK(encryptor_);</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  CHECK(encryptor_-&gt;EncryptData(data, size, data));</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;}</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> EncryptingFragmenter::EncryptSample(scoped_refptr&lt;MediaSample&gt; sample) {</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  DCHECK(encryptor_);</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;  SampleEncryptionEntry sample_encryption_entry;</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;  sample_encryption_entry.initialization_vector = encryptor_-&gt;iv();</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  uint8_t* data = sample-&gt;writable_data();</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;  <span class="keywordflow">if</span> (IsSubsampleEncryptionRequired()) {</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    <span class="keywordflow">if</span> (vpx_parser_) {</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;      std::vector&lt;VPxFrameInfo&gt; vpx_frames;</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;      <span class="keywordflow">if</span> (!vpx_parser_-&gt;Parse(sample-&gt;data(), sample-&gt;data_size(),</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;                              &amp;vpx_frames)) {</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to parse vpx frame.&quot;</span>);</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;      }</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;      <span class="keyword">const</span> <span class="keywordtype">bool</span> is_superframe = vpx_frames.size() &gt; 1;</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;      <span class="keywordflow">for</span> (<span class="keyword">const</span> VPxFrameInfo&amp; frame : vpx_frames) {</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;        SubsampleEntry subsample;</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;        subsample.clear_bytes = frame.uncompressed_header_size;</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;        subsample.cipher_bytes =</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;            frame.frame_size - frame.uncompressed_header_size;</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        <span class="comment">// &quot;VP Codec ISO Media File Format Binding&quot; document requires that the</span></div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;        <span class="comment">// encrypted bytes of each frame within the superframe must be block</span></div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;        <span class="comment">// aligned so that the counter state can be computed for each frame</span></div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;        <span class="comment">// within the superframe.</span></div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;        <span class="keywordflow">if</span> (is_superframe) {</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;          uint16_t misalign_bytes = subsample.cipher_bytes % kCencBlockSize;</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;          subsample.clear_bytes += misalign_bytes;</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;          subsample.cipher_bytes -= misalign_bytes;</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        }</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;        sample_encryption_entry.subsamples.push_back(subsample);</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;        <span class="keywordflow">if</span> (subsample.cipher_bytes &gt; 0)</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;          EncryptBytes(data + subsample.clear_bytes, subsample.cipher_bytes);</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;        data += frame.frame_size;</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;      }</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;      <span class="comment">// TODO(modmaker): Support H.265.</span></div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;      <span class="keyword">const</span> NaluReader::NaluType nalu_type = NaluReader::kH264;</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;      NaluReader reader(nalu_type, nalu_length_size_, data,</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;                        sample-&gt;data_size());</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;      <span class="comment">// Store the current length of clear data.  This is used to squash</span></div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;      <span class="comment">// multiple unencrypted NAL units into fewer subsample entries.</span></div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;      uint64_t accumulated_clear_bytes = 0;</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;      Nalu nalu;</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;      NaluReader::Result result;</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;      <span class="keywordflow">while</span> ((result = reader.Advance(&amp;nalu)) == NaluReader::kOk) {</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        <span class="keywordflow">if</span> (nalu.is_video_slice()) {</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;          <span class="comment">// For video-slice NAL units, encrypt the video slice.  This skips</span></div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;          <span class="comment">// the frame header.  If this is an unrecognized codec (e.g. H.265),</span></div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;          <span class="comment">// the whole NAL unit will be encrypted.</span></div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;          <span class="keyword">const</span> int64_t video_slice_header_size =</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;              header_parser_ ? header_parser_-&gt;GetHeaderSize(nalu) : 0;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;          <span class="keywordflow">if</span> (video_slice_header_size &lt; 0)</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;            <span class="keywordflow">return</span> Status(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to read slice header.&quot;</span>);</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;          <span class="keyword">const</span> uint64_t current_clear_bytes = nalu.header_size() +</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;                                               video_slice_header_size;</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;          <span class="keyword">const</span> uint64_t cipher_bytes =</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;              nalu.payload_size() - video_slice_header_size;</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;          <span class="keyword">const</span> uint8_t* nalu_data = nalu.data() + current_clear_bytes;</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;          EncryptBytes(const_cast&lt;uint8_t*&gt;(nalu_data), cipher_bytes);</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;          AddSubsamples(</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;              accumulated_clear_bytes + nalu_length_size_ + current_clear_bytes,</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;              cipher_bytes, &amp;sample_encryption_entry.subsamples);</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;          accumulated_clear_bytes = 0;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;          <span class="comment">// For non-video-slice NAL units, don&#39;t encrypt.</span></div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;          accumulated_clear_bytes +=</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;              nalu_length_size_ + nalu.header_size() + nalu.payload_size();</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        }</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;      }</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;      <span class="keywordflow">if</span> (result != NaluReader::kEOStream)</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;        <span class="keywordflow">return</span> Status(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to parse NAL units.&quot;</span>);</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;      AddSubsamples(accumulated_clear_bytes, 0,</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;                    &amp;sample_encryption_entry.subsamples);</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    }</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;    <span class="comment">// The length of per-sample auxiliary datum, defined in CENC ch. 7.</span></div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    traf()-&gt;auxiliary_size.sample_info_sizes.push_back(</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;        sample_encryption_entry.ComputeSize());</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    EncryptBytes(data, sample-&gt;data_size());</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  }</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  traf()-&gt;sample_encryption.sample_encryption_entries.push_back(</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;      sample_encryption_entry);</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  encryptor_-&gt;UpdateIv();</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;}</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;<span class="keywordtype">bool</span> EncryptingFragmenter::IsSubsampleEncryptionRequired() {</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  <span class="keywordflow">return</span> vpx_parser_ || nalu_length_size_ != 0;</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;}</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1SampleAuxiliaryInformationSize_html"><div class="ttname"><a href="../../d2/d51/structedash__packager_1_1media_1_1mp4_1_1SampleAuxiliaryInformationSize.html">edash_packager::media::mp4::SampleAuxiliaryInformationSize</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00069">box_definitions.h:69</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Fragmenter_html"><div class="ttname"><a href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html">edash_packager::media::mp4::Fragmenter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd1/fragmenter_8h_source.html#l00030">fragmenter.h:30</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a5ed5486f22438e20d0d41524a47f4dd3"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a5ed5486f22438e20d0d41524a47f4dd3">edash_packager::media::mp4::EncryptingFragmenter::CreateEncryptor</a></div><div class="ttdeci">Status CreateEncryptor()</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00169">encrypting_fragmenter.cc:169</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a5ed5486f22438e20d0d41524a47f4dd3"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a5ed5486f22438e20d0d41524a47f4dd3">edash_packager::media::mp4::EncryptingFragmenter::CreateEncryptor</a></div><div class="ttdeci">Status CreateEncryptor()</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00171">encrypting_fragmenter.cc:171</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a6ab7ed1ca842bc5618f03971911c2457"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a6ab7ed1ca842bc5618f03971911c2457">edash_packager::media::mp4::EncryptingFragmenter::EncryptingFragmenter</a></div><div class="ttdeci">EncryptingFragmenter(scoped_refptr&lt; StreamInfo &gt; info, TrackFragment *traf, scoped_ptr&lt; EncryptionKey &gt; encryption_key, int64_t clear_time, EncryptionMode encryption_mode)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00063">encrypting_fragmenter.cc:63</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Status_html"><div class="ttname"><a href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">edash_packager::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a3159dcc8d0f02da113715a97d096afef"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3159dcc8d0f02da113715a97d096afef">edash_packager::media::mp4::EncryptingFragmenter::InitializeFragment</a></div><div class="ttdeci">Status InitializeFragment(int64_t first_sample_dts) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00102">encrypting_fragmenter.cc:102</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a3159dcc8d0f02da113715a97d096afef"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3159dcc8d0f02da113715a97d096afef">edash_packager::media::mp4::EncryptingFragmenter::InitializeFragment</a></div><div class="ttdeci">Status InitializeFragment(int64_t first_sample_dts) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00104">encrypting_fragmenter.cc:104</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Fragmenter_html_ab55cbcb40b4c1308d70052a4b8ccd6af"><div class="ttname"><a href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#ab55cbcb40b4c1308d70052a4b8ccd6af">edash_packager::media::mp4::Fragmenter::InitializeFragment</a></div><div class="ttdeci">virtual Status InitializeFragment(int64_t first_sample_dts)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d9a/fragmenter_8cc_source.html#l00076">fragmenter.cc:76</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Fragmenter_html_a81d8b1f324bdd2bc9cc2e5a469243926"><div class="ttname"><a href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#a81d8b1f324bdd2bc9cc2e5a469243926">edash_packager::media::mp4::Fragmenter::AddSample</a></div><div class="ttdeci">virtual Status AddSample(scoped_refptr&lt; MediaSample &gt; sample)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d9a/fragmenter_8cc_source.html#l00036">fragmenter.cc:36</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1VP9Parser_html"><div class="ttname"><a href="../../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html">edash_packager::media::VP9Parser</a></div><div class="ttdoc">Class to parse a vp9 bit stream. </div><div class="ttdef"><b>Definition:</b> <a href="../../df/d8a/vp9__parser_8h_source.html#l00020">vp9_parser.h:20</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a35e714ce7885037ea4299f0836e0d058"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a35e714ce7885037ea4299f0836e0d058">edash_packager::media::mp4::EncryptingFragmenter::EncryptingFragmenter</a></div><div class="ttdeci">EncryptingFragmenter(scoped_refptr&lt; StreamInfo &gt; info, TrackFragment *traf, scoped_ptr&lt; EncryptionKey &gt; encryption_key, int64_t clear_time)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00063">encrypting_fragmenter.cc:63</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Fragmenter_html_ae51bbd5482783890e9843fd3ca61f2bb"><div class="ttname"><a href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#ae51bbd5482783890e9843fd3ca61f2bb">edash_packager::media::mp4::Fragmenter::OptimizeSampleEntries</a></div><div class="ttdeci">bool OptimizeSampleEntries(std::vector&lt; T &gt; *entries, T *default_value)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd1/fragmenter_8h_source.html#l00089">fragmenter.h:89</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_ae8fd13a579fee2167167bcdbb9637dcc"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#ae8fd13a579fee2167167bcdbb9637dcc">edash_packager::media::mp4::EncryptingFragmenter::AddSample</a></div><div class="ttdeci">Status AddSample(scoped_refptr&lt; MediaSample &gt; sample) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00087">encrypting_fragmenter.cc:87</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCtrEncryptor_html"><div class="ttname"><a href="../../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html">edash_packager::media::AesCtrEncryptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df0/aes__encryptor_8h_source.html#l00025">aes_encryptor.h:25</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a7917221a0f5093ad6770926ee0ae0ce2"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a7917221a0f5093ad6770926ee0ae0ce2">edash_packager::media::mp4::EncryptingFragmenter::FinalizeFragment</a></div><div class="ttdeci">void FinalizeFragment() override</div><div class="ttdoc">Finalize and optimize the fragment. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00132">encrypting_fragmenter.cc:132</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_ae8fd13a579fee2167167bcdbb9637dcc"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#ae8fd13a579fee2167167bcdbb9637dcc">edash_packager::media::mp4::EncryptingFragmenter::AddSample</a></div><div class="ttdeci">Status AddSample(scoped_refptr&lt; MediaSample &gt; sample) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00089">encrypting_fragmenter.cc:89</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCtrEncryptor_html"><div class="ttname"><a href="../../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html">edash_packager::media::AesCtrEncryptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df0/aes__encryptor_8h_source.html#l00078">aes_encryptor.h:78</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a7917221a0f5093ad6770926ee0ae0ce2"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a7917221a0f5093ad6770926ee0ae0ce2">edash_packager::media::mp4::EncryptingFragmenter::FinalizeFragment</a></div><div class="ttdeci">void FinalizeFragment() override</div><div class="ttdoc">Finalize and optimize the fragment. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00134">encrypting_fragmenter.cc:134</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1TrackFragment_html"><div class="ttname"><a href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">edash_packager::media::mp4::TrackFragment</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00675">box_definitions.h:675</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1VP8Parser_html"><div class="ttname"><a href="../../d5/dce/classedash__packager_1_1media_1_1VP8Parser.html">edash_packager::media::VP8Parser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d65/vp8__parser_8h_source.html#l00021">vp8_parser.h:21</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a3e66313de4ecb51f23fe438758e0153b"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3e66313de4ecb51f23fe438758e0153b">edash_packager::media::mp4::EncryptingFragmenter::PrepareFragmentForEncryption</a></div><div class="ttdeci">virtual Status PrepareFragmentForEncryption(bool enable_encryption)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00143">encrypting_fragmenter.cc:143</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a3e66313de4ecb51f23fe438758e0153b"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3e66313de4ecb51f23fe438758e0153b">edash_packager::media::mp4::EncryptingFragmenter::PrepareFragmentForEncryption</a></div><div class="ttdeci">virtual Status PrepareFragmentForEncryption(bool enable_encryption)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00145">encrypting_fragmenter.cc:145</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser_html"><div class="ttname"><a href="../../d6/dc2/classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser.html">edash_packager::media::mp4::H264VideoSliceHeaderParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d33/video__slice__header__parser_8h_source.html#l00036">video_slice_header_parser.h:36</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a0184deccbe7e99ea7a685cf0de2f9156"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a0184deccbe7e99ea7a685cf0de2f9156">edash_packager::media::mp4::EncryptingFragmenter::FinalizeFragmentForEncryption</a></div><div class="ttdeci">virtual void FinalizeFragmentForEncryption()</div><div class="ttdoc">Finalize current fragment for encryption. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00148">encrypting_fragmenter.cc:148</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a0184deccbe7e99ea7a685cf0de2f9156"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a0184deccbe7e99ea7a685cf0de2f9156">edash_packager::media::mp4::EncryptingFragmenter::FinalizeFragmentForEncryption</a></div><div class="ttdeci">virtual void FinalizeFragmentForEncryption()</div><div class="ttdoc">Finalize current fragment for encryption. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00150">encrypting_fragmenter.cc:150</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Fragmenter_html_a5f346308fec8fa24cf47cf7ffd21d741"><div class="ttname"><a href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#a5f346308fec8fa24cf47cf7ffd21d741">edash_packager::media::mp4::Fragmenter::FinalizeFragment</a></div><div class="ttdeci">virtual void FinalizeFragment()</div><div class="ttdoc">Finalize and optimize the fragment. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d9a/fragmenter_8cc_source.html#l00093">fragmenter.cc:93</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCbcPkcs5Encryptor_html"><div class="ttname"><a href="../../d6/dc4/classedash__packager_1_1media_1_1AesCbcPkcs5Encryptor.html">edash_packager::media::AesCbcPkcs5Encryptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df0/aes__encryptor_8h_source.html#l00123">aes_encryptor.h:123</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 15 2016 17:38:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 18 2016 05:18:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

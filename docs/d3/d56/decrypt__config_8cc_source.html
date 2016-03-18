@@ -98,22 +98,26 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a271d0e6319a0542e00a2dd7005293bd2">   12</a></span>&#160;<a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a271d0e6319a0542e00a2dd7005293bd2">DecryptConfig::DecryptConfig</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#ae83fdc91d0d93211c8e0882d6d9da961">   12</a></span>&#160;<a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#ae83fdc91d0d93211c8e0882d6d9da961">DecryptConfig::DecryptConfig</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;                             <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv,</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;                             <span class="keyword">const</span> std::vector&lt;SubsampleEntry&gt;&amp; subsamples)</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    : key_id_(key_id), iv_(iv), subsamples_(subsamples) {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  CHECK_GT(key_id.size(), 0u);</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;}</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;DecryptConfig::~DecryptConfig() {}</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1DecryptConfig_html_a271d0e6319a0542e00a2dd7005293bd2"><div class="ttname"><a href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a271d0e6319a0542e00a2dd7005293bd2">edash_packager::media::DecryptConfig::DecryptConfig</a></div><div class="ttdeci">DecryptConfig(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; SubsampleEntry &gt; &amp;subsamples)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d56/decrypt__config_8cc_source.html#l00012">decrypt_config.cc:12</a></div></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;                             <span class="keyword">const</span> std::vector&lt;SubsampleEntry&gt;&amp; subsamples,</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;                             EncryptionMode decryption_mode)</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    : key_id_(key_id),</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;      iv_(iv),</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;      subsamples_(subsamples),</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;      decryption_mode_(decryption_mode) {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  CHECK_GT(key_id.size(), 0u);</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;}</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;DecryptConfig::~DecryptConfig() {}</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1DecryptConfig_html_ae83fdc91d0d93211c8e0882d6d9da961"><div class="ttname"><a href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#ae83fdc91d0d93211c8e0882d6d9da961">edash_packager::media::DecryptConfig::DecryptConfig</a></div><div class="ttdeci">DecryptConfig(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; SubsampleEntry &gt; &amp;subsamples, EncryptionMode decryption_mode)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d56/decrypt__config_8cc_source.html#l00012">decrypt_config.cc:12</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 15 2016 17:38:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 18 2016 05:18:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

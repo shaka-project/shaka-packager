@@ -100,58 +100,63 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/scoped_ptr.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>media {</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="../../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html">   27</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a> {</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <a class="code" href="../../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a>()</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    : clear_bytes(0), cipher_bytes(0) {}</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <a class="code" href="../../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a>(uint16_t clear_bytes, uint32_t cipher_bytes)</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    : clear_bytes(clear_bytes), cipher_bytes(cipher_bytes) {}</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  uint16_t clear_bytes;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  uint32_t cipher_bytes;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;};</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno"><a class="line" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html">   39</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html">DecryptConfig</a> {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a65b9e6b7a1a2308f38e6b435bf8ce5bb">   42</a></span>&#160;  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a65b9e6b7a1a2308f38e6b435bf8ce5bb">kDecryptionKeySize</a> = 16;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a271d0e6319a0542e00a2dd7005293bd2">DecryptConfig</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv,</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                <span class="keyword">const</span> std::vector&lt;SubsampleEntry&gt;&amp; subsamples);</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  ~<a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html">DecryptConfig</a>();</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> key_id_; }</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> iv_; }</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keyword">const</span> std::vector&lt;SubsampleEntry&gt;&amp; subsamples()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> subsamples_; }</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/encryption_modes.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>media {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="../../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html">   28</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a> {</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <a class="code" href="../../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a>()</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    : clear_bytes(0), cipher_bytes(0) {}</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <a class="code" href="../../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html">SubsampleEntry</a>(uint16_t clear_bytes, uint32_t cipher_bytes)</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    : clear_bytes(clear_bytes), cipher_bytes(cipher_bytes) {}</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  uint16_t clear_bytes;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  uint32_t cipher_bytes;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;};</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html">   40</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html">DecryptConfig</a> {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00043"></a><span class="lineno"><a class="line" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a65b9e6b7a1a2308f38e6b435bf8ce5bb">   43</a></span>&#160;  <span class="keyword">static</span> <span class="keyword">const</span> <span class="keywordtype">size_t</span> <a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a65b9e6b7a1a2308f38e6b435bf8ce5bb">kDecryptionKeySize</a> = 16;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#ae83fdc91d0d93211c8e0882d6d9da961">DecryptConfig</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv,</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                <span class="keyword">const</span> std::vector&lt;SubsampleEntry&gt;&amp; subsamples,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                EncryptionMode decryption_mode);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  ~<a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html">DecryptConfig</a>();</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt; key_id_;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="comment">// Initialization vector.</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt; iv_;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="comment">// Subsample information. May be empty for some formats, meaning entire frame</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="comment">// (less data ignored by data_offset_) is encrypted.</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keyword">const</span> std::vector&lt;SubsampleEntry&gt; subsamples_;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a271d0e6319a0542e00a2dd7005293bd2">DecryptConfig</a>);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;};</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_DECRYPT_CONFIG_H_</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1DecryptConfig_html"><div class="ttname"><a href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html">edash_packager::media::DecryptConfig</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00039">decrypt_config.h:39</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1DecryptConfig_html_a65b9e6b7a1a2308f38e6b435bf8ce5bb"><div class="ttname"><a href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a65b9e6b7a1a2308f38e6b435bf8ce5bb">edash_packager::media::DecryptConfig::kDecryptionKeySize</a></div><div class="ttdeci">static const size_t kDecryptionKeySize</div><div class="ttdoc">Keys are always 128 bits. </div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00042">decrypt_config.h:42</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1SubsampleEntry_html"><div class="ttname"><a href="../../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html">edash_packager::media::SubsampleEntry</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00027">decrypt_config.h:27</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1DecryptConfig_html_a271d0e6319a0542e00a2dd7005293bd2"><div class="ttname"><a href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a271d0e6319a0542e00a2dd7005293bd2">edash_packager::media::DecryptConfig::DecryptConfig</a></div><div class="ttdeci">DecryptConfig(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; SubsampleEntry &gt; &amp;subsamples)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d56/decrypt__config_8cc_source.html#l00012">decrypt_config.cc:12</a></div></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> key_id_; }</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> iv_; }</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keyword">const</span> std::vector&lt;SubsampleEntry&gt;&amp; subsamples()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> subsamples_; }</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  EncryptionMode decryption_mode()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> decryption_mode_; }</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt; key_id_;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="comment">// Initialization vector.</span></div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt; iv_;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="comment">// Subsample information. May be empty for some formats, meaning entire frame</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="comment">// (less data ignored by data_offset_) is encrypted.</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keyword">const</span> std::vector&lt;SubsampleEntry&gt; subsamples_;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  EncryptionMode decryption_mode_;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#ae83fdc91d0d93211c8e0882d6d9da961">DecryptConfig</a>);</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;};</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_DECRYPT_CONFIG_H_</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1DecryptConfig_html"><div class="ttname"><a href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html">edash_packager::media::DecryptConfig</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00040">decrypt_config.h:40</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1DecryptConfig_html_ae83fdc91d0d93211c8e0882d6d9da961"><div class="ttname"><a href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#ae83fdc91d0d93211c8e0882d6d9da961">edash_packager::media::DecryptConfig::DecryptConfig</a></div><div class="ttdeci">DecryptConfig(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; SubsampleEntry &gt; &amp;subsamples, EncryptionMode decryption_mode)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d56/decrypt__config_8cc_source.html#l00012">decrypt_config.cc:12</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1DecryptConfig_html_a65b9e6b7a1a2308f38e6b435bf8ce5bb"><div class="ttname"><a href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a65b9e6b7a1a2308f38e6b435bf8ce5bb">edash_packager::media::DecryptConfig::kDecryptionKeySize</a></div><div class="ttdeci">static const size_t kDecryptionKeySize</div><div class="ttdoc">Keys are always 128 bits. </div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00043">decrypt_config.h:43</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1SubsampleEntry_html"><div class="ttname"><a href="../../d4/de4/structedash__packager_1_1media_1_1SubsampleEntry.html">edash_packager::media::SubsampleEntry</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00028">decrypt_config.h:28</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Mar 15 2016 17:38:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Mar 18 2016 05:18:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
