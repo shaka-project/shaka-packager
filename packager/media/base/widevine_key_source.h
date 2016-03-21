@@ -26,7 +26,7 @@ template <class T> class ProducerConsumerQueue;
 class WidevineKeySource : public KeySource {
  public:
   /// @param server_url is the Widevine common encryption server url.
-  explicit WidevineKeySource(const std::string& server_url);
+  WidevineKeySource(const std::string& server_url, bool add_common_pssh);
 
   ~WidevineKeySource() override;
 
@@ -113,6 +113,7 @@ class WidevineKeySource : public KeySource {
 
   const uint32_t crypto_period_count_;
   base::Lock lock_;
+  bool add_common_pssh_;
   bool key_production_started_;
   base::WaitableEvent start_key_production_;
   uint32_t first_crypto_period_index_;

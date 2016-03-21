@@ -80,7 +80,7 @@ scoped_ptr<KeySource> CreateEncryptionKeySource() {
   scoped_ptr<KeySource> encryption_key_source;
   if (FLAGS_enable_widevine_encryption) {
     scoped_ptr<WidevineKeySource> widevine_key_source(
-        new WidevineKeySource(FLAGS_key_server_url));
+        new WidevineKeySource(FLAGS_key_server_url, FLAGS_include_common_pssh));
     if (!FLAGS_signer.empty()) {
       scoped_ptr<RequestSigner> request_signer(CreateSigner());
       if (!request_signer)
@@ -111,7 +111,7 @@ scoped_ptr<KeySource> CreateDecryptionKeySource() {
   scoped_ptr<KeySource> decryption_key_source;
   if (FLAGS_enable_widevine_decryption) {
     scoped_ptr<WidevineKeySource> widevine_key_source(
-        new WidevineKeySource(FLAGS_key_server_url));
+        new WidevineKeySource(FLAGS_key_server_url, FLAGS_include_common_pssh));
     if (!FLAGS_signer.empty()) {
       scoped_ptr<RequestSigner> request_signer(CreateSigner());
       if (!request_signer)

@@ -23,6 +23,11 @@ DEFINE_bool(enable_widevine_decryption,
             "Enable decryption with Widevine license server/proxy. User should "
             "provide either AES signing key (--aes_signing_key, "
             "--aes_signing_iv) or RSA signing key (--rsa_signing_key_path).");
+DEFINE_bool(include_common_pssh,
+            false,
+            "When using Widevine encryption, include an additional v1 PSSH box "
+            "for the common system ID that includes the key IDs. See: "
+            "http://goo.gl/PHZDAF");
 DEFINE_string(key_server_url, "", "Key server url. Required for encryption and "
               "decryption");
 DEFINE_string(content_id, "", "Content Id (hex).");
@@ -102,6 +107,11 @@ bool ValidateWidevineCryptoFlags() {
                     FLAGS_enable_widevine_encryption,
                     true,
                     widevine_encryption_label)) {
+    success = false;
+  }
+  if (FLAGS_include_common_pssh && !FLAGS_enable_widevine_encryption) {
+    PrintError("--include_common_pssh is only valid with "
+               "--enable_widevine_encryption");
     success = false;
   }
 

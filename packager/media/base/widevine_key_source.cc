@@ -6,12 +6,15 @@
 
 #include "packager/media/base/widevine_key_source.h"
 
+#include <set>
+
 #include "packager/base/base64.h"
 #include "packager/base/bind.h"
 #include "packager/base/json/json_reader.h"
 #include "packager/base/json/json_writer.h"
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/stl_util.h"
+#include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/http_key_fetcher.h"
 #include "packager/media/base/producer_consumer_queue.h"
 #include "packager/media/base/protection_system_specific_info.h"
@@ -142,13 +145,15 @@ class WidevineKeySource::RefCountedEncryptionKeyMap
   DISALLOW_COPY_AND_ASSIGN(RefCountedEncryptionKeyMap);
 };
 
-WidevineKeySource::WidevineKeySource(const std::string& server_url)
+WidevineKeySource::WidevineKeySource(const std::string& server_url,
+                                     bool add_common_pssh)
     : key_production_thread_("KeyProductionThread",
                              base::Bind(&WidevineKeySource::FetchKeysTask,
                                         base::Unretained(this))),
       key_fetcher_(new HttpKeyFetcher(kKeyFetchTimeoutInSeconds)),
       server_url_(server_url),
       crypto_period_count_(kDefaultCryptoPeriodCount),
+      add_common_pssh_(add_common_pssh),
       key_production_started_(false),
       start_key_production_(false, false),
       first_crypto_period_index_(0) {
@@ -572,8 +577,27 @@ bool WidevineKeySource::ExtractEncryptionKey(
     encryption_key_map[track_type] = encryption_key.release();
   }
 
-  // NOTE: To support version 1 pssh, update ProtectionSystemSpecificInfo to
-  // include all key IDs in |encryption_key_map|.
+  // If the flag exists, create a common system ID PSSH box that contains the
+  // key IDs of all the keys.
+  if (add_common_pssh_ && !widevine_classic) {
+    std::set<std::vector<uint8_t>> key_ids;
+    for (const EncryptionKeyMap::value_type& pair : encryption_key_map) {
+      key_ids.insert(pair.second->key_id);
+    }
+
+    // Create a common system PSSH box.
+    ProtectionSystemSpecificInfo info;
+    info.set_system_id(kCommonSystemId, arraysize(kCommonSystemId));
+    info.set_pssh_box_version(1);
+    for (const std::vector<uint8_t>& key_id : key_ids) {
+      info.add_key_id(key_id);
+    }
+
+    for (const EncryptionKeyMap::value_type& pair : encryption_key_map) {
+      pair.second->key_system_info.push_back(info);
+    }
+  }
+
   DCHECK(!encryption_key_map.empty());
   if (!enable_key_rotation) {
     encryption_key_map_ = encryption_key_map;
