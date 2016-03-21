@@ -92,7 +92,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="../../dc/d2f/classedash__packager_1_1media_1_1KeySource-members.html">List of all members</a>  </div>
   <div class="headertitle">
-<div class="title">edash_packager::media::KeySource Class Reference</div>  </div>
+<div class="title">edash_packager::media::KeySource Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
 </div><!--header-->
 <div class="contents">
 
@@ -106,7 +106,8 @@ Inheritance diagram for edash_packager::media::KeySource:</div>
  <div class="center">
   <img src="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.png" usemap="#edash_packager::media::KeySource_map" alt=""/>
   <map id="edash_packager::media::KeySource_map" name="edash_packager::media::KeySource_map">
-<area href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html" alt="edash_packager::media::WidevineKeySource" shape="rect" coords="0,56,266,80"/>
+<area href="../../d0/d86/classedash__packager_1_1media_1_1FixedKeySource.html" title="A key source that uses fixed keys for encryption. " alt="edash_packager::media::FixedKeySource" shape="rect" coords="0,56,266,80"/>
+<area href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html" alt="edash_packager::media::WidevineKeySource" shape="rect" coords="276,56,542,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -126,25 +127,21 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4020839c22a550bf71d891bf55087e0b"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a4020839c22a550bf71d891bf55087e0b">FetchKeys</a> (const std::vector&lt; uint8_t &gt; &amp;content_id, const std::string &amp;policy)</td></tr>
-<tr class="separator:a4020839c22a550bf71d891bf55087e0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8c834c4d9b4babc7761d569420786d82"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a8c834c4d9b4babc7761d569420786d82">FetchKeys</a> (const std::vector&lt; uint8_t &gt; &amp;pssh_box)</td></tr>
-<tr class="separator:a8c834c4d9b4babc7761d569420786d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a88116562e805499cd054918bee68672c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a88116562e805499cd054918bee68672c">FetchKeys</a> (const std::vector&lt; std::vector&lt; uint8_t &gt;&gt; &amp;key_ids)</td></tr>
-<tr class="separator:a88116562e805499cd054918bee68672c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a68de1e9682273c2dc9b8db04718d426c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a68de1e9682273c2dc9b8db04718d426c">FetchKeys</a> (uint32_t asset_id)</td></tr>
-<tr class="separator:a68de1e9682273c2dc9b8db04718d426c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a49ccfe7a61c36ac9818482a7892915d3"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a49ccfe7a61c36ac9818482a7892915d3">GetKey</a> (TrackType track_type, <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)</td></tr>
-<tr class="separator:a49ccfe7a61c36ac9818482a7892915d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2d44267b238a221bb8a7d2bc1bf68ea2"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a2d44267b238a221bb8a7d2bc1bf68ea2">GetKey</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)</td></tr>
-<tr class="separator:a2d44267b238a221bb8a7d2bc1bf68ea2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a349381b866a37df15a931980636621ac"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a349381b866a37df15a931980636621ac">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, TrackType track_type, <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)</td></tr>
-<tr class="separator:a349381b866a37df15a931980636621ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43f27685ba464c98327cd3836ffd973c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a43f27685ba464c98327cd3836ffd973c">FetchKeys</a> (const std::vector&lt; uint8_t &gt; &amp;pssh_box)=0</td></tr>
+<tr class="separator:a43f27685ba464c98327cd3836ffd973c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50a4a73b2111bd0e37d161304fb381d6"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a50a4a73b2111bd0e37d161304fb381d6">FetchKeys</a> (const std::vector&lt; std::vector&lt; uint8_t &gt;&gt; &amp;key_ids)=0</td></tr>
+<tr class="separator:a50a4a73b2111bd0e37d161304fb381d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a735f734f7eb4817baf6dabf1ad9f1e6b"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a735f734f7eb4817baf6dabf1ad9f1e6b">FetchKeys</a> (uint32_t asset_id)=0</td></tr>
+<tr class="separator:a735f734f7eb4817baf6dabf1ad9f1e6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1000d8809b293738dca06c1a5f916bf"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ae1000d8809b293738dca06c1a5f916bf">GetKey</a> (TrackType track_type, <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
+<tr class="separator:ae1000d8809b293738dca06c1a5f916bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87a935dacc8f88fdb3b5135e0b45d7ae"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#a87a935dacc8f88fdb3b5135e0b45d7ae">GetKey</a> (const std::vector&lt; uint8_t &gt; &amp;key_id, <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
+<tr class="separator:a87a935dacc8f88fdb3b5135e0b45d7ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad553c27e8575682eb408bef53d5f4e1c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ad553c27e8575682eb408bef53d5f4e1c">GetCryptoPeriodKey</a> (uint32_t crypto_period_index, TrackType track_type, <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> *key)=0</td></tr>
+<tr class="separator:ad553c27e8575682eb408bef53d5f4e1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:ab05172d89513c0d3627502c9cff4535f"><td class="memItemLeft" align="right" valign="top">static scoped_ptr&lt; <a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab05172d89513c0d3627502c9cff4535f">CreateFromHexStrings</a> (const std::string &amp;key_id_hex, const std::string &amp;key_hex, const std::string &amp;pssh_data_hex, const std::string &amp;iv_hex)</td></tr>
-<tr class="separator:ab05172d89513c0d3627502c9cff4535f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab15ba8121f76e0945d4f10d722da5cc8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab15ba8121f76e0945d4f10d722da5cc8"></a>
 static TrackType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ab15ba8121f76e0945d4f10d722da5cc8">GetTrackTypeFromString</a> (const std::string &amp;track_type_string)</td></tr>
 <tr class="memdesc:ab15ba8121f76e0945d4f10d722da5cc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Convert string representation of track type to enum representation. <br/></td></tr>
@@ -157,9 +154,9 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html" title="KeySource is responsible for encryption key acquisition. ">KeySource</a> is responsible for encryption key acquisition. </p>
 
-<p>Definition at line <a class="el" href="../../dc/d3f/key__source_8h_source.html#l00035">35</a> of file <a class="el" href="../../dc/d3f/key__source_8h_source.html">key_source.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dc/d3f/key__source_8h_source.html#l00031">31</a> of file <a class="el" href="../../dc/d3f/key__source_8h_source.html">key_source.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="ab05172d89513c0d3627502c9cff4535f"></a>
+<a class="anchor" id="a43f27685ba464c98327cd3836ffd973c"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -167,112 +164,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">scoped_ptr&lt; <a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a> &gt; edash_packager::media::KeySource::CreateFromHexStrings </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>key_id_hex</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>key_hex</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>pssh_data_hex</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>iv_hex</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Create <a class="el" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html" title="KeySource is responsible for encryption key acquisition. ">KeySource</a> object from hex strings. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">key_id_hex</td><td>is the key id in hex string. </td></tr>
-    <tr><td class="paramname">key_hex</td><td>is the key in hex string. </td></tr>
-    <tr><td class="paramname">pssh_data_hex</td><td>is the pssh_data in hex string. </td></tr>
-    <tr><td class="paramname">iv_hex</td><td>is the IV in hex string. If not specified, a randomly generated IV with the default length will be used. Note: GetKey on the created key source will always return the same key for all track types. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00100">100</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a4020839c22a550bf71d891bf55087e0b"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::KeySource::FetchKeys </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
-          <td class="paramname"><em>content_id</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>policy</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Fetch keys for CENC from the key server. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">content_id</td><td>the unique id identify the content. </td></tr>
-    <tr><td class="paramname">policy</td><td>specifies the DRM content rights. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
-
-<p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a59b0688cd8c8ad9a3100f3bce8cb340c">edash_packager::media::WidevineKeySource</a>.</p>
-
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00021">21</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a8c834c4d9b4babc7761d569420786d82"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::KeySource::FetchKeys </td>
+          <td class="memname">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::KeySource::FetchKeys </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
           <td class="paramname"><em>pssh_box</em></td><td>)</td>
@@ -281,7 +173,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -294,13 +186,11 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a22e0c28e069abe7836eb6dc17c6f948b">edash_packager::media::WidevineKeySource</a>.</p>
-
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00027">27</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Implemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a22e0c28e069abe7836eb6dc17c6f948b">edash_packager::media::WidevineKeySource</a>, and <a class="el" href="../../d0/d86/classedash__packager_1_1media_1_1FixedKeySource.html#af8d99a5165eabd51b9c7b908bad6c8e6">edash_packager::media::FixedKeySource</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a88116562e805499cd054918bee68672c"></a>
+<a class="anchor" id="a50a4a73b2111bd0e37d161304fb381d6"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -308,7 +198,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::KeySource::FetchKeys </td>
+          <td class="memname">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::KeySource::FetchKeys </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; std::vector&lt; uint8_t &gt;&gt; &amp;&#160;</td>
           <td class="paramname"><em>key_ids</em></td><td>)</td>
@@ -317,7 +207,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -330,13 +220,11 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a4ac5c6324bb9fabd3461a4fb87bb312d">edash_packager::media::WidevineKeySource</a>.</p>
-
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00032">32</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Implemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a4ac5c6324bb9fabd3461a4fb87bb312d">edash_packager::media::WidevineKeySource</a>, and <a class="el" href="../../d0/d86/classedash__packager_1_1media_1_1FixedKeySource.html#af2dfa2579683634b3934dac2df5aa2bd">edash_packager::media::FixedKeySource</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a68de1e9682273c2dc9b8db04718d426c"></a>
+<a class="anchor" id="a735f734f7eb4817baf6dabf1ad9f1e6b"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -344,7 +232,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::KeySource::FetchKeys </td>
+          <td class="memname">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::KeySource::FetchKeys </td>
           <td>(</td>
           <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>asset_id</em></td><td>)</td>
@@ -353,7 +241,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -366,13 +254,11 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#abc2c55f49f2c93a76dee393938869f24">edash_packager::media::WidevineKeySource</a>.</p>
-
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00037">37</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Implemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#abc2c55f49f2c93a76dee393938869f24">edash_packager::media::WidevineKeySource</a>, and <a class="el" href="../../d0/d86/classedash__packager_1_1media_1_1FixedKeySource.html#a545a4cfd54555f6f41c3be9a10b63c65">edash_packager::media::FixedKeySource</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a349381b866a37df15a931980636621ac"></a>
+<a class="anchor" id="ad553c27e8575682eb408bef53d5f4e1c"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -380,7 +266,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::KeySource::GetCryptoPeriodKey </td>
+          <td class="memname">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::KeySource::GetCryptoPeriodKey </td>
           <td>(</td>
           <td class="paramtype">uint32_t&#160;</td>
           <td class="paramname"><em>crypto_period_index</em>, </td>
@@ -405,7 +291,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -420,13 +306,11 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a35023c0b18a2db012027d4cf22c7bf1b">edash_packager::media::WidevineKeySource</a>.</p>
-
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00062">62</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Implemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a35023c0b18a2db012027d4cf22c7bf1b">edash_packager::media::WidevineKeySource</a>, and <a class="el" href="../../d0/d86/classedash__packager_1_1media_1_1FixedKeySource.html#a109d8adf6eaf0e85d46358ffa9b5e2d8">edash_packager::media::FixedKeySource</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a49ccfe7a61c36ac9818482a7892915d3"></a>
+<a class="anchor" id="ae1000d8809b293738dca06c1a5f916bf"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -434,7 +318,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::KeySource::GetKey </td>
+          <td class="memname">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::KeySource::GetKey </td>
           <td>(</td>
           <td class="paramtype">TrackType&#160;</td>
           <td class="paramname"><em>track_type</em>, </td>
@@ -453,7 +337,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -467,13 +351,11 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#ac1e7cae9bd5f008f20ca1d1603588441">edash_packager::media::WidevineKeySource</a>.</p>
-
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00042">42</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Implemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#ac1e7cae9bd5f008f20ca1d1603588441">edash_packager::media::WidevineKeySource</a>, and <a class="el" href="../../d0/d86/classedash__packager_1_1media_1_1FixedKeySource.html#a588ebb1c3984ffbeca897273bb7931dc">edash_packager::media::FixedKeySource</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a2d44267b238a221bb8a7d2bc1bf68ea2"></a>
+<a class="anchor" id="a87a935dacc8f88fdb3b5135e0b45d7ae"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -481,7 +363,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::KeySource::GetKey </td>
+          <td class="memname">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> edash_packager::media::KeySource::GetKey </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
           <td class="paramname"><em>key_id</em>, </td>
@@ -500,7 +382,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -514,9 +396,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, or an error status otherwise. </dd></dl>
 
-<p>Reimplemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a7b65c5c7b65d7e304956c86f5c058c1a">edash_packager::media::WidevineKeySource</a>.</p>
-
-<p>Definition at line <a class="el" href="../../d7/dd6/key__source_8cc_source.html#l00049">49</a> of file <a class="el" href="../../d7/dd6/key__source_8cc_source.html">key_source.cc</a>.</p>
+<p>Implemented in <a class="el" href="../../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#a7b65c5c7b65d7e304956c86f5c058c1a">edash_packager::media::WidevineKeySource</a>, and <a class="el" href="../../d0/d86/classedash__packager_1_1media_1_1FixedKeySource.html#a278e8f642c3e6be2b55830c8762bc330">edash_packager::media::FixedKeySource</a>.</p>
 
 </div>
 </div>
@@ -527,7 +407,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 18 2016 05:18:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Mar 21 2016 19:13:44 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

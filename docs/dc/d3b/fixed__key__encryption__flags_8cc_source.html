@@ -111,49 +111,53 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;              <span class="stringliteral">&quot;&quot;</span>,</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;              <span class="stringliteral">&quot;Iv in hex string format. If not specified, a random iv will be &quot;</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;              <span class="stringliteral">&quot;generated. This flag should only be used for testing.&quot;</span>);</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;DEFINE_string(pssh, <span class="stringliteral">&quot;&quot;</span>, <span class="stringliteral">&quot;PSSH in hex string format.&quot;</span>);</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html">   27</a></span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html#a87cbb414bc89b31dc8ba8de91ac9c438">   29</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a87cbb414bc89b31dc8ba8de91ac9c438">ValidateFixedCryptoFlags</a>() {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordtype">bool</span> success = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> fixed_crypto =</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;      FLAGS_enable_fixed_key_encryption || FLAGS_enable_fixed_key_decryption;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> fixed_crypto_label[] = <span class="stringliteral">&quot;--enable_fixed_key_encryption/decryption&quot;</span>;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="comment">// --key_id and --key are associated with --enable_fixed_key_encryption and</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="comment">// --enable_fixed_key_decryption.</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../db/d09/namespaceedash__packager.html#a5836ddf029d56f4a8dd43a7b4d8dbaff">ValidateFlag</a>(</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;          <span class="stringliteral">&quot;key_id&quot;</span>, FLAGS_key_id, fixed_crypto, <span class="keyword">false</span>, fixed_crypto_label)) {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    success = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  }</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;DEFINE_string(pssh,</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;              <span class="stringliteral">&quot;&quot;</span>,</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;              <span class="stringliteral">&quot;One or more PSSH boxes in hex string format.  If not specified, &quot;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;              <span class="stringliteral">&quot;will generate a v1 common PSSH box according to &quot;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;              <span class="stringliteral">&quot;https://goo.gl/507mKp.&quot;</span>);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00031"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html">   31</a></span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00033"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html#a87cbb414bc89b31dc8ba8de91ac9c438">   33</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a87cbb414bc89b31dc8ba8de91ac9c438">ValidateFixedCryptoFlags</a>() {</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keywordtype">bool</span> success = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> fixed_crypto =</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      FLAGS_enable_fixed_key_encryption || FLAGS_enable_fixed_key_decryption;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">char</span> fixed_crypto_label[] = <span class="stringliteral">&quot;--enable_fixed_key_encryption/decryption&quot;</span>;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="comment">// --key_id and --key are associated with --enable_fixed_key_encryption and</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="comment">// --enable_fixed_key_decryption.</span></div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../db/d09/namespaceedash__packager.html#a5836ddf029d56f4a8dd43a7b4d8dbaff">ValidateFlag</a>(</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;          <span class="stringliteral">&quot;key&quot;</span>, FLAGS_key, fixed_crypto, <span class="keyword">false</span>, fixed_crypto_label)) {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;          <span class="stringliteral">&quot;key_id&quot;</span>, FLAGS_key_id, fixed_crypto, <span class="keyword">false</span>, fixed_crypto_label)) {</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    success = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  }</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../db/d09/namespaceedash__packager.html#a5836ddf029d56f4a8dd43a7b4d8dbaff">ValidateFlag</a>(<span class="stringliteral">&quot;iv&quot;</span>, FLAGS_iv, FLAGS_enable_fixed_key_encryption, <span class="keyword">true</span>,</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                    <span class="stringliteral">&quot;--enable_fixed_key_encryption&quot;</span>)) {</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../db/d09/namespaceedash__packager.html#a5836ddf029d56f4a8dd43a7b4d8dbaff">ValidateFlag</a>(</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;          <span class="stringliteral">&quot;key&quot;</span>, FLAGS_key, fixed_crypto, <span class="keyword">false</span>, fixed_crypto_label)) {</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    success = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  }</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="comment">// --pssh is associated with --enable_fix_key_encryption.</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../db/d09/namespaceedash__packager.html#a5836ddf029d56f4a8dd43a7b4d8dbaff">ValidateFlag</a>(<span class="stringliteral">&quot;pssh&quot;</span>,</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                    FLAGS_pssh,</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                    FLAGS_enable_fixed_key_encryption,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                    <span class="keyword">false</span>,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                    <span class="stringliteral">&quot;--enable_fixed_key_encryption&quot;</span>)) {</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    success = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  }</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordflow">return</span> success;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;}</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="namespaceedash__packager_html_a87cbb414bc89b31dc8ba8de91ac9c438"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a87cbb414bc89b31dc8ba8de91ac9c438">edash_packager::ValidateFixedCryptoFlags</a></div><div class="ttdeci">bool ValidateFixedCryptoFlags()</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3b/fixed__key__encryption__flags_8cc_source.html#l00029">fixed_key_encryption_flags.cc:29</a></div></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../db/d09/namespaceedash__packager.html#a5836ddf029d56f4a8dd43a7b4d8dbaff">ValidateFlag</a>(<span class="stringliteral">&quot;iv&quot;</span>, FLAGS_iv, FLAGS_enable_fixed_key_encryption, <span class="keyword">true</span>,</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;                    <span class="stringliteral">&quot;--enable_fixed_key_encryption&quot;</span>)) {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    success = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="comment">// --pssh is associated with --enable_fix_key_encryption.</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../db/d09/namespaceedash__packager.html#a5836ddf029d56f4a8dd43a7b4d8dbaff">ValidateFlag</a>(<span class="stringliteral">&quot;pssh&quot;</span>,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                    FLAGS_pssh,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                    FLAGS_enable_fixed_key_encryption,</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;                    <span class="keyword">true</span>,</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;                    <span class="stringliteral">&quot;--enable_fixed_key_encryption&quot;</span>)) {</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    success = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  }</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordflow">return</span> success;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;}</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="namespaceedash__packager_html_a87cbb414bc89b31dc8ba8de91ac9c438"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a87cbb414bc89b31dc8ba8de91ac9c438">edash_packager::ValidateFixedCryptoFlags</a></div><div class="ttdeci">bool ValidateFixedCryptoFlags()</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3b/fixed__key__encryption__flags_8cc_source.html#l00033">fixed_key_encryption_flags.cc:33</a></div></div>
 <div class="ttc" id="namespaceedash__packager_html_a5836ddf029d56f4a8dd43a7b4d8dbaff"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a5836ddf029d56f4a8dd43a7b4d8dbaff">edash_packager::ValidateFlag</a></div><div class="ttdeci">bool ValidateFlag(const char *flag_name, const std::string &amp;flag_value, bool condition, bool optional, const char *label)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/dad/validate__flag_8cc_source.html#l00017">validate_flag.cc:17</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Mar 18 2016 05:18:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Mar 21 2016 19:13:40 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
