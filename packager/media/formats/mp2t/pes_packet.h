@@ -28,9 +28,9 @@ class PesPacket {
   void set_stream_id(uint8_t stream_id) { stream_id_ = stream_id; }
 
   /// @return true if dts has been set.
-  bool has_dts() const { return dts_ < 0; }
+  bool has_dts() const { return dts_ >= 0; }
   /// @return true if pts has been set.
-  bool has_pts() const { return pts_ < 0; }
+  bool has_pts() const { return pts_ >= 0; }
 
   /// @return dts.
   int64_t dts() const { return dts_; }

@@ -36,6 +36,8 @@
         'ts_section_pmt.h',
         'ts_section_psi.cc',
         'ts_section_psi.h',
+        'ts_writer.cc',
+        'ts_writer.h',
       ],
       'dependencies': [
         '../../base/media_base.gyp:media_base',
@@ -52,6 +54,7 @@
         'es_parser_h264_unittest.cc',
         'mp2t_media_parser_unittest.cc',
         'pes_packet_generator_unittest.cc',
+        'ts_writer_unittest.cc',
       ],
       'dependencies': [
         '../../../testing/gtest.gyp:gtest',
