@@ -41,27 +41,27 @@ class ContinuityCounter {
 class TsWriter {
  public:
   TsWriter();
-  ~TsWriter();
+  virtual ~TsWriter();
 
   /// This must be called before calling other methods.
   /// @return true on success, false otherwise.
-  bool Initialize(const StreamInfo& stream_info);
+  virtual bool Initialize(const StreamInfo& stream_info);
 
   /// This will fail if the current segment is not finalized.
   /// @param file_name is the output file name.
   /// @return true on success, false otherwise.
-  bool NewSegment(const std::string& file_name);
+  virtual bool NewSegment(const std::string& file_name);
 
   /// Flush all the pending PesPackets that have not been written to file and
   /// close the file.
   /// @return true on success, false otherwise.
-  bool FinalizeSegment();
+  virtual bool FinalizeSegment();
 
   /// Add PesPacket to the instance. PesPacket might not get written to file
   /// immediately.
   /// @param pes_packet gets added to the writer.
   /// @return true on success, false otherwise.
-  bool AddPesPacket(scoped_ptr<PesPacket> pes_packet);
+  virtual bool AddPesPacket(scoped_ptr<PesPacket> pes_packet);
 
  private:
   std::vector<uint8_t> psi_ts_packets_;

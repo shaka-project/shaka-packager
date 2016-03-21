@@ -29,38 +29,39 @@ namespace mp2t {
 class PesPacket;
 
 /// Generates PesPackets from MediaSamples.
+/// Methods are virtual for mocking.
 class PesPacketGenerator {
  public:
   PesPacketGenerator();
-  ~PesPacketGenerator();
+  virtual ~PesPacketGenerator();
 
   /// Initialize the object. This clears the internal state first so any
   /// PesPackets that have not been flushed will be lost.
   /// @param stream is the stream info for the elementary stream that will be
   ///        added via PushSample().
   /// @return true on success, false otherwise.
-  bool Initialize(const StreamInfo& stream);
+  virtual bool Initialize(const StreamInfo& stream);
 
   /// Add a sample to the generator. This does not necessarily increase
   /// NumberOfReadyPesPackets().
   /// If this returns false, the object may end up in an undefined state.
   /// @return true on success, false otherwise.
-  bool PushSample(scoped_refptr<MediaSample> sample);
+  virtual bool PushSample(scoped_refptr<MediaSample> sample);
 
   /// @return The number of PES packets that are ready to be consumed.
-  size_t NumberOfReadyPesPackets();
+  virtual size_t NumberOfReadyPesPackets();
 
   /// Removes the next PES packet from the stream and returns it. Must have at
   /// least one packet ready.
   /// @return Next PES packet that is ready.
-  scoped_ptr<PesPacket> GetNextPesPacket();
+  virtual scoped_ptr<PesPacket> GetNextPesPacket();
 
   /// Flush the object. This may create more PesPackets with the stored
   /// samples.
   /// It is safe to call NumberOfReadyPesPackets() and GetNextPesPacket() after
   /// this.
   /// @return true on success, false otherwise.
-  bool Flush();
+  virtual bool Flush();
 
  private:
   friend class PesPacketGeneratorTest;
