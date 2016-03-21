@@ -26,6 +26,8 @@
         'pes_packet.h',
         'pes_packet_generator.cc',
         'pes_packet_generator.h',
+        'ts_muxer.cc',
+        'ts_muxer.h',
         'ts_packet.cc',
         'ts_packet.h',
         'ts_section_pat.cc',
