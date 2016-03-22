@@ -34,22 +34,43 @@ class Nalu {
     H264_PPS = 8,
     H264_AUD = 9,
     H264_EOSeq = 10,
+    H264_FillerData = 12,
+    H264_SPSExtension = 13,
+    H264_SubsetSPS = 15,
+    H264_Reserved17 = 17,
+    H264_Reserved18 = 18,
     H264_CodedSliceExtension = 20,
+    H264_Reserved22 = 22,
   };
   enum H265NaluType {
     H265_TRAIL_N = 0,
+    H265_TSA_N = 2,
+    H265_TSA_R = 3,
+    H265_STSA_N = 4,
+    H265_STSA_R = 5,
     H265_RASL_R = 9,
+
+    H265_RSV_VCL_N10 = 10,
+    H265_RSV_VCL_R15 = 15,
 
     H265_BLA_W_LP = 16,
     H265_IDR_W_RADL = 19,
     H265_IDR_N_LP = 20,
     H265_CRA_NUT = 21,
+
+    H265_RSV_IRAP_VCL22 = 22,
     H265_RSV_IRAP_VCL23 = 23,
+    H265_RSV_VCL31 = 31,
 
     H265_VPS = 32,
     H265_SPS = 33,
     H265_PPS = 34,
     H265_AUD = 35,
+
+    H265_EOS = 36,
+    H265_EOB = 37,
+
+    H265_RSV_NVCL41 = 41,
   };
 
   Nalu();

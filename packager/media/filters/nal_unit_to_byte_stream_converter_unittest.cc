@@ -152,7 +152,7 @@ TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStream) {
   // This does not contain AUD, SPS, nor PPS.
   const uint8_t kUnitStreamLikeMediaSample[] = {
       0x00, 0x00, 0x00, 0x0A,  // Size 10 NALU.
-      0x00,                    // Unspecified NAL unit type.
+      0x06,                    // NAL unit type.
       0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77,
   };
   NalUnitToByteStreamConverter converter;
@@ -180,7 +180,7 @@ TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStream) {
       0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15,  // PPS.
       0x00, 0x00, 0x00, 0x01,  // Start code.
       // The input NALU.
-      0x00,  // Unspecified NALU type.
+      0x06,  // NALU type.
       0xFD, 0x78, 0xA4, 0xC3, 0x82, 0x62, 0x11, 0x29, 0x77,
   };
 
@@ -195,7 +195,7 @@ TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStreamWithEscape) {
   // This does not contain AUD, SPS, nor PPS.
   const uint8_t kUnitStreamLikeMediaSample[] = {
       0x00, 0x00, 0x00, 0x0A,  // Size 10 NALU.
-      0x00,                    // Unspecified NAL unit type.
+      0x06,                    // NAL unit type.
       0x06, 0x00, 0x00, 0x00, 0xDF, 0x62, 0x11, 0x29, 0x77,
   };
   NalUnitToByteStreamConverter converter;
@@ -224,7 +224,7 @@ TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStreamWithEscape) {
       0x68, 0xFE, 0xFD, 0xFC, 0xFB, 0x11, 0x12, 0x13, 0x14, 0x15,  // PPS.
       0x00, 0x00, 0x00, 0x01,  // Start code.
       // The input NALU.
-      0x00,  // Unspecified NALU type.
+      0x06,  // NALU type.
       0x06, 0x00, 0x00, 0x03, 0x00, 0xDF, 0x62, 0x11, 0x29, 0x77,
   };
 
@@ -237,7 +237,7 @@ TEST(NalUnitToByteStreamConverterTest, ConvertUnitToByteStreamWithEscape) {
 TEST(NalUnitToByteStreamConverterTest, NaluEndingWithZero) {
   const uint8_t kNaluEndingWithZero[] = {
       0x00, 0x00, 0x00, 0x03,  // Size 10 NALU.
-      0x00,                    // Unspecified NAL unit type.
+      0x06,                    // NAL unit type.
       0xAA, 0x00,              // Ends with 0.
   };
   NalUnitToByteStreamConverter converter;
@@ -257,7 +257,7 @@ TEST(NalUnitToByteStreamConverterTest, NaluEndingWithZero) {
       0xF0,                                // primary pic type is anything.
       0x00, 0x00, 0x00, 0x01,              // Start code.
       // The input NALU.
-      0x00,              // Unspecified NALU type.
+      0x06,              // NALU type.
       0xAA, 0x00, 0x03,  // 0x03 at the end because the original ends with 0.
   };
 
@@ -271,7 +271,7 @@ TEST(NalUnitToByteStreamConverterTest, NaluEndingWithZero) {
 TEST(NalUnitToByteStreamConverterTest, NonKeyFrameSample) {
   const uint8_t kNonKeyFrameStream[] = {
       0x00, 0x00, 0x00, 0x03,  // Size 10 NALU.
-      0x00,                    // Unspecified NAL unit type.
+      0x06,                    // NAL unit type.
       0x33, 0x88,
   };
   NalUnitToByteStreamConverter converter;
@@ -291,7 +291,7 @@ TEST(NalUnitToByteStreamConverterTest, NonKeyFrameSample) {
       0xF0,                    // Anything.
       0x00, 0x00, 0x00, 0x01,  // Start code.
       // The input NALU.
-      0x00,  // Unspecified NALU type.
+      0x06,  // NALU type.
       0x33, 0x88,
   };
 
@@ -305,7 +305,7 @@ TEST(NalUnitToByteStreamConverterTest, NonKeyFrameSample) {
 TEST(NalUnitToByteStreamConverterTest, DispersedZeros) {
   const uint8_t kDispersedZeros[] = {
       0x00, 0x00, 0x00, 0x08,  // Size 10 NALU.
-      0x00,                    // Unspecified NAL unit type.
+      0x06,                    // NAL unit type.
       // After 2 zeros (including the first byte of the NALU followed by 0, 1,
       // 2, or 3 caused it to insert the escape byte.
       0x11, 0x00,
@@ -327,7 +327,7 @@ TEST(NalUnitToByteStreamConverterTest, DispersedZeros) {
       0xF0,                    // Anything.
       0x00, 0x00, 0x00, 0x01,  // Start code.
       // The input NALU.
-      0x00,  // Unspecified NAL unit type.
+      0x06,  // NAL unit type.
       0x11, 0x00, 0x01, 0x00, 0x02, 0x00, 0x44,
   };
 
@@ -341,7 +341,7 @@ TEST(NalUnitToByteStreamConverterTest, DoNotEscape) {
   // This has sequences that should be escaped if escape_data = true.
   const uint8_t kNotEscaped[] = {
       0x00, 0x00, 0x00, 0x0C,  // Size 12 NALU.
-      0x00,                    // Unspecified NAL unit type.
+      0x06,                    // NAL unit type.
       0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x02, 0x00, 0x00, 0x03,
   };
 
@@ -361,7 +361,7 @@ TEST(NalUnitToByteStreamConverterTest, DoNotEscape) {
       0xF0,                    // Anything.
       0x00, 0x00, 0x00, 0x01,  // Start code.
       // Should be the same as the input.
-      0x00,
+      0x06,
       0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x02, 0x00, 0x00, 0x03,
   };
 

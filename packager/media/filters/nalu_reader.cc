@@ -6,6 +6,8 @@
 
 #include "packager/media/filters/nalu_reader.h"
 
+#include <iostream>
+
 #include "packager/base/logging.h"
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/filters/h264_parser.h"
@@ -29,31 +31,66 @@ Nalu::Nalu()
       type_(0),
       is_video_slice_(false) {}
 
+// ITU-T H.264 (02/2014) 7.4.1 NAL unit semantics
 bool Nalu::InitializeFromH264(const uint8_t* data, uint64_t size) {
   DCHECK(data);
   if (size == 0)
     return false;
-  uint8_t header = data[0];
-  if ((header & 0x80) != 0)
+  const uint8_t header = data[0];
+  if ((header & 0x80) != 0) {
+    LOG(WARNING) << "forbidden_zero_bit shall be equal to 0 (header 0x"
+                 << std::hex << static_cast<int>(header) << ").";
     return false;
+  }
 
   data_ = data;
   header_size_ = 1;
   payload_size_ = size - header_size_;
   ref_idc_ = (header >> 5) & 0x3;
   type_ = header & 0x1F;
+
+  // Reserved NAL units are not treated as valid NAL units here.
+  if (type_ == Nalu::H264_Unspecified || type_ == Nalu::H264_Reserved17 ||
+      type_ == Nalu::H264_Reserved18 || type_ >= Nalu::H264_Reserved22) {
+    LOG(WARNING) << "Unspecified or reserved nal_unit_type " << type_
+                 << " (header 0x" << std::hex << static_cast<int>(header)
+                 << ").";
+    return false;
+  } else if (type_ == Nalu::H264_IDRSlice || type_ == Nalu::H264_SPS ||
+      type_ == Nalu::H264_SPSExtension || type_ == Nalu::H264_SubsetSPS ||
+      type_ == Nalu::H264_PPS) {
+    if (ref_idc_ == 0) {
+      LOG(WARNING) << "nal_ref_idc shall not be equal to 0 for nalu type "
+                   << type_ << " (header 0x" << std::hex
+                   << static_cast<int>(header) << ").";
+      return false;
+    }
+  } else if (type_ == Nalu::H264_SEIMessage ||
+             (type_ >= Nalu::H264_AUD && type_ <= Nalu::H264_FillerData)) {
+    if (ref_idc_ != 0) {
+      LOG(WARNING) << "nal_ref_idc shall be equal to 0 for nalu type " << type_
+                   << " (header 0x" << std::hex << static_cast<int>(header)
+                   << ").";
+      return false;
+    }
+  }
+
   is_video_slice_ = (type_ >= Nalu::H264_NonIDRSlice &&
                      type_ <= Nalu::H264_IDRSlice);
   return true;
 }
 
+// ITU-T H.265 (04/2015) 7.4.2.2 NAL unit header semantics
 bool Nalu::InitializeFromH265(const uint8_t* data, uint64_t size) {
   DCHECK(data);
   if (size < 2)
     return false;
-  uint16_t header = (data[0] << 8) | data[1];
-  if ((header & 0x8000) != 0)
+  const uint16_t header = (data[0] << 8) | data[1];
+  if ((header & 0x8000) != 0) {
+    LOG(WARNING) << "forbidden_zero_bit shall be equal to 0 (header 0x"
+                 << std::hex << header << ").";
     return false;
+  }
 
   data_ = data;
   header_size_ = 2;
@@ -61,12 +98,47 @@ bool Nalu::InitializeFromH265(const uint8_t* data, uint64_t size) {
 
   type_ = (header >> 9) & 0x3F;
   nuh_layer_id_ = (header >> 3) & 0x3F;
-  nuh_temporal_id_ = (header & 0x7) - 1;
+  const int nuh_temporal_id_plus1 = header & 0x7;
+  if (nuh_temporal_id_plus1 == 0) {
+    LOG(WARNING) << "nul_temporal_id_plus1 shall not be equal to 0 (header 0x"
+                 << std::hex << header << ").";
+    return false;
+  }
+  nuh_temporal_id_ = nuh_temporal_id_plus1 - 1;
 
-  // Don't treat reserved VCL types as video slices since we cannot parse them.
-  is_video_slice_ =
-      (type_ >= Nalu::H265_TRAIL_N && type_ <= Nalu::H265_RASL_R) ||
-      (type_ >= Nalu::H265_BLA_W_LP && type_ <= Nalu::H265_CRA_NUT);
+  if (type_ == Nalu::H265_EOB && nuh_layer_id_ != 0) {
+    LOG(WARNING) << "nuh_layer_id shall be equal to 0 for nalu type " << type_
+                 << " (header 0x" << std::hex << header << ").";
+    return false;
+  }
+
+  // Reserved NAL units are not treated as valid NAL units here.
+  if ((type_ >= Nalu::H265_RSV_VCL_N10 && type_ <= Nalu::H265_RSV_VCL_R15) ||
+      (type_ >= Nalu::H265_RSV_IRAP_VCL22 && type_ < Nalu::H265_RSV_VCL31) ||
+      (type_ >= Nalu::H265_RSV_NVCL41)) {
+    LOG(WARNING) << "Unspecified or reserved nal_unit_type " << type_
+                 << " (header 0x" << std::hex << header << ").";
+    return false;
+  } else if ((type_ >= Nalu::H265_BLA_W_LP &&
+              type_ <= Nalu::H265_RSV_IRAP_VCL23) ||
+             type_ == Nalu::H265_VPS || type_ == Nalu::H265_SPS ||
+             type_ == Nalu::H265_EOS || type_ == Nalu::H265_EOB) {
+    if (nuh_temporal_id_ != 0) {
+      LOG(WARNING) << "TemporalId shall be equal to 0 for nalu type " << type_
+                   << " (header 0x" << std::hex << header << ").";
+      return false;
+    }
+  } else if (type_ == Nalu::H265_TSA_N || type_ == Nalu::H265_TSA_R ||
+             (nuh_layer_id_ == 0 &&
+              (type_ == Nalu::H265_STSA_N || type_ == Nalu::H265_STSA_R))) {
+    if (nuh_temporal_id_ == 0) {
+      LOG(WARNING) << "TemporalId shall not be equal to 0 for nalu type "
+                   << type_ << " (header 0x" << std::hex << header << ").";
+      return false;
+    }
+  }
+
+  is_video_slice_ = type_ >= Nalu::H265_TRAIL_N && type_ <= Nalu::H265_CRA_NUT;
   return true;
 }
 
@@ -218,11 +290,29 @@ bool NaluReader::LocateNaluByStartCode(uint64_t* nalu_size,
   // belong to the current NALU.
   uint64_t nalu_size_without_start_code = 0;
   uint8_t next_start_code_size = 0;
-  if (!FindStartCode(nalu_data, max_nalu_data_size,
-                     &nalu_size_without_start_code, &next_start_code_size)) {
-    nalu_size_without_start_code = max_nalu_data_size;
+  while (true) {
+    if (!FindStartCode(nalu_data, max_nalu_data_size,
+                       &nalu_size_without_start_code, &next_start_code_size)) {
+      nalu_data += max_nalu_data_size;
+      break;
+    }
+
+    nalu_data += nalu_size_without_start_code + next_start_code_size;
+    max_nalu_data_size -= nalu_size_without_start_code + next_start_code_size;
+    // If it is not a valid NAL unit, we will continue searching. This is to
+    // handle the case where emulation prevention are not applied.
+    Nalu nalu;
+    if (nalu_type_ == kH264
+            ? nalu.InitializeFromH264(nalu_data, max_nalu_data_size)
+            : nalu.InitializeFromH265(nalu_data, max_nalu_data_size)) {
+      nalu_data -= next_start_code_size;
+      break;
+    }
+    LOG(WARNING) << "Seeing invalid NAL unit. Emulation prevention may not "
+                    "have been applied properly. Assuming it is part of the "
+                    "previous NAL unit.";
   }
-  *nalu_size = nalu_size_without_start_code + annexb_start_code_size;
+  *nalu_size = nalu_data - stream_;
   *start_code_size = annexb_start_code_size;
   return true;
 }

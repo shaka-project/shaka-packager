@@ -70,15 +70,15 @@ EncryptingFragmenter::EncryptingFragmenter(
       info_(info),
       encryption_key_(encryption_key.Pass()),
       nalu_length_size_(GetNaluLengthSize(*info)),
+      video_codec_(GetVideoCodec(*info)),
       clear_time_(clear_time),
       encryption_mode_(encryption_mode) {
   DCHECK(encryption_key_);
-  VideoCodec video_codec = GetVideoCodec(*info);
-  if (video_codec == kCodecVP8) {
+  if (video_codec_ == kCodecVP8) {
     vpx_parser_.reset(new VP8Parser);
-  } else if (video_codec == kCodecVP9) {
+  } else if (video_codec_ == kCodecVP9) {
     vpx_parser_.reset(new VP9Parser);
-  } else if (video_codec == kCodecH264) {
+  } else if (video_codec_ == kCodecH264) {
     header_parser_.reset(new H264VideoSliceHeaderParser);
   }
   // TODO(modmaker): Support H.265.
@@ -231,8 +231,10 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
         data += frame.frame_size;
       }
     } else {
-      // TODO(modmaker): Support H.265.
-      const NaluReader::NaluType nalu_type = NaluReader::kH264;
+      const NaluReader::NaluType nalu_type =
+          (video_codec_ == kCodecHVC1 || video_codec_ == kCodecHEV1)
+              ? NaluReader::kH265
+              : NaluReader::kH264;
       NaluReader reader(nalu_type, nalu_length_size_, data,
                         sample->data_size());
 
