@@ -153,20 +153,21 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// and type of NAL units remain unencrypted. This function returns the size of</span></div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">// the size field in bytes. Can be 1, 2 or 4 bytes.</span></div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keyword">const</span> uint8_t nalu_length_size_;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  int64_t clear_time_;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  EncryptionMode encryption_mode_;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  scoped_ptr&lt;VPxParser&gt; vpx_parser_;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  scoped_ptr&lt;VideoSliceHeaderParser&gt; header_parser_;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html">EncryptingFragmenter</a>);</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;};</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_MP4_ENCRYPTING_FRAGMENTER_H_</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keyword">const</span> VideoCodec video_codec_;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  int64_t clear_time_;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  EncryptionMode encryption_mode_;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  scoped_ptr&lt;VPxParser&gt; vpx_parser_;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  scoped_ptr&lt;VideoSliceHeaderParser&gt; header_parser_;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html">EncryptingFragmenter</a>);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;};</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_MP4_ENCRYPTING_FRAGMENTER_H_</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Fragmenter_html"><div class="ttname"><a href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html">edash_packager::media::mp4::Fragmenter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd1/fragmenter_8h_source.html#l00030">fragmenter.h:30</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1AesEncryptor_html"><div class="ttname"><a href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html">edash_packager::media::AesEncryptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df0/aes__encryptor_8h_source.html#l00024">aes_encryptor.h:24</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1EncryptionKey_html"><div class="ttname"><a href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">edash_packager::media::EncryptionKey</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00020">key_source.h:20</a></div></div>
@@ -183,7 +184,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 21 2016 19:13:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 24 2016 21:23:32 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

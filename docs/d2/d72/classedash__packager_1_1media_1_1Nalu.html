@@ -110,24 +110,45 @@ Public Types</h2></td></tr>
 <b>H264_AUD</b> = 9, 
 <b>H264_EOSeq</b> = 10, 
 <br/>
-&#160;&#160;<b>H264_CodedSliceExtension</b> = 20
+&#160;&#160;<b>H264_FillerData</b> = 12, 
+<b>H264_SPSExtension</b> = 13, 
+<b>H264_SubsetSPS</b> = 15, 
+<b>H264_Reserved17</b> = 17, 
+<br/>
+&#160;&#160;<b>H264_Reserved18</b> = 18, 
+<b>H264_CodedSliceExtension</b> = 20, 
+<b>H264_Reserved22</b> = 22
 <br/>
  }</td></tr>
 <tr class="separator:a9ba57b723ae9c4feaf127238dfac4547"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af290f7a2b18ab31252705bb439d0fb03"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>H265NaluType</b> { <br/>
 &#160;&#160;<b>H265_TRAIL_N</b> = 0, 
-<b>H265_RASL_R</b> = 9, 
-<b>H265_BLA_W_LP</b> = 16, 
-<b>H265_IDR_W_RADL</b> = 19, 
+<b>H265_TSA_N</b> = 2, 
+<b>H265_TSA_R</b> = 3, 
+<b>H265_STSA_N</b> = 4, 
 <br/>
-&#160;&#160;<b>H265_IDR_N_LP</b> = 20, 
+&#160;&#160;<b>H265_STSA_R</b> = 5, 
+<b>H265_RASL_R</b> = 9, 
+<b>H265_RSV_VCL_N10</b> = 10, 
+<b>H265_RSV_VCL_R15</b> = 15, 
+<br/>
+&#160;&#160;<b>H265_BLA_W_LP</b> = 16, 
+<b>H265_IDR_W_RADL</b> = 19, 
+<b>H265_IDR_N_LP</b> = 20, 
 <b>H265_CRA_NUT</b> = 21, 
+<br/>
+&#160;&#160;<b>H265_RSV_IRAP_VCL22</b> = 22, 
 <b>H265_RSV_IRAP_VCL23</b> = 23, 
+<b>H265_RSV_VCL31</b> = 31, 
 <b>H265_VPS</b> = 32, 
 <br/>
 &#160;&#160;<b>H265_SPS</b> = 33, 
 <b>H265_PPS</b> = 34, 
-<b>H265_AUD</b> = 35
+<b>H265_AUD</b> = 35, 
+<b>H265_EOS</b> = 36, 
+<br/>
+&#160;&#160;<b>H265_EOB</b> = 37, 
+<b>H265_RSV_NVCL41</b> = 41
 <br/>
  }</td></tr>
 <tr class="separator:af290f7a2b18ab31252705bb439d0fb03"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -176,7 +197,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_video_slice</b> ()
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Mar 21 2016 19:13:44 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 24 2016 21:23:35 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
