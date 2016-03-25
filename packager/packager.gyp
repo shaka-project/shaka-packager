@@ -34,6 +34,7 @@
         'app/widevine_encryption_flags.h',
       ],
       'dependencies': [
+        'hls/hls.gyp:hls_builder',
         'media/event/media_event.gyp:media_event',
         'media/file/file.gyp:file',
         'media/filters/filters.gyp:filters',
@@ -93,6 +94,7 @@
       'target_name': 'packager_builder_tests',
       'type': 'none',
       'dependencies': [
+        'hls/hls.gyp:hls_unittest',
         'media/base/media_base.gyp:media_base_unittest',
         'media/event/media_event.gyp:media_event_unittest',
         'media/file/file.gyp:file_unittest',
