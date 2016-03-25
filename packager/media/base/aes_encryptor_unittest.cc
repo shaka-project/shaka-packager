@@ -170,7 +170,7 @@ TEST_F(AesCtrEncryptorTest, NistTestCase) {
 
 TEST_F(AesCtrEncryptorTest, NistTestCaseInplaceEncryptionDecryption) {
   std::vector<uint8_t> buffer = plaintext_;
-  EXPECT_TRUE(encryptor_.EncryptData(&buffer[0], buffer.size(), &buffer[0]));
+  EXPECT_TRUE(encryptor_.Encrypt(&buffer[0], buffer.size(), &buffer[0]));
   EXPECT_EQ(ciphertext_, buffer);
 
   EXPECT_TRUE(decryptor_.SetIv(iv_));
@@ -211,13 +211,12 @@ TEST_F(AesCtrEncryptorTest, 128BitIVBoundaryCaseEncryption) {
 
   ASSERT_TRUE(encryptor_.InitializeWithIv(key_, iv_max64));
   std::vector<uint8_t> encrypted_verify(plaintext_.size(), 0);
-  EXPECT_TRUE(encryptor_.EncryptData(&plaintext_[0], kAesBlockSize,
-                                     &encrypted_verify[0]));
+  EXPECT_TRUE(
+      encryptor_.Encrypt(&plaintext_[0], kAesBlockSize, &encrypted_verify[0]));
   std::vector<uint8_t> iv_zero(kIv128Zero, kIv128Zero + arraysize(kIv128Zero));
   ASSERT_TRUE(encryptor_.InitializeWithIv(key_, iv_zero));
-  EXPECT_TRUE(encryptor_.EncryptData(&plaintext_[kAesBlockSize],
-                                     kAesBlockSize * 3,
-                                     &encrypted_verify[kAesBlockSize]));
+  EXPECT_TRUE(encryptor_.Encrypt(&plaintext_[kAesBlockSize], kAesBlockSize * 3,
+                                 &encrypted_verify[kAesBlockSize]));
   EXPECT_EQ(encrypted, encrypted_verify);
 }
 
@@ -254,7 +253,7 @@ TEST_P(AesCtrEncryptorSubsampleTest, NistTestCaseSubsamples) {
   for (uint32_t i = 0, offset = 0; i < test_case->subsample_count; ++i) {
     uint32_t len = test_case->subsample_sizes[i];
     EXPECT_TRUE(
-        encryptor_.EncryptData(&plaintext_[offset], len, &encrypted[offset]));
+        encryptor_.Encrypt(&plaintext_[offset], len, &encrypted[offset]));
     offset += len;
     EXPECT_EQ(offset % kAesBlockSize, encryptor_.block_offset());
   }
@@ -301,30 +300,66 @@ INSTANTIATE_TEST_CASE_P(IvTestCases,
                         AesCtrEncryptorIvTest,
                         ::testing::ValuesIn(kIvTestCases));
 
-class AesCbcPkcs5EncryptorTestEncryptionDecryption : public testing::Test {
+class AesCbcEncryptDecryptTest {
  public:
-  void TestEncryptionDecryption(const std::vector<uint8_t>& key,
-                                const std::vector<uint8_t>& iv,
-                                const std::string& plaintext,
-                                const std::string& expected_ciphertext_hex) {
-    AesCbcPkcs5Encryptor encryptor;
-    EXPECT_TRUE(encryptor.InitializeWithIv(key, iv));
+  AesCbcEncryptDecryptTest()
+      : encryptor_(new AesCbcEncryptor(kPkcs5Padding, !kChainAcrossCalls)),
+        decryptor_(new AesCbcDecryptor(kPkcs5Padding, !kChainAcrossCalls)),
+        key_(kAesKey, kAesKey + arraysize(kAesKey)),
+        iv_(kAesIv, kAesIv + arraysize(kAesIv)) {}
 
-    std::string ciphertext;
-    encryptor.Encrypt(plaintext, &ciphertext);
-    EXPECT_EQ(expected_ciphertext_hex,
-              base::HexEncode(ciphertext.data(), ciphertext.size()));
+  void TestEncryptDecrypt(const std::vector<uint8_t>& plaintext,
+                          const std::vector<uint8_t>& expected_ciphertext) {
+    // Test Vector form.
+    TestEncryptDecryptSeparateBuffers(plaintext, expected_ciphertext);
+    TestEncryptDecryptInPlace(plaintext, expected_ciphertext);
 
-    AesCbcPkcs5Decryptor decryptor;
-    ASSERT_TRUE(decryptor.InitializeWithIv(key, iv));
+    // Test string form.
+    std::string plaintext_str(plaintext.begin(), plaintext.end());
+    std::string expected_ciphertext_str(expected_ciphertext.begin(),
+                                        expected_ciphertext.end());
+    TestEncryptDecryptSeparateBuffers(plaintext_str, expected_ciphertext_str);
+    TestEncryptDecryptInPlace(plaintext_str, expected_ciphertext_str);
+  }
 
-    std::string decrypted;
-    EXPECT_TRUE(decryptor.Decrypt(ciphertext, &decrypted));
+ protected:
+  template <class T>
+  void TestEncryptDecryptSeparateBuffers(const T& plaintext,
+                                         const T& expected_ciphertext) {
+    ASSERT_TRUE(encryptor_->InitializeWithIv(key_, iv_));
+    ASSERT_TRUE(decryptor_->InitializeWithIv(key_, iv_));
+
+    T encrypted;
+    EXPECT_TRUE(encryptor_->Encrypt(plaintext, &encrypted));
+    EXPECT_EQ(expected_ciphertext, encrypted);
+
+    T decrypted;
+    EXPECT_TRUE(decryptor_->Decrypt(encrypted, &decrypted));
     EXPECT_EQ(plaintext, decrypted);
   }
+
+  template <class T>
+  void TestEncryptDecryptInPlace(const T& plaintext,
+                                 const T& expected_ciphertext) {
+    ASSERT_TRUE(encryptor_->InitializeWithIv(key_, iv_));
+    ASSERT_TRUE(decryptor_->InitializeWithIv(key_, iv_));
+
+    T buffer(plaintext);
+    EXPECT_TRUE(encryptor_->Encrypt(buffer, &buffer));
+    EXPECT_EQ(expected_ciphertext, buffer);
+    EXPECT_TRUE(decryptor_->Decrypt(buffer, &buffer));
+    EXPECT_EQ(plaintext, buffer);
+  }
+
+  scoped_ptr<AesCbcEncryptor> encryptor_;
+  scoped_ptr<AesCbcDecryptor> decryptor_;
+  std::vector<uint8_t> key_;
+  std::vector<uint8_t> iv_;
 };
 
-TEST_F(AesCbcPkcs5EncryptorTestEncryptionDecryption, EncryptAES256CBC) {
+class AesCbcTest : public AesCbcEncryptDecryptTest, public testing::Test {};
+
+TEST_F(AesCbcTest, Aes256CbcPkcs5) {
   // NIST SP 800-38A test vector F.2.5 CBC-AES256.Encrypt.
   static const uint8_t kAesCbcKey[] = {
       0x60, 0x3d, 0xeb, 0x10, 0x15, 0xca, 0x71, 0xbe, 0x2b, 0x73, 0xae,
@@ -363,18 +398,17 @@ TEST_F(AesCbcPkcs5EncryptorTestEncryptionDecryption, EncryptAES256CBC) {
       0x3f, 0x46, 0x17, 0x96, 0xd6, 0xb0, 0xd6, 0xb2,
       0xe0, 0xc2, 0xa7, 0x2b, 0x4d, 0x80, 0xe6, 0x44};
 
-  const std::vector<uint8_t> key(kAesCbcKey,
-                                 kAesCbcKey + arraysize(kAesCbcKey));
-  const std::vector<uint8_t> iv(kAesCbcIv, kAesCbcIv + arraysize(kAesCbcIv));
-  const std::string plaintext(reinterpret_cast<const char*>(kAesCbcPlaintext),
-                              sizeof(kAesCbcPlaintext));
-  const std::string expected_ciphertext_hex =
-      base::HexEncode(kAesCbcCiphertext, sizeof(kAesCbcCiphertext));
+  key_.assign(kAesCbcKey, kAesCbcKey + arraysize(kAesCbcKey));
+  iv_.assign(kAesCbcIv, kAesCbcIv + arraysize(kAesCbcIv));
+  const std::vector<uint8_t> plaintext(
+      kAesCbcPlaintext, kAesCbcPlaintext + arraysize(kAesCbcPlaintext));
+  const std::vector<uint8_t> expected_ciphertext(
+      kAesCbcCiphertext, kAesCbcCiphertext + arraysize(kAesCbcCiphertext));
 
-  TestEncryptionDecryption(key, iv, plaintext, expected_ciphertext_hex);
+  TestEncryptDecrypt(plaintext, expected_ciphertext);
 }
 
-TEST_F(AesCbcPkcs5EncryptorTestEncryptionDecryption, EncryptAES128CBCRegression) {
+TEST_F(AesCbcTest, Aes128CbcPkcs5) {
   const std::string kKey = "128=SixteenBytes";
   const std::string kIv = "Sweet Sixteen IV";
   const std::string kPlaintext =
@@ -383,172 +417,201 @@ TEST_F(AesCbcPkcs5EncryptorTestEncryptionDecryption, EncryptAES128CBCRegression)
       "D4A67A0BA33C30F207344D81D1E944BBE65587C3D7D9939A"
       "C070C62B9C15A3EA312EA4AD1BC7929F4D3C16B03AD5ADA8";
 
-  const std::vector<uint8_t> key(kKey.begin(), kKey.end());
-  const std::vector<uint8_t> iv(kIv.begin(), kIv.end());
+  key_.assign(kKey.begin(), kKey.end());
+  iv_.assign(kIv.begin(), kIv.end());
 
-  TestEncryptionDecryption(key, iv, kPlaintext, kExpectedCiphertextHex);
+  const std::vector<uint8_t> plaintext(kPlaintext.begin(), kPlaintext.end());
+  std::vector<uint8_t> expected_ciphertext;
+  ASSERT_TRUE(
+      base::HexStringToBytes(kExpectedCiphertextHex, &expected_ciphertext));
+  TestEncryptDecrypt(plaintext, expected_ciphertext);
 }
 
-TEST_F(AesCbcPkcs5EncryptorTestEncryptionDecryption, EncryptAES192CBCRegression) {
+TEST_F(AesCbcTest, Aes192CbcPkcs5) {
   const std::string kKey = "192bitsIsTwentyFourByte!";
   const std::string kIv = "Sweet Sixteen IV";
   const std::string kPlaintext = "Small text";
   const std::string kExpectedCiphertextHex = "78DE5D7C2714FC5C61346C5416F6C89A";
 
-  const std::vector<uint8_t> key(kKey.begin(), kKey.end());
-  const std::vector<uint8_t> iv(kIv.begin(), kIv.end());
+  key_.assign(kKey.begin(), kKey.end());
+  iv_.assign(kIv.begin(), kIv.end());
 
-  TestEncryptionDecryption(key, iv, kPlaintext, kExpectedCiphertextHex);
+  const std::vector<uint8_t> plaintext(kPlaintext.begin(), kPlaintext.end());
+  std::vector<uint8_t> expected_ciphertext;
+  ASSERT_TRUE(
+      base::HexStringToBytes(kExpectedCiphertextHex, &expected_ciphertext));
+  TestEncryptDecrypt(plaintext, expected_ciphertext);
 }
 
-class AesCbcPkcs5EncryptorTest : public testing::Test {
- public:
-  void SetUp() override {
-    const std::string kKey = "128=SixteenBytes";
-    const std::string kIv = "Sweet Sixteen IV";
-    key_.assign(kKey.begin(), kKey.end());
-    iv_.assign(kIv.begin(), kIv.end());
-  }
+TEST_F(AesCbcTest, NoPaddingNoChainAcrossCalls) {
+  const uint8_t kPlaintext[] = {
+      0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96,
+      0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a,
+  };
+  const uint8_t kCiphertext[] = {
+      0x77, 0xcd, 0xe9, 0x1f, 0xe6, 0xdf, 0x9c, 0xbc,
+      0x5d, 0x0c, 0x98, 0xf9, 0x6e, 0xfd, 0x59, 0x0b,
+  };
 
- protected:
-  std::vector<uint8_t> key_;
-  std::vector<uint8_t> iv_;
-};
+  std::vector<uint8_t> plaintext(kPlaintext,
+                                 kPlaintext + arraysize(kPlaintext));
+  std::vector<uint8_t> ciphertext(kCiphertext,
+                                  kCiphertext + arraysize(kCiphertext));
 
-TEST_F(AesCbcPkcs5EncryptorTest, UnsupportedKeySize) {
-  AesCbcPkcs5Encryptor encryptor;
-  EXPECT_FALSE(encryptor.InitializeWithIv(std::vector<uint8_t>(15, 0), iv_));
-}
-
-TEST_F(AesCbcPkcs5EncryptorTest, UnsupportedIvSize) {
-  AesCbcPkcs5Encryptor encryptor;
-  EXPECT_FALSE(encryptor.InitializeWithIv(key_, std::vector<uint8_t>(14, 0)));
-}
-
-TEST_F(AesCbcPkcs5EncryptorTest, EmptyEncrypt) {
-  AesCbcPkcs5Encryptor encryptor;
+  AesCbcEncryptor encryptor(kNoPadding, !kChainAcrossCalls);
   ASSERT_TRUE(encryptor.InitializeWithIv(key_, iv_));
 
-  std::string ciphertext;
-  std::string expected_ciphertext_hex = "8518B8878D34E7185E300D0FCC426396";
-  encryptor.Encrypt("", &ciphertext);
-  EXPECT_EQ(expected_ciphertext_hex,
-            base::HexEncode(ciphertext.data(), ciphertext.size()));
-}
+  std::vector<uint8_t> encrypted;
+  ASSERT_TRUE(encryptor.Encrypt(plaintext, &encrypted));
+  EXPECT_EQ(ciphertext, encrypted);
+  // Iv should not have been updated.
+  EXPECT_EQ(iv_, encryptor.iv());
+  ASSERT_TRUE(encryptor.Encrypt(plaintext, &encrypted));
+  EXPECT_EQ(ciphertext, encrypted);
 
-TEST_F(AesCbcPkcs5EncryptorTest, CipherTextNotMultipleOfBlockSize) {
-  AesCbcPkcs5Decryptor decryptor;
+  AesCbcDecryptor decryptor(kNoPadding, !kChainAcrossCalls);
   ASSERT_TRUE(decryptor.InitializeWithIv(key_, iv_));
 
-  std::string plaintext;
-  EXPECT_FALSE(decryptor.Decrypt("1", &plaintext));
+  std::vector<uint8_t> decrypted;
+  ASSERT_TRUE(decryptor.Decrypt(ciphertext, &decrypted));
+  EXPECT_EQ(plaintext, decrypted);
+  // Iv should not have been updated.
+  EXPECT_EQ(iv_, encryptor.iv());
+  ASSERT_TRUE(decryptor.Decrypt(ciphertext, &decrypted));
+  EXPECT_EQ(plaintext, decrypted);
 }
 
-class AesCbcCtsEncryptorDecryptorTest : public testing::Test {
- public:
-  void SetUp() override {
-    key_.assign(kAesKey, kAesKey + arraysize(kAesKey));
-    iv_.assign(kAesIv, kAesIv + arraysize(kAesIv));
-  }
+TEST_F(AesCbcTest, NoPaddingChainAcrossCalls) {
+  const uint8_t kPlaintext[] = {
+      0x6b, 0xc1, 0xbe, 0xe2, 0x2e, 0x40, 0x9f, 0x96,
+      0xe9, 0x3d, 0x7e, 0x11, 0x73, 0x93, 0x17, 0x2a,
+  };
+  const uint8_t kCiphertext[] = {
+      0x77, 0xcd, 0xe9, 0x1f, 0xe6, 0xdf, 0x9c, 0xbc,
+      0x5d, 0x0c, 0x98, 0xf9, 0x6e, 0xfd, 0x59, 0x0b,
+  };
+  const uint8_t kCiphertext2[] = {
+      0xbd, 0xdd, 0xe4, 0x39, 0x52, 0x6f, 0x10, 0x0c,
+      0x95, 0x45, 0xc2, 0x74, 0xd4, 0xf7, 0xfd, 0x3f,
+  };
 
-  void TestEncryptDecryptSeparateBuffers(
-      const std::vector<uint8_t>& plaintext,
-      const std::vector<uint8_t>& expected_ciphertext) {
-    ASSERT_TRUE(encryptor_.InitializeWithIv(key_, iv_));
-    ASSERT_TRUE(decryptor_.InitializeWithIv(key_, iv_));
+  std::vector<uint8_t> plaintext(kPlaintext,
+                                 kPlaintext + arraysize(kPlaintext));
+  std::vector<uint8_t> ciphertext(kCiphertext,
+                                  kCiphertext + arraysize(kCiphertext));
+  std::vector<uint8_t> ciphertext2(kCiphertext2,
+                                   kCiphertext2 + arraysize(kCiphertext2));
 
-    std::vector<uint8_t> encrypted;
-    encryptor_.Encrypt(plaintext, &encrypted);
-    EXPECT_EQ(expected_ciphertext, encrypted);
+  AesCbcEncryptor encryptor(kNoPadding, kChainAcrossCalls);
+  ASSERT_TRUE(encryptor.InitializeWithIv(key_, iv_));
 
-    std::vector<uint8_t> decrypted;
-    decryptor_.Decrypt(encrypted, &decrypted);
-    EXPECT_EQ(plaintext, decrypted);
-  }
+  std::vector<uint8_t> encrypted;
+  ASSERT_TRUE(encryptor.Encrypt(plaintext, &encrypted));
+  EXPECT_EQ(ciphertext, encrypted);
+  // Iv should have been updated.
+  EXPECT_NE(iv_, encryptor.iv());
+  // If run encrypt again, the result will be different.
+  ASSERT_TRUE(encryptor.Encrypt(plaintext, &encrypted));
+  EXPECT_EQ(ciphertext2, encrypted);
 
-  void TestEncryptDecryptInPlace(
-      const std::vector<uint8_t>& plaintext,
-      const std::vector<uint8_t>& expected_ciphertext) {
-    ASSERT_TRUE(encryptor_.InitializeWithIv(key_, iv_));
-    ASSERT_TRUE(decryptor_.InitializeWithIv(key_, iv_));
+  AesCbcDecryptor decryptor(kNoPadding, kChainAcrossCalls);
+  ASSERT_TRUE(decryptor.InitializeWithIv(key_, iv_));
 
-    std::vector<uint8_t> buffer(plaintext);
-    encryptor_.Encrypt(buffer, &buffer);
-    EXPECT_EQ(expected_ciphertext, buffer);
-    decryptor_.Decrypt(buffer, &buffer);
-    EXPECT_EQ(plaintext, buffer);
-  }
+  std::vector<uint8_t> decrypted;
+  ASSERT_TRUE(decryptor.Decrypt(ciphertext, &decrypted));
+  EXPECT_EQ(plaintext, decrypted);
+  // Iv should have been updated.
+  EXPECT_NE(iv_, encryptor.iv());
+  // If run decrypt on ciphertext2 now, it will return the original plaintext.
+  ASSERT_TRUE(decryptor.Decrypt(ciphertext2, &decrypted));
+  EXPECT_EQ(plaintext, decrypted);
+}
 
- protected:
-  std::vector<uint8_t> key_;
-  std::vector<uint8_t> iv_;
-  AesCbcCtsEncryptor encryptor_;
-  AesCbcCtsDecryptor decryptor_;
+TEST_F(AesCbcTest, UnsupportedKeySize) {
+  EXPECT_FALSE(encryptor_->InitializeWithIv(std::vector<uint8_t>(15, 0), iv_));
+  EXPECT_FALSE(decryptor_->InitializeWithIv(std::vector<uint8_t>(15, 0), iv_));
+}
+
+TEST_F(AesCbcTest, UnsupportedIvSize) {
+  EXPECT_FALSE(encryptor_->InitializeWithIv(key_, std::vector<uint8_t>(14, 0)));
+  EXPECT_FALSE(decryptor_->InitializeWithIv(key_, std::vector<uint8_t>(8, 0)));
+}
+
+TEST_F(AesCbcTest, Pkcs5CipherTextNotMultipleOfBlockSize) {
+  std::string plaintext;
+  ASSERT_TRUE(decryptor_->InitializeWithIv(key_, iv_));
+  EXPECT_FALSE(decryptor_->Decrypt("1", &plaintext));
+}
+
+TEST_F(AesCbcTest, Pkcs5CipherTextEmpty) {
+  std::string plaintext;
+  ASSERT_TRUE(decryptor_->InitializeWithIv(key_, iv_));
+  EXPECT_FALSE(decryptor_->Decrypt("", &plaintext));
+}
+
+struct CbcTestCase {
+  CbcPaddingScheme padding_scheme;
+  const char* plaintext_hex;
+  const char* expected_ciphertext_hex;
 };
 
-TEST_F(AesCbcCtsEncryptorDecryptorTest, TestWithResidualBytes) {
+const CbcTestCase kCbcTestCases[] = {
+    // No padding with zero bytes.
+    {kNoPadding, "", ""},
+    {kNoPadding,
+     "6bc1bee22e409f96e93d7e117393172a6bc1bee22e409f96e93d7e117393172a",
+     "77cde91fe6df9cbc5d0c98f96efd590bbddde439526f100c9545c274d4f7fd3f"},
+    // Pkcs5 padding with zero bytes.
+    {kPkcs5Padding, "", "f6a3569dea3cda208eb3d5792942612b"},
+    // Cts Padding with zero bytes.
+    {kCtsPadding, "", ""},
+    // Cts Padding with no encrypted blocks.
+    {kCtsPadding, "3f593e7a204a5e70f2", "3f593e7a204a5e70f2"},
+    // Cts padding with residual bytes.
+    {kCtsPadding,
+     "e0818f2dc7caaa9edf09285a0c1fca98d39e9b08a47ab6911c4bbdf27d94"
+     "f917cdffc9ebb307141f23b0d3921e0ed7f86eb09381286f8e7a4f",
+     "b40a0b8704c74e22e8030cad6f272b34ace54cc7c9c64b2018bbcf23df018"
+     "39b14899441cf74a9fb2f2b229a609146f31be8e8a826eb6e857e"},
+    // Cts padding with even blocks.
+    {kCtsPadding,
+     "3f593e7a204a5e70f2814dca05aa49d36f2daddc9a24e0515802c539efc3"
+     "1094b3ad6c26d6f5c0e387545ce6a4c2c14d",
+     "5f32cd0504b27b25ee04090d88d37d340c9c0a9fa50b05358b98fad4302ea"
+     "480148d8aa091f4e7d186a7223df153f6f7"},
+    // Cts padding with one block and a half.
+    {kCtsPadding, "3f593e7a204a5e70f2814dca05aa49d36f2daddc9a4302ea",
+     "623fc113fe02ce85628deb58d652c6995f32cd0504b27b25"},
+};
+
+class AesCbcCryptorVerificationTest
+    : public AesCbcEncryptDecryptTest,
+      public ::testing::TestWithParam<CbcTestCase> {};
+
+TEST_P(AesCbcCryptorVerificationTest, EncryptDecryptTest) {
+  encryptor_.reset(
+      new AesCbcEncryptor(GetParam().padding_scheme, !kChainAcrossCalls));
+  decryptor_.reset(
+      new AesCbcDecryptor(GetParam().padding_scheme, !kChainAcrossCalls));
+
   std::vector<uint8_t> plaintext;
-  ASSERT_TRUE(base::HexStringToBytes(
-      "e0818f2dc7caaa9edf09285a0c1fca98d39e9b08a47ab6911c4bbdf27d94"
-      "f917cdffc9ebb307141f23b0d3921e0ed7f86eb09381286f8e7a4f",
-      &plaintext));
+  std::string plaintext_hex(GetParam().plaintext_hex);
+  if (!plaintext_hex.empty())
+    ASSERT_TRUE(base::HexStringToBytes(plaintext_hex, &plaintext));
 
-  std::vector<uint8_t> ciphertext;
-  ASSERT_TRUE(base::HexStringToBytes(
-      "b40a0b8704c74e22e8030cad6f272b34ace54cc7c9c64b2018bbcf23df018"
-      "39b14899441cf74a9fb2f2b229a609146f31be8e8a826eb6e857e",
-      &ciphertext));
+  std::vector<uint8_t> expected_ciphertext;
+  std::string expected_ciphertext_hex(GetParam().expected_ciphertext_hex);
+  if (!expected_ciphertext_hex.empty()) {
+    ASSERT_TRUE(base::HexStringToBytes(GetParam().expected_ciphertext_hex,
+                                       &expected_ciphertext));
+  }
 
-  TestEncryptDecryptSeparateBuffers(plaintext, ciphertext);
-  TestEncryptDecryptInPlace(plaintext, ciphertext);
+  TestEncryptDecrypt(plaintext, expected_ciphertext);
 }
 
-TEST_F(AesCbcCtsEncryptorDecryptorTest, TestEvenBlocks) {
-  std::vector<uint8_t> plaintext;
-  ASSERT_TRUE(base::HexStringToBytes(
-      "3f593e7a204a5e70f2814dca05aa49d36f2daddc9a24e0515802c539efc3"
-      "1094b3ad6c26d6f5c0e387545ce6a4c2c14d",
-      &plaintext));
-
-  std::vector<uint8_t> ciphertext;
-  ASSERT_TRUE(base::HexStringToBytes(
-      "5f32cd0504b27b25ee04090d88d37d340c9c0a9fa50b05358b98fad4302ea"
-      "480148d8aa091f4e7d186a7223df153f6f7",
-      &ciphertext));
-
-  TestEncryptDecryptSeparateBuffers(plaintext, ciphertext);
-  TestEncryptDecryptInPlace(plaintext, ciphertext);
-}
-
-TEST_F(AesCbcCtsEncryptorDecryptorTest, TestOneBlockAndAHalf) {
-  std::vector<uint8_t> plaintext;
-  ASSERT_TRUE(base::HexStringToBytes(
-      "3f593e7a204a5e70f2814dca05aa49d36f2daddc9a4302ea",
-      &plaintext));
-
-  std::vector<uint8_t> ciphertext;
-  ASSERT_TRUE(base::HexStringToBytes(
-      "623fc113fe02ce85628deb58d652c6995f32cd0504b27b25",
-      &ciphertext));
-
-  TestEncryptDecryptSeparateBuffers(plaintext, ciphertext);
-  TestEncryptDecryptInPlace(plaintext, ciphertext);
-}
-
-TEST_F(AesCbcCtsEncryptorDecryptorTest, TestZeroEncryptedBlocks) {
-  std::vector<uint8_t> plaintext;
-  ASSERT_TRUE(base::HexStringToBytes("3f593e7a204a5e70f2", &plaintext));
-
-  TestEncryptDecryptSeparateBuffers(plaintext, plaintext);
-  TestEncryptDecryptInPlace(plaintext, plaintext);
-}
-
-TEST_F(AesCbcCtsEncryptorDecryptorTest, TestZeroBytes) {
-  std::vector<uint8_t> plaintext;
-
-  TestEncryptDecryptSeparateBuffers(plaintext, plaintext);
-  TestEncryptDecryptInPlace(plaintext, plaintext);
-}
+INSTANTIATE_TEST_CASE_P(CbcTestCases,
+                        AesCbcCryptorVerificationTest,
+                        ::testing::ValuesIn(kCbcTestCases));
 
 }  // namespace media
 }  // namespace edash_packager

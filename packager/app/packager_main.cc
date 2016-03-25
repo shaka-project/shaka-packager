@@ -112,7 +112,7 @@ edash_packager::media::EncryptionMode GetEncryptionMode(
   } else if (protection_scheme == "cbc1") {
     return edash_packager::media::kEncryptionModeAesCbc;
   } else {
-    LOG(ERROR) << "Protection scheme is unknown.";
+    LOG(ERROR) << "Unknown protection scheme: " << protection_scheme;
     return edash_packager::media::kEncryptionModeUnknown;
   }
 }
@@ -377,6 +377,12 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
   EncryptionMode encryption_mode = GetEncryptionMode(FLAGS_protection_scheme);
   if (encryption_mode == kEncryptionModeUnknown)
     return false;
+  if (encryption_mode == kEncryptionModeAesCbc && !FLAGS_iv.empty()) {
+    if (FLAGS_iv.size() != 16) {
+      LOG(ERROR) << "Iv size should be 16 bytes for CBC encryption mode.";
+      return false;
+    }
+  }
 
   if (!AssignFlagsFromProfile())
     return false;

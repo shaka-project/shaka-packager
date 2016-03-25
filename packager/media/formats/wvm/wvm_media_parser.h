@@ -20,7 +20,7 @@
 namespace edash_packager {
 namespace media {
 
-class AesCbcCtsDecryptor;
+class AesCbcDecryptor;
 class KeySource;
 struct EncryptionKey;
 
@@ -252,7 +252,7 @@ class WvmMediaParser : public MediaParser {
   std::deque<DemuxStreamIdMediaSample> media_sample_queue_;
   std::vector<uint8_t> sample_data_;
   KeySource* decryption_key_source_;
-  scoped_ptr<AesCbcCtsDecryptor> content_decryptor_;
+  scoped_ptr<AesCbcDecryptor> content_decryptor_;
 
   DISALLOW_COPY_AND_ASSIGN(WvmMediaParser);
 };

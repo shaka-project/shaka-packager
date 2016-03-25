@@ -44,7 +44,7 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
         aes_decryptor.reset(new AesCtrDecryptor);
         break;
       case kEncryptionModeAesCbc:
-        aes_decryptor.reset(new AesCbcPkcs5Decryptor);
+        aes_decryptor.reset(new AesCbcDecryptor(kNoPadding, kChainAcrossCalls));
         break;
       default:
         LOG(ERROR) << "Unsupported Decryption Mode: "

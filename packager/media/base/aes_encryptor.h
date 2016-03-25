@@ -29,52 +29,64 @@ class AesEncryptor {
   /// Initialize the encryptor with specified key and a random generated IV
   /// of the specified size.
   /// @return true on successful initialization, false otherwise.
-  virtual bool InitializeWithRandomIv(const std::vector<uint8_t>& key,
+  bool InitializeWithRandomIv(const std::vector<uint8_t>& key,
                                       uint8_t iv_size);
 
   /// Initialize the encryptor with specified key and IV.
   /// @return true on successful initialization, false otherwise.
-  virtual bool InitializeWithIv(const std::vector<uint8_t>& key,
-                                const std::vector<uint8_t>& iv) = 0;
+  bool InitializeWithIv(const std::vector<uint8_t>& key,
+                        const std::vector<uint8_t>& iv);
 
-  virtual size_t NumPaddingBytes(size_t size) = 0;
-
-  /// @name Various forms of encrypt and decrypt calls.
+  /// @name Various forms of encrypt calls.
   /// The plaintext and ciphertext pointers can be the same address.
-  /// @{
-  virtual bool EncryptData(const uint8_t* plaintext,
-                           size_t plaintext_size,
-                           uint8_t* ciphertext) = 0;
-
   bool Encrypt(const std::vector<uint8_t>& plaintext,
                std::vector<uint8_t>* ciphertext);
-
   bool Encrypt(const std::string& plaintext, std::string* ciphertext);
+  bool Encrypt(const uint8_t* plaintext,
+               size_t plaintext_size,
+               uint8_t* ciphertext) {
+    return EncryptInternal(plaintext, plaintext_size, ciphertext);
+  }
   /// @}
 
   /// Update IV for next sample.
   /// As recommended in ISO/IEC FDIS 23001-7:
   /// IV need to be updated per sample for CENC.
-  /// IV need not be unique per sample for CBC mode.
   virtual void UpdateIv() = 0;
 
   /// Set IV.
   /// @return true if successful, false if the input is invalid.
   virtual bool SetIv(const std::vector<uint8_t>& iv) = 0;
 
+  /// @return The current iv.
   const std::vector<uint8_t>& iv() const { return iv_; }
 
  protected:
+  /// Internal implementation of encrypt function.
+  /// @param plaintext points to the input plaintext.
+  /// @param plaintext_size is the size of input plaintext.
+  /// @param[out] ciphertext points to the output ciphertext. @a plaintext and
+  ///             @a ciphertext can point to the same address.
+  virtual bool EncryptInternal(const uint8_t* plaintext,
+                               size_t plaintext_size,
+                               uint8_t* ciphertext) = 0;
+  /// @param size specifies the input plaintext size.
+  /// @returns The number of padding bytes needed for output ciphertext.
+  virtual size_t NumPaddingBytes(size_t size) const = 0;
+
+  void set_iv(const std::vector<uint8_t>& iv) { iv_ = iv; }
+  AES_KEY* aes_key() const { return aes_key_.get(); }
+
+ private:
   // Initialization vector, with size 8 or 16.
   std::vector<uint8_t> iv_;
   // Openssl AES_KEY.
   scoped_ptr<AES_KEY> aes_key_;
 
- private:
   DISALLOW_COPY_AND_ASSIGN(AesEncryptor);
 };
 
-// Class which implements AES-CTR counter-mode encryption/decryption.
+// Class which implements AES-CTR counter-mode encryption.
 class AesCtrEncryptor : public AesEncryptor {
  public:
   AesCtrEncryptor();
@@ -82,18 +94,6 @@ class AesCtrEncryptor : public AesEncryptor {
 
   /// @name AesEncryptor implementation overrides.
   /// @{
-  /// @param key should be 16 bytes in size as specified in CENC spec.
-  /// @param iv_size should be either 8 or 16 as specified in CENC spec.
-  /// @return true on successful initialization, false otherwise.
-  bool InitializeWithIv(const std::vector<uint8_t>& key,
-                        const std::vector<uint8_t>& iv) override;
-
-  size_t NumPaddingBytes(size_t size) override;
-
-  bool EncryptData(const uint8_t* plaintext,
-                   size_t plaintext_size,
-                   uint8_t* ciphertext) override;
-
   /// Update IV for next sample. @a block_offset_ is reset to 0.
   /// As recommended in ISO/IEC FDIS 23001-7: CENC spec,
   ///   For 64-bit IV size, new_iv = old_iv + 1;
@@ -104,6 +104,12 @@ class AesCtrEncryptor : public AesEncryptor {
   /// @}
 
   uint32_t block_offset() const { return block_offset_; }
+
+ protected:
+  bool EncryptInternal(const uint8_t* plaintext,
+                       size_t plaintext_size,
+                       uint8_t* ciphertext) override;
+  size_t NumPaddingBytes(size_t size) const override;
 
  private:
   // Current block offset.
@@ -118,58 +124,43 @@ class AesCtrEncryptor : public AesEncryptor {
   DISALLOW_COPY_AND_ASSIGN(AesCtrEncryptor);
 };
 
-// Class which implements AES-CBC (Cipher block chaining) encryption with
-// PKCS#5 padding.
-class AesCbcPkcs5Encryptor : public AesEncryptor {
- public:
-  AesCbcPkcs5Encryptor();
-  ~AesCbcPkcs5Encryptor() override;
-
-  /// @name AesEncryptor implementation overrides.
-  /// @{
-  bool InitializeWithIv(const std::vector<uint8_t>& key,
-                        const std::vector<uint8_t>& iv) override;
-
-  size_t NumPaddingBytes(size_t size) override;
-
-  bool EncryptData(const uint8_t* plaintext,
-                   size_t plaintext_size,
-                   uint8_t* ciphertext) override;
-
-  void UpdateIv() override;
-
-  bool SetIv(const std::vector<uint8_t>& iv) override;
-  /// @}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AesCbcPkcs5Encryptor);
+enum CbcPaddingScheme {
+  kNoPadding,
+  kPkcs5Padding,
+  kCtsPadding,
 };
 
-// Class which implements AES-CBC (Cipher block chaining) encryption with
-// Ciphertext stealing.
-class AesCbcCtsEncryptor : public AesEncryptor {
+const bool kChainAcrossCalls = true;
+
+// Class which implements AES-CBC (Cipher block chaining) encryption.
+class AesCbcEncryptor : public AesEncryptor {
  public:
-  AesCbcCtsEncryptor();
-  ~AesCbcCtsEncryptor() override;
+  /// @param padding_scheme indicates the padding scheme used. Currently
+  ///        supported schemes: kNoPadding, kPkcs5Padding, kCtsPadding.
+  /// @param chain_across_calls indicates whether there is a continuous cipher
+  ///        block chain across calls for Encrypt function. If it is false, iv
+  ///        is not updated across Encrypt function calls.
+  AesCbcEncryptor(CbcPaddingScheme padding_scheme, bool chain_across_calls);
+  ~AesCbcEncryptor() override;
 
   /// @name AesEncryptor implementation overrides.
   /// @{
-  bool InitializeWithIv(const std::vector<uint8_t>& key,
-                        const std::vector<uint8_t>& iv) override;
-
-  size_t NumPaddingBytes(size_t size) override;
-
-  bool EncryptData(const uint8_t* plaintext,
-                   size_t plaintext_size,
-                   uint8_t* ciphertext) override;
-
   void UpdateIv() override;
 
   bool SetIv(const std::vector<uint8_t>& iv) override;
   /// @}
 
+ protected:
+  bool EncryptInternal(const uint8_t* plaintext,
+                       size_t plaintext_size,
+                       uint8_t* ciphertext) override;
+  size_t NumPaddingBytes(size_t size) const override;
+
  private:
-  DISALLOW_COPY_AND_ASSIGN(AesCbcCtsEncryptor);
+  const CbcPaddingScheme padding_scheme_;
+  const bool chain_across_calls_;
+
+  DISALLOW_COPY_AND_ASSIGN(AesCbcEncryptor);
 };
 
 }  // namespace media

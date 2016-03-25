@@ -27,34 +27,42 @@ class AesDecryptor {
   AesDecryptor();
   virtual ~AesDecryptor();
 
+  /// Initialize the decryptor with specified key and IV.
+  /// @return true on successful initialization, false otherwise.
   virtual bool InitializeWithIv(const std::vector<uint8_t>& key,
                                 const std::vector<uint8_t>& iv) = 0;
 
   /// @name Various forms of decrypt calls.
   /// The plaintext and ciphertext pointers can be the same address.
   /// @{
-  virtual bool Decrypt(const uint8_t* ciphertext,
-                       size_t ciphertext_size,
-                       uint8_t* plaintext) = 0;
-
-  virtual bool Decrypt(const std::vector<uint8_t>& ciphertext,
-                       std::vector<uint8_t>* plaintext) = 0;
-
-  virtual bool Decrypt(const std::string& ciphertext,
-                       std::string* plaintext) = 0;
+  bool Decrypt(const std::vector<uint8_t>& ciphertext,
+               std::vector<uint8_t>* plaintext);
+  bool Decrypt(const std::string& ciphertext, std::string* plaintext);
+  bool Decrypt(const uint8_t* ciphertext,
+               size_t ciphertext_size,
+               uint8_t* plaintext) {
+    size_t plaintext_size;
+    return DecryptInternal(ciphertext, ciphertext_size, plaintext,
+                           &plaintext_size);
+  }
   /// @}
 
-  /// Set IV. @a block_offset_ is reset to 0 on success.
+  /// Set IV.
   /// @return true if successful, false if the input is invalid.
   virtual bool SetIv(const std::vector<uint8_t>& iv) = 0;
 
-  const std::vector<uint8_t>& iv() const { return iv_; }
-
  protected:
-  // Initialization vector, with size 8 or 16.
-  std::vector<uint8_t> iv_;
-  // Openssl AES_KEY.
-  scoped_ptr<AES_KEY> aes_key_;
+  /// Internal implementation of decrypt function.
+  /// @param ciphertext points to the input ciphertext.
+  /// @param ciphertext_size is the input ciphertext size.
+  /// @param[out] plaintext points to the output plaintext. @a plaintext and
+  ///             @a ciphertext can point to the same address.
+  /// @param[out] plaintext_size contains the size of plaintext on success.
+  ///             It should never be larger than @a ciphertext_size.
+  virtual bool DecryptInternal(const uint8_t* ciphertext,
+                               size_t ciphertext_size,
+                               uint8_t* plaintext,
+                               size_t* plaintext_size) = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AesDecryptor);
@@ -71,19 +79,16 @@ class AesCtrDecryptor : public AesDecryptor {
   bool InitializeWithIv(const std::vector<uint8_t>& key,
                         const std::vector<uint8_t>& iv) override;
 
-  bool Decrypt(const uint8_t* ciphertext,
-               size_t ciphertext_size,
-               uint8_t* plaintext) override;
-
-  bool Decrypt(const std::vector<uint8_t>& ciphertext,
-               std::vector<uint8_t>* plaintext) override;
-
-  bool Decrypt(const std::string& ciphertext, std::string* plaintext) override;
-
   bool SetIv(const std::vector<uint8_t>& iv) override;
   /// @}
 
   uint32_t block_offset() const { return encryptor_->block_offset(); }
+
+ protected:
+  bool DecryptInternal(const uint8_t* ciphertext,
+                       size_t ciphertext_size,
+                       uint8_t* plaintext,
+                       size_t* plaintext_size) override;
 
  private:
   scoped_ptr<AesCtrEncryptor> encryptor_;
@@ -91,60 +96,40 @@ class AesCtrDecryptor : public AesDecryptor {
   DISALLOW_COPY_AND_ASSIGN(AesCtrDecryptor);
 };
 
-// Class which implements AES-CBC (Cipher block chaining) decryption with
-// PKCS#5 padding.
-class AesCbcPkcs5Decryptor : public AesDecryptor {
+// Class which implements AES-CBC (Cipher block chaining) decryption.
+class AesCbcDecryptor : public AesDecryptor {
  public:
-  AesCbcPkcs5Decryptor();
-  ~AesCbcPkcs5Decryptor() override;
+  /// @param padding_scheme indicates the padding scheme used. Currently
+  ///        supported schemes: kNoPadding, kPkcs5Padding, kCtsPadding.
+  /// @param chain_across_calls indicates whether there is a continuous cipher
+  ///        block chain across calls for Decrypt function. If it is false, iv
+  ///        is not updated across Decrypt function calls.
+  AesCbcDecryptor(CbcPaddingScheme padding_scheme, bool chain_across_calls);
+  ~AesCbcDecryptor() override;
 
   /// @name AesDecryptor implementation overrides.
   /// @{
   bool InitializeWithIv(const std::vector<uint8_t>& key,
                         const std::vector<uint8_t>& iv) override;
 
-  bool Decrypt(const uint8_t* ciphertext,
-               size_t ciphertext_size,
-               uint8_t* plaintext) override;
-
-  bool Decrypt(const std::vector<uint8_t>& ciphertext,
-               std::vector<uint8_t>* plaintext) override;
-
-  bool Decrypt(const std::string& ciphertext, std::string* plaintext) override;
-
   bool SetIv(const std::vector<uint8_t>& iv) override;
   /// @}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AesCbcPkcs5Decryptor);
-};
-
-// Class which implements AES-CBC (Cipher block chaining) decryption with
-// Ciphertext stealing.
-class AesCbcCtsDecryptor : public AesDecryptor {
- public:
-  AesCbcCtsDecryptor();
-  ~AesCbcCtsDecryptor() override;
-
-  /// @name AesDecryptor implementation overrides.
-  /// @{
-  bool InitializeWithIv(const std::vector<uint8_t>& key,
-                        const std::vector<uint8_t>& iv) override;
-
-  bool Decrypt(const uint8_t* ciphertext,
-               size_t ciphertext_size,
-               uint8_t* plaintext) override;
-
-  bool Decrypt(const std::vector<uint8_t>& ciphertext,
-               std::vector<uint8_t>* plaintext) override;
-
-  bool Decrypt(const std::string& ciphertext, std::string* plaintext) override;
-
-  bool SetIv(const std::vector<uint8_t>& iv) override;
-  /// @}
+ protected:
+  bool DecryptInternal(const uint8_t* ciphertext,
+                       size_t ciphertext_size,
+                       uint8_t* plaintext,
+                       size_t* plaintext_size) override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(AesCbcCtsDecryptor);
+  // Openssl AES_KEY.
+  scoped_ptr<AES_KEY> aes_key_;
+  // Initialization vector, must be 16 for CBC.
+  std::vector<uint8_t> iv_;
+  const CbcPaddingScheme padding_scheme_;
+  const bool chain_across_calls_;
+
+  DISALLOW_COPY_AND_ASSIGN(AesCbcDecryptor);
 };
 
 }  // namespace media

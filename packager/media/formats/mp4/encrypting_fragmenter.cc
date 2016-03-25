@@ -23,7 +23,8 @@ namespace mp4 {
 
 namespace {
 // Generate 64bit IV by default.
-const size_t kDefaultIvSize = 8u;
+const size_t kDefaultIvSizeForCtr = 8u;
+const size_t kDefaultIvSizeForCbc = 16u;
 const size_t kCencBlockSize = 16u;
 
 // Adds one or more subsamples to |*subsamples|.  This may add more than one
@@ -175,16 +176,19 @@ void EncryptingFragmenter::FinalizeFragmentForEncryption() {
 Status EncryptingFragmenter::CreateEncryptor() {
   DCHECK(encryption_key_);
   scoped_ptr<AesEncryptor> encryptor;
+  size_t default_iv_size = 0;
   if (encryption_mode_ == kEncryptionModeAesCtr) {
     encryptor.reset(new AesCtrEncryptor);
+    default_iv_size = kDefaultIvSizeForCtr;
   } else if (encryption_mode_ == kEncryptionModeAesCbc) {
-    encryptor.reset(new AesCbcPkcs5Encryptor);
+    encryptor.reset(new AesCbcEncryptor(kNoPadding, kChainAcrossCalls));
+    default_iv_size = kDefaultIvSizeForCbc;
   } else {
     return Status(error::MUXER_FAILURE, "Unsupported encryption mode.");
   }
   const bool initialized = encryption_key_->iv.empty()
                                ? encryptor->InitializeWithRandomIv(
-                                     encryption_key_->key, kDefaultIvSize)
+                                     encryption_key_->key, default_iv_size)
                                : encryptor->InitializeWithIv(
                                      encryption_key_->key, encryption_key_->iv);
   if (!initialized)
@@ -195,7 +199,7 @@ Status EncryptingFragmenter::CreateEncryptor() {
 
 void EncryptingFragmenter::EncryptBytes(uint8_t* data, uint32_t size) {
   DCHECK(encryptor_);
-  CHECK(encryptor_->EncryptData(data, size, data));
+  CHECK(encryptor_->Encrypt(data, size, data));
 }
 
 Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
@@ -223,8 +227,11 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
         // encrypted bytes of each frame within the superframe must be block
         // aligned so that the counter state can be computed for each frame
         // within the superframe.
-        if (is_superframe) {
-          uint16_t misalign_bytes = subsample.cipher_bytes % kCencBlockSize;
+        // For AES-CBC mode 'cbc1' scheme, clear data is sized appropriately so
+        // that the cipher data is block aligned.
+        if (is_superframe || encryption_mode_ == kEncryptionModeAesCbc) {
+          const uint16_t misalign_bytes =
+              subsample.cipher_bytes % kCencBlockSize;
           subsample.clear_bytes += misalign_bytes;
           subsample.cipher_bytes -= misalign_bytes;
         }
@@ -258,10 +265,18 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
           if (video_slice_header_size < 0)
             return Status(error::MUXER_FAILURE, "Failed to read slice header.");
 
-          const uint64_t current_clear_bytes = nalu.header_size() +
-                                               video_slice_header_size;
-          const uint64_t cipher_bytes =
-              nalu.payload_size() - video_slice_header_size;
+          uint64_t current_clear_bytes =
+              nalu.header_size() + video_slice_header_size;
+          uint64_t cipher_bytes = nalu.payload_size() - video_slice_header_size;
+
+          // For AES-CBC mode 'cbc1' scheme, clear data is sized appropriately
+          // so that the cipher data is block aligned.
+          if (encryption_mode_ == kEncryptionModeAesCbc) {
+            const uint16_t misalign_bytes = cipher_bytes % kCencBlockSize;
+            current_clear_bytes += misalign_bytes;
+            cipher_bytes -= misalign_bytes;
+          }
+
           const uint8_t* nalu_data = nalu.data() + current_clear_bytes;
           EncryptBytes(const_cast<uint8_t*>(nalu_data), cipher_bytes);
 
@@ -285,7 +300,12 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
     traf()->auxiliary_size.sample_info_sizes.push_back(
         sample_encryption_entry.ComputeSize());
   } else {
-    EncryptBytes(data, sample->data_size());
+    uint64_t encryption_data_size = sample->data_size();
+    // AES-CBC mode requires all encrypted cipher blocks to be 16 bytes. The
+    // partial blocks are left unencrypted.
+    if (encryption_mode_ == kEncryptionModeAesCbc)
+      encryption_data_size -= encryption_data_size % kCencBlockSize;
+    EncryptBytes(data, encryption_data_size);
   }
 
   traf()->sample_encryption.sample_encryption_entries.push_back(
