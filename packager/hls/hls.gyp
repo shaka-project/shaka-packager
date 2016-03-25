@@ -13,10 +13,13 @@
       'target_name': 'hls_builder',
       'type': '<(component)',
       'sources': [
+        'base/hls_notifier.h',
         'base/master_playlist.cc',
         'base/master_playlist.h',
         'base/media_playlist.cc',
         'base/media_playlist.h',
+        'base/simple_hls_notifier.cc',
+        'base/simple_hls_notifier.h',
       ],
       'dependencies': [
         '../base/base.gyp:base',
@@ -32,6 +35,7 @@
         'base/media_playlist_unittest.cc',
         'base/mock_media_playlist.cc',
         'base/mock_media_playlist.h',
+        'base/simple_hls_notifier_unittest.cc',
       ],
       'dependencies': [
         '../base/base.gyp:base',

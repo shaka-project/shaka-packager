@@ -18,16 +18,17 @@ namespace hls {
 class MediaPlaylist;
 
 /// Class to generate HLS Master Playlist.
+/// Methods are virtual for mocking.
 class MasterPlaylist {
  public:
   /// @param file_name is the file name of the master playlist.
   explicit MasterPlaylist(const std::string& file_name);
-  ~MasterPlaylist();
+  virtual ~MasterPlaylist();
 
   /// @param media_playlist is a MediaPlaylist that should get added to this
   ///        master playlist. Ownership does not transfer.
   /// @return true on success, false otherwise.
-  void AddMediaPlaylist(MediaPlaylist* media_playlist);
+  virtual void AddMediaPlaylist(MediaPlaylist* media_playlist);
 
   /// Write out Master Playlist and all the added MediaPlaylists to
   /// base_url + <name of playlist>.
@@ -38,8 +39,8 @@ class MasterPlaylist {
   ///        necessarily the same as base_url. It must be in a form that File
   ///        interface can open.
   /// @return true on success, false otherwise.
-  bool WriteAllPlaylists(const std::string& base_url,
-                         const std::string& output_dir);
+  virtual bool WriteAllPlaylists(const std::string& base_url,
+                                 const std::string& output_dir);
 
   /// Writes Master Playlist to output_dir + <name of playlist>.
   /// This assumes that @a base_url is used as the prefix for Media Playlists.
@@ -49,8 +50,8 @@ class MasterPlaylist {
   ///        necessarily the same as base_url. It must be in a form that File
   ///        interface can open.
   /// @return true on success, false otherwise.
-  bool WriteMasterPlaylist(const std::string& base_url,
-                           const std::string& output_dir);
+  virtual bool WriteMasterPlaylist(const std::string& base_url,
+                                   const std::string& output_dir);
 
  private:
   const std::string file_name_;
