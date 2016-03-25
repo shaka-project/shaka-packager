@@ -133,7 +133,7 @@ class MediaPlaylist {
 
   /// @return the longest segment’s duration. This will return 0 if no
   ///         segments have been added.
-  virtual double GetLongestSegmentDuration();
+  virtual double GetLongestSegmentDuration() const;
 
   /// Set the target duration of this MediaPlaylist.
   /// In other words this is the value for EXT-X-TARGETDURATION.

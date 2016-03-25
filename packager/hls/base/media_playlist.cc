@@ -301,7 +301,7 @@ uint64_t MediaPlaylist::Bitrate() const {
   return total_segments_size_ / total_duration_in_seconds_;
 }
 
-double MediaPlaylist::GetLongestSegmentDuration() {
+double MediaPlaylist::GetLongestSegmentDuration() const {
   return longest_segment_duration_;
 }
 

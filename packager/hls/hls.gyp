@@ -13,6 +13,8 @@
       'target_name': 'hls_builder',
       'type': '<(component)',
       'sources': [
+        'base/master_playlist.cc',
+        'base/master_playlist.h',
         'base/media_playlist.cc',
         'base/media_playlist.h',
       ],
@@ -26,7 +28,10 @@
       'target_name': 'hls_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
+        'base/master_playlist_unittest.cc',
         'base/media_playlist_unittest.cc',
+        'base/mock_media_playlist.cc',
+        'base/mock_media_playlist.h',
       ],
       'dependencies': [
         '../base/base.gyp:base',
