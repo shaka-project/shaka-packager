@@ -21,7 +21,7 @@ import sys
 
 # Define static global objects and attributes.
 SRC_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../..')
-
+OUT_DIR = os.path.join(SRC_DIR, os.getenv('builddir_name', 'out'))
 
 # Parse arguments and calculate dynamic global objects and attributes.
 parser = argparse.ArgumentParser()

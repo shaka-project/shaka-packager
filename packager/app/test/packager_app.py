@@ -19,7 +19,7 @@ class PackagerApp(object):
   """Main integration class for testing the packager binary."""
 
   def __init__(self):
-    self.build_dir = os.path.join(test_env.SRC_DIR, 'out',
+    self.build_dir = os.path.join(test_env.OUT_DIR,
                                   test_env.options.build_type)
     self.binary = os.path.join(self.build_dir, 'packager')
 
