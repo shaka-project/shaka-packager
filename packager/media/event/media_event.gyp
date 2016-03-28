@@ -13,6 +13,8 @@
       'target_name': 'media_event',
       'type': '<(component)',
       'sources': [
+        'hls_notify_muxer_listener.cc',
+        'hls_notify_muxer_listener.h',
         'mpd_notify_muxer_listener.cc',
         'mpd_notify_muxer_listener.h',
         'muxer_listener.h',
@@ -34,6 +36,7 @@
       'target_name': 'media_event_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
+        'hls_notify_muxer_listener_unittest.cc',
         'mpd_notify_muxer_listener_unittest.cc',
         'muxer_listener_test_helper.cc',
         'muxer_listener_test_helper.h',
