@@ -226,7 +226,8 @@ Status SingleSegmentSegmenter::DoFinalizeSegment() {
   UpdateProgress(vod_ref.subsegment_duration);
   if (muxer_listener()) {
     muxer_listener()->OnSampleDurationReady(sample_duration());
-    muxer_listener()->OnNewSegment(vod_ref.earliest_presentation_time,
+    muxer_listener()->OnNewSegment(options().output_file_name,
+                                   vod_ref.earliest_presentation_time,
                                    vod_ref.subsegment_duration, segment_size);
   }
   return Status::OK;

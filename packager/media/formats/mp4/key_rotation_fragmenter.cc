@@ -81,6 +81,7 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption(
   if (muxer_listener_) {
     muxer_listener_->OnEncryptionInfoReady(!kInitialEncryptionInfo,
                                            encryption_key()->key_id,
+                                           encryption_key()->iv,
                                            encryption_key()->key_system_info);
   }
 

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "packager/base/logging.h"
 #include "packager/base/stl_util.h"
 #include "packager/media/base/aes_cryptor.h"
 #include "packager/media/base/buffer_writer.h"
@@ -214,7 +215,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
                                    local_protection_scheme, &description);
       if (muxer_listener_) {
         muxer_listener_->OnEncryptionInfoReady(
-            kInitialEncryptionInfo, encryption_key.key_id,
+            kInitialEncryptionInfo, encryption_key.key_id, encryption_key.iv,
             encryption_key.key_system_info);
       }
 
@@ -252,6 +253,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
       if (muxer_listener_) {
         muxer_listener_->OnEncryptionInfoReady(kInitialEncryptionInfo,
                                                encryption_key->key_id,
+                                               encryption_key->iv,
                                                encryption_key->key_system_info);
       }
     }

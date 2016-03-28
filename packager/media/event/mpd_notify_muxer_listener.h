@@ -35,6 +35,7 @@ class MpdNotifyMuxerListener : public MuxerListener {
   /// @{
   void OnEncryptionInfoReady(bool is_initial_encryption_info,
                              const std::vector<uint8_t>& key_id,
+                             const std::vector<uint8_t>& iv,
                              const std::vector<ProtectionSystemSpecificInfo>&
                                  key_system_info) override;
   void OnMediaStart(const MuxerOptions& muxer_options,
@@ -50,7 +51,8 @@ class MpdNotifyMuxerListener : public MuxerListener {
                   uint64_t index_range_end,
                   float duration_seconds,
                   uint64_t file_size) override;
-  void OnNewSegment(uint64_t start_time,
+  void OnNewSegment(const std::string& file_name,
+                    uint64_t start_time,
                     uint64_t duration,
                     uint64_t segment_file_size) override;
   /// @}

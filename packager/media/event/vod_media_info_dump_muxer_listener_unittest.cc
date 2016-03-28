@@ -25,6 +25,11 @@ const uint8_t kBogusDefaultKeyId[] = {0x5f, 0x64, 0x65, 0x66, 0x61, 0x75,
                                       0x6c, 0x74, 0x5f, 0x6b, 0x65, 0x79,
                                       0x5f, 0x69, 0x64, 0x5f};
 
+const uint8_t kBogusIv[] = {
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x67, 0x83, 0xC3, 0x66, 0xEE, 0xAB, 0xB2, 0xF1,
+};
+
 const bool kInitialEncryptionInfo = true;
 }  // namespace
 
@@ -76,9 +81,10 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
       std::vector<uint8_t> bogus_default_key_id(
           kBogusDefaultKeyId,
           kBogusDefaultKeyId + arraysize(kBogusDefaultKeyId));
+      std::vector<uint8_t> bogus_iv(kBogusIv, kBogusIv + arraysize(kBogusIv));
 
       listener_->OnEncryptionInfoReady(kInitialEncryptionInfo,
-                                       bogus_default_key_id,
+                                       bogus_default_key_id, bogus_iv,
                                        GetDefaultKeySystemInfo());
     }
     listener_->OnMediaStart(muxer_options, stream_info, kReferenceTimeScale,

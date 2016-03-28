@@ -120,6 +120,7 @@ Status Encryptor::CreateEncryptor(MuxerListener* muxer_listener,
     const bool kInitialEncryptionInfo = true;
     muxer_listener->OnEncryptionInfoReady(kInitialEncryptionInfo,
                                           encryption_key->key_id,
+                                          encryptor->iv(),
                                           encryption_key->key_system_info);
   }
 

@@ -148,11 +148,10 @@ Status MultiSegmentSegmenter::WriteSegment() {
           "Cannot open file for append " + options().output_file_name);
     }
   } else {
-    file = File::Open(GetSegmentName(options().segment_template,
-                                     sidx()->earliest_presentation_time,
-                                     num_segments_++,
-                                     options().bandwidth).c_str(),
-                      "w");
+    file_name = GetSegmentName(options().segment_template,
+                               sidx()->earliest_presentation_time,
+                               num_segments_++, options().bandwidth);
+    file = File::Open(file_name.c_str(), "w");
     if (file == NULL) {
       return Status(error::FILE_FAILURE,
                     "Cannot open file for write " + file_name);
@@ -186,8 +185,9 @@ Status MultiSegmentSegmenter::WriteSegment() {
   UpdateProgress(segment_duration);
   if (muxer_listener()) {
     muxer_listener()->OnSampleDurationReady(sample_duration());
-    muxer_listener()->OnNewSegment(
-        sidx()->earliest_presentation_time, segment_duration, segment_size);
+    muxer_listener()->OnNewSegment(file_name,
+                                   sidx()->earliest_presentation_time,
+                                   segment_duration, segment_size);
   }
 
   return Status::OK;

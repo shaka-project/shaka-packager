@@ -31,6 +31,7 @@ MpdNotifyMuxerListener::~MpdNotifyMuxerListener() {}
 void MpdNotifyMuxerListener::OnEncryptionInfoReady(
     bool is_initial_encryption_info,
     const std::vector<uint8_t>& key_id,
+    const std::vector<uint8_t>& iv,
     const std::vector<ProtectionSystemSpecificInfo>& key_system_info) {
   if (is_initial_encryption_info) {
     LOG_IF(WARNING, is_encrypted_)
@@ -142,7 +143,8 @@ void MpdNotifyMuxerListener::OnMediaEnd(bool has_init_range,
   mpd_notifier_->Flush();
 }
 
-void MpdNotifyMuxerListener::OnNewSegment(uint64_t start_time,
+void MpdNotifyMuxerListener::OnNewSegment(const std::string& file_name,
+                                          uint64_t start_time,
                                           uint64_t duration,
                                           uint64_t segment_file_size) {
   if (mpd_notifier_->dash_profile() == kLiveProfile) {

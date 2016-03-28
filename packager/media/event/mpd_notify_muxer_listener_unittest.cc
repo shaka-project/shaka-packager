@@ -55,6 +55,11 @@ void SetDefaultLiveMuxerOptionsValues(media::MuxerOptions* muxer_options) {
   muxer_options->temp_dir.clear();
 }
 
+const uint8_t kBogusIv[] = {
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x67, 0x83, 0xC3, 0x66, 0xEE, 0xAB, 0xB2, 0xF1,
+};
+
 }  // namespace
 
 namespace media {
@@ -161,8 +166,10 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
       "}\n";
 
   EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
-  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo,
-                                   default_key_id, GetDefaultKeySystemInfo());
+
+  std::vector<uint8_t> iv(kBogusIv, kBogusIv + arraysize(kBogusIv));
+  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, default_key_id, iv,
+                                   GetDefaultKeySystemInfo());
 
   listener_->OnMediaStart(muxer_options, *video_stream_info,
                           kDefaultReferenceTimeScale,
@@ -245,8 +252,8 @@ TEST_F(MpdNotifyMuxerListenerTest, VodOnNewSegment) {
   listener_->OnMediaStart(muxer_options, *video_stream_info,
                           kDefaultReferenceTimeScale,
                           MuxerListener::kContainerMp4);
-  listener_->OnNewSegment(kStartTime1, kDuration1, kSegmentFileSize1);
-  listener_->OnNewSegment(kStartTime2, kDuration2, kSegmentFileSize2);
+  listener_->OnNewSegment("", kStartTime1, kDuration1, kSegmentFileSize1);
+  listener_->OnNewSegment("", kStartTime2, kDuration2, kSegmentFileSize2);
   ::testing::Mock::VerifyAndClearExpectations(notifier_.get());
 
   InSequence s;
@@ -312,13 +319,14 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
               NotifyNewSegment(_, kStartTime2, kDuration2, kSegmentFileSize2));
   EXPECT_CALL(*notifier_, Flush());
 
-  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo,
-                                   default_key_id, GetDefaultKeySystemInfo());
+  std::vector<uint8_t> iv(kBogusIv, kBogusIv + arraysize(kBogusIv));
+  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, default_key_id, iv,
+                                   GetDefaultKeySystemInfo());
   listener_->OnMediaStart(muxer_options, *video_stream_info,
                           kDefaultReferenceTimeScale,
                           MuxerListener::kContainerMp4);
-  listener_->OnNewSegment(kStartTime1, kDuration1, kSegmentFileSize1);
-  listener_->OnNewSegment(kStartTime2, kDuration2, kSegmentFileSize2);
+  listener_->OnNewSegment("", kStartTime1, kDuration1, kSegmentFileSize1);
+  listener_->OnNewSegment("", kStartTime2, kDuration2, kSegmentFileSize2);
   ::testing::Mock::VerifyAndClearExpectations(notifier_.get());
 
   EXPECT_CALL(*notifier_, Flush()).Times(0);
@@ -374,16 +382,17 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
               NotifyNewSegment(_, kStartTime2, kDuration2, kSegmentFileSize2));
   EXPECT_CALL(*notifier_, Flush());
 
-  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, default_key_id,
+  std::vector<uint8_t> iv(kBogusIv, kBogusIv + arraysize(kBogusIv));
+  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, default_key_id, iv,
                                    std::vector<ProtectionSystemSpecificInfo>());
   listener_->OnMediaStart(muxer_options, *video_stream_info,
                           kDefaultReferenceTimeScale,
                           MuxerListener::kContainerMp4);
   listener_->OnEncryptionInfoReady(kNonInitialEncryptionInfo,
-                                   std::vector<uint8_t>(),
+                                   std::vector<uint8_t>(), iv,
                                    GetDefaultKeySystemInfo());
-  listener_->OnNewSegment(kStartTime1, kDuration1, kSegmentFileSize1);
-  listener_->OnNewSegment(kStartTime2, kDuration2, kSegmentFileSize2);
+  listener_->OnNewSegment("", kStartTime1, kDuration1, kSegmentFileSize1);
+  listener_->OnNewSegment("", kStartTime2, kDuration2, kSegmentFileSize2);
   ::testing::Mock::VerifyAndClearExpectations(notifier_.get());
 
   EXPECT_CALL(*notifier_, Flush()).Times(0);

@@ -50,7 +50,8 @@ Status MultiSegmentSegmenter::FinalizeSegment() {
     const uint64_t start_timescale = FromWebMTimecode(start_webm_timecode);
     const uint64_t length = static_cast<uint64_t>(
         cluster_length_sec() * info()->time_scale());
-    muxer_listener()->OnNewSegment(start_timescale, length, size);
+    muxer_listener()->OnNewSegment(writer_->file()->file_name(),
+                                   start_timescale, length, size);
   }
 
   VLOG(1) << "WEBM file '" << writer_->file()->file_name() << "' finalized.";

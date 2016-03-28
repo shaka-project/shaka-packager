@@ -28,6 +28,7 @@ VodMediaInfoDumpMuxerListener::~VodMediaInfoDumpMuxerListener() {}
 void VodMediaInfoDumpMuxerListener::OnEncryptionInfoReady(
     bool is_initial_encryption_info,
     const std::vector<uint8_t>& default_key_id,
+    const std::vector<uint8_t>& iv,
     const std::vector<ProtectionSystemSpecificInfo>& key_system_info) {
   LOG_IF(WARNING, !is_initial_encryption_info)
       << "Updating (non initial) encryption info is not supported by "
@@ -91,10 +92,10 @@ void VodMediaInfoDumpMuxerListener::OnMediaEnd(bool has_init_range,
   WriteMediaInfoToFile(*media_info_, output_file_name_);
 }
 
-void VodMediaInfoDumpMuxerListener::OnNewSegment(uint64_t start_time,
+void VodMediaInfoDumpMuxerListener::OnNewSegment(const std::string& file_name,
+                                                 uint64_t start_time,
                                                  uint64_t duration,
-                                                 uint64_t segment_file_size) {
-}
+                                                 uint64_t segment_file_size) {}
 
 // static
 bool VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
