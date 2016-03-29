@@ -10,6 +10,7 @@
 #include <math.h>
 
 #include "packager/base/logging.h"
+#include "packager/base/stl_util.h"
 #include "packager/media/filters/nalu_reader.h"
 
 #define TRUE_OR_RETURN(a)                            \
@@ -86,7 +87,10 @@ H265SliceHeader::H265SliceHeader() {}
 H265SliceHeader::~H265SliceHeader() {}
 
 H265Parser::H265Parser() {}
-H265Parser::~H265Parser() {}
+H265Parser::~H265Parser() {
+  STLDeleteValues(&active_spses_);
+  STLDeleteValues(&active_ppses_);
+}
 
 H265Parser::Result H265Parser::ParseSliceHeader(const Nalu& nalu,
                                                 H265SliceHeader* slice_header) {
@@ -406,10 +410,10 @@ H265Parser::Result H265Parser::ParsePps(const Nalu& nalu, int* pps_id) {
 
   // Ignore remaining extension data.
 
-  // This will replace any existing PPS instance.  The scoped_ptr will delete
-  // the memory when it is overwritten.
+  // This will replace any existing PPS instance.
   *pps_id = pps->pic_parameter_set_id;
-  active_ppses_[*pps_id] = pps.Pass();
+  delete active_ppses_[*pps_id];
+  active_ppses_[*pps_id] = pps.release();
 
   return kOk;
 }
@@ -517,20 +521,20 @@ H265Parser::Result H265Parser::ParseSps(const Nalu& nalu, int* sps_id) {
 
   // Ignore remaining extension data.
 
-  // This will replace any existing SPS instance.  The scoped_ptr will delete
-  // the memory when it is overwritten.
+  // This will replace any existing SPS instance.
   *sps_id = sps->seq_parameter_set_id;
-  active_spses_[*sps_id] = sps.Pass();
+  delete active_spses_[*sps_id];
+  active_spses_[*sps_id] = sps.release();
 
   return kOk;
 }
 
 const H265Pps* H265Parser::GetPps(int pps_id) {
-  return active_ppses_[pps_id].get();
+  return active_ppses_[pps_id];
 }
 
 const H265Sps* H265Parser::GetSps(int sps_id) {
-  return active_spses_[sps_id].get();
+  return active_spses_[sps_id];
 }
 
 H265Parser::Result H265Parser::ParseReferencePictureSet(

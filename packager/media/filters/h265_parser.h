@@ -305,8 +305,8 @@ class H265Parser {
 
   Result SkipScalingListData(H26xBitReader* br);
 
-  typedef std::map<int, scoped_ptr<H265Sps>> SpsById;
-  typedef std::map<int, scoped_ptr<H265Pps>> PpsById;
+  typedef std::map<int, H265Sps*> SpsById;
+  typedef std::map<int, H265Pps*> PpsById;
 
   SpsById active_spses_;
   PpsById active_ppses_;
