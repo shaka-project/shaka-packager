@@ -41,7 +41,7 @@ class PackagerAppTest(unittest.TestCase):
   def testVersion(self):
     self.assertRegexpMatches(
         self.packager.Version(), '^edash-packager version '
-        '((?P<tag>[\w\.]+)-)?(?P<hash>[a-f\d]+)-(debug|release)$')
+        r'((?P<tag>[\w\.]+)-)?(?P<hash>[a-f\d]+)-(debug|release)$')
 
   def testDumpStreamInfo(self):
     test_file = os.path.join(self.test_data_dir, 'bear-640x360.mp4')
@@ -390,9 +390,9 @@ class PackagerAppTest(unittest.TestCase):
                 '--content_id=3031323334353637', '--signer=widevine_test']
     elif encryption:
       pssh_box = ('000000307073736800000000'  # PSSH header
-                 'edef8ba979d64acea3c827dcd51d21ed'  # Widevine system ID
-                 '00000010'  # Data size
-                 '31323334353637383930313233343536')  # Data
+                  'edef8ba979d64acea3c827dcd51d21ed'  # Widevine system ID
+                  '00000010'  # Data size
+                  '31323334353637383930313233343536')  # Data
       flags += ['--enable_fixed_key_encryption',
                 '--key_id=31323334353637383930313233343536',
                 '--key=32333435363738393021323334353637',
@@ -480,10 +480,10 @@ class PackagerAppTest(unittest.TestCase):
     publish_time = m.group(0)
     print publish_time
     with open(test_output, 'w') as f:
-        f.write(content.replace(
-            availability_start_time,
-            'availabilityStartTime="place_holder"').replace(
-                publish_time, 'publishTime="some_publish_time"'))
+      f.write(content.replace(
+          availability_start_time,
+          'availabilityStartTime="some_availability_start_time"').replace(
+              publish_time, 'publishTime="some_publish_time"'))
 
     self._DiffGold(test_output, golden_file_name)
 
