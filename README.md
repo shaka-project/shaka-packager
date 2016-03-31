@@ -8,11 +8,12 @@ Current supported codecs:
 
 |      Codecs       |   ISO-BMFF   |     WebM     |   MPEG2-TS   |     WVM     |
 |:-----------------:|:------------:|:------------:|:------------:|:-----------:|
-|    H264 (AVC)     |    I / O     |      I       |       -      |      I      |
+|    H264 (AVC)     |    I / O     |      -       |       I      |      I      |
 |    H265 (HEVC)    |    I / O     |      -       |       -      |      -      |
 |       VP8         |    I / O     |    I / O     |       -      |      -      |
 |       VP9         |    I / O     |    I / O     |       -      |      -      |
 |       AAC         |    I / O     |      -       |       I      |      I      |
+|  Dolby AC3/EAC3   |    I / O     |      -       |       -      |      -      |
 |       DTS         |    I / O     |      -       |       -      |      -      |
 |       Opus        |      -       |    I / O     |       -      |      -      |
 |      Vorbis       |      -       |    I / O     |       -      |      -      |
@@ -89,16 +90,24 @@ We have a [public mailing list](https://groups.google.com/forum/#!forum/edash-us
 
 1. Install [Docker](https://docs.docker.com/installation/).
 
-2. Build the image
+2. Pull prebuilt image from Dockerhub or build an image locally
 
-  ```Shell
-  docker build -t edash github.com/google/edash-packager.git
-  ```
+  2.a. Pull prebuilt image from Dockerhub
+
+    ```Shell
+    docker pull google/edash-packager
+    ```
+
+  2.b. Build an image locally
+
+    ```Shell
+    docker build -t google/edash-packager github.com/google/edash-packager.git
+    ```
 
 3. Run the container (`your_media_path` should be your media folder)
 
   ```Shell
-  docker run -v /your_media_path/:/media -it --rm edash
+  docker run -v /your_media_path/:/media -it --rm google/edash-packager
   ```
 
 4. Testing

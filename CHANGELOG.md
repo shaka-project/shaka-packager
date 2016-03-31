@@ -1,3 +1,30 @@
+## [1.4.0] - 2016-04-08
+### Added
+- Added support for MacOSX (#65). Thanks to @nevil.
+- Added support for Dolby AC3 and EAC3 Audio in ISO-BMFF (#64).
+- Added support for language code with subtags, e.g. por-BR is now supported.
+- Added a new optional flag (--include_common_pssh) to widevine encryption
+  to include [common system pssh box](https://goo.gl/507mKp) in addition to
+  widevine pssh box.
+- Improved handling of unescaped NAL units in byte stream (#96).
+
+### Changed
+- Changed fixed key encryption to generate
+  [common system pssh box](https://goo.gl/507mKp) by default; overridable by
+  specifying pssh box(es) explicitly with --pssh flag, which is now optional.
+  --pssh should be one or more PSSH boxes instead of just pssh data in hex
+  string format if it is specified.
+- Improved subsample encryption algorithm for H.264 and H.265. Now only video
+  data in slice NALs are encrypted (#40).
+
+### Fixed
+- Split AdaptationSets by container and codec in addition to content_type,
+  language. AVC/MP4 and VP9/WebM are now put in different AdaptationSets if
+  they are packaged together.
+- Fixed index range off-by-1 error in WebM DASH manifest (#99).
+- Fixed WebM SeekHeader bug that the positions should be relative to the
+  Segment payload instead of the start of the file.
+
 ## [1.3.1] - 2016-01-22
 This release fixes and improves WebM parsing and packaging.
 ### Added
@@ -124,6 +151,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[1.4.0]: https://github.com/google/edash-packager/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/google/edash-packager/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/google/edash-packager/compare/v1.2.0...v1.3.0
 [1.2.1]: https://github.com/google/edash-packager/compare/v1.2.0...v1.2.1
