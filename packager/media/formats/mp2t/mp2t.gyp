@@ -19,6 +19,10 @@
         'es_parser_adts.h',
         'es_parser_h264.cc',
         'es_parser_h264.h',
+        'es_parser_h265.cc',
+        'es_parser_h265.h',
+        'es_parser_h26x.cc',
+        'es_parser_h26x.h',
         'es_parser.h',
         'mp2t_media_parser.cc',
         'mp2t_media_parser.h',
@@ -45,6 +49,7 @@
       ],
       'dependencies': [
         '../../base/media_base.gyp:media_base',
+        '../../filters/filters.gyp:filters',
         # TODO(rkuroiwa): AACAudioSpecificConfig is used to create ADTS.
         # Break this dependency on mp4 by moving it to media/filters.
         '../../formats/mp4/mp4.gyp:mp4',

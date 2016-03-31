@@ -73,15 +73,12 @@ class Mp2tMediaParserTest : public testing::Test {
 
   bool OnNewSample(uint32_t track_id,
                    const scoped_refptr<MediaSample>& sample) {
-    std::string stream_type;
     StreamMap::const_iterator stream = stream_map_.find(track_id);
     if (stream != stream_map_.end()) {
       if (stream->second->stream_type() == kStreamAudio) {
         ++audio_frame_count_;
-        stream_type = "audio";
       } else if (stream->second->stream_type() == kStreamVideo) {
         ++video_frame_count_;
-        stream_type = "video";
         if (video_min_dts_ == kNoTimestamp)
           video_min_dts_ = sample->dts();
         // Verify timestamps are increasing.
@@ -121,20 +118,36 @@ class Mp2tMediaParserTest : public testing::Test {
   }
 };
 
-TEST_F(Mp2tMediaParserTest, UnalignedAppend17) {
+TEST_F(Mp2tMediaParserTest, UnalignedAppend17_H264) {
   // Test small, non-segment-aligned appends.
   ParseMpeg2TsFile("bear-640x360.ts", 17);
-  EXPECT_EQ(video_frame_count_, 79);
+  EXPECT_EQ(79, video_frame_count_);
   EXPECT_TRUE(parser_->Flush());
-  EXPECT_EQ(video_frame_count_, 82);
+  EXPECT_EQ(82, video_frame_count_);
 }
 
-TEST_F(Mp2tMediaParserTest, UnalignedAppend512) {
+TEST_F(Mp2tMediaParserTest, UnalignedAppend512_H264) {
   // Test small, non-segment-aligned appends.
   ParseMpeg2TsFile("bear-640x360.ts", 512);
-  EXPECT_EQ(video_frame_count_, 79);
+  EXPECT_EQ(79, video_frame_count_);
   EXPECT_TRUE(parser_->Flush());
-  EXPECT_EQ(video_frame_count_, 82);
+  EXPECT_EQ(82, video_frame_count_);
+}
+
+TEST_F(Mp2tMediaParserTest, UnalignedAppend17_H265) {
+  // Test small, non-segment-aligned appends.
+  ParseMpeg2TsFile("bear-640x360-hevc.ts", 17);
+  EXPECT_EQ(79, video_frame_count_);
+  EXPECT_TRUE(parser_->Flush());
+  EXPECT_EQ(82, video_frame_count_);
+}
+
+TEST_F(Mp2tMediaParserTest, UnalignedAppend512_H265) {
+  // Test small, non-segment-aligned appends.
+  ParseMpeg2TsFile("bear-640x360-hevc.ts", 512);
+  EXPECT_EQ(79, video_frame_count_);
+  EXPECT_TRUE(parser_->Flush());
+  EXPECT_EQ(82, video_frame_count_);
 }
 
 TEST_F(Mp2tMediaParserTest, TimestampWrapAround) {
@@ -143,7 +156,7 @@ TEST_F(Mp2tMediaParserTest, TimestampWrapAround) {
   // wrap around in the Mpeg2 TS stream.
   ParseMpeg2TsFile("bear-640x360_ptswraparound.ts", 512);
   EXPECT_TRUE(parser_->Flush());
-  EXPECT_EQ(video_frame_count_, 82);
+  EXPECT_EQ(82, video_frame_count_);
   EXPECT_LT(video_min_dts_, static_cast<int64_t>(1) << 33);
   EXPECT_GT(video_max_dts_, static_cast<int64_t>(1) << 33);
 }

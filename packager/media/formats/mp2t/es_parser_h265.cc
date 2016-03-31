@@ -1,62 +1,65 @@
-// Copyright 2014 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
+// Copyright 2016 Google Inc. All rights reserved.
+//
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/formats/mp2t/es_parser_h264.h"
+#include "packager/media/formats/mp2t/es_parser_h265.h"
 
 #include <stdint.h>
 
 #include "packager/base/logging.h"
 #include "packager/media/base/media_sample.h"
+#include "packager/media/base/offset_byte_queue.h"
 #include "packager/media/base/timestamp.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/filters/avc_decoder_configuration.h"
-#include "packager/media/filters/h264_byte_to_unit_stream_converter.h"
-#include "packager/media/filters/h264_parser.h"
+#include "packager/media/filters/hevc_decoder_configuration.h"
+#include "packager/media/filters/h265_parser.h"
+#include "packager/media/filters/h26x_byte_to_unit_stream_converter.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 
 namespace edash_packager {
 namespace media {
 namespace mp2t {
 
-EsParserH264::EsParserH264(uint32_t pid,
+EsParserH265::EsParserH265(uint32_t pid,
                            const NewStreamInfoCB& new_stream_info_cb,
                            const EmitSampleCB& emit_sample_cb)
-    : EsParserH26x(Nalu::kH264, pid, emit_sample_cb),
+    : EsParserH26x(Nalu::kH265, pid, emit_sample_cb),
       new_stream_info_cb_(new_stream_info_cb),
       decoder_config_check_pending_(false),
-      h264_parser_(new H264Parser()) {}
+      h265_parser_(new H265Parser()) {}
 
-EsParserH264::~EsParserH264() {}
+EsParserH265::~EsParserH265() {}
 
-void EsParserH264::Reset() {
-  DVLOG(1) << "EsParserH264::Reset";
-  h264_parser_.reset(new H264Parser());
+void EsParserH265::Reset() {
+  DVLOG(1) << "EsParserH265::Reset";
+  h265_parser_.reset(new H265Parser());
   last_video_decoder_config_ = scoped_refptr<StreamInfo>();
   decoder_config_check_pending_ = false;
   EsParserH26x::Reset();
 }
 
-bool EsParserH264::ProcessNalu(const Nalu& nalu,
+bool EsParserH265::ProcessNalu(const Nalu& nalu,
                                bool* is_key_frame,
                                int* pps_id_for_access_unit) {
   switch (nalu.type()) {
-    case Nalu::H264_AUD: {
+    case Nalu::H265_AUD: {
       DVLOG(LOG_LEVEL_ES) << "Nalu: AUD";
       break;
     }
-    case Nalu::H264_SPS: {
+    case Nalu::H265_SPS: {
       DVLOG(LOG_LEVEL_ES) << "Nalu: SPS";
       int sps_id;
-      if (h264_parser_->ParseSps(nalu, &sps_id) != H264Parser::kOk)
+      if (h265_parser_->ParseSps(nalu, &sps_id) != H265Parser::kOk)
         return false;
       decoder_config_check_pending_ = true;
       break;
     }
-    case Nalu::H264_PPS: {
+    case Nalu::H265_PPS: {
       DVLOG(LOG_LEVEL_ES) << "Nalu: PPS";
       int pps_id;
-      if (h264_parser_->ParsePps(nalu, &pps_id) != H264Parser::kOk) {
+      if (h265_parser_->ParsePps(nalu, &pps_id) != H265Parser::kOk) {
         // Allow PPS parsing to fail if waiting for SPS.
         if (last_video_decoder_config_)
           return false;
@@ -65,36 +68,36 @@ bool EsParserH264::ProcessNalu(const Nalu& nalu,
       }
       break;
     }
-    case Nalu::H264_IDRSlice:
-    case Nalu::H264_NonIDRSlice: {
-      *is_key_frame = (nalu.type() == Nalu::H264_IDRSlice);
-      DVLOG(LOG_LEVEL_ES) << "Nalu: slice IDR=" << is_key_frame;
-      H264SliceHeader shdr;
-      if (h264_parser_->ParseSliceHeader(nalu, &shdr) != H264Parser::kOk) {
-        // Only accept an invalid SPS/PPS at the beginning when the stream
-        // does not necessarily start with an SPS/PPS/IDR.
-        if (last_video_decoder_config_)
-          return false;
-      } else {
-        *pps_id_for_access_unit = shdr.pic_parameter_set_id;
-      }
-      break;
-    }
     default: {
-      DVLOG(LOG_LEVEL_ES) << "Nalu: " << nalu.type();
+      if (nalu.is_video_slice()) {
+        *is_key_frame = nalu.type() == Nalu::H265_IDR_W_RADL ||
+                        nalu.type() == Nalu::H265_IDR_N_LP;
+        DVLOG(LOG_LEVEL_ES) << "Nalu: slice KeyFrame=" << is_key_frame;
+        H265SliceHeader shdr;
+        if (h265_parser_->ParseSliceHeader(nalu, &shdr) != H265Parser::kOk) {
+          // Only accept an invalid SPS/PPS at the beginning when the stream
+          // does not necessarily start with an SPS/PPS/IDR.
+          if (last_video_decoder_config_)
+            return false;
+        } else {
+          *pps_id_for_access_unit = shdr.pic_parameter_set_id;
+        }
+      } else {
+        DVLOG(LOG_LEVEL_ES) << "Nalu: " << nalu.type();
+      }
     }
   }
 
   return true;
 }
 
-bool EsParserH264::UpdateVideoDecoderConfig(int pps_id) {
+bool EsParserH265::UpdateVideoDecoderConfig(int pps_id) {
   // Update the video decoder configuration if needed.
   if (!decoder_config_check_pending_)
     return true;
 
-  const H264Pps* pps = h264_parser_->GetPps(pps_id);
-  const H264Sps* sps;
+  const H265Pps* pps = h265_parser_->GetPps(pps_id);
+  const H265Sps* sps;
   if (!pps) {
     // Only accept an invalid PPS at the beginning when the stream
     // does not necessarily start with an SPS/PPS/IDR.
@@ -103,16 +106,18 @@ bool EsParserH264::UpdateVideoDecoderConfig(int pps_id) {
     // to process this kind of frame accordingly.
     return last_video_decoder_config_ == nullptr;
   } else {
-    sps = h264_parser_->GetSps(pps->seq_parameter_set_id);
+    sps = h265_parser_->GetSps(pps->seq_parameter_set_id);
     if (!sps)
       return false;
     decoder_config_check_pending_ = false;
   }
 
   std::vector<uint8_t> decoder_config_record;
+  HEVCDecoderConfiguration decoder_config;
   if (!stream_converter()->GetDecoderConfigurationRecord(
-          &decoder_config_record)) {
-    DLOG(ERROR) << "Failure to construct an AVCDecoderConfigurationRecord";
+          &decoder_config_record) ||
+      !decoder_config.Parse(decoder_config_record)) {
+    DLOG(ERROR) << "Failure to construct an HEVCDecoderConfigurationRecord";
     return false;
   }
 
@@ -123,7 +128,7 @@ bool EsParserH264::UpdateVideoDecoderConfig(int pps_id) {
       // minor configuration changes (such as frame ordering) can be handled
       // gracefully by decoders without notification. Major changes (such as
       // video resolution changes) should be treated as errors.
-      LOG(WARNING) << "H.264 decoder configuration has changed.";
+      LOG(WARNING) << "H.265 decoder configuration has changed.";
       last_video_decoder_config_->set_extra_data(decoder_config_record);
     }
     return true;
@@ -144,23 +149,18 @@ bool EsParserH264::UpdateVideoDecoderConfig(int pps_id) {
           pid(),
           kMpeg2Timescale,
           kInfiniteDuration,
-          kCodecH264,
-          AVCDecoderConfiguration::GetCodecString(decoder_config_record[1],
-                                                  decoder_config_record[2],
-                                                  decoder_config_record[3]),
+          kCodecHVC1,
+          decoder_config.GetCodecString(kCodecHVC1),
           std::string(),
           coded_width,
           coded_height,
           pixel_width,
           pixel_height,
           0,
-          H264ByteToUnitStreamConverter::kUnitStreamNaluLengthSize,
+          H26xByteToUnitStreamConverter::kUnitStreamNaluLengthSize,
           decoder_config_record.data(),
           decoder_config_record.size(),
           false));
-  DVLOG(1) << "Profile IDC: " << sps->profile_idc;
-  DVLOG(1) << "Level IDC: " << sps->level_idc;
-  DVLOG(1) << "log2_max_frame_num_minus4: " << sps->log2_max_frame_num_minus4;
 
   // Video config notification.
   new_stream_info_cb_.Run(last_video_decoder_config_);

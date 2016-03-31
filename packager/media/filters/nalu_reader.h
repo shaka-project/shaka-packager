@@ -36,7 +36,9 @@ class Nalu {
     H264_EOSeq = 10,
     H264_FillerData = 12,
     H264_SPSExtension = 13,
+    H264_PrefixNALUnit = 14,
     H264_SubsetSPS = 15,
+    H264_DepthParameterSet = 16,
     H264_Reserved17 = 17,
     H264_Reserved18 = 18,
     H264_CodedSliceExtension = 20,
@@ -70,7 +72,12 @@ class Nalu {
     H265_EOS = 36,
     H265_EOB = 37,
 
+    H265_PREFIX_SEI = 39,
+
     H265_RSV_NVCL41 = 41,
+    H265_RSV_NVCL44 = 44,
+    H265_UNSPEC48 = 48,
+    H265_UNSPEC55 = 55,
   };
   enum CodecType {
     kH264,
@@ -96,6 +103,7 @@ class Nalu {
 
   int type() const { return type_; }
   bool is_video_slice() const { return is_video_slice_; }
+  bool can_start_access_unit() const { return can_start_access_unit_; }
 
  private:
   bool InitializeFromH264(const uint8_t* data, uint64_t size);
@@ -115,6 +123,7 @@ class Nalu {
   int nuh_temporal_id_;
   int type_;
   bool is_video_slice_;
+  bool can_start_access_unit_;
 
   // Don't use DISALLOW_COPY_AND_ASSIGN since it is just numbers and a pointer
   // it does not own.  This allows Nalus to be stored in a vector.

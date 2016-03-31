@@ -29,6 +29,7 @@ vorbis-packet-3  - timestamp: 2902ms, duration: 0ms
 bear-640x360.ts - AVC + AAC encode, multiplexed into an MPEG2-TS container.
 bear-640x360_ptswraparound.ts - Same as bear-640x360.ts, with a timestamp wrap-around in the middle, created with the below command:
                                 ffmpeg -itsoffset 95442 -i bear-640x360.ts -c:v copy -c:a copy -muxdelay 0 bear-640x360_ptswraparound.ts
+bear-640x360-hevc.ts - HEVC + AAC encode, multiplexed into an MPEG2-TS container.
 
 // ISO-BMFF streams.
 bear-1280x720.mp4 - AVC + AAC encode, mulitplexed into an ISOBMFF container.

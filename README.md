@@ -9,7 +9,7 @@ Current supported codecs:
 |      Codecs       |   ISO-BMFF   |     WebM     |   MPEG2-TS   |     WVM     |
 |:-----------------:|:------------:|:------------:|:------------:|:-----------:|
 |    H264 (AVC)     |    I / O     |      -       |       I      |      I      |
-|    H265 (HEVC)    |    I / O     |      -       |       -      |      -      |
+|    H265 (HEVC)    |    I / O     |      -       |       I      |      -      |
 |       VP8         |    I / O     |    I / O     |       -      |      -      |
 |       VP9         |    I / O     |    I / O     |       -      |      -      |
 |       AAC         |    I / O     |      -       |       I      |      I      |

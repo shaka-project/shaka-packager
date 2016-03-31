@@ -12,6 +12,7 @@
 #include "packager/media/formats/mp2t/es_parser.h"
 #include "packager/media/formats/mp2t/es_parser_adts.h"
 #include "packager/media/formats/mp2t/es_parser_h264.h"
+#include "packager/media/formats/mp2t/es_parser_h265.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 #include "packager/media/formats/mp2t/ts_packet.h"
 #include "packager/media/formats/mp2t/ts_section.h"
@@ -28,6 +29,7 @@ enum StreamType {
   kStreamTypeMpeg1Audio = 0x3,
   kStreamTypeAAC = 0xf,
   kStreamTypeAVC = 0x1b,
+  kStreamTypeHEVC = 0x24,
 };
 
 class PidState {
@@ -295,6 +297,14 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
   if (stream_type == kStreamTypeAVC) {
     es_parser.reset(
         new EsParserH264(
+            pes_pid,
+            base::Bind(&Mp2tMediaParser::OnNewStreamInfo,
+                       base::Unretained(this)),
+            base::Bind(&Mp2tMediaParser::OnEmitSample,
+                       base::Unretained(this))));
+  } else if (stream_type == kStreamTypeHEVC) {
+    es_parser.reset(
+        new EsParserH265(
             pes_pid,
             base::Bind(&Mp2tMediaParser::OnNewStreamInfo,
                        base::Unretained(this)),
