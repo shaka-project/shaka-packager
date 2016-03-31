@@ -88,6 +88,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="../../d6/d22/classedash__packager_1_1media_1_1AesCtrDecryptor-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">edash_packager::media::AesCtrDecryptor Class Reference</div>  </div>
@@ -109,39 +110,130 @@ Public Member Functions</h2></td></tr>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>block_offset</b> () const </td></tr>
 <tr class="separator:af2f6634cfe37f24a89ae08d3485de0a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">AesDecryptor implementation overrides.</div></td></tr>
-<tr class="memitem:afe5ed7534a8a187247ede28b6446f071"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afe5ed7534a8a187247ede28b6446f071"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>InitializeWithIv</b> (const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;iv) override</td></tr>
+<tr class="memitem:afe5ed7534a8a187247ede28b6446f071"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d06/classedash__packager_1_1media_1_1AesCtrDecryptor.html#afe5ed7534a8a187247ede28b6446f071">InitializeWithIv</a> (const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;iv) override</td></tr>
 <tr class="separator:afe5ed7534a8a187247ede28b6446f071"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18fcb16d90ead9ab4cde40bdcffea1a8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a18fcb16d90ead9ab4cde40bdcffea1a8"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>Decrypt</b> (const uint8_t *ciphertext, size_t ciphertext_size, uint8_t *plaintext) override</td></tr>
-<tr class="separator:a18fcb16d90ead9ab4cde40bdcffea1a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af0912f24eb1f3a45eb3f29442423e19d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af0912f24eb1f3a45eb3f29442423e19d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>Decrypt</b> (const std::vector&lt; uint8_t &gt; &amp;ciphertext, std::vector&lt; uint8_t &gt; *plaintext) override</td></tr>
-<tr class="separator:af0912f24eb1f3a45eb3f29442423e19d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba4feeef6f7f5e2cafd8e7dce3005a03"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aba4feeef6f7f5e2cafd8e7dce3005a03"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>Decrypt</b> (const std::string &amp;ciphertext, std::string *plaintext) override</td></tr>
-<tr class="separator:aba4feeef6f7f5e2cafd8e7dce3005a03"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8a3e36af755f380c62fd1f058ee678b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d06/classedash__packager_1_1media_1_1AesCtrDecryptor.html#ad8a3e36af755f380c62fd1f058ee678b">SetIv</a> (const std::vector&lt; uint8_t &gt; &amp;iv) override</td></tr>
 <tr class="separator:ad8a3e36af755f380c62fd1f058ee678b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classedash__packager_1_1media_1_1AesDecryptor"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classedash__packager_1_1media_1_1AesDecryptor')"><img src="../../closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="../../d9/d96/classedash__packager_1_1media_1_1AesDecryptor.html">edash_packager::media::AesDecryptor</a></td></tr>
-<tr class="memitem:a9ccdaa18b0f5f972905868e7145f1e8b inherit pub_methods_classedash__packager_1_1media_1_1AesDecryptor"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9ccdaa18b0f5f972905868e7145f1e8b"></a>
-const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>iv</b> () const </td></tr>
-<tr class="separator:a9ccdaa18b0f5f972905868e7145f1e8b inherit pub_methods_classedash__packager_1_1media_1_1AesDecryptor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab94ce94a8859705bcb7114eef178a9c1 inherit pub_methods_classedash__packager_1_1media_1_1AesDecryptor"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab94ce94a8859705bcb7114eef178a9c1"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>Decrypt</b> (const std::vector&lt; uint8_t &gt; &amp;ciphertext, std::vector&lt; uint8_t &gt; *plaintext)</td></tr>
+<tr class="separator:ab94ce94a8859705bcb7114eef178a9c1 inherit pub_methods_classedash__packager_1_1media_1_1AesDecryptor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac804da88952f3a92310090b08b3e25d7 inherit pub_methods_classedash__packager_1_1media_1_1AesDecryptor"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac804da88952f3a92310090b08b3e25d7"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>Decrypt</b> (const std::string &amp;ciphertext, std::string *plaintext)</td></tr>
+<tr class="separator:ac804da88952f3a92310090b08b3e25d7 inherit pub_methods_classedash__packager_1_1media_1_1AesDecryptor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aee9cdb0a3faa56302aa1e76f0e873a96 inherit pub_methods_classedash__packager_1_1media_1_1AesDecryptor"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aee9cdb0a3faa56302aa1e76f0e873a96"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>Decrypt</b> (const uint8_t *ciphertext, size_t ciphertext_size, uint8_t *plaintext)</td></tr>
+<tr class="separator:aee9cdb0a3faa56302aa1e76f0e873a96 inherit pub_methods_classedash__packager_1_1media_1_1AesDecryptor"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
-Additional Inherited Members</h2></td></tr>
-<tr class="inherit_header pro_attribs_classedash__packager_1_1media_1_1AesDecryptor"><td colspan="2" onclick="javascript:toggleInherit('pro_attribs_classedash__packager_1_1media_1_1AesDecryptor')"><img src="../../closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="../../d9/d96/classedash__packager_1_1media_1_1AesDecryptor.html">edash_packager::media::AesDecryptor</a></td></tr>
-<tr class="memitem:a9751cf4c7855494b12e9c485abec97f1 inherit pro_attribs_classedash__packager_1_1media_1_1AesDecryptor"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9751cf4c7855494b12e9c485abec97f1"></a>
-std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>iv_</b></td></tr>
-<tr class="separator:a9751cf4c7855494b12e9c485abec97f1 inherit pro_attribs_classedash__packager_1_1media_1_1AesDecryptor"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a61713eb455c1da0c6cd7549e4ac54942 inherit pro_attribs_classedash__packager_1_1media_1_1AesDecryptor"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a61713eb455c1da0c6cd7549e4ac54942"></a>
-scoped_ptr&lt; AES_KEY &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>aes_key_</b></td></tr>
-<tr class="separator:a61713eb455c1da0c6cd7549e4ac54942 inherit pro_attribs_classedash__packager_1_1media_1_1AesDecryptor"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:aadbe5fbd2984565db8733a0ac0a1e621"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d06/classedash__packager_1_1media_1_1AesCtrDecryptor.html#aadbe5fbd2984565db8733a0ac0a1e621">DecryptInternal</a> (const uint8_t *ciphertext, size_t ciphertext_size, uint8_t *plaintext, size_t *plaintext_size) override</td></tr>
+<tr class="separator:aadbe5fbd2984565db8733a0ac0a1e621"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="../../d8/d4d/aes__decryptor_8h_source.html#l00064">64</a> of file <a class="el" href="../../d8/d4d/aes__decryptor_8h_source.html">aes_decryptor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d4d/aes__decryptor_8h_source.html#l00072">72</a> of file <a class="el" href="../../d8/d4d/aes__decryptor_8h_source.html">aes_decryptor.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="aadbe5fbd2984565db8733a0ac0a1e621"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool edash_packager::media::AesCtrDecryptor::DecryptInternal </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>ciphertext</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>ciphertext_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>plaintext</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *&#160;</td>
+          <td class="paramname"><em>plaintext_size</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Internal implementation of decrypt function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">ciphertext</td><td>points to the input ciphertext. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">ciphertext_size</td><td>is the input ciphertext size. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">plaintext</td><td>points to the output plaintext. <em>plaintext</em> and <em>ciphertext</em> can point to the same address. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">plaintext_size</td><td>contains the size of plaintext on success. It should never be larger than <em>ciphertext_size</em>. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implements <a class="el" href="../../d9/d96/classedash__packager_1_1media_1_1AesDecryptor.html#ab069c70e1ceb84e7223a09df04af56da">edash_packager::media::AesDecryptor</a>.</p>
+
+<p>Definition at line <a class="el" href="../../da/df4/aes__decryptor_8cc_source.html#l00071">71</a> of file <a class="el" href="../../da/df4/aes__decryptor_8cc_source.html">aes_decryptor.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="afe5ed7534a8a187247ede28b6446f071"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool edash_packager::media::AesCtrDecryptor::InitializeWithIv </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>key</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>iv</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Initialize the decryptor with specified key and IV. </p>
+<dl class="section return"><dt>Returns</dt><dd>true on successful initialization, false otherwise. </dd></dl>
+
+<p>Implements <a class="el" href="../../d9/d96/classedash__packager_1_1media_1_1AesDecryptor.html#a82c717a0d0ca1f58f504868d572795bf">edash_packager::media::AesDecryptor</a>.</p>
+
+<p>Definition at line <a class="el" href="../../da/df4/aes__decryptor_8cc_source.html#l00060">60</a> of file <a class="el" href="../../da/df4/aes__decryptor_8cc_source.html">aes_decryptor.cc</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="ad8a3e36af755f380c62fd1f058ee678b"></a>
 <div class="memitem">
 <div class="memproto">
@@ -163,12 +255,12 @@ scoped_ptr&lt; AES_KEY &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Set IV. <em>block_offset_</em> is reset to 0 on success. </p>
+<p>Set IV. </p>
 <dl class="section return"><dt>Returns</dt><dd>true if successful, false if the input is invalid. </dd></dl>
 
 <p>Implements <a class="el" href="../../d9/d96/classedash__packager_1_1media_1_1AesDecryptor.html#ab81d5f1a5d4b0d01f603b2f06b98b4cd">edash_packager::media::AesDecryptor</a>.</p>
 
-<p>Definition at line <a class="el" href="../../da/df4/aes__decryptor_8cc_source.html#l00060">60</a> of file <a class="el" href="../../da/df4/aes__decryptor_8cc_source.html">aes_decryptor.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../da/df4/aes__decryptor_8cc_source.html#l00066">66</a> of file <a class="el" href="../../da/df4/aes__decryptor_8cc_source.html">aes_decryptor.cc</a>.</p>
 
 </div>
 </div>
@@ -179,7 +271,7 @@ scoped_ptr&lt; AES_KEY &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 30 2016 17:08:01 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 31 2016 17:13:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

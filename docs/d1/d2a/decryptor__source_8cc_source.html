@@ -133,7 +133,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        aes_decryptor.reset(<span class="keyword">new</span> AesCtrDecryptor);</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      <span class="keywordflow">case</span> kEncryptionModeAesCbc:</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        aes_decryptor.reset(<span class="keyword">new</span> AesCbcPkcs5Decryptor);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;        aes_decryptor.reset(<span class="keyword">new</span> AesCbcDecryptor(kNoPadding, kChainAcrossCalls));</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      <span class="keywordflow">default</span>:</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;        LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unsupported Decryption Mode: &quot;</span></div>
@@ -190,7 +190,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 30 2016 17:07:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 31 2016 17:13:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

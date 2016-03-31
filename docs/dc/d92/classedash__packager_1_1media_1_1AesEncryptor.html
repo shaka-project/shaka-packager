@@ -88,7 +88,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-attribs">Protected Attributes</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="../../d7/d5a/classedash__packager_1_1media_1_1AesEncryptor-members.html">List of all members</a>  </div>
   <div class="headertitle">
 <div class="title">edash_packager::media::AesEncryptor Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div>  </div>
@@ -100,55 +100,54 @@ Inheritance diagram for edash_packager::media::AesEncryptor:</div>
  <div class="center">
   <img src="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.png" usemap="#edash_packager::media::AesEncryptor_map" alt=""/>
   <map id="edash_packager::media::AesEncryptor_map" name="edash_packager::media::AesEncryptor_map">
-<area href="../../d6/da2/classedash__packager_1_1media_1_1AesCbcCtsEncryptor.html" alt="edash_packager::media::AesCbcCtsEncryptor" shape="rect" coords="0,56,286,80"/>
-<area href="../../d6/dc4/classedash__packager_1_1media_1_1AesCbcPkcs5Encryptor.html" alt="edash_packager::media::AesCbcPkcs5Encryptor" shape="rect" coords="296,56,582,80"/>
-<area href="../../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html" alt="edash_packager::media::AesCtrEncryptor" shape="rect" coords="592,56,878,80"/>
+<area href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html" alt="edash_packager::media::AesCbcEncryptor" shape="rect" coords="0,56,252,80"/>
+<area href="../../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html" alt="edash_packager::media::AesCtrEncryptor" shape="rect" coords="262,56,514,80"/>
 </map>
  </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a49631d3d3d834bf7d78e0d51d7b33651"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html#a49631d3d3d834bf7d78e0d51d7b33651">InitializeWithRandomIv</a> (const std::vector&lt; uint8_t &gt; &amp;key, uint8_t iv_size)</td></tr>
+<tr class="memitem:a49631d3d3d834bf7d78e0d51d7b33651"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html#a49631d3d3d834bf7d78e0d51d7b33651">InitializeWithRandomIv</a> (const std::vector&lt; uint8_t &gt; &amp;key, uint8_t iv_size)</td></tr>
 <tr class="separator:a49631d3d3d834bf7d78e0d51d7b33651"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6c225492907f281a7c08a76e012f8ba7"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html#a6c225492907f281a7c08a76e012f8ba7">InitializeWithIv</a> (const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;iv)=0</td></tr>
-<tr class="separator:a6c225492907f281a7c08a76e012f8ba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ceba168d0e47dec68e85fab66fc88bd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2ceba168d0e47dec68e85fab66fc88bd"></a>
-virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><b>NumPaddingBytes</b> (size_t size)=0</td></tr>
-<tr class="separator:a2ceba168d0e47dec68e85fab66fc88bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa62b508ead94c483e2186e30da442faa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html#aa62b508ead94c483e2186e30da442faa">InitializeWithIv</a> (const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;<a class="el" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html#a741ad288803fc1c609dcc574ef797280">iv</a>)</td></tr>
+<tr class="separator:aa62b508ead94c483e2186e30da442faa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a23724f4f7a8a94599ced13878af59d51"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html#a23724f4f7a8a94599ced13878af59d51">UpdateIv</a> ()=0</td></tr>
 <tr class="separator:a23724f4f7a8a94599ced13878af59d51"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90d1ed31ee6c25dd0b27cb48c1366699"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html#a90d1ed31ee6c25dd0b27cb48c1366699">SetIv</a> (const std::vector&lt; uint8_t &gt; &amp;iv)=0</td></tr>
+<tr class="memitem:a90d1ed31ee6c25dd0b27cb48c1366699"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html#a90d1ed31ee6c25dd0b27cb48c1366699">SetIv</a> (const std::vector&lt; uint8_t &gt; &amp;<a class="el" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html#a741ad288803fc1c609dcc574ef797280">iv</a>)=0</td></tr>
 <tr class="separator:a90d1ed31ee6c25dd0b27cb48c1366699"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a741ad288803fc1c609dcc574ef797280"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a741ad288803fc1c609dcc574ef797280"></a>
-const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>iv</b> () const </td></tr>
+<tr class="memitem:a741ad288803fc1c609dcc574ef797280"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html#a741ad288803fc1c609dcc574ef797280">iv</a> () const </td></tr>
 <tr class="separator:a741ad288803fc1c609dcc574ef797280"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr><td colspan="2"><div class="groupHeader">Various forms of encrypt and decrypt calls.</div></td></tr>
+<tr><td colspan="2"><div class="groupHeader">Various forms of encrypt calls.</div></td></tr>
 <tr><td colspan="2"><div class="groupText"><p>The plaintext and ciphertext pointers can be the same address. </p>
 </div></td></tr>
-<tr class="memitem:a820be0b4ea703359bfdddfab13a57411"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a820be0b4ea703359bfdddfab13a57411"></a>
-virtual bool&#160;</td><td class="memItemRight" valign="bottom"><b>EncryptData</b> (const uint8_t *plaintext, size_t plaintext_size, uint8_t *ciphertext)=0</td></tr>
-<tr class="separator:a820be0b4ea703359bfdddfab13a57411"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c17f07cbf59e7bb4a20bd35ec150807"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2c17f07cbf59e7bb4a20bd35ec150807"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>Encrypt</b> (const std::vector&lt; uint8_t &gt; &amp;plaintext, std::vector&lt; uint8_t &gt; *ciphertext)</td></tr>
 <tr class="separator:a2c17f07cbf59e7bb4a20bd35ec150807"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8e62ca3b7e48159c9430e6279906799"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad8e62ca3b7e48159c9430e6279906799"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>Encrypt</b> (const std::string &amp;plaintext, std::string *ciphertext)</td></tr>
 <tr class="separator:ad8e62ca3b7e48159c9430e6279906799"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad0b1f4ad154670fcf3afc25ced189dc8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad0b1f4ad154670fcf3afc25ced189dc8"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>Encrypt</b> (const uint8_t *plaintext, size_t plaintext_size, uint8_t *ciphertext)</td></tr>
+<tr class="separator:ad0b1f4ad154670fcf3afc25ced189dc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-attribs"></a>
-Protected Attributes</h2></td></tr>
-<tr class="memitem:af91b6ae946e99ccb90f9ec68f3356fd9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af91b6ae946e99ccb90f9ec68f3356fd9"></a>
-std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>iv_</b></td></tr>
-<tr class="separator:af91b6ae946e99ccb90f9ec68f3356fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66fcc910aec9853192dfa34669d53b86"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a66fcc910aec9853192dfa34669d53b86"></a>
-scoped_ptr&lt; AES_KEY &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>aes_key_</b></td></tr>
-<tr class="separator:a66fcc910aec9853192dfa34669d53b86"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
+<tr class="memitem:ad71d9a5010d0855037af761ad2389ab0"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html#ad71d9a5010d0855037af761ad2389ab0">EncryptInternal</a> (const uint8_t *plaintext, size_t plaintext_size, uint8_t *ciphertext)=0</td></tr>
+<tr class="separator:ad71d9a5010d0855037af761ad2389ab0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36022a2b0a3c89222030a2d8d8d5dfff"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html#a36022a2b0a3c89222030a2d8d8d5dfff">NumPaddingBytes</a> (size_t size) const =0</td></tr>
+<tr class="separator:a36022a2b0a3c89222030a2d8d8d5dfff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3797efc15e64f4838a65cd7d57beb963"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3797efc15e64f4838a65cd7d57beb963"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_iv</b> (const std::vector&lt; uint8_t &gt; &amp;<a class="el" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html#a741ad288803fc1c609dcc574ef797280">iv</a>)</td></tr>
+<tr class="separator:a3797efc15e64f4838a65cd7d57beb963"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31e690a689e621fd786229914dc77f1b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a31e690a689e621fd786229914dc77f1b"></a>
+AES_KEY *&#160;</td><td class="memItemRight" valign="bottom"><b>aes_key</b> () const </td></tr>
+<tr class="separator:a31e690a689e621fd786229914dc77f1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
 <p>Definition at line <a class="el" href="../../d1/df0/aes__encryptor_8h_source.html#l00024">24</a> of file <a class="el" href="../../d1/df0/aes__encryptor_8h_source.html">aes_encryptor.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a6c225492907f281a7c08a76e012f8ba7"></a>
+<a class="anchor" id="ad71d9a5010d0855037af761ad2389ab0"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -156,7 +155,55 @@ scoped_ptr&lt; AES_KEY &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual bool edash_packager::media::AesEncryptor::InitializeWithIv </td>
+          <td class="memname">virtual bool edash_packager::media::AesEncryptor::EncryptInternal </td>
+          <td>(</td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>plaintext</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>plaintext_size</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>ciphertext</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Internal implementation of encrypt function. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">plaintext</td><td>points to the input plaintext. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">plaintext_size</td><td>is the size of input plaintext. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">ciphertext</td><td>points to the output ciphertext. <em>plaintext</em> and <em>ciphertext</em> can point to the same address. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Implemented in <a class="el" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html#a6cdd9be2760a6d50aba4eff18fe6f1b7">edash_packager::media::AesCbcEncryptor</a>, and <a class="el" href="../../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html#a27d2771e7d776085e146cf515f2fb074">edash_packager::media::AesCtrEncryptor</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="aa62b508ead94c483e2186e30da442faa"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool edash_packager::media::AesEncryptor::InitializeWithIv </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
           <td class="paramname"><em>key</em>, </td>
@@ -173,25 +220,17 @@ scoped_ptr&lt; AES_KEY &gt;&#160;</td><td class="memItemRight" valign="bottom"><
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 <p>Initialize the encryptor with specified key and IV. </p>
 <dl class="section return"><dt>Returns</dt><dd>true on successful initialization, false otherwise. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d6/da2/classedash__packager_1_1media_1_1AesCbcCtsEncryptor.html#ad9f134c35f24ebf4c1877ad76f8622b7">edash_packager::media::AesCbcCtsEncryptor</a>, <a class="el" href="../../d6/dc4/classedash__packager_1_1media_1_1AesCbcPkcs5Encryptor.html#acff7cfca3a800344952a86e13dfad896">edash_packager::media::AesCbcPkcs5Encryptor</a>, and <a class="el" href="../../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html#a2fa3278643f5d2ef4083a04ad44933f3">edash_packager::media::AesCtrEncryptor</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/da4/aes__encryptor_8cc_source.html#l00055">55</a> of file <a class="el" href="../../d5/da4/aes__encryptor_8cc_source.html">aes_encryptor.cc</a>.</p>
 
 </div>
 </div>
 <a class="anchor" id="a49631d3d3d834bf7d78e0d51d7b33651"></a>
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool edash_packager::media::AesEncryptor::InitializeWithRandomIv </td>
@@ -211,16 +250,70 @@ scoped_ptr&lt; AES_KEY &gt;&#160;</td><td class="memItemRight" valign="bottom"><
           <td></td><td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 <p>Initialize the encryptor with specified key and a random generated IV of the specified size. </p>
 <dl class="section return"><dt>Returns</dt><dd>true on successful initialization, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/da4/aes__encryptor_8cc_source.html#l00046">46</a> of file <a class="el" href="../../d5/da4/aes__encryptor_8cc_source.html">aes_encryptor.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/da4/aes__encryptor_8cc_source.html#l00043">43</a> of file <a class="el" href="../../d5/da4/aes__encryptor_8cc_source.html">aes_encryptor.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a741ad288803fc1c609dcc574ef797280"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt;uint8_t&gt;&amp; edash_packager::media::AesEncryptor::iv </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>The current iv. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d1/df0/aes__encryptor_8h_source.html#l00062">62</a> of file <a class="el" href="../../d1/df0/aes__encryptor_8h_source.html">aes_encryptor.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a36022a2b0a3c89222030a2d8d8d5dfff"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual size_t edash_packager::media::AesEncryptor::NumPaddingBytes </td>
+          <td>(</td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>size</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">size</td><td>specifies the input plaintext size. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>The number of padding bytes needed for output ciphertext. </dd></dl>
+
+<p>Implemented in <a class="el" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html#a4e766c8364282bc7f7b1c0dcca9798c1">edash_packager::media::AesCbcEncryptor</a>, and <a class="el" href="../../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html#a7cf8a785b54dfbc8960ad50ed4d8844d">edash_packager::media::AesCtrEncryptor</a>.</p>
 
 </div>
 </div>
@@ -248,7 +341,7 @@ scoped_ptr&lt; AES_KEY &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 <p>Set IV. </p>
 <dl class="section return"><dt>Returns</dt><dd>true if successful, false if the input is invalid. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d6/da2/classedash__packager_1_1media_1_1AesCbcCtsEncryptor.html#ae6df0c4b5a1db50537f74deb36b96292">edash_packager::media::AesCbcCtsEncryptor</a>, <a class="el" href="../../d6/dc4/classedash__packager_1_1media_1_1AesCbcPkcs5Encryptor.html#ad21bb8d1ea5aa49645c9b3476f6bcc8a">edash_packager::media::AesCbcPkcs5Encryptor</a>, and <a class="el" href="../../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html#ac70e6553917ad948fb2c18101de0f8d9">edash_packager::media::AesCtrEncryptor</a>.</p>
+<p>Implemented in <a class="el" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html#ab5436c698f7691f2558514088559dc7e">edash_packager::media::AesCbcEncryptor</a>, and <a class="el" href="../../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html#ac70e6553917ad948fb2c18101de0f8d9">edash_packager::media::AesCtrEncryptor</a>.</p>
 
 </div>
 </div>
@@ -272,9 +365,9 @@ scoped_ptr&lt; AES_KEY &gt;&#160;</td><td class="memItemRight" valign="bottom"><
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Update IV for next sample. As recommended in ISO/IEC FDIS 23001-7: IV need to be updated per sample for CENC. IV need not be unique per sample for CBC mode. </p>
+<p>Update IV for next sample. As recommended in ISO/IEC FDIS 23001-7: IV need to be updated per sample for CENC. </p>
 
-<p>Implemented in <a class="el" href="../../d6/da2/classedash__packager_1_1media_1_1AesCbcCtsEncryptor.html#abd04cf7a533527022735eb79151db262">edash_packager::media::AesCbcCtsEncryptor</a>, <a class="el" href="../../d6/dc4/classedash__packager_1_1media_1_1AesCbcPkcs5Encryptor.html#aab27a1d7244f1dcdd7aa75b0fc1be995">edash_packager::media::AesCbcPkcs5Encryptor</a>, and <a class="el" href="../../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html#a27cc6076b6f5edd8c096753ae157a1db">edash_packager::media::AesCtrEncryptor</a>.</p>
+<p>Implemented in <a class="el" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html#ac075650788539c041b465aff6356a2b9">edash_packager::media::AesCbcEncryptor</a>, and <a class="el" href="../../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html#a27cc6076b6f5edd8c096753ae157a1db">edash_packager::media::AesCtrEncryptor</a>.</p>
 
 </div>
 </div>
@@ -285,7 +378,7 @@ scoped_ptr&lt; AES_KEY &gt;&#160;</td><td class="memItemRight" valign="bottom"><
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Mar 30 2016 17:08:01 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Mar 31 2016 17:13:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
