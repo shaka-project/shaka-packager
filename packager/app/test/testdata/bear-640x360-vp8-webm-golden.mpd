@@ -5,7 +5,7 @@
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="1000000/33000" par="16:9">
       <Representation id="0" bandwidth="335454" codecs="vp8" mimeType="video/webm" sar="1:1">
         <BaseURL>output_video.webm</BaseURL>
-        <SegmentBase indexRange="114676-114725" timescale="1000000">
+        <SegmentBase indexRange="114676-114724" timescale="1000000">
           <Initialization range="0-288"/>
         </SegmentBase>
       </Representation>

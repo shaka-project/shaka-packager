@@ -80,7 +80,7 @@ bool SingleSegmentSegmenter::GetIndexRangeStartAndEnd(uint32_t* start,
   // The index is the Cues element, which is always placed at the end of the
   // file.
   *start = index_start_;
-  *end = writer_->file()->Size();
+  *end = writer_->file()->Size() - 1;
   return true;
 }
 

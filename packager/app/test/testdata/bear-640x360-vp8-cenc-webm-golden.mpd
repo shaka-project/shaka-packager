@@ -8,7 +8,7 @@
           <cenc:pssh>AAAAMHBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAABAxMjM0NTY3ODkwMTIzNDU2</cenc:pssh>
         </ContentProtection>
         <BaseURL>output_video.webm</BaseURL>
-        <SegmentBase indexRange="115225-115275" timescale="1000000">
+        <SegmentBase indexRange="115225-115274" timescale="1000000">
           <Initialization range="0-339"/>
         </SegmentBase>
       </Representation>
