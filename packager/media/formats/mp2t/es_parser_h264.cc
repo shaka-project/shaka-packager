@@ -329,7 +329,7 @@ bool EsParserH264::EmitFrame(int64_t access_unit_pos,
 
 bool EsParserH264::UpdateVideoDecoderConfig(const H264Sps* sps) {
   std::vector<uint8_t> decoder_config_record;
-  if (!stream_converter_->GetAVCDecoderConfigurationRecord(
+  if (!stream_converter_->GetDecoderConfigurationRecord(
           &decoder_config_record)) {
     DLOG(ERROR) << "Failure to construct an AVCDecoderConfigurationRecord";
     return false;

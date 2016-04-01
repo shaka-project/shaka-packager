@@ -125,7 +125,7 @@ class NaluReader {
     kInvalidStream,      // error in stream
     kEOStream,           // end of stream
   };
-  enum NaluType {
+  enum CodecType {
     kH264,
     kH265,
   };
@@ -133,7 +133,7 @@ class NaluReader {
   /// @param nalu_length_size should be set to 0 for AnnexB byte streams;
   ///        otherwise, it indicates the size of NAL unit length for the NAL
   ///        unit stream.
-  NaluReader(NaluType type,
+  NaluReader(CodecType type,
              uint8_t nal_length_size,
              const uint8_t* stream,
              uint64_t stream_size);
@@ -183,7 +183,7 @@ class NaluReader {
   // The remaining size of the stream.
   uint64_t stream_size_;
   // The type of NALU being read.
-  NaluType nalu_type_;
+  CodecType nalu_type_;
   // The number of bytes the prefix length is; only valid if format is
   // kAnnexbByteStreamFormat.
   uint8_t nalu_length_size_;

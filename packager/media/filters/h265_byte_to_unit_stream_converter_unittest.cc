@@ -1,4 +1,4 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2016 Google Inc. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
@@ -8,28 +8,31 @@
 #include <stdio.h>
 
 #include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/filters/h264_byte_to_unit_stream_converter.h"
+#include "packager/media/filters/h265_byte_to_unit_stream_converter.h"
+#include "packager/media/filters/hevc_decoder_configuration.h"
 #include "packager/media/test/test_data_util.h"
 
 namespace {
 const char kExpectedConfigRecord[] =
-    "014d400dffe10013274d400da918283e600d418041adb0ad7bdf01010004"
-    "28de0988";
+    "01016000000300900000030000f000fcfdf8f800000303a10001002e42010101600000"
+    "030090000003000003005da0028080241f265999a4932bffc0d5c0d640400000030040"
+    "00000602a2000100074401c172b46240a00001001840010c01ffff0160000003009000"
+    "0003000003005d999809";
 }
 
 namespace edash_packager {
 namespace media {
 
-TEST(H264ByteToUnitStreamConverter, ConversionSuccess) {
+TEST(H265ByteToUnitStreamConverter, ConversionSuccess) {
   std::vector<uint8_t> input_frame =
-      ReadTestDataFile("avc-byte-stream-frame.h264");
+      ReadTestDataFile("hevc-byte-stream-frame.h265");
   ASSERT_FALSE(input_frame.empty());
 
   std::vector<uint8_t> expected_output_frame =
-      ReadTestDataFile("avc-unit-stream-frame.h264");
+      ReadTestDataFile("hevc-unit-stream-frame.h265");
   ASSERT_FALSE(expected_output_frame.empty());
 
-  H264ByteToUnitStreamConverter converter;
+  H265ByteToUnitStreamConverter converter;
   std::vector<uint8_t> output_frame;
   ASSERT_TRUE(converter.ConvertByteStreamToNalUnitStream(input_frame.data(),
                                                          input_frame.size(),
@@ -42,12 +45,21 @@ TEST(H264ByteToUnitStreamConverter, ConversionSuccess) {
   std::vector<uint8_t> decoder_config;
   ASSERT_TRUE(converter.GetDecoderConfigurationRecord(&decoder_config));
   EXPECT_EQ(expected_decoder_config, decoder_config);
+
+  // Double-check that it can be parsed.
+  HEVCDecoderConfiguration conf;
+  ASSERT_TRUE(conf.Parse(decoder_config));
+  // The order is SPS, PPS, VPS.
+  ASSERT_EQ(3u, conf.nalu_count());
+  EXPECT_EQ(Nalu::H265_SPS, conf.nalu(0).type());
+  EXPECT_EQ(Nalu::H265_PPS, conf.nalu(1).type());
+  EXPECT_EQ(Nalu::H265_VPS, conf.nalu(2).type());
 }
 
-TEST(H264ByteToUnitStreamConverter, ConversionFailure) {
+TEST(H265ByteToUnitStreamConverter, ConversionFailure) {
   std::vector<uint8_t> input_frame(100, 0);
 
-  H264ByteToUnitStreamConverter converter;
+  H265ByteToUnitStreamConverter converter;
   std::vector<uint8_t> output_frame;
   EXPECT_FALSE(converter.ConvertByteStreamToNalUnitStream(input_frame.data(),
                                                           0,

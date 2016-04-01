@@ -827,7 +827,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
         // Set extra data for video stream from AVC Decoder Config Record.
         // Also, set codec string from the AVC Decoder Config Record.
         std::vector<uint8_t> decoder_config_record;
-        byte_to_unit_stream_converter_.GetAVCDecoderConfigurationRecord(
+        byte_to_unit_stream_converter_.GetDecoderConfigurationRecord(
             &decoder_config_record);
         for (uint32_t i = 0; i < stream_infos_.size(); i++) {
           if (stream_infos_[i]->stream_type() == media::kStreamVideo &&

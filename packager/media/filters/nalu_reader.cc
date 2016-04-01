@@ -142,7 +142,7 @@ bool Nalu::InitializeFromH265(const uint8_t* data, uint64_t size) {
   return true;
 }
 
-NaluReader::NaluReader(NaluType type,
+NaluReader::NaluReader(CodecType type,
                        uint8_t nal_length_size,
                        const uint8_t* stream,
                        uint64_t stream_size)

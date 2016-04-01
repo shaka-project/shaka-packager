@@ -1,11 +1,11 @@
-// Copyright 2014 Google Inc. All rights reserved.
+// Copyright 2016 Google Inc. All rights reserved.
 //
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_FILTERS_H264_BYTE_TO_UNIT_STREAM_CONVERTER_H_
-#define MEDIA_FILTERS_H264_BYTE_TO_UNIT_STREAM_CONVERTER_H_
+#ifndef MEDIA_FILTERS_H265_BYTE_TO_UNIT_STREAM_CONVERTER_H_
+#define MEDIA_FILTERS_H265_BYTE_TO_UNIT_STREAM_CONVERTER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -17,12 +17,12 @@
 namespace edash_packager {
 namespace media {
 
-/// Class which converts H.264 byte streams (as specified in ISO/IEC 14496-10
-/// Annex B) into H.264 NAL unit streams (as specified in ISO/IEC 14496-15).
-class H264ByteToUnitStreamConverter : public H26xByteToUnitStreamConverter {
+/// Class which converts H.265 byte streams (as specified in ISO/IEC 14496-10
+/// Annex B) into H.265 NAL unit streams (as specified in ISO/IEC 14496-15).
+class H265ByteToUnitStreamConverter : public H26xByteToUnitStreamConverter {
  public:
-  H264ByteToUnitStreamConverter();
-  ~H264ByteToUnitStreamConverter() override;
+  H265ByteToUnitStreamConverter();
+  ~H265ByteToUnitStreamConverter() override;
 
   /// @name H26xByteToUnitStreamConverter implementation override.
   /// @{
@@ -35,11 +35,12 @@ class H264ByteToUnitStreamConverter : public H26xByteToUnitStreamConverter {
 
   std::vector<uint8_t> last_sps_;
   std::vector<uint8_t> last_pps_;
+  std::vector<uint8_t> last_vps_;
 
-  DISALLOW_COPY_AND_ASSIGN(H264ByteToUnitStreamConverter);
+  DISALLOW_COPY_AND_ASSIGN(H265ByteToUnitStreamConverter);
 };
 
 }  // namespace media
 }  // namespace edash_packager
 
-#endif  // MEDIA_FILTERS_H264_BYTE_TO_UNIT_STREAM_CONVERTER_H_
+#endif  // MEDIA_FILTERS_H265_BYTE_TO_UNIT_STREAM_CONVERTER_H_

@@ -15,74 +15,12 @@
 namespace edash_packager {
 namespace media {
 
-namespace {
-// Additional space to reserve for output frame. This value ought to be enough
-// to acommodate frames consisting of 100 NAL units with 3-byte start codes.
-const size_t kStreamConversionOverhead = 100;
-}
-
-H264ByteToUnitStreamConverter::H264ByteToUnitStreamConverter() {}
-
+H264ByteToUnitStreamConverter::H264ByteToUnitStreamConverter()
+    : H26xByteToUnitStreamConverter(NaluReader::kH264) {}
 H264ByteToUnitStreamConverter::~H264ByteToUnitStreamConverter() {}
 
-bool H264ByteToUnitStreamConverter::ConvertByteStreamToNalUnitStream(
-    const uint8_t* input_frame,
-    size_t input_frame_size,
-    std::vector<uint8_t>* output_frame) {
-  DCHECK(input_frame);
-  DCHECK(output_frame);
-
-  BufferWriter output_buffer(input_frame_size + kStreamConversionOverhead);
-
-  Nalu nalu;
-  NaluReader reader(NaluReader::kH264, kIsAnnexbByteStream, input_frame,
-                    input_frame_size);
-  if (!reader.StartsWithStartCode()) {
-    LOG(ERROR) << "H.264 byte stream frame did not begin with start code.";
-    return false;
-  }
-  while (reader.Advance(&nalu) == NaluReader::kOk) {
-    ProcessNalu(nalu, &output_buffer);
-  }
-
-  output_buffer.SwapBuffer(output_frame);
-  return true;
-}
-
-void H264ByteToUnitStreamConverter::ProcessNalu(const Nalu& nalu,
-                                                BufferWriter* output_buffer) {
-  DCHECK(nalu.data());
-  DCHECK(output_buffer);
-
-  // Skip the start code, but keep the 1-byte NALU type.
-  const uint8_t* nalu_ptr = nalu.data();
-  const uint64_t nalu_size = nalu.payload_size() + nalu.header_size();
-  DCHECK_LE(nalu_size, std::numeric_limits<uint32_t>::max());
-
-  switch (nalu.type()) {
-    case Nalu::H264_SPS:
-      // Grab SPS NALU.
-      last_sps_.assign(nalu_ptr, nalu_ptr + nalu_size);
-      return;
-    case Nalu::H264_PPS:
-      // Grab PPS NALU.
-      last_pps_.assign(nalu_ptr, nalu_ptr + nalu_size);
-      return;
-    case Nalu::H264_AUD:
-      // Ignore AUD NALU.
-      return;
-    default:
-      // Copy all other NALUs.
-      break;
-  }
-
-  // Append 4-byte length and NAL unit data to the buffer.
-  output_buffer->AppendInt(static_cast<uint32_t>(nalu_size));
-  output_buffer->AppendArray(nalu_ptr, nalu_size);
-}
-
-bool H264ByteToUnitStreamConverter::GetAVCDecoderConfigurationRecord(
-    std::vector<uint8_t>* decoder_config) {
+bool H264ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
+    std::vector<uint8_t>* decoder_config) const {
   DCHECK(decoder_config);
 
   if ((last_sps_.size() < 4) || last_pps_.empty()) {
@@ -108,9 +46,34 @@ bool H264ByteToUnitStreamConverter::GetAVCDecoderConfigurationRecord(
   buffer.AppendInt(num_pps);
   buffer.AppendInt(static_cast<uint16_t>(last_pps_.size()));
   buffer.AppendVector(last_pps_);
-  buffer.SwapBuffer(decoder_config);
 
+  buffer.SwapBuffer(decoder_config);
   return true;
+}
+
+bool H264ByteToUnitStreamConverter::ProcessNalu(const Nalu& nalu) {
+  DCHECK(nalu.data());
+
+  // Skip the start code, but keep the 1-byte NALU type.
+  const uint8_t* nalu_ptr = nalu.data();
+  const uint64_t nalu_size = nalu.payload_size() + nalu.header_size();
+
+  switch (nalu.type()) {
+    case Nalu::H264_SPS:
+      // Grab SPS NALU.
+      last_sps_.assign(nalu_ptr, nalu_ptr + nalu_size);
+      return true;
+    case Nalu::H264_PPS:
+      // Grab PPS NALU.
+      last_pps_.assign(nalu_ptr, nalu_ptr + nalu_size);
+      return true;
+    case Nalu::H264_AUD:
+      // Ignore AUD NALU.
+      return true;
+    default:
+      // Have the base class handle other NALU types.
+      return false;
+  }
 }
 
 }  // namespace media
