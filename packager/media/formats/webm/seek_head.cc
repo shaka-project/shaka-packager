@@ -14,9 +14,10 @@
 namespace edash_packager {
 namespace media {
 namespace {
-const mkvmuxer::uint64 kElementIds[] = {mkvmuxer::kMkvCluster,
-                                        mkvmuxer::kMkvCues, mkvmuxer::kMkvInfo,
-                                        mkvmuxer::kMkvTracks};
+const mkvmuxer::uint64 kElementIds[] = {
+    mkvmuxer::kMkvInfo, mkvmuxer::kMkvTracks, mkvmuxer::kMkvCluster,
+    mkvmuxer::kMkvCues,
+};
 const int kElementIdCount = arraysize(kElementIds);
 
 uint64_t MaxSeekEntrySize() {
@@ -55,7 +56,7 @@ bool SeekHead::Write(mkvmuxer::IMkvWriter* writer) {
   if (!WriteEbmlMasterElement(writer, mkvmuxer::kMkvSeekHead, payload_size))
     return false;
 
-  const int64_t positions[] = {cluster_pos_, cues_pos_, info_pos_, tracks_pos_};
+  const int64_t positions[] = {info_pos_, tracks_pos_, cluster_pos_, cues_pos_};
   for (int i = 0; i < kElementIdCount; ++i) {
     if (element_sizes[i] == 0)
       continue;
@@ -99,7 +100,7 @@ bool SeekHead::WriteVoid(mkvmuxer::IMkvWriter* writer) {
 }
 
 uint64_t SeekHead::GetPayloadSize(std::vector<uint64_t>* data) {
-  const int64_t positions[] = {cluster_pos_, cues_pos_, info_pos_, tracks_pos_};
+  const int64_t positions[] = {info_pos_, tracks_pos_, cluster_pos_, cues_pos_};
   uint64_t total_payload_size = 0;
   data->resize(kElementIdCount);
   for (int i = 0; i < kElementIdCount; ++i) {

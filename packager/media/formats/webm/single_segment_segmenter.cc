@@ -22,7 +22,7 @@ Status SingleSegmentSegmenter::DoInitialize(scoped_ptr<MkvWriter> writer) {
   writer_ = writer.Pass();
   Status ret = WriteSegmentHeader(0, writer_.get());
   init_end_ = writer_->Position() - 1;
-  seek_head()->set_cluster_pos(init_end_ + 1);
+  seek_head()->set_cluster_pos(init_end_ + 1 - segment_payload_pos());
   return ret;
 }
 
@@ -32,7 +32,7 @@ Status SingleSegmentSegmenter::DoFinalize() {
 
   // Write the Cues to the end of the file.
   index_start_ = writer_->Position();
-  seek_head()->set_cues_pos(index_start_);
+  seek_head()->set_cues_pos(index_start_ - segment_payload_pos());
   if (!cues()->Write(writer_.get()))
     return Status(error::FILE_FAILURE, "Error writing Cues data.");
 

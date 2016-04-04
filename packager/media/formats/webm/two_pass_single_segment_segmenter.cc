@@ -95,7 +95,7 @@ Status TwoPassSingleSegmentSegmenter::DoFinalize() {
   // Write the Cues to the end of the temp file.
   uint64_t cues_pos = writer()->Position();
   set_index_start(cues_pos);
-  seek_head()->set_cues_pos(cues_pos);
+  seek_head()->set_cues_pos(cues_pos - segment_payload_pos());
   if (!cues()->Write(writer()))
     return Status(error::FILE_FAILURE, "Error writing Cues data.");
 

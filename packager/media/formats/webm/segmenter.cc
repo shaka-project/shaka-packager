@@ -224,9 +224,11 @@ Status Segmenter::WriteSegmentHeader(uint64_t file_size, MkvWriter* writer) {
       return error_status;
   }
 
+  seek_head_.set_info_pos(writer->Position() - segment_payload_pos_);
   if (!segment_info_.Write(writer))
     return error_status;
 
+  seek_head_.set_tracks_pos(writer->Position() - segment_payload_pos_);
   if (!tracks_.Write(writer))
     return error_status;
 
