@@ -183,7 +183,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="comment">// Write the Cues to the end of the temp file.</span></div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  uint64_t cues_pos = writer()-&gt;Position();</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  set_index_start(cues_pos);</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  seek_head()-&gt;set_cues_pos(cues_pos);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  seek_head()-&gt;set_cues_pos(cues_pos - segment_payload_pos());</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keywordflow">if</span> (!cues()-&gt;Write(writer()))</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Error writing Cues data.&quot;</span>);</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
@@ -275,7 +275,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 4 2016 16:08:32 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 6 2016 20:29:00 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
