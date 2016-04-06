@@ -53,18 +53,21 @@ class TsSegmenter {
   void SetTsWriterFileOpenedForTesting(bool value);
 
  private:
-  Status FinalizeSegmentIfPastSegmentDuration();
   Status OpenNewSegmentIfClosed(uint32_t next_pts);
 
-  // Writes PES packets (carried in TsPackets) to file(s). This will
-  // segment appropriately. The state of file may be open or closed after
-  // calling this.
-  Status WritePesPacketsToFiles();
+  // Writes PES packets (carried in TsPackets) to a file. If a file is not open,
+  // it will open one. This will not close the file.
+  Status WritePesPacketsToFile();
+
+  // Flush all the samples that are (possibly) buffered and write them to the
+  // current segment, this will close the file. If a file is not already opened
+  // before calling this, this will open one and write them to file.
+  Status Flush();
 
   const MuxerOptions& muxer_options_;
 
   // in seconds.
-  double current_segment_duration_ = 0.0;
+  double current_segment_total_sample_duration_ = 0.0;
 
   // Used for segment template.
   uint64_t segment_number_ = 0;

@@ -220,7 +220,6 @@ TEST_F(TsWriterTest, AddPesPacket) {
 
   scoped_ptr<PesPacket> pes(new PesPacket());
   pes->set_stream_id(0xE0);
-  pes->set_duration(99000);
   pes->set_pts(0x900);
   pes->set_dts(0x900);
   const uint8_t kAnyData[] = {
@@ -285,7 +284,6 @@ TEST_F(TsWriterTest, BigPesPacket) {
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
 
   scoped_ptr<PesPacket> pes(new PesPacket());
-  pes->set_duration(99000);
   pes->set_pts(0);
   pes->set_dts(0);
   // A little over 2 TS Packets (3 TS Packets).
@@ -323,7 +321,6 @@ TEST_F(TsWriterTest, PesPtsZeroNoDts) {
 
   scoped_ptr<PesPacket> pes(new PesPacket());
   pes->set_stream_id(0xE0);
-  pes->set_duration(99000);
   pes->set_pts(0x0);
   const uint8_t kAnyData[] = {
       0x12, 0x88, 0x4F, 0x4A,

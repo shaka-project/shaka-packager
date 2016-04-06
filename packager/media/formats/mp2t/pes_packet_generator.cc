@@ -64,7 +64,6 @@ bool PesPacketGenerator::PushSample(scoped_refptr<MediaSample> sample) {
   if (!current_processing_pes_)
     current_processing_pes_.reset(new PesPacket());
 
-  current_processing_pes_->set_duration(sample->duration());
   current_processing_pes_->set_pts(timescale_scale_ * sample->pts());
   current_processing_pes_->set_dts(timescale_scale_ * sample->dts());
   if (stream_type_ == kStreamVideo) {

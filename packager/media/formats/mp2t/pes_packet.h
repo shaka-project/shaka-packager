@@ -46,14 +46,6 @@ class PesPacket {
     pts_ = pts;
   }
 
-  /// Duration is not really part of PES but its here to calculate stream's
-  /// duration.
-  /// @return duration of this PES in timescale.
-  int64_t duration() const { return duration_; }
-  /// @param duration of this PES.
-  void set_duration(int64_t duration) { duration_ = duration; }
-
-  /// @return data carried by this PES, the payload.
   const std::vector<uint8_t>& data() const { return data_; }
   /// @return mutable data for this PES.
   std::vector<uint8_t>* mutable_data() { return &data_; }
@@ -64,8 +56,6 @@ class PesPacket {
   // These values mean "not set" when the value is less than 0.
   int64_t dts_ = -1;
   int64_t pts_ = -1;
-
-  int64_t duration_ = 0;
 
   std::vector<uint8_t> data_;
 

@@ -153,10 +153,8 @@ TEST_F(TsSegmenterTest, AddSample) {
       .WillOnce(Return(true));
 
   // The pointer is released inside the segmenter.
-  PesPacket* pes = new PesPacket();
-  pes->set_duration(kTimeScale);
   EXPECT_CALL(*mock_pes_packet_generator_, GetNextPesPacketMock())
-      .WillOnce(Return(pes));
+      .WillOnce(Return(new PesPacket()));
 
   segmenter.InjectTsWriterForTesting(mock_ts_writer_.Pass());
   segmenter.InjectPesPacketGeneratorForTesting(
@@ -168,7 +166,9 @@ TEST_F(TsSegmenterTest, AddSample) {
 
 // Verify the case where the segment is long enough and the current segment
 // should be closed.
-TEST_F(TsSegmenterTest, PastSegmentDuration) {
+// This will add 2 samples and verify that the first segment is closed when the
+// second sample is added.
+TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264VideoCodec, kCodecString, kLanguage,
       kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
@@ -178,8 +178,7 @@ TEST_F(TsSegmenterTest, PastSegmentDuration) {
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options);
 
-  ON_CALL(*mock_ts_writer_, TimeScale())
-      .WillByDefault(Return(kTimeScale));
+  ON_CALL(*mock_ts_writer_, TimeScale()).WillByDefault(Return(kTimeScale));
 
   EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
@@ -188,17 +187,40 @@ TEST_F(TsSegmenterTest, PastSegmentDuration) {
   const uint8_t kAnyData[] = {
       0x01, 0x0F, 0x3C,
   };
-  scoped_refptr<MediaSample> sample =
+  scoped_refptr<MediaSample> sample1 =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
+  scoped_refptr<MediaSample> sample2 =
+      MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
+
+  // 11 seconds > 10 seconds (segment duration).
+  // Expect the segment to be finalized.
+  sample1->set_duration(kTimeScale * 11);
+
+  // Doesn't really matter how long this is.
+  sample2->set_duration(kTimeScale * 7);
 
   Sequence writer_sequence;
   EXPECT_CALL(*mock_ts_writer_, NewSegment(StrEq("file1.ts")))
       .InSequence(writer_sequence)
       .WillOnce(Return(true));
 
-  EXPECT_CALL(*mock_pes_packet_generator_, PushSample(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_pes_packet_generator_, PushSample(_))
+      .Times(2)
+      .WillRepeatedly(Return(true));
 
   Sequence ready_pes_sequence;
+  // First AddSample().
+  EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
+      .InSequence(ready_pes_sequence)
+      .WillOnce(Return(1u));
+  EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
+      .InSequence(ready_pes_sequence)
+      .WillOnce(Return(0u));
+  // When Flush() is called, inside second AddSample().
+  EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
+      .InSequence(ready_pes_sequence)
+      .WillOnce(Return(0u));
+  // Still inside AddSample() but after Flush().
   EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
       .InSequence(ready_pes_sequence)
       .WillOnce(Return(1u));
@@ -206,26 +228,35 @@ TEST_F(TsSegmenterTest, PastSegmentDuration) {
       .InSequence(ready_pes_sequence)
       .WillOnce(Return(0u));
 
+  EXPECT_CALL(*mock_pes_packet_generator_, Flush())
+      .WillOnce(Return(true));
+
   EXPECT_CALL(*mock_ts_writer_, FinalizeSegment())
+      .InSequence(writer_sequence)
+      .WillOnce(Return(true));
+  EXPECT_CALL(*mock_ts_writer_, NewSegment(StrEq("file2.ts")))
       .InSequence(writer_sequence)
       .WillOnce(Return(true));
 
   EXPECT_CALL(*mock_ts_writer_, AddPesPacketMock(_))
-      .WillOnce(Return(true));
+      .Times(2)
+      .WillRepeatedly(Return(true));
 
-  // The pointer is released inside the segmenter.
-  PesPacket* pes = new PesPacket();
-  // 11 seconds > 10 seconds (segment duration).
-  // Expect the segment to be finalized.
-  pes->set_duration(11 * kTimeScale);
+  // The pointers are released inside the segmenter.
+  Sequence pes_packet_sequence;
   EXPECT_CALL(*mock_pes_packet_generator_, GetNextPesPacketMock())
-      .WillOnce(Return(pes));
+      .InSequence(pes_packet_sequence)
+      .WillOnce(Return(new PesPacket()));
+  EXPECT_CALL(*mock_pes_packet_generator_, GetNextPesPacketMock())
+      .InSequence(pes_packet_sequence)
+      .WillOnce(Return(new PesPacket()));
 
   segmenter.InjectTsWriterForTesting(mock_ts_writer_.Pass());
   segmenter.InjectPesPacketGeneratorForTesting(
       mock_pes_packet_generator_.Pass());
   EXPECT_OK(segmenter.Initialize(*stream_info));
-  EXPECT_OK(segmenter.AddSample(sample));
+  EXPECT_OK(segmenter.AddSample(sample1));
+  EXPECT_OK(segmenter.AddSample(sample2));
 }
 
 // Finalize right after Initialize(). The writer will not be initialized.
@@ -244,6 +275,8 @@ TEST_F(TsSegmenterTest, InitializeThenFinalize) {
       .WillOnce(Return(true));
 
   EXPECT_CALL(*mock_pes_packet_generator_, Flush()).WillOnce(Return(true));
+  ON_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
+      .WillByDefault(Return(0));
 
   segmenter.InjectTsWriterForTesting(mock_ts_writer_.Pass());
   segmenter.InjectPesPacketGeneratorForTesting(
@@ -284,8 +317,8 @@ TEST_F(TsSegmenterTest, Finalize) {
   EXPECT_OK(segmenter.Finalize());
 }
 
-// Verify that it can generate multiple segments.
-TEST_F(TsSegmenterTest, MultipleSegments) {
+// Verify that it won't finish a segment if the sample is not a key frame.
+TEST_F(TsSegmenterTest, SegmentOnlyBeforeKeyFrame) {
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264VideoCodec, kCodecString, kLanguage,
       kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
@@ -295,8 +328,7 @@ TEST_F(TsSegmenterTest, MultipleSegments) {
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options);
 
-  ON_CALL(*mock_ts_writer_, TimeScale())
-      .WillByDefault(Return(kTimeScale));
+  ON_CALL(*mock_ts_writer_, TimeScale()).WillByDefault(Return(kTimeScale));
 
   EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
@@ -305,11 +337,24 @@ TEST_F(TsSegmenterTest, MultipleSegments) {
   const uint8_t kAnyData[] = {
       0x01, 0x0F, 0x3C,
   };
-  scoped_refptr<MediaSample> sample =
+  scoped_refptr<MediaSample> key_frame_sample1 =
+      MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
+  scoped_refptr<MediaSample> non_key_frame_sample =
+      MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), !kIsKeyFrame);
+  scoped_refptr<MediaSample> key_frame_sample2 =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
 
+  // 11 seconds > 10 seconds (segment duration).
+  key_frame_sample1->set_duration(kTimeScale * 11);
+
+  // But since the second sample is not a key frame, it shouldn't be segmented.
+  non_key_frame_sample->set_duration(kTimeScale * 7);
+
+  // Since this is a key frame, it should be segmented when this is added.
+  key_frame_sample2->set_duration(kTimeScale * 3);
+
   EXPECT_CALL(*mock_pes_packet_generator_, PushSample(_))
-      .Times(2)
+      .Times(3)
       .WillRepeatedly(Return(true));
 
   Sequence writer_sequence;
@@ -318,25 +363,33 @@ TEST_F(TsSegmenterTest, MultipleSegments) {
       .WillOnce(Return(true));
 
   Sequence ready_pes_sequence;
+  // First AddSample().
   EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
       .InSequence(ready_pes_sequence)
       .WillOnce(Return(1u));
-
-  // The pointer is released inside the segmenter.
-  PesPacket* pes = new PesPacket();
-  // 11 seconds > 10 seconds (segment duration).
-  // Expect the segment to be finalized.
-  pes->set_duration(11 * kTimeScale);
-  EXPECT_CALL(*mock_pes_packet_generator_, GetNextPesPacketMock())
+  EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
       .InSequence(ready_pes_sequence)
-      .WillOnce(Return(pes));
-
+      .WillOnce(Return(0u));
+  // Second AddSample().
+  EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
+      .InSequence(ready_pes_sequence)
+      .WillOnce(Return(1u));
+  EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
+      .InSequence(ready_pes_sequence)
+      .WillOnce(Return(0u));
+  // Third AddSample(), in Flush().
+  EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
+      .InSequence(ready_pes_sequence)
+      .WillOnce(Return(0u));
+  // Third AddSample() after Flush().
+  EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
+      .InSequence(ready_pes_sequence)
+      .WillOnce(Return(1u));
   EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
       .InSequence(ready_pes_sequence)
       .WillOnce(Return(0u));
 
-  EXPECT_CALL(*mock_ts_writer_, AddPesPacketMock(_))
-      .InSequence(writer_sequence)
+  EXPECT_CALL(*mock_pes_packet_generator_, Flush())
       .WillOnce(Return(true));
 
   EXPECT_CALL(*mock_ts_writer_, FinalizeSegment())
@@ -348,33 +401,29 @@ TEST_F(TsSegmenterTest, MultipleSegments) {
       .InSequence(writer_sequence)
       .WillOnce(Return(true));
 
-  EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
-      .InSequence(ready_pes_sequence)
-      .WillOnce(Return(1u));
-
-  // The pointer is released inside the segmenter.
-  pes = new PesPacket();
-  // 7 < 10 seconds, If FinalizeSegment() is called AddSample will fail (due to
-  // mock returning false by default).
-  pes->set_duration(7 * kTimeScale);
-  EXPECT_CALL(*mock_pes_packet_generator_, GetNextPesPacketMock())
-      .InSequence(ready_pes_sequence)
-      .WillOnce(Return(pes));
-
-  EXPECT_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
-      .InSequence(ready_pes_sequence)
-      .WillOnce(Return(0u));
-
   EXPECT_CALL(*mock_ts_writer_, AddPesPacketMock(_))
-      .InSequence(writer_sequence)
-      .WillOnce(Return(true));
+      .Times(3)
+      .WillRepeatedly(Return(true));
+
+  // The pointers are released inside the segmenter.
+  Sequence pes_packet_sequence;
+  EXPECT_CALL(*mock_pes_packet_generator_, GetNextPesPacketMock())
+      .InSequence(pes_packet_sequence)
+      .WillOnce(Return(new PesPacket()));
+  EXPECT_CALL(*mock_pes_packet_generator_, GetNextPesPacketMock())
+      .InSequence(pes_packet_sequence)
+      .WillOnce(Return(new PesPacket()));
+  EXPECT_CALL(*mock_pes_packet_generator_, GetNextPesPacketMock())
+      .InSequence(pes_packet_sequence)
+      .WillOnce(Return(new PesPacket()));
 
   segmenter.InjectTsWriterForTesting(mock_ts_writer_.Pass());
   segmenter.InjectPesPacketGeneratorForTesting(
       mock_pes_packet_generator_.Pass());
   EXPECT_OK(segmenter.Initialize(*stream_info));
-  EXPECT_OK(segmenter.AddSample(sample));
-  EXPECT_OK(segmenter.AddSample(sample));
+  EXPECT_OK(segmenter.AddSample(key_frame_sample1));
+  EXPECT_OK(segmenter.AddSample(non_key_frame_sample));
+  EXPECT_OK(segmenter.AddSample(key_frame_sample2));
 }
 
 }  // namespace mp2t

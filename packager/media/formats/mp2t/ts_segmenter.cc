@@ -39,31 +39,32 @@ Status TsSegmenter::Initialize(const StreamInfo& stream_info) {
 }
 
 Status TsSegmenter::Finalize() {
-  if (!pes_packet_generator_->Flush()) {
-    return Status(error::MUXER_FAILURE,
-                  "Failed to finalize PesPacketGenerator.");
-  }
-
-  Status status = WritePesPacketsToFiles();
-  if (!status.ok())
-    return status;
-
-  if (!ts_writer_file_opened_)
-    return Status::OK;
-
-  if (!ts_writer_->FinalizeSegment())
-    return Status(error::MUXER_FAILURE, "Failed to finalize TsPacketWriter.");
-  ts_writer_file_opened_ = false;
-  return Status::OK;
+  return Flush();
 }
 
+// First checks whether the sample is a key frame. If so and the segment has
+// passed the segment duration, then flush the generator and write all the data
+// to file.
 Status TsSegmenter::AddSample(scoped_refptr<MediaSample> sample) {
+  const bool passed_segment_duration =
+      current_segment_total_sample_duration_ > muxer_options_.segment_duration;
+  if (sample->is_key_frame() && passed_segment_duration) {
+    Status status = Flush();
+    if (!status.ok())
+      return status;
+  }
+
+  if (!ts_writer_file_opened_ && !sample->is_key_frame())
+    LOG(WARNING) << "A segment will start with a non key frame.";
+
   if (!pes_packet_generator_->PushSample(sample)) {
     return Status(error::MUXER_FAILURE,
                   "Failed to add sample to PesPacketGenerator.");
   }
-  // TODO(rkuriowa): Only segment files before a key frame.
-  return WritePesPacketsToFiles();
+
+  current_segment_total_sample_duration_ += sample->duration() / kTsTimescale;
+
+  return WritePesPacketsToFile();
 }
 
 void TsSegmenter::InjectTsWriterForTesting(scoped_ptr<TsWriter> writer) {
@@ -79,16 +80,6 @@ void TsSegmenter::SetTsWriterFileOpenedForTesting(bool value) {
   ts_writer_file_opened_ = value;
 }
 
-Status TsSegmenter::FinalizeSegmentIfPastSegmentDuration() {
-  if (current_segment_duration_ > muxer_options_.segment_duration) {
-    if (!ts_writer_->FinalizeSegment())
-      return Status(error::FILE_FAILURE, "Failed to finalize segment.");
-    ts_writer_file_opened_ = false;
-    current_segment_duration_ = 0.0;
-  }
-  return Status::OK;
-}
-
 Status TsSegmenter::OpenNewSegmentIfClosed(uint32_t next_pts) {
   if (ts_writer_file_opened_)
     return Status::OK;
@@ -101,7 +92,7 @@ Status TsSegmenter::OpenNewSegmentIfClosed(uint32_t next_pts) {
   return Status::OK;
 }
 
-Status TsSegmenter::WritePesPacketsToFiles() {
+Status TsSegmenter::WritePesPacketsToFile() {
   while (pes_packet_generator_->NumberOfReadyPesPackets() > 0u) {
     scoped_ptr<PesPacket> pes_packet =
         pes_packet_generator_->GetNextPesPacket();
@@ -110,17 +101,30 @@ Status TsSegmenter::WritePesPacketsToFiles() {
     if (!status.ok())
       return status;
 
-    const double pes_packet_duration = pes_packet->duration();
-
     if (!ts_writer_->AddPesPacket(pes_packet.Pass()))
       return Status(error::MUXER_FAILURE, "Failed to add PES packet.");
-
-    current_segment_duration_ += pes_packet_duration / kTsTimescale;
-
-    status = FinalizeSegmentIfPastSegmentDuration();
-    if (!status.ok())
-      return status;
   }
+  return Status::OK;
+}
+
+Status TsSegmenter::Flush() {
+  if (!pes_packet_generator_->Flush()) {
+    return Status(error::MUXER_FAILURE,
+                  "Failed to flush PesPacketGenerator.");
+  }
+  Status status = WritePesPacketsToFile();
+  if (!status.ok())
+    return status;
+
+  // This method may be called from Finalize() so ts_writer_file_opened_ could
+  // be false.
+  if (ts_writer_file_opened_) {
+    if (!ts_writer_->FinalizeSegment()) {
+      return Status(error::MUXER_FAILURE, "Failed to finalize TsWriter.");
+    }
+    ts_writer_file_opened_ = false;
+  }
+  current_segment_total_sample_duration_ = 0.0;
   return Status::OK;
 }
 

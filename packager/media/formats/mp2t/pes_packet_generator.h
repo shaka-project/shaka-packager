@@ -56,10 +56,8 @@ class PesPacketGenerator {
   /// @return Next PES packet that is ready.
   virtual scoped_ptr<PesPacket> GetNextPesPacket();
 
-  /// Flush the object. This may create more PesPackets with the stored
-  /// samples.
-  /// It is safe to call NumberOfReadyPesPackets() and GetNextPesPacket() after
-  /// this.
+  /// Flush the object.
+  /// This may increase NumberOfReadyPesPackets().
   /// @return true on success, false otherwise.
   virtual bool Flush();
 
