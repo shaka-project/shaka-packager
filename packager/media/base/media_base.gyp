@@ -19,6 +19,8 @@
         'aes_decryptor.h',
         'aes_encryptor.cc',
         'aes_encryptor.h',
+        'aes_pattern_cryptor.cc',
+        'aes_pattern_cryptor.h',
         'audio_stream_info.cc',
         'audio_stream_info.h',
         'audio_timestamp_helper.cc',
@@ -116,6 +118,7 @@
       'type': '<(gtest_target_type)',
       'sources': [
         'aes_cryptor_unittest.cc',
+        'aes_pattern_cryptor_unittest.cc',
         'audio_timestamp_helper_unittest.cc',
         'bit_reader_unittest.cc',
         'buffer_writer_unittest.cc',
