@@ -199,7 +199,7 @@ Status EncryptingFragmenter::CreateEncryptor() {
 
 void EncryptingFragmenter::EncryptBytes(uint8_t* data, uint32_t size) {
   DCHECK(encryptor_);
-  CHECK(encryptor_->Encrypt(data, size, data));
+  CHECK(encryptor_->Crypt(data, size, data));
 }
 
 Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {

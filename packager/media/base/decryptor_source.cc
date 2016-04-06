@@ -27,7 +27,7 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
   DCHECK(buffer);
 
   // Get the decryptor object.
-  AesDecryptor* decryptor;
+  AesCryptor* decryptor;
   auto found = decryptor_map_.find(decrypt_config->key_id());
   if (found == decryptor_map_.end()) {
     // Create new AesDecryptor based on decryption mode.
@@ -38,7 +38,7 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
       return false;
     }
 
-    scoped_ptr<AesDecryptor> aes_decryptor;
+    scoped_ptr<AesCryptor> aes_decryptor;
     switch (decrypt_config->decryption_mode()) {
       case kEncryptionModeAesCtr:
         aes_decryptor.reset(new AesCtrDecryptor);
@@ -68,7 +68,7 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
 
   if (decrypt_config->subsamples().empty()) {
     // Sample not encrypted using subsample encryption. Decrypt whole.
-    if (!decryptor->Decrypt(buffer, buffer_size, buffer)) {
+    if (!decryptor->Crypt(buffer, buffer_size, buffer)) {
       LOG(ERROR) << "Error during bulk sample decryption.";
       return false;
     }
@@ -86,7 +86,7 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
       return false;
     }
     current_ptr += subsample.clear_bytes;
-    if (!decryptor->Decrypt(current_ptr, subsample.cipher_bytes, current_ptr)) {
+    if (!decryptor->Crypt(current_ptr, subsample.cipher_bytes, current_ptr)) {
       LOG(ERROR) << "Error decrypting subsample buffer.";
       return false;
     }

@@ -779,9 +779,9 @@ bool WvmMediaParser::DemuxNextPes(bool is_program_end) {
     if (!content_decryptor_) {
       output_encrypted_sample = true;
     } else {
-      content_decryptor_->Decrypt(&sample_data_[crypto_unit_start_pos_],
-                                  sample_data_.size() - crypto_unit_start_pos_,
-                                  &sample_data_[crypto_unit_start_pos_]);
+      content_decryptor_->Crypt(&sample_data_[crypto_unit_start_pos_],
+                                sample_data_.size() - crypto_unit_start_pos_,
+                                &sample_data_[crypto_unit_start_pos_]);
     }
   }
   // Demux media sample if we are at program end or if we are not at a
@@ -1124,8 +1124,8 @@ bool WvmMediaParser::ProcessEcm() {
       kEcmFlagsSizeBytes + kEcmContentKeySizeBytes +
       kEcmPaddingSizeBytes;  // flags + contentKey + padding.
   std::vector<uint8_t> content_key_buffer(content_key_buffer_size);
-  CHECK(asset_decryptor.Decrypt(ecm_data, content_key_buffer_size,
-                                content_key_buffer.data()));
+  CHECK(asset_decryptor.Crypt(ecm_data, content_key_buffer_size,
+                              content_key_buffer.data()));
 
   std::vector<uint8_t> decrypted_content_key_vec(
       content_key_buffer.begin() + 4,

@@ -6,6 +6,7 @@
 
 #include "packager/media/base/request_signer.h"
 
+#include "packager/base/logging.h"
 #include "packager/base/sha1.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/aes_encryptor.h"
@@ -48,7 +49,7 @@ AesRequestSigner* AesRequestSigner::CreateSigner(const std::string& signer_name,
 
 bool AesRequestSigner::GenerateSignature(const std::string& message,
                                          std::string* signature) {
-  aes_cbc_encryptor_->Encrypt(base::SHA1HashString(message), signature);
+  aes_cbc_encryptor_->Crypt(base::SHA1HashString(message), signature);
   return true;
 }
 

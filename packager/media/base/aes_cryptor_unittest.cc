@@ -159,22 +159,22 @@ class AesCtrEncryptorTest : public testing::Test {
 
 TEST_F(AesCtrEncryptorTest, NistTestCase) {
   std::vector<uint8_t> encrypted;
-  EXPECT_TRUE(encryptor_.Encrypt(plaintext_, &encrypted));
+  ASSERT_TRUE(encryptor_.Crypt(plaintext_, &encrypted));
   EXPECT_EQ(ciphertext_, encrypted);
 
-  EXPECT_TRUE(decryptor_.SetIv(iv_));
+  ASSERT_TRUE(decryptor_.SetIv(iv_));
   std::vector<uint8_t> decrypted;
-  EXPECT_TRUE(decryptor_.Decrypt(encrypted, &decrypted));
+  ASSERT_TRUE(decryptor_.Crypt(encrypted, &decrypted));
   EXPECT_EQ(plaintext_, decrypted);
 }
 
 TEST_F(AesCtrEncryptorTest, NistTestCaseInplaceEncryptionDecryption) {
   std::vector<uint8_t> buffer = plaintext_;
-  EXPECT_TRUE(encryptor_.Encrypt(&buffer[0], buffer.size(), &buffer[0]));
+  ASSERT_TRUE(encryptor_.Crypt(&buffer[0], buffer.size(), &buffer[0]));
   EXPECT_EQ(ciphertext_, buffer);
 
-  EXPECT_TRUE(decryptor_.SetIv(iv_));
-  EXPECT_TRUE(decryptor_.Decrypt(&buffer[0], buffer.size(), &buffer[0]));
+  ASSERT_TRUE(decryptor_.SetIv(iv_));
+  ASSERT_TRUE(decryptor_.Crypt(&buffer[0], buffer.size(), &buffer[0]));
   EXPECT_EQ(plaintext_, buffer);
 }
 
@@ -184,13 +184,13 @@ TEST_F(AesCtrEncryptorTest, EncryptDecryptString) {
       "82E3AD1EF90C5CC09EB37F1B9EFBD99016441A1C15123F0777CD57BB993E14DA02";
 
   std::string ciphertext;
-  EXPECT_TRUE(encryptor_.Encrypt(kPlaintext, &ciphertext));
+  ASSERT_TRUE(encryptor_.Crypt(kPlaintext, &ciphertext));
   EXPECT_EQ(kExpectedCiphertextInHex,
             base::HexEncode(ciphertext.data(), ciphertext.size()));
 
   std::string decrypted;
-  EXPECT_TRUE(decryptor_.SetIv(iv_));
-  EXPECT_TRUE(decryptor_.Decrypt(ciphertext, &decrypted));
+  ASSERT_TRUE(decryptor_.SetIv(iv_));
+  ASSERT_TRUE(decryptor_.Crypt(ciphertext, &decrypted));
   EXPECT_EQ(kPlaintext, decrypted);
 }
 
@@ -202,7 +202,7 @@ TEST_F(AesCtrEncryptorTest, 128BitIVBoundaryCaseEncryption) {
                                 kIv128Max64 + arraysize(kIv128Max64));
   ASSERT_TRUE(encryptor_.InitializeWithIv(key_, iv_max64));
   std::vector<uint8_t> encrypted;
-  EXPECT_TRUE(encryptor_.Encrypt(plaintext_, &encrypted));
+  ASSERT_TRUE(encryptor_.Crypt(plaintext_, &encrypted));
 
   std::vector<uint8_t> iv_one_and_three(
       kIv128OneAndThree, kIv128OneAndThree + arraysize(kIv128OneAndThree));
@@ -211,12 +211,12 @@ TEST_F(AesCtrEncryptorTest, 128BitIVBoundaryCaseEncryption) {
 
   ASSERT_TRUE(encryptor_.InitializeWithIv(key_, iv_max64));
   std::vector<uint8_t> encrypted_verify(plaintext_.size(), 0);
-  EXPECT_TRUE(
-      encryptor_.Encrypt(&plaintext_[0], kAesBlockSize, &encrypted_verify[0]));
+  ASSERT_TRUE(
+      encryptor_.Crypt(&plaintext_[0], kAesBlockSize, &encrypted_verify[0]));
   std::vector<uint8_t> iv_zero(kIv128Zero, kIv128Zero + arraysize(kIv128Zero));
   ASSERT_TRUE(encryptor_.InitializeWithIv(key_, iv_zero));
-  EXPECT_TRUE(encryptor_.Encrypt(&plaintext_[kAesBlockSize], kAesBlockSize * 3,
-                                 &encrypted_verify[kAesBlockSize]));
+  ASSERT_TRUE(encryptor_.Crypt(&plaintext_[kAesBlockSize], kAesBlockSize * 3,
+                               &encrypted_verify[kAesBlockSize]));
   EXPECT_EQ(encrypted, encrypted_verify);
 }
 
@@ -224,8 +224,8 @@ TEST_F(AesCtrEncryptorTest, InitWithRandomIv) {
   const uint8_t kIvSize = 8;
   ASSERT_TRUE(encryptor_.InitializeWithRandomIv(key_, kIvSize));
   ASSERT_EQ(kIvSize, encryptor_.iv().size());
-  LOG(INFO) << "Random IV: " << base::HexEncode(&encryptor_.iv()[0],
-                                                encryptor_.iv().size());
+  LOG(INFO) << "Random IV: "
+            << base::HexEncode(&encryptor_.iv()[0], encryptor_.iv().size());
 }
 
 TEST_F(AesCtrEncryptorTest, UnsupportedKeySize) {
@@ -252,19 +252,17 @@ TEST_P(AesCtrEncryptorSubsampleTest, NistTestCaseSubsamples) {
   std::vector<uint8_t> encrypted(plaintext_.size(), 0);
   for (uint32_t i = 0, offset = 0; i < test_case->subsample_count; ++i) {
     uint32_t len = test_case->subsample_sizes[i];
-    EXPECT_TRUE(
-        encryptor_.Encrypt(&plaintext_[offset], len, &encrypted[offset]));
+    ASSERT_TRUE(encryptor_.Crypt(&plaintext_[offset], len, &encrypted[offset]));
     offset += len;
     EXPECT_EQ(offset % kAesBlockSize, encryptor_.block_offset());
   }
   EXPECT_EQ(ciphertext_, encrypted);
 
-  EXPECT_TRUE(decryptor_.SetIv(iv_));
+  ASSERT_TRUE(decryptor_.SetIv(iv_));
   std::vector<uint8_t> decrypted(encrypted.size(), 0);
   for (uint32_t i = 0, offset = 0; i < test_case->subsample_count; ++i) {
     uint32_t len = test_case->subsample_sizes[i];
-    EXPECT_TRUE(
-        decryptor_.Decrypt(&encrypted[offset], len, &decrypted[offset]));
+    ASSERT_TRUE(decryptor_.Crypt(&encrypted[offset], len, &decrypted[offset]));
     offset += len;
     EXPECT_EQ(offset % kAesBlockSize, decryptor_.block_offset());
   }
@@ -291,7 +289,7 @@ TEST_P(AesCtrEncryptorIvTest, IvTest) {
   ASSERT_TRUE(encryptor.InitializeWithIv(key, iv_test));
 
   std::vector<uint8_t> encrypted;
-  EXPECT_TRUE(encryptor.Encrypt(plaintext, &encrypted));
+  ASSERT_TRUE(encryptor.Crypt(plaintext, &encrypted));
   encryptor.UpdateIv();
   EXPECT_EQ(iv_expected, encryptor.iv());
 }
@@ -300,9 +298,9 @@ INSTANTIATE_TEST_CASE_P(IvTestCases,
                         AesCtrEncryptorIvTest,
                         ::testing::ValuesIn(kIvTestCases));
 
-class AesCbcEncryptDecryptTest {
+class AesCbcTest : public ::testing::Test {
  public:
-  AesCbcEncryptDecryptTest()
+  AesCbcTest()
       : encryptor_(new AesCbcEncryptor(kPkcs5Padding, !kChainAcrossCalls)),
         decryptor_(new AesCbcDecryptor(kPkcs5Padding, !kChainAcrossCalls)),
         key_(kAesKey, kAesKey + arraysize(kAesKey)),
@@ -330,11 +328,11 @@ class AesCbcEncryptDecryptTest {
     ASSERT_TRUE(decryptor_->InitializeWithIv(key_, iv_));
 
     T encrypted;
-    EXPECT_TRUE(encryptor_->Encrypt(plaintext, &encrypted));
+    ASSERT_TRUE(encryptor_->Crypt(plaintext, &encrypted));
     EXPECT_EQ(expected_ciphertext, encrypted);
 
     T decrypted;
-    EXPECT_TRUE(decryptor_->Decrypt(encrypted, &decrypted));
+    ASSERT_TRUE(decryptor_->Crypt(encrypted, &decrypted));
     EXPECT_EQ(plaintext, decrypted);
   }
 
@@ -345,9 +343,9 @@ class AesCbcEncryptDecryptTest {
     ASSERT_TRUE(decryptor_->InitializeWithIv(key_, iv_));
 
     T buffer(plaintext);
-    EXPECT_TRUE(encryptor_->Encrypt(buffer, &buffer));
+    ASSERT_TRUE(encryptor_->Crypt(buffer, &buffer));
     EXPECT_EQ(expected_ciphertext, buffer);
-    EXPECT_TRUE(decryptor_->Decrypt(buffer, &buffer));
+    ASSERT_TRUE(decryptor_->Crypt(buffer, &buffer));
     EXPECT_EQ(plaintext, buffer);
   }
 
@@ -356,8 +354,6 @@ class AesCbcEncryptDecryptTest {
   std::vector<uint8_t> key_;
   std::vector<uint8_t> iv_;
 };
-
-class AesCbcTest : public AesCbcEncryptDecryptTest, public testing::Test {};
 
 TEST_F(AesCbcTest, Aes256CbcPkcs5) {
   // NIST SP 800-38A test vector F.2.5 CBC-AES256.Encrypt.
@@ -462,22 +458,22 @@ TEST_F(AesCbcTest, NoPaddingNoChainAcrossCalls) {
   ASSERT_TRUE(encryptor.InitializeWithIv(key_, iv_));
 
   std::vector<uint8_t> encrypted;
-  ASSERT_TRUE(encryptor.Encrypt(plaintext, &encrypted));
+  ASSERT_TRUE(encryptor.Crypt(plaintext, &encrypted));
   EXPECT_EQ(ciphertext, encrypted);
   // Iv should not have been updated.
   EXPECT_EQ(iv_, encryptor.iv());
-  ASSERT_TRUE(encryptor.Encrypt(plaintext, &encrypted));
+  ASSERT_TRUE(encryptor.Crypt(plaintext, &encrypted));
   EXPECT_EQ(ciphertext, encrypted);
 
   AesCbcDecryptor decryptor(kNoPadding, !kChainAcrossCalls);
   ASSERT_TRUE(decryptor.InitializeWithIv(key_, iv_));
 
   std::vector<uint8_t> decrypted;
-  ASSERT_TRUE(decryptor.Decrypt(ciphertext, &decrypted));
+  ASSERT_TRUE(decryptor.Crypt(ciphertext, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
   // Iv should not have been updated.
   EXPECT_EQ(iv_, encryptor.iv());
-  ASSERT_TRUE(decryptor.Decrypt(ciphertext, &decrypted));
+  ASSERT_TRUE(decryptor.Crypt(ciphertext, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
 }
 
@@ -506,24 +502,24 @@ TEST_F(AesCbcTest, NoPaddingChainAcrossCalls) {
   ASSERT_TRUE(encryptor.InitializeWithIv(key_, iv_));
 
   std::vector<uint8_t> encrypted;
-  ASSERT_TRUE(encryptor.Encrypt(plaintext, &encrypted));
+  ASSERT_TRUE(encryptor.Crypt(plaintext, &encrypted));
   EXPECT_EQ(ciphertext, encrypted);
   // Iv should have been updated.
   EXPECT_NE(iv_, encryptor.iv());
   // If run encrypt again, the result will be different.
-  ASSERT_TRUE(encryptor.Encrypt(plaintext, &encrypted));
+  ASSERT_TRUE(encryptor.Crypt(plaintext, &encrypted));
   EXPECT_EQ(ciphertext2, encrypted);
 
   AesCbcDecryptor decryptor(kNoPadding, kChainAcrossCalls);
   ASSERT_TRUE(decryptor.InitializeWithIv(key_, iv_));
 
   std::vector<uint8_t> decrypted;
-  ASSERT_TRUE(decryptor.Decrypt(ciphertext, &decrypted));
+  ASSERT_TRUE(decryptor.Crypt(ciphertext, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
   // Iv should have been updated.
   EXPECT_NE(iv_, encryptor.iv());
   // If run decrypt on ciphertext2 now, it will return the original plaintext.
-  ASSERT_TRUE(decryptor.Decrypt(ciphertext2, &decrypted));
+  ASSERT_TRUE(decryptor.Crypt(ciphertext2, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
 }
 
@@ -540,13 +536,13 @@ TEST_F(AesCbcTest, UnsupportedIvSize) {
 TEST_F(AesCbcTest, Pkcs5CipherTextNotMultipleOfBlockSize) {
   std::string plaintext;
   ASSERT_TRUE(decryptor_->InitializeWithIv(key_, iv_));
-  EXPECT_FALSE(decryptor_->Decrypt("1", &plaintext));
+  EXPECT_FALSE(decryptor_->Crypt("1", &plaintext));
 }
 
 TEST_F(AesCbcTest, Pkcs5CipherTextEmpty) {
   std::string plaintext;
   ASSERT_TRUE(decryptor_->InitializeWithIv(key_, iv_));
-  EXPECT_FALSE(decryptor_->Decrypt("", &plaintext));
+  EXPECT_FALSE(decryptor_->Crypt("", &plaintext));
 }
 
 struct CbcTestCase {
@@ -585,8 +581,8 @@ const CbcTestCase kCbcTestCases[] = {
 };
 
 class AesCbcCryptorVerificationTest
-    : public AesCbcEncryptDecryptTest,
-      public ::testing::TestWithParam<CbcTestCase> {};
+    : public AesCbcTest,
+      public ::testing::WithParamInterface<CbcTestCase> {};
 
 TEST_P(AesCbcCryptorVerificationTest, EncryptDecryptTest) {
   encryptor_.reset(

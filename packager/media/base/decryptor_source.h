@@ -29,7 +29,7 @@ class DecryptorSource {
 
  private:
   KeySource* key_source_;
-  std::map<std::vector<uint8_t>, AesDecryptor*> decryptor_map_;
+  std::map<std::vector<uint8_t>, AesCryptor*> decryptor_map_;
 
   DISALLOW_COPY_AND_ASSIGN(DecryptorSource);
 };

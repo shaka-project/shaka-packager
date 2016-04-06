@@ -40,9 +40,8 @@ namespace media {
 AesEncryptor::AesEncryptor() {}
 AesEncryptor::~AesEncryptor() {}
 
-bool AesEncryptor::InitializeWithRandomIv(
-    const std::vector<uint8_t>& key,
-    uint8_t iv_size) {
+bool AesEncryptor::InitializeWithRandomIv(const std::vector<uint8_t>& key,
+                                          uint8_t iv_size) {
   std::vector<uint8_t> iv(iv_size, 0);
   if (RAND_bytes(iv.data(), iv_size) != 1) {
     LOG(ERROR) << "RAND_bytes failed with error: "
@@ -59,29 +58,9 @@ bool AesEncryptor::InitializeWithIv(const std::vector<uint8_t>& key,
     return false;
   }
 
-  aes_key_.reset(new AES_KEY());
-  CHECK_EQ(AES_set_encrypt_key(key.data(), key.size() * 8, aes_key_.get()), 0);
+  CHECK_EQ(AES_set_encrypt_key(key.data(), key.size() * 8, mutable_aes_key()),
+           0);
   return SetIv(iv);
-}
-
-bool AesEncryptor::Encrypt(const std::vector<uint8_t>& plaintext,
-                           std::vector<uint8_t>* ciphertext) {
-  // Save plaintext size to make it work for in-place conversion, since the
-  // next statement will update the plaintext size.
-  const size_t plaintext_size = plaintext.size();
-  ciphertext->resize(plaintext_size + NumPaddingBytes(plaintext.size()));
-  return EncryptInternal(plaintext.data(), plaintext_size, ciphertext->data());
-}
-
-bool AesEncryptor::Encrypt(const std::string& plaintext,
-                           std::string* ciphertext) {
-  // Save plaintext size to make it work for in-place conversion, since the
-  // next statement will update the plaintext size.
-  const size_t plaintext_size = plaintext.size();
-  ciphertext->resize(plaintext_size + NumPaddingBytes(plaintext.size()));
-  return EncryptInternal(
-      reinterpret_cast<const uint8_t*>(plaintext.data()), plaintext_size,
-      reinterpret_cast<uint8_t*>(string_as_array(ciphertext)));
 }
 
 AesCtrEncryptor::AesCtrEncryptor()
@@ -134,12 +113,21 @@ bool AesCtrEncryptor::SetIv(const std::vector<uint8_t>& iv) {
   return true;
 }
 
-bool AesCtrEncryptor::EncryptInternal(const uint8_t* plaintext,
-                                      size_t plaintext_size,
-                                      uint8_t* ciphertext) {
+bool AesCtrEncryptor::CryptInternal(const uint8_t* plaintext,
+                                    size_t plaintext_size,
+                                    uint8_t* ciphertext,
+                                    size_t* ciphertext_size) {
   DCHECK(plaintext);
   DCHECK(ciphertext);
   DCHECK(aes_key());
+
+  // |ciphertext_size| is always the same as |plaintext_size| for counter mode.
+  if (*ciphertext_size < plaintext_size) {
+    LOG(ERROR) << "Expecting output size of at least " << plaintext_size
+               << " bytes.";
+    return false;
+  }
+  *ciphertext_size = plaintext_size;
 
   for (size_t i = 0; i < plaintext_size; ++i) {
     if (block_offset_ == 0) {
@@ -156,11 +144,6 @@ bool AesCtrEncryptor::EncryptInternal(const uint8_t* plaintext,
     block_offset_ = (block_offset_ + 1) % AES_BLOCK_SIZE;
   }
   return true;
-}
-
-size_t AesCtrEncryptor::NumPaddingBytes(size_t size) const {
-  // No padding needed for CTR.
-  return 0;
 }
 
 AesCbcEncryptor::AesCbcEncryptor(CbcPaddingScheme padding_scheme,
@@ -194,9 +177,10 @@ bool AesCbcEncryptor::SetIv(const std::vector<uint8_t>& iv) {
   return true;
 }
 
-bool AesCbcEncryptor::EncryptInternal(const uint8_t* plaintext,
-                                      size_t plaintext_size,
-                                      uint8_t* ciphertext) {
+bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
+                                    size_t plaintext_size,
+                                    uint8_t* ciphertext,
+                                    size_t* ciphertext_size) {
   DCHECK(aes_key());
 
   const size_t residual_block_size = plaintext_size % AES_BLOCK_SIZE;
@@ -205,6 +189,15 @@ bool AesCbcEncryptor::EncryptInternal(const uint8_t* plaintext,
                << ", got " << plaintext_size;
     return false;
   }
+
+  const size_t num_padding_bytes = NumPaddingBytes(plaintext_size);
+  const size_t required_ciphertext_size = plaintext_size + num_padding_bytes;
+  if (*ciphertext_size < required_ciphertext_size) {
+    LOG(ERROR) << "Expecting output size of at least "
+               << required_ciphertext_size << " bytes.";
+    return false;
+  }
+  *ciphertext_size = required_ciphertext_size;
 
   // Encrypt everything but the residual block using CBC.
   const size_t cbc_size = plaintext_size - residual_block_size;
@@ -231,13 +224,14 @@ bool AesCbcEncryptor::EncryptInternal(const uint8_t* plaintext,
   uint8_t* residual_ciphertext_block = ciphertext + cbc_size;
 
   if (padding_scheme_ == kPkcs5Padding) {
-    const size_t num_padding_bytes = AES_BLOCK_SIZE - residual_block_size;
-    DCHECK_EQ(num_padding_bytes, NumPaddingBytes(plaintext_size));
+    DCHECK_EQ(num_padding_bytes, AES_BLOCK_SIZE - residual_block_size);
+
     // Pad residue block with PKCS5 padding.
     residual_block.resize(AES_BLOCK_SIZE, static_cast<char>(num_padding_bytes));
     AES_cbc_encrypt(residual_block.data(), residual_ciphertext_block,
                     AES_BLOCK_SIZE, aes_key(), local_iv.data(), AES_ENCRYPT);
   } else {
+    DCHECK_EQ(num_padding_bytes, 0u);
     DCHECK_EQ(padding_scheme_, kCtsPadding);
 
     // Zero-pad the residual block and encrypt using CBC.

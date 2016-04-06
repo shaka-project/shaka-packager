@@ -13,6 +13,8 @@
       'target_name': 'media_base',
       'type': '<(component)',
       'sources': [
+        'aes_cryptor.cc',
+        'aes_cryptor.h',
         'aes_decryptor.cc',
         'aes_decryptor.h',
         'aes_encryptor.cc',
@@ -113,7 +115,7 @@
       'target_name': 'media_base_unittest',
       'type': '<(gtest_target_type)',
       'sources': [
-        'aes_encryptor_unittest.cc',
+        'aes_cryptor_unittest.cc',
         'audio_timestamp_helper_unittest.cc',
         'bit_reader_unittest.cc',
         'buffer_writer_unittest.cc',
