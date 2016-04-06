@@ -25,12 +25,16 @@ KeyRotationFragmenter::KeyRotationFragmenter(MovieFragment* moof,
                                              int64_t crypto_period_duration,
                                              int64_t clear_time,
                                              FourCC protection_scheme,
+                                             uint8_t crypt_byte_block,
+                                             uint8_t skip_byte_block,
                                              MuxerListener* muxer_listener)
     : EncryptingFragmenter(info,
                            traf,
                            scoped_ptr<EncryptionKey>(new EncryptionKey()),
                            clear_time,
-                           protection_scheme),
+                           protection_scheme,
+                           crypt_byte_block,
+                           skip_byte_block),
       moof_(moof),
       encryption_key_source_(encryption_key_source),
       track_type_(track_type),
@@ -105,10 +109,18 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption(
   // Fill in SampleGroupDescription box information.
   traf()->sample_group_description.grouping_type = FOURCC_seig;
   traf()->sample_group_description.entries.resize(1);
-  traf()->sample_group_description.entries[0].is_protected = 1;
-  traf()->sample_group_description.entries[0].per_sample_iv_size =
-      encryptor()->iv().size();
-  traf()->sample_group_description.entries[0].key_id = encryption_key()->key_id;
+  auto& sample_group_entry = traf()->sample_group_description.entries[0];
+  sample_group_entry.is_protected = 1;
+  if (protection_scheme() == FOURCC_cbcs) {
+    // For 'cbcs' scheme, Constant IVs SHALL be used.
+    sample_group_entry.per_sample_iv_size = 0;
+    sample_group_entry.constant_iv = encryptor()->iv();
+  } else {
+    sample_group_entry.per_sample_iv_size = encryptor()->iv().size();
+  }
+  sample_group_entry.crypt_byte_block = crypt_byte_block();
+  sample_group_entry.skip_byte_block = skip_byte_block();
+  sample_group_entry.key_id = encryption_key()->key_id;
 
   // Fill in SampleToGroup box information.
   traf()->sample_to_group.grouping_type = FOURCC_seig;

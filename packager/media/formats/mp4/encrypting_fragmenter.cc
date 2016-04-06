@@ -9,6 +9,7 @@
 #include <limits>
 
 #include "packager/media/base/aes_encryptor.h"
+#include "packager/media/base/aes_pattern_cryptor.h"
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
@@ -63,26 +64,37 @@ EncryptingFragmenter::EncryptingFragmenter(
     TrackFragment* traf,
     scoped_ptr<EncryptionKey> encryption_key,
     int64_t clear_time,
-    FourCC protection_scheme)
+    FourCC protection_scheme,
+    uint8_t crypt_byte_block,
+    uint8_t skip_byte_block)
     : Fragmenter(traf),
       info_(info),
       encryption_key_(encryption_key.Pass()),
       nalu_length_size_(GetNaluLengthSize(*info)),
       video_codec_(GetVideoCodec(*info)),
       clear_time_(clear_time),
-      protection_scheme_(protection_scheme) {
+      protection_scheme_(protection_scheme),
+      crypt_byte_block_(crypt_byte_block),
+      skip_byte_block_(skip_byte_block) {
   DCHECK(encryption_key_);
-  if (video_codec_ == kCodecVP8) {
-    vpx_parser_.reset(new VP8Parser);
-  } else if (video_codec_ == kCodecVP9) {
-    vpx_parser_.reset(new VP9Parser);
-  } else if (video_codec_ == kCodecH264) {
-    header_parser_.reset(new H264VideoSliceHeaderParser);
-  } else if (video_codec_ == kCodecHVC1 || video_codec_ == kCodecHEV1) {
-    header_parser_.reset(new H265VideoSliceHeaderParser);
-  } else if (nalu_length_size_ > 0) {
-    LOG(WARNING) << "Unknown video codec '" << video_codec_
-                 << "', whole subsamples will be encrypted.";
+  switch (video_codec_) {
+    case kCodecVP8:
+      vpx_parser_.reset(new VP8Parser);
+      break;
+    case kCodecVP9:
+      vpx_parser_.reset(new VP9Parser);
+      break;
+    case kCodecH264:
+      header_parser_.reset(new H264VideoSliceHeaderParser);
+      break;
+    case kCodecHVC1:
+      FALLTHROUGH_INTENDED;
+    case kCodecHEV1:
+      header_parser_.reset(new H265VideoSliceHeaderParser);
+      break;
+    default:
+      LOG(WARNING) << "Unknown video codec '" << video_codec_
+                   << "', whole subsamples will be encrypted.";
   }
 }
 
@@ -153,6 +165,11 @@ void EncryptingFragmenter::FinalizeFragmentForEncryption() {
   // The offset will be adjusted in Segmenter after knowing moof size.
   traf()->auxiliary_offset.offsets.push_back(0);
 
+  // For 'cbcs' scheme, Constant IVs SHALL be used.
+  const size_t per_sample_iv_size =
+      (protection_scheme_ == FOURCC_cbcs) ? 0 : encryptor_->iv().size();
+  traf()->sample_encryption.iv_size = per_sample_iv_size;
+
   // Optimize saiz box.
   SampleAuxiliaryInformationSize& saiz = traf()->auxiliary_size;
   saiz.sample_count = traf()->runs[0].sample_sizes.size();
@@ -165,9 +182,11 @@ void EncryptingFragmenter::FinalizeFragmentForEncryption() {
     // |sample_info_sizes| table is filled in only for subsample encryption,
     // otherwise |sample_info_size| is just the IV size.
     DCHECK(!IsSubsampleEncryptionRequired());
-    saiz.default_sample_info_size = encryptor_->iv().size();
+    saiz.default_sample_info_size = per_sample_iv_size;
   }
-  traf()->sample_encryption.iv_size = encryptor_->iv().size();
+  // It should only happen with full sample encryption + constant iv, which is
+  // not a legal combination.
+  CHECK(!saiz.sample_info_sizes.empty() || saiz.default_sample_info_size != 0);
 }
 
 Status EncryptingFragmenter::CreateEncryptor() {
@@ -179,6 +198,19 @@ Status EncryptingFragmenter::CreateEncryptor() {
       break;
     case FOURCC_cbc1:
       encryptor.reset(new AesCbcEncryptor(kNoPadding, kChainAcrossCalls));
+      break;
+    case FOURCC_cens:
+      encryptor.reset(
+          new AesPatternCryptor(crypt_byte_block(), skip_byte_block(),
+                                AesPatternCryptor::kDontUseConstantIv,
+                                scoped_ptr<AesCryptor>(new AesCtrEncryptor)));
+      break;
+    case FOURCC_cbcs:
+      encryptor.reset(
+          new AesPatternCryptor(crypt_byte_block(), skip_byte_block(),
+                                AesPatternCryptor::kUseConstantIv,
+                                scoped_ptr<AesCryptor>(new AesCbcEncryptor(
+                                    kNoPadding, kChainAcrossCalls))));
       break;
     default:
       return Status(error::MUXER_FAILURE, "Unsupported protection scheme.");
@@ -202,7 +234,9 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
   DCHECK(encryptor_);
 
   SampleEncryptionEntry sample_encryption_entry;
-  sample_encryption_entry.initialization_vector = encryptor_->iv();
+  // For 'cbcs' scheme, Constant IVs SHALL be used.
+  if (protection_scheme_ != FOURCC_cbcs)
+    sample_encryption_entry.initialization_vector = encryptor_->iv();
   uint8_t* data = sample->writable_data();
   if (IsSubsampleEncryptionRequired()) {
     if (vpx_parser_) {

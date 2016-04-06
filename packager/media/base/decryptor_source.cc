@@ -9,6 +9,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/stl_util.h"
 #include "packager/media/base/aes_decryptor.h"
+#include "packager/media/base/aes_pattern_cryptor.h"
 
 namespace edash_packager {
 namespace media {
@@ -46,6 +47,21 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
         break;
       case FOURCC_cbc1:
         aes_decryptor.reset(new AesCbcDecryptor(kNoPadding, kChainAcrossCalls));
+        break;
+      case FOURCC_cens:
+        aes_decryptor.reset(
+            new AesPatternCryptor(decrypt_config->crypt_byte_block(),
+                                  decrypt_config->skip_byte_block(),
+                                  AesPatternCryptor::kDontUseConstantIv,
+                                  scoped_ptr<AesCryptor>(new AesCtrDecryptor)));
+        break;
+      case FOURCC_cbcs:
+        aes_decryptor.reset(
+            new AesPatternCryptor(decrypt_config->crypt_byte_block(),
+                                  decrypt_config->skip_byte_block(),
+                                  AesPatternCryptor::kUseConstantIv,
+                                  scoped_ptr<AesCryptor>(new AesCbcDecryptor(
+                                      kNoPadding, kChainAcrossCalls))));
         break;
       default:
         LOG(ERROR) << "Unsupported protection scheme: "

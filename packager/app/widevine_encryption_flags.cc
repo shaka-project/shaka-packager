@@ -57,8 +57,12 @@ DEFINE_int32(crypto_period_duration,
              "rotation is enabled.");
 DEFINE_string(protection_scheme,
               "cenc",
-              "Choose protection scheme. Currently support cenc and cbc1. "
-              "Default is cenc.");
+              "Choose protection scheme, 'cenc' or 'cbc1' or pattern-based "
+              "protection schemes 'cens' or 'cbcs'. Note that if a "
+              "pattern-based protection scheme only applies to video stream; "
+              "audio stream will be encrypted using the corresponding "
+              "non-pattern-based encryption schemes, i.e. 'cenc' for 'cens', "
+              "'cbc1' for 'cbcs'.");
 
 namespace edash_packager {
 

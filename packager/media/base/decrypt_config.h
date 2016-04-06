@@ -60,10 +60,16 @@ class DecryptConfig {
   ///        in size to the sum of the subsample sizes.
   /// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',
   ///        'cbc1', 'cbcs'.
+  /// @param crypt_byte_block indicates number of encrypted blocks (16-byte) in
+  ///        pattern based encryption, 'cens' and 'cbcs'. Ignored otherwise.
+  /// @param skip_byte_block indicates number of unencrypted blocks (16-byte)
+  ///        in pattern based encryption, 'cens' and 'cbcs'. Ignored otherwise.
   DecryptConfig(const std::vector<uint8_t>& key_id,
                 const std::vector<uint8_t>& iv,
                 const std::vector<SubsampleEntry>& subsamples,
-                FourCC protection_scheme);
+                FourCC protection_scheme,
+                uint8_t crypt_byte_block,
+                uint8_t skip_byte_block);
 
   ~DecryptConfig();
 
@@ -71,6 +77,8 @@ class DecryptConfig {
   const std::vector<uint8_t>& iv() const { return iv_; }
   const std::vector<SubsampleEntry>& subsamples() const { return subsamples_; }
   FourCC protection_scheme() const { return protection_scheme_; }
+  uint8_t crypt_byte_block() const { return crypt_byte_block_; }
+  uint8_t skip_byte_block() const { return skip_byte_block_; }
 
  private:
   const std::vector<uint8_t> key_id_;
@@ -83,6 +91,9 @@ class DecryptConfig {
   const std::vector<SubsampleEntry> subsamples_;
 
   const FourCC protection_scheme_;
+  // For pattern-based protection schemes, like CENS and CBCS.
+  const uint8_t crypt_byte_block_;
+  const uint8_t skip_byte_block_;
 
   DISALLOW_COPY_AND_ASSIGN(DecryptConfig);
 };

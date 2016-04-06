@@ -19,6 +19,9 @@ const int kSumAscending1 = 45;
 const int kAudioScale = 48000;
 const int kVideoScale = 25;
 
+const uint8_t kDefaultCryptByteBlock = 2;
+const uint8_t kDefaultSkipByteBlock = 8;
+
 const uint8_t kAuxInfo[] = {
     // Sample 1: IV (no subsumples).
     0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x31,
@@ -29,7 +32,8 @@ const uint8_t kAuxInfo[] = {
     // Sample 2: Subsample 1.
     0x00, 0x01, 0x00, 0x00, 0x00, 0x02,
     // Sample 2: Subsample 2.
-    0x00, 0x03, 0x00, 0x00, 0x00, 0x04};
+    0x00, 0x03, 0x00, 0x00, 0x00, 0x04,
+};
 
 const uint8_t kSampleEncryptionDataWithSubsamples[] = {
     // Sample count.
@@ -47,7 +51,8 @@ const uint8_t kSampleEncryptionDataWithSubsamples[] = {
     // Sample 2: Subsample 1.
     0x00, 0x01, 0x00, 0x00, 0x00, 0x02,
     // Sample 2: Subsample 2.
-    0x00, 0x03, 0x00, 0x00, 0x00, 0x04};
+    0x00, 0x03, 0x00, 0x00, 0x00, 0x04,
+};
 
 const uint8_t kSampleEncryptionDataWithoutSubsamples[] = {
     // Sample count.
@@ -55,13 +60,37 @@ const uint8_t kSampleEncryptionDataWithoutSubsamples[] = {
     // Sample 1: IV.
     0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x31,
     // Sample 2: IV.
-    0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x32};
+    0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x32,
+};
+
+const uint8_t kSampleEncryptionDataWithConstantIvAndSubsamples[] = {
+    // Sample count.
+    0x00, 0x00, 0x00, 0x02,
+    // Sample 1: Subsample count.
+    0x00, 0x01,
+    // Sample 1: Subsample 1.
+    0x00, 0x01, 0x00, 0x00, 0x00, 0x02,
+    // Sample 2: Subsample count.
+    0x00, 0x02,
+    // Sample 2: Subsample 1.
+    0x00, 0x01, 0x00, 0x00, 0x00, 0x02,
+    // Sample 2: Subsample 2.
+    0x00, 0x03, 0x00, 0x00, 0x00, 0x04,
+};
+
+const uint8_t kSampleEncryptionDataWithConstantIvWithoutSubsamples[] = {
+    // Sample count.
+    0x00, 0x00, 0x00, 0x02,
+};
 
 const char kIv1[] = {0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x31};
 const char kIv2[] = {0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x32};
+const char kConstantIv[] = {0x41, 0x54, 0x65, 0x73, 0x74, 0x49, 0x76, 0x33};
 
-const uint8_t kKeyId[] = {0x41, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x54,
-                          0x65, 0x73, 0x74, 0x4b, 0x65, 0x79, 0x49, 0x44};
+const uint8_t kKeyId[] = {
+    0x41, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x54,
+    0x65, 0x73, 0x74, 0x4b, 0x65, 0x79, 0x49, 0x44,
+};
 
 }  // namespace
 
@@ -142,7 +171,7 @@ class TrackRunIteratorTest : public testing::Test {
   }
 
   // Update the first sample description of a Track to indicate encryption
-  void AddEncryption(Track* track) {
+  void AddEncryption(FourCC protection_scheme, Track* track) {
     SampleDescription* stsd =
         &track->media.information.sample_table.description;
     ProtectionSchemeInfo* sinf;
@@ -152,9 +181,20 @@ class TrackRunIteratorTest : public testing::Test {
       sinf = &stsd->audio_entries[0].sinf;
     }
 
-    sinf->type.type = FOURCC_cenc;
+    sinf->type.type = protection_scheme;
     sinf->info.track_encryption.default_is_protected = 1;
-    sinf->info.track_encryption.default_per_sample_iv_size = 8;
+    // Use constant IV for CBCS protection scheme.
+    if (protection_scheme == FOURCC_cbcs) {
+      sinf->info.track_encryption.default_per_sample_iv_size = 0;
+      sinf->info.track_encryption.default_constant_iv.assign(
+          kConstantIv, kConstantIv + arraysize(kConstantIv));
+      sinf->info.track_encryption.default_crypt_byte_block =
+          kDefaultCryptByteBlock;
+      sinf->info.track_encryption.default_skip_byte_block =
+          kDefaultSkipByteBlock;
+    } else {
+      sinf->info.track_encryption.default_per_sample_iv_size = 8;
+    }
     sinf->info.track_encryption.default_kid.assign(kKeyId,
                                                    kKeyId + arraysize(kKeyId));
   }
@@ -199,6 +239,39 @@ class TrackRunIteratorTest : public testing::Test {
       frag->auxiliary_size.sample_info_sizes.push_back(22);
     } else {
       frag->auxiliary_size.default_sample_info_size = 8;
+    }
+  }
+
+  void AddSampleEncryptionWithConstantIv(uint8_t use_subsample_flag,
+                                         TrackFragment* frag) {
+    frag->sample_encryption.iv_size = 0;
+    frag->sample_encryption.flags = use_subsample_flag;
+    if (use_subsample_flag) {
+      frag->sample_encryption.sample_encryption_data.assign(
+          kSampleEncryptionDataWithConstantIvAndSubsamples,
+          kSampleEncryptionDataWithConstantIvAndSubsamples +
+              arraysize(kSampleEncryptionDataWithConstantIvAndSubsamples));
+    } else {
+      frag->sample_encryption.sample_encryption_data.assign(
+          kSampleEncryptionDataWithConstantIvWithoutSubsamples,
+          kSampleEncryptionDataWithConstantIvWithoutSubsamples +
+              arraysize(kSampleEncryptionDataWithConstantIvWithoutSubsamples));
+    }
+
+    // Update sample sizes and aux info header.
+    frag->runs.resize(1);
+    frag->runs[0].sample_count = 2;
+    if (use_subsample_flag) {
+      // Update sample sizes to match with subsample entries above.
+      frag->runs[0].sample_sizes[0] = 3;
+      frag->runs[0].sample_sizes[1] = 10;
+      // Set aux info header.
+      frag->auxiliary_offset.offsets.push_back(0);
+      frag->auxiliary_size.sample_count = 2;
+      frag->auxiliary_size.sample_info_sizes.push_back(16);
+      frag->auxiliary_size.sample_info_sizes.push_back(22);
+    } else {
+      // No aux info needed for constant iv and full sample encryption.
     }
   }
 
@@ -364,7 +437,7 @@ TEST_F(TrackRunIteratorTest, IgnoreUnknownAuxInfoTest) {
 
 TEST_F(TrackRunIteratorTest,
        DecryptConfigTestWithSampleEncryptionAndSubsample) {
-  AddEncryption(&moov_.tracks[1]);
+  AddEncryption(FOURCC_cenc, &moov_.tracks[1]);
   iter_.reset(new TrackRunIterator(&moov_));
 
   MovieFragment moof = CreateFragment();
@@ -402,7 +475,7 @@ TEST_F(TrackRunIteratorTest,
 
 TEST_F(TrackRunIteratorTest,
        DecryptConfigTestWithSampleEncryptionAndNoSubsample) {
-  AddEncryption(&moov_.tracks[1]);
+  AddEncryption(FOURCC_cenc, &moov_.tracks[1]);
   iter_.reset(new TrackRunIterator(&moov_));
 
   MovieFragment moof = CreateFragment();
@@ -432,8 +505,84 @@ TEST_F(TrackRunIteratorTest,
   EXPECT_EQ(config->subsamples().size(), 0u);
 }
 
+TEST_F(TrackRunIteratorTest,
+       DecryptConfigTestWithSampleEncryptionAndConstantIvAndSubsample) {
+  AddEncryption(FOURCC_cbcs, &moov_.tracks[1]);
+  iter_.reset(new TrackRunIterator(&moov_));
+
+  MovieFragment moof = CreateFragment();
+  AddSampleEncryptionWithConstantIv(SampleEncryption::kUseSubsampleEncryption,
+                                    &moof.tracks[1]);
+
+  ASSERT_TRUE(iter_->Init(moof));
+  // The run for track 2 will be the second, which is parsed according to
+  // data_offset.
+  iter_->AdvanceRun();
+  EXPECT_EQ(iter_->track_id(), 2u);
+
+  EXPECT_TRUE(iter_->is_encrypted());
+  EXPECT_EQ(iter_->sample_offset(), 200);
+  EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[1].runs[0].data_offset);
+  scoped_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
+  EXPECT_EQ(FOURCC_cbcs, config->protection_scheme());
+  EXPECT_EQ(kDefaultCryptByteBlock, config->crypt_byte_block());
+  EXPECT_EQ(kDefaultSkipByteBlock, config->skip_byte_block());
+  EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId)),
+            config->key_id());
+  EXPECT_EQ(
+      std::vector<uint8_t>(kConstantIv, kConstantIv + arraysize(kConstantIv)),
+      config->iv());
+  EXPECT_EQ(config->subsamples().size(), 1u);
+  EXPECT_EQ(config->subsamples()[0].clear_bytes, 1u);
+  EXPECT_EQ(config->subsamples()[0].cipher_bytes, 2u);
+  iter_->AdvanceSample();
+  config = iter_->GetDecryptConfig();
+  EXPECT_EQ(
+      std::vector<uint8_t>(kConstantIv, kConstantIv + arraysize(kConstantIv)),
+      config->iv());
+  EXPECT_EQ(config->subsamples().size(), 2u);
+  EXPECT_EQ(config->subsamples()[0].clear_bytes, 1u);
+  EXPECT_EQ(config->subsamples()[0].cipher_bytes, 2u);
+  EXPECT_EQ(config->subsamples()[1].clear_bytes, 3u);
+  EXPECT_EQ(config->subsamples()[1].cipher_bytes, 4u);
+}
+
+TEST_F(TrackRunIteratorTest,
+       DecryptConfigTestWithSampleEncryptionAndConstantIvAndNoSubsample) {
+  AddEncryption(FOURCC_cbcs, &moov_.tracks[1]);
+  iter_.reset(new TrackRunIterator(&moov_));
+
+  MovieFragment moof = CreateFragment();
+  AddSampleEncryptionWithConstantIv(!SampleEncryption::kUseSubsampleEncryption,
+                                    &moof.tracks[1]);
+
+  ASSERT_TRUE(iter_->Init(moof));
+  // The run for track 2 will be the second, which is parsed according to
+  // data_offset.
+  iter_->AdvanceRun();
+  EXPECT_EQ(iter_->track_id(), 2u);
+
+  EXPECT_TRUE(iter_->is_encrypted());
+  EXPECT_EQ(iter_->sample_offset(), 200);
+  EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[1].runs[0].data_offset);
+  scoped_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
+  EXPECT_EQ(FOURCC_cbcs, config->protection_scheme());
+  EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId)),
+            config->key_id());
+  EXPECT_EQ(
+      std::vector<uint8_t>(kConstantIv, kConstantIv + arraysize(kConstantIv)),
+      config->iv());
+  EXPECT_EQ(config->subsamples().size(), 0u);
+  iter_->AdvanceSample();
+  config = iter_->GetDecryptConfig();
+  EXPECT_EQ(
+      std::vector<uint8_t>(kConstantIv, kConstantIv + arraysize(kConstantIv)),
+      config->iv());
+  EXPECT_EQ(config->subsamples().size(), 0u);
+}
+
 TEST_F(TrackRunIteratorTest, DecryptConfigTestWithAuxInfo) {
-  AddEncryption(&moov_.tracks[1]);
+  AddEncryption(FOURCC_cenc, &moov_.tracks[1]);
   iter_.reset(new TrackRunIterator(&moov_));
 
   MovieFragment moof = CreateFragment();
@@ -470,8 +619,8 @@ TEST_F(TrackRunIteratorTest, DecryptConfigTestWithAuxInfo) {
 
 // It is legal for aux info blocks to be shared among multiple formats.
 TEST_F(TrackRunIteratorTest, SharedAuxInfoTest) {
-  AddEncryption(&moov_.tracks[0]);
-  AddEncryption(&moov_.tracks[1]);
+  AddEncryption(FOURCC_cenc, &moov_.tracks[0]);
+  AddEncryption(FOURCC_cenc, &moov_.tracks[1]);
   iter_.reset(new TrackRunIterator(&moov_));
 
   MovieFragment moof = CreateFragment();
@@ -512,8 +661,8 @@ TEST_F(TrackRunIteratorTest, SharedAuxInfoTest) {
 //  byte 10000: track 1, run 2 data
 //  byte 20000: track 1, run 1 aux info
 TEST_F(TrackRunIteratorTest, UnexpectedOrderingTest) {
-  AddEncryption(&moov_.tracks[0]);
-  AddEncryption(&moov_.tracks[1]);
+  AddEncryption(FOURCC_cenc, &moov_.tracks[0]);
+  AddEncryption(FOURCC_cenc, &moov_.tracks[1]);
   iter_.reset(new TrackRunIterator(&moov_));
 
   MovieFragment moof = CreateFragment();

@@ -606,10 +606,22 @@ scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
 
   FourCC protection_scheme = is_audio() ? audio_description().sinf.type.type
                                         : video_description().sinf.type.type;
-  return scoped_ptr<DecryptConfig>(
-      new DecryptConfig(track_encryption().default_kid,
-                        sample_encryption_entry.initialization_vector,
-                        sample_encryption_entry.subsamples, protection_scheme));
+  std::vector<uint8_t> iv = sample_encryption_entry.initialization_vector;
+  if (iv.empty()) {
+    if (protection_scheme != FOURCC_cbcs) {
+      LOG(WARNING)
+          << "Constant IV should only be used with 'cbcs' protection scheme.";
+    }
+    iv = track_encryption().default_constant_iv;
+    if (iv.empty()) {
+      LOG(ERROR) << "IV cannot be empty.";
+      return scoped_ptr<DecryptConfig>();
+    }
+  }
+  return scoped_ptr<DecryptConfig>(new DecryptConfig(
+      track_encryption().default_kid, iv, sample_encryption_entry.subsamples,
+      protection_scheme, track_encryption().default_crypt_byte_block,
+      track_encryption().default_skip_byte_block));
 }
 
 }  // namespace mp4

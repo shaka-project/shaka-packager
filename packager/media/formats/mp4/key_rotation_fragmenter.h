@@ -34,6 +34,10 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
   ///        track's timescale.
   /// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',
   ///        'cbc1', 'cbcs'.
+  /// @param crypt_byte_block indicates number of encrypted blocks (16-byte) in
+  ///        pattern based encryption.
+  /// @param skip_byte_block indicates number of unencrypted blocks (16-byte)
+  ///        in pattern based encryption.
   /// @param muxer_listener is a pointer to MuxerListener for notifying
   ///        muxer related events. This may be null.
   KeyRotationFragmenter(MovieFragment* moof,
@@ -44,6 +48,8 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
                         int64_t crypto_period_duration,
                         int64_t clear_time,
                         FourCC protection_scheme,
+                        uint8_t crypt_byte_block,
+                        uint8_t skip_byte_block,
                         MuxerListener* muxer_listener);
   ~KeyRotationFragmenter() override;
 

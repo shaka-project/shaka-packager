@@ -32,11 +32,17 @@ class EncryptingFragmenter : public Fragmenter {
   ///        track's timescale.
   /// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',
   ///        'cbc1', 'cbcs'.
+  /// @param crypt_byte_block indicates number of encrypted blocks (16-byte) in
+  ///        pattern based encryption.
+  /// @param skip_byte_block indicates number of unencrypted blocks (16-byte)
+  ///        in pattern based encryption.
   EncryptingFragmenter(scoped_refptr<StreamInfo> info,
                        TrackFragment* traf,
                        scoped_ptr<EncryptionKey> encryption_key,
                        int64_t clear_time,
-                       FourCC protection_scheme);
+                       FourCC protection_scheme,
+                       uint8_t crypt_byte_block,
+                       uint8_t skip_byte_block);
 
   ~EncryptingFragmenter() override;
 
@@ -62,6 +68,8 @@ class EncryptingFragmenter : public Fragmenter {
   const EncryptionKey* encryption_key() const { return encryption_key_.get(); }
   AesCryptor* encryptor() { return encryptor_.get(); }
   FourCC protection_scheme() const { return protection_scheme_; }
+  uint8_t crypt_byte_block() const { return crypt_byte_block_; }
+  uint8_t skip_byte_block() const { return skip_byte_block_; }
 
   void set_encryption_key(scoped_ptr<EncryptionKey> encryption_key) {
     encryption_key_ = encryption_key.Pass();
@@ -83,7 +91,9 @@ class EncryptingFragmenter : public Fragmenter {
   const uint8_t nalu_length_size_;
   const VideoCodec video_codec_;
   int64_t clear_time_;
-  FourCC protection_scheme_;
+  const FourCC protection_scheme_;
+  const uint8_t crypt_byte_block_;
+  const uint8_t skip_byte_block_;
 
   scoped_ptr<VPxParser> vpx_parser_;
   scoped_ptr<VideoSliceHeaderParser> header_parser_;
