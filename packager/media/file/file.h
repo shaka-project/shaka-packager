@@ -17,6 +17,7 @@ namespace edash_packager {
 namespace media {
 
 extern const char* kLocalFilePrefix;
+extern const char* kMemoryFilePrefix;
 const int64_t kWholeFile = -1;
 
 /// Define an abstract file interface.

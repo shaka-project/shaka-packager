@@ -39,8 +39,9 @@ const uint8_t kNaluLengthSize = 0;
 SegmentTestBase::SegmentTestBase() {}
 
 void SegmentTestBase::SetUp() {
-  output_file_name_ = "memory://output-file.webm";
-  segment_template_ = "memory://output-template-$Number$.webm";
+  output_file_name_ = std::string(kMemoryFilePrefix) + "output-file.webm";
+  segment_template_ =
+      std::string(kMemoryFilePrefix) + "output-template-$Number$.webm";
   cur_time_timescale_ = 0;
   single_segment_ = true;
 }
@@ -84,7 +85,7 @@ MuxerOptions SegmentTestBase::CreateMuxerOptions() const {
   ret.fragment_sap_aligned = false;
   // Use memory files for temp storage.  Normally this would be a bad idea
   // since it wouldn't support large files, but for tests the files are small.
-  ret.temp_dir = "memory://temp/";
+  ret.temp_dir = std::string(kMemoryFilePrefix) + "temp/";
   return ret;
 }
 
