@@ -32,6 +32,7 @@
 #include "packager/media/event/mpd_notify_muxer_listener.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
 #include "packager/media/file/file.h"
+#include "packager/media/formats/mp2t/ts_muxer.h"
 #include "packager/media/formats/mp4/mp4_muxer.h"
 #include "packager/media/formats/webm/webm_muxer.h"
 #include "packager/mpd/base/dash_iop_mpd_notifier.h"
@@ -207,6 +208,8 @@ scoped_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options,
                                     MediaContainerName container) {
   if (container == CONTAINER_WEBM) {
     return scoped_ptr<Muxer>(new webm::WebMMuxer(options));
+  } else if (container == CONTAINER_MPEG2TS) {
+    return scoped_ptr<Muxer>(new mp2t::TsMuxer(options));
   } else {
     DCHECK_EQ(container, CONTAINER_MOV);
     return scoped_ptr<Muxer>(new mp4::MP4Muxer(options));

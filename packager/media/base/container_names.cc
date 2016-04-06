@@ -1719,9 +1719,11 @@ MediaContainerName DetermineContainerFromFormatName(
              base::EqualsCaseInsensitiveASCII(format_name, "mp4") ||
              base::EqualsCaseInsensitiveASCII(format_name, "mov")) {
     return CONTAINER_MOV;
-  } else {
-    return CONTAINER_UNKNOWN;
+  } else if (base::EqualsCaseInsensitiveASCII(format_name, "ts") ||
+             base::EqualsCaseInsensitiveASCII(format_name, "mpeg2ts")) {
+    return CONTAINER_MPEG2TS;
   }
+  return CONTAINER_UNKNOWN;
 }
 
 MediaContainerName DetermineContainerFromFileName(
@@ -1736,9 +1738,11 @@ MediaContainerName DetermineContainerFromFileName(
              base::EndsWith(file_name, ".m4v",
                             base::CompareCase::INSENSITIVE_ASCII)) {
     return CONTAINER_MOV;
-  } else {
-    return CONTAINER_UNKNOWN;
+  } else if (base::EndsWith(file_name, ".ts",
+                            base::CompareCase::INSENSITIVE_ASCII)) {
+    return CONTAINER_MPEG2TS;
   }
+  return CONTAINER_UNKNOWN;
 }
 
 }  // namespace media
