@@ -6,7 +6,7 @@
 
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/buffer_writer.h"
-#include "packager/media/formats/mp4/rcheck.h"
+#include "packager/media/base/rcheck.h"
 
 namespace edash_packager {
 namespace media {

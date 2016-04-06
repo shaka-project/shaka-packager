@@ -9,10 +9,10 @@
 
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/encryption_modes.h"
+#include "packager/media/base/rcheck.h"
 #include "packager/media/formats/mp4/chunk_info_iterator.h"
 #include "packager/media/formats/mp4/composition_offset_iterator.h"
 #include "packager/media/formats/mp4/decoding_time_iterator.h"
-#include "packager/media/formats/mp4/rcheck.h"
 #include "packager/media/formats/mp4/sync_sample_iterator.h"
 
 namespace {
@@ -602,10 +602,10 @@ scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
                                         : video_description().sinf.type.type;
   EncryptionMode decryption_mode;
   switch (protection_scheme) {
-    case FOURCC_CENC:
+    case FOURCC_cenc:
       decryption_mode = kEncryptionModeAesCtr;
       break;
-    case FOURCC_CBC1:
+    case FOURCC_cbc1:
       decryption_mode = kEncryptionModeAesCbc;
       break;
     default:

@@ -42,7 +42,7 @@ BoxReader* BoxReader::ReadTopLevelBox(const uint8_t* buf,
     return NULL;
 
   // We don't require the complete box to be available for MDAT box.
-  if (reader->type() == FOURCC_MDAT)
+  if (reader->type() == FOURCC_mdat)
     return reader.release();
 
   if (!IsValidTopLevelBox(reader->type())) {
@@ -77,21 +77,21 @@ bool BoxReader::StartTopLevelBox(const uint8_t* buf,
 // static
 bool BoxReader::IsValidTopLevelBox(const FourCC& type) {
   switch (type) {
-    case FOURCC_FTYP:
-    case FOURCC_PDIN:
-    case FOURCC_BLOC:
-    case FOURCC_MOOV:
-    case FOURCC_MOOF:
-    case FOURCC_MFRA:
-    case FOURCC_MDAT:
-    case FOURCC_FREE:
-    case FOURCC_SKIP:
-    case FOURCC_META:
-    case FOURCC_MECO:
-    case FOURCC_STYP:
-    case FOURCC_SIDX:
-    case FOURCC_SSIX:
-    case FOURCC_PRFT:
+    case FOURCC_ftyp:
+    case FOURCC_pdin:
+    case FOURCC_bloc:
+    case FOURCC_moov:
+    case FOURCC_moof:
+    case FOURCC_mfra:
+    case FOURCC_mdat:
+    case FOURCC_free:
+    case FOURCC_skip:
+    case FOURCC_meta:
+    case FOURCC_meco:
+    case FOURCC_styp:
+    case FOURCC_sidx:
+    case FOURCC_ssix:
+    case FOURCC_prft:
       return true;
     default:
       // Hex is used to show nonprintable characters and aid in debugging
@@ -173,7 +173,7 @@ bool BoxReader::ReadHeader(bool* err) {
 
   // 'mdat' box could have a 64-bit size; other boxes should be very small.
   if (size > static_cast<uint64_t>(std::numeric_limits<int32_t>::max()) &&
-      type_ != FOURCC_MDAT) {
+      type_ != FOURCC_mdat) {
     LOG(ERROR) << base::StringPrintf("Box '%s' size (%" PRIu64
                                      ") is too large.",
                                      FourCCToString(type_).c_str(),

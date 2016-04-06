@@ -8,7 +8,6 @@
 #include "packager/base/logging.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/formats/mp4/box_definitions.h"
-#include "packager/media/formats/mp4/rcheck.h"
 #include "packager/media/formats/mp4/track_run_iterator.h"
 
 namespace {
@@ -87,7 +86,7 @@ class TrackRunIteratorTest : public testing::Test {
     SampleDescription& desc1 =
         moov_.tracks[0].media.information.sample_table.description;
     AudioSampleEntry aud_desc;
-    aud_desc.format = FOURCC_MP4A;
+    aud_desc.format = FOURCC_mp4a;
     aud_desc.sinf.info.track_encryption.is_encrypted = false;
     desc1.type = kAudio;
     desc1.audio_entries.push_back(aud_desc);
@@ -99,7 +98,7 @@ class TrackRunIteratorTest : public testing::Test {
     SampleDescription& desc2 =
         moov_.tracks[1].media.information.sample_table.description;
     VideoSampleEntry vid_desc;
-    vid_desc.format = FOURCC_AVC1;
+    vid_desc.format = FOURCC_avc1;
     vid_desc.sinf.info.track_encryption.is_encrypted = false;
     desc2.type = kVideo;
     desc2.video_entries.push_back(vid_desc);
@@ -155,7 +154,7 @@ class TrackRunIteratorTest : public testing::Test {
       sinf = &stsd->audio_entries[0].sinf;
     }
 
-    sinf->type.type = FOURCC_CENC;
+    sinf->type.type = FOURCC_cenc;
     sinf->info.track_encryption.is_encrypted = true;
     sinf->info.track_encryption.default_iv_size = 8;
     sinf->info.track_encryption.default_kid.assign(kKeyId,

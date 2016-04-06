@@ -55,9 +55,9 @@ void GenerateSinf(const EncryptionKey& encryption_key,
   sinf->format.format = old_type;
 
   if (encryption_mode == kEncryptionModeAesCtr){
-    sinf->type.type = FOURCC_CENC;
+    sinf->type.type = FOURCC_cenc;
   } else if (encryption_mode == kEncryptionModeAesCbc) {
-    sinf->type.type = FOURCC_CBC1;
+    sinf->type.type = FOURCC_cbc1;
   }
 
   sinf->type.version = kCencSchemeVersion;
@@ -82,7 +82,7 @@ void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
     // Convert the first entry to an encrypted entry.
     VideoSampleEntry& entry = description->video_entries[0];
     GenerateSinf(encryption_key, entry.format, encryption_mode, &entry.sinf);
-    entry.format = FOURCC_ENCV;
+    entry.format = FOURCC_encv;
   } else {
     DCHECK_EQ(kAudio, description->type);
     DCHECK_EQ(1u, description->audio_entries.size());
@@ -94,7 +94,7 @@ void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
     // Convert the first entry to an encrypted entry.
     AudioSampleEntry& entry = description->audio_entries[0];
     GenerateSinf(encryption_key, entry.format, encryption_mode, &entry.sinf);
-    entry.format = FOURCC_ENCA;
+    entry.format = FOURCC_enca;
   }
 }
 

@@ -97,7 +97,7 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption(
   // i.e. there is at most one key for the fragment. So there should be only
   // one entry in SampleGroupDescription box and one entry in SampleToGroup box.
   // Fill in SampleGroupDescription box information.
-  traf()->sample_group_description.grouping_type = FOURCC_SEIG;
+  traf()->sample_group_description.grouping_type = FOURCC_seig;
   traf()->sample_group_description.entries.resize(1);
   traf()->sample_group_description.entries[0].is_encrypted = true;
   traf()->sample_group_description.entries[0].iv_size =
@@ -105,7 +105,7 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption(
   traf()->sample_group_description.entries[0].key_id = encryption_key()->key_id;
 
   // Fill in SampleToGroup box information.
-  traf()->sample_to_group.grouping_type = FOURCC_SEIG;
+  traf()->sample_to_group.grouping_type = FOURCC_seig;
   traf()->sample_to_group.entries.resize(1);
   // sample_count is adjusted in |FinalizeFragment| later.
   traf()->sample_to_group.entries[0].group_description_index =

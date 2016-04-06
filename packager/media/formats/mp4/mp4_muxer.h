@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "packager/media/base/muxer.h"
-#include "packager/media/formats/mp4/fourccs.h"
 
 namespace edash_packager {
 namespace media {

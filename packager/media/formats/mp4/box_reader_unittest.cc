@@ -8,8 +8,8 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/rcheck.h"
 #include "packager/media/formats/mp4/box_buffer.h"
-#include "packager/media/formats/mp4/rcheck.h"
 
 namespace edash_packager {
 namespace media {
@@ -30,7 +30,7 @@ static const uint8_t kSkipBox[] = {
     0x00};
 
 struct FreeBox : Box {
-  FourCC BoxType() const override { return FOURCC_FREE; }
+  FourCC BoxType() const override { return FOURCC_free; }
   bool ReadWriteInternal(BoxBuffer* buffer) override {
     return true;
   }
@@ -41,7 +41,7 @@ struct FreeBox : Box {
 };
 
 struct PsshBox : Box {
-  FourCC BoxType() const override { return FOURCC_PSSH; }
+  FourCC BoxType() const override { return FOURCC_pssh; }
   bool ReadWriteInternal(BoxBuffer* buffer) override {
     return buffer->ReadWriteUInt32(&val);
   }
@@ -54,7 +54,7 @@ struct PsshBox : Box {
 };
 
 struct SkipBox : FullBox {
-  FourCC BoxType() const override { return FOURCC_SKIP; }
+  FourCC BoxType() const override { return FOURCC_skip; }
   bool ReadWriteInternal(BoxBuffer* buffer) override {
     RCHECK(ReadWriteHeaderInternal(buffer) && buffer->ReadWriteUInt8(&a) &&
            buffer->ReadWriteUInt8(&b) && buffer->ReadWriteUInt16(&c) &&
@@ -208,7 +208,7 @@ TEST_F(BoxReaderTest, SkippingBloc) {
 
   EXPECT_FALSE(err);
   EXPECT_TRUE(reader);
-  EXPECT_EQ(FOURCC_BLOC, reader->type());
+  EXPECT_EQ(FOURCC_bloc, reader->type());
 }
 
 }  // namespace mp4

@@ -11,8 +11,8 @@
 #include "packager/base/compiler_specific.h"
 #include "packager/base/logging.h"
 #include "packager/media/base/buffer_reader.h"
-#include "packager/media/formats/mp4/fourccs.h"
-#include "packager/media/formats/mp4/rcheck.h"
+#include "packager/media/base/fourccs.h"
+#include "packager/media/base/rcheck.h"
 
 namespace edash_packager {
 namespace media {

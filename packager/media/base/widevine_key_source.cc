@@ -18,16 +18,9 @@
 #include "packager/media/base/http_key_fetcher.h"
 #include "packager/media/base/producer_consumer_queue.h"
 #include "packager/media/base/protection_system_specific_info.h"
+#include "packager/media/base/rcheck.h"
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/widevine_pssh_data.pb.h"
-
-#define RCHECK(x)                                       \
-  do {                                                  \
-    if (!(x)) {                                         \
-      LOG(ERROR) << "Failure while processing: " << #x; \
-      return false;                                     \
-    }                                                   \
-  } while (0)
 
 namespace edash_packager {
 namespace {

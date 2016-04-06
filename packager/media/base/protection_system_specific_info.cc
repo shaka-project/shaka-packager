@@ -7,9 +7,8 @@
 #include "packager/media/base/protection_system_specific_info.h"
 
 #include "packager/media/base/buffer_writer.h"
-// Header-only files:
-#include "packager/media/formats/mp4/fourccs.h"
-#include "packager/media/formats/mp4/rcheck.h"
+#include "packager/media/base/fourccs.h"
+#include "packager/media/base/rcheck.h"
 
 namespace edash_packager {
 namespace media {
@@ -52,7 +51,7 @@ bool ProtectionSystemSpecificInfo::Parse(const uint8_t* data,
   RCHECK(reader.Read4(&size));
   RCHECK(reader.Read4(&box_type));
   RCHECK(size == data_size);
-  RCHECK(box_type == mp4::FOURCC_PSSH);
+  RCHECK(box_type == FOURCC_pssh);
   RCHECK(reader.Read4(&version_and_flags));
 
   version_ = (version_and_flags >> 24);
@@ -84,7 +83,7 @@ bool ProtectionSystemSpecificInfo::Parse(const uint8_t* data,
 std::vector<uint8_t> ProtectionSystemSpecificInfo::CreateBox() const {
   DCHECK_EQ(kSystemIdSize, system_id_.size());
 
-  const uint32_t box_type = mp4::FOURCC_PSSH;
+  const uint32_t box_type = FOURCC_pssh;
   const uint32_t version_and_flags = (static_cast<uint32_t>(version_) << 24);
   const uint32_t pssh_data_size = pssh_data_.size();
 

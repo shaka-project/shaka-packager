@@ -46,7 +46,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     buffer.Swap(buffer_.get());
     uint32_t skip_box_size = buffer.Size() + kBoxSize;
     buffer_->AppendInt(skip_box_size);
-    buffer_->AppendInt(static_cast<uint32_t>(FOURCC_SKIP));
+    buffer_->AppendInt(static_cast<uint32_t>(FOURCC_skip));
     buffer_->AppendBuffer(buffer);
     bool err = false;
     return BoxReader::ReadTopLevelBox(buffer_->Buffer(), buffer_->Size(), &err);
@@ -133,17 +133,17 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Fill(FileType* ftyp) {
-    ftyp->major_brand = FOURCC_DASH;
+    ftyp->major_brand = FOURCC_dash;
     ftyp->minor_version = 567;
-    ftyp->compatible_brands.push_back(FOURCC_ISO6);
-    ftyp->compatible_brands.push_back(FOURCC_MP41);
-    ftyp->compatible_brands.push_back(FOURCC_AVC1);
+    ftyp->compatible_brands.push_back(FOURCC_iso6);
+    ftyp->compatible_brands.push_back(FOURCC_mp41);
+    ftyp->compatible_brands.push_back(FOURCC_avc1);
   }
 
   void Modify(FileType* ftyp) {
-    ftyp->major_brand = FOURCC_MP41;
+    ftyp->major_brand = FOURCC_mp41;
     ftyp->compatible_brands.clear();
-    ftyp->compatible_brands.push_back(FOURCC_DASH);
+    ftyp->compatible_brands.push_back(FOURCC_dash);
   }
 
   void Fill(ProtectionSystemSpecificHeader* pssh) {
@@ -197,12 +197,12 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     senc->sample_encryption_entries[0].subsamples.clear();
   }
 
-  void Fill(OriginalFormat* frma) { frma->format = FOURCC_AVC1; }
+  void Fill(OriginalFormat* frma) { frma->format = FOURCC_avc1; }
 
-  void Modify(OriginalFormat* frma) { frma->format = FOURCC_MP4A; }
+  void Modify(OriginalFormat* frma) { frma->format = FOURCC_mp4a; }
 
   void Fill(SchemeType* schm) {
-    schm->type = FOURCC_CENC;
+    schm->type = FOURCC_cenc;
     schm->version = 12344;
   }
 
@@ -297,9 +297,9 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Modify(Edit* edts) { Modify(&edts->list); }
 
-  void Fill(HandlerReference* hdlr) { hdlr->handler_type = FOURCC_VIDE; }
+  void Fill(HandlerReference* hdlr) { hdlr->handler_type = FOURCC_vide; }
 
-  void Modify(HandlerReference* hdlr) { hdlr->handler_type = FOURCC_SOUN; }
+  void Modify(HandlerReference* hdlr) { hdlr->handler_type = FOURCC_soun; }
 
   void Fill(ID3v2* id3v2) {
     id3v2->language.code = "eng";
@@ -349,7 +349,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Fill(VideoSampleEntry* encv) {
-    encv->format = FOURCC_ENCV;
+    encv->format = FOURCC_encv;
     encv->data_reference_index = 1;
     encv->width = 800;
     encv->height = 600;
@@ -412,7 +412,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Fill(AudioSampleEntry* enca) {
-    enca->format = FOURCC_ENCA;
+    enca->format = FOURCC_enca;
     enca->data_reference_index = 2;
     enca->channelcount = 5;
     enca->samplesize = 16;
@@ -748,7 +748,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Fill(SampleToGroup* sbgp) {
-    sbgp->grouping_type = FOURCC_SEIG;
+    sbgp->grouping_type = FOURCC_seig;
     sbgp->entries.resize(2);
     sbgp->entries[0].sample_count = 3;
     sbgp->entries[0].group_description_index = 0x10002;
@@ -763,7 +763,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   }
 
   void Fill(SampleGroupDescription* sgpd) {
-    sgpd->grouping_type = FOURCC_SEIG;
+    sgpd->grouping_type = FOURCC_seig;
     sgpd->entries.resize(2);
     sgpd->entries[0].is_encrypted = true;
     sgpd->entries[0].iv_size = 8;
@@ -1091,12 +1091,12 @@ TEST_F(BoxDefinitionsTest, MediaHandlerType) {
 
   Media media_readback;
   ASSERT_TRUE(ReadBack(&media_readback));
-  ASSERT_EQ(FOURCC_VIDE, media_readback.handler.handler_type);
+  ASSERT_EQ(FOURCC_vide, media_readback.handler.handler_type);
 }
 
 TEST_F(BoxDefinitionsTest, DTSSampleEntry) {
   AudioSampleEntry entry;
-  entry.format = FOURCC_DTSE;
+  entry.format = FOURCC_dtse;
   entry.data_reference_index = 2;
   entry.channelcount = 5;
   entry.samplesize = 16;
@@ -1110,7 +1110,7 @@ TEST_F(BoxDefinitionsTest, DTSSampleEntry) {
 
 TEST_F(BoxDefinitionsTest, AC3SampleEntry) {
   AudioSampleEntry entry;
-  entry.format = FOURCC_AC3;
+  entry.format = FOURCC_ac_3;
   entry.data_reference_index = 2;
   entry.channelcount = 5;
   entry.samplesize = 16;
@@ -1125,7 +1125,7 @@ TEST_F(BoxDefinitionsTest, AC3SampleEntry) {
 
 TEST_F(BoxDefinitionsTest, EC3SampleEntry) {
   AudioSampleEntry entry;
-  entry.format = FOURCC_EAC3;
+  entry.format = FOURCC_ec_3;
   entry.data_reference_index = 2;
   entry.channelcount = 5;
   entry.samplesize = 16;

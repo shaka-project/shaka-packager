@@ -9,8 +9,8 @@
 #include "packager/base/logging.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/macros.h"
+#include "packager/media/base/rcheck.h"
 #include "packager/media/formats/mp4/box_buffer.h"
-#include "packager/media/formats/mp4/rcheck.h"
 
 namespace {
 const uint32_t kFourCCSize = 4;
@@ -99,11 +99,11 @@ namespace {
 
 TrackType FourCCToTrackType(FourCC fourcc) {
   switch (fourcc) {
-    case FOURCC_VIDE:
+    case FOURCC_vide:
       return kVideo;
-    case FOURCC_SOUN:
+    case FOURCC_soun:
       return kAudio;
-    case FOURCC_TEXT:
+    case FOURCC_text:
       return kText;
     default:
       return kInvalid;
@@ -113,11 +113,11 @@ TrackType FourCCToTrackType(FourCC fourcc) {
 FourCC TrackTypeToFourCC(TrackType track_type) {
   switch (track_type) {
     case kVideo:
-      return FOURCC_VIDE;
+      return FOURCC_vide;
     case kAudio:
-      return FOURCC_SOUN;
+      return FOURCC_soun;
     case kText:
-      return FOURCC_TEXT;
+      return FOURCC_text;
     default:
       return FOURCC_NULL;
   }
@@ -127,7 +127,7 @@ FourCC TrackTypeToFourCC(TrackType track_type) {
 
 FileType::FileType() : major_brand(FOURCC_NULL), minor_version(0) {}
 FileType::~FileType() {}
-FourCC FileType::BoxType() const { return FOURCC_FTYP; }
+FourCC FileType::BoxType() const { return FOURCC_ftyp; }
 
 bool FileType::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -151,11 +151,11 @@ uint32_t FileType::ComputeSizeInternal() {
          kFourCCSize * compatible_brands.size();
 }
 
-FourCC SegmentType::BoxType() const { return FOURCC_STYP; }
+FourCC SegmentType::BoxType() const { return FOURCC_styp; }
 
 ProtectionSystemSpecificHeader::ProtectionSystemSpecificHeader() {}
 ProtectionSystemSpecificHeader::~ProtectionSystemSpecificHeader() {}
-FourCC ProtectionSystemSpecificHeader::BoxType() const { return FOURCC_PSSH; }
+FourCC ProtectionSystemSpecificHeader::BoxType() const { return FOURCC_pssh; }
 
 bool ProtectionSystemSpecificHeader::ReadWriteInternal(BoxBuffer* buffer) {
   if (buffer->Reading()) {
@@ -176,7 +176,7 @@ uint32_t ProtectionSystemSpecificHeader::ComputeSizeInternal() {
 
 SampleAuxiliaryInformationOffset::SampleAuxiliaryInformationOffset() {}
 SampleAuxiliaryInformationOffset::~SampleAuxiliaryInformationOffset() {}
-FourCC SampleAuxiliaryInformationOffset::BoxType() const { return FOURCC_SAIO; }
+FourCC SampleAuxiliaryInformationOffset::BoxType() const { return FOURCC_saio; }
 
 bool SampleAuxiliaryInformationOffset::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
@@ -204,7 +204,7 @@ uint32_t SampleAuxiliaryInformationOffset::ComputeSizeInternal() {
 SampleAuxiliaryInformationSize::SampleAuxiliaryInformationSize()
     : default_sample_info_size(0), sample_count(0) {}
 SampleAuxiliaryInformationSize::~SampleAuxiliaryInformationSize() {}
-FourCC SampleAuxiliaryInformationSize::BoxType() const { return FOURCC_SAIZ; }
+FourCC SampleAuxiliaryInformationSize::BoxType() const { return FOURCC_saiz; }
 
 bool SampleAuxiliaryInformationSize::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
@@ -297,7 +297,7 @@ uint32_t SampleEncryptionEntry::GetTotalSizeOfSubsamples() const {
 
 SampleEncryption::SampleEncryption() : iv_size(0) {}
 SampleEncryption::~SampleEncryption() {}
-FourCC SampleEncryption::BoxType() const { return FOURCC_SENC; }
+FourCC SampleEncryption::BoxType() const { return FOURCC_senc; }
 
 bool SampleEncryption::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
@@ -366,7 +366,7 @@ bool SampleEncryption::ParseFromSampleEncryptionData(
 
 OriginalFormat::OriginalFormat() : format(FOURCC_NULL) {}
 OriginalFormat::~OriginalFormat() {}
-FourCC OriginalFormat::BoxType() const { return FOURCC_FRMA; }
+FourCC OriginalFormat::BoxType() const { return FOURCC_frma; }
 
 bool OriginalFormat::ReadWriteInternal(BoxBuffer* buffer) {
   return ReadWriteHeaderInternal(buffer) && buffer->ReadWriteFourCC(&format);
@@ -378,7 +378,7 @@ uint32_t OriginalFormat::ComputeSizeInternal() {
 
 SchemeType::SchemeType() : type(FOURCC_NULL), version(0) {}
 SchemeType::~SchemeType() {}
-FourCC SchemeType::BoxType() const { return FOURCC_SCHM; }
+FourCC SchemeType::BoxType() const { return FOURCC_schm; }
 
 bool SchemeType::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -394,7 +394,7 @@ uint32_t SchemeType::ComputeSizeInternal() {
 TrackEncryption::TrackEncryption()
     : is_encrypted(false), default_iv_size(0), default_kid(16, 0) {}
 TrackEncryption::~TrackEncryption() {}
-FourCC TrackEncryption::BoxType() const { return FOURCC_TENC; }
+FourCC TrackEncryption::BoxType() const { return FOURCC_tenc; }
 
 bool TrackEncryption::ReadWriteInternal(BoxBuffer* buffer) {
   if (!buffer->Reading()) {
@@ -429,7 +429,7 @@ uint32_t TrackEncryption::ComputeSizeInternal() {
 
 SchemeInfo::SchemeInfo() {}
 SchemeInfo::~SchemeInfo() {}
-FourCC SchemeInfo::BoxType() const { return FOURCC_SCHI; }
+FourCC SchemeInfo::BoxType() const { return FOURCC_schi; }
 
 bool SchemeInfo::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) && buffer->PrepareChildren() &&
@@ -443,14 +443,14 @@ uint32_t SchemeInfo::ComputeSizeInternal() {
 
 ProtectionSchemeInfo::ProtectionSchemeInfo() {}
 ProtectionSchemeInfo::~ProtectionSchemeInfo() {}
-FourCC ProtectionSchemeInfo::BoxType() const { return FOURCC_SINF; }
+FourCC ProtectionSchemeInfo::BoxType() const { return FOURCC_sinf; }
 
 bool ProtectionSchemeInfo::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->PrepareChildren() &&
          buffer->ReadWriteChild(&format) &&
          buffer->ReadWriteChild(&type));
-  if (type.type == FOURCC_CENC || type.type == FOURCC_CBC1)
+  if (type.type == FOURCC_cenc || type.type == FOURCC_cbc1)
     RCHECK(buffer->ReadWriteChild(&info));
   // Other protection schemes are silently ignored. Since the protection scheme
   // type can't be determined until this box is opened, we return 'true' for
@@ -476,7 +476,7 @@ MovieHeader::MovieHeader()
       volume(1 << 8),
       next_track_id(0) {}
 MovieHeader::~MovieHeader() {}
-FourCC MovieHeader::BoxType() const { return FOURCC_MVHD; }
+FourCC MovieHeader::BoxType() const { return FOURCC_mvhd; }
 
 bool MovieHeader::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
@@ -519,7 +519,7 @@ TrackHeader::TrackHeader()
   flags = kTrackEnabled | kTrackInMovie;
 }
 TrackHeader::~TrackHeader() {}
-FourCC TrackHeader::BoxType() const { return FOURCC_TKHD; }
+FourCC TrackHeader::BoxType() const { return FOURCC_tkhd; }
 
 bool TrackHeader::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
@@ -559,7 +559,7 @@ uint32_t TrackHeader::ComputeSizeInternal() {
 
 SampleDescription::SampleDescription() : type(kInvalid) {}
 SampleDescription::~SampleDescription() {}
-FourCC SampleDescription::BoxType() const { return FOURCC_STSD; }
+FourCC SampleDescription::BoxType() const { return FOURCC_stsd; }
 
 bool SampleDescription::ReadWriteInternal(BoxBuffer* buffer) {
   uint32_t count = 0;
@@ -632,7 +632,7 @@ uint32_t SampleDescription::ComputeSizeInternal() {
 
 DecodingTimeToSample::DecodingTimeToSample() {}
 DecodingTimeToSample::~DecodingTimeToSample() {}
-FourCC DecodingTimeToSample::BoxType() const { return FOURCC_STTS; }
+FourCC DecodingTimeToSample::BoxType() const { return FOURCC_stts; }
 
 bool DecodingTimeToSample::ReadWriteInternal(BoxBuffer* buffer) {
   uint32_t count = decoding_time.size();
@@ -654,7 +654,7 @@ uint32_t DecodingTimeToSample::ComputeSizeInternal() {
 
 CompositionTimeToSample::CompositionTimeToSample() {}
 CompositionTimeToSample::~CompositionTimeToSample() {}
-FourCC CompositionTimeToSample::BoxType() const { return FOURCC_CTTS; }
+FourCC CompositionTimeToSample::BoxType() const { return FOURCC_ctts; }
 
 bool CompositionTimeToSample::ReadWriteInternal(BoxBuffer* buffer) {
   uint32_t count = composition_offset.size();
@@ -705,7 +705,7 @@ uint32_t CompositionTimeToSample::ComputeSizeInternal() {
 
 SampleToChunk::SampleToChunk() {}
 SampleToChunk::~SampleToChunk() {}
-FourCC SampleToChunk::BoxType() const { return FOURCC_STSC; }
+FourCC SampleToChunk::BoxType() const { return FOURCC_stsc; }
 
 bool SampleToChunk::ReadWriteInternal(BoxBuffer* buffer) {
   uint32_t count = chunk_info.size();
@@ -731,7 +731,7 @@ uint32_t SampleToChunk::ComputeSizeInternal() {
 
 SampleSize::SampleSize() : sample_size(0), sample_count(0) {}
 SampleSize::~SampleSize() {}
-FourCC SampleSize::BoxType() const { return FOURCC_STSZ; }
+FourCC SampleSize::BoxType() const { return FOURCC_stsz; }
 
 bool SampleSize::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -756,7 +756,7 @@ uint32_t SampleSize::ComputeSizeInternal() {
 
 CompactSampleSize::CompactSampleSize() : field_size(0) {}
 CompactSampleSize::~CompactSampleSize() {}
-FourCC CompactSampleSize::BoxType() const { return FOURCC_STZ2; }
+FourCC CompactSampleSize::BoxType() const { return FOURCC_stz2; }
 
 bool CompactSampleSize::ReadWriteInternal(BoxBuffer* buffer) {
   uint32_t sample_count = sizes.size();
@@ -811,7 +811,7 @@ uint32_t CompactSampleSize::ComputeSizeInternal() {
 
 ChunkOffset::ChunkOffset() {}
 ChunkOffset::~ChunkOffset() {}
-FourCC ChunkOffset::BoxType() const { return FOURCC_STCO; }
+FourCC ChunkOffset::BoxType() const { return FOURCC_stco; }
 
 bool ChunkOffset::ReadWriteInternal(BoxBuffer* buffer) {
   uint32_t count = offsets.size();
@@ -830,7 +830,7 @@ uint32_t ChunkOffset::ComputeSizeInternal() {
 
 ChunkLargeOffset::ChunkLargeOffset() {}
 ChunkLargeOffset::~ChunkLargeOffset() {}
-FourCC ChunkLargeOffset::BoxType() const { return FOURCC_CO64; }
+FourCC ChunkLargeOffset::BoxType() const { return FOURCC_co64; }
 
 bool ChunkLargeOffset::ReadWriteInternal(BoxBuffer* buffer) {
   uint32_t count = offsets.size();
@@ -866,7 +866,7 @@ uint32_t ChunkLargeOffset::ComputeSizeInternal() {
 
 SyncSample::SyncSample() {}
 SyncSample::~SyncSample() {}
-FourCC SyncSample::BoxType() const { return FOURCC_STSS; }
+FourCC SyncSample::BoxType() const { return FOURCC_stss; }
 
 bool SyncSample::ReadWriteInternal(BoxBuffer* buffer) {
   uint32_t count = sample_number.size();
@@ -889,7 +889,7 @@ uint32_t SyncSample::ComputeSizeInternal() {
 
 SampleTable::SampleTable() {}
 SampleTable::~SampleTable() {}
-FourCC SampleTable::BoxType() const { return FOURCC_STBL; }
+FourCC SampleTable::BoxType() const { return FOURCC_stbl; }
 
 bool SampleTable::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -940,7 +940,7 @@ uint32_t SampleTable::ComputeSizeInternal() {
 
 EditList::EditList() {}
 EditList::~EditList() {}
-FourCC EditList::BoxType() const { return FOURCC_ELST; }
+FourCC EditList::BoxType() const { return FOURCC_elst; }
 
 bool EditList::ReadWriteInternal(BoxBuffer* buffer) {
   uint32_t count = edits.size();
@@ -977,7 +977,7 @@ uint32_t EditList::ComputeSizeInternal() {
 
 Edit::Edit() {}
 Edit::~Edit() {}
-FourCC Edit::BoxType() const { return FOURCC_EDTS; }
+FourCC Edit::BoxType() const { return FOURCC_edts; }
 
 bool Edit::ReadWriteInternal(BoxBuffer* buffer) {
   return ReadWriteHeaderInternal(buffer) &&
@@ -994,21 +994,21 @@ uint32_t Edit::ComputeSizeInternal() {
 
 HandlerReference::HandlerReference() : handler_type(FOURCC_NULL) {}
 HandlerReference::~HandlerReference() {}
-FourCC HandlerReference::BoxType() const { return FOURCC_HDLR; }
+FourCC HandlerReference::BoxType() const { return FOURCC_hdlr; }
 
 bool HandlerReference::ReadWriteInternal(BoxBuffer* buffer) {
   std::vector<uint8_t> handler_name;
   if (!buffer->Reading()) {
     switch (handler_type) {
-      case FOURCC_VIDE:
+      case FOURCC_vide:
         handler_name.assign(kVideoHandlerName,
                             kVideoHandlerName + arraysize(kVideoHandlerName));
         break;
-      case FOURCC_SOUN:
+      case FOURCC_soun:
         handler_name.assign(kAudioHandlerName,
                             kAudioHandlerName + arraysize(kAudioHandlerName));
         break;
-      case FOURCC_TEXT:
+      case FOURCC_text:
         handler_name.assign(kTextHandlerName,
                             kTextHandlerName + arraysize(kTextHandlerName));
         break;
@@ -1032,13 +1032,13 @@ bool HandlerReference::ReadWriteInternal(BoxBuffer* buffer) {
 uint32_t HandlerReference::ComputeSizeInternal() {
   uint32_t box_size = HeaderSize() + kFourCCSize + 16;  // 16 bytes Reserved
   switch (handler_type) {
-    case FOURCC_VIDE:
+    case FOURCC_vide:
       box_size += sizeof(kVideoHandlerName);
       break;
-    case FOURCC_SOUN:
+    case FOURCC_soun:
       box_size += sizeof(kAudioHandlerName);
       break;
-    case FOURCC_TEXT:
+    case FOURCC_text:
       box_size += sizeof(kTextHandlerName);
       break;
     case FOURCC_ID32:
@@ -1168,7 +1168,7 @@ Metadata::Metadata() {}
 Metadata::~Metadata() {}
 
 FourCC Metadata::BoxType() const {
-  return FOURCC_META;
+  return FOURCC_meta;
 }
 
 bool Metadata::ReadWriteInternal(BoxBuffer* buffer) {
@@ -1212,7 +1212,7 @@ uint32_t CodecConfigurationRecord::ComputeSizeInternal() {
 
 PixelAspectRatio::PixelAspectRatio() : h_spacing(0), v_spacing(0) {}
 PixelAspectRatio::~PixelAspectRatio() {}
-FourCC PixelAspectRatio::BoxType() const { return FOURCC_PASP; }
+FourCC PixelAspectRatio::BoxType() const { return FOURCC_pasp; }
 
 bool PixelAspectRatio::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -1252,20 +1252,20 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
 
     const FourCC actual_format = GetActualFormat();
     switch (actual_format) {
-      case FOURCC_AVC1:
+      case FOURCC_avc1:
         compressor_name.assign(
             kAvcCompressorName,
             kAvcCompressorName + arraysize(kAvcCompressorName));
         break;
-      case FOURCC_HEV1:
-      case FOURCC_HVC1:
+      case FOURCC_hev1:
+      case FOURCC_hvc1:
         compressor_name.assign(
             kHevcCompressorName,
             kHevcCompressorName + arraysize(kHevcCompressorName));
         break;
-      case FOURCC_VP08:
-      case FOURCC_VP09:
-      case FOURCC_VP10:
+      case FOURCC_vp08:
+      case FOURCC_vp09:
+      case FOURCC_vp10:
         compressor_name.assign(
             kVpcCompressorName,
             kVpcCompressorName + arraysize(kVpcCompressorName));
@@ -1296,11 +1296,11 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
 
   RCHECK(buffer->PrepareChildren());
 
-  if (format == FOURCC_ENCV) {
+  if (format == FOURCC_encv) {
     if (buffer->Reading()) {
       // Continue scanning until a recognized protection scheme is found,
       // or until we run out of protection schemes.
-      while (sinf.type.type != FOURCC_CENC && sinf.type.type != FOURCC_CBC1) {
+      while (sinf.type.type != FOURCC_cenc && sinf.type.type != FOURCC_cbc1) {
         if (!buffer->ReadWriteChild(&sinf))
           return false;
       }
@@ -1311,17 +1311,17 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
 
   const FourCC actual_format = GetActualFormat();
   switch (actual_format) {
-    case FOURCC_AVC1:
-      codec_config_record.box_type = FOURCC_AVCC;
+    case FOURCC_avc1:
+      codec_config_record.box_type = FOURCC_avcC;
       break;
-    case FOURCC_HEV1:
-    case FOURCC_HVC1:
-      codec_config_record.box_type = FOURCC_HVCC;
+    case FOURCC_hev1:
+    case FOURCC_hvc1:
+      codec_config_record.box_type = FOURCC_hvcC;
       break;
-    case FOURCC_VP08:
-    case FOURCC_VP09:
-    case FOURCC_VP10:
-      codec_config_record.box_type = FOURCC_VPCC;
+    case FOURCC_vp08:
+    case FOURCC_vp09:
+    case FOURCC_vp10:
+      codec_config_record.box_type = FOURCC_vpcC;
       break;
     default:
       LOG(ERROR) << FourCCToString(actual_format) << " is not supported.";
@@ -1343,7 +1343,7 @@ uint32_t VideoSampleEntry::ComputeSizeInternal() {
 
 ElementaryStreamDescriptor::ElementaryStreamDescriptor() {}
 ElementaryStreamDescriptor::~ElementaryStreamDescriptor() {}
-FourCC ElementaryStreamDescriptor::BoxType() const { return FOURCC_ESDS; }
+FourCC ElementaryStreamDescriptor::BoxType() const { return FOURCC_esds; }
 
 bool ElementaryStreamDescriptor::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
@@ -1375,7 +1375,7 @@ DTSSpecific::DTSSpecific()
       avg_bitrate(0),
       pcm_sample_depth(0) {}
 DTSSpecific::~DTSSpecific() {}
-FourCC DTSSpecific::BoxType() const { return FOURCC_DDTS; }
+FourCC DTSSpecific::BoxType() const { return FOURCC_ddts; }
 
 bool DTSSpecific::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -1408,7 +1408,7 @@ uint32_t DTSSpecific::ComputeSizeInternal() {
 AC3Specific::AC3Specific() {}
 AC3Specific::~AC3Specific() {}
 
-FourCC AC3Specific::BoxType() const { return FOURCC_DAC3; }
+FourCC AC3Specific::BoxType() const { return FOURCC_dac3; }
 
 bool AC3Specific::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -1427,7 +1427,7 @@ uint32_t AC3Specific::ComputeSizeInternal() {
 EC3Specific::EC3Specific() {}
 EC3Specific::~EC3Specific() {}
 
-FourCC EC3Specific::BoxType() const { return FOURCC_DEC3; }
+FourCC EC3Specific::BoxType() const { return FOURCC_dec3; }
 
 bool EC3Specific::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
@@ -1481,11 +1481,11 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   samplerate >>= 16;
 
   RCHECK(buffer->PrepareChildren());
-  if (format == FOURCC_ENCA) {
+  if (format == FOURCC_enca) {
     if (buffer->Reading()) {
       // Continue scanning until a recognized protection scheme is found,
       // or until we run out of protection schemes.
-      while (sinf.type.type != FOURCC_CENC && sinf.type.type != FOURCC_CBC1) {
+      while (sinf.type.type != FOURCC_cenc && sinf.type.type != FOURCC_cbc1) {
         if (!buffer->ReadWriteChild(&sinf))
           return false;
       }
@@ -1587,7 +1587,7 @@ uint32_t TextSampleEntry::ComputeSizeInternal() {
 MediaHeader::MediaHeader()
     : creation_time(0), modification_time(0), timescale(0), duration(0) {}
 MediaHeader::~MediaHeader() {}
-FourCC MediaHeader::BoxType() const { return FOURCC_MDHD; }
+FourCC MediaHeader::BoxType() const { return FOURCC_mdhd; }
 
 bool MediaHeader::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
@@ -1615,7 +1615,7 @@ VideoMediaHeader::VideoMediaHeader()
   flags = kVideoMediaHeaderFlags;
 }
 VideoMediaHeader::~VideoMediaHeader() {}
-FourCC VideoMediaHeader::BoxType() const { return FOURCC_VMHD; }
+FourCC VideoMediaHeader::BoxType() const { return FOURCC_vmhd; }
 bool VideoMediaHeader::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->ReadWriteUInt16(&graphicsmode) &&
@@ -1632,7 +1632,7 @@ uint32_t VideoMediaHeader::ComputeSizeInternal() {
 
 SoundMediaHeader::SoundMediaHeader() : balance(0) {}
 SoundMediaHeader::~SoundMediaHeader() {}
-FourCC SoundMediaHeader::BoxType() const { return FOURCC_SMHD; }
+FourCC SoundMediaHeader::BoxType() const { return FOURCC_smhd; }
 bool SoundMediaHeader::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->ReadWriteUInt16(&balance) &&
@@ -1662,7 +1662,7 @@ DataEntryUrl::DataEntryUrl() {
   flags = kDataEntryUrlFlags;
 }
 DataEntryUrl::~DataEntryUrl() {}
-FourCC DataEntryUrl::BoxType() const { return FOURCC_URL; }
+FourCC DataEntryUrl::BoxType() const { return FOURCC_url; }
 bool DataEntryUrl::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
   if (buffer->Reading()) {
@@ -1682,7 +1682,7 @@ DataReference::DataReference() {
   data_entry.resize(1);
 }
 DataReference::~DataReference() {}
-FourCC DataReference::BoxType() const { return FOURCC_DREF; }
+FourCC DataReference::BoxType() const { return FOURCC_dref; }
 bool DataReference::ReadWriteInternal(BoxBuffer* buffer) {
   uint32_t entry_count = data_entry.size();
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -1704,7 +1704,7 @@ uint32_t DataReference::ComputeSizeInternal() {
 
 DataInformation::DataInformation() {}
 DataInformation::~DataInformation() {}
-FourCC DataInformation::BoxType() const { return FOURCC_DINF; }
+FourCC DataInformation::BoxType() const { return FOURCC_dinf; }
 
 bool DataInformation::ReadWriteInternal(BoxBuffer* buffer) {
   return ReadWriteHeaderInternal(buffer) &&
@@ -1718,7 +1718,7 @@ uint32_t DataInformation::ComputeSizeInternal() {
 
 MediaInformation::MediaInformation() {}
 MediaInformation::~MediaInformation() {}
-FourCC MediaInformation::BoxType() const { return FOURCC_MINF; }
+FourCC MediaInformation::BoxType() const { return FOURCC_minf; }
 
 bool MediaInformation::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -1763,7 +1763,7 @@ uint32_t MediaInformation::ComputeSizeInternal() {
 
 Media::Media() {}
 Media::~Media() {}
-FourCC Media::BoxType() const { return FOURCC_MDIA; }
+FourCC Media::BoxType() const { return FOURCC_mdia; }
 
 bool Media::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -1798,7 +1798,7 @@ uint32_t Media::ComputeSizeInternal() {
 
 Track::Track() {}
 Track::~Track() {}
-FourCC Track::BoxType() const { return FOURCC_TRAK; }
+FourCC Track::BoxType() const { return FOURCC_trak; }
 
 bool Track::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -1817,7 +1817,7 @@ uint32_t Track::ComputeSizeInternal() {
 
 MovieExtendsHeader::MovieExtendsHeader() : fragment_duration(0) {}
 MovieExtendsHeader::~MovieExtendsHeader() {}
-FourCC MovieExtendsHeader::BoxType() const { return FOURCC_MEHD; }
+FourCC MovieExtendsHeader::BoxType() const { return FOURCC_mehd; }
 
 bool MovieExtendsHeader::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
@@ -1841,7 +1841,7 @@ TrackExtends::TrackExtends()
       default_sample_size(0),
       default_sample_flags(0) {}
 TrackExtends::~TrackExtends() {}
-FourCC TrackExtends::BoxType() const { return FOURCC_TREX; }
+FourCC TrackExtends::BoxType() const { return FOURCC_trex; }
 
 bool TrackExtends::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -1862,7 +1862,7 @@ uint32_t TrackExtends::ComputeSizeInternal() {
 
 MovieExtends::MovieExtends() {}
 MovieExtends::~MovieExtends() {}
-FourCC MovieExtends::BoxType() const { return FOURCC_MVEX; }
+FourCC MovieExtends::BoxType() const { return FOURCC_mvex; }
 
 bool MovieExtends::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -1890,7 +1890,7 @@ uint32_t MovieExtends::ComputeSizeInternal() {
 
 Movie::Movie() {}
 Movie::~Movie() {}
-FourCC Movie::BoxType() const { return FOURCC_MOOV; }
+FourCC Movie::BoxType() const { return FOURCC_moov; }
 
 bool Movie::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -1924,7 +1924,7 @@ uint32_t Movie::ComputeSizeInternal() {
 
 TrackFragmentDecodeTime::TrackFragmentDecodeTime() : decode_time(0) {}
 TrackFragmentDecodeTime::~TrackFragmentDecodeTime() {}
-FourCC TrackFragmentDecodeTime::BoxType() const { return FOURCC_TFDT; }
+FourCC TrackFragmentDecodeTime::BoxType() const { return FOURCC_tfdt; }
 
 bool TrackFragmentDecodeTime::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer));
@@ -1940,7 +1940,7 @@ uint32_t TrackFragmentDecodeTime::ComputeSizeInternal() {
 
 MovieFragmentHeader::MovieFragmentHeader() : sequence_number(0) {}
 MovieFragmentHeader::~MovieFragmentHeader() {}
-FourCC MovieFragmentHeader::BoxType() const { return FOURCC_MFHD; }
+FourCC MovieFragmentHeader::BoxType() const { return FOURCC_mfhd; }
 
 bool MovieFragmentHeader::ReadWriteInternal(BoxBuffer* buffer) {
   return ReadWriteHeaderInternal(buffer) &&
@@ -1959,7 +1959,7 @@ TrackFragmentHeader::TrackFragmentHeader()
       default_sample_flags(0) {}
 
 TrackFragmentHeader::~TrackFragmentHeader() {}
-FourCC TrackFragmentHeader::BoxType() const { return FOURCC_TFHD; }
+FourCC TrackFragmentHeader::BoxType() const { return FOURCC_tfhd; }
 
 bool TrackFragmentHeader::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -2014,7 +2014,7 @@ uint32_t TrackFragmentHeader::ComputeSizeInternal() {
 
 TrackFragmentRun::TrackFragmentRun() : sample_count(0), data_offset(0) {}
 TrackFragmentRun::~TrackFragmentRun() {}
-FourCC TrackFragmentRun::BoxType() const { return FOURCC_TRUN; }
+FourCC TrackFragmentRun::BoxType() const { return FOURCC_trun; }
 
 bool TrackFragmentRun::ReadWriteInternal(BoxBuffer* buffer) {
   if (!buffer->Reading()) {
@@ -2135,7 +2135,7 @@ uint32_t TrackFragmentRun::ComputeSizeInternal() {
 
 SampleToGroup::SampleToGroup() : grouping_type(0), grouping_type_parameter(0) {}
 SampleToGroup::~SampleToGroup() {}
-FourCC SampleToGroup::BoxType() const { return FOURCC_SBGP; }
+FourCC SampleToGroup::BoxType() const { return FOURCC_sbgp; }
 
 bool SampleToGroup::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -2143,7 +2143,7 @@ bool SampleToGroup::ReadWriteInternal(BoxBuffer* buffer) {
   if (version == 1)
     RCHECK(buffer->ReadWriteUInt32(&grouping_type_parameter));
 
-  if (grouping_type != FOURCC_SEIG) {
+  if (grouping_type != FOURCC_seig) {
     DCHECK(buffer->Reading());
     DLOG(WARNING) << "Sample group "
                   << FourCCToString(static_cast<FourCC>(grouping_type))
@@ -2177,13 +2177,13 @@ CencSampleEncryptionInfoEntry::~CencSampleEncryptionInfoEntry() {};
 
 SampleGroupDescription::SampleGroupDescription() : grouping_type(0) {}
 SampleGroupDescription::~SampleGroupDescription() {}
-FourCC SampleGroupDescription::BoxType() const { return FOURCC_SGPD; }
+FourCC SampleGroupDescription::BoxType() const { return FOURCC_sgpd; }
 
 bool SampleGroupDescription::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
          buffer->ReadWriteUInt32(&grouping_type));
 
-  if (grouping_type != FOURCC_SEIG) {
+  if (grouping_type != FOURCC_seig) {
     DCHECK(buffer->Reading());
     DLOG(WARNING) << "Sample group '" << grouping_type << "' is not supported.";
     return true;
@@ -2254,7 +2254,7 @@ uint32_t SampleGroupDescription::ComputeSizeInternal() {
 
 TrackFragment::TrackFragment() : decode_time_absent(false) {}
 TrackFragment::~TrackFragment() {}
-FourCC TrackFragment::BoxType() const { return FOURCC_TRAF; }
+FourCC TrackFragment::BoxType() const { return FOURCC_traf; }
 
 bool TrackFragment::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -2271,11 +2271,11 @@ bool TrackFragment::ReadWriteInternal(BoxBuffer* buffer) {
     // with different grouping types. For common encryption, the relevant
     // grouping type is 'seig'. Continue reading until 'seig' is found, or
     // until running out of child boxes.
-    while (sample_to_group.grouping_type != FOURCC_SEIG &&
+    while (sample_to_group.grouping_type != FOURCC_seig &&
            buffer->reader()->ChildExist(&sample_to_group)) {
       RCHECK(buffer->reader()->ReadChild(&sample_to_group));
     }
-    while (sample_group_description.grouping_type != FOURCC_SEIG &&
+    while (sample_group_description.grouping_type != FOURCC_seig &&
            buffer->reader()->ChildExist(&sample_group_description)) {
       RCHECK(buffer->reader()->ReadChild(&sample_group_description));
     }
@@ -2305,7 +2305,7 @@ uint32_t TrackFragment::ComputeSizeInternal() {
 
 MovieFragment::MovieFragment() {}
 MovieFragment::~MovieFragment() {}
-FourCC MovieFragment::BoxType() const { return FOURCC_MOOF; }
+FourCC MovieFragment::BoxType() const { return FOURCC_moof; }
 
 bool MovieFragment::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -2340,7 +2340,7 @@ SegmentIndex::SegmentIndex()
       earliest_presentation_time(0),
       first_offset(0) {}
 SegmentIndex::~SegmentIndex() {}
-FourCC SegmentIndex::BoxType() const { return FOURCC_SIDX; }
+FourCC SegmentIndex::BoxType() const { return FOURCC_sidx; }
 
 bool SegmentIndex::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(ReadWriteHeaderInternal(buffer) &&
@@ -2392,7 +2392,7 @@ uint32_t SegmentIndex::ComputeSizeInternal() {
 
 MediaData::MediaData() : data_size(0) {}
 MediaData::~MediaData() {}
-FourCC MediaData::BoxType() const { return FOURCC_MDAT; }
+FourCC MediaData::BoxType() const { return FOURCC_mdat; }
 
 bool MediaData::ReadWriteInternal(BoxBuffer* buffer) {
   NOTIMPLEMENTED() << "Actual data is parsed and written separately.";

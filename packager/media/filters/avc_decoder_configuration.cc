@@ -9,8 +9,8 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/media/base/buffer_reader.h"
+#include "packager/media/base/rcheck.h"
 #include "packager/media/filters/h264_parser.h"
-#include "packager/media/formats/mp4/rcheck.h"
 
 namespace edash_packager {
 namespace media {

@@ -17,6 +17,7 @@
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/macros.h"
 #include "packager/media/base/media_sample.h"
+#include "packager/media/base/rcheck.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
@@ -26,7 +27,6 @@
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/box_reader.h"
 #include "packager/media/formats/mp4/es_descriptor.h"
-#include "packager/media/formats/mp4/rcheck.h"
 #include "packager/media/formats/mp4/track_run_iterator.h"
 
 namespace edash_packager {
@@ -42,17 +42,17 @@ uint64_t Rescale(uint64_t time_in_old_scale,
 
 VideoCodec FourCCToVideoCodec(FourCC fourcc) {
   switch (fourcc) {
-    case FOURCC_AVC1:
+    case FOURCC_avc1:
       return kCodecH264;
-    case FOURCC_HEV1:
+    case FOURCC_hev1:
       return kCodecHEV1;
-    case FOURCC_HVC1:
+    case FOURCC_hvc1:
       return kCodecHVC1;
-    case FOURCC_VP08:
+    case FOURCC_vp08:
       return kCodecVP8;
-    case FOURCC_VP09:
+    case FOURCC_vp09:
       return kCodecVP9;
-    case FOURCC_VP10:
+    case FOURCC_vp10:
       return kCodecVP10;
     default:
       return kUnknownVideoCodec;
@@ -61,21 +61,21 @@ VideoCodec FourCCToVideoCodec(FourCC fourcc) {
 
 AudioCodec FourCCToAudioCodec(FourCC fourcc) {
   switch(fourcc) {
-    case FOURCC_DTSC:
+    case FOURCC_dtsc:
       return kCodecDTSC;
-    case FOURCC_DTSH:
+    case FOURCC_dtsh:
       return kCodecDTSH;
-    case FOURCC_DTSL:
+    case FOURCC_dtsl:
       return kCodecDTSL;
-    case FOURCC_DTSE:
+    case FOURCC_dtse:
       return kCodecDTSE;
-    case FOURCC_DTSP:
+    case FOURCC_dtsp:
       return kCodecDTSP;
-    case FOURCC_DTSM:
+    case FOURCC_dtsm:
       return kCodecDTSM;
-    case FOURCC_AC3:
+    case FOURCC_ac_3:
       return kCodecAC3;
-    case FOURCC_EAC3:
+    case FOURCC_ec_3:
       return kCodecEAC3;
     default:
       return kUnknownAudioCodec;
@@ -195,9 +195,9 @@ bool MP4MediaParser::LoadMoov(const std::string& file_path) {
                  << "'";
       return false;
     }
-    if (box_type == FOURCC_MDAT) {
+    if (box_type == FOURCC_mdat) {
       mdat_seen = true;
-    } else if (box_type == FOURCC_MOOV) {
+    } else if (box_type == FOURCC_moov) {
       if (!mdat_seen) {
         // 'moov' is before 'mdat'. Nothing to do.
         break;
@@ -246,7 +246,7 @@ bool MP4MediaParser::ParseBox(bool* err) {
   if (reader.get() == NULL)
     return false;
 
-  if (reader->type() == FOURCC_MDAT) {
+  if (reader->type() == FOURCC_mdat) {
     // The code ends up here only if a MOOV box is not yet seen.
     DCHECK(!moov_);
 
@@ -258,9 +258,9 @@ bool MP4MediaParser::ParseBox(bool* err) {
   // Set up mdat offset for ReadMDATsUntil().
   mdat_tail_ = queue_.head() + reader->size();
 
-  if (reader->type() == FOURCC_MOOV) {
+  if (reader->type() == FOURCC_moov) {
     *err = !ParseMoov(reader.get());
-  } else if (reader->type() == FOURCC_MOOF) {
+  } else if (reader->type() == FOURCC_moof) {
     moof_head_ = queue_.head();
     *err = !ParseMoof(reader.get());
 
@@ -350,7 +350,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       std::vector<uint8_t> extra_data;
 
       switch (actual_format) {
-        case FOURCC_MP4A:
+        case FOURCC_mp4a:
           // Check if it is MPEG4 AAC defined in ISO 14496 Part 3 or
           // supported MPEG2 AAC variants.
           if (entry.esds.es_descriptor.IsAAC()) {
@@ -399,27 +399,27 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             return false;
           }
           break;
-        case FOURCC_DTSC:
+        case FOURCC_dtsc:
           FALLTHROUGH_INTENDED;
-        case FOURCC_DTSH:
+        case FOURCC_dtsh:
           FALLTHROUGH_INTENDED;
-        case FOURCC_DTSL:
+        case FOURCC_dtsl:
           FALLTHROUGH_INTENDED;
-        case FOURCC_DTSE:
+        case FOURCC_dtse:
           FALLTHROUGH_INTENDED;
-        case FOURCC_DTSM:
+        case FOURCC_dtsm:
           extra_data = entry.ddts.extra_data;
           max_bitrate = entry.ddts.max_bitrate;
           avg_bitrate = entry.ddts.avg_bitrate;
           num_channels = entry.channelcount;
           sampling_frequency = entry.samplerate;
           break;
-        case FOURCC_AC3:
+        case FOURCC_ac_3:
           extra_data = entry.dac3.data;
           num_channels = entry.channelcount;
           sampling_frequency = entry.samplerate;
           break;
-        case FOURCC_EAC3:
+        case FOURCC_ec_3:
           extra_data = entry.dec3.data;
           num_channels = entry.channelcount;
           sampling_frequency = entry.samplerate;
@@ -469,7 +469,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       const FourCC actual_format = entry.GetActualFormat();
       const VideoCodec video_codec = FourCCToVideoCodec(actual_format);
       switch (actual_format) {
-        case FOURCC_AVC1: {
+        case FOURCC_avc1: {
           AVCDecoderConfiguration avc_config;
           if (!avc_config.Parse(entry.codec_config_record.data)) {
             LOG(ERROR) << "Failed to parse avcc.";
@@ -505,8 +505,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           }
           break;
         }
-        case FOURCC_HEV1:
-        case FOURCC_HVC1: {
+        case FOURCC_hev1:
+        case FOURCC_hvc1: {
           HEVCDecoderConfiguration hevc_config;
           if (!hevc_config.Parse(entry.codec_config_record.data)) {
             LOG(ERROR) << "Failed to parse hevc.";
@@ -516,9 +516,9 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           nalu_length_size = hevc_config.nalu_length_size();
           break;
         }
-        case FOURCC_VP08:
-        case FOURCC_VP09:
-        case FOURCC_VP10: {
+        case FOURCC_vp08:
+        case FOURCC_vp09:
+        case FOURCC_vp10: {
           VPCodecConfiguration vp_config;
           if (!vp_config.Parse(entry.codec_config_record.data)) {
             LOG(ERROR) << "Failed to parse vpcc.";

@@ -10,6 +10,7 @@
 #include "packager/base/time/time.h"
 #include "packager/media/base/aes_encryptor.h"
 #include "packager/media/base/audio_stream_info.h"
+#include "packager/media/base/fourccs.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/media_stream.h"
@@ -18,7 +19,6 @@
 #include "packager/media/file/file.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/es_descriptor.h"
-#include "packager/media/formats/mp4/fourccs.h"
 #include "packager/media/formats/mp4/multi_segment_segmenter.h"
 #include "packager/media/formats/mp4/single_segment_segmenter.h"
 
@@ -43,17 +43,17 @@ void SetStartAndEndFromOffsetAndSize(size_t offset,
 FourCC VideoCodecToFourCC(VideoCodec codec) {
   switch (codec) {
     case kCodecH264:
-      return FOURCC_AVC1;
+      return FOURCC_avc1;
     case kCodecHEV1:
-      return FOURCC_HEV1;
+      return FOURCC_hev1;
     case kCodecHVC1:
-      return FOURCC_HVC1;
+      return FOURCC_hvc1;
     case kCodecVP8:
-      return FOURCC_VP08;
+      return FOURCC_vp08;
     case kCodecVP9:
-      return FOURCC_VP09;
+      return FOURCC_vp09;
     case kCodecVP10:
-      return FOURCC_VP10;
+      return FOURCC_vp10;
     default:
       return FOURCC_NULL;
   }
@@ -62,21 +62,21 @@ FourCC VideoCodecToFourCC(VideoCodec codec) {
 FourCC AudioCodecToFourCC(AudioCodec codec) {
   switch (codec) {
     case kCodecAAC:
-      return FOURCC_MP4A;
+      return FOURCC_mp4a;
     case kCodecAC3:
-      return FOURCC_AC3;
+      return FOURCC_ac_3;
     case kCodecDTSC:
-      return FOURCC_DTSC;
+      return FOURCC_dtsc;
     case kCodecDTSH:
-      return FOURCC_DTSH;
+      return FOURCC_dtsh;
     case kCodecDTSL:
-      return FOURCC_DTSL;
+      return FOURCC_dtsl;
     case kCodecDTSE:
-      return FOURCC_DTSE;
+      return FOURCC_dtse;
     case kCodecDTSM:
-      return FOURCC_DTSM;
+      return FOURCC_dtsm;
     case kCodecEAC3:
-      return FOURCC_EAC3;
+      return FOURCC_ec_3;
     default:
       return FOURCC_NULL;
   }
@@ -93,9 +93,9 @@ Status MP4Muxer::Initialize() {
   scoped_ptr<FileType> ftyp(new FileType);
   scoped_ptr<Movie> moov(new Movie);
 
-  ftyp->major_brand = FOURCC_DASH;
-  ftyp->compatible_brands.push_back(FOURCC_ISO6);
-  ftyp->compatible_brands.push_back(FOURCC_MP41);
+  ftyp->major_brand = FOURCC_dash;
+  ftyp->compatible_brands.push_back(FOURCC_iso6);
+  ftyp->compatible_brands.push_back(FOURCC_mp41);
   if (streams().size() == 1 &&
       streams()[0]->info()->stream_type() == kStreamVideo) {
     const FourCC codec_fourcc = VideoCodecToFourCC(

@@ -5,8 +5,8 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include "packager/media/base/bit_reader.h"
+#include "packager/media/base/rcheck.h"
 #include "packager/media/filters/ec3_audio_util.h"
-#include "packager/media/formats/mp4/rcheck.h"
 
 namespace edash_packager {
 namespace media {

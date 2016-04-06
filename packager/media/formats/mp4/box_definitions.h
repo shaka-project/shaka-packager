@@ -8,10 +8,10 @@
 #include <vector>
 
 #include "packager/media/base/decrypt_config.h"
+#include "packager/media/base/fourccs.h"
 #include "packager/media/formats/mp4/aac_audio_specific_config.h"
 #include "packager/media/formats/mp4/box.h"
 #include "packager/media/formats/mp4/es_descriptor.h"
-#include "packager/media/formats/mp4/fourccs.h"
 
 namespace edash_packager {
 namespace media {
@@ -277,7 +277,7 @@ struct VideoSampleEntry : Box {
   DECLARE_BOX_METHODS(VideoSampleEntry);
   // Returns actual format of this sample entry.
   FourCC GetActualFormat() const {
-    return format == FOURCC_ENCV ? sinf.format.format : format;
+    return format == FOURCC_encv ? sinf.format.format : format;
   }
 
   FourCC format;
@@ -323,7 +323,7 @@ struct AudioSampleEntry : Box {
   DECLARE_BOX_METHODS(AudioSampleEntry);
   // Returns actual format of this sample entry.
   FourCC GetActualFormat() const {
-    return format == FOURCC_ENCA ? sinf.format.format : format;
+    return format == FOURCC_enca ? sinf.format.format : format;
   }
 
   FourCC format;

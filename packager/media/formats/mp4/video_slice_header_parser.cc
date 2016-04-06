@@ -6,9 +6,9 @@
 
 #include "packager/media/formats/mp4/video_slice_header_parser.h"
 
+#include "packager/media/base/rcheck.h"
 #include "packager/media/filters/avc_decoder_configuration.h"
 #include "packager/media/filters/hevc_decoder_configuration.h"
-#include "packager/media/formats/mp4/rcheck.h"
 
 namespace edash_packager {
 namespace media {
