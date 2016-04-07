@@ -23,11 +23,11 @@ const uint8_t kVideoStreamId = 0xe0;
 const uint8_t kAudioStreamId = 0xc0;
 }  // namespace
 
-PesPacketGenerator::PesPacketGenerator() {}
+PesPacketGenerator::PesPacketGenerator() : pes_packets_deleter_(&pes_packets_) {}
 PesPacketGenerator::~PesPacketGenerator() {}
 
 bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
-  pes_packets_.clear();
+  STLDeleteElements(&pes_packets_);
   stream_type_ = stream_info.stream_type();
 
   if (stream_type_ == kStreamVideo) {
@@ -76,7 +76,7 @@ bool PesPacketGenerator::PushSample(scoped_refptr<MediaSample> sample) {
       return false;
     }
     current_processing_pes_->set_stream_id(kVideoStreamId);
-    pes_packets_.push_back(current_processing_pes_.Pass());
+    pes_packets_.push_back(current_processing_pes_.release());
     return true;
   }
   DCHECK_EQ(stream_type_, kStreamAudio);
@@ -91,7 +91,7 @@ bool PesPacketGenerator::PushSample(scoped_refptr<MediaSample> sample) {
   // packets.
   current_processing_pes_->mutable_data()->swap(aac_frame);
   current_processing_pes_->set_stream_id(kAudioStreamId);
-  pes_packets_.push_back(current_processing_pes_.Pass());
+  pes_packets_.push_back(current_processing_pes_.release());
   return true;
 }
 
@@ -101,9 +101,9 @@ size_t PesPacketGenerator::NumberOfReadyPesPackets() {
 
 scoped_ptr<PesPacket> PesPacketGenerator::GetNextPesPacket() {
   DCHECK(!pes_packets_.empty());
-  scoped_ptr<PesPacket> pes = pes_packets_.front().Pass();
+  PesPacket* pes = pes_packets_.front();
   pes_packets_.pop_front();
-  return pes.Pass();
+  return scoped_ptr<PesPacket>(pes);
 }
 
 bool PesPacketGenerator::Flush() {

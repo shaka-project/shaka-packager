@@ -10,6 +10,7 @@
 #include <list>
 
 #include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/stl_util.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/stream_info.h"
 
@@ -77,7 +78,8 @@ class PesPacketGenerator {
   // This can be used to create a PES from multiple audio samples.
   scoped_ptr<PesPacket> current_processing_pes_;
 
-  std::list<scoped_ptr<PesPacket>> pes_packets_;
+  std::list<PesPacket*> pes_packets_;
+  STLElementDeleter<decltype(pes_packets_)> pes_packets_deleter_;
 
   DISALLOW_COPY_AND_ASSIGN(PesPacketGenerator);
 };
