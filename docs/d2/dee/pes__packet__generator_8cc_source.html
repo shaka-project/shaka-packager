@@ -112,11 +112,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">const</span> uint8_t kAudioStreamId = 0xc0;</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;}  <span class="comment">// namespace</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;PesPacketGenerator::PesPacketGenerator() {}</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;PesPacketGenerator::PesPacketGenerator() : pes_packets_deleter_(&amp;pes_packets_) {}</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;PesPacketGenerator::~PesPacketGenerator() {}</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
 <div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="../../de/d1a/classedash__packager_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a00c8ff143e59d207fbb09e092802f6fd">   29</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../de/d1a/classedash__packager_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a00c8ff143e59d207fbb09e092802f6fd">PesPacketGenerator::Initialize</a>(<span class="keyword">const</span> <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a>&amp; stream_info) {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  pes_packets_.clear();</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  STLDeleteElements(&amp;pes_packets_);</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  stream_type_ = stream_info.stream_type();</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordflow">if</span> (stream_type_ == kStreamVideo) {</div>
@@ -165,7 +165,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    }</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    current_processing_pes_-&gt;set_stream_id(kVideoStreamId);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    pes_packets_.push_back(current_processing_pes_.Pass());</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    pes_packets_.push_back(current_processing_pes_.release());</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  }</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  DCHECK_EQ(stream_type_, kStreamAudio);</div>
@@ -180,7 +180,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="comment">// packets.</span></div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  current_processing_pes_-&gt;mutable_data()-&gt;swap(aac_frame);</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  current_processing_pes_-&gt;set_stream_id(kAudioStreamId);</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  pes_packets_.push_back(current_processing_pes_.Pass());</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  pes_packets_.push_back(current_processing_pes_.release());</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;}</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
@@ -190,9 +190,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
 <div class="line"><a name="l00102"></a><span class="lineno"><a class="line" href="../../de/d1a/classedash__packager_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a2b945f33d9c8c03300f24158f39a31dd">  102</a></span>&#160;scoped_ptr&lt;PesPacket&gt; <a class="code" href="../../de/d1a/classedash__packager_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a2b945f33d9c8c03300f24158f39a31dd">PesPacketGenerator::GetNextPesPacket</a>() {</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  DCHECK(!pes_packets_.empty());</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  scoped_ptr&lt;PesPacket&gt; pes = pes_packets_.front().Pass();</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <a class="code" href="../../d6/d3e/classedash__packager_1_1media_1_1mp2t_1_1PesPacket.html">PesPacket</a>* pes = pes_packets_.front();</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  pes_packets_.pop_front();</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="keywordflow">return</span> pes.Pass();</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="keywordflow">return</span> scoped_ptr&lt;PesPacket&gt;(pes);</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;}</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
 <div class="line"><a name="l00109"></a><span class="lineno"><a class="line" href="../../de/d1a/classedash__packager_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a812e776f3064d22f60e742fb1f6aa700">  109</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../de/d1a/classedash__packager_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a812e776f3064d22f60e742fb1f6aa700">PesPacketGenerator::Flush</a>() {</div>
@@ -216,7 +216,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 7 2016 08:08:00 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 7 2016 21:43:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
