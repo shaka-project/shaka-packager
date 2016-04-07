@@ -97,9 +97,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7f11850cfce911e3aec88974fc76105c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dbe/classedash__packager_1_1media_1_1NalUnitToByteStreamConverter.html#a7f11850cfce911e3aec88974fc76105c">Initialize</a> (const uint8_t *decoder_configuration_data, size_t decoder_configuration_data_size, bool escape_data)</td></tr>
+<tr class="memitem:a7f11850cfce911e3aec88974fc76105c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dbe/classedash__packager_1_1media_1_1NalUnitToByteStreamConverter.html#a7f11850cfce911e3aec88974fc76105c">Initialize</a> (const uint8_t *decoder_configuration_data, size_t decoder_configuration_data_size, bool escape_data)</td></tr>
 <tr class="separator:a7f11850cfce911e3aec88974fc76105c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3fda2b87f26b14a1249624b16b22c4c2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dbe/classedash__packager_1_1media_1_1NalUnitToByteStreamConverter.html#a3fda2b87f26b14a1249624b16b22c4c2">ConvertUnitToByteStream</a> (const uint8_t *sample, size_t sample_size, bool is_key_frame, std::vector&lt; uint8_t &gt; *output)</td></tr>
+<tr class="memitem:a3fda2b87f26b14a1249624b16b22c4c2"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dbe/classedash__packager_1_1media_1_1NalUnitToByteStreamConverter.html#a3fda2b87f26b14a1249624b16b22c4c2">ConvertUnitToByteStream</a> (const uint8_t *sample, size_t sample_size, bool is_key_frame, std::vector&lt; uint8_t &gt; *output)</td></tr>
 <tr class="separator:a3fda2b87f26b14a1249624b16b22c4c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="friends"></a>
@@ -110,11 +110,14 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NalUnitToByteStreamC
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="../../d8/dfa/nal__unit__to__byte__stream__converter_8h_source.html#l00021">21</a> of file <a class="el" href="../../d8/dfa/nal__unit__to__byte__stream__converter_8h_source.html">nal_unit_to_byte_stream_converter.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/dfa/nal__unit__to__byte__stream__converter_8h_source.html#l00022">22</a> of file <a class="el" href="../../d8/dfa/nal__unit__to__byte__stream__converter_8h_source.html">nal_unit_to_byte_stream_converter.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a3fda2b87f26b14a1249624b16b22c4c2"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool edash_packager::media::NalUnitToByteStreamConverter::ConvertUnitToByteStream </td>
@@ -146,6 +149,11 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NalUnitToByteStreamC
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>Converts unit stream to byte stream using the data passed to <a class="el" href="../../d4/dbe/classedash__packager_1_1media_1_1NalUnitToByteStreamConverter.html#a7f11850cfce911e3aec88974fc76105c">Initialize()</a>. The method will function correctly even if <em>sample</em> is encrypted using SAMPLE-AES encryption. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -165,6 +173,9 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NalUnitToByteStreamC
 <a class="anchor" id="a7f11850cfce911e3aec88974fc76105c"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool edash_packager::media::NalUnitToByteStreamConverter::Initialize </td>
@@ -190,6 +201,11 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NalUnitToByteStreamC
           <td></td><td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>This must be called before calling other methods. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -213,7 +229,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>NalUnitToByteStreamC
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 6 2016 20:29:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 7 2016 08:08:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
