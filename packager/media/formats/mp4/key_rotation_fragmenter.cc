@@ -24,13 +24,13 @@ KeyRotationFragmenter::KeyRotationFragmenter(MovieFragment* moof,
                                              KeySource::TrackType track_type,
                                              int64_t crypto_period_duration,
                                              int64_t clear_time,
-                                             MuxerListener* muxer_listener,
-                                             EncryptionMode encryption_mode)
+                                             FourCC protection_scheme,
+                                             MuxerListener* muxer_listener)
     : EncryptingFragmenter(info,
                            traf,
                            scoped_ptr<EncryptionKey>(new EncryptionKey()),
                            clear_time,
-                           encryption_mode),
+                           protection_scheme),
       moof_(moof),
       encryption_key_source_(encryption_key_source),
       track_type_(track_type),
@@ -55,6 +55,12 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption(
         current_crypto_period_index, track_type_, encryption_key.get());
     if (!status.ok())
       return status;
+    if (encryption_key->iv.empty()) {
+      if (!AesCryptor::GenerateRandomIv(protection_scheme(),
+                                        &encryption_key->iv)) {
+        return Status(error::INTERNAL_ERROR, "Failed to generate random iv.");
+      }
+    }
     set_encryption_key(encryption_key.Pass());
     prev_crypto_period_index_ = current_crypto_period_index;
     need_to_refresh_encryptor = true;

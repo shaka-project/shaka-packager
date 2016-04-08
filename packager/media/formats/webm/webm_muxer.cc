@@ -6,6 +6,7 @@
 
 #include "packager/media/formats/webm/webm_muxer.h"
 
+#include "packager/media/base/fourccs.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/stream_info.h"
@@ -30,12 +31,11 @@ Status WebMMuxer::Initialize() {
                   "Key rotation is not implemented for WebM");
   }
 
-  if (encryption_key_source() && (encryption_mode() != kEncryptionModeAesCtr)) {
+  if (encryption_key_source() && (protection_scheme() != FOURCC_cenc)) {
     NOTIMPLEMENTED()
-        << "WebM muxer does not support encryption mode other than AES-CTR.";
-    return Status(
-        error::UNIMPLEMENTED,
-        "WebM muxer does not support encryption mode other than AES-CTR.");
+        << "WebM does not support protection scheme other than 'cenc'.";
+    return Status(error::UNIMPLEMENTED,
+                  "WebM does not support protection scheme other than 'cenc'.");
   }
 
   scoped_ptr<MkvWriter> writer(new MkvWriter);

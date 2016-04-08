@@ -7,15 +7,13 @@
 #include "packager/media/formats/webm/encryptor.h"
 
 #include "packager/media/base/aes_encryptor.h"
+#include "packager/media/base/fourccs.h"
 #include "packager/media/base/media_sample.h"
 
 namespace edash_packager {
 namespace media {
 namespace webm {
 namespace {
-
-// Generate 64bit IV by default.
-const size_t kDefaultIvSize = 8u;
 
 Status CreateContentEncryption(mkvmuxer::Track* track, EncryptionKey* key) {
   if (!track->AddContentEncoding()) {
@@ -107,13 +105,14 @@ Status Encryptor::CreateEncryptor(MuxerListener* muxer_listener,
   Status status = key_source->GetKey(track_type, encryption_key.get());
   if (!status.ok())
     return status;
+  if (encryption_key->iv.empty()) {
+    if (!AesCryptor::GenerateRandomIv(FOURCC_cenc, &encryption_key->iv))
+      return Status(error::INTERNAL_ERROR, "Failed to generate random iv.");
+  }
 
   scoped_ptr<AesCtrEncryptor> encryptor(new AesCtrEncryptor());
-  const bool initialized = encryption_key->iv.empty()
-                               ? encryptor->InitializeWithRandomIv(
-                                     encryption_key->key, kDefaultIvSize)
-                               : encryptor->InitializeWithIv(
-                                     encryption_key->key, encryption_key->iv);
+  const bool initialized =
+      encryptor->InitializeWithIv(encryption_key->key, encryption_key->iv);
   if (!initialized)
     return Status(error::INTERNAL_ERROR, "Failed to create the encryptor.");
 

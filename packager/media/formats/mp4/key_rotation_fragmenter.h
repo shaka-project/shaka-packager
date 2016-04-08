@@ -7,7 +7,7 @@
 #ifndef MEDIA_FORMATS_MP4_KEY_ROTATION_FRAGMENTER_H_
 #define MEDIA_FORMATS_MP4_KEY_ROTATION_FRAGMENTER_H_
 
-#include "packager/media/base/encryption_modes.h"
+#include "packager/media/base/fourccs.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/event/muxer_listener.h"
 #include "packager/media/formats/mp4/encrypting_fragmenter.h"
@@ -32,6 +32,8 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
   ///        of the current track's timescale.
   /// @param clear_time specifies clear lead duration in units of the current
   ///        track's timescale.
+  /// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',
+  ///        'cbc1', 'cbcs'.
   /// @param muxer_listener is a pointer to MuxerListener for notifying
   ///        muxer related events. This may be null.
   KeyRotationFragmenter(MovieFragment* moof,
@@ -41,8 +43,8 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
                         KeySource::TrackType track_type,
                         int64_t crypto_period_duration,
                         int64_t clear_time,
-                        MuxerListener* muxer_listener,
-                        EncryptionMode encryption_mode);
+                        FourCC protection_scheme,
+                        MuxerListener* muxer_listener);
   ~KeyRotationFragmenter() override;
 
  protected:

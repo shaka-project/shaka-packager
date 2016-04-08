@@ -7,8 +7,6 @@
 #include "packager/media/base/aes_encryptor.h"
 
 #include <openssl/aes.h>
-#include <openssl/err.h>
-#include <openssl/rand.h>
 
 #include "packager/base/logging.h"
 
@@ -39,17 +37,6 @@ namespace media {
 
 AesEncryptor::AesEncryptor() {}
 AesEncryptor::~AesEncryptor() {}
-
-bool AesEncryptor::InitializeWithRandomIv(const std::vector<uint8_t>& key,
-                                          uint8_t iv_size) {
-  std::vector<uint8_t> iv(iv_size, 0);
-  if (RAND_bytes(iv.data(), iv_size) != 1) {
-    LOG(ERROR) << "RAND_bytes failed with error: "
-               << ERR_error_string(ERR_get_error(), NULL);
-    return false;
-  }
-  return InitializeWithIv(key, iv);
-}
 
 bool AesEncryptor::InitializeWithIv(const std::vector<uint8_t>& key,
                                     const std::vector<uint8_t>& iv) {

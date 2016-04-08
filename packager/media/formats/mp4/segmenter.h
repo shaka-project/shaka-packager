@@ -12,7 +12,7 @@
 
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/memory/scoped_ptr.h"
-#include "packager/media/base/encryption_modes.h"
+#include "packager/media/base/fourccs.h"
 #include "packager/media/base/status.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 
@@ -59,6 +59,8 @@ class Segmenter {
   ///        pixels per frame than max_sd_pixels, it is HD, SD otherwise.
   /// @param clear_time specifies clear lead duration in seconds.
   /// @param crypto_period_duration specifies crypto period duration in seconds.
+  /// @param protection_scheme specifies the protection scheme: 'senc', 'sens',
+  ///        'cbc1', 'cbcs'.
   /// @return OK on success, an error status otherwise.
   Status Initialize(const std::vector<MediaStream*>& streams,
                     MuxerListener* muxer_listener,
@@ -67,7 +69,7 @@ class Segmenter {
                     uint32_t max_sd_pixels,
                     double clear_lead_in_seconds,
                     double crypto_period_duration_in_seconds,
-                    EncryptionMode encryption_mode);
+                    FourCC protection_scheme);
 
   /// Finalize the segmenter.
   /// @return OK on success, an error status otherwise.

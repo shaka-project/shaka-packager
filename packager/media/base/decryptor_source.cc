@@ -8,6 +8,7 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/stl_util.h"
+#include "packager/media/base/aes_decryptor.h"
 
 namespace edash_packager {
 namespace media {
@@ -39,16 +40,16 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
     }
 
     scoped_ptr<AesCryptor> aes_decryptor;
-    switch (decrypt_config->decryption_mode()) {
-      case kEncryptionModeAesCtr:
+    switch (decrypt_config->protection_scheme()) {
+      case FOURCC_cenc:
         aes_decryptor.reset(new AesCtrDecryptor);
         break;
-      case kEncryptionModeAesCbc:
+      case FOURCC_cbc1:
         aes_decryptor.reset(new AesCbcDecryptor(kNoPadding, kChainAcrossCalls));
         break;
       default:
-        LOG(ERROR) << "Unsupported Decryption Mode: "
-                   << decrypt_config->decryption_mode();
+        LOG(ERROR) << "Unsupported protection scheme: "
+                   << decrypt_config->protection_scheme();
         return false;
     }
 

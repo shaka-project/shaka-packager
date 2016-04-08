@@ -12,6 +12,7 @@
 
 #include "packager/base/macros.h"
 #include "packager/base/memory/scoped_ptr.h"
+#include "packager/media/base/fourccs.h"
 
 struct aes_key_st;
 typedef struct aes_key_st AES_KEY;
@@ -57,6 +58,13 @@ class AesCryptor {
 
   /// @return The current iv.
   const std::vector<uint8_t>& iv() const { return iv_; }
+
+  /// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',
+  ///        'cbc1', 'cbcs', which is useful to determine the random iv size.
+  /// @param iv points to generated initialization vector.
+  /// @return true on success, false otherwise.
+  static bool GenerateRandomIv(FourCC protection_scheme,
+                               std::vector<uint8_t>* iv);
 
  protected:
   void set_iv(const std::vector<uint8_t>& iv) { iv_ = iv; }

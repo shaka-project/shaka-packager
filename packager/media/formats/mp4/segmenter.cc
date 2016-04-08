@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "packager/base/stl_util.h"
+#include "packager/media/base/aes_cryptor.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
@@ -26,8 +27,6 @@ namespace mp4 {
 
 namespace {
 
-// Generate 64bit IV by default.
-const size_t kDefaultIvSize = 8u;
 const size_t kCencKeyIdSize = 16u;
 
 // The version of cenc implemented here. CENC 4.
@@ -50,26 +49,24 @@ uint64_t Rescale(uint64_t time_in_old_scale,
 
 void GenerateSinf(const EncryptionKey& encryption_key,
                   FourCC old_type,
-                  EncryptionMode encryption_mode,
+                  FourCC protection_scheme,
                   ProtectionSchemeInfo* sinf) {
   sinf->format.format = old_type;
 
-  if (encryption_mode == kEncryptionModeAesCtr){
-    sinf->type.type = FOURCC_cenc;
-  } else if (encryption_mode == kEncryptionModeAesCbc) {
-    sinf->type.type = FOURCC_cbc1;
-  }
-
+  DCHECK_NE(protection_scheme, FOURCC_NULL);
+  sinf->type.type = protection_scheme;
   sinf->type.version = kCencSchemeVersion;
-  sinf->info.track_encryption.is_encrypted = true;
-  sinf->info.track_encryption.default_iv_size =
-      encryption_key.iv.empty() ? kDefaultIvSize : encryption_key.iv.size();
-  sinf->info.track_encryption.default_kid = encryption_key.key_id;
+
+  auto& track_encryption = sinf->info.track_encryption;
+  track_encryption.is_encrypted = true;
+  DCHECK(!encryption_key.iv.empty());
+  track_encryption.default_iv_size = encryption_key.iv.size();
+  track_encryption.default_kid = encryption_key.key_id;
 }
 
 void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
                                   double clear_lead_in_seconds,
-                                  EncryptionMode encryption_mode,
+                                  FourCC protection_scheme,
                                   SampleDescription* description) {
   DCHECK(description);
   if (description->type == kVideo) {
@@ -81,7 +78,7 @@ void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
 
     // Convert the first entry to an encrypted entry.
     VideoSampleEntry& entry = description->video_entries[0];
-    GenerateSinf(encryption_key, entry.format, encryption_mode, &entry.sinf);
+    GenerateSinf(encryption_key, entry.format, protection_scheme, &entry.sinf);
     entry.format = FOURCC_encv;
   } else {
     DCHECK_EQ(kAudio, description->type);
@@ -93,7 +90,7 @@ void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
 
     // Convert the first entry to an encrypted entry.
     AudioSampleEntry& entry = description->audio_entries[0];
-    GenerateSinf(encryption_key, entry.format, encryption_mode, &entry.sinf);
+    GenerateSinf(encryption_key, entry.format, protection_scheme, &entry.sinf);
     entry.format = FOURCC_enca;
   }
 }
@@ -137,7 +134,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
                              uint32_t max_sd_pixels,
                              double clear_lead_in_seconds,
                              double crypto_period_duration_in_seconds,
-                             EncryptionMode encryption_mode) {
+                             FourCC protection_scheme) {
   DCHECK_LT(0u, streams.size());
   muxer_listener_ = muxer_listener;
   progress_listener_ = progress_listener;
@@ -173,8 +170,10 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
       encryption_key.key_id.assign(
           kKeyRotationDefaultKeyId,
           kKeyRotationDefaultKeyId + arraysize(kKeyRotationDefaultKeyId));
+      if (!AesCryptor::GenerateRandomIv(protection_scheme, &encryption_key.iv))
+        return Status(error::INTERNAL_ERROR, "Failed to generate random iv.");
       GenerateEncryptedSampleEntry(encryption_key, clear_lead_in_seconds,
-                                   encryption_mode, &description);
+                                   protection_scheme, &description);
       if (muxer_listener_) {
         muxer_listener_->OnEncryptionInfoReady(
             kInitialEncryptionInfo, encryption_key.key_id,
@@ -186,7 +185,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
           encryption_key_source, track_type,
           crypto_period_duration_in_seconds * streams[i]->info()->time_scale(),
           clear_lead_in_seconds * streams[i]->info()->time_scale(),
-          muxer_listener_, encryption_mode);
+          protection_scheme, muxer_listener_);
       continue;
     }
 
@@ -195,9 +194,13 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
         encryption_key_source->GetKey(track_type, encryption_key.get());
     if (!status.ok())
       return status;
+    if (encryption_key->iv.empty()) {
+      if (!AesCryptor::GenerateRandomIv(protection_scheme, &encryption_key->iv))
+        return Status(error::INTERNAL_ERROR, "Failed to generate random iv.");
+    }
 
     GenerateEncryptedSampleEntry(*encryption_key, clear_lead_in_seconds,
-                                 encryption_mode, &description);
+                                 protection_scheme, &description);
 
     if (moov_->pssh.empty()) {
       moov_->pssh.resize(encryption_key->key_system_info.size());
@@ -215,7 +218,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
     fragmenters_[i] = new EncryptingFragmenter(
         streams[i]->info(), &moof_->tracks[i], encryption_key.Pass(),
         clear_lead_in_seconds * streams[i]->info()->time_scale(),
-        encryption_mode);
+        protection_scheme);
   }
 
   // Choose the first stream if there is no VIDEO.

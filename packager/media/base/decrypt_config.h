@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "packager/base/memory/scoped_ptr.h"
-#include "packager/media/base/encryption_modes.h"
+#include "packager/media/base/fourccs.h"
 
 namespace edash_packager {
 namespace media {
@@ -42,23 +42,35 @@ class DecryptConfig {
   /// Keys are always 128 bits.
   static const size_t kDecryptionKeySize = 16;
 
+  /// Create a 'cenc' decrypt config.
   /// @param key_id is the ID that references the decryption key.
   /// @param iv is the initialization vector defined by the encryptor.
   /// @param subsamples defines the clear and encrypted portions of the sample
   ///        as described in SubsampleEntry. A decrypted buffer will be equal
   ///        in size to the sum of the subsample sizes.
-  /// @param decryption_mode decryption_mode is to determine which decryptor to
-  /// use.
+  DecryptConfig(const std::vector<uint8_t>& key_id,
+                const std::vector<uint8_t>& iv,
+                const std::vector<SubsampleEntry>& subsamples);
+
+  /// Create a general decrypt config with possible pattern-based encryption.
+  /// @param key_id is the ID that references the decryption key.
+  /// @param iv is the initialization vector defined by the encryptor.
+  /// @param subsamples defines the clear and encrypted portions of the sample
+  ///        as described in SubsampleEntry. A decrypted buffer will be equal
+  ///        in size to the sum of the subsample sizes.
+  /// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',
+  ///        'cbc1', 'cbcs'.
   DecryptConfig(const std::vector<uint8_t>& key_id,
                 const std::vector<uint8_t>& iv,
                 const std::vector<SubsampleEntry>& subsamples,
-                EncryptionMode decryption_mode);
+                FourCC protection_scheme);
+
   ~DecryptConfig();
 
   const std::vector<uint8_t>& key_id() const { return key_id_; }
   const std::vector<uint8_t>& iv() const { return iv_; }
   const std::vector<SubsampleEntry>& subsamples() const { return subsamples_; }
-  EncryptionMode decryption_mode() const { return decryption_mode_; }
+  FourCC protection_scheme() const { return protection_scheme_; }
 
  private:
   const std::vector<uint8_t> key_id_;
@@ -70,7 +82,7 @@ class DecryptConfig {
   // (less data ignored by data_offset_) is encrypted.
   const std::vector<SubsampleEntry> subsamples_;
 
-  EncryptionMode decryption_mode_;
+  const FourCC protection_scheme_;
 
   DISALLOW_COPY_AND_ASSIGN(DecryptConfig);
 };

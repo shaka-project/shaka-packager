@@ -22,9 +22,6 @@ namespace media {
 namespace mp4 {
 
 namespace {
-// Generate 64bit IV by default.
-const size_t kDefaultIvSizeForCtr = 8u;
-const size_t kDefaultIvSizeForCbc = 16u;
 const size_t kCencBlockSize = 16u;
 
 // Adds one or more subsamples to |*subsamples|.  This may add more than one
@@ -66,14 +63,14 @@ EncryptingFragmenter::EncryptingFragmenter(
     TrackFragment* traf,
     scoped_ptr<EncryptionKey> encryption_key,
     int64_t clear_time,
-    EncryptionMode encryption_mode)
+    FourCC protection_scheme)
     : Fragmenter(traf),
       info_(info),
       encryption_key_(encryption_key.Pass()),
       nalu_length_size_(GetNaluLengthSize(*info)),
       video_codec_(GetVideoCodec(*info)),
       clear_time_(clear_time),
-      encryption_mode_(encryption_mode) {
+      protection_scheme_(protection_scheme) {
   DCHECK(encryption_key_);
   if (video_codec_ == kCodecVP8) {
     vpx_parser_.reset(new VP8Parser);
@@ -175,22 +172,21 @@ void EncryptingFragmenter::FinalizeFragmentForEncryption() {
 
 Status EncryptingFragmenter::CreateEncryptor() {
   DCHECK(encryption_key_);
-  scoped_ptr<AesEncryptor> encryptor;
-  size_t default_iv_size = 0;
-  if (encryption_mode_ == kEncryptionModeAesCtr) {
-    encryptor.reset(new AesCtrEncryptor);
-    default_iv_size = kDefaultIvSizeForCtr;
-  } else if (encryption_mode_ == kEncryptionModeAesCbc) {
-    encryptor.reset(new AesCbcEncryptor(kNoPadding, kChainAcrossCalls));
-    default_iv_size = kDefaultIvSizeForCbc;
-  } else {
-    return Status(error::MUXER_FAILURE, "Unsupported encryption mode.");
+  scoped_ptr<AesCryptor> encryptor;
+  switch (protection_scheme_) {
+    case FOURCC_cenc:
+      encryptor.reset(new AesCtrEncryptor);
+      break;
+    case FOURCC_cbc1:
+      encryptor.reset(new AesCbcEncryptor(kNoPadding, kChainAcrossCalls));
+      break;
+    default:
+      return Status(error::MUXER_FAILURE, "Unsupported protection scheme.");
   }
-  const bool initialized = encryption_key_->iv.empty()
-                               ? encryptor->InitializeWithRandomIv(
-                                     encryption_key_->key, default_iv_size)
-                               : encryptor->InitializeWithIv(
-                                     encryption_key_->key, encryption_key_->iv);
+
+  DCHECK(!encryption_key_->iv.empty());
+  const bool initialized =
+      encryptor->InitializeWithIv(encryption_key_->key, encryption_key_->iv);
   if (!initialized)
     return Status(error::MUXER_FAILURE, "Failed to create the encryptor.");
   encryptor_ = encryptor.Pass();
@@ -229,7 +225,7 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
         // within the superframe.
         // For AES-CBC mode 'cbc1' scheme, clear data is sized appropriately so
         // that the cipher data is block aligned.
-        if (is_superframe || encryption_mode_ == kEncryptionModeAesCbc) {
+        if (is_superframe || protection_scheme_ == FOURCC_cbc1) {
           const uint16_t misalign_bytes =
               subsample.cipher_bytes % kCencBlockSize;
           subsample.clear_bytes += misalign_bytes;
@@ -271,7 +267,7 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
 
           // For AES-CBC mode 'cbc1' scheme, clear data is sized appropriately
           // so that the cipher data is block aligned.
-          if (encryption_mode_ == kEncryptionModeAesCbc) {
+          if (protection_scheme_ == FOURCC_cbc1) {
             const uint16_t misalign_bytes = cipher_bytes % kCencBlockSize;
             current_clear_bytes += misalign_bytes;
             cipher_bytes -= misalign_bytes;
@@ -303,7 +299,7 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
     uint64_t encryption_data_size = sample->data_size();
     // AES-CBC mode requires all encrypted cipher blocks to be 16 bytes. The
     // partial blocks are left unencrypted.
-    if (encryption_mode_ == kEncryptionModeAesCbc)
+    if (protection_scheme_ == FOURCC_cbc1)
       encryption_data_size -= encryption_data_size % kCencBlockSize;
     EncryptBytes(data, encryption_data_size);
   }

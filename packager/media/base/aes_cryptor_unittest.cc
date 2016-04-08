@@ -220,12 +220,12 @@ TEST_F(AesCtrEncryptorTest, 128BitIVBoundaryCaseEncryption) {
   EXPECT_EQ(encrypted, encrypted_verify);
 }
 
-TEST_F(AesCtrEncryptorTest, InitWithRandomIv) {
-  const uint8_t kIvSize = 8;
-  ASSERT_TRUE(encryptor_.InitializeWithRandomIv(key_, kIvSize));
-  ASSERT_EQ(kIvSize, encryptor_.iv().size());
-  LOG(INFO) << "Random IV: "
-            << base::HexEncode(&encryptor_.iv()[0], encryptor_.iv().size());
+TEST_F(AesCtrEncryptorTest, GenerateRandomIv) {
+  const uint8_t kCencIvSize = 8;
+  std::vector<uint8_t> iv;
+  ASSERT_TRUE(AesCryptor::GenerateRandomIv(FOURCC_cenc, &iv));
+  ASSERT_EQ(kCencIvSize, iv.size());
+  LOG(INFO) << "Random IV: " << base::HexEncode(iv.data(), iv.size());
 }
 
 TEST_F(AesCtrEncryptorTest, UnsupportedKeySize) {
@@ -236,10 +236,6 @@ TEST_F(AesCtrEncryptorTest, UnsupportedKeySize) {
 TEST_F(AesCtrEncryptorTest, UnsupportedIV) {
   std::vector<uint8_t> iv(kInvalidIv, kInvalidIv + arraysize(kInvalidIv));
   ASSERT_FALSE(encryptor_.InitializeWithIv(key_, iv));
-}
-
-TEST_F(AesCtrEncryptorTest, IncorrectIvSize) {
-  ASSERT_FALSE(encryptor_.InitializeWithRandomIv(key_, 15));
 }
 
 class AesCtrEncryptorSubsampleTest

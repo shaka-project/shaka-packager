@@ -25,7 +25,7 @@
 #include "packager/base/time/clock.h"
 #include "packager/media/base/container_names.h"
 #include "packager/media/base/demuxer.h"
-#include "packager/media/base/encryption_modes.h"
+#include "packager/media/base/fourccs.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
@@ -105,15 +105,19 @@ std::string DetermineTextFileFormat(const std::string& file) {
   return "";
 }
 
-edash_packager::media::EncryptionMode GetEncryptionMode(
+edash_packager::media::FourCC GetProtectionScheme(
     const std::string& protection_scheme) {
   if (protection_scheme == "cenc") {
-    return edash_packager::media::kEncryptionModeAesCtr;
+    return edash_packager::media::FOURCC_cenc;
+  } else if (protection_scheme == "cens") {
+    return edash_packager::media::FOURCC_cens;
   } else if (protection_scheme == "cbc1") {
-    return edash_packager::media::kEncryptionModeAesCbc;
+    return edash_packager::media::FOURCC_cbc1;
+  } else if (protection_scheme == "cbcs") {
+    return edash_packager::media::FOURCC_cbcs;
   } else {
     LOG(ERROR) << "Unknown protection scheme: " << protection_scheme;
-    return edash_packager::media::kEncryptionModeUnknown;
+    return edash_packager::media::FOURCC_NULL;
   }
 }
 
@@ -310,7 +314,7 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                           FLAGS_max_sd_pixels,
                           FLAGS_clear_lead,
                           FLAGS_crypto_period_duration,
-                          GetEncryptionMode(FLAGS_protection_scheme));
+                          GetProtectionScheme(FLAGS_protection_scheme));
     }
 
     scoped_ptr<MuxerListener> muxer_listener;
@@ -374,11 +378,11 @@ Status RunRemuxJobs(const std::vector<RemuxJob*>& remux_jobs) {
 }
 
 bool RunPackager(const StreamDescriptorList& stream_descriptors) {
-  EncryptionMode encryption_mode = GetEncryptionMode(FLAGS_protection_scheme);
-  if (encryption_mode == kEncryptionModeUnknown)
+  const FourCC protection_scheme = GetProtectionScheme(FLAGS_protection_scheme);
+  if (protection_scheme == FOURCC_NULL)
     return false;
-  if (encryption_mode == kEncryptionModeAesCbc && !FLAGS_iv.empty()) {
-    if (FLAGS_iv.size() != 16) {
+  if (protection_scheme == FOURCC_cbc1 || protection_scheme == FOURCC_cbcs) {
+    if (!FLAGS_iv.empty() && FLAGS_iv.size() != 16) {
       LOG(ERROR) << "Iv size should be 16 bytes for CBC encryption mode.";
       return false;
     }

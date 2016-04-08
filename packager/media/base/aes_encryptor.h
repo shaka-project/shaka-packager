@@ -24,11 +24,6 @@ class AesEncryptor : public AesCryptor {
   AesEncryptor();
   ~AesEncryptor() override;
 
-  /// Initialize the encryptor with specified key and a random generated IV
-  /// of the specified size.
-  /// @return true on successful initialization, false otherwise.
-  bool InitializeWithRandomIv(const std::vector<uint8_t>& key, uint8_t iv_size);
-
   /// Initialize the encryptor with specified key and IV.
   /// @return true on successful initialization, false otherwise.
   bool InitializeWithIv(const std::vector<uint8_t>& key,

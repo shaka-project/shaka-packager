@@ -9,7 +9,7 @@
 
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/memory/scoped_ptr.h"
-#include "packager/media/base/encryption_modes.h"
+#include "packager/media/base/fourccs.h"
 #include "packager/media/filters/vpx_parser.h"
 #include "packager/media/formats/mp4/fragmenter.h"
 #include "packager/media/formats/mp4/video_slice_header_parser.h"
@@ -17,7 +17,7 @@
 namespace edash_packager {
 namespace media {
 
-class AesEncryptor;
+class AesCryptor;
 class StreamInfo;
 struct EncryptionKey;
 
@@ -30,11 +30,13 @@ class EncryptingFragmenter : public Fragmenter {
   /// @param encryption_key contains the encryption parameters.
   /// @param clear_time specifies clear lead duration in units of the current
   ///        track's timescale.
+  /// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',
+  ///        'cbc1', 'cbcs'.
   EncryptingFragmenter(scoped_refptr<StreamInfo> info,
                        TrackFragment* traf,
                        scoped_ptr<EncryptionKey> encryption_key,
                        int64_t clear_time,
-                       EncryptionMode encryption_mode);
+                       FourCC protection_scheme);
 
   ~EncryptingFragmenter() override;
 
@@ -57,8 +59,9 @@ class EncryptingFragmenter : public Fragmenter {
   /// @return OK on success, an error status otherwise.
   Status CreateEncryptor();
 
-  EncryptionKey* encryption_key() { return encryption_key_.get(); }
-  AesEncryptor* encryptor() { return encryptor_.get(); }
+  const EncryptionKey* encryption_key() const { return encryption_key_.get(); }
+  AesCryptor* encryptor() { return encryptor_.get(); }
+  FourCC protection_scheme() const { return protection_scheme_; }
 
   void set_encryption_key(scoped_ptr<EncryptionKey> encryption_key) {
     encryption_key_ = encryption_key.Pass();
@@ -73,14 +76,14 @@ class EncryptingFragmenter : public Fragmenter {
 
   scoped_refptr<StreamInfo> info_;
   scoped_ptr<EncryptionKey> encryption_key_;
-  scoped_ptr<AesEncryptor> encryptor_;
+  scoped_ptr<AesCryptor> encryptor_;
   // If this stream contains AVC, subsample encryption specifies that the size
   // and type of NAL units remain unencrypted. This function returns the size of
   // the size field in bytes. Can be 1, 2 or 4 bytes.
   const uint8_t nalu_length_size_;
   const VideoCodec video_codec_;
   int64_t clear_time_;
-  EncryptionMode encryption_mode_;
+  FourCC protection_scheme_;
 
   scoped_ptr<VPxParser> vpx_parser_;
   scoped_ptr<VideoSliceHeaderParser> header_parser_;

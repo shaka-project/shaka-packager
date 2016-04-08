@@ -6,6 +6,7 @@
 
 #include "packager/media/base/muxer.h"
 
+#include "packager/media/base/fourccs.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/media_stream.h"
 
@@ -19,7 +20,7 @@ Muxer::Muxer(const MuxerOptions& options)
       max_sd_pixels_(0),
       clear_lead_in_seconds_(0),
       crypto_period_duration_in_seconds_(0),
-      encryption_mode_(kEncryptionModeUnknown),
+      protection_scheme_(FOURCC_NULL),
       cancelled_(false),
       clock_(NULL) {}
 
@@ -29,13 +30,13 @@ void Muxer::SetKeySource(KeySource* encryption_key_source,
                          uint32_t max_sd_pixels,
                          double clear_lead_in_seconds,
                          double crypto_period_duration_in_seconds,
-                         EncryptionMode encryption_mode) {
+                         FourCC protection_scheme) {
   DCHECK(encryption_key_source);
   encryption_key_source_ = encryption_key_source;
   max_sd_pixels_ = max_sd_pixels;
   clear_lead_in_seconds_ = clear_lead_in_seconds;
   crypto_period_duration_in_seconds_ = crypto_period_duration_in_seconds;
-  encryption_mode_ = encryption_mode;
+  protection_scheme_ = protection_scheme;
 }
 
 void Muxer::AddStream(MediaStream* stream) {

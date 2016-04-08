@@ -6,7 +6,6 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/sys_byteorder.h"
-#include "packager/media/base/encryption_modes.h"
 #include "packager/media/formats/webm/webm_constants.h"
 
 namespace edash_packager {
@@ -56,8 +55,7 @@ bool WebMCreateDecryptConfig(const uint8_t* data,
   decrypt_config->reset(new DecryptConfig(
       std::vector<uint8_t>(key_id, key_id + key_id_size),
       std::vector<uint8_t>(counter_block.begin(), counter_block.end()),
-      std::vector<SubsampleEntry>(),
-      kEncryptionModeAesCtr));
+      std::vector<SubsampleEntry>()));
   *data_offset = frame_offset;
 
   return true;
