@@ -11,7 +11,6 @@ var searchData=
   ['seekable',['Seekable',['../d4/d8c/classedash__packager_1_1media_1_1MkvWriter.html#a12cd17b2abad09764d3358534c7dcb5a',1,'edash_packager::media::MkvWriter']]],
   ['set_5fclock',['set_clock',['../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#ae22512b48793cb5c91186bc698966bfa',1,'edash_packager::media::Muxer']]],
   ['set_5fdts',['set_dts',['../d6/d3e/classedash__packager_1_1media_1_1mp2t_1_1PesPacket.html#a2fc1c08df366e034196e6745d895e3e2',1,'edash_packager::media::mp2t::PesPacket']]],
-  ['set_5fduration',['set_duration',['../d6/d3e/classedash__packager_1_1media_1_1mp2t_1_1PesPacket.html#a052f04da2a9a128673cec761fca73a2c',1,'edash_packager::media::mp2t::PesPacket']]],
   ['set_5fkey_5ffetcher',['set_key_fetcher',['../db/da4/classedash__packager_1_1media_1_1WidevineKeySource.html#ab483fd321e0f8681c232ac4fbaacb00c',1,'edash_packager::media::WidevineKeySource']]],
   ['set_5fnalu_5flength_5fsize',['set_nalu_length_size',['../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a7f93b527e9c1bd1034f98861ca4f57f7',1,'edash_packager::media::DecoderConfiguration']]],
   ['set_5fpts',['set_pts',['../d6/d3e/classedash__packager_1_1media_1_1mp2t_1_1PesPacket.html#a8eeec3470376869a424c70a922a190a6',1,'edash_packager::media::mp2t::PesPacket']]],
