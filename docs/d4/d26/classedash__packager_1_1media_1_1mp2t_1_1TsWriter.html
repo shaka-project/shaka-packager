@@ -98,13 +98,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a17147205cdc4f959c67cc2e803e59e27"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a17147205cdc4f959c67cc2e803e59e27">Initialize</a> (const <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream_info)</td></tr>
+<tr class="memitem:a17147205cdc4f959c67cc2e803e59e27"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a17147205cdc4f959c67cc2e803e59e27">Initialize</a> (const <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream_info)</td></tr>
 <tr class="separator:a17147205cdc4f959c67cc2e803e59e27"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac4695ef9da2fa8006102d8adb61598a3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#ac4695ef9da2fa8006102d8adb61598a3">NewSegment</a> (const std::string &amp;file_name)</td></tr>
+<tr class="memitem:ac4695ef9da2fa8006102d8adb61598a3"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#ac4695ef9da2fa8006102d8adb61598a3">NewSegment</a> (const std::string &amp;file_name)</td></tr>
 <tr class="separator:ac4695ef9da2fa8006102d8adb61598a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a34adca8447b1692556343774f3ef2777"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a34adca8447b1692556343774f3ef2777">FinalizeSegment</a> ()</td></tr>
+<tr class="memitem:a34adca8447b1692556343774f3ef2777"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a34adca8447b1692556343774f3ef2777">FinalizeSegment</a> ()</td></tr>
 <tr class="separator:a34adca8447b1692556343774f3ef2777"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a33a3c6b81d629fac0087139241bdcb69"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a33a3c6b81d629fac0087139241bdcb69">AddPesPacket</a> (scoped_ptr&lt; <a class="el" href="../../d6/d3e/classedash__packager_1_1media_1_1mp2t_1_1PesPacket.html">PesPacket</a> &gt; pes_packet)</td></tr>
+<tr class="memitem:a33a3c6b81d629fac0087139241bdcb69"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a33a3c6b81d629fac0087139241bdcb69">AddPesPacket</a> (scoped_ptr&lt; <a class="el" href="../../d6/d3e/classedash__packager_1_1media_1_1mp2t_1_1PesPacket.html">PesPacket</a> &gt; pes_packet)</td></tr>
 <tr class="separator:a33a3c6b81d629fac0087139241bdcb69"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -115,6 +115,9 @@ Public Member Functions</h2></td></tr>
 <a class="anchor" id="a33a3c6b81d629fac0087139241bdcb69"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool edash_packager::media::mp2t::TsWriter::AddPesPacket </td>
@@ -124,6 +127,11 @@ Public Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>Add <a class="el" href="../../d6/d3e/classedash__packager_1_1media_1_1mp2t_1_1PesPacket.html" title="Class that carries PES packet information. ">PesPacket</a> to the instance. <a class="el" href="../../d6/d3e/classedash__packager_1_1media_1_1mp2t_1_1PesPacket.html" title="Class that carries PES packet information. ">PesPacket</a> might not get written to file immediately. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -141,6 +149,9 @@ Public Member Functions</h2></td></tr>
 <a class="anchor" id="a34adca8447b1692556343774f3ef2777"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool edash_packager::media::mp2t::TsWriter::FinalizeSegment </td>
@@ -149,6 +160,11 @@ Public Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>Flush all the pending PesPackets that have not been written to file and close the file. </p>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
@@ -160,6 +176,9 @@ Public Member Functions</h2></td></tr>
 <a class="anchor" id="a17147205cdc4f959c67cc2e803e59e27"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool edash_packager::media::mp2t::TsWriter::Initialize </td>
@@ -169,6 +188,11 @@ Public Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>This must be called before calling other methods. </p>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
@@ -180,6 +204,9 @@ Public Member Functions</h2></td></tr>
 <a class="anchor" id="ac4695ef9da2fa8006102d8adb61598a3"></a>
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">bool edash_packager::media::mp2t::TsWriter::NewSegment </td>
@@ -189,6 +216,11 @@ Public Member Functions</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 <p>This will fail if the current segment is not finalized. </p>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -210,7 +242,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 11 2016 07:08:07 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 11 2016 17:43:29 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -12,5 +12,6 @@ var searchData=
   ['tryreadchild',['TryReadChild',['../db/d6c/classedash__packager_1_1media_1_1mp4_1_1BoxReader.html#ae697ff0b40b4aa9feecb45d303f8f6bc',1,'edash_packager::media::mp4::BoxReader']]],
   ['tryreadchildren',['TryReadChildren',['../db/d6c/classedash__packager_1_1media_1_1mp4_1_1BoxReader.html#a1e30404fe509e750023ae39a093b4e6a',1,'edash_packager::media::mp4::BoxReader']]],
   ['tryreadwritechild',['TryReadWriteChild',['../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a0573809c43c576c1835f5b8aa0e57191',1,'edash_packager::media::mp4::BoxBuffer']]],
+  ['tssegmenter',['TsSegmenter',['../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#ab00bb02904501df4ecc7bdf08b77cb51',1,'edash_packager::media::mp2t::TsSegmenter']]],
   ['type',['type',['../d3/dfa/classedash__packager_1_1MpdBuilder.html#ab23432768423d4489380f45c292c7648',1,'edash_packager::MpdBuilder']]]
 ];
