@@ -11,6 +11,7 @@ var searchData=
   ['addliveonlyinfo',['AddLiveOnlyInfo',['../dc/d05/classedash__packager_1_1xml_1_1RepresentationXmlNode.html#aef4b41002294b95cba4ed9b2fbb536d6',1,'edash_packager::xml::RepresentationXmlNode']]],
   ['addnalu',['AddNalu',['../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a9e094293bce0ea72b2546088f6c250d8',1,'edash_packager::media::DecoderConfiguration']]],
   ['addnewsegment',['AddNewSegment',['../d7/d15/classedash__packager_1_1Representation.html#ad40b7da1667aeb77c84958ec4ec0d9eb',1,'edash_packager::Representation']]],
+  ['addpespacket',['AddPesPacket',['../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a33a3c6b81d629fac0087139241bdcb69',1,'edash_packager::media::mp2t::TsWriter']]],
   ['addrepresentation',['AddRepresentation',['../db/de4/classedash__packager_1_1AdaptationSet.html#a9a15647b565f9898a5a0e1d3176ff935',1,'edash_packager::AdaptationSet']]],
   ['addrole',['AddRole',['../db/de4/classedash__packager_1_1AdaptationSet.html#a3bfc3e2de3eaafc61a4dc2e23c698956',1,'edash_packager::AdaptationSet']]],
   ['addroleelement',['AddRoleElement',['../d6/d37/classedash__packager_1_1xml_1_1AdaptationSetXmlNode.html#a40c48f2ed2ac0f550bf019d7e650be94',1,'edash_packager::xml::AdaptationSetXmlNode']]],

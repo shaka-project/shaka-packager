@@ -30,6 +30,7 @@ var searchData=
   ['container_5fname',['container_name',['../d5/dce/classedash__packager_1_1media_1_1Demuxer.html#a650a6cfceda9dcd9c05feefbe0773057',1,'edash_packager::media::Demuxer']]],
   ['contentencoding',['ContentEncoding',['../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html',1,'edash_packager::media']]],
   ['contentprotectionelement',['ContentProtectionElement',['../d0/d96/structedash__packager_1_1ContentProtectionElement.html',1,'edash_packager']]],
+  ['continuitycounter',['ContinuityCounter',['../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html',1,'edash_packager::media::mp2t']]],
   ['convertbytestreamtonalunitstream',['ConvertByteStreamToNalUnitStream',['../d5/d30/classedash__packager_1_1media_1_1H264ByteToUnitStreamConverter.html#a63d265a1448b3a3534ba7c9c6c5c4178',1,'edash_packager::media::H264ByteToUnitStreamConverter']]],
   ['converttoadts',['ConvertToADTS',['../dc/dc6/classedash__packager_1_1media_1_1mp4_1_1AACAudioSpecificConfig.html#a4413882e6649fc144d6ab2c1e9643a93',1,'edash_packager::media::mp4::AACAudioSpecificConfig']]],
   ['convertunittobytestream',['ConvertUnitToByteStream',['../d4/dbe/classedash__packager_1_1media_1_1NalUnitToByteStreamConverter.html#a3fda2b87f26b14a1249624b16b22c4c2',1,'edash_packager::media::NalUnitToByteStreamConverter']]],

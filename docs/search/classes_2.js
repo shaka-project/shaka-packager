@@ -16,6 +16,7 @@ var searchData=
   ['compositiontimetosample',['CompositionTimeToSample',['../da/d54/structedash__packager_1_1media_1_1mp4_1_1CompositionTimeToSample.html',1,'edash_packager::media::mp4']]],
   ['contentencoding',['ContentEncoding',['../df/d30/classedash__packager_1_1media_1_1ContentEncoding.html',1,'edash_packager::media']]],
   ['contentprotectionelement',['ContentProtectionElement',['../d0/d96/structedash__packager_1_1ContentProtectionElement.html',1,'edash_packager']]],
+  ['continuitycounter',['ContinuityCounter',['../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html',1,'edash_packager::media::mp2t']]],
   ['cue',['Cue',['../df/dda/structedash__packager_1_1media_1_1Cue.html',1,'edash_packager::media']]],
   ['cueidbox',['CueIDBox',['../de/d07/structedash__packager_1_1media_1_1mp4_1_1CueIDBox.html',1,'edash_packager::media::mp4']]],
   ['cuepayloadbox',['CuePayloadBox',['../d7/d49/structedash__packager_1_1media_1_1mp4_1_1CuePayloadBox.html',1,'edash_packager::media::mp4']]],
