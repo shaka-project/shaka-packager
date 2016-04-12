@@ -106,16 +106,16 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/key_source.h&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/macros.h&quot;</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_sample.h&quot;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/video_stream_info.h&quot;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file.h&quot;</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file_closer.h&quot;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/avc_decoder_configuration.h&quot;</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/hevc_decoder_configuration.h&quot;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/vp_codec_configuration.h&quot;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box_definitions.h&quot;</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box_reader.h&quot;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/es_descriptor.h&quot;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/rcheck.h&quot;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/rcheck.h&quot;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/video_stream_info.h&quot;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file.h&quot;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file_closer.h&quot;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/avc_decoder_configuration.h&quot;</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/hevc_decoder_configuration.h&quot;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/vp_codec_configuration.h&quot;</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box_definitions.h&quot;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box_reader.h&quot;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/es_descriptor.h&quot;</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/track_run_iterator.h&quot;</span></div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
@@ -131,17 +131,17 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;VideoCodec FourCCToVideoCodec(FourCC fourcc) {</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordflow">switch</span> (fourcc) {</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">case</span> FOURCC_AVC1:</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordflow">case</span> FOURCC_avc1:</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      <span class="keywordflow">return</span> kCodecH264;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">case</span> FOURCC_HEV1:</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">case</span> FOURCC_hev1:</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      <span class="keywordflow">return</span> kCodecHEV1;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordflow">case</span> FOURCC_HVC1:</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <span class="keywordflow">case</span> FOURCC_hvc1:</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      <span class="keywordflow">return</span> kCodecHVC1;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">case</span> FOURCC_VP08:</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">case</span> FOURCC_vp08:</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;      <span class="keywordflow">return</span> kCodecVP8;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordflow">case</span> FOURCC_VP09:</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordflow">case</span> FOURCC_vp09:</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;      <span class="keywordflow">return</span> kCodecVP9;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordflow">case</span> FOURCC_VP10:</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordflow">case</span> FOURCC_vp10:</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      <span class="keywordflow">return</span> kCodecVP10;</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">default</span>:</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      <span class="keywordflow">return</span> kUnknownVideoCodec;</div>
@@ -150,21 +150,21 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;AudioCodec FourCCToAudioCodec(FourCC fourcc) {</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keywordflow">switch</span>(fourcc) {</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordflow">case</span> FOURCC_DTSC:</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordflow">case</span> FOURCC_dtsc:</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;      <span class="keywordflow">return</span> kCodecDTSC;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordflow">case</span> FOURCC_DTSH:</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    <span class="keywordflow">case</span> FOURCC_dtsh:</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      <span class="keywordflow">return</span> kCodecDTSH;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordflow">case</span> FOURCC_DTSL:</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordflow">case</span> FOURCC_dtsl:</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      <span class="keywordflow">return</span> kCodecDTSL;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordflow">case</span> FOURCC_DTSE:</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordflow">case</span> FOURCC_dtse:</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      <span class="keywordflow">return</span> kCodecDTSE;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordflow">case</span> FOURCC_DTSP:</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordflow">case</span> FOURCC_dtsp:</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      <span class="keywordflow">return</span> kCodecDTSP;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordflow">case</span> FOURCC_DTSM:</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordflow">case</span> FOURCC_dtsm:</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      <span class="keywordflow">return</span> kCodecDTSM;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordflow">case</span> FOURCC_AC3:</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordflow">case</span> FOURCC_ac_3:</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;      <span class="keywordflow">return</span> kCodecAC3;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordflow">case</span> FOURCC_EAC3:</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordflow">case</span> FOURCC_ec_3:</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;      <span class="keywordflow">return</span> kCodecEAC3;</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordflow">default</span>:</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;      <span class="keywordflow">return</span> kUnknownAudioCodec;</div>
@@ -284,9 +284,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;                 &lt;&lt; <span class="stringliteral">&quot;&#39;&quot;</span>;</div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    }</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <span class="keywordflow">if</span> (box_type == FOURCC_MDAT) {</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <span class="keywordflow">if</span> (box_type == FOURCC_mdat) {</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;      mdat_seen = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (box_type == FOURCC_MOOV) {</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (box_type == FOURCC_moov) {</div>
 <div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;      <span class="keywordflow">if</span> (!mdat_seen) {</div>
 <div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;        <span class="comment">// &#39;moov&#39; is before &#39;mdat&#39;. Nothing to do.</span></div>
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;        <span class="keywordflow">break</span>;</div>
@@ -335,7 +335,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;  <span class="keywordflow">if</span> (reader.get() == NULL)</div>
 <div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  <span class="keywordflow">if</span> (reader-&gt;type() == FOURCC_MDAT) {</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  <span class="keywordflow">if</span> (reader-&gt;type() == FOURCC_mdat) {</div>
 <div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    <span class="comment">// The code ends up here only if a MOOV box is not yet seen.</span></div>
 <div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;    DCHECK(!moov_);</div>
 <div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;</div>
@@ -347,9 +347,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;  <span class="comment">// Set up mdat offset for ReadMDATsUntil().</span></div>
 <div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;  mdat_tail_ = queue_.<a class="code" href="../../d1/d92/classedash__packager_1_1media_1_1OffsetByteQueue.html#aa9d018636705cab1759978cd7c6d17da">head</a>() + reader-&gt;size();</div>
 <div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  <span class="keywordflow">if</span> (reader-&gt;type() == FOURCC_MOOV) {</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;  <span class="keywordflow">if</span> (reader-&gt;type() == FOURCC_moov) {</div>
 <div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    *err = !ParseMoov(reader.get());</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (reader-&gt;type() == FOURCC_MOOF) {</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (reader-&gt;type() == FOURCC_moof) {</div>
 <div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    moof_head_ = queue_.<a class="code" href="../../d1/d92/classedash__packager_1_1media_1_1OffsetByteQueue.html#aa9d018636705cab1759978cd7c6d17da">head</a>();</div>
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    *err = !ParseMoof(reader.get());</div>
 <div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;</div>
@@ -439,7 +439,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;      std::vector&lt;uint8_t&gt; extra_data;</div>
 <div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;</div>
 <div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;      <span class="keywordflow">switch</span> (actual_format) {</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;        <span class="keywordflow">case</span> FOURCC_MP4A:</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;        <span class="keywordflow">case</span> FOURCC_mp4a:</div>
 <div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;          <span class="comment">// Check if it is MPEG4 AAC defined in ISO 14496 Part 3 or</span></div>
 <div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;          <span class="comment">// supported MPEG2 AAC variants.</span></div>
 <div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;          <span class="keywordflow">if</span> (entry.esds.es_descriptor.IsAAC()) {</div>
@@ -488,27 +488,27 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;          }</div>
 <div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;          <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;        <span class="keywordflow">case</span> FOURCC_DTSC:</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;        <span class="keywordflow">case</span> FOURCC_dtsc:</div>
 <div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;          FALLTHROUGH_INTENDED;</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;        <span class="keywordflow">case</span> FOURCC_DTSH:</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;        <span class="keywordflow">case</span> FOURCC_dtsh:</div>
 <div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;          FALLTHROUGH_INTENDED;</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;        <span class="keywordflow">case</span> FOURCC_DTSL:</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;        <span class="keywordflow">case</span> FOURCC_dtsl:</div>
 <div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;          FALLTHROUGH_INTENDED;</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;        <span class="keywordflow">case</span> FOURCC_DTSE:</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;        <span class="keywordflow">case</span> FOURCC_dtse:</div>
 <div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;          FALLTHROUGH_INTENDED;</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;        <span class="keywordflow">case</span> FOURCC_DTSM:</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;        <span class="keywordflow">case</span> FOURCC_dtsm:</div>
 <div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;          extra_data = entry.ddts.extra_data;</div>
 <div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;          max_bitrate = entry.ddts.max_bitrate;</div>
 <div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;          avg_bitrate = entry.ddts.avg_bitrate;</div>
 <div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;          num_channels = entry.channelcount;</div>
 <div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;          sampling_frequency = entry.samplerate;</div>
 <div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;          <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;        <span class="keywordflow">case</span> FOURCC_AC3:</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;        <span class="keywordflow">case</span> FOURCC_ac_3:</div>
 <div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;          extra_data = entry.dac3.data;</div>
 <div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;          num_channels = entry.channelcount;</div>
 <div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;          sampling_frequency = entry.samplerate;</div>
 <div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;          <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;        <span class="keywordflow">case</span> FOURCC_EAC3:</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;        <span class="keywordflow">case</span> FOURCC_ec_3:</div>
 <div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;          extra_data = entry.dec3.data;</div>
 <div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;          num_channels = entry.channelcount;</div>
 <div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;          sampling_frequency = entry.samplerate;</div>
@@ -558,7 +558,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;      <span class="keyword">const</span> FourCC actual_format = entry.GetActualFormat();</div>
 <div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;      <span class="keyword">const</span> VideoCodec video_codec = FourCCToVideoCodec(actual_format);</div>
 <div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;      <span class="keywordflow">switch</span> (actual_format) {</div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;        <span class="keywordflow">case</span> FOURCC_AVC1: {</div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;        <span class="keywordflow">case</span> FOURCC_avc1: {</div>
 <div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;          AVCDecoderConfiguration avc_config;</div>
 <div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;          <span class="keywordflow">if</span> (!avc_config.Parse(entry.codec_config_record.data)) {</div>
 <div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;            LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to parse avcc.&quot;</span>;</div>
@@ -594,8 +594,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;          }</div>
 <div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;          <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;        }</div>
-<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;        <span class="keywordflow">case</span> FOURCC_HEV1:</div>
-<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;        <span class="keywordflow">case</span> FOURCC_HVC1: {</div>
+<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;        <span class="keywordflow">case</span> FOURCC_hev1:</div>
+<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;        <span class="keywordflow">case</span> FOURCC_hvc1: {</div>
 <div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;          HEVCDecoderConfiguration hevc_config;</div>
 <div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;          <span class="keywordflow">if</span> (!hevc_config.Parse(entry.codec_config_record.data)) {</div>
 <div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;            LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to parse hevc.&quot;</span>;</div>
@@ -605,9 +605,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;          nalu_length_size = hevc_config.nalu_length_size();</div>
 <div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;          <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;        }</div>
-<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;        <span class="keywordflow">case</span> FOURCC_VP08:</div>
-<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;        <span class="keywordflow">case</span> FOURCC_VP09:</div>
-<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;        <span class="keywordflow">case</span> FOURCC_VP10: {</div>
+<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;        <span class="keywordflow">case</span> FOURCC_vp08:</div>
+<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;        <span class="keywordflow">case</span> FOURCC_vp09:</div>
+<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;        <span class="keywordflow">case</span> FOURCC_vp10: {</div>
 <div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;          VPCodecConfiguration vp_config;</div>
 <div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;          <span class="keywordflow">if</span> (!vp_config.Parse(entry.codec_config_record.data)) {</div>
 <div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;            LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to parse vpcc.&quot;</span>;</div>
@@ -829,7 +829,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 12 2016 19:10:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 12 2016 21:32:50 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

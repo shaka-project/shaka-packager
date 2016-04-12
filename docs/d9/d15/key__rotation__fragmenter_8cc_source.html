@@ -186,7 +186,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="comment">// i.e. there is at most one key for the fragment. So there should be only</span></div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="comment">// one entry in SampleGroupDescription box and one entry in SampleToGroup box.</span></div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="comment">// Fill in SampleGroupDescription box information.</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  traf()-&gt;sample_group_description.grouping_type = FOURCC_SEIG;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  traf()-&gt;sample_group_description.grouping_type = FOURCC_seig;</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  traf()-&gt;sample_group_description.entries.resize(1);</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  traf()-&gt;sample_group_description.entries[0].is_encrypted = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  traf()-&gt;sample_group_description.entries[0].iv_size =</div>
@@ -194,7 +194,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  traf()-&gt;sample_group_description.entries[0].key_id = encryption_key()-&gt;key_id;</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="comment">// Fill in SampleToGroup box information.</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  traf()-&gt;sample_to_group.grouping_type = FOURCC_SEIG;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  traf()-&gt;sample_to_group.grouping_type = FOURCC_seig;</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  traf()-&gt;sample_to_group.entries.resize(1);</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="comment">// sample_count is adjusted in |FinalizeFragment| later.</span></div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  traf()-&gt;sample_to_group.entries[0].group_description_index =</div>
@@ -230,7 +230,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 12 2016 19:10:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 12 2016 21:32:50 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -144,9 +144,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  sinf-&gt;format.format = old_type;</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordflow">if</span> (encryption_mode == kEncryptionModeAesCtr){</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    sinf-&gt;type.type = FOURCC_CENC;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    sinf-&gt;type.type = FOURCC_cenc;</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (encryption_mode == kEncryptionModeAesCbc) {</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    sinf-&gt;type.type = FOURCC_CBC1;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    sinf-&gt;type.type = FOURCC_cbc1;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  }</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  sinf-&gt;type.version = kCencSchemeVersion;</div>
@@ -171,7 +171,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="comment">// Convert the first entry to an encrypted entry.</span></div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    VideoSampleEntry&amp; entry = description-&gt;video_entries[0];</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    GenerateSinf(encryption_key, entry.format, encryption_mode, &amp;entry.sinf);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    entry.format = FOURCC_ENCV;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    entry.format = FOURCC_encv;</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    DCHECK_EQ(kAudio, description-&gt;type);</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    DCHECK_EQ(1u, description-&gt;audio_entries.size());</div>
@@ -183,7 +183,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="comment">// Convert the first entry to an encrypted entry.</span></div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    AudioSampleEntry&amp; entry = description-&gt;audio_entries[0];</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    GenerateSinf(encryption_key, entry.format, encryption_mode, &amp;entry.sinf);</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    entry.format = FOURCC_ENCA;</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    entry.format = FOURCC_enca;</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  }</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;}</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
@@ -546,7 +546,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 12 2016 19:10:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 12 2016 21:32:50 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

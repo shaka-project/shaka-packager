@@ -97,10 +97,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/decrypt_config.h&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/aac_audio_specific_config.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/es_descriptor.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/fourccs.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/fourccs.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/aac_audio_specific_config.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/es_descriptor.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>media {</div>
@@ -340,7 +340,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  DECLARE_BOX_METHODS(<a class="code" href="../../df/d6a/structedash__packager_1_1media_1_1mp4_1_1VideoSampleEntry.html">VideoSampleEntry</a>);</div>
 <div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  <span class="comment">// Returns actual format of this sample entry.</span></div>
 <div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;  FourCC GetActualFormat()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    <span class="keywordflow">return</span> format == FOURCC_ENCV ? sinf.format.format : format;</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    <span class="keywordflow">return</span> format == FOURCC_encv ? sinf.format.format : format;</div>
 <div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  }</div>
 <div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;</div>
 <div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  FourCC format;</div>
@@ -386,7 +386,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;  DECLARE_BOX_METHODS(<a class="code" href="../../df/d62/structedash__packager_1_1media_1_1mp4_1_1AudioSampleEntry.html">AudioSampleEntry</a>);</div>
 <div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  <span class="comment">// Returns actual format of this sample entry.</span></div>
 <div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  FourCC GetActualFormat()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    <span class="keywordflow">return</span> format == FOURCC_ENCA ? sinf.format.format : format;</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    <span class="keywordflow">return</span> format == FOURCC_enca ? sinf.format.format : format;</div>
 <div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  }</div>
 <div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;</div>
 <div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;  FourCC format;</div>
@@ -945,7 +945,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 12 2016 19:10:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 12 2016 21:32:50 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

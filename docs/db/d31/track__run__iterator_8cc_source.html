@@ -98,10 +98,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/buffer_reader.h&quot;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/encryption_modes.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/chunk_info_iterator.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/composition_offset_iterator.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/decoding_time_iterator.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/rcheck.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/rcheck.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/chunk_info_iterator.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/composition_offset_iterator.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/decoding_time_iterator.h&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/sync_sample_iterator.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>{</div>
@@ -691,10 +691,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;                                        : <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a981f52a2e185f5b9f0bf7bb17ff6f3d8">video_description</a>().sinf.type.type;</div>
 <div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;  EncryptionMode decryption_mode;</div>
 <div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;  <span class="keywordflow">switch</span> (protection_scheme) {</div>
-<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;    <span class="keywordflow">case</span> FOURCC_CENC:</div>
+<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;    <span class="keywordflow">case</span> FOURCC_cenc:</div>
 <div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;      decryption_mode = kEncryptionModeAesCtr;</div>
 <div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;    <span class="keywordflow">case</span> FOURCC_CBC1:</div>
+<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;    <span class="keywordflow">case</span> FOURCC_cbc1:</div>
 <div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;      decryption_mode = kEncryptionModeAesCbc;</div>
 <div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;      <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;    <span class="keywordflow">default</span>:</div>
@@ -763,7 +763,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 12 2016 19:10:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 12 2016 21:32:50 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
