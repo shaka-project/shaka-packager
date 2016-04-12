@@ -12,6 +12,7 @@
 
 #include "packager/base/macros.h"
 #include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/stl_util.h"
 #include "packager/mpd/base/media_info.pb.h"
 
 namespace edash_packager {
@@ -164,7 +165,8 @@ class MediaPlaylist {
   bool target_duration_set_ = false;
   uint32_t target_duration_ = 0;
 
-  std::list<scoped_ptr<HlsEntry>> entries_;
+  std::list<HlsEntry*> entries_;
+  STLElementDeleter<decltype(entries_)> entries_deleter_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaPlaylist);
 };
