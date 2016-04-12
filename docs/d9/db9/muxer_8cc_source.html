@@ -95,129 +95,130 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/muxer.h&quot;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_sample.h&quot;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_stream.h&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>media {</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;Muxer::Muxer(<span class="keyword">const</span> MuxerOptions&amp; options)</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;    : options_(options),</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;      initialized_(false),</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;      encryption_key_source_(NULL),</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;      max_sd_pixels_(0),</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;      clear_lead_in_seconds_(0),</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;      crypto_period_duration_in_seconds_(0),</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;      encryption_mode_(kEncryptionModeUnknown),</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;      cancelled_(false),</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      clock_(NULL) {}</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;Muxer::~Muxer() {}</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a8376a54357dc92777cc1837b5090bac6">   28</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a8376a54357dc92777cc1837b5090bac6">Muxer::SetKeySource</a>(<a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a>* encryption_key_source,</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                         uint32_t max_sd_pixels,</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                         <span class="keywordtype">double</span> clear_lead_in_seconds,</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                         <span class="keywordtype">double</span> crypto_period_duration_in_seconds,</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                         EncryptionMode encryption_mode) {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  DCHECK(encryption_key_source);</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  encryption_key_source_ = encryption_key_source;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  max_sd_pixels_ = max_sd_pixels;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  clear_lead_in_seconds_ = clear_lead_in_seconds;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  crypto_period_duration_in_seconds_ = crypto_period_duration_in_seconds;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  encryption_mode_ = encryption_mode;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a77c7a214383f64f822d479d226750bf5">   41</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a77c7a214383f64f822d479d226750bf5">Muxer::AddStream</a>(<a class="code" href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html">MediaStream</a>* stream) {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  DCHECK(stream);</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  stream-&gt;<a class="code" href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html#a05b7188c263dc71b00635415bbdfd37f">Connect</a>(<span class="keyword">this</span>);</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  streams_.push_back(stream);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;}</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#aa2ef293cdb921d97bb39d038f29da8c4">   47</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#aa2ef293cdb921d97bb39d038f29da8c4">Muxer::Run</a>() {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  DCHECK(!streams_.empty());</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="comment">// Start the streams.</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordflow">for</span> (std::vector&lt;MediaStream*&gt;::iterator it = streams_.begin();</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;       it != streams_.end();</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;       ++it) {</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    status = (*it)-&gt;Start(MediaStream::kPull);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  }</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  uint32_t current_stream_id = 0;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordflow">while</span> (status.ok()) {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordflow">if</span> (cancelled_)</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::CANCELLED, <span class="stringliteral">&quot;muxer run cancelled&quot;</span>);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    scoped_refptr&lt;MediaSample&gt; sample;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    status = streams_[current_stream_id]-&gt;PullSample(&amp;sample);</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    status = AddSample(streams_[current_stream_id], sample);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="comment">// Switch to next stream if the current stream is ready for fragmentation.</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordflow">if</span> (status.error_code() == error::FRAGMENT_FINALIZED) {</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      current_stream_id = (current_stream_id + 1) % streams_.size();</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      status.Clear();</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    }</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  }</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// Finalize the muxer after reaching end of stream.</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordflow">return</span> status.error_code() == error::END_OF_STREAM ? Finalize() : status;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;}</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#abecb4fbe4bcd5257857e397f7f3d096b">   81</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#abecb4fbe4bcd5257857e397f7f3d096b">Muxer::Cancel</a>() {</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  cancelled_ = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno"><a class="line" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#aa8ea4384b819187c51f67ad901aca148">   85</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#aa8ea4384b819187c51f67ad901aca148">Muxer::SetMuxerListener</a>(scoped_ptr&lt;MuxerListener&gt; muxer_listener) {</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  muxer_listener_ = muxer_listener.Pass();</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;}</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
-<div class="line"><a name="l00089"></a><span class="lineno"><a class="line" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a04959bfe66cdb16053326938df9d445a">   89</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a04959bfe66cdb16053326938df9d445a">Muxer::SetProgressListener</a>(</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    scoped_ptr&lt;ProgressListener&gt; progress_listener) {</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  progress_listener_ = progress_listener.Pass();</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> Muxer::AddSample(<span class="keyword">const</span> <a class="code" href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html">MediaStream</a>* stream,</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                        scoped_refptr&lt;MediaSample&gt; sample) {</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  DCHECK(std::find(streams_.begin(), streams_.end(), stream) != streams_.end());</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keywordflow">if</span> (!initialized_) {</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = Initialize();</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;      <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    initialized_ = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  }</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordflow">if</span> (sample-&gt;end_of_stream()) {</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="comment">// EOS sample should be sent only when the sample was pushed from Demuxer</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="comment">// to Muxer. In this case, there should be only one stream in Muxer.</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    DCHECK_EQ(1u, streams_.size());</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordflow">return</span> Finalize();</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (sample-&gt;is_encrypted()) {</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unable to multiplex encrypted media sample&quot;</span>;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordflow">return</span> Status(error::INTERNAL_ERROR, <span class="stringliteral">&quot;Encrypted media sample.&quot;</span>);</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  }</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="keywordflow">return</span> DoAddSample(stream, sample);</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;}</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1Muxer_html_aa8ea4384b819187c51f67ad901aca148"><div class="ttname"><a href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#aa8ea4384b819187c51f67ad901aca148">edash_packager::media::Muxer::SetMuxerListener</a></div><div class="ttdeci">void SetMuxerListener(scoped_ptr&lt; MuxerListener &gt; muxer_listener)</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00085">muxer.cc:85</a></div></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/fourccs.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_sample.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_stream.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>media {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;Muxer::Muxer(<span class="keyword">const</span> MuxerOptions&amp; options)</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    : options_(options),</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;      initialized_(false),</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;      encryption_key_source_(NULL),</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;      max_sd_pixels_(0),</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;      clear_lead_in_seconds_(0),</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;      crypto_period_duration_in_seconds_(0),</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;      protection_scheme_(FOURCC_NULL),</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      cancelled_(false),</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;      clock_(NULL) {}</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;Muxer::~Muxer() {}</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a246cda6ea92a24b2c5b504678143ed4e">   29</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a246cda6ea92a24b2c5b504678143ed4e">Muxer::SetKeySource</a>(<a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a>* encryption_key_source,</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                         uint32_t max_sd_pixels,</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                         <span class="keywordtype">double</span> clear_lead_in_seconds,</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                         <span class="keywordtype">double</span> crypto_period_duration_in_seconds,</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                         FourCC protection_scheme) {</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  DCHECK(encryption_key_source);</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  encryption_key_source_ = encryption_key_source;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  max_sd_pixels_ = max_sd_pixels;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  clear_lead_in_seconds_ = clear_lead_in_seconds;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  crypto_period_duration_in_seconds_ = crypto_period_duration_in_seconds;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  protection_scheme_ = protection_scheme;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a77c7a214383f64f822d479d226750bf5">   42</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a77c7a214383f64f822d479d226750bf5">Muxer::AddStream</a>(<a class="code" href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html">MediaStream</a>* stream) {</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  DCHECK(stream);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  stream-&gt;<a class="code" href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html#a05b7188c263dc71b00635415bbdfd37f">Connect</a>(<span class="keyword">this</span>);</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  streams_.push_back(stream);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;}</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#aa2ef293cdb921d97bb39d038f29da8c4">   48</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#aa2ef293cdb921d97bb39d038f29da8c4">Muxer::Run</a>() {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  DCHECK(!streams_.empty());</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="comment">// Start the streams.</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordflow">for</span> (std::vector&lt;MediaStream*&gt;::iterator it = streams_.begin();</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;       it != streams_.end();</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;       ++it) {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    status = (*it)-&gt;Start(MediaStream::kPull);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;      <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  }</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  uint32_t current_stream_id = 0;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordflow">while</span> (status.ok()) {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordflow">if</span> (cancelled_)</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::CANCELLED, <span class="stringliteral">&quot;muxer run cancelled&quot;</span>);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    scoped_refptr&lt;MediaSample&gt; sample;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    status = streams_[current_stream_id]-&gt;PullSample(&amp;sample);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    status = AddSample(streams_[current_stream_id], sample);</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="comment">// Switch to next stream if the current stream is ready for fragmentation.</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordflow">if</span> (status.error_code() == error::FRAGMENT_FINALIZED) {</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      current_stream_id = (current_stream_id + 1) % streams_.size();</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      status.Clear();</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    }</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  }</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// Finalize the muxer after reaching end of stream.</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keywordflow">return</span> status.error_code() == error::END_OF_STREAM ? Finalize() : status;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;}</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#abecb4fbe4bcd5257857e397f7f3d096b">   82</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#abecb4fbe4bcd5257857e397f7f3d096b">Muxer::Cancel</a>() {</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  cancelled_ = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#aa8ea4384b819187c51f67ad901aca148">   86</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#aa8ea4384b819187c51f67ad901aca148">Muxer::SetMuxerListener</a>(scoped_ptr&lt;MuxerListener&gt; muxer_listener) {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  muxer_listener_ = muxer_listener.Pass();</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00090"></a><span class="lineno"><a class="line" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a04959bfe66cdb16053326938df9d445a">   90</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a04959bfe66cdb16053326938df9d445a">Muxer::SetProgressListener</a>(</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    scoped_ptr&lt;ProgressListener&gt; progress_listener) {</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  progress_listener_ = progress_listener.Pass();</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> Muxer::AddSample(<span class="keyword">const</span> <a class="code" href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html">MediaStream</a>* stream,</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;                        scoped_refptr&lt;MediaSample&gt; sample) {</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  DCHECK(std::find(streams_.begin(), streams_.end(), stream) != streams_.end());</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keywordflow">if</span> (!initialized_) {</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = Initialize();</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    initialized_ = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  }</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keywordflow">if</span> (sample-&gt;end_of_stream()) {</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="comment">// EOS sample should be sent only when the sample was pushed from Demuxer</span></div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="comment">// to Muxer. In this case, there should be only one stream in Muxer.</span></div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    DCHECK_EQ(1u, streams_.size());</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;    <span class="keywordflow">return</span> Finalize();</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (sample-&gt;is_encrypted()) {</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unable to multiplex encrypted media sample&quot;</span>;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">return</span> Status(error::INTERNAL_ERROR, <span class="stringliteral">&quot;Encrypted media sample.&quot;</span>);</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  }</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="keywordflow">return</span> DoAddSample(stream, sample);</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;}</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1Muxer_html_aa8ea4384b819187c51f67ad901aca148"><div class="ttname"><a href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#aa8ea4384b819187c51f67ad901aca148">edash_packager::media::Muxer::SetMuxerListener</a></div><div class="ttdeci">void SetMuxerListener(scoped_ptr&lt; MuxerListener &gt; muxer_listener)</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00086">muxer.cc:86</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1Muxer_html_a246cda6ea92a24b2c5b504678143ed4e"><div class="ttname"><a href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a246cda6ea92a24b2c5b504678143ed4e">edash_packager::media::Muxer::SetKeySource</a></div><div class="ttdeci">void SetKeySource(KeySource *encryption_key_source, uint32_t max_sd_pixels, double clear_lead_in_seconds, double crypto_period_duration_in_seconds, FourCC protection_scheme)</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00029">muxer.cc:29</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Status_html"><div class="ttname"><a href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">edash_packager::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1Muxer_html_a04959bfe66cdb16053326938df9d445a"><div class="ttname"><a href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a04959bfe66cdb16053326938df9d445a">edash_packager::media::Muxer::SetProgressListener</a></div><div class="ttdeci">void SetProgressListener(scoped_ptr&lt; ProgressListener &gt; progress_listener)</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00089">muxer.cc:89</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1Muxer_html_a8376a54357dc92777cc1837b5090bac6"><div class="ttname"><a href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a8376a54357dc92777cc1837b5090bac6">edash_packager::media::Muxer::SetKeySource</a></div><div class="ttdeci">void SetKeySource(KeySource *encryption_key_source, uint32_t max_sd_pixels, double clear_lead_in_seconds, double crypto_period_duration_in_seconds, EncryptionMode encryption_mode)</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00028">muxer.cc:28</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1Muxer_html_a04959bfe66cdb16053326938df9d445a"><div class="ttname"><a href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a04959bfe66cdb16053326938df9d445a">edash_packager::media::Muxer::SetProgressListener</a></div><div class="ttdeci">void SetProgressListener(scoped_ptr&lt; ProgressListener &gt; progress_listener)</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00090">muxer.cc:90</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">edash_packager::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00031">key_source.h:31</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1Muxer_html_aa2ef293cdb921d97bb39d038f29da8c4"><div class="ttname"><a href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#aa2ef293cdb921d97bb39d038f29da8c4">edash_packager::media::Muxer::Run</a></div><div class="ttdeci">Status Run()</div><div class="ttdoc">Drive the remuxing from muxer side (pull). </div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00047">muxer.cc:47</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1Muxer_html_a77c7a214383f64f822d479d226750bf5"><div class="ttname"><a href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a77c7a214383f64f822d479d226750bf5">edash_packager::media::Muxer::AddStream</a></div><div class="ttdeci">void AddStream(MediaStream *stream)</div><div class="ttdoc">Add video/audio stream. </div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00041">muxer.cc:41</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1Muxer_html_aa2ef293cdb921d97bb39d038f29da8c4"><div class="ttname"><a href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#aa2ef293cdb921d97bb39d038f29da8c4">edash_packager::media::Muxer::Run</a></div><div class="ttdeci">Status Run()</div><div class="ttdoc">Drive the remuxing from muxer side (pull). </div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00048">muxer.cc:48</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1Muxer_html_a77c7a214383f64f822d479d226750bf5"><div class="ttname"><a href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#a77c7a214383f64f822d479d226750bf5">edash_packager::media::Muxer::AddStream</a></div><div class="ttdeci">void AddStream(MediaStream *stream)</div><div class="ttdoc">Add video/audio stream. </div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00042">muxer.cc:42</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1MediaStream_html_a05b7188c263dc71b00635415bbdfd37f"><div class="ttname"><a href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html#a05b7188c263dc71b00635415bbdfd37f">edash_packager::media::MediaStream::Connect</a></div><div class="ttdeci">void Connect(Muxer *muxer)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d15/media__stream_8cc_source.html#l00055">media_stream.cc:55</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1Muxer_html_abecb4fbe4bcd5257857e397f7f3d096b"><div class="ttname"><a href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#abecb4fbe4bcd5257857e397f7f3d096b">edash_packager::media::Muxer::Cancel</a></div><div class="ttdeci">void Cancel()</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00081">muxer.cc:81</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1Muxer_html_abecb4fbe4bcd5257857e397f7f3d096b"><div class="ttname"><a href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html#abecb4fbe4bcd5257857e397f7f3d096b">edash_packager::media::Muxer::Cancel</a></div><div class="ttdeci">void Cancel()</div><div class="ttdef"><b>Definition:</b> <a href="../../d9/db9/muxer_8cc_source.html#l00082">muxer.cc:82</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1MediaStream_html"><div class="ttname"><a href="../../d2/dfd/classedash__packager_1_1media_1_1MediaStream.html">edash_packager::media::MediaStream</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d9/d93/media__stream_8h_source.html#l00026">media_stream.h:26</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 12 2016 21:32:49 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 12 2016 23:13:04 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -88,6 +88,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="../../d6/d29/classedash__packager_1_1media_1_1AesCryptor-members.html">List of all members</a>  </div>
   <div class="headertitle">
@@ -130,6 +131,11 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>Crypt</b> (const std:
 <tr class="memitem:a7e2bedb13dbc242a1a4ede6ad500068c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a7e2bedb13dbc242a1a4ede6ad500068c">Crypt</a> (const uint8_t *text, size_t text_size, uint8_t *crypt_text)</td></tr>
 <tr class="separator:a7e2bedb13dbc242a1a4ede6ad500068c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:a0fccd9fe2270f0c584ff1f6c5dd6bd91"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a0fccd9fe2270f0c584ff1f6c5dd6bd91">GenerateRandomIv</a> (FourCC protection_scheme, std::vector&lt; uint8_t &gt; *<a class="el" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">iv</a>)</td></tr>
+<tr class="separator:a0fccd9fe2270f0c584ff1f6c5dd6bd91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:af6192ab45367841f182212f81f60cf47"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af6192ab45367841f182212f81f60cf47"></a>
@@ -144,7 +150,7 @@ AES_KEY *&#160;</td><td class="memItemRight" valign="bottom"><b>mutable_aes_key<
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="../../d0/d42/aes__cryptor_8h_source.html#l00024">24</a> of file <a class="el" href="../../d0/d42/aes__cryptor_8h_source.html">aes_cryptor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d42/aes__cryptor_8h_source.html#l00025">25</a> of file <a class="el" href="../../d0/d42/aes__cryptor_8h_source.html">aes_cryptor.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a7e2bedb13dbc242a1a4ede6ad500068c"></a>
 <div class="memitem">
@@ -190,7 +196,51 @@ AES_KEY *&#160;</td><td class="memItemRight" valign="bottom"><b>mutable_aes_key<
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d0/d42/aes__cryptor_8h_source.html#l00043">43</a> of file <a class="el" href="../../d0/d42/aes__cryptor_8h_source.html">aes_cryptor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d42/aes__cryptor_8h_source.html#l00044">44</a> of file <a class="el" href="../../d0/d42/aes__cryptor_8h_source.html">aes_cryptor.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a0fccd9fe2270f0c584ff1f6c5dd6bd91"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool edash_packager::media::AesCryptor::GenerateRandomIv </td>
+          <td>(</td>
+          <td class="paramtype">FourCC&#160;</td>
+          <td class="paramname"><em>protection_scheme</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; uint8_t &gt; *&#160;</td>
+          <td class="paramname"><em>iv</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">protection_scheme</td><td>specifies the protection scheme: 'cenc', 'cens', 'cbc1', 'cbcs', which is useful to determine the random iv size. </td></tr>
+    <tr><td class="paramname">iv</td><td>points to generated initialization vector. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d6/d55/aes__cryptor_8cc_source.html#l00058">58</a> of file <a class="el" href="../../d6/d55/aes__cryptor_8cc_source.html">aes_cryptor.cc</a>.</p>
 
 </div>
 </div>
@@ -254,7 +304,7 @@ AES_KEY *&#160;</td><td class="memItemRight" valign="bottom"><b>mutable_aes_key<
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The current iv. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d0/d42/aes__cryptor_8h_source.html#l00059">59</a> of file <a class="el" href="../../d0/d42/aes__cryptor_8h_source.html">aes_cryptor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d42/aes__cryptor_8h_source.html#l00060">60</a> of file <a class="el" href="../../d0/d42/aes__cryptor_8h_source.html">aes_cryptor.h</a>.</p>
 
 </div>
 </div>
@@ -319,7 +369,7 @@ AES_KEY *&#160;</td><td class="memItemRight" valign="bottom"><b>mutable_aes_key<
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 12 2016 21:32:51 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 12 2016 23:13:05 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
