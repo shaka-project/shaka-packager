@@ -10,6 +10,7 @@ var searchData=
   ['aescryptor',['AesCryptor',['../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html',1,'edash_packager::media']]],
   ['aesctrencryptor',['AesCtrEncryptor',['../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html',1,'edash_packager::media']]],
   ['aesencryptor',['AesEncryptor',['../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html',1,'edash_packager::media']]],
+  ['aespatterncryptor',['AesPatternCryptor',['../dc/d54/classedash__packager_1_1media_1_1AesPatternCryptor.html',1,'edash_packager::media']]],
   ['aesrequestsigner',['AesRequestSigner',['../d8/dcc/classedash__packager_1_1media_1_1AesRequestSigner.html',1,'edash_packager::media']]],
   ['audiosampleentry',['AudioSampleEntry',['../df/d62/structedash__packager_1_1media_1_1mp4_1_1AudioSampleEntry.html',1,'edash_packager::media::mp4']]],
   ['audiostreaminfo',['AudioStreamInfo',['../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html',1,'edash_packager::media']]],
