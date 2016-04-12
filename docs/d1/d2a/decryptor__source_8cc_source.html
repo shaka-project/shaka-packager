@@ -116,7 +116,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  DCHECK(buffer);</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="comment">// Get the decryptor object.</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  AesDecryptor* decryptor;</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  AesCryptor* decryptor;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keyword">auto</span> found = decryptor_map_.find(decrypt_config-&gt;key_id());</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordflow">if</span> (found == decryptor_map_.end()) {</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="comment">// Create new AesDecryptor based on decryption mode.</span></div>
@@ -127,7 +127,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    }</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    scoped_ptr&lt;AesDecryptor&gt; aes_decryptor;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    scoped_ptr&lt;AesCryptor&gt; aes_decryptor;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordflow">switch</span> (decrypt_config-&gt;decryption_mode()) {</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      <span class="keywordflow">case</span> kEncryptionModeAesCtr:</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        aes_decryptor.reset(<span class="keyword">new</span> AesCtrDecryptor);</div>
@@ -157,7 +157,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordflow">if</span> (decrypt_config-&gt;subsamples().empty()) {</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="comment">// Sample not encrypted using subsample encryption. Decrypt whole.</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">if</span> (!decryptor-&gt;Decrypt(buffer, buffer_size, buffer)) {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">if</span> (!decryptor-&gt;Crypt(buffer, buffer_size, buffer)) {</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Error during bulk sample decryption.&quot;</span>;</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    }</div>
@@ -175,7 +175,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    }</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    current_ptr += subsample.clear_bytes;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordflow">if</span> (!decryptor-&gt;Decrypt(current_ptr, subsample.cipher_bytes, current_ptr)) {</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordflow">if</span> (!decryptor-&gt;Crypt(current_ptr, subsample.cipher_bytes, current_ptr)) {</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Error decrypting subsample buffer.&quot;</span>;</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    }</div>
@@ -190,7 +190,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 11 2016 23:28:44 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 12 2016 00:33:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

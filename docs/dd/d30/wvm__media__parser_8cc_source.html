@@ -868,9 +868,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00779"></a><span class="lineno">  779</span>&#160;    <span class="keywordflow">if</span> (!content_decryptor_) {</div>
 <div class="line"><a name="l00780"></a><span class="lineno">  780</span>&#160;      output_encrypted_sample = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00781"></a><span class="lineno">  781</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;      content_decryptor_-&gt;Decrypt(&amp;sample_data_[crypto_unit_start_pos_],</div>
-<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;                                  sample_data_.size() - crypto_unit_start_pos_,</div>
-<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;                                  &amp;sample_data_[crypto_unit_start_pos_]);</div>
+<div class="line"><a name="l00782"></a><span class="lineno">  782</span>&#160;      content_decryptor_-&gt;Crypt(&amp;sample_data_[crypto_unit_start_pos_],</div>
+<div class="line"><a name="l00783"></a><span class="lineno">  783</span>&#160;                                sample_data_.size() - crypto_unit_start_pos_,</div>
+<div class="line"><a name="l00784"></a><span class="lineno">  784</span>&#160;                                &amp;sample_data_[crypto_unit_start_pos_]);</div>
 <div class="line"><a name="l00785"></a><span class="lineno">  785</span>&#160;    }</div>
 <div class="line"><a name="l00786"></a><span class="lineno">  786</span>&#160;  }</div>
 <div class="line"><a name="l00787"></a><span class="lineno">  787</span>&#160;  <span class="comment">// Demux media sample if we are at program end or if we are not at a</span></div>
@@ -1213,8 +1213,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01124"></a><span class="lineno"> 1124</span>&#160;      kEcmFlagsSizeBytes + kEcmContentKeySizeBytes +</div>
 <div class="line"><a name="l01125"></a><span class="lineno"> 1125</span>&#160;      kEcmPaddingSizeBytes;  <span class="comment">// flags + contentKey + padding.</span></div>
 <div class="line"><a name="l01126"></a><span class="lineno"> 1126</span>&#160;  std::vector&lt;uint8_t&gt; content_key_buffer(content_key_buffer_size);</div>
-<div class="line"><a name="l01127"></a><span class="lineno"> 1127</span>&#160;  CHECK(asset_decryptor.Decrypt(ecm_data, content_key_buffer_size,</div>
-<div class="line"><a name="l01128"></a><span class="lineno"> 1128</span>&#160;                                content_key_buffer.data()));</div>
+<div class="line"><a name="l01127"></a><span class="lineno"> 1127</span>&#160;  CHECK(asset_decryptor.Crypt(ecm_data, content_key_buffer_size,</div>
+<div class="line"><a name="l01128"></a><span class="lineno"> 1128</span>&#160;                              content_key_buffer.data()));</div>
 <div class="line"><a name="l01129"></a><span class="lineno"> 1129</span>&#160;</div>
 <div class="line"><a name="l01130"></a><span class="lineno"> 1130</span>&#160;  std::vector&lt;uint8_t&gt; decrypted_content_key_vec(</div>
 <div class="line"><a name="l01131"></a><span class="lineno"> 1131</span>&#160;      content_key_buffer.begin() + 4,</div>
@@ -1261,7 +1261,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 11 2016 23:28:46 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 12 2016 00:33:13 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
