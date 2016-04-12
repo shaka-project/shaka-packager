@@ -144,10 +144,17 @@ struct SchemeType : FullBox {
 struct TrackEncryption : FullBox {
   DECLARE_BOX_METHODS(TrackEncryption);
 
-  // Note: this definition is specific to the CENC protection type.
-  bool is_encrypted;
-  uint8_t default_iv_size;
+  uint8_t default_is_protected;
+  uint8_t default_per_sample_iv_size;
   std::vector<uint8_t> default_kid;
+
+  // For pattern-based encryption.
+  uint8_t default_crypt_byte_block;
+  uint8_t default_skip_byte_block;
+
+  // Present only if
+  // |default_is_protected == 1 && default_per_sample_iv_size == 0|.
+  std::vector<uint8_t> default_constant_iv;
 };
 
 struct SchemeInfo : Box {
@@ -660,9 +667,16 @@ struct CencSampleEncryptionInfoEntry {
   CencSampleEncryptionInfoEntry();
   ~CencSampleEncryptionInfoEntry();
 
-  bool is_encrypted;
-  uint8_t iv_size;
+  uint8_t is_protected;
+  uint8_t per_sample_iv_size;
   std::vector<uint8_t> key_id;
+
+  // For pattern-based encryption.
+  uint8_t crypt_byte_block;
+  uint8_t skip_byte_block;
+
+  // Present only if |is_protected == 1 && per_sample_iv_size == 0|.
+  std::vector<uint8_t> constant_iv;
 };
 
 struct SampleGroupDescription : FullBox {

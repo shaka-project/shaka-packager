@@ -42,10 +42,13 @@ const char kVpcCompressorName[] = "\012VPC Coding";
 // at once.
 const int kCueSourceIdNotSet = -1;
 
+const size_t kInvalidIvSize = 1;
 // According to ISO/IEC FDIS 23001-7: CENC spec, IV should be either
 // 64-bit (8-byte) or 128-bit (16-byte).
-bool IsIvSizeValid(size_t iv_size) {
-  return iv_size == 8 || iv_size == 16;
+// |per_sample_iv_size| of 0 means constant_iv is used.
+bool IsIvSizeValid(size_t per_sample_iv_size) {
+  return per_sample_iv_size == 0 || per_sample_iv_size == 8 ||
+         per_sample_iv_size == 16;
 }
 
 // Default values to construct the following fields in ddts box. Values are set
@@ -295,7 +298,7 @@ uint32_t SampleEncryptionEntry::GetTotalSizeOfSubsamples() const {
   return size;
 }
 
-SampleEncryption::SampleEncryption() : iv_size(0) {}
+SampleEncryption::SampleEncryption() : iv_size(kInvalidIvSize) {}
 SampleEncryption::~SampleEncryption() {}
 FourCC SampleEncryption::BoxType() const { return FOURCC_senc; }
 
@@ -304,14 +307,16 @@ bool SampleEncryption::ReadWriteInternal(BoxBuffer* buffer) {
 
   // If we don't know |iv_size|, store sample encryption data to parse later
   // after we know iv_size.
-  if (buffer->Reading() && iv_size == 0) {
+  if (buffer->Reading() && iv_size == kInvalidIvSize) {
     RCHECK(
         buffer->ReadWriteVector(&sample_encryption_data, buffer->BytesLeft()));
     return true;
   }
 
   if (!IsIvSizeValid(iv_size)) {
-    LOG(ERROR) << "IV_size can only be 8 or 16, but seeing " << iv_size;
+    LOG(ERROR)
+        << "IV_size can only be 8 or 16 or 0 for constant iv, but seeing "
+        << iv_size;
     return false;
   }
 
@@ -392,7 +397,11 @@ uint32_t SchemeType::ComputeSizeInternal() {
 }
 
 TrackEncryption::TrackEncryption()
-    : is_encrypted(false), default_iv_size(0), default_kid(16, 0) {}
+    : default_is_protected(0),
+      default_per_sample_iv_size(0),
+      default_kid(16, 0),
+      default_crypt_byte_block(0),
+      default_skip_byte_block(0) {}
 TrackEncryption::~TrackEncryption() {}
 FourCC TrackEncryption::BoxType() const { return FOURCC_tenc; }
 
@@ -404,27 +413,50 @@ bool TrackEncryption::ReadWriteInternal(BoxBuffer* buffer) {
                    << ". Resized accordingly.";
       default_kid.resize(kCencKeyIdSize);
     }
+    RCHECK(default_crypt_byte_block < 16 && default_skip_byte_block < 16);
+    if (default_crypt_byte_block != 0 && default_skip_byte_block != 0) {
+      // Version 1 box is needed for pattern-based encryption.
+      version = 1;
+    }
   }
 
-  uint8_t flag = is_encrypted ? 1 : 0;
   RCHECK(ReadWriteHeaderInternal(buffer) &&
-         buffer->IgnoreBytes(2) &&  // reserved.
-         buffer->ReadWriteUInt8(&flag) &&
-         buffer->ReadWriteUInt8(&default_iv_size) &&
+         buffer->IgnoreBytes(1));  // reserved.
+
+  uint8_t pattern = default_crypt_byte_block << 4 | default_skip_byte_block;
+  RCHECK(buffer->ReadWriteUInt8(&pattern));
+  default_crypt_byte_block = pattern >> 4;
+  default_skip_byte_block = pattern & 0x0F;
+
+  RCHECK(buffer->ReadWriteUInt8(&default_is_protected) &&
+         buffer->ReadWriteUInt8(&default_per_sample_iv_size) &&
          buffer->ReadWriteVector(&default_kid, kCencKeyIdSize));
-  if (buffer->Reading()) {
-    is_encrypted = (flag != 0);
-    if (is_encrypted) {
-      RCHECK(default_iv_size == 8 || default_iv_size == 16);
+
+  if (default_is_protected == 1) {
+    if (default_per_sample_iv_size == 0) {  // For constant iv.
+      uint8_t default_constant_iv_size = default_constant_iv.size();
+      RCHECK(buffer->ReadWriteUInt8(&default_constant_iv_size));
+      RCHECK(default_constant_iv_size == 8 || default_constant_iv_size == 16);
+      RCHECK(buffer->ReadWriteVector(&default_constant_iv,
+                                     default_constant_iv_size));
     } else {
-      RCHECK(default_iv_size == 0);
+      RCHECK(default_per_sample_iv_size == 8 ||
+             default_per_sample_iv_size == 16);
+      RCHECK(default_constant_iv.empty());
     }
+  } else {
+    // Expect |default_is_protected| to be 0, i.e. not protected. Other values
+    // of |default_is_protected| is not supported.
+    RCHECK(default_is_protected == 0);
+    RCHECK(default_per_sample_iv_size == 0);
   }
   return true;
 }
 
 uint32_t TrackEncryption::ComputeSizeInternal() {
-  return HeaderSize() + sizeof(uint32_t) + kCencKeyIdSize;
+  return HeaderSize() + sizeof(uint32_t) + kCencKeyIdSize +
+         (default_constant_iv.empty() ? 0 : (sizeof(uint8_t) +
+                                             default_constant_iv.size()));
 }
 
 SchemeInfo::SchemeInfo() {}
@@ -2171,8 +2203,10 @@ uint32_t SampleToGroup::ComputeSizeInternal() {
 }
 
 CencSampleEncryptionInfoEntry::CencSampleEncryptionInfoEntry()
-    : is_encrypted(false), iv_size(0) {
-}
+    : is_protected(0),
+      per_sample_iv_size(0),
+      crypt_byte_block(0),
+      skip_byte_block(0) {}
 CencSampleEncryptionInfoEntry::~CencSampleEncryptionInfoEntry() {};
 
 SampleGroupDescription::SampleGroupDescription() : grouping_type(0) {}
@@ -2220,22 +2254,41 @@ bool SampleGroupDescription::ReadWriteInternal(BoxBuffer* buffer) {
                      << ". Resized accordingly.";
         entries[i].key_id.resize(kCencKeyIdSize);
       }
+      RCHECK(entries[i].crypt_byte_block < 16 &&
+             entries[i].skip_byte_block < 16);
     }
 
-    uint8_t flag = entries[i].is_encrypted ? 1 : 0;
-    RCHECK(buffer->IgnoreBytes(2) &&  // reserved.
-           buffer->ReadWriteUInt8(&flag) &&
-           buffer->ReadWriteUInt8(&entries[i].iv_size) &&
+    RCHECK(buffer->IgnoreBytes(1));  // reserved.
+
+    uint8_t pattern =
+        entries[i].crypt_byte_block << 4 | entries[i].skip_byte_block;
+    RCHECK(buffer->ReadWriteUInt8(&pattern));
+    entries[i].crypt_byte_block = pattern >> 4;
+    entries[i].skip_byte_block = pattern & 0x0F;
+
+    RCHECK(buffer->ReadWriteUInt8(&entries[i].is_protected) &&
+           buffer->ReadWriteUInt8(&entries[i].per_sample_iv_size) &&
            buffer->ReadWriteVector(&entries[i].key_id, kCencKeyIdSize));
 
-    if (buffer->Reading()) {
-      entries[i].is_encrypted = (flag != 0);
-      if (entries[i].is_encrypted) {
-        RCHECK(entries[i].iv_size == 8 || entries[i].iv_size == 16);
+    if (entries[i].is_protected == 1) {
+      if (entries[i].per_sample_iv_size == 0) {  // For constant iv.
+        uint8_t constant_iv_size = entries[i].constant_iv.size();
+        RCHECK(buffer->ReadWriteUInt8(&constant_iv_size));
+        RCHECK(constant_iv_size == 8 || constant_iv_size == 16);
+        RCHECK(
+            buffer->ReadWriteVector(&entries[i].constant_iv, constant_iv_size));
       } else {
-        RCHECK(entries[i].iv_size == 0);
+        RCHECK(entries[i].per_sample_iv_size == 8 ||
+               entries[i].per_sample_iv_size == 16);
+        RCHECK(entries[i].constant_iv.empty());
       }
+    } else {
+      // Expect |is_protected| to be 0, i.e. not protected. Other values of
+      // |is_protected| is not supported.
+      RCHECK(entries[i].is_protected == 0);
+      RCHECK(entries[i].per_sample_iv_size == 0);
     }
+
   }
   return true;
 }
@@ -2246,10 +2299,16 @@ uint32_t SampleGroupDescription::ComputeSizeInternal() {
   // This box is optional. Skip it if it is not used.
   if (entries.empty())
     return 0;
-  const size_t kEntrySize = sizeof(uint32_t) + kCencKeyIdSize;
+  size_t entries_size = 0;
+  for (const auto& entry : entries) {
+    entries_size += sizeof(uint32_t) + kCencKeyIdSize +
+                    (entry.constant_iv.empty()
+                         ? 0
+                         : (sizeof(uint8_t) + entry.constant_iv.size()));
+  }
   return HeaderSize() + sizeof(grouping_type) +
          (version == 1 ? sizeof(uint32_t) : 0) + sizeof(uint32_t) +
-         entries.size() * kEntrySize;
+         entries_size;
 }
 
 TrackFragment::TrackFragment() : decode_time_absent(false) {}

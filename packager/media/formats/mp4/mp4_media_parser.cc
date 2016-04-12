@@ -430,7 +430,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           return false;
       }
 
-      bool is_encrypted = entry.sinf.info.track_encryption.is_encrypted;
+      const bool is_encrypted =
+          entry.sinf.info.track_encryption.default_is_protected == 1;
       DVLOG(1) << "is_audio_track_encrypted_: " << is_encrypted;
       streams.push_back(new AudioStreamInfo(
           track->header.track_id,
@@ -533,7 +534,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         return false;
       }
 
-      bool is_encrypted = entry.sinf.info.track_encryption.is_encrypted;
+      const bool is_encrypted =
+          entry.sinf.info.track_encryption.default_is_protected == 1;
       DVLOG(1) << "is_video_track_encrypted_: " << is_encrypted;
       streams.push_back(new VideoStreamInfo(
           track->header.track_id, timescale, duration, video_codec,

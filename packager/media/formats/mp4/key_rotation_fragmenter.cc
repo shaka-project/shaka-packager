@@ -105,8 +105,8 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption(
   // Fill in SampleGroupDescription box information.
   traf()->sample_group_description.grouping_type = FOURCC_seig;
   traf()->sample_group_description.entries.resize(1);
-  traf()->sample_group_description.entries[0].is_encrypted = true;
-  traf()->sample_group_description.entries[0].iv_size =
+  traf()->sample_group_description.entries[0].is_protected = 1;
+  traf()->sample_group_description.entries[0].per_sample_iv_size =
       encryptor()->iv().size();
   traf()->sample_group_description.entries[0].key_id = encryption_key()->key_id;
 

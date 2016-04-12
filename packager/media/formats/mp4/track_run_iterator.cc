@@ -224,14 +224,16 @@ bool TrackRunIterator::Init() {
           desc_idx = 0;
         tri.audio_description = &stsd.audio_entries[desc_idx];
         // We don't support encrypted non-fragmented mp4 for now.
-        RCHECK(!tri.audio_description->sinf.info.track_encryption.is_encrypted);
+        RCHECK(tri.audio_description->sinf.info.track_encryption
+                   .default_is_protected == 0);
       } else if (tri.track_type == kVideo) {
         RCHECK(!stsd.video_entries.empty());
         if (desc_idx > stsd.video_entries.size())
           desc_idx = 0;
         tri.video_description = &stsd.video_entries[desc_idx];
         // We don't support encrypted non-fragmented mp4 for now.
-        RCHECK(!tri.video_description->sinf.info.track_encryption.is_encrypted);
+        RCHECK(tri.video_description->sinf.info.track_encryption
+                   .default_is_protected == 0);
       }
 
       uint32_t samples_per_chunk = chunk_info.samples_per_chunk();
@@ -333,12 +335,14 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
     std::vector<SampleEncryptionEntry> sample_encryption_entries;
     if (!traf.sample_encryption.sample_encryption_data.empty()) {
       RCHECK(audio_sample_entry || video_sample_entry);
-      const uint8_t default_iv_size =
+      const uint8_t default_per_sample_iv_size =
           audio_sample_entry
-              ? audio_sample_entry->sinf.info.track_encryption.default_iv_size
-              : video_sample_entry->sinf.info.track_encryption.default_iv_size;
+              ? audio_sample_entry->sinf.info.track_encryption
+                    .default_per_sample_iv_size
+              : video_sample_entry->sinf.info.track_encryption
+                    .default_per_sample_iv_size;
       RCHECK(traf.sample_encryption.ParseFromSampleEncryptionData(
-          default_iv_size, &sample_encryption_entries));
+          default_per_sample_iv_size, &sample_encryption_entries));
     }
 
     int64_t run_start_dts = traf.decode_time_absent
@@ -463,9 +467,11 @@ bool TrackRunIterator::CacheAuxInfo(const uint8_t* buf, int buf_size) {
       info_size = run_itr_->aux_info_sizes[i];
 
     BufferReader reader(buf + pos, info_size);
-    const bool has_subsamples = info_size > track_encryption().default_iv_size;
+    const bool has_subsamples =
+        info_size > track_encryption().default_per_sample_iv_size;
     RCHECK(sample_encryption_entries[i].ParseFromBuffer(
-        track_encryption().default_iv_size, has_subsamples, &reader));
+        track_encryption().default_per_sample_iv_size, has_subsamples,
+        &reader));
     pos += info_size;
   }
 
@@ -512,7 +518,7 @@ uint32_t TrackRunIterator::track_id() const {
 
 bool TrackRunIterator::is_encrypted() const {
   DCHECK(IsRunValid());
-  return track_encryption().is_encrypted;
+  return track_encryption().default_is_protected == 1;
 }
 
 int64_t TrackRunIterator::aux_info_offset() const {

@@ -65,9 +65,12 @@ inline bool operator==(const SchemeType& lhs, const SchemeType& rhs) {
 }
 
 inline bool operator==(const TrackEncryption& lhs, const TrackEncryption& rhs) {
-  return lhs.is_encrypted == rhs.is_encrypted &&
-         lhs.default_iv_size == rhs.default_iv_size &&
-         lhs.default_kid == rhs.default_kid;
+  return lhs.default_is_protected == rhs.default_is_protected &&
+         lhs.default_per_sample_iv_size == rhs.default_per_sample_iv_size &&
+         lhs.default_kid == rhs.default_kid &&
+         lhs.default_crypt_byte_block == rhs.default_crypt_byte_block &&
+         lhs.default_skip_byte_block == rhs.default_skip_byte_block &&
+         lhs.default_constant_iv == rhs.default_constant_iv;
 }
 
 inline bool operator==(const SchemeInfo& lhs, const SchemeInfo& rhs) {
@@ -395,9 +398,12 @@ inline bool operator==(const SampleToGroup& lhs,
 
 inline bool operator==(const CencSampleEncryptionInfoEntry& lhs,
                        const CencSampleEncryptionInfoEntry& rhs) {
-  return lhs.is_encrypted == rhs.is_encrypted &&
-         lhs.iv_size == rhs.iv_size &&
-         lhs.key_id == rhs.key_id;
+  return lhs.is_protected == rhs.is_protected &&
+         lhs.per_sample_iv_size == rhs.per_sample_iv_size &&
+         lhs.key_id == rhs.key_id &&
+         lhs.crypt_byte_block == rhs.crypt_byte_block &&
+         lhs.skip_byte_block == rhs.skip_byte_block &&
+         lhs.constant_iv == rhs.constant_iv;
 }
 
 inline bool operator==(const SampleGroupDescription& lhs,

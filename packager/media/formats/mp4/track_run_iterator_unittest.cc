@@ -87,7 +87,6 @@ class TrackRunIteratorTest : public testing::Test {
         moov_.tracks[0].media.information.sample_table.description;
     AudioSampleEntry aud_desc;
     aud_desc.format = FOURCC_mp4a;
-    aud_desc.sinf.info.track_encryption.is_encrypted = false;
     desc1.type = kAudio;
     desc1.audio_entries.push_back(aud_desc);
     moov_.extends.tracks[0].track_id = 1;
@@ -99,7 +98,6 @@ class TrackRunIteratorTest : public testing::Test {
         moov_.tracks[1].media.information.sample_table.description;
     VideoSampleEntry vid_desc;
     vid_desc.format = FOURCC_avc1;
-    vid_desc.sinf.info.track_encryption.is_encrypted = false;
     desc2.type = kVideo;
     desc2.video_entries.push_back(vid_desc);
     moov_.extends.tracks[1].track_id = 2;
@@ -155,8 +153,8 @@ class TrackRunIteratorTest : public testing::Test {
     }
 
     sinf->type.type = FOURCC_cenc;
-    sinf->info.track_encryption.is_encrypted = true;
-    sinf->info.track_encryption.default_iv_size = 8;
+    sinf->info.track_encryption.default_is_protected = 1;
+    sinf->info.track_encryption.default_per_sample_iv_size = 8;
     sinf->info.track_encryption.default_kid.assign(kKeyId,
                                                    kKeyId + arraysize(kKeyId));
   }

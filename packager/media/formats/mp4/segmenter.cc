@@ -58,9 +58,9 @@ void GenerateSinf(const EncryptionKey& encryption_key,
   sinf->type.version = kCencSchemeVersion;
 
   auto& track_encryption = sinf->info.track_encryption;
-  track_encryption.is_encrypted = true;
+  track_encryption.default_is_protected = 1;
   DCHECK(!encryption_key.iv.empty());
-  track_encryption.default_iv_size = encryption_key.iv.size();
+  track_encryption.default_per_sample_iv_size = encryption_key.iv.size();
   track_encryption.default_kid = encryption_key.key_id;
 }
 

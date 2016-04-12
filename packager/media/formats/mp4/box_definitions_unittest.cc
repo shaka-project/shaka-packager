@@ -209,15 +209,21 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   void Modify(SchemeType* schm) { schm->version = 123; }
 
   void Fill(TrackEncryption* tenc) {
-    tenc->is_encrypted = true;
-    tenc->default_iv_size = 8;
+    tenc->default_is_protected = 1;
+    tenc->default_per_sample_iv_size = 8;
     tenc->default_kid.assign(kData16Bytes,
                              kData16Bytes + arraysize(kData16Bytes));
+    tenc->default_skip_byte_block = 2;
+    tenc->default_crypt_byte_block = 8;
+    tenc->version = 1;
   }
 
   void Modify(TrackEncryption* tenc) {
-    tenc->is_encrypted = false;
-    tenc->default_iv_size = 0;
+    tenc->default_is_protected = 0;
+    tenc->default_per_sample_iv_size = 0;
+    tenc->default_skip_byte_block = 0;
+    tenc->default_crypt_byte_block = 0;
+    tenc->version = 0;
   }
 
   void Fill(SchemeInfo* schi) { Fill(&schi->track_encryption); }
@@ -764,14 +770,21 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Fill(SampleGroupDescription* sgpd) {
     sgpd->grouping_type = FOURCC_seig;
-    sgpd->entries.resize(2);
-    sgpd->entries[0].is_encrypted = true;
-    sgpd->entries[0].iv_size = 8;
+    sgpd->entries.resize(3);
+    sgpd->entries[0].is_protected = 1;
+    sgpd->entries[0].per_sample_iv_size = 8;
     sgpd->entries[0].key_id.assign(kData16Bytes,
                                    kData16Bytes + arraysize(kData16Bytes));
-    sgpd->entries[1].is_encrypted = false;
-    sgpd->entries[1].iv_size = 0;
+    sgpd->entries[0].crypt_byte_block = 3;
+    sgpd->entries[0].skip_byte_block = 7;
+    sgpd->entries[1].is_protected = 0;
+    sgpd->entries[1].per_sample_iv_size = 0;
     sgpd->entries[1].key_id.resize(16);
+    sgpd->entries[2].is_protected = 1;
+    sgpd->entries[2].per_sample_iv_size = 0;
+    sgpd->entries[2].constant_iv.assign(kData16Bytes,
+                                        kData16Bytes + arraysize(kData16Bytes));
+    sgpd->entries[2].key_id.resize(16);
     sgpd->version = 1;
   }
 
@@ -1186,9 +1199,18 @@ TEST_F(BoxDefinitionsTest, TrackFragmentRun_NoSampleSize) {
   ASSERT_EQ(trun, trun_readback);
 }
 
-TEST_F(BoxDefinitionsTest, SampleEncryptionIsOptional) {
-  SampleEncryption senc;
-  EXPECT_EQ(0u, senc.ComputeSize());
+TEST_F(BoxDefinitionsTest, TrackEncryptionConstantIv) {
+  TrackEncryption tenc;
+  tenc.default_is_protected = 1;
+  tenc.default_per_sample_iv_size = 0;
+  tenc.default_kid.assign(kData16Bytes, kData16Bytes + arraysize(kData16Bytes));
+  tenc.default_constant_iv.assign(kData16Bytes,
+                                  kData16Bytes + arraysize(kData16Bytes));
+  tenc.Write(buffer_.get());
+
+  TrackEncryption tenc_readback;
+  ASSERT_TRUE(ReadBack(&tenc_readback));
+  ASSERT_EQ(tenc, tenc_readback);
 }
 
 TEST_F(BoxDefinitionsTest, SampleEncryptionWithIvKnownWhenReading) {
@@ -1216,7 +1238,8 @@ TEST_F(BoxDefinitionsTest, SampleEncryptionWithIvUnknownWhenReading) {
   senc.Write(buffer_.get());
 
   SampleEncryption senc_readback;
-  senc_readback.iv_size = 0;
+  const size_t kInvalidIvSize = 1;
+  senc_readback.iv_size = kInvalidIvSize;
 
   ASSERT_TRUE(ReadBack(&senc_readback));
   EXPECT_NE(0u, senc_readback.sample_encryption_data.size());
