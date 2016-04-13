@@ -171,12 +171,6 @@ bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
   DCHECK(aes_key());
 
   const size_t residual_block_size = plaintext_size % AES_BLOCK_SIZE;
-  if (padding_scheme_ == kNoPadding && residual_block_size != 0) {
-    LOG(ERROR) << "Expecting input size to be multiple of " << AES_BLOCK_SIZE
-               << ", got " << plaintext_size;
-    return false;
-  }
-
   const size_t num_padding_bytes = NumPaddingBytes(plaintext_size);
   const size_t required_ciphertext_size = plaintext_size + num_padding_bytes;
   if (*ciphertext_size < required_ciphertext_size) {
@@ -204,6 +198,12 @@ bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
     return true;
   }
   DCHECK(!chain_across_calls_);
+
+  if (padding_scheme_ == kNoPadding) {
+    // The residual block is left unencrypted.
+    memcpy(ciphertext + cbc_size, plaintext + cbc_size, residual_block_size);
+    return true;
+  }
 
   std::vector<uint8_t> residual_block(plaintext + cbc_size,
                                       plaintext + plaintext_size);

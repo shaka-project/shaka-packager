@@ -71,8 +71,12 @@ class AesCtrEncryptor : public AesEncryptor {
 };
 
 enum CbcPaddingScheme {
+  // Residual block is left unencrypted.
   kNoPadding,
+  // Residual block is padded with pkcs5 and encrypted.
   kPkcs5Padding,
+  // Residual block and the next-to-last block are encrypted using ciphertext
+  // stealing method.
   kCtsPadding,
 };
 

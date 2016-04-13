@@ -84,6 +84,7 @@ bool AesCbcDecryptor::CryptInternal(const uint8_t* ciphertext,
 
   std::vector<uint8_t> local_iv(iv());
   const size_t residual_block_size = ciphertext_size % AES_BLOCK_SIZE;
+  const size_t cbc_size = ciphertext_size - residual_block_size;
   if (residual_block_size == 0) {
     AES_cbc_encrypt(ciphertext, plaintext, ciphertext_size, aes_key(),
                     local_iv.data(), AES_DECRYPT);
@@ -101,6 +102,15 @@ bool AesCbcDecryptor::CryptInternal(const uint8_t* ciphertext,
     }
     *plaintext_size -= num_padding_bytes;
     return true;
+  } else if (padding_scheme_ == kNoPadding) {
+    AES_cbc_encrypt(ciphertext, plaintext, cbc_size, aes_key(), local_iv.data(),
+                    AES_DECRYPT);
+    if (chain_across_calls_)
+      set_iv(local_iv);
+
+    // The residual block is not encrypted.
+    memcpy(plaintext + cbc_size, ciphertext + cbc_size, residual_block_size);
+    return true;
   } else if (padding_scheme_ != kCtsPadding) {
     LOG(ERROR) << "Expecting cipher text size to be multiple of "
                << AES_BLOCK_SIZE << ", got " << ciphertext_size;
@@ -116,7 +126,6 @@ bool AesCbcDecryptor::CryptInternal(const uint8_t* ciphertext,
   }
 
   // AES-CBC decrypt everything up to the next-to-last full block.
-  const size_t cbc_size = ciphertext_size - residual_block_size;
   if (cbc_size > AES_BLOCK_SIZE) {
     AES_cbc_encrypt(ciphertext, plaintext, cbc_size - AES_BLOCK_SIZE, aes_key(),
                     local_iv.data(), AES_DECRYPT);

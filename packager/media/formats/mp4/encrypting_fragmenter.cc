@@ -330,12 +330,7 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
     traf()->auxiliary_size.sample_info_sizes.push_back(
         sample_encryption_entry.ComputeSize());
   } else {
-    uint64_t encryption_data_size = sample->data_size();
-    // AES-CBC mode requires all encrypted cipher blocks to be 16 bytes. The
-    // partial blocks are left unencrypted.
-    if (protection_scheme_ == FOURCC_cbc1)
-      encryption_data_size -= encryption_data_size % kCencBlockSize;
-    EncryptBytes(data, encryption_data_size);
+    EncryptBytes(data, sample->data_size());
   }
 
   traf()->sample_encryption.sample_encryption_entries.push_back(

@@ -553,6 +553,9 @@ const CbcTestCase kCbcTestCases[] = {
     {kNoPadding,
      "6bc1bee22e409f96e93d7e117393172a6bc1bee22e409f96e93d7e117393172a",
      "77cde91fe6df9cbc5d0c98f96efd590bbddde439526f100c9545c274d4f7fd3f"},
+    {kNoPadding,
+     "6bc1bee22e409f96e93d7e117393172a6bc1bee22e409f96e93d7e117393172a1234",
+     "77cde91fe6df9cbc5d0c98f96efd590bbddde439526f100c9545c274d4f7fd3f1234"},
     // Pkcs5 padding with zero bytes.
     {kPkcs5Padding, "", "f6a3569dea3cda208eb3d5792942612b"},
     // Cts Padding with zero bytes.
