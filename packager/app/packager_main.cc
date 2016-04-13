@@ -384,12 +384,6 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
   const FourCC protection_scheme = GetProtectionScheme(FLAGS_protection_scheme);
   if (protection_scheme == FOURCC_NULL)
     return false;
-  if (protection_scheme == FOURCC_cbc1 || protection_scheme == FOURCC_cbcs) {
-    if (!FLAGS_iv.empty() && FLAGS_iv.size() != 16) {
-      LOG(ERROR) << "Iv size should be 16 bytes for CBC encryption mode.";
-      return false;
-    }
-  }
 
   if (!AssignFlagsFromProfile())
     return false;

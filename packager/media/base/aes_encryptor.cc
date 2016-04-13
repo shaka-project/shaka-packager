@@ -15,15 +15,12 @@ namespace {
 // Increment an 8-byte counter by 1. Return true if overflowed.
 bool Increment64(uint8_t* counter) {
   DCHECK(counter);
-  for (int i = 7; i >= 0; --i)
+  for (int i = 7; i >= 0; --i) {
     if (++counter[i] != 0)
       return false;
+  }
   return true;
 }
-
-// According to ISO/IEC FDIS 23001-7: CENC spec, IV should be either
-// 64-bit (8-byte) or 128-bit (16-byte).
-bool IsIvSizeValid(size_t iv_size) { return iv_size == 8 || iv_size == 16; }
 
 // AES defines three key sizes: 128, 192 and 256 bits.
 bool IsKeySizeValidForAes(size_t key_size) {
@@ -35,7 +32,8 @@ bool IsKeySizeValidForAes(size_t key_size) {
 namespace edash_packager {
 namespace media {
 
-AesEncryptor::AesEncryptor() {}
+AesEncryptor::AesEncryptor(ConstantIvFlag constant_iv_flag)
+    : AesCryptor(constant_iv_flag) {}
 AesEncryptor::~AesEncryptor() {}
 
 bool AesEncryptor::InitializeWithIv(const std::vector<uint8_t>& key,
@@ -50,55 +48,15 @@ bool AesEncryptor::InitializeWithIv(const std::vector<uint8_t>& key,
   return SetIv(iv);
 }
 
+// We don't support constant iv for counter mode, as we don't have a use case
+// for that.
 AesCtrEncryptor::AesCtrEncryptor()
-    : block_offset_(0),
-      encrypted_counter_(AES_BLOCK_SIZE, 0),
-      counter_overflow_(false) {}
+    : AesEncryptor(kDontUseConstantIv),
+      block_offset_(0),
+      encrypted_counter_(AES_BLOCK_SIZE, 0) {}
 
 AesCtrEncryptor::~AesCtrEncryptor() {}
 
-void AesCtrEncryptor::UpdateIv() {
-  block_offset_ = 0;
-
-  // As recommended in ISO/IEC FDIS 23001-7: CENC spec, for 64-bit (8-byte)
-  // IV_Sizes, initialization vectors for subsequent samples can be created by
-  // incrementing the initialization vector of the previous sample.
-  // For 128-bit (16-byte) IV_Sizes, initialization vectors for subsequent
-  // samples should be created by adding the block count of the previous sample
-  // to the initialization vector of the previous sample.
-  if (iv().size() == 8) {
-    counter_ = iv();
-    Increment64(&counter_[0]);
-    set_iv(counter_);
-    counter_.resize(AES_BLOCK_SIZE, 0);
-  } else {
-    DCHECK_EQ(16u, iv().size());
-    // Even though the block counter portion of the counter (bytes 8 to 15) is
-    // treated as a 64-bit number, it is recommended that the initialization
-    // vector is treated as a 128-bit number when calculating the next
-    // initialization vector from the previous one. The block counter portion
-    // is already incremented by number of blocks, the other 64 bits of the
-    // counter (bytes 0 to 7) is incremented here if the block counter portion
-    // has overflowed.
-    if (counter_overflow_)
-      Increment64(&counter_[0]);
-    set_iv(counter_);
-  }
-  counter_overflow_ = false;
-}
-
-bool AesCtrEncryptor::SetIv(const std::vector<uint8_t>& iv) {
-  if (!IsIvSizeValid(iv.size())) {
-    LOG(ERROR) << "Invalid IV size: " << iv.size();
-    return false;
-  }
-
-  block_offset_ = 0;
-  set_iv(iv);
-  counter_ = iv;
-  counter_.resize(AES_BLOCK_SIZE, 0);
-  return true;
-}
 
 bool AesCtrEncryptor::CryptInternal(const uint8_t* plaintext,
                                     size_t plaintext_size,
@@ -119,13 +77,12 @@ bool AesCtrEncryptor::CryptInternal(const uint8_t* plaintext,
   for (size_t i = 0; i < plaintext_size; ++i) {
     if (block_offset_ == 0) {
       AES_encrypt(&counter_[0], &encrypted_counter_[0], aes_key());
-      // As mentioned in ISO/IEC FDIS 23001-7: CENC spec, of the 16 byte counter
+      // As mentioned in ISO/IEC 23001-7:2016 CENC spec, of the 16 byte counter
       // block, bytes 8 to 15 (i.e. the least significant bytes) are used as a
       // simple 64 bit unsigned integer that is incremented by one for each
       // subsequent block of sample data processed and is kept in network byte
       // order.
-      if (Increment64(&counter_[8]))
-        counter_overflow_ = true;
+      Increment64(&counter_[8]);
     }
     ciphertext[i] = plaintext[i] ^ encrypted_counter_[block_offset_];
     block_offset_ = (block_offset_ + 1) % AES_BLOCK_SIZE;
@@ -133,36 +90,26 @@ bool AesCtrEncryptor::CryptInternal(const uint8_t* plaintext,
   return true;
 }
 
+void AesCtrEncryptor::SetIvInternal() {
+  block_offset_ = 0;
+  counter_ = iv();
+  counter_.resize(AES_BLOCK_SIZE, 0);
+}
+
+AesCbcEncryptor::AesCbcEncryptor(CbcPaddingScheme padding_scheme)
+    : AesCbcEncryptor(padding_scheme, kDontUseConstantIv) {}
+
 AesCbcEncryptor::AesCbcEncryptor(CbcPaddingScheme padding_scheme,
-                                 bool chain_across_calls)
-    : padding_scheme_(padding_scheme),
-      chain_across_calls_(chain_across_calls) {
+                                 ConstantIvFlag constant_iv_flag)
+    : AesEncryptor(constant_iv_flag), padding_scheme_(padding_scheme) {
   if (padding_scheme_ != kNoPadding) {
-    CHECK(!chain_across_calls) << "cipher block chain across calls only makes "
-                                  "sense if the padding_scheme is kNoPadding.";
+    CHECK_EQ(constant_iv_flag, kUseConstantIv)
+        << "non-constant iv (cipher block chain across calls) only makes sense "
+           "if the padding_scheme is kNoPadding.";
   }
 }
+
 AesCbcEncryptor::~AesCbcEncryptor() {}
-
-void AesCbcEncryptor::UpdateIv() {
-  // From CENC spec: CBC mode Initialization Vectors need not be unique per
-  // sample or Subsample and may be generated randomly or sequentially, e.g.
-  // a per sample IV may be (1) equal to the cipher text of the last encrypted
-  // cipher block (a continous cipher block chain across samples), or (2)
-  // generated by incrementing the previuos IV by the number of cipher blocks in the last
-  // sample or (3) by a fixed amount. We use method (1) here. No separate IV
-  // update is needed.
-}
-
-bool AesCbcEncryptor::SetIv(const std::vector<uint8_t>& iv) {
-  if (iv.size() != AES_BLOCK_SIZE) {
-    LOG(ERROR) << "Invalid IV size: " << iv.size();
-    return false;
-  }
-
-  set_iv(iv);
-  return true;
-}
 
 bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
                                     size_t plaintext_size,
@@ -182,22 +129,18 @@ bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
 
   // Encrypt everything but the residual block using CBC.
   const size_t cbc_size = plaintext_size - residual_block_size;
-  std::vector<uint8_t> local_iv(iv());
   if (cbc_size != 0) {
-    AES_cbc_encrypt(plaintext, ciphertext, cbc_size, aes_key(), local_iv.data(),
-                    AES_ENCRYPT);
+    AES_cbc_encrypt(plaintext, ciphertext, cbc_size, aes_key(),
+                    internal_iv_.data(), AES_ENCRYPT);
   } else if (padding_scheme_ == kCtsPadding) {
     // Don't have a full block, leave unencrypted.
     memcpy(ciphertext, plaintext, plaintext_size);
     return true;
   }
   if (residual_block_size == 0 && padding_scheme_ != kPkcs5Padding) {
-    if (chain_across_calls_)
-      set_iv(local_iv);
     // No residual block. No need to do padding.
     return true;
   }
-  DCHECK(!chain_across_calls_);
 
   if (padding_scheme_ == kNoPadding) {
     // The residual block is left unencrypted.
@@ -216,7 +159,8 @@ bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
     // Pad residue block with PKCS5 padding.
     residual_block.resize(AES_BLOCK_SIZE, static_cast<char>(num_padding_bytes));
     AES_cbc_encrypt(residual_block.data(), residual_ciphertext_block,
-                    AES_BLOCK_SIZE, aes_key(), local_iv.data(), AES_ENCRYPT);
+                    AES_BLOCK_SIZE, aes_key(), internal_iv_.data(),
+                    AES_ENCRYPT);
   } else {
     DCHECK_EQ(num_padding_bytes, 0u);
     DCHECK_EQ(padding_scheme_, kCtsPadding);
@@ -224,7 +168,8 @@ bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
     // Zero-pad the residual block and encrypt using CBC.
     residual_block.resize(AES_BLOCK_SIZE, 0);
     AES_cbc_encrypt(residual_block.data(), residual_block.data(),
-                    AES_BLOCK_SIZE, aes_key(), local_iv.data(), AES_ENCRYPT);
+                    AES_BLOCK_SIZE, aes_key(), internal_iv_.data(),
+                    AES_ENCRYPT);
 
     // Replace the last full block with the zero-padded, encrypted residual
     // block, and replace the residual block with the equivalent portion of the
@@ -237,6 +182,11 @@ bool AesCbcEncryptor::CryptInternal(const uint8_t* plaintext,
            AES_BLOCK_SIZE);
   }
   return true;
+}
+
+void AesCbcEncryptor::SetIvInternal() {
+  internal_iv_ = iv();
+  internal_iv_.resize(AES_BLOCK_SIZE, 0);
 }
 
 size_t AesCbcEncryptor::NumPaddingBytes(size_t size) const {

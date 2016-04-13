@@ -61,7 +61,7 @@ DEFINE_string(protection_scheme,
               "protection schemes 'cens' or 'cbcs'. Note that if a "
               "pattern-based protection scheme only applies to video stream; "
               "audio stream will be encrypted using the corresponding "
-              "non-pattern-based encryption schemes, i.e. 'cenc' for 'cens', "
+              "non-pattern-based protection schemes, i.e. 'cenc' for 'cens', "
               "'cbc1' for 'cbcs'.");
 
 namespace edash_packager {

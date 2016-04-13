@@ -21,7 +21,13 @@ namespace media {
 
 class AesEncryptor : public AesCryptor {
  public:
-  AesEncryptor();
+  /// @param constant_iv_flag indicates whether a constant iv is used,
+  ///        kUseConstantIv means that the same iv is used for all Crypt calls
+  ///        until iv is changed via SetIv; otherwise, iv can be incremented
+  ///        (for counter mode) or chained (for cipher block chaining mode)
+  ///        internally inside Crypt call, i.e. iv will be updated across Crypt
+  ///        calls.
+  explicit AesEncryptor(ConstantIvFlag constant_iv_flag);
   ~AesEncryptor() override;
 
   /// Initialize the encryptor with specified key and IV.
@@ -39,17 +45,6 @@ class AesCtrEncryptor : public AesEncryptor {
   AesCtrEncryptor();
   ~AesCtrEncryptor() override;
 
-  /// @name AesCryptor implementation overrides.
-  /// @{
-  /// Update IV for next sample. @a block_offset_ is reset to 0.
-  /// As recommended in ISO/IEC FDIS 23001-7: CENC spec,
-  ///   For 64-bit IV size, new_iv = old_iv + 1;
-  ///   For 128-bit IV size, new_iv = old_iv + previous_sample_block_count.
-  void UpdateIv() override;
-
-  bool SetIv(const std::vector<uint8_t>& iv) override;
-  /// @}
-
   uint32_t block_offset() const { return block_offset_; }
 
  private:
@@ -57,6 +52,7 @@ class AesCtrEncryptor : public AesEncryptor {
                      size_t plaintext_size,
                      uint8_t* ciphertext,
                      size_t* ciphertext_size) override;
+  void SetIvInternal() override;
 
   // Current block offset.
   uint32_t block_offset_;
@@ -64,8 +60,6 @@ class AesCtrEncryptor : public AesEncryptor {
   std::vector<uint8_t> counter_;
   // Encrypted counter.
   std::vector<uint8_t> encrypted_counter_;
-  // Keep track of whether the counter has overflowed.
-  bool counter_overflow_;
 
   DISALLOW_COPY_AND_ASSIGN(AesCtrEncryptor);
 };
@@ -80,35 +74,38 @@ enum CbcPaddingScheme {
   kCtsPadding,
 };
 
-const bool kChainAcrossCalls = true;
-
 // Class which implements AES-CBC (Cipher block chaining) encryption.
 class AesCbcEncryptor : public AesEncryptor {
  public:
+  /// Creates a AesCbcEncryptor with continous cipher block chain across Crypt
+  /// calls, i.e. AesCbcEncryptor(padding_scheme, kDontUseConstantIv).
   /// @param padding_scheme indicates the padding scheme used. Currently
   ///        supported schemes: kNoPadding, kPkcs5Padding, kCtsPadding.
-  /// @param chain_across_calls indicates whether there is a continuous cipher
-  ///        block chain across calls for Encrypt function. If it is false, iv
-  ///        is not updated across Encrypt function calls.
-  AesCbcEncryptor(CbcPaddingScheme padding_scheme, bool chain_across_calls);
+  explicit AesCbcEncryptor(CbcPaddingScheme padding_scheme);
+
+  /// @param padding_scheme indicates the padding scheme used. Currently
+  ///        supported schemes: kNoPadding, kPkcs5Padding, kCtsPadding.
+  /// @param constant_iv_flag indicates whether a constant iv is used,
+  ///        kUseConstantIv means that the same iv is used for all Crypt calls
+  ///        until iv is changed via SetIv; otherwise, iv is updated internally
+  ///        and there is a continuous cipher block chain across Crypt calls
+  ///        util iv is changed explicitly via SetIv or UpdateIv functions.
+  AesCbcEncryptor(CbcPaddingScheme padding_scheme,
+                  ConstantIvFlag constant_iv_flag);
+
   ~AesCbcEncryptor() override;
-
-  /// @name AesCryptor implementation overrides.
-  /// @{
-  void UpdateIv() override;
-
-  bool SetIv(const std::vector<uint8_t>& iv) override;
-  /// @}
 
  private:
   bool CryptInternal(const uint8_t* plaintext,
                      size_t plaintext_size,
                      uint8_t* ciphertext,
                      size_t* ciphertext_size) override;
+  void SetIvInternal() override;
   size_t NumPaddingBytes(size_t size) const override;
 
   const CbcPaddingScheme padding_scheme_;
-  const bool chain_across_calls_;
+  // 16-byte internal iv for crypto operations.
+  std::vector<uint8_t> internal_iv_;
 
   DISALLOW_COPY_AND_ASSIGN(AesCbcEncryptor);
 };

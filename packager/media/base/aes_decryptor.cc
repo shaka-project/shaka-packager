@@ -22,13 +22,16 @@ bool IsKeySizeValidForAes(size_t key_size) {
 namespace edash_packager {
 namespace media {
 
+AesCbcDecryptor::AesCbcDecryptor(CbcPaddingScheme padding_scheme)
+    : AesCbcDecryptor(padding_scheme, kDontUseConstantIv) {}
+
 AesCbcDecryptor::AesCbcDecryptor(CbcPaddingScheme padding_scheme,
-                                 bool chain_across_calls)
-    : padding_scheme_(padding_scheme),
-      chain_across_calls_(chain_across_calls) {
+                                 ConstantIvFlag constant_iv_flag)
+    : AesCryptor(constant_iv_flag), padding_scheme_(padding_scheme) {
   if (padding_scheme_ != kNoPadding) {
-    CHECK(!chain_across_calls) << "cipher block chain across calls only makes "
-                                  "sense if the padding_scheme is kNoPadding.";
+    CHECK_EQ(constant_iv_flag, kUseConstantIv)
+        << "non-constant iv (cipher block chain across calls) only makes sense "
+           "if the padding_scheme is kNoPadding.";
   }
 }
 
@@ -44,16 +47,6 @@ bool AesCbcDecryptor::InitializeWithIv(const std::vector<uint8_t>& key,
   CHECK_EQ(AES_set_decrypt_key(key.data(), key.size() * 8, mutable_aes_key()),
            0);
   return SetIv(iv);
-}
-
-bool AesCbcDecryptor::SetIv(const std::vector<uint8_t>& iv) {
-  if (iv.size() != AES_BLOCK_SIZE) {
-    LOG(ERROR) << "Invalid IV size: " << iv.size();
-    return false;
-  }
-
-  set_iv(iv);
-  return true;
 }
 
 bool AesCbcDecryptor::CryptInternal(const uint8_t* ciphertext,
@@ -82,14 +75,11 @@ bool AesCbcDecryptor::CryptInternal(const uint8_t* ciphertext,
   }
   DCHECK(plaintext);
 
-  std::vector<uint8_t> local_iv(iv());
   const size_t residual_block_size = ciphertext_size % AES_BLOCK_SIZE;
   const size_t cbc_size = ciphertext_size - residual_block_size;
   if (residual_block_size == 0) {
     AES_cbc_encrypt(ciphertext, plaintext, ciphertext_size, aes_key(),
-                    local_iv.data(), AES_DECRYPT);
-    if (chain_across_calls_)
-      set_iv(local_iv);
+                    internal_iv_.data(), AES_DECRYPT);
     if (padding_scheme_ != kPkcs5Padding)
       return true;
 
@@ -103,10 +93,8 @@ bool AesCbcDecryptor::CryptInternal(const uint8_t* ciphertext,
     *plaintext_size -= num_padding_bytes;
     return true;
   } else if (padding_scheme_ == kNoPadding) {
-    AES_cbc_encrypt(ciphertext, plaintext, cbc_size, aes_key(), local_iv.data(),
-                    AES_DECRYPT);
-    if (chain_across_calls_)
-      set_iv(local_iv);
+    AES_cbc_encrypt(ciphertext, plaintext, cbc_size, aes_key(),
+                    internal_iv_.data(), AES_DECRYPT);
 
     // The residual block is not encrypted.
     memcpy(plaintext + cbc_size, ciphertext + cbc_size, residual_block_size);
@@ -117,7 +105,6 @@ bool AesCbcDecryptor::CryptInternal(const uint8_t* ciphertext,
     return false;
   }
 
-  DCHECK(!chain_across_calls_);
   DCHECK_EQ(padding_scheme_, kCtsPadding);
   if (ciphertext_size < AES_BLOCK_SIZE) {
     // Don't have a full block, leave unencrypted.
@@ -128,7 +115,7 @@ bool AesCbcDecryptor::CryptInternal(const uint8_t* ciphertext,
   // AES-CBC decrypt everything up to the next-to-last full block.
   if (cbc_size > AES_BLOCK_SIZE) {
     AES_cbc_encrypt(ciphertext, plaintext, cbc_size - AES_BLOCK_SIZE, aes_key(),
-                    local_iv.data(), AES_DECRYPT);
+                    internal_iv_.data(), AES_DECRYPT);
   }
 
   const uint8_t* next_to_last_ciphertext_block =
@@ -162,8 +149,13 @@ bool AesCbcDecryptor::CryptInternal(const uint8_t* ciphertext,
 
   // Decrypt the next-to-last full block.
   AES_cbc_encrypt(next_to_last_plaintext_block, next_to_last_plaintext_block,
-                  AES_BLOCK_SIZE, aes_key(), local_iv.data(), AES_DECRYPT);
+                  AES_BLOCK_SIZE, aes_key(), internal_iv_.data(), AES_DECRYPT);
   return true;
+}
+
+void AesCbcDecryptor::SetIvInternal() {
+  internal_iv_ = iv();
+  internal_iv_.resize(AES_BLOCK_SIZE, 0);
 }
 
 }  // namespace media

@@ -41,7 +41,7 @@ AesRequestSigner* AesRequestSigner::CreateSigner(const std::string& signer_name,
   }
 
   scoped_ptr<AesCbcEncryptor> encryptor(
-      new AesCbcEncryptor(kPkcs5Padding, !kChainAcrossCalls));
+      new AesCbcEncryptor(kPkcs5Padding, AesCryptor::kUseConstantIv));
   if (!encryptor->InitializeWithIv(aes_key, iv))
     return NULL;
   return new AesRequestSigner(signer_name, encryptor.Pass());

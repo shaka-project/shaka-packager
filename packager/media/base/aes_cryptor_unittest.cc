@@ -220,6 +220,20 @@ TEST_F(AesCtrEncryptorTest, 128BitIVBoundaryCaseEncryption) {
   EXPECT_EQ(encrypted, encrypted_verify);
 }
 
+TEST_F(AesCtrEncryptorTest, 64BitIvUpdate) {
+  std::vector<uint8_t> iv_zero(kIv64Zero, kIv64Zero + arraysize(kIv64Zero));
+  ASSERT_TRUE(encryptor_.InitializeWithIv(key_, iv_zero));
+
+  // There are four blocks of text in |plaintext_|, but since iv is 8 bytes,
+  // iv should only be incremented by one when UpdateIv() is called.
+  std::vector<uint8_t> encrypted;
+  ASSERT_TRUE(encryptor_.Crypt(plaintext_, &encrypted));
+
+  std::vector<uint8_t> iv_one(kIv64One, kIv64One + arraysize(kIv64One));
+  encryptor_.UpdateIv();
+  EXPECT_EQ(iv_one, encryptor_.iv());
+}
+
 TEST_F(AesCtrEncryptorTest, GenerateRandomIv) {
   const uint8_t kCencIvSize = 8;
   std::vector<uint8_t> iv;
@@ -297,8 +311,10 @@ INSTANTIATE_TEST_CASE_P(IvTestCases,
 class AesCbcTest : public ::testing::Test {
  public:
   AesCbcTest()
-      : encryptor_(new AesCbcEncryptor(kPkcs5Padding, !kChainAcrossCalls)),
-        decryptor_(new AesCbcDecryptor(kPkcs5Padding, !kChainAcrossCalls)),
+      : encryptor_(
+            new AesCbcEncryptor(kPkcs5Padding, AesCryptor::kUseConstantIv)),
+        decryptor_(
+            new AesCbcDecryptor(kPkcs5Padding, AesCryptor::kUseConstantIv)),
         key_(kAesKey, kAesKey + arraysize(kAesKey)),
         iv_(kAesIv, kAesIv + arraysize(kAesIv)) {}
 
@@ -450,25 +466,21 @@ TEST_F(AesCbcTest, NoPaddingNoChainAcrossCalls) {
   std::vector<uint8_t> ciphertext(kCiphertext,
                                   kCiphertext + arraysize(kCiphertext));
 
-  AesCbcEncryptor encryptor(kNoPadding, !kChainAcrossCalls);
+  AesCbcEncryptor encryptor(kNoPadding, AesCryptor::kUseConstantIv);
   ASSERT_TRUE(encryptor.InitializeWithIv(key_, iv_));
 
   std::vector<uint8_t> encrypted;
   ASSERT_TRUE(encryptor.Crypt(plaintext, &encrypted));
   EXPECT_EQ(ciphertext, encrypted);
-  // Iv should not have been updated.
-  EXPECT_EQ(iv_, encryptor.iv());
   ASSERT_TRUE(encryptor.Crypt(plaintext, &encrypted));
   EXPECT_EQ(ciphertext, encrypted);
 
-  AesCbcDecryptor decryptor(kNoPadding, !kChainAcrossCalls);
+  AesCbcDecryptor decryptor(kNoPadding, AesCryptor::kUseConstantIv);
   ASSERT_TRUE(decryptor.InitializeWithIv(key_, iv_));
 
   std::vector<uint8_t> decrypted;
   ASSERT_TRUE(decryptor.Crypt(ciphertext, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
-  // Iv should not have been updated.
-  EXPECT_EQ(iv_, encryptor.iv());
   ASSERT_TRUE(decryptor.Crypt(ciphertext, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
 }
@@ -494,26 +506,23 @@ TEST_F(AesCbcTest, NoPaddingChainAcrossCalls) {
   std::vector<uint8_t> ciphertext2(kCiphertext2,
                                    kCiphertext2 + arraysize(kCiphertext2));
 
-  AesCbcEncryptor encryptor(kNoPadding, kChainAcrossCalls);
+  AesCbcEncryptor encryptor(kNoPadding, AesCryptor::kDontUseConstantIv);
   ASSERT_TRUE(encryptor.InitializeWithIv(key_, iv_));
 
   std::vector<uint8_t> encrypted;
   ASSERT_TRUE(encryptor.Crypt(plaintext, &encrypted));
   EXPECT_EQ(ciphertext, encrypted);
-  // Iv should have been updated.
-  EXPECT_NE(iv_, encryptor.iv());
   // If run encrypt again, the result will be different.
   ASSERT_TRUE(encryptor.Crypt(plaintext, &encrypted));
+  EXPECT_NE(ciphertext, ciphertext2);
   EXPECT_EQ(ciphertext2, encrypted);
 
-  AesCbcDecryptor decryptor(kNoPadding, kChainAcrossCalls);
+  AesCbcDecryptor decryptor(kNoPadding, AesCryptor::kDontUseConstantIv);
   ASSERT_TRUE(decryptor.InitializeWithIv(key_, iv_));
 
   std::vector<uint8_t> decrypted;
   ASSERT_TRUE(decryptor.Crypt(ciphertext, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
-  // Iv should have been updated.
-  EXPECT_NE(iv_, encryptor.iv());
   // If run decrypt on ciphertext2 now, it will return the original plaintext.
   ASSERT_TRUE(decryptor.Crypt(ciphertext2, &decrypted));
   EXPECT_EQ(plaintext, decrypted);
@@ -524,9 +533,11 @@ TEST_F(AesCbcTest, UnsupportedKeySize) {
   EXPECT_FALSE(decryptor_->InitializeWithIv(std::vector<uint8_t>(15, 0), iv_));
 }
 
-TEST_F(AesCbcTest, UnsupportedIvSize) {
+TEST_F(AesCbcTest, VariousIvSize) {
   EXPECT_FALSE(encryptor_->InitializeWithIv(key_, std::vector<uint8_t>(14, 0)));
-  EXPECT_FALSE(decryptor_->InitializeWithIv(key_, std::vector<uint8_t>(8, 0)));
+  EXPECT_FALSE(decryptor_->InitializeWithIv(key_, std::vector<uint8_t>(7, 0)));
+  EXPECT_FALSE(decryptor_->InitializeWithIv(key_, std::vector<uint8_t>(1, 0)));
+  EXPECT_TRUE(decryptor_->InitializeWithIv(key_, std::vector<uint8_t>(8, 0)));
 }
 
 TEST_F(AesCbcTest, Pkcs5CipherTextNotMultipleOfBlockSize) {
@@ -584,10 +595,10 @@ class AesCbcCryptorVerificationTest
       public ::testing::WithParamInterface<CbcTestCase> {};
 
 TEST_P(AesCbcCryptorVerificationTest, EncryptDecryptTest) {
-  encryptor_.reset(
-      new AesCbcEncryptor(GetParam().padding_scheme, !kChainAcrossCalls));
-  decryptor_.reset(
-      new AesCbcDecryptor(GetParam().padding_scheme, !kChainAcrossCalls));
+  encryptor_.reset(new AesCbcEncryptor(GetParam().padding_scheme,
+                                       AesCryptor::kUseConstantIv));
+  decryptor_.reset(new AesCbcDecryptor(GetParam().padding_scheme,
+                                       AesCryptor::kUseConstantIv));
 
   std::vector<uint8_t> plaintext;
   std::string plaintext_hex(GetParam().plaintext_hex);

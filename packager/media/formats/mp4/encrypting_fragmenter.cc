@@ -197,20 +197,17 @@ Status EncryptingFragmenter::CreateEncryptor() {
       encryptor.reset(new AesCtrEncryptor);
       break;
     case FOURCC_cbc1:
-      encryptor.reset(new AesCbcEncryptor(kNoPadding, kChainAcrossCalls));
+      encryptor.reset(new AesCbcEncryptor(kNoPadding));
       break;
     case FOURCC_cens:
-      encryptor.reset(
-          new AesPatternCryptor(crypt_byte_block(), skip_byte_block(),
-                                AesPatternCryptor::kDontUseConstantIv,
-                                scoped_ptr<AesCryptor>(new AesCtrEncryptor)));
+      encryptor.reset(new AesPatternCryptor(
+          crypt_byte_block(), skip_byte_block(), AesCryptor::kDontUseConstantIv,
+          scoped_ptr<AesCryptor>(new AesCtrEncryptor)));
       break;
     case FOURCC_cbcs:
-      encryptor.reset(
-          new AesPatternCryptor(crypt_byte_block(), skip_byte_block(),
-                                AesPatternCryptor::kUseConstantIv,
-                                scoped_ptr<AesCryptor>(new AesCbcEncryptor(
-                                    kNoPadding, kChainAcrossCalls))));
+      encryptor.reset(new AesPatternCryptor(
+          crypt_byte_block(), skip_byte_block(), AesCryptor::kUseConstantIv,
+          scoped_ptr<AesCryptor>(new AesCbcEncryptor(kNoPadding))));
       break;
     default:
       return Status(error::MUXER_FAILURE, "Unsupported protection scheme.");

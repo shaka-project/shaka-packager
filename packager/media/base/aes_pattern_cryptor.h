@@ -15,11 +15,6 @@ namespace media {
 /// Implements pattern-based encryption/decryption.
 class AesPatternCryptor : public AesCryptor {
  public:
-  enum ConstantIvFlag {
-    kUseConstantIv,
-    kDontUseConstantIv,
-  };
-
   /// @param crypt_byte_block indicates number of encrypted blocks (16-byte) in
   ///        pattern based encryption.
   /// @param skip_byte_block indicates number of unencrypted blocks (16-byte)
@@ -42,22 +37,18 @@ class AesPatternCryptor : public AesCryptor {
   /// @{
   bool InitializeWithIv(const std::vector<uint8_t>& key,
                         const std::vector<uint8_t>& iv) override;
-  bool SetIv(const std::vector<uint8_t>& iv) override;
-  void UpdateIv() override;
   /// @}
 
- protected:
+ private:
   bool CryptInternal(const uint8_t* text,
                      size_t text_size,
                      uint8_t* crypt_text,
                      size_t* crypt_text_size) override;
+  void SetIvInternal() override;
 
- private:
   const uint8_t crypt_byte_block_;
   const uint8_t skip_byte_block_;
-  const ConstantIvFlag constant_iv_flag_;
   scoped_ptr<AesCryptor> cryptor_;
-  std::vector<uint8_t> iv_;
 
   DISALLOW_COPY_AND_ASSIGN(AesPatternCryptor);
 };

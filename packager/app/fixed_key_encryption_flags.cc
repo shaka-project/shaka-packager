@@ -50,6 +50,14 @@ bool ValidateFixedCryptoFlags() {
                     "--enable_fixed_key_encryption")) {
     success = false;
   }
+  if (!FLAGS_iv.empty()) {
+    if (FLAGS_iv.size() != 8 * 2 && FLAGS_iv.size() != 16 * 2) {
+      PrintError(
+          "--iv should be either 8 bytes (16 hex digits) or 16 bytes (32 hex "
+          "digits).");
+      success = false;
+    }
+  }
 
   // --pssh is associated with --enable_fix_key_encryption.
   if (!ValidateFlag("pssh",

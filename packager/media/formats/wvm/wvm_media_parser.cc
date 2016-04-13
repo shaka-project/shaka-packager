@@ -1114,7 +1114,7 @@ bool WvmMediaParser::ProcessEcm() {
       encryption_key.key.begin(),
       encryption_key.key.begin() + kAssetKeySizeBytes);
   std::vector<uint8_t> iv(kInitializationVectorSizeBytes);
-  AesCbcDecryptor asset_decryptor(kCtsPadding, !kChainAcrossCalls);
+  AesCbcDecryptor asset_decryptor(kCtsPadding, AesCryptor::kUseConstantIv);
   if (!asset_decryptor.InitializeWithIv(asset_key, iv)) {
     LOG(ERROR) << "Failed to initialize asset_decryptor.";
     return false;
@@ -1131,7 +1131,7 @@ bool WvmMediaParser::ProcessEcm() {
       content_key_buffer.begin() + 4,
       content_key_buffer.begin() + 20);
   scoped_ptr<AesCbcDecryptor> content_decryptor(
-      new AesCbcDecryptor(kCtsPadding, !kChainAcrossCalls));
+      new AesCbcDecryptor(kCtsPadding, AesCryptor::kUseConstantIv));
   if (!content_decryptor->InitializeWithIv(decrypted_content_key_vec, iv)) {
     LOG(ERROR) << "Failed to initialize content decryptor.";
     return false;

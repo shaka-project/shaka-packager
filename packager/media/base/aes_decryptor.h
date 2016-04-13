@@ -24,22 +24,28 @@ using AesCtrDecryptor = AesCtrEncryptor;
 /// Class which implements AES-CBC (Cipher block chaining) decryption.
 class AesCbcDecryptor : public AesCryptor {
  public:
+  /// Creates a AesCbcDecryptor with continous cipher block chain across Crypt
+  /// calls.
   /// @param padding_scheme indicates the padding scheme used. Currently
   ///        supported schemes: kNoPadding, kPkcs5Padding, kCtsPadding.
-  /// @param chain_across_calls indicates whether there is a continuous cipher
-  ///        block chain across calls for Decrypt function. If it is false, iv
-  ///        is not updated across Decrypt function calls.
-  AesCbcDecryptor(CbcPaddingScheme padding_scheme, bool chain_across_calls);
+  explicit AesCbcDecryptor(CbcPaddingScheme padding_scheme);
+
+  /// @param padding_scheme indicates the padding scheme used. Currently
+  ///        supported schemes: kNoPadding, kPkcs5Padding, kCtsPadding.
+  /// @param constant_iv_flag indicates whether a constant iv is used,
+  ///        kUseConstantIv means that the same iv is used for all Crypt calls
+  ///        until iv is changed via SetIv; otherwise, iv is updated internally
+  ///        and there is a continuous cipher block chain across Crypt calls
+  ///        util iv is changed explicitly via SetIv or UpdateIv functions.
+  AesCbcDecryptor(CbcPaddingScheme padding_scheme,
+                  ConstantIvFlag constant_iv_flag);
+
   ~AesCbcDecryptor() override;
 
   /// @name AesCryptor implementation overrides.
   /// @{
   bool InitializeWithIv(const std::vector<uint8_t>& key,
                         const std::vector<uint8_t>& iv) override;
-  bool SetIv(const std::vector<uint8_t>& iv) override;
-  void UpdateIv() override {
-    // Nop for decryptor.
-  }
   /// @}
 
  private:
@@ -47,9 +53,11 @@ class AesCbcDecryptor : public AesCryptor {
                      size_t ciphertext_size,
                      uint8_t* plaintext,
                      size_t* plaintext_size) override;
+  void SetIvInternal() override;
 
   const CbcPaddingScheme padding_scheme_;
-  const bool chain_across_calls_;
+  // 16-byte internal iv for crypto operations.
+  std::vector<uint8_t> internal_iv_;
 
   DISALLOW_COPY_AND_ASSIGN(AesCbcDecryptor);
 };

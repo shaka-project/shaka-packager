@@ -24,7 +24,18 @@ namespace media {
 // implementations.
 class AesCryptor {
  public:
-  AesCryptor();
+  enum ConstantIvFlag {
+    kUseConstantIv,
+    kDontUseConstantIv,
+  };
+
+  /// @param constant_iv_flag indicates whether a constant iv is used,
+  ///        kUseConstantIv means that the same iv is used for all Crypt calls
+  ///        until iv is changed via SetIv; otherwise, iv can be incremented
+  ///        (for counter mode) or chained (for cipher block chaining mode)
+  ///        internally inside Crypt call, i.e. iv will be updated across Crypt
+  ///        calls.
+  explicit AesCryptor(ConstantIvFlag constant_iv_flag);
   virtual ~AesCryptor();
 
   /// Initialize the cryptor with specified key and IV.
@@ -43,18 +54,28 @@ class AesCryptor {
   /// @param crypt_text should have at least @a text_size bytes.
   bool Crypt(const uint8_t* text, size_t text_size, uint8_t* crypt_text) {
     size_t crypt_text_size = text_size;
-    return CryptInternal(text, text_size, crypt_text, &crypt_text_size);
+    return Crypt(text, text_size, crypt_text, &crypt_text_size);
+  }
+  bool Crypt(const uint8_t* text,
+             size_t text_size,
+             uint8_t* crypt_text,
+             size_t* crypt_text_size) {
+    if (constant_iv_flag_ == kUseConstantIv)
+      SetIvInternal();
+    else
+      num_crypt_bytes_ += text_size;
+    return CryptInternal(text, text_size, crypt_text, crypt_text_size);
   }
   /// @}
 
   /// Set IV.
   /// @return true if successful, false if the input is invalid.
-  virtual bool SetIv(const std::vector<uint8_t>& iv) = 0;
+  bool SetIv(const std::vector<uint8_t>& iv);
 
   /// Update IV for next sample. As recommended in ISO/IEC 23001-7: IV need to
   /// be updated per sample for CENC.
-  /// This is used by encryptors only.
-  virtual void UpdateIv() = 0;
+  /// This is used by encryptors only. It is a NOP if using kUseConstantIv.
+  void UpdateIv();
 
   /// @return The current iv.
   const std::vector<uint8_t>& iv() const { return iv_; }
@@ -67,7 +88,6 @@ class AesCryptor {
                                std::vector<uint8_t>* iv);
 
  protected:
-  void set_iv(const std::vector<uint8_t>& iv) { iv_ = iv; }
   const AES_KEY* aes_key() const { return aes_key_.get(); }
   AES_KEY* mutable_aes_key() { return aes_key_.get(); }
 
@@ -87,15 +107,26 @@ class AesCryptor {
                              uint8_t* crypt_text,
                              size_t* crypt_text_size) = 0;
 
+  // Internal implementation of SetIv, which setup internal iv.
+  virtual void SetIvInternal() = 0;
+
   // |size| specifies the input text size.
   // Return the number of padding bytes needed.
   // Note: No paddings should be needed except for pkcs5-cbc encryptor.
   virtual size_t NumPaddingBytes(size_t size) const;
 
-  // Initialization vector, with size 8 or 16.
-  std::vector<uint8_t> iv_;
   // Openssl AES_KEY.
   scoped_ptr<AES_KEY> aes_key_;
+
+  // Indicates whether a constant iv is used. Internal iv will be reset to
+  // |iv_| before calling Crypt if that is the case.
+  const ConstantIvFlag constant_iv_flag_;
+  // Initialization vector from by SetIv or InitializeWithIv, with size 8 or 16
+  // bytes.
+  std::vector<uint8_t> iv_;
+  // Tracks number of crypt bytes. It is used to calculate how many blocks
+  // should iv advance in UpdateIv(). It will be reset to 0 after iv is updated.
+  size_t num_crypt_bytes_;
 
   DISALLOW_COPY_AND_ASSIGN(AesCryptor);
 };

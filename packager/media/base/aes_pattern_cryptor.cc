@@ -17,9 +17,9 @@ AesPatternCryptor::AesPatternCryptor(uint8_t crypt_byte_block,
                                      uint8_t skip_byte_block,
                                      ConstantIvFlag constant_iv_flag,
                                      scoped_ptr<AesCryptor> cryptor)
-    : crypt_byte_block_(crypt_byte_block),
+    : AesCryptor(constant_iv_flag),
+      crypt_byte_block_(crypt_byte_block),
       skip_byte_block_(skip_byte_block),
-      constant_iv_flag_(constant_iv_flag),
       cryptor_(cryptor.Pass()) {
   DCHECK(cryptor_);
 }
@@ -28,26 +28,13 @@ AesPatternCryptor::~AesPatternCryptor() {}
 
 bool AesPatternCryptor::InitializeWithIv(const std::vector<uint8_t>& key,
                                          const std::vector<uint8_t>& iv) {
-  iv_ = iv;
-  return cryptor_->InitializeWithIv(key, iv);
-}
-
-bool AesPatternCryptor::SetIv(const std::vector<uint8_t>& iv) {
-  iv_ = iv;
-  return cryptor_->SetIv(iv);
-}
-
-void AesPatternCryptor::UpdateIv() {
-  cryptor_->UpdateIv();
+  return SetIv(iv) && cryptor_->InitializeWithIv(key, iv);
 }
 
 bool AesPatternCryptor::CryptInternal(const uint8_t* text,
                                       size_t text_size,
                                       uint8_t* crypt_text,
                                       size_t* crypt_text_size) {
-  if (constant_iv_flag_ == AesPatternCryptor::kUseConstantIv)
-    CHECK(SetIv(iv_));
-
   // |crypt_text_size| is always the same as |text_size| for pattern encryption.
   if (*crypt_text_size < text_size) {
     LOG(ERROR) << "Expecting output size of at least " << text_size
@@ -78,6 +65,10 @@ bool AesPatternCryptor::CryptInternal(const uint8_t* text,
     crypt_text += skip_byte_size;
   }
   return true;
+}
+
+void AesPatternCryptor::SetIvInternal() {
+  CHECK(cryptor_->SetIv(iv()));
 }
 
 }  // namespace media

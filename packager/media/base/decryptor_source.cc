@@ -46,22 +46,19 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
         aes_decryptor.reset(new AesCtrDecryptor);
         break;
       case FOURCC_cbc1:
-        aes_decryptor.reset(new AesCbcDecryptor(kNoPadding, kChainAcrossCalls));
+        aes_decryptor.reset(new AesCbcDecryptor(kNoPadding));
         break;
       case FOURCC_cens:
-        aes_decryptor.reset(
-            new AesPatternCryptor(decrypt_config->crypt_byte_block(),
-                                  decrypt_config->skip_byte_block(),
-                                  AesPatternCryptor::kDontUseConstantIv,
-                                  scoped_ptr<AesCryptor>(new AesCtrDecryptor)));
+        aes_decryptor.reset(new AesPatternCryptor(
+            decrypt_config->crypt_byte_block(),
+            decrypt_config->skip_byte_block(), AesCryptor::kDontUseConstantIv,
+            scoped_ptr<AesCryptor>(new AesCtrDecryptor)));
         break;
       case FOURCC_cbcs:
-        aes_decryptor.reset(
-            new AesPatternCryptor(decrypt_config->crypt_byte_block(),
-                                  decrypt_config->skip_byte_block(),
-                                  AesPatternCryptor::kUseConstantIv,
-                                  scoped_ptr<AesCryptor>(new AesCbcDecryptor(
-                                      kNoPadding, kChainAcrossCalls))));
+        aes_decryptor.reset(new AesPatternCryptor(
+            decrypt_config->crypt_byte_block(),
+            decrypt_config->skip_byte_block(), AesCryptor::kUseConstantIv,
+            scoped_ptr<AesCryptor>(new AesCbcDecryptor(kNoPadding))));
         break;
       default:
         LOG(ERROR) << "Unsupported protection scheme: "

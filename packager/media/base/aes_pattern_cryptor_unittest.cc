@@ -24,16 +24,17 @@ namespace media {
 
 class MockAesCryptor : public AesCryptor {
  public:
+  MockAesCryptor() : AesCryptor(kDontUseConstantIv) {}
+
   MOCK_METHOD2(InitializeWithIv,
                bool(const std::vector<uint8_t>& key,
                     const std::vector<uint8_t>& iv));
-  MOCK_METHOD1(SetIv, bool(const std::vector<uint8_t>& iv));
-  MOCK_METHOD0(UpdateIv, void());
   MOCK_METHOD4(CryptInternal,
                bool(const uint8_t* text,
                     size_t text_size,
                     uint8_t* crypt_text,
                     size_t* crypt_text_size));
+  MOCK_METHOD0(SetIvInternal, void());
 };
 
 class AesPatternCryptorTest : public ::testing::Test {
@@ -42,7 +43,7 @@ class AesPatternCryptorTest : public ::testing::Test {
       : mock_cryptor_(new MockAesCryptor),
         pattern_cryptor_(kCryptByteBlock,
                          kSkipByteBlock,
-                         AesPatternCryptor::kDontUseConstantIv,
+                         AesCryptor::kDontUseConstantIv,
                          scoped_ptr<MockAesCryptor>(mock_cryptor_)) {}
 
  protected:
@@ -55,11 +56,7 @@ TEST_F(AesPatternCryptorTest, InitializeWithIv) {
   std::vector<uint8_t> iv(8, 'i');
   EXPECT_CALL(*mock_cryptor_, InitializeWithIv(key, iv)).WillOnce(Return(true));
   EXPECT_TRUE(pattern_cryptor_.InitializeWithIv(key, iv));
-}
-
-TEST_F(AesPatternCryptorTest, UpdateIv) {
-  EXPECT_CALL(*mock_cryptor_, UpdateIv());
-  pattern_cryptor_.UpdateIv();
+  EXPECT_EQ(iv, pattern_cryptor_.iv());
 }
 
 namespace {
@@ -152,7 +149,7 @@ TEST(AesPatternCryptorConstIvTest, UseConstantIv) {
   // SetIv will be called twice:
   //   once by AesPatternCryptor::SetIv,
   //   once by AesPatternCryptor::Crypt, to make sure the same iv is used.
-  EXPECT_CALL(*mock_cryptor, SetIv(iv)).Times(2).WillRepeatedly(Return(true));
+  EXPECT_CALL(*mock_cryptor, SetIvInternal()).Times(2);
   EXPECT_TRUE(pattern_cryptor.SetIv(iv));
 
   std::string crypt_text;
@@ -167,7 +164,7 @@ TEST(AesPatternCryptorConstIvTest, DontUseConstantIv) {
 
   std::vector<uint8_t> iv(8, 'i');
   // SetIv will be called only once by AesPatternCryptor::SetIv.
-  EXPECT_CALL(*mock_cryptor, SetIv(iv)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_cryptor, SetIvInternal());
   EXPECT_TRUE(pattern_cryptor.SetIv(iv));
 
   std::string crypt_text;
