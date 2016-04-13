@@ -49,9 +49,13 @@ bool H265ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
   // Skip Nalu header (2) and the first byte of the SPS to get the
   // profile_tier_level.
   buffer.AppendArray(&last_sps_[2+1], 12);
-  // min_spacial_segmentation_idc = 0 (Unknown)
-  // TODO(modmaker): Parse vui_parameters and update this.
-  buffer.AppendInt(static_cast<uint16_t>(0xf000));
+
+  // The default value for this field is 0, which is Unknown.
+  int min_spatial_segmentation_idc =
+      sps->vui_parameters.min_spatial_segmentation_idc;
+
+  buffer.AppendInt(
+      static_cast<uint16_t>(0xf000 | min_spatial_segmentation_idc));
   buffer.AppendInt(static_cast<uint8_t>(0xfc) /* parallelismType = 0 */);
   buffer.AppendInt(static_cast<uint8_t>(0xfc | sps->chroma_format_idc));
   buffer.AppendInt(static_cast<uint8_t>(0xf8 | sps->bit_depth_luma_minus8));

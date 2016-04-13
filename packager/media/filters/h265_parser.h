@@ -22,6 +22,16 @@ enum H265SliceType { kBSlice = 0, kPSlice = 1, kISlice = 2 };
 
 const int kMaxRefPicSetCount = 16;
 
+// On success, |coded_width| and |coded_height| contains coded resolution after
+// cropping; |pixel_width:pixel_height| contains pixel aspect ratio, 1:1 is
+// assigned if it is not present in SPS.
+struct H265Sps;
+bool ExtractResolutionFromSps(const H265Sps& sps,
+                              uint32_t* coded_width,
+                              uint32_t* coded_height,
+                              uint32_t* pixel_width,
+                              uint32_t* pixel_height);
+
 struct H265ReferencePictureSet {
   int delta_poc_s0[kMaxRefPicSetCount];
   int delta_poc_s1[kMaxRefPicSetCount];
@@ -31,6 +41,20 @@ struct H265ReferencePictureSet {
   int num_negative_pics;
   int num_positive_pics;
   int num_delta_pocs;
+};
+
+struct H265VuiParameters {
+  enum { kExtendedSar = 255 };
+
+  bool aspect_ratio_info_present_flag = false;
+  int aspect_ratio_idc = 0;
+  int sar_width = 0;
+  int sar_height = 0;
+
+  bool bitstream_restriction_flag = false;
+  int min_spatial_segmentation_idc = 0;
+
+  // Incomplete...
 };
 
 struct H265Pps {
@@ -162,6 +186,9 @@ struct H265Sps {
   bool temporal_mvp_enabled_flag = false;
   bool strong_intra_smoothing_enabled_flag = false;
 
+  bool vui_parameters_present = false;
+  H265VuiParameters vui_parameters;
+
   // Ignored: extensions...
 };
 
@@ -277,6 +304,10 @@ class H265Parser {
   const H265Sps* GetSps(int sps_id);
 
  private:
+  Result ParseVuiParameters(int max_num_sub_layers_minus1,
+                            H26xBitReader* br,
+                            H265VuiParameters* vui);
+
   Result ParseReferencePictureSet(
       int num_short_term_ref_pic_sets,
       int st_rpx_idx,
@@ -304,6 +335,12 @@ class H265Parser {
                               H26xBitReader* br);
 
   Result SkipScalingListData(H26xBitReader* br);
+
+  Result SkipHrdParameters(int max_num_sub_layers_minus1, H26xBitReader* br);
+
+  Result SkipSubLayerHrdParameters(int cpb_cnt_minus1,
+                                   bool sub_pic_hdr_params_present_flag,
+                                   H26xBitReader* br);
 
   typedef std::map<int, H265Sps*> SpsById;
   typedef std::map<int, H265Pps*> PpsById;

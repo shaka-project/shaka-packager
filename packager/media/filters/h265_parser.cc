@@ -11,6 +11,7 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/stl_util.h"
+#include "packager/media/base/macros.h"
 #include "packager/media/filters/nalu_reader.h"
 
 #define TRUE_OR_RETURN(a)                            \
@@ -51,7 +52,98 @@ int GetNumPicTotalCurr(const H265SliceHeader& slice_header,
 
   return num_pic_total_curr + slice_header.used_by_curr_pic_lt;
 }
+
+void GetAspectRatioInfo(const H265Sps& sps,
+                        uint32_t* pixel_width,
+                        uint32_t* pixel_height) {
+  // The default value is 0; so if this is not in the SPS, it will correctly
+  // assume unspecified.
+  int aspect_ratio_idc = sps.vui_parameters.aspect_ratio_idc;
+
+  // Table E.1
+  switch (aspect_ratio_idc) {
+    case 1:  *pixel_width = 1;   *pixel_height = 1;  break;
+    case 2:  *pixel_width = 12;  *pixel_height = 11; break;
+    case 3:  *pixel_width = 10;  *pixel_height = 11; break;
+    case 4:  *pixel_width = 16;  *pixel_height = 11; break;
+    case 5:  *pixel_width = 40;  *pixel_height = 33; break;
+    case 6:  *pixel_width = 24;  *pixel_height = 11; break;
+    case 7:  *pixel_width = 20;  *pixel_height = 11; break;
+    case 8:  *pixel_width = 32;  *pixel_height = 11; break;
+    case 9:  *pixel_width = 80;  *pixel_height = 33; break;
+    case 10: *pixel_width = 18;  *pixel_height = 11; break;
+    case 11: *pixel_width = 15;  *pixel_height = 11; break;
+    case 12: *pixel_width = 64;  *pixel_height = 33; break;
+    case 13: *pixel_width = 160; *pixel_height = 99; break;
+    case 14: *pixel_width = 4;   *pixel_height = 3;  break;
+    case 15: *pixel_width = 3;   *pixel_height = 2;  break;
+    case 16: *pixel_width = 2;   *pixel_height = 1;  break;
+
+    case 255:
+      *pixel_width = sps.vui_parameters.sar_width;
+      *pixel_height = sps.vui_parameters.sar_height;
+      break;
+
+    default:
+      // Section E.3.1 specifies that other values should be interpreted as 0.
+      LOG(WARNING) << "Unknown aspect_ratio_idc " << aspect_ratio_idc;
+      FALLTHROUGH_INTENDED;
+    case 0:
+      // Unlike the spec, assume 1:1 if not specified.
+      *pixel_width = 1;
+      *pixel_height = 1;
+      break;
+  }
+}
 }  // namespace
+
+bool ExtractResolutionFromSps(const H265Sps& sps,
+                              uint32_t* coded_width,
+                              uint32_t* coded_height,
+                              uint32_t* pixel_width,
+                              uint32_t* pixel_height) {
+  int crop_x = 0;
+  int crop_y = 0;
+  if (sps.conformance_window_flag) {
+    int sub_width_c = 0;
+    int sub_height_c = 0;
+
+    // Table 6-1
+    switch (sps.chroma_format_idc) {
+      case 0:  // Monochrome
+        sub_width_c = 1;
+        sub_height_c = 1;
+        break;
+      case 1:  // 4:2:0
+        sub_width_c = 2;
+        sub_height_c = 2;
+        break;
+      case 2:  // 4:2:2
+        sub_width_c = 2;
+        sub_height_c = 1;
+        break;
+      case 3:  // 4:4:4
+        sub_width_c = 1;
+        sub_height_c = 1;
+        break;
+      default:
+        LOG(ERROR) << "Unexpected chroma_format_idc " << sps.chroma_format_idc;
+        return false;
+    }
+
+    // Formula D-28, D-29
+    crop_x =
+        sub_width_c * (sps.conf_win_right_offset + sps.conf_win_left_offset);
+    crop_y =
+        sub_height_c * (sps.conf_win_bottom_offset + sps.conf_win_top_offset);
+  }
+
+  // Formula D-28, D-29
+  *coded_width = sps.pic_width_in_luma_samples - crop_x;
+  *coded_height = sps.pic_height_in_luma_samples - crop_y;
+  GetAspectRatioInfo(sps, pixel_width, pixel_height);
+  return true;
+}
 
 H265Pps::H265Pps() {}
 H265Pps::~H265Pps() {}
@@ -519,6 +611,12 @@ H265Parser::Result H265Parser::ParseSps(const Nalu& nalu, int* sps_id) {
   TRUE_OR_RETURN(br->ReadBool(&sps->temporal_mvp_enabled_flag));
   TRUE_OR_RETURN(br->ReadBool(&sps->strong_intra_smoothing_enabled_flag));
 
+  TRUE_OR_RETURN(br->ReadBool(&sps->vui_parameters_present));
+  if (sps->vui_parameters_present) {
+    OK_OR_RETURN(ParseVuiParameters(sps->max_sub_layers_minus1, br,
+                                    &sps->vui_parameters));
+  }
+
   // Ignore remaining extension data.
 
   // This will replace any existing SPS instance.
@@ -535,6 +633,98 @@ const H265Pps* H265Parser::GetPps(int pps_id) {
 
 const H265Sps* H265Parser::GetSps(int sps_id) {
   return active_spses_[sps_id];
+}
+
+H265Parser::Result H265Parser::ParseVuiParameters(int max_num_sub_layers_minus1,
+                                                  H26xBitReader* br,
+                                                  H265VuiParameters* vui) {
+  // Reads whole element but ignores most of it.
+  int ignored;
+
+  TRUE_OR_RETURN(br->ReadBool(&vui->aspect_ratio_info_present_flag));
+  if (vui->aspect_ratio_info_present_flag) {
+    TRUE_OR_RETURN(br->ReadBits(8, &vui->aspect_ratio_idc));
+    if (vui->aspect_ratio_idc == H265VuiParameters::kExtendedSar) {
+      TRUE_OR_RETURN(br->ReadBits(16, &vui->sar_width));
+      TRUE_OR_RETURN(br->ReadBits(16, &vui->sar_height));
+    }
+  }
+
+  bool overscan_info_present_flag;
+  TRUE_OR_RETURN(br->ReadBool(&overscan_info_present_flag));
+  if (overscan_info_present_flag) {
+    TRUE_OR_RETURN(br->SkipBits(1));  // overscan_appropriate_flag
+  }
+
+  bool video_signal_type_present_flag;
+  TRUE_OR_RETURN(br->ReadBool(&video_signal_type_present_flag));
+  if (video_signal_type_present_flag) {
+    TRUE_OR_RETURN(br->SkipBits(3));  // video_format
+    TRUE_OR_RETURN(br->SkipBits(1));  // video_full_range_flag
+
+    bool colour_description_present_flag;
+    TRUE_OR_RETURN(br->ReadBool(&colour_description_present_flag));
+    if (colour_description_present_flag) {
+      // colour_primaries, transfer_characteristics, matrix_coeffs
+      TRUE_OR_RETURN(br->SkipBits(8 + 8 + 8));
+    }
+  }
+
+  bool chroma_loc_info_present_flag;
+  TRUE_OR_RETURN(br->ReadBool(&chroma_loc_info_present_flag));
+  if (chroma_loc_info_present_flag) {
+    // chroma_sample_log_type_top_field, chroma_sample_log_type_bottom_field
+    TRUE_OR_RETURN(br->ReadUE(&ignored));
+    TRUE_OR_RETURN(br->ReadUE(&ignored));
+  }
+
+  // neutral_chroma_indication_flag, field_seq_flag,
+  // frame_field_info_present_flag.
+  TRUE_OR_RETURN(br->SkipBits(3));
+
+  bool default_display_window_flag;
+  TRUE_OR_RETURN(br->ReadBool(&default_display_window_flag));
+  if (default_display_window_flag) {
+    TRUE_OR_RETURN(br->ReadUE(&ignored));  // def_disp_win_left_offset
+    TRUE_OR_RETURN(br->ReadUE(&ignored));  // def_disp_win_right_offset
+    TRUE_OR_RETURN(br->ReadUE(&ignored));  // def_disp_win_top_offset
+    TRUE_OR_RETURN(br->ReadUE(&ignored));  // def_disp_win_bottom_offset
+  }
+
+  bool vui_timing_info_present_flag;
+  TRUE_OR_RETURN(br->ReadBool(&vui_timing_info_present_flag));
+  if (vui_timing_info_present_flag) {
+    // vui_num_units_in_tick, vui_time_scale
+    TRUE_OR_RETURN(br->SkipBits(32 + 32));
+
+    bool vui_poc_proportional_to_timing_flag;
+    TRUE_OR_RETURN(br->ReadBool(&vui_poc_proportional_to_timing_flag));
+    if (vui_poc_proportional_to_timing_flag) {
+      // vui_num_ticks_poc_diff_one_minus1
+      TRUE_OR_RETURN(br->ReadUE(&ignored));
+    }
+
+    bool vui_hdr_parameters_present_flag;
+    TRUE_OR_RETURN(br->ReadBool(&vui_hdr_parameters_present_flag));
+    if (vui_hdr_parameters_present_flag) {
+      OK_OR_RETURN(SkipHrdParameters(max_num_sub_layers_minus1, br));
+    }
+  }
+
+  TRUE_OR_RETURN(br->ReadBool(&vui->bitstream_restriction_flag));
+  if (vui->bitstream_restriction_flag) {
+    // tiles_fixed_structure_flag, motion_vectors_over_pic_boundaries_flag,
+    // restricted_ref_pic_lists_flag.
+    TRUE_OR_RETURN(br->SkipBits(3));
+
+    TRUE_OR_RETURN(br->ReadUE(&vui->min_spatial_segmentation_idc));
+    TRUE_OR_RETURN(br->ReadUE(&ignored));  // max_bytes_per_pic_denom
+    TRUE_OR_RETURN(br->ReadUE(&ignored));  // max_bits_per_min_cu_denum
+    TRUE_OR_RETURN(br->ReadUE(&ignored));  // log2_max_mv_length_horizontal
+    TRUE_OR_RETURN(br->ReadUE(&ignored));  // log2_max_mv_length_vertical
+  }
+
+  return kOk;
 }
 
 H265Parser::Result H265Parser::ParseReferencePictureSet(
@@ -838,6 +1028,85 @@ H265Parser::Result H265Parser::SkipScalingListData(H26xBitReader* br) {
         }
       }
     }
+  }
+
+  return kOk;
+}
+
+H265Parser::Result H265Parser::SkipHrdParameters(int max_num_sub_layers_minus1,
+                                                 H26xBitReader* br) {
+  // common_inf_present_flag is always 1 when parsing vui_parameters.
+  const bool common_inf_present_flag = true;
+
+  int ignored;
+  bool nal_hdr_parameters_present_flag;
+  bool vcl_hdr_parameters_present_flag;
+  bool sub_pic_hdr_params_present_flag = false;
+  if (common_inf_present_flag) {
+    TRUE_OR_RETURN(br->ReadBool(&nal_hdr_parameters_present_flag));
+    TRUE_OR_RETURN(br->ReadBool(&vcl_hdr_parameters_present_flag));
+    if (nal_hdr_parameters_present_flag || vcl_hdr_parameters_present_flag) {
+      TRUE_OR_RETURN(br->ReadBool(&sub_pic_hdr_params_present_flag));
+      if (sub_pic_hdr_params_present_flag) {
+        // tick_divisor_minus2, du_cpb_removal_delay_increment_length_minus1,
+        // sub_pic_cpb_params_in_pic_timing_sei_flag
+        // dpb_output_delay_du_length_minus1
+        TRUE_OR_RETURN(br->SkipBits(8 + 5 + 1 + 5));
+      }
+
+      // bit_rate_scale, cpb_size_scale
+      TRUE_OR_RETURN(br->SkipBits(4 + 4));
+      if (sub_pic_hdr_params_present_flag)
+        TRUE_OR_RETURN(br->SkipBits(4));  // cpb_size_du_scale
+
+      // initial_cpb_removal_delay_length_minus1,
+      // au_cpb_removal_delay_length_minus1, dpb_output_delay_length_minus1
+      TRUE_OR_RETURN(br->SkipBits(5 + 5 + 5));
+    }
+  }
+
+  for (int i = 0; i <= max_num_sub_layers_minus1; i++) {
+    bool fixed_pic_rate_general_flag;
+    bool fixed_pic_rate_within_cvs_flag = true;
+    bool low_delay_hdr_flag = false;
+    int cpb_cnt_minus1 = 0;
+    TRUE_OR_RETURN(br->ReadBool(&fixed_pic_rate_general_flag));
+    if (!fixed_pic_rate_general_flag)
+      TRUE_OR_RETURN(br->ReadBool(&fixed_pic_rate_within_cvs_flag));
+    if (fixed_pic_rate_within_cvs_flag)
+      TRUE_OR_RETURN(br->ReadUE(&ignored));  // elemental_duration_ic_tc_minus1
+    else
+      TRUE_OR_RETURN(br->ReadBool(&low_delay_hdr_flag));
+    if (!low_delay_hdr_flag)
+      TRUE_OR_RETURN(br->ReadUE(&cpb_cnt_minus1));
+
+    if (nal_hdr_parameters_present_flag) {
+      OK_OR_RETURN(SkipSubLayerHrdParameters(
+          cpb_cnt_minus1, sub_pic_hdr_params_present_flag, br));
+    }
+    if (vcl_hdr_parameters_present_flag) {
+      OK_OR_RETURN(SkipSubLayerHrdParameters(
+          cpb_cnt_minus1, sub_pic_hdr_params_present_flag, br));
+    }
+  }
+
+  return kOk;
+}
+
+H265Parser::Result H265Parser::SkipSubLayerHrdParameters(
+    int cpb_cnt_minus1,
+    bool sub_pic_hdr_params_present_flag,
+    H26xBitReader* br) {
+  int ignored;
+  for (int i = 0; i <= cpb_cnt_minus1; i++) {
+    TRUE_OR_RETURN(br->ReadUE(&ignored));  // bit_rate_value_minus1
+    TRUE_OR_RETURN(br->ReadUE(&ignored));  // cpb_size_value_minus1
+    if (sub_pic_hdr_params_present_flag) {
+      TRUE_OR_RETURN(br->ReadUE(&ignored));  // cpb_size_du_value_minus1
+      TRUE_OR_RETURN(br->ReadUE(&ignored));  // bit_rate_du_value_minus1
+    }
+
+    TRUE_OR_RETURN(br->SkipBits(1));  // cbr_flag
   }
 
   return kOk;

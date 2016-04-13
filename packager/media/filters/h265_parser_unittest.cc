@@ -125,6 +125,52 @@ TEST(H265ParserTest, ParsePps) {
   EXPECT_EQ(0, pps->log2_parallel_merge_level_minus2);
 }
 
+TEST(H265ParserTest, ExtractResolutionFromSpsData) {
+  H265Parser parser;
+  int sps_id = 0;
+  Nalu nalu;
+  ASSERT_TRUE(nalu.InitializeFromH265(kSpsData, arraysize(kSpsData)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &sps_id));
+
+  uint32_t coded_width = 0;
+  uint32_t coded_height = 0;
+  uint32_t pixel_width = 0;
+  uint32_t pixel_height = 0;
+  ASSERT_TRUE(ExtractResolutionFromSps(*parser.GetSps(sps_id), &coded_width,
+                                       &coded_height, &pixel_width,
+                                       &pixel_height));
+  EXPECT_EQ(640u, coded_width);
+  EXPECT_EQ(360u, coded_height);
+  EXPECT_EQ(1u, pixel_width);
+  EXPECT_EQ(1u, pixel_height);
+}
+
+TEST(H265ParserTest, ExtractResolutionFromSpsDataWithCrop) {
+  const uint8_t kSpsCropData[] = {
+      0x42, 0x01, 0x01, 0x01, 0x60, 0x00, 0x00, 0x03, 0x00, 0x90, 0x00,
+      0x00, 0x03, 0x00, 0x00, 0x03, 0x00, 0x3c, 0xa0, 0x0f, 0x08, 0x0f,
+      0x16, 0x59, 0x99, 0xa4, 0x93, 0x2b, 0xff, 0xc0, 0xd5, 0xc0, 0xd6,
+      0x40, 0x40, 0x00, 0x00, 0x03, 0x00, 0x40, 0x00, 0x00, 0x06, 0x02,
+  };
+  H265Parser parser;
+  int sps_id = 0;
+  Nalu nalu;
+  ASSERT_TRUE(nalu.InitializeFromH265(kSpsCropData, arraysize(kSpsCropData)));
+  ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &sps_id));
+
+  uint32_t coded_width = 0;
+  uint32_t coded_height = 0;
+  uint32_t pixel_width = 0;
+  uint32_t pixel_height = 0;
+  ASSERT_TRUE(ExtractResolutionFromSps(*parser.GetSps(sps_id), &coded_width,
+                                       &coded_height, &pixel_width,
+                                       &pixel_height));
+  EXPECT_EQ(480u, coded_width);
+  EXPECT_EQ(240u, coded_height);
+  EXPECT_EQ(855u, pixel_width);
+  EXPECT_EQ(857u, pixel_height);
+}
+
 }  // namespace H265
 }  // namespace media
 }  // namespace edash_packager
