@@ -916,7 +916,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00827"></a><span class="lineno">  827</span>&#160;        <span class="comment">// Set extra data for video stream from AVC Decoder Config Record.</span></div>
 <div class="line"><a name="l00828"></a><span class="lineno">  828</span>&#160;        <span class="comment">// Also, set codec string from the AVC Decoder Config Record.</span></div>
 <div class="line"><a name="l00829"></a><span class="lineno">  829</span>&#160;        std::vector&lt;uint8_t&gt; decoder_config_record;</div>
-<div class="line"><a name="l00830"></a><span class="lineno">  830</span>&#160;        byte_to_unit_stream_converter_.GetAVCDecoderConfigurationRecord(</div>
+<div class="line"><a name="l00830"></a><span class="lineno">  830</span>&#160;        byte_to_unit_stream_converter_.GetDecoderConfigurationRecord(</div>
 <div class="line"><a name="l00831"></a><span class="lineno">  831</span>&#160;            &amp;decoder_config_record);</div>
 <div class="line"><a name="l00832"></a><span class="lineno">  832</span>&#160;        <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; stream_infos_.size(); i++) {</div>
 <div class="line"><a name="l00833"></a><span class="lineno">  833</span>&#160;          <span class="keywordflow">if</span> (stream_infos_[i]-&gt;stream_type() == media::kStreamVideo &amp;&amp;</div>
@@ -1261,7 +1261,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 12 2016 23:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 13 2016 21:42:48 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

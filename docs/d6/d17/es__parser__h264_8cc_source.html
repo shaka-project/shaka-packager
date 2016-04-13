@@ -418,7 +418,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;</div>
 <div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;<span class="keywordtype">bool</span> EsParserH264::UpdateVideoDecoderConfig(<span class="keyword">const</span> H264Sps* sps) {</div>
 <div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  std::vector&lt;uint8_t&gt; decoder_config_record;</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  <span class="keywordflow">if</span> (!stream_converter_-&gt;GetAVCDecoderConfigurationRecord(</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  <span class="keywordflow">if</span> (!stream_converter_-&gt;GetDecoderConfigurationRecord(</div>
 <div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;          &amp;decoder_config_record)) {</div>
 <div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    DLOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failure to construct an AVCDecoderConfigurationRecord&quot;</span>;</div>
 <div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -484,7 +484,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 12 2016 23:58:01 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 13 2016 21:42:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

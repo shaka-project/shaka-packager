@@ -209,12 +209,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    kInvalidStream,      <span class="comment">// error in stream</span></div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    kEOStream,           <span class="comment">// end of stream</span></div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  };</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keyword">enum</span> NaluType {</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keyword">enum</span> CodecType {</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    kH264,</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    kH265,</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  };</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  <a class="code" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#a47c6d8fa9d49494cf015a32ebecbb35c">NaluReader</a>(NaluType type,</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  <a class="code" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#a83978e4b54b0c72b703c507407907dc7">NaluReader</a>(CodecType type,</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;             uint8_t nal_length_size,</div>
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;             <span class="keyword">const</span> uint8_t* stream,</div>
 <div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;             uint64_t stream_size);</div>
@@ -258,7 +258,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  <span class="comment">// The remaining size of the stream.</span></div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  uint64_t stream_size_;</div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  <span class="comment">// The type of NALU being read.</span></div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  NaluType nalu_type_;</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  CodecType nalu_type_;</div>
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  <span class="comment">// The number of bytes the prefix length is; only valid if format is</span></div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  <span class="comment">// kAnnexbByteStreamFormat.</span></div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  uint8_t nalu_length_size_;</div>
@@ -276,11 +276,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classedash__packager_1_1media_1_1Nalu_html"><div class="ttname"><a href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">edash_packager::media::Nalu</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00026">nalu_reader.h:26</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1NaluReader_html_af9382cd46f2f4d22636f7f5513e8df1d"><div class="ttname"><a href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#af9382cd46f2f4d22636f7f5513e8df1d">edash_packager::media::NaluReader::Advance</a></div><div class="ttdeci">Result Advance(Nalu *nalu)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df5/nalu__reader_8cc_source.html#l00159">nalu_reader.cc:159</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1NaluReader_html_a0f700b8bc3163065111b77d6a37a92db"><div class="ttname"><a href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#a0f700b8bc3163065111b77d6a37a92db">edash_packager::media::NaluReader::StartsWithStartCode</a></div><div class="ttdeci">bool StartsWithStartCode()</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df5/nalu__reader_8cc_source.html#l00217">nalu_reader.cc:217</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1NaluReader_html_a47c6d8fa9d49494cf015a32ebecbb35c"><div class="ttname"><a href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#a47c6d8fa9d49494cf015a32ebecbb35c">edash_packager::media::NaluReader::NaluReader</a></div><div class="ttdeci">NaluReader(NaluType type, uint8_t nal_length_size, const uint8_t *stream, uint64_t stream_size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df5/nalu__reader_8cc_source.html#l00145">nalu_reader.cc:145</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1NaluReader_html_a83978e4b54b0c72b703c507407907dc7"><div class="ttname"><a href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#a83978e4b54b0c72b703c507407907dc7">edash_packager::media::NaluReader::NaluReader</a></div><div class="ttdeci">NaluReader(CodecType type, uint8_t nal_length_size, const uint8_t *stream, uint64_t stream_size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df5/nalu__reader_8cc_source.html#l00145">nalu_reader.cc:145</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 12 2016 23:58:01 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 13 2016 21:42:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

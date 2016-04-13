@@ -105,15 +105,15 @@ Public Types</h2></td></tr>
 <b>kEOStream</b>
  }</td></tr>
 <tr class="separator:a5a45861bb0f201f7df8cfa87233b6d64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1c2f255811d6700f87aefd203fbc88a7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>NaluType</b> { <b>kH264</b>, 
+<tr class="memitem:a66bada7ac5a101cb51f32a2e688a2560"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>CodecType</b> { <b>kH264</b>, 
 <b>kH265</b>
  }</td></tr>
-<tr class="separator:a1c2f255811d6700f87aefd203fbc88a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="separator:a66bada7ac5a101cb51f32a2e688a2560"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a47c6d8fa9d49494cf015a32ebecbb35c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#a47c6d8fa9d49494cf015a32ebecbb35c">NaluReader</a> (NaluType type, uint8_t nal_length_size, const uint8_t *stream, uint64_t stream_size)</td></tr>
-<tr class="separator:a47c6d8fa9d49494cf015a32ebecbb35c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83978e4b54b0c72b703c507407907dc7"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#a83978e4b54b0c72b703c507407907dc7">NaluReader</a> (CodecType type, uint8_t nal_length_size, const uint8_t *stream, uint64_t stream_size)</td></tr>
+<tr class="separator:a83978e4b54b0c72b703c507407907dc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9382cd46f2f4d22636f7f5513e8df1d"><td class="memItemLeft" align="right" valign="top">Result&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#af9382cd46f2f4d22636f7f5513e8df1d">Advance</a> (<a class="el" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a> *nalu)</td></tr>
 <tr class="separator:af9382cd46f2f4d22636f7f5513e8df1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0f700b8bc3163065111b77d6a37a92db"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#a0f700b8bc3163065111b77d6a37a92db">StartsWithStartCode</a> ()</td></tr>
@@ -134,14 +134,14 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>FindStartCode<
 
 <p>Definition at line <a class="el" href="../../d4/d87/nalu__reader_8h_source.html#l00121">121</a> of file <a class="el" href="../../d4/d87/nalu__reader_8h_source.html">nalu_reader.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a47c6d8fa9d49494cf015a32ebecbb35c"></a>
+<a class="anchor" id="a83978e4b54b0c72b703c507407907dc7"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">edash_packager::media::NaluReader::NaluReader </td>
           <td>(</td>
-          <td class="paramtype">NaluType&#160;</td>
+          <td class="paramtype">CodecType&#160;</td>
           <td class="paramname"><em>type</em>, </td>
         </tr>
         <tr>
@@ -232,7 +232,7 @@ static bool&#160;</td><td class="memItemRight" valign="bottom"><b>FindStartCode<
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 12 2016 23:58:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 13 2016 21:42:49 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
