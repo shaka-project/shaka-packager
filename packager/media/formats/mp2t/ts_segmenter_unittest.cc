@@ -63,7 +63,8 @@ class MockPesPacketGenerator : public PesPacketGenerator {
 
 class MockTsWriter : public TsWriter {
  public:
-  MOCK_METHOD1(Initialize, bool(const StreamInfo& stream_info));
+  MOCK_METHOD2(Initialize,
+               bool(const StreamInfo& stream_info, bool will_be_encrypted));
   MOCK_METHOD1(NewSegment, bool(const std::string& file_name));
   MOCK_METHOD0(FinalizeSegment, bool());
 
@@ -97,7 +98,7 @@ TEST_F(TsSegmenterTest, Initialize) {
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
 
-  EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_ts_writer_, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
       .WillOnce(Return(true));
 
@@ -118,7 +119,7 @@ TEST_F(TsSegmenterTest, AddSample) {
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
 
-  EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_ts_writer_, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
       .WillOnce(Return(true));
 
@@ -180,7 +181,7 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
 
   const uint32_t kFirstPts = 1000;
 
-  EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_ts_writer_, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
       .WillOnce(Return(true));
 
@@ -278,7 +279,7 @@ TEST_F(TsSegmenterTest, InitializeThenFinalize) {
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
 
-  EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_ts_writer_, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
       .WillOnce(Return(true));
 
@@ -307,7 +308,7 @@ TEST_F(TsSegmenterTest, Finalize) {
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
 
-  EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_ts_writer_, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
       .WillOnce(Return(true));
 
@@ -336,7 +337,7 @@ TEST_F(TsSegmenterTest, SegmentOnlyBeforeKeyFrame) {
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options, nullptr);
 
-  EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_ts_writer_, Initialize(_, _)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
       .WillOnce(Return(true));
 

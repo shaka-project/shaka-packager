@@ -10,13 +10,15 @@
 namespace edash_packager {
 namespace media {
 
-enum FourCC {
+enum FourCC : uint32_t {
   FOURCC_NULL = 0,
 
   FOURCC_ID32 = 0x49443332,
   FOURCC_PRIV = 0x50524956,
 
+  FOURCC_aacd = 0x61616364,
   FOURCC_ac_3 = 0x61632d33,  // "ac-3"
+  FOURCC_apad = 0x61706164,
   FOURCC_avc1 = 0x61766331,
   FOURCC_avcC = 0x61766343,
   FOURCC_bloc = 0x626C6F63,
@@ -131,6 +133,9 @@ enum FourCC {
   FOURCC_vtte = 0x76747465,
   FOURCC_wide = 0x77696465,
   FOURCC_wvtt = 0x77767474,
+  FOURCC_zaac = 0x7A616163,
+  FOURCC_zach = 0x7A616368,
+  FOURCC_zacp = 0x7A616370,
 };
 
 const inline std::string FourCCToString(FourCC fourcc) {
