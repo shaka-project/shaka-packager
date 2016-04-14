@@ -60,7 +60,7 @@ const uint8_t kPat[] = {
     0xE0,        // first 3 bits is reserved.
     kPmtPid,
     // CRC32.
-    0xAB, 0xB9, 0x9E, 0x9D,
+    0xF9, 0x62, 0xF5, 0x8B,
 };
 
 // Like PAT, with encryption different PMTs are required.
@@ -81,7 +81,7 @@ const uint8_t kPmtH264[] = {
     kStreamTypeH264, 0xE0, kElementaryPid,  // stream_type -> PID.
     0xF0, 0x00,                             // Es_info_length is 0.
     // CRC32.
-    0x56, 0x90, 0xF4, 0xEB,
+    0x43, 0x49, 0x97, 0xBE,
 };
 
 const uint8_t kPmtAac[] = {
@@ -100,7 +100,7 @@ const uint8_t kPmtAac[] = {
     kStreamTypeAdtsAac, 0xE0, kElementaryPid,  // stream_type -> PID.
     0xF0, 0x00,                                // Es_info_length is 0.
     // CRC32.
-    0xC3, 0xF0, 0xC5, 0xA9,
+    0xE0, 0x6F, 0x1A, 0x31,
 };
 
 const bool kHasPcr = true;

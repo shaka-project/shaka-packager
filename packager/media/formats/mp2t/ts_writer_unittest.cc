@@ -170,7 +170,7 @@ TEST_F(TsWriterTest, NewSegment) {
       0xE0,        // first 3 bits is reserved.
       0x20,        // PMT PID.
       // CRC32.
-      0xAB, 0xB9, 0x9E, 0x9D,
+      0xf9, 0x62, 0xf5, 0x8b,
   };
 
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(
@@ -202,7 +202,7 @@ TEST_F(TsWriterTest, NewSegment) {
       0x1B, 0xE0, 0x50,  // stream_type -> PID.
       0xF0, 0x00,        // Es_info_length is 0.
       // CRC32.
-      0x56, 0x90, 0xF4, 0xEB,
+      0x43, 0x49, 0x97, 0xbe,
   };
 
   EXPECT_NO_FATAL_FAILURE(ExpectTsPacketEqual(
