@@ -313,443 +313,449 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;          desc_idx = 0;</div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;        tri.audio_description = &amp;stsd.audio_entries[desc_idx];</div>
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        <span class="comment">// We don&#39;t support encrypted non-fragmented mp4 for now.</span></div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;        RCHECK(!tri.audio_description-&gt;sinf.info.track_encryption.is_encrypted);</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (tri.track_type == kVideo) {</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;        RCHECK(!stsd.video_entries.empty());</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;        <span class="keywordflow">if</span> (desc_idx &gt; stsd.video_entries.size())</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;          desc_idx = 0;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;        tri.video_description = &amp;stsd.video_entries[desc_idx];</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        <span class="comment">// We don&#39;t support encrypted non-fragmented mp4 for now.</span></div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;        RCHECK(!tri.video_description-&gt;sinf.info.track_encryption.is_encrypted);</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;      }</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;      uint32_t samples_per_chunk = chunk_info.<a class="code" href="../../d8/d71/classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator.html#a57bb736f64a9ab08b1f1957bedf621b6">samples_per_chunk</a>();</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;      tri.samples.resize(samples_per_chunk);</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;      <span class="keywordflow">for</span> (uint32_t k = 0; k &lt; samples_per_chunk; ++k) {</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;        SampleInfo&amp; sample = tri.samples[k];</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;        sample.size = sample_size.sample_size != 0</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;                          ? sample_size.sample_size</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;                          : sample_size.sizes[sample_index];</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        sample.duration = decoding_time.<a class="code" href="../../d4/d90/classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator.html#ab7b1c20038d9bb2912cf2cf403d46a92">sample_delta</a>();</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;        sample.cts_offset =</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;            has_composition_offset ? composition_offset.<a class="code" href="../../d4/de5/classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator.html#a9abe77c82033bb5db017dc889f17b974">sample_offset</a>() : 0;</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        sample.is_keyframe = sync_sample.<a class="code" href="../../db/d01/classedash__packager_1_1media_1_1mp4_1_1SyncSampleIterator.html#a19c0a90ae6ce549a8826569103bdee1c">IsSyncSample</a>();</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        run_start_dts += sample.duration;</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;        RCHECK(tri.audio_description-&gt;sinf.info.track_encryption</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;                   .default_is_protected == 0);</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (tri.track_type == kVideo) {</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;        RCHECK(!stsd.video_entries.empty());</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;        <span class="keywordflow">if</span> (desc_idx &gt; stsd.video_entries.size())</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;          desc_idx = 0;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        tri.video_description = &amp;stsd.video_entries[desc_idx];</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;        <span class="comment">// We don&#39;t support encrypted non-fragmented mp4 for now.</span></div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;        RCHECK(tri.video_description-&gt;sinf.info.track_encryption</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;                   .default_is_protected == 0);</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;      }</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;      uint32_t samples_per_chunk = chunk_info.<a class="code" href="../../d8/d71/classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator.html#a57bb736f64a9ab08b1f1957bedf621b6">samples_per_chunk</a>();</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;      tri.samples.resize(samples_per_chunk);</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;      <span class="keywordflow">for</span> (uint32_t k = 0; k &lt; samples_per_chunk; ++k) {</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;        SampleInfo&amp; sample = tri.samples[k];</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;        sample.size = sample_size.sample_size != 0</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;                          ? sample_size.sample_size</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;                          : sample_size.sizes[sample_index];</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;        sample.duration = decoding_time.<a class="code" href="../../d4/d90/classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator.html#ab7b1c20038d9bb2912cf2cf403d46a92">sample_delta</a>();</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;        sample.cts_offset =</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;            has_composition_offset ? composition_offset.<a class="code" href="../../d4/de5/classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator.html#a9abe77c82033bb5db017dc889f17b974">sample_offset</a>() : 0;</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        sample.is_keyframe = sync_sample.<a class="code" href="../../db/d01/classedash__packager_1_1media_1_1mp4_1_1SyncSampleIterator.html#a19c0a90ae6ce549a8826569103bdee1c">IsSyncSample</a>();</div>
 <div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        <span class="comment">// Advance to next sample. Should success except for last sample.</span></div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        ++sample_index;</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        RCHECK(chunk_info.<a class="code" href="../../d8/d71/classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator.html#abef0d18263efb1ae8b601a88e05fd6cc">AdvanceSample</a>() &amp;&amp; sync_sample.<a class="code" href="../../db/d01/classedash__packager_1_1media_1_1mp4_1_1SyncSampleIterator.html#af185ed71d28bfb56940821165e4cbef4">AdvanceSample</a>());</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        <span class="keywordflow">if</span> (sample_index == num_samples) {</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;          <span class="comment">// We should hit end of tables for decoding time and composition</span></div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;          <span class="comment">// offset.</span></div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;          RCHECK(!decoding_time.<a class="code" href="../../d4/d90/classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator.html#a147cf702aaaef56bce32ca91c45bc071">AdvanceSample</a>());</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;          <span class="keywordflow">if</span> (has_composition_offset)</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;            RCHECK(!composition_offset.<a class="code" href="../../d4/de5/classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator.html#a545c773305ae13ef89ab1cef3a7fc1e6">AdvanceSample</a>());</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;          RCHECK(decoding_time.<a class="code" href="../../d4/d90/classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator.html#a147cf702aaaef56bce32ca91c45bc071">AdvanceSample</a>());</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;          <span class="keywordflow">if</span> (has_composition_offset)</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;            RCHECK(composition_offset.<a class="code" href="../../d4/de5/classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator.html#a545c773305ae13ef89ab1cef3a7fc1e6">AdvanceSample</a>());</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;        }</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;      }</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;      runs_.push_back(tri);</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    }</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  }</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  std::sort(runs_.begin(), runs_.end(), CompareMinTrackRunDataOffset());</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  run_itr_ = runs_.begin();</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  ResetRun();</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;}</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;</div>
-<div class="line"><a name="l00277"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a354985cb4f5eed26e91dbb343a6343a0">  277</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a6fd0f1d72f9a31a1c0d26c3b1ae25250">TrackRunIterator::Init</a>(<span class="keyword">const</span> <a class="code" href="../../dd/da2/structedash__packager_1_1media_1_1mp4_1_1MovieFragment.html">MovieFragment</a>&amp; moof) {</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  runs_.clear();</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  next_fragment_start_dts_.resize(moof.tracks.size(), 0);</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; moof.tracks.size(); i++) {</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a>&amp; traf = moof.tracks[i];</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d3/de1/structedash__packager_1_1media_1_1mp4_1_1Track.html">Track</a>* trak = NULL;</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> t = 0; t &lt; moov_-&gt;tracks.size(); t++) {</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;      <span class="keywordflow">if</span> (moov_-&gt;tracks[t].header.track_id == traf.header.track_id)</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;        trak = &amp;moov_-&gt;tracks[t];</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    }</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    RCHECK(trak);</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d3/d2c/structedash__packager_1_1media_1_1mp4_1_1TrackExtends.html">TrackExtends</a>* trex = NULL;</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> t = 0; t &lt; moov_-&gt;extends.tracks.size(); t++) {</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;      <span class="keywordflow">if</span> (moov_-&gt;extends.tracks[t].track_id == traf.header.track_id)</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;        trex = &amp;moov_-&gt;extends.tracks[t];</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    }</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    RCHECK(trex);</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d3/d74/structedash__packager_1_1media_1_1mp4_1_1SampleDescription.html">SampleDescription</a>&amp; stsd =</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;        trak-&gt;media.information.sample_table.description;</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;    <span class="keywordflow">if</span> (stsd.type != kAudio &amp;&amp; stsd.type != kVideo) {</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;      DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Skipping unhandled track type&quot;</span>;</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;    }</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    <span class="keywordtype">size_t</span> desc_idx = traf.header.sample_description_index;</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="keywordflow">if</span> (!desc_idx)</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;      desc_idx = trex-&gt;default_sample_description_index;</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    RCHECK(desc_idx &gt; 0);  <span class="comment">// Descriptions are one-indexed in the file</span></div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    desc_idx -= 1;</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../df/d62/structedash__packager_1_1media_1_1mp4_1_1AudioSampleEntry.html">AudioSampleEntry</a>* audio_sample_entry = NULL;</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../df/d6a/structedash__packager_1_1media_1_1mp4_1_1VideoSampleEntry.html">VideoSampleEntry</a>* video_sample_entry = NULL;</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    <span class="keywordflow">switch</span> (stsd.type) {</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;      <span class="keywordflow">case</span> kAudio:</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;        RCHECK(!stsd.audio_entries.empty());</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;        <span class="keywordflow">if</span> (desc_idx &gt; stsd.audio_entries.size())</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;          desc_idx = 0;</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        audio_sample_entry = &amp;stsd.audio_entries[desc_idx];</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;      <span class="keywordflow">case</span> kVideo:</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;        RCHECK(!stsd.video_entries.empty());</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;        <span class="keywordflow">if</span> (desc_idx &gt; stsd.video_entries.size())</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;          desc_idx = 0;</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;        video_sample_entry = &amp;stsd.video_entries[desc_idx];</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;      <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;        NOTREACHED();</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    }</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    <span class="comment">// SampleEncryptionEntries should not have been parsed, without having</span></div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;    <span class="comment">// iv_size. Parse the box now.</span></div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    DCHECK(traf.sample_encryption.sample_encryption_entries.empty());</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    std::vector&lt;SampleEncryptionEntry&gt; sample_encryption_entries;</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    <span class="keywordflow">if</span> (!traf.sample_encryption.<a class="code" href="../../d5/d78/structedash__packager_1_1media_1_1mp4_1_1SampleEncryption.html#ad241dc7c7acb0ff200444636b6881800">sample_encryption_data</a>.empty()) {</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;      RCHECK(audio_sample_entry || video_sample_entry);</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;      <span class="keyword">const</span> uint8_t default_iv_size =</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;          audio_sample_entry</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;              ? audio_sample_entry-&gt;sinf.info.track_encryption.default_iv_size</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;              : video_sample_entry-&gt;sinf.info.track_encryption.default_iv_size;</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;      RCHECK(traf.sample_encryption.<a class="code" href="../../d5/d78/structedash__packager_1_1media_1_1mp4_1_1SampleEncryption.html#af94f8472666f214a83461d09de3a524f">ParseFromSampleEncryptionData</a>(</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;          default_iv_size, &amp;sample_encryption_entries));</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;    }</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;    int64_t run_start_dts = traf.decode_time_absent</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;                                ? next_fragment_start_dts_[i]</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;                                : traf.decode_time.decode_time;</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;    <span class="keywordtype">int</span> sample_count_sum = 0;</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; traf.runs.size(); j++) {</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;      <span class="keyword">const</span> <a class="code" href="../../df/d21/structedash__packager_1_1media_1_1mp4_1_1TrackFragmentRun.html">TrackFragmentRun</a>&amp; trun = traf.runs[j];</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;      TrackRunInfo tri;</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;      tri.track_id = traf.header.track_id;</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;      tri.timescale = trak-&gt;media.header.timescale;</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;      tri.start_dts = run_start_dts;</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;      tri.sample_start_offset = trun.data_offset;</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;      tri.track_type = stsd.type;</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;      tri.audio_description = audio_sample_entry;</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;      tri.video_description = video_sample_entry;</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        run_start_dts += sample.duration;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        <span class="comment">// Advance to next sample. Should success except for last sample.</span></div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;        ++sample_index;</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;        RCHECK(chunk_info.<a class="code" href="../../d8/d71/classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator.html#abef0d18263efb1ae8b601a88e05fd6cc">AdvanceSample</a>() &amp;&amp; sync_sample.<a class="code" href="../../db/d01/classedash__packager_1_1media_1_1mp4_1_1SyncSampleIterator.html#af185ed71d28bfb56940821165e4cbef4">AdvanceSample</a>());</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        <span class="keywordflow">if</span> (sample_index == num_samples) {</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;          <span class="comment">// We should hit end of tables for decoding time and composition</span></div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;          <span class="comment">// offset.</span></div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;          RCHECK(!decoding_time.<a class="code" href="../../d4/d90/classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator.html#a147cf702aaaef56bce32ca91c45bc071">AdvanceSample</a>());</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;          <span class="keywordflow">if</span> (has_composition_offset)</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;            RCHECK(!composition_offset.<a class="code" href="../../d4/de5/classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator.html#a545c773305ae13ef89ab1cef3a7fc1e6">AdvanceSample</a>());</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;          RCHECK(decoding_time.<a class="code" href="../../d4/d90/classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator.html#a147cf702aaaef56bce32ca91c45bc071">AdvanceSample</a>());</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;          <span class="keywordflow">if</span> (has_composition_offset)</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;            RCHECK(composition_offset.<a class="code" href="../../d4/de5/classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator.html#a545c773305ae13ef89ab1cef3a7fc1e6">AdvanceSample</a>());</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        }</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;      }</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;      runs_.push_back(tri);</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    }</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;  }</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  std::sort(runs_.begin(), runs_.end(), CompareMinTrackRunDataOffset());</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  run_itr_ = runs_.begin();</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;  ResetRun();</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;}</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;</div>
+<div class="line"><a name="l00279"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a354985cb4f5eed26e91dbb343a6343a0">  279</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a6fd0f1d72f9a31a1c0d26c3b1ae25250">TrackRunIterator::Init</a>(<span class="keyword">const</span> <a class="code" href="../../dd/da2/structedash__packager_1_1media_1_1mp4_1_1MovieFragment.html">MovieFragment</a>&amp; moof) {</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  runs_.clear();</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  next_fragment_start_dts_.resize(moof.tracks.size(), 0);</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; moof.tracks.size(); i++) {</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a>&amp; traf = moof.tracks[i];</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d3/de1/structedash__packager_1_1media_1_1mp4_1_1Track.html">Track</a>* trak = NULL;</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> t = 0; t &lt; moov_-&gt;tracks.size(); t++) {</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;      <span class="keywordflow">if</span> (moov_-&gt;tracks[t].header.track_id == traf.header.track_id)</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;        trak = &amp;moov_-&gt;tracks[t];</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;    }</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    RCHECK(trak);</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d3/d2c/structedash__packager_1_1media_1_1mp4_1_1TrackExtends.html">TrackExtends</a>* trex = NULL;</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> t = 0; t &lt; moov_-&gt;extends.tracks.size(); t++) {</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;      <span class="keywordflow">if</span> (moov_-&gt;extends.tracks[t].track_id == traf.header.track_id)</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;        trex = &amp;moov_-&gt;extends.tracks[t];</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    }</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    RCHECK(trex);</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d3/d74/structedash__packager_1_1media_1_1mp4_1_1SampleDescription.html">SampleDescription</a>&amp; stsd =</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;        trak-&gt;media.information.sample_table.description;</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;    <span class="keywordflow">if</span> (stsd.type != kAudio &amp;&amp; stsd.type != kVideo) {</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;      DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Skipping unhandled track type&quot;</span>;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    }</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    <span class="keywordtype">size_t</span> desc_idx = traf.header.sample_description_index;</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    <span class="keywordflow">if</span> (!desc_idx)</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;      desc_idx = trex-&gt;default_sample_description_index;</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;    RCHECK(desc_idx &gt; 0);  <span class="comment">// Descriptions are one-indexed in the file</span></div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    desc_idx -= 1;</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../df/d62/structedash__packager_1_1media_1_1mp4_1_1AudioSampleEntry.html">AudioSampleEntry</a>* audio_sample_entry = NULL;</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../df/d6a/structedash__packager_1_1media_1_1mp4_1_1VideoSampleEntry.html">VideoSampleEntry</a>* video_sample_entry = NULL;</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    <span class="keywordflow">switch</span> (stsd.type) {</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;      <span class="keywordflow">case</span> kAudio:</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        RCHECK(!stsd.audio_entries.empty());</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        <span class="keywordflow">if</span> (desc_idx &gt; stsd.audio_entries.size())</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;          desc_idx = 0;</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;        audio_sample_entry = &amp;stsd.audio_entries[desc_idx];</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;      <span class="keywordflow">case</span> kVideo:</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;        RCHECK(!stsd.video_entries.empty());</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;        <span class="keywordflow">if</span> (desc_idx &gt; stsd.video_entries.size())</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;          desc_idx = 0;</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;        video_sample_entry = &amp;stsd.video_entries[desc_idx];</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;      <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;        NOTREACHED();</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    }</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    <span class="comment">// SampleEncryptionEntries should not have been parsed, without having</span></div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    <span class="comment">// iv_size. Parse the box now.</span></div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    DCHECK(traf.sample_encryption.sample_encryption_entries.empty());</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    std::vector&lt;SampleEncryptionEntry&gt; sample_encryption_entries;</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    <span class="keywordflow">if</span> (!traf.sample_encryption.<a class="code" href="../../d5/d78/structedash__packager_1_1media_1_1mp4_1_1SampleEncryption.html#ad241dc7c7acb0ff200444636b6881800">sample_encryption_data</a>.empty()) {</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;      RCHECK(audio_sample_entry || video_sample_entry);</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;      <span class="keyword">const</span> uint8_t default_per_sample_iv_size =</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;          audio_sample_entry</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;              ? audio_sample_entry-&gt;sinf.info.track_encryption</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;                    .default_per_sample_iv_size</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;              : video_sample_entry-&gt;sinf.info.track_encryption</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;                    .default_per_sample_iv_size;</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;      RCHECK(traf.sample_encryption.<a class="code" href="../../d5/d78/structedash__packager_1_1media_1_1mp4_1_1SampleEncryption.html#af94f8472666f214a83461d09de3a524f">ParseFromSampleEncryptionData</a>(</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;          default_per_sample_iv_size, &amp;sample_encryption_entries));</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    }</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;    int64_t run_start_dts = traf.decode_time_absent</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;                                ? next_fragment_start_dts_[i]</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;                                : traf.decode_time.decode_time;</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;    <span class="keywordtype">int</span> sample_count_sum = 0;</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;    <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> j = 0; j &lt; traf.runs.size(); j++) {</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;      <span class="keyword">const</span> <a class="code" href="../../df/d21/structedash__packager_1_1media_1_1mp4_1_1TrackFragmentRun.html">TrackFragmentRun</a>&amp; trun = traf.runs[j];</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;      TrackRunInfo tri;</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;      tri.track_id = traf.header.track_id;</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;      tri.timescale = trak-&gt;media.header.timescale;</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;      tri.start_dts = run_start_dts;</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;      tri.sample_start_offset = trun.data_offset;</div>
 <div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;      tri.aux_info_start_offset = -1;</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;      tri.aux_info_total_size = 0;</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;      <span class="comment">// Populate sample encryption entries from SampleEncryption &#39;senc&#39; box if</span></div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;      <span class="comment">// it is available; otherwise initialize aux_info variables, which will</span></div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;      <span class="comment">// be used to populate sample encryption entries later in CacheAuxInfo.</span></div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;      <span class="keywordflow">if</span> (!sample_encryption_entries.empty()) {</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;        RCHECK(sample_encryption_entries.size() &gt;=</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;               sample_count_sum + trun.sample_count);</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k &lt; trun.sample_count; ++k) {</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;          tri.sample_encryption_entries.push_back(</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;              sample_encryption_entries[sample_count_sum + k]);</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;        }</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (traf.auxiliary_offset.offsets.size() &gt; j) {</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;        <span class="comment">// Collect information from the auxiliary_offset entry with the same</span></div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;        <span class="comment">// index in the &#39;saiz&#39; container as the current run&#39;s index in the</span></div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;        <span class="comment">// &#39;trun&#39; container, if it is present.</span></div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;        tri.aux_info_start_offset = traf.auxiliary_offset.offsets[j];</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;        <span class="comment">// There should be an auxiliary info entry corresponding to each sample</span></div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;        <span class="comment">// in the auxiliary offset entry&#39;s corresponding track run.</span></div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;        RCHECK(traf.auxiliary_size.sample_count &gt;=</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;               sample_count_sum + trun.sample_count);</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;        tri.aux_info_default_size =</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;            traf.auxiliary_size.default_sample_info_size;</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;        <span class="keywordflow">if</span> (tri.aux_info_default_size == 0) {</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;          <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; sizes =</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;              traf.auxiliary_size.sample_info_sizes;</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;          tri.aux_info_sizes.insert(</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;              tri.aux_info_sizes.begin(),</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;              sizes.begin() + sample_count_sum,</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;              sizes.begin() + sample_count_sum + trun.sample_count);</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;        }</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;        <span class="comment">// If the default info size is positive, find the total size of the aux</span></div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;        <span class="comment">// info block from it, otherwise sum over the individual sizes of each</span></div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;        <span class="comment">// aux info entry in the aux_offset entry.</span></div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;        <span class="keywordflow">if</span> (tri.aux_info_default_size) {</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;          tri.aux_info_total_size =</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;              tri.aux_info_default_size * trun.sample_count;</div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;          tri.aux_info_total_size = 0;</div>
-<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;          <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k &lt; trun.sample_count; k++) {</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;            tri.aux_info_total_size += tri.aux_info_sizes[k];</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;          }</div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;        }</div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;      }</div>
-<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;      tri.samples.resize(trun.sample_count);</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k &lt; trun.sample_count; k++) {</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;        PopulateSampleInfo(*trex, traf.header, trun, k, &amp;tri.samples[k]);</div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;        run_start_dts += tri.samples[k].duration;</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;      }</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;      runs_.push_back(tri);</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;      sample_count_sum += trun.sample_count;</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;    }</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;    next_fragment_start_dts_[i] = run_start_dts;</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;  }</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;  std::sort(runs_.begin(), runs_.end(), CompareMinTrackRunDataOffset());</div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;  run_itr_ = runs_.begin();</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;  ResetRun();</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;}</div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;</div>
-<div class="line"><a name="l00424"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a73b4ffaf8c1bba665c475729c2c9e22f">  424</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a73b4ffaf8c1bba665c475729c2c9e22f">TrackRunIterator::AdvanceRun</a>() {</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;  ++run_itr_;</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;  ResetRun();</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;}</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;<span class="keywordtype">void</span> TrackRunIterator::ResetRun() {</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">IsRunValid</a>())</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;    <span class="keywordflow">return</span>;</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;  sample_dts_ = run_itr_-&gt;start_dts;</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;  sample_offset_ = run_itr_-&gt;sample_start_offset;</div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;  sample_itr_ = run_itr_-&gt;samples.begin();</div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;}</div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;</div>
-<div class="line"><a name="l00437"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a0414b608c3dbfb42074fd0d18a792b6c">  437</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a0414b608c3dbfb42074fd0d18a792b6c">TrackRunIterator::AdvanceSample</a>() {</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>());</div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;  sample_dts_ += sample_itr_-&gt;duration;</div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;  sample_offset_ += sample_itr_-&gt;size;</div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;  ++sample_itr_;</div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;}</div>
-<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;</div>
-<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;<span class="comment">// This implementation only indicates a need for caching if CENC auxiliary</span></div>
-<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;<span class="comment">// info is available in the stream.</span></div>
-<div class="line"><a name="l00446"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a3538a0f31238843afd2dfb4e94587f03">  446</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a3538a0f31238843afd2dfb4e94587f03">TrackRunIterator::AuxInfoNeedsToBeCached</a>() {</div>
-<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">IsRunValid</a>());</div>
-<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;  <span class="keywordflow">return</span> is_encrypted() &amp;&amp; aux_info_size() &gt; 0 &amp;&amp;</div>
-<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;         run_itr_-&gt;sample_encryption_entries.size() == 0;</div>
-<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;}</div>
-<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;</div>
-<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;<span class="comment">// This implementation currently only caches CENC auxiliary info.</span></div>
-<div class="line"><a name="l00453"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a1eff021eb8dd5177f49cc030acd16e8f">  453</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a1eff021eb8dd5177f49cc030acd16e8f">TrackRunIterator::CacheAuxInfo</a>(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">int</span> buf_size) {</div>
-<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;  RCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a3538a0f31238843afd2dfb4e94587f03">AuxInfoNeedsToBeCached</a>() &amp;&amp; buf_size &gt;= aux_info_size());</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;      tri.track_type = stsd.type;</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;      tri.audio_description = audio_sample_entry;</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;      tri.video_description = video_sample_entry;</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;      tri.aux_info_start_offset = -1;</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;      tri.aux_info_total_size = 0;</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;      <span class="comment">// Populate sample encryption entries from SampleEncryption &#39;senc&#39; box if</span></div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;      <span class="comment">// it is available; otherwise initialize aux_info variables, which will</span></div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;      <span class="comment">// be used to populate sample encryption entries later in CacheAuxInfo.</span></div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;      <span class="keywordflow">if</span> (!sample_encryption_entries.empty()) {</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;        RCHECK(sample_encryption_entries.size() &gt;=</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;               sample_count_sum + trun.sample_count);</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;        <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k &lt; trun.sample_count; ++k) {</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;          tri.sample_encryption_entries.push_back(</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;              sample_encryption_entries[sample_count_sum + k]);</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;        }</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (traf.auxiliary_offset.offsets.size() &gt; j) {</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;        <span class="comment">// Collect information from the auxiliary_offset entry with the same</span></div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;        <span class="comment">// index in the &#39;saiz&#39; container as the current run&#39;s index in the</span></div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;        <span class="comment">// &#39;trun&#39; container, if it is present.</span></div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;        tri.aux_info_start_offset = traf.auxiliary_offset.offsets[j];</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;        <span class="comment">// There should be an auxiliary info entry corresponding to each sample</span></div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;        <span class="comment">// in the auxiliary offset entry&#39;s corresponding track run.</span></div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;        RCHECK(traf.auxiliary_size.sample_count &gt;=</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;               sample_count_sum + trun.sample_count);</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;        tri.aux_info_default_size =</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;            traf.auxiliary_size.default_sample_info_size;</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;        <span class="keywordflow">if</span> (tri.aux_info_default_size == 0) {</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;          <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; sizes =</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;              traf.auxiliary_size.sample_info_sizes;</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;          tri.aux_info_sizes.insert(</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;              tri.aux_info_sizes.begin(),</div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;              sizes.begin() + sample_count_sum,</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;              sizes.begin() + sample_count_sum + trun.sample_count);</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;        }</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;        <span class="comment">// If the default info size is positive, find the total size of the aux</span></div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;        <span class="comment">// info block from it, otherwise sum over the individual sizes of each</span></div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;        <span class="comment">// aux info entry in the aux_offset entry.</span></div>
+<div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;        <span class="keywordflow">if</span> (tri.aux_info_default_size) {</div>
+<div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;          tri.aux_info_total_size =</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;              tri.aux_info_default_size * trun.sample_count;</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;          tri.aux_info_total_size = 0;</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;          <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k &lt; trun.sample_count; k++) {</div>
+<div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;            tri.aux_info_total_size += tri.aux_info_sizes[k];</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;          }</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;        }</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;      }</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;      tri.samples.resize(trun.sample_count);</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;      <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> k = 0; k &lt; trun.sample_count; k++) {</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;        PopulateSampleInfo(*trex, traf.header, trun, k, &amp;tri.samples[k]);</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;        run_start_dts += tri.samples[k].duration;</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;      }</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;      runs_.push_back(tri);</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;      sample_count_sum += trun.sample_count;</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;    }</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;    next_fragment_start_dts_[i] = run_start_dts;</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;  }</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;  std::sort(runs_.begin(), runs_.end(), CompareMinTrackRunDataOffset());</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;  run_itr_ = runs_.begin();</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;  ResetRun();</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;}</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;</div>
+<div class="line"><a name="l00428"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a73b4ffaf8c1bba665c475729c2c9e22f">  428</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a73b4ffaf8c1bba665c475729c2c9e22f">TrackRunIterator::AdvanceRun</a>() {</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;  ++run_itr_;</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;  ResetRun();</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;}</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;<span class="keywordtype">void</span> TrackRunIterator::ResetRun() {</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">IsRunValid</a>())</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;    <span class="keywordflow">return</span>;</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;  sample_dts_ = run_itr_-&gt;start_dts;</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;  sample_offset_ = run_itr_-&gt;sample_start_offset;</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;  sample_itr_ = run_itr_-&gt;samples.begin();</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;}</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;</div>
+<div class="line"><a name="l00441"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a0414b608c3dbfb42074fd0d18a792b6c">  441</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a0414b608c3dbfb42074fd0d18a792b6c">TrackRunIterator::AdvanceSample</a>() {</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>());</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;  sample_dts_ += sample_itr_-&gt;duration;</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;  sample_offset_ += sample_itr_-&gt;size;</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;  ++sample_itr_;</div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;}</div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;</div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;<span class="comment">// This implementation only indicates a need for caching if CENC auxiliary</span></div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;<span class="comment">// info is available in the stream.</span></div>
+<div class="line"><a name="l00450"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a3538a0f31238843afd2dfb4e94587f03">  450</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a3538a0f31238843afd2dfb4e94587f03">TrackRunIterator::AuxInfoNeedsToBeCached</a>() {</div>
+<div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">IsRunValid</a>());</div>
+<div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;  <span class="keywordflow">return</span> is_encrypted() &amp;&amp; aux_info_size() &gt; 0 &amp;&amp;</div>
+<div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;         run_itr_-&gt;sample_encryption_entries.size() == 0;</div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;}</div>
 <div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;</div>
-<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;  std::vector&lt;SampleEncryptionEntry&gt;&amp; sample_encryption_entries =</div>
-<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;      runs_[run_itr_ - runs_.begin()].sample_encryption_entries;</div>
-<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;  sample_encryption_entries.resize(run_itr_-&gt;samples.size());</div>
-<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;  int64_t pos = 0;</div>
-<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; run_itr_-&gt;samples.size(); i++) {</div>
-<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;    <span class="keywordtype">int</span> info_size = run_itr_-&gt;aux_info_default_size;</div>
-<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;    <span class="keywordflow">if</span> (!info_size)</div>
-<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;      info_size = run_itr_-&gt;aux_info_sizes[i];</div>
-<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;</div>
-<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;    <a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html">BufferReader</a> reader(buf + pos, info_size);</div>
-<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">bool</span> has_subsamples = info_size &gt; track_encryption().default_iv_size;</div>
-<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;    RCHECK(sample_encryption_entries[i].ParseFromBuffer(</div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;        track_encryption().default_iv_size, has_subsamples, &amp;reader));</div>
-<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;    pos += info_size;</div>
-<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;  }</div>
-<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;</div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;}</div>
-<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;</div>
-<div class="line"><a name="l00475"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">  475</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">TrackRunIterator::IsRunValid</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> run_itr_ != runs_.end(); }</div>
-<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;</div>
-<div class="line"><a name="l00477"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">  477</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">TrackRunIterator::IsSampleValid</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">IsRunValid</a>() &amp;&amp; (sample_itr_ != run_itr_-&gt;samples.end());</div>
+<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;<span class="comment">// This implementation currently only caches CENC auxiliary info.</span></div>
+<div class="line"><a name="l00457"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a1eff021eb8dd5177f49cc030acd16e8f">  457</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a1eff021eb8dd5177f49cc030acd16e8f">TrackRunIterator::CacheAuxInfo</a>(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">int</span> buf_size) {</div>
+<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;  RCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a3538a0f31238843afd2dfb4e94587f03">AuxInfoNeedsToBeCached</a>() &amp;&amp; buf_size &gt;= aux_info_size());</div>
+<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;</div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;  std::vector&lt;SampleEncryptionEntry&gt;&amp; sample_encryption_entries =</div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;      runs_[run_itr_ - runs_.begin()].sample_encryption_entries;</div>
+<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;  sample_encryption_entries.resize(run_itr_-&gt;samples.size());</div>
+<div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;  int64_t pos = 0;</div>
+<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; run_itr_-&gt;samples.size(); i++) {</div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;    <span class="keywordtype">int</span> info_size = run_itr_-&gt;aux_info_default_size;</div>
+<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;    <span class="keywordflow">if</span> (!info_size)</div>
+<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;      info_size = run_itr_-&gt;aux_info_sizes[i];</div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;</div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;    <a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html">BufferReader</a> reader(buf + pos, info_size);</div>
+<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">bool</span> has_subsamples =</div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;        info_size &gt; track_encryption().default_per_sample_iv_size;</div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;    RCHECK(sample_encryption_entries[i].ParseFromBuffer(</div>
+<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;        track_encryption().default_per_sample_iv_size, has_subsamples,</div>
+<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;        &amp;reader));</div>
+<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;    pos += info_size;</div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;  }</div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;</div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;}</div>
 <div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;</div>
-<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;<span class="comment">// Because tracks are in sorted order and auxiliary information is cached when</span></div>
-<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;<span class="comment">// returning samples, it is guaranteed that no data will be required before the</span></div>
-<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;<span class="comment">// lesser of the minimum data offset of this track and the next in sequence.</span></div>
-<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;<span class="comment">// (The stronger condition - that no data is required before the minimum data</span></div>
-<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;<span class="comment">// offset of this track alone - is not guaranteed, because the BMFF spec does</span></div>
-<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;<span class="comment">// not have any inter-run ordering restrictions.)</span></div>
-<div class="line"><a name="l00487"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a0927d4e877f453b00e3eb08230510a6c">  487</a></span>&#160;int64_t <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a0927d4e877f453b00e3eb08230510a6c">TrackRunIterator::GetMaxClearOffset</a>() {</div>
-<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;  int64_t offset = kInvalidOffset;</div>
-<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;</div>
-<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;  <span class="keywordflow">if</span> (<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>()) {</div>
-<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;    offset = std::min(offset, sample_offset_);</div>
-<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a3538a0f31238843afd2dfb4e94587f03">AuxInfoNeedsToBeCached</a>())</div>
-<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;      offset = std::min(offset, aux_info_offset());</div>
-<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;  }</div>
-<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;  <span class="keywordflow">if</span> (run_itr_ != runs_.end()) {</div>
-<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;    std::vector&lt;TrackRunInfo&gt;::const_iterator next_run = run_itr_ + 1;</div>
-<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;    <span class="keywordflow">if</span> (next_run != runs_.end()) {</div>
-<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;      offset = std::min(offset, next_run-&gt;sample_start_offset);</div>
-<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;      <span class="keywordflow">if</span> (next_run-&gt;aux_info_total_size)</div>
-<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;        offset = std::min(offset, next_run-&gt;aux_info_start_offset);</div>
-<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;    }</div>
-<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;  }</div>
-<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;  <span class="keywordflow">if</span> (offset == kInvalidOffset)</div>
-<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;    <span class="keywordflow">return</span> runs_.empty() ? 0 : runs_[0].sample_start_offset;</div>
-<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;  <span class="keywordflow">return</span> offset;</div>
-<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;}</div>
-<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;</div>
-<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;uint32_t TrackRunIterator::track_id()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">IsRunValid</a>());</div>
-<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;  <span class="keywordflow">return</span> run_itr_-&gt;track_id;</div>
-<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;}</div>
-<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;</div>
-<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;<span class="keywordtype">bool</span> TrackRunIterator::is_encrypted()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">IsRunValid</a>());</div>
-<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;  <span class="keywordflow">return</span> track_encryption().is_encrypted;</div>
-<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;}</div>
-<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;</div>
-<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;int64_t TrackRunIterator::aux_info_offset()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;  <span class="keywordflow">return</span> run_itr_-&gt;aux_info_start_offset;</div>
-<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;}</div>
-<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;</div>
-<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;<span class="keywordtype">int</span> TrackRunIterator::aux_info_size()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;  <span class="keywordflow">return</span> run_itr_-&gt;aux_info_total_size;</div>
-<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;}</div>
-<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;</div>
-<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;<span class="keywordtype">bool</span> TrackRunIterator::is_audio()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">IsRunValid</a>());</div>
-<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;  <span class="keywordflow">return</span> run_itr_-&gt;track_type == kAudio;</div>
-<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;}</div>
-<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;</div>
-<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;<span class="keywordtype">bool</span> TrackRunIterator::is_video()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">IsRunValid</a>());</div>
-<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;  <span class="keywordflow">return</span> run_itr_-&gt;track_type == kVideo;</div>
-<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;}</div>
-<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;</div>
-<div class="line"><a name="l00536"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a2c58182a77817e4ed4a2860ae3be73df">  536</a></span>&#160;<span class="keyword">const</span> <a class="code" href="../../df/d62/structedash__packager_1_1media_1_1mp4_1_1AudioSampleEntry.html">AudioSampleEntry</a>&amp; <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a2c58182a77817e4ed4a2860ae3be73df">TrackRunIterator::audio_description</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;  DCHECK(is_audio());</div>
-<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;  DCHECK(run_itr_-&gt;audio_description);</div>
-<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;  <span class="keywordflow">return</span> *run_itr_-&gt;audio_description;</div>
+<div class="line"><a name="l00481"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">  481</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">TrackRunIterator::IsRunValid</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> run_itr_ != runs_.end(); }</div>
+<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;</div>
+<div class="line"><a name="l00483"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">  483</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">TrackRunIterator::IsSampleValid</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">IsRunValid</a>() &amp;&amp; (sample_itr_ != run_itr_-&gt;samples.end());</div>
+<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;}</div>
+<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;</div>
+<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;<span class="comment">// Because tracks are in sorted order and auxiliary information is cached when</span></div>
+<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;<span class="comment">// returning samples, it is guaranteed that no data will be required before the</span></div>
+<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;<span class="comment">// lesser of the minimum data offset of this track and the next in sequence.</span></div>
+<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;<span class="comment">// (The stronger condition - that no data is required before the minimum data</span></div>
+<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;<span class="comment">// offset of this track alone - is not guaranteed, because the BMFF spec does</span></div>
+<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;<span class="comment">// not have any inter-run ordering restrictions.)</span></div>
+<div class="line"><a name="l00493"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a0927d4e877f453b00e3eb08230510a6c">  493</a></span>&#160;int64_t <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a0927d4e877f453b00e3eb08230510a6c">TrackRunIterator::GetMaxClearOffset</a>() {</div>
+<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;  int64_t offset = kInvalidOffset;</div>
+<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;</div>
+<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;  <span class="keywordflow">if</span> (<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>()) {</div>
+<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;    offset = std::min(offset, sample_offset_);</div>
+<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;    <span class="keywordflow">if</span> (<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a3538a0f31238843afd2dfb4e94587f03">AuxInfoNeedsToBeCached</a>())</div>
+<div class="line"><a name="l00499"></a><span class="lineno">  499</span>&#160;      offset = std::min(offset, aux_info_offset());</div>
+<div class="line"><a name="l00500"></a><span class="lineno">  500</span>&#160;  }</div>
+<div class="line"><a name="l00501"></a><span class="lineno">  501</span>&#160;  <span class="keywordflow">if</span> (run_itr_ != runs_.end()) {</div>
+<div class="line"><a name="l00502"></a><span class="lineno">  502</span>&#160;    std::vector&lt;TrackRunInfo&gt;::const_iterator next_run = run_itr_ + 1;</div>
+<div class="line"><a name="l00503"></a><span class="lineno">  503</span>&#160;    <span class="keywordflow">if</span> (next_run != runs_.end()) {</div>
+<div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;      offset = std::min(offset, next_run-&gt;sample_start_offset);</div>
+<div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;      <span class="keywordflow">if</span> (next_run-&gt;aux_info_total_size)</div>
+<div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;        offset = std::min(offset, next_run-&gt;aux_info_start_offset);</div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;    }</div>
+<div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;  }</div>
+<div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;  <span class="keywordflow">if</span> (offset == kInvalidOffset)</div>
+<div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;    <span class="keywordflow">return</span> runs_.empty() ? 0 : runs_[0].sample_start_offset;</div>
+<div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;  <span class="keywordflow">return</span> offset;</div>
+<div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;}</div>
+<div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;</div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;uint32_t TrackRunIterator::track_id()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">IsRunValid</a>());</div>
+<div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;  <span class="keywordflow">return</span> run_itr_-&gt;track_id;</div>
+<div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;}</div>
+<div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;</div>
+<div class="line"><a name="l00519"></a><span class="lineno">  519</span>&#160;<span class="keywordtype">bool</span> TrackRunIterator::is_encrypted()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">IsRunValid</a>());</div>
+<div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;  <span class="keywordflow">return</span> track_encryption().default_is_protected == 1;</div>
+<div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;}</div>
+<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;</div>
+<div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;int64_t TrackRunIterator::aux_info_offset()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;  <span class="keywordflow">return</span> run_itr_-&gt;aux_info_start_offset;</div>
+<div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;}</div>
+<div class="line"><a name="l00527"></a><span class="lineno">  527</span>&#160;</div>
+<div class="line"><a name="l00528"></a><span class="lineno">  528</span>&#160;<span class="keywordtype">int</span> TrackRunIterator::aux_info_size()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00529"></a><span class="lineno">  529</span>&#160;  <span class="keywordflow">return</span> run_itr_-&gt;aux_info_total_size;</div>
+<div class="line"><a name="l00530"></a><span class="lineno">  530</span>&#160;}</div>
+<div class="line"><a name="l00531"></a><span class="lineno">  531</span>&#160;</div>
+<div class="line"><a name="l00532"></a><span class="lineno">  532</span>&#160;<span class="keywordtype">bool</span> TrackRunIterator::is_audio()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00533"></a><span class="lineno">  533</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">IsRunValid</a>());</div>
+<div class="line"><a name="l00534"></a><span class="lineno">  534</span>&#160;  <span class="keywordflow">return</span> run_itr_-&gt;track_type == kAudio;</div>
+<div class="line"><a name="l00535"></a><span class="lineno">  535</span>&#160;}</div>
+<div class="line"><a name="l00536"></a><span class="lineno">  536</span>&#160;</div>
+<div class="line"><a name="l00537"></a><span class="lineno">  537</span>&#160;<span class="keywordtype">bool</span> TrackRunIterator::is_video()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00538"></a><span class="lineno">  538</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">IsRunValid</a>());</div>
+<div class="line"><a name="l00539"></a><span class="lineno">  539</span>&#160;  <span class="keywordflow">return</span> run_itr_-&gt;track_type == kVideo;</div>
 <div class="line"><a name="l00540"></a><span class="lineno">  540</span>&#160;}</div>
 <div class="line"><a name="l00541"></a><span class="lineno">  541</span>&#160;</div>
-<div class="line"><a name="l00542"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a981f52a2e185f5b9f0bf7bb17ff6f3d8">  542</a></span>&#160;<span class="keyword">const</span> <a class="code" href="../../df/d6a/structedash__packager_1_1media_1_1mp4_1_1VideoSampleEntry.html">VideoSampleEntry</a>&amp; <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a981f52a2e185f5b9f0bf7bb17ff6f3d8">TrackRunIterator::video_description</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;  DCHECK(is_video());</div>
-<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;  DCHECK(run_itr_-&gt;video_description);</div>
-<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;  <span class="keywordflow">return</span> *run_itr_-&gt;video_description;</div>
+<div class="line"><a name="l00542"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a2c58182a77817e4ed4a2860ae3be73df">  542</a></span>&#160;<span class="keyword">const</span> <a class="code" href="../../df/d62/structedash__packager_1_1media_1_1mp4_1_1AudioSampleEntry.html">AudioSampleEntry</a>&amp; <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a2c58182a77817e4ed4a2860ae3be73df">TrackRunIterator::audio_description</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00543"></a><span class="lineno">  543</span>&#160;  DCHECK(is_audio());</div>
+<div class="line"><a name="l00544"></a><span class="lineno">  544</span>&#160;  DCHECK(run_itr_-&gt;audio_description);</div>
+<div class="line"><a name="l00545"></a><span class="lineno">  545</span>&#160;  <span class="keywordflow">return</span> *run_itr_-&gt;audio_description;</div>
 <div class="line"><a name="l00546"></a><span class="lineno">  546</span>&#160;}</div>
 <div class="line"><a name="l00547"></a><span class="lineno">  547</span>&#160;</div>
-<div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;int64_t TrackRunIterator::sample_offset()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>());</div>
-<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;  <span class="keywordflow">return</span> sample_offset_;</div>
-<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;}</div>
-<div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;</div>
-<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;<span class="keywordtype">int</span> TrackRunIterator::sample_size()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>());</div>
-<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160;  <span class="keywordflow">return</span> sample_itr_-&gt;size;</div>
-<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;}</div>
-<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;</div>
-<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;int64_t TrackRunIterator::dts()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>());</div>
-<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;  <span class="keywordflow">return</span> sample_dts_;</div>
-<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;}</div>
-<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;</div>
-<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;int64_t TrackRunIterator::cts()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>());</div>
-<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;  <span class="keywordflow">return</span> sample_dts_ + sample_itr_-&gt;cts_offset;</div>
-<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;}</div>
-<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;</div>
-<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;int64_t TrackRunIterator::duration()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>());</div>
-<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;  <span class="keywordflow">return</span> sample_itr_-&gt;duration;</div>
-<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;}</div>
-<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;</div>
-<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;<span class="keywordtype">bool</span> TrackRunIterator::is_keyframe()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>());</div>
-<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;  <span class="keywordflow">return</span> sample_itr_-&gt;is_keyframe;</div>
-<div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;}</div>
-<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;</div>
-<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;<span class="keyword">const</span> TrackEncryption&amp; TrackRunIterator::track_encryption()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;  <span class="keywordflow">if</span> (is_audio())</div>
-<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a2c58182a77817e4ed4a2860ae3be73df">audio_description</a>().sinf.info.track_encryption;</div>
-<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;  DCHECK(is_video());</div>
-<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a981f52a2e185f5b9f0bf7bb17ff6f3d8">video_description</a>().sinf.info.track_encryption;</div>
-<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;}</div>
-<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;</div>
-<div class="line"><a name="l00585"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae62fc9fe719f4432d4043ea2f43963c6">  585</a></span>&#160;scoped_ptr&lt;DecryptConfig&gt; <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae62fc9fe719f4432d4043ea2f43963c6">TrackRunIterator::GetDecryptConfig</a>() {</div>
-<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;  <span class="keywordtype">size_t</span> sample_idx = sample_itr_ - run_itr_-&gt;samples.begin();</div>
-<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;  DCHECK_LT(sample_idx, run_itr_-&gt;sample_encryption_entries.size());</div>
-<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../d8/de5/structedash__packager_1_1media_1_1mp4_1_1SampleEncryptionEntry.html">SampleEncryptionEntry</a>&amp; sample_encryption_entry =</div>
-<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;      run_itr_-&gt;sample_encryption_entries[sample_idx];</div>
-<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;  DCHECK(is_encrypted());</div>
-<div class="line"><a name="l00591"></a><span class="lineno">  591</span>&#160;  DCHECK(!<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a3538a0f31238843afd2dfb4e94587f03">AuxInfoNeedsToBeCached</a>());</div>
-<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;</div>
-<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> total_size_of_subsamples =</div>
-<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;      sample_encryption_entry.GetTotalSizeOfSubsamples();</div>
-<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;  <span class="keywordflow">if</span> (total_size_of_subsamples != 0 &amp;&amp;</div>
-<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;      total_size_of_subsamples != static_cast&lt;size_t&gt;(sample_size())) {</div>
-<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Incorrect CENC subsample size.&quot;</span>;</div>
-<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;    <span class="keywordflow">return</span> scoped_ptr&lt;DecryptConfig&gt;();</div>
-<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;  }</div>
-<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;</div>
-<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;  FourCC protection_scheme = is_audio() ? <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a2c58182a77817e4ed4a2860ae3be73df">audio_description</a>().sinf.type.type</div>
-<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;                                        : <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a981f52a2e185f5b9f0bf7bb17ff6f3d8">video_description</a>().sinf.type.type;</div>
-<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;  <span class="keywordflow">return</span> scoped_ptr&lt;DecryptConfig&gt;(</div>
-<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;      <span class="keyword">new</span> <a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html">DecryptConfig</a>(track_encryption().default_kid,</div>
-<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;                        sample_encryption_entry.initialization_vector,</div>
-<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;                        sample_encryption_entry.subsamples, protection_scheme));</div>
-<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;}</div>
-<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;</div>
-<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_aac5201a3e14e410c805f5f9b58e88c22"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">edash_packager::media::mp4::TrackRunIterator::IsSampleValid</a></div><div class="ttdeci">bool IsSampleValid() const </div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00477">track_run_iterator.cc:477</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a981f52a2e185f5b9f0bf7bb17ff6f3d8"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a981f52a2e185f5b9f0bf7bb17ff6f3d8">edash_packager::media::mp4::TrackRunIterator::video_description</a></div><div class="ttdeci">const VideoSampleEntry &amp; video_description() const </div><div class="ttdoc">Only valid if is_video() is true. </div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00542">track_run_iterator.cc:542</a></div></div>
+<div class="line"><a name="l00548"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a981f52a2e185f5b9f0bf7bb17ff6f3d8">  548</a></span>&#160;<span class="keyword">const</span> <a class="code" href="../../df/d6a/structedash__packager_1_1media_1_1mp4_1_1VideoSampleEntry.html">VideoSampleEntry</a>&amp; <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a981f52a2e185f5b9f0bf7bb17ff6f3d8">TrackRunIterator::video_description</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;  DCHECK(is_video());</div>
+<div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;  DCHECK(run_itr_-&gt;video_description);</div>
+<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;  <span class="keywordflow">return</span> *run_itr_-&gt;video_description;</div>
+<div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;}</div>
+<div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;</div>
+<div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;int64_t TrackRunIterator::sample_offset()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00555"></a><span class="lineno">  555</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>());</div>
+<div class="line"><a name="l00556"></a><span class="lineno">  556</span>&#160;  <span class="keywordflow">return</span> sample_offset_;</div>
+<div class="line"><a name="l00557"></a><span class="lineno">  557</span>&#160;}</div>
+<div class="line"><a name="l00558"></a><span class="lineno">  558</span>&#160;</div>
+<div class="line"><a name="l00559"></a><span class="lineno">  559</span>&#160;<span class="keywordtype">int</span> TrackRunIterator::sample_size()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>());</div>
+<div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;  <span class="keywordflow">return</span> sample_itr_-&gt;size;</div>
+<div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;}</div>
+<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;</div>
+<div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;int64_t TrackRunIterator::dts()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>());</div>
+<div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;  <span class="keywordflow">return</span> sample_dts_;</div>
+<div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;}</div>
+<div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;</div>
+<div class="line"><a name="l00569"></a><span class="lineno">  569</span>&#160;int64_t TrackRunIterator::cts()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00570"></a><span class="lineno">  570</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>());</div>
+<div class="line"><a name="l00571"></a><span class="lineno">  571</span>&#160;  <span class="keywordflow">return</span> sample_dts_ + sample_itr_-&gt;cts_offset;</div>
+<div class="line"><a name="l00572"></a><span class="lineno">  572</span>&#160;}</div>
+<div class="line"><a name="l00573"></a><span class="lineno">  573</span>&#160;</div>
+<div class="line"><a name="l00574"></a><span class="lineno">  574</span>&#160;int64_t TrackRunIterator::duration()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00575"></a><span class="lineno">  575</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>());</div>
+<div class="line"><a name="l00576"></a><span class="lineno">  576</span>&#160;  <span class="keywordflow">return</span> sample_itr_-&gt;duration;</div>
+<div class="line"><a name="l00577"></a><span class="lineno">  577</span>&#160;}</div>
+<div class="line"><a name="l00578"></a><span class="lineno">  578</span>&#160;</div>
+<div class="line"><a name="l00579"></a><span class="lineno">  579</span>&#160;<span class="keywordtype">bool</span> TrackRunIterator::is_keyframe()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00580"></a><span class="lineno">  580</span>&#160;  DCHECK(<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">IsSampleValid</a>());</div>
+<div class="line"><a name="l00581"></a><span class="lineno">  581</span>&#160;  <span class="keywordflow">return</span> sample_itr_-&gt;is_keyframe;</div>
+<div class="line"><a name="l00582"></a><span class="lineno">  582</span>&#160;}</div>
+<div class="line"><a name="l00583"></a><span class="lineno">  583</span>&#160;</div>
+<div class="line"><a name="l00584"></a><span class="lineno">  584</span>&#160;<span class="keyword">const</span> TrackEncryption&amp; TrackRunIterator::track_encryption()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00585"></a><span class="lineno">  585</span>&#160;  <span class="keywordflow">if</span> (is_audio())</div>
+<div class="line"><a name="l00586"></a><span class="lineno">  586</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a2c58182a77817e4ed4a2860ae3be73df">audio_description</a>().sinf.info.track_encryption;</div>
+<div class="line"><a name="l00587"></a><span class="lineno">  587</span>&#160;  DCHECK(is_video());</div>
+<div class="line"><a name="l00588"></a><span class="lineno">  588</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a981f52a2e185f5b9f0bf7bb17ff6f3d8">video_description</a>().sinf.info.track_encryption;</div>
+<div class="line"><a name="l00589"></a><span class="lineno">  589</span>&#160;}</div>
+<div class="line"><a name="l00590"></a><span class="lineno">  590</span>&#160;</div>
+<div class="line"><a name="l00591"></a><span class="lineno"><a class="line" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae62fc9fe719f4432d4043ea2f43963c6">  591</a></span>&#160;scoped_ptr&lt;DecryptConfig&gt; <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae62fc9fe719f4432d4043ea2f43963c6">TrackRunIterator::GetDecryptConfig</a>() {</div>
+<div class="line"><a name="l00592"></a><span class="lineno">  592</span>&#160;  <span class="keywordtype">size_t</span> sample_idx = sample_itr_ - run_itr_-&gt;samples.begin();</div>
+<div class="line"><a name="l00593"></a><span class="lineno">  593</span>&#160;  DCHECK_LT(sample_idx, run_itr_-&gt;sample_encryption_entries.size());</div>
+<div class="line"><a name="l00594"></a><span class="lineno">  594</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../d8/de5/structedash__packager_1_1media_1_1mp4_1_1SampleEncryptionEntry.html">SampleEncryptionEntry</a>&amp; sample_encryption_entry =</div>
+<div class="line"><a name="l00595"></a><span class="lineno">  595</span>&#160;      run_itr_-&gt;sample_encryption_entries[sample_idx];</div>
+<div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;  DCHECK(is_encrypted());</div>
+<div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;  DCHECK(!<a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a3538a0f31238843afd2dfb4e94587f03">AuxInfoNeedsToBeCached</a>());</div>
+<div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;</div>
+<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> total_size_of_subsamples =</div>
+<div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;      sample_encryption_entry.GetTotalSizeOfSubsamples();</div>
+<div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;  <span class="keywordflow">if</span> (total_size_of_subsamples != 0 &amp;&amp;</div>
+<div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;      total_size_of_subsamples != static_cast&lt;size_t&gt;(sample_size())) {</div>
+<div class="line"><a name="l00603"></a><span class="lineno">  603</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Incorrect CENC subsample size.&quot;</span>;</div>
+<div class="line"><a name="l00604"></a><span class="lineno">  604</span>&#160;    <span class="keywordflow">return</span> scoped_ptr&lt;DecryptConfig&gt;();</div>
+<div class="line"><a name="l00605"></a><span class="lineno">  605</span>&#160;  }</div>
+<div class="line"><a name="l00606"></a><span class="lineno">  606</span>&#160;</div>
+<div class="line"><a name="l00607"></a><span class="lineno">  607</span>&#160;  FourCC protection_scheme = is_audio() ? <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a2c58182a77817e4ed4a2860ae3be73df">audio_description</a>().sinf.type.type</div>
+<div class="line"><a name="l00608"></a><span class="lineno">  608</span>&#160;                                        : <a class="code" href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a981f52a2e185f5b9f0bf7bb17ff6f3d8">video_description</a>().sinf.type.type;</div>
+<div class="line"><a name="l00609"></a><span class="lineno">  609</span>&#160;  <span class="keywordflow">return</span> scoped_ptr&lt;DecryptConfig&gt;(</div>
+<div class="line"><a name="l00610"></a><span class="lineno">  610</span>&#160;      <span class="keyword">new</span> <a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html">DecryptConfig</a>(track_encryption().default_kid,</div>
+<div class="line"><a name="l00611"></a><span class="lineno">  611</span>&#160;                        sample_encryption_entry.initialization_vector,</div>
+<div class="line"><a name="l00612"></a><span class="lineno">  612</span>&#160;                        sample_encryption_entry.subsamples, protection_scheme));</div>
+<div class="line"><a name="l00613"></a><span class="lineno">  613</span>&#160;}</div>
+<div class="line"><a name="l00614"></a><span class="lineno">  614</span>&#160;</div>
+<div class="line"><a name="l00615"></a><span class="lineno">  615</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00616"></a><span class="lineno">  616</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00617"></a><span class="lineno">  617</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_aac5201a3e14e410c805f5f9b58e88c22"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#aac5201a3e14e410c805f5f9b58e88c22">edash_packager::media::mp4::TrackRunIterator::IsSampleValid</a></div><div class="ttdeci">bool IsSampleValid() const </div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00483">track_run_iterator.cc:483</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a981f52a2e185f5b9f0bf7bb17ff6f3d8"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a981f52a2e185f5b9f0bf7bb17ff6f3d8">edash_packager::media::mp4::TrackRunIterator::video_description</a></div><div class="ttdeci">const VideoSampleEntry &amp; video_description() const </div><div class="ttdoc">Only valid if is_video() is true. </div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00548">track_run_iterator.cc:548</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator_html_a57bb736f64a9ab08b1f1957bedf621b6"><div class="ttname"><a href="../../d8/d71/classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator.html#a57bb736f64a9ab08b1f1957bedf621b6">edash_packager::media::mp4::ChunkInfoIterator::samples_per_chunk</a></div><div class="ttdeci">uint32_t samples_per_chunk() const </div><div class="ttdef"><b>Definition:</b> <a href="../../db/dd2/chunk__info__iterator_8h_source.html#l00045">chunk_info_iterator.h:45</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1DecryptConfig_html"><div class="ttname"><a href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html">edash_packager::media::DecryptConfig</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00040">decrypt_config.h:40</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a0414b608c3dbfb42074fd0d18a792b6c"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a0414b608c3dbfb42074fd0d18a792b6c">edash_packager::media::mp4::TrackRunIterator::AdvanceSample</a></div><div class="ttdeci">void AdvanceSample()</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00437">track_run_iterator.cc:437</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1SampleDescription_html"><div class="ttname"><a href="../../d3/d74/structedash__packager_1_1media_1_1mp4_1_1SampleDescription.html">edash_packager::media::mp4::SampleDescription</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00368">box_definitions.h:368</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_ae62fc9fe719f4432d4043ea2f43963c6"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae62fc9fe719f4432d4043ea2f43963c6">edash_packager::media::mp4::TrackRunIterator::GetDecryptConfig</a></div><div class="ttdeci">scoped_ptr&lt; DecryptConfig &gt; GetDecryptConfig()</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00585">track_run_iterator.cc:585</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1SampleEncryption_html_af94f8472666f214a83461d09de3a524f"><div class="ttname"><a href="../../d5/d78/structedash__packager_1_1media_1_1mp4_1_1SampleEncryption.html#af94f8472666f214a83461d09de3a524f">edash_packager::media::mp4::SampleEncryption::ParseFromSampleEncryptionData</a></div><div class="ttdeci">bool ParseFromSampleEncryptionData(size_t iv_size, std::vector&lt; SampleEncryptionEntry &gt; *sample_encryption_entries) const </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dee/box__definitions_8cc_source.html#l00349">box_definitions.cc:349</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a0414b608c3dbfb42074fd0d18a792b6c"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a0414b608c3dbfb42074fd0d18a792b6c">edash_packager::media::mp4::TrackRunIterator::AdvanceSample</a></div><div class="ttdeci">void AdvanceSample()</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00441">track_run_iterator.cc:441</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1SampleDescription_html"><div class="ttname"><a href="../../d3/d74/structedash__packager_1_1media_1_1mp4_1_1SampleDescription.html">edash_packager::media::mp4::SampleDescription</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00375">box_definitions.h:375</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_ae62fc9fe719f4432d4043ea2f43963c6"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae62fc9fe719f4432d4043ea2f43963c6">edash_packager::media::mp4::TrackRunIterator::GetDecryptConfig</a></div><div class="ttdeci">scoped_ptr&lt; DecryptConfig &gt; GetDecryptConfig()</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00591">track_run_iterator.cc:591</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1SampleEncryption_html_af94f8472666f214a83461d09de3a524f"><div class="ttname"><a href="../../d5/d78/structedash__packager_1_1media_1_1mp4_1_1SampleEncryption.html#af94f8472666f214a83461d09de3a524f">edash_packager::media::mp4::SampleEncryption::ParseFromSampleEncryptionData</a></div><div class="ttdeci">bool ParseFromSampleEncryptionData(size_t iv_size, std::vector&lt; SampleEncryptionEntry &gt; *sample_encryption_entries) const </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dee/box__definitions_8cc_source.html#l00354">box_definitions.cc:354</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator_html_a182b0464b4681a63ac3453b4b5b1aa28"><div class="ttname"><a href="../../d4/d90/classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator.html#a182b0464b4681a63ac3453b4b5b1aa28">edash_packager::media::mp4::DecodingTimeIterator::IsValid</a></div><div class="ttdeci">bool IsValid() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d45/decoding__time__iterator_8cc_source.html#l00035">decoding_time_iterator.cc:35</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator_html_a545c773305ae13ef89ab1cef3a7fc1e6"><div class="ttname"><a href="../../d4/de5/classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator.html#a545c773305ae13ef89ab1cef3a7fc1e6">edash_packager::media::mp4::CompositionOffsetIterator::AdvanceSample</a></div><div class="ttdeci">bool AdvanceSample()</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/de2/composition__offset__iterator_8cc_source.html#l00022">composition_offset_iterator.cc:22</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a1eff021eb8dd5177f49cc030acd16e8f"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a1eff021eb8dd5177f49cc030acd16e8f">edash_packager::media::mp4::TrackRunIterator::CacheAuxInfo</a></div><div class="ttdeci">bool CacheAuxInfo(const uint8_t *buf, int size)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00453">track_run_iterator.cc:453</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a1eff021eb8dd5177f49cc030acd16e8f"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a1eff021eb8dd5177f49cc030acd16e8f">edash_packager::media::mp4::TrackRunIterator::CacheAuxInfo</a></div><div class="ttdeci">bool CacheAuxInfo(const uint8_t *buf, int size)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00457">track_run_iterator.cc:457</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1SampleEncryption_html_ad241dc7c7acb0ff200444636b6881800"><div class="ttname"><a href="../../d5/d78/structedash__packager_1_1media_1_1mp4_1_1SampleEncryption.html#ad241dc7c7acb0ff200444636b6881800">edash_packager::media::mp4::SampleEncryption::sample_encryption_data</a></div><div class="ttdeci">std::vector&lt; uint8_t &gt; sample_encryption_data</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00125">box_definitions.h:125</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a2c58182a77817e4ed4a2860ae3be73df"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a2c58182a77817e4ed4a2860ae3be73df">edash_packager::media::mp4::TrackRunIterator::audio_description</a></div><div class="ttdeci">const AudioSampleEntry &amp; audio_description() const </div><div class="ttdoc">Only valid if is_audio() is true. </div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00536">track_run_iterator.cc:536</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a73b4ffaf8c1bba665c475729c2c9e22f"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a73b4ffaf8c1bba665c475729c2c9e22f">edash_packager::media::mp4::TrackRunIterator::AdvanceRun</a></div><div class="ttdeci">void AdvanceRun()</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00424">track_run_iterator.cc:424</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a2c58182a77817e4ed4a2860ae3be73df"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a2c58182a77817e4ed4a2860ae3be73df">edash_packager::media::mp4::TrackRunIterator::audio_description</a></div><div class="ttdeci">const AudioSampleEntry &amp; audio_description() const </div><div class="ttdoc">Only valid if is_audio() is true. </div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00542">track_run_iterator.cc:542</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a73b4ffaf8c1bba665c475729c2c9e22f"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a73b4ffaf8c1bba665c475729c2c9e22f">edash_packager::media::mp4::TrackRunIterator::AdvanceRun</a></div><div class="ttdeci">void AdvanceRun()</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00428">track_run_iterator.cc:428</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator_html_a147cf702aaaef56bce32ca91c45bc071"><div class="ttname"><a href="../../d4/d90/classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator.html#a147cf702aaaef56bce32ca91c45bc071">edash_packager::media::mp4::DecodingTimeIterator::AdvanceSample</a></div><div class="ttdeci">bool AdvanceSample()</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d45/decoding__time__iterator_8cc_source.html#l00024">decoding_time_iterator.cc:24</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator_html"><div class="ttname"><a href="../../d8/d71/classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator.html">edash_packager::media::mp4::ChunkInfoIterator</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/dd2/chunk__info__iterator_8h_source.html#l00024">chunk_info_iterator.h:24</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a0927d4e877f453b00e3eb08230510a6c"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a0927d4e877f453b00e3eb08230510a6c">edash_packager::media::mp4::TrackRunIterator::GetMaxClearOffset</a></div><div class="ttdeci">int64_t GetMaxClearOffset()</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00487">track_run_iterator.cc:487</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a0927d4e877f453b00e3eb08230510a6c"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a0927d4e877f453b00e3eb08230510a6c">edash_packager::media::mp4::TrackRunIterator::GetMaxClearOffset</a></div><div class="ttdeci">int64_t GetMaxClearOffset()</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00493">track_run_iterator.cc:493</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator_html_a9abe77c82033bb5db017dc889f17b974"><div class="ttname"><a href="../../d4/de5/classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator.html#a9abe77c82033bb5db017dc889f17b974">edash_packager::media::mp4::CompositionOffsetIterator::sample_offset</a></div><div class="ttdeci">int64_t sample_offset() const </div><div class="ttdef"><b>Definition:</b> <a href="../../df/d1c/composition__offset__iterator_8h_source.html#l00040">composition_offset_iterator.h:40</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Movie_html"><div class="ttname"><a href="../../d6/dec/structedash__packager_1_1media_1_1mp4_1_1Movie.html">edash_packager::media::mp4::Movie</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00569">box_definitions.h:569</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Movie_html"><div class="ttname"><a href="../../d6/dec/structedash__packager_1_1media_1_1mp4_1_1Movie.html">edash_packager::media::mp4::Movie</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00576">box_definitions.h:576</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator_html_a3c087f45de97888c3c537cec1ab6b940"><div class="ttname"><a href="../../d8/d71/classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator.html#a3c087f45de97888c3c537cec1ab6b940">edash_packager::media::mp4::ChunkInfoIterator::NumSamples</a></div><div class="ttdeci">uint32_t NumSamples(uint32_t start_chunk, uint32_t end_chunk) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d3b/chunk__info__iterator_8cc_source.html#l00050">chunk_info_iterator.cc:50</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1SyncSampleIterator_html_a19c0a90ae6ce549a8826569103bdee1c"><div class="ttname"><a href="../../db/d01/classedash__packager_1_1media_1_1mp4_1_1SyncSampleIterator.html#a19c0a90ae6ce549a8826569103bdee1c">edash_packager::media::mp4::SyncSampleIterator::IsSyncSample</a></div><div class="ttdeci">bool IsSyncSample() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/def/sync__sample__iterator_8cc_source.html#l00029">sync_sample_iterator.cc:29</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator_html_af989a372d83019e0a65e8c850e122e47"><div class="ttname"><a href="../../d4/d90/classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator.html#af989a372d83019e0a65e8c850e122e47">edash_packager::media::mp4::DecodingTimeIterator::NumSamples</a></div><div class="ttdeci">uint32_t NumSamples() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d45/decoding__time__iterator_8cc_source.html#l00061">decoding_time_iterator.cc:61</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1SyncSampleIterator_html"><div class="ttname"><a href="../../db/d01/classedash__packager_1_1media_1_1mp4_1_1SyncSampleIterator.html">edash_packager::media::mp4::SyncSampleIterator</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/dd9/sync__sample__iterator_8h_source.html#l00023">sync_sample_iterator.h:23</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1TrackFragmentRun_html"><div class="ttname"><a href="../../df/d21/structedash__packager_1_1media_1_1mp4_1_1TrackFragmentRun.html">edash_packager::media::mp4::TrackFragmentRun</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00621">box_definitions.h:621</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1TrackFragmentRun_html"><div class="ttname"><a href="../../df/d21/structedash__packager_1_1media_1_1mp4_1_1TrackFragmentRun.html">edash_packager::media::mp4::TrackFragmentRun</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00628">box_definitions.h:628</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator_html_a10f25f383ea2b2404dc3cd6f8d87dc71"><div class="ttname"><a href="../../d4/de5/classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator.html#a10f25f383ea2b2404dc3cd6f8d87dc71">edash_packager::media::mp4::CompositionOffsetIterator::NumSamples</a></div><div class="ttdeci">uint32_t NumSamples() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/de2/composition__offset__iterator_8cc_source.html#l00051">composition_offset_iterator.cc:51</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator_html_ac45e00a98de1ea01bd8c41a9f02fdfbe"><div class="ttname"><a href="../../d8/d71/classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator.html#ac45e00a98de1ea01bd8c41a9f02fdfbe">edash_packager::media::mp4::ChunkInfoIterator::sample_description_index</a></div><div class="ttdeci">uint32_t sample_description_index() const </div><div class="ttdef"><b>Definition:</b> <a href="../../db/dd2/chunk__info__iterator_8h_source.html#l00048">chunk_info_iterator.h:48</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator_html_a378cfea9333aba7b810d1b7a575a28cd"><div class="ttname"><a href="../../d8/d71/classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator.html#a378cfea9333aba7b810d1b7a575a28cd">edash_packager::media::mp4::ChunkInfoIterator::LastFirstChunk</a></div><div class="ttdeci">uint32_t LastFirstChunk() const </div><div class="ttdef"><b>Definition:</b> <a href="../../db/dd2/chunk__info__iterator_8h_source.html#l00057">chunk_info_iterator.h:57</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a3538a0f31238843afd2dfb4e94587f03"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a3538a0f31238843afd2dfb4e94587f03">edash_packager::media::mp4::TrackRunIterator::AuxInfoNeedsToBeCached</a></div><div class="ttdeci">bool AuxInfoNeedsToBeCached()</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00446">track_run_iterator.cc:446</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1VideoSampleEntry_html"><div class="ttname"><a href="../../df/d6a/structedash__packager_1_1media_1_1mp4_1_1VideoSampleEntry.html">edash_packager::media::mp4::VideoSampleEntry</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00276">box_definitions.h:276</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a3538a0f31238843afd2dfb4e94587f03"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a3538a0f31238843afd2dfb4e94587f03">edash_packager::media::mp4::TrackRunIterator::AuxInfoNeedsToBeCached</a></div><div class="ttdeci">bool AuxInfoNeedsToBeCached()</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00450">track_run_iterator.cc:450</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1VideoSampleEntry_html"><div class="ttname"><a href="../../df/d6a/structedash__packager_1_1media_1_1mp4_1_1VideoSampleEntry.html">edash_packager::media::mp4::VideoSampleEntry</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00283">box_definitions.h:283</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator_html_ab7b1c20038d9bb2912cf2cf403d46a92"><div class="ttname"><a href="../../d4/d90/classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator.html#ab7b1c20038d9bb2912cf2cf403d46a92">edash_packager::media::mp4::DecodingTimeIterator::sample_delta</a></div><div class="ttdeci">uint32_t sample_delta() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d52/decoding__time__iterator_8h_source.html#l00040">decoding_time_iterator.h:40</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator_html"><div class="ttname"><a href="../../d4/de5/classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator.html">edash_packager::media::mp4::CompositionOffsetIterator</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/d1c/composition__offset__iterator_8h_source.html#l00024">composition_offset_iterator.h:24</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1SampleEncryptionEntry_html"><div class="ttname"><a href="../../d8/de5/structedash__packager_1_1media_1_1mp4_1_1SampleEncryptionEntry.html">edash_packager::media::mp4::SampleEncryptionEntry</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00077">box_definitions.h:77</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1MovieFragment_html"><div class="ttname"><a href="../../dd/da2/structedash__packager_1_1media_1_1mp4_1_1MovieFragment.html">edash_packager::media::mp4::MovieFragment</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00689">box_definitions.h:689</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1SampleSize_html"><div class="ttname"><a href="../../d7/da5/structedash__packager_1_1media_1_1mp4_1_1SampleSize.html">edash_packager::media::mp4::SampleSize</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00420">box_definitions.h:420</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1MovieFragment_html"><div class="ttname"><a href="../../dd/da2/structedash__packager_1_1media_1_1mp4_1_1MovieFragment.html">edash_packager::media::mp4::MovieFragment</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00703">box_definitions.h:703</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1SampleSize_html"><div class="ttname"><a href="../../d7/da5/structedash__packager_1_1media_1_1mp4_1_1SampleSize.html">edash_packager::media::mp4::SampleSize</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00427">box_definitions.h:427</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a2cfa01eaed61581122199666536c4bed"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a2cfa01eaed61581122199666536c4bed">edash_packager::media::mp4::TrackRunIterator::TrackRunIterator</a></div><div class="ttdeci">TrackRunIterator(const Movie *moov)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00072">track_run_iterator.cc:72</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator_html_abef0d18263efb1ae8b601a88e05fd6cc"><div class="ttname"><a href="../../d8/d71/classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator.html#abef0d18263efb1ae8b601a88e05fd6cc">edash_packager::media::mp4::ChunkInfoIterator::AdvanceSample</a></div><div class="ttdeci">bool AdvanceSample()</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d3b/chunk__info__iterator_8cc_source.html#l00038">chunk_info_iterator.cc:38</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1SyncSampleIterator_html_af185ed71d28bfb56940821165e4cbef4"><div class="ttname"><a href="../../db/d01/classedash__packager_1_1media_1_1mp4_1_1SyncSampleIterator.html#af185ed71d28bfb56940821165e4cbef4">edash_packager::media::mp4::SyncSampleIterator::AdvanceSample</a></div><div class="ttdeci">bool AdvanceSample()</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/def/sync__sample__iterator_8cc_source.html#l00022">sync_sample_iterator.cc:22</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_ae06821cd3461cc5b8b6c2c41a286a228"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">edash_packager::media::mp4::TrackRunIterator::IsRunValid</a></div><div class="ttdeci">bool IsRunValid() const </div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00475">track_run_iterator.cc:475</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1TrackExtends_html"><div class="ttname"><a href="../../d3/d2c/structedash__packager_1_1media_1_1mp4_1_1TrackExtends.html">edash_packager::media::mp4::TrackExtends</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00552">box_definitions.h:552</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_ae06821cd3461cc5b8b6c2c41a286a228"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#ae06821cd3461cc5b8b6c2c41a286a228">edash_packager::media::mp4::TrackRunIterator::IsRunValid</a></div><div class="ttdeci">bool IsRunValid() const </div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00481">track_run_iterator.cc:481</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1TrackExtends_html"><div class="ttname"><a href="../../d3/d2c/structedash__packager_1_1media_1_1mp4_1_1TrackExtends.html">edash_packager::media::mp4::TrackExtends</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00559">box_definitions.h:559</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1BufferReader_html"><div class="ttname"><a href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html">edash_packager::media::BufferReader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/d3e/buffer__reader_8h_source.html#l00023">buffer_reader.h:23</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1TrackFragment_html"><div class="ttname"><a href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">edash_packager::media::mp4::TrackFragment</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00675">box_definitions.h:675</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1TrackFragment_html"><div class="ttname"><a href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">edash_packager::media::mp4::TrackFragment</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00689">box_definitions.h:689</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator_html_adf687bc7500b4c97f0ae170ea2254c09"><div class="ttname"><a href="../../d4/de5/classedash__packager_1_1media_1_1mp4_1_1CompositionOffsetIterator.html#adf687bc7500b4c97f0ae170ea2254c09">edash_packager::media::mp4::CompositionOffsetIterator::IsValid</a></div><div class="ttdeci">bool IsValid() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/de2/composition__offset__iterator_8cc_source.html#l00033">composition_offset_iterator.cc:33</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator_html"><div class="ttname"><a href="../../d4/d90/classedash__packager_1_1media_1_1mp4_1_1DecodingTimeIterator.html">edash_packager::media::mp4::DecodingTimeIterator</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d52/decoding__time__iterator_8h_source.html#l00024">decoding_time_iterator.h:24</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1AudioSampleEntry_html"><div class="ttname"><a href="../../df/d62/structedash__packager_1_1media_1_1mp4_1_1AudioSampleEntry.html">edash_packager::media::mp4::AudioSampleEntry</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00322">box_definitions.h:322</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Track_html"><div class="ttname"><a href="../../d3/de1/structedash__packager_1_1media_1_1mp4_1_1Track.html">edash_packager::media::mp4::Track</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00537">box_definitions.h:537</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1AudioSampleEntry_html"><div class="ttname"><a href="../../df/d62/structedash__packager_1_1media_1_1mp4_1_1AudioSampleEntry.html">edash_packager::media::mp4::AudioSampleEntry</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00329">box_definitions.h:329</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Track_html"><div class="ttname"><a href="../../d3/de1/structedash__packager_1_1media_1_1mp4_1_1Track.html">edash_packager::media::mp4::Track</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00544">box_definitions.h:544</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator_html_ab3a329468f494ff3143d4c43c94d13ba"><div class="ttname"><a href="../../d8/d71/classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator.html#ab3a329468f494ff3143d4c43c94d13ba">edash_packager::media::mp4::ChunkInfoIterator::current_chunk</a></div><div class="ttdeci">uint32_t current_chunk() const </div><div class="ttdef"><b>Definition:</b> <a href="../../db/dd2/chunk__info__iterator_8h_source.html#l00042">chunk_info_iterator.h:42</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator_html_a6fd0f1d72f9a31a1c0d26c3b1ae25250"><div class="ttname"><a href="../../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a6fd0f1d72f9a31a1c0d26c3b1ae25250">edash_packager::media::mp4::TrackRunIterator::Init</a></div><div class="ttdeci">bool Init()</div><div class="ttdef"><b>Definition:</b> <a href="../../db/d31/track__run__iterator_8cc_source.html#l00145">track_run_iterator.cc:145</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator_html_a83f8702a396ae63c94e79ae7d32cdcbf"><div class="ttname"><a href="../../d8/d71/classedash__packager_1_1media_1_1mp4_1_1ChunkInfoIterator.html#a83f8702a396ae63c94e79ae7d32cdcbf">edash_packager::media::mp4::ChunkInfoIterator::IsValid</a></div><div class="ttdeci">bool IsValid() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d3b/chunk__info__iterator_8cc_source.html#l00045">chunk_info_iterator.cc:45</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 14 2016 18:27:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 14 2016 20:07:48 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -126,15 +126,24 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a02b1cc561cdf230add6a726eab4d9a3d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a02b1cc561cdf230add6a726eab4d9a3d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_encrypted</b></td></tr>
-<tr class="separator:a02b1cc561cdf230add6a726eab4d9a3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a26a83160eb5a771204d4550bd588d703"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a26a83160eb5a771204d4550bd588d703"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>default_iv_size</b></td></tr>
-<tr class="separator:a26a83160eb5a771204d4550bd588d703"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ad427700190dc0dad5f60dac853bafd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4ad427700190dc0dad5f60dac853bafd"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>default_is_protected</b></td></tr>
+<tr class="separator:a4ad427700190dc0dad5f60dac853bafd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0c8f840c1cd2a35bd9874ebc3b9a68db"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0c8f840c1cd2a35bd9874ebc3b9a68db"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>default_per_sample_iv_size</b></td></tr>
+<tr class="separator:a0c8f840c1cd2a35bd9874ebc3b9a68db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa3045f77ff74f820ffc185fa9627e50e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa3045f77ff74f820ffc185fa9627e50e"></a>
 std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>default_kid</b></td></tr>
 <tr class="separator:aa3045f77ff74f820ffc185fa9627e50e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af57bfae6416cc8108c147c63dc673115"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af57bfae6416cc8108c147c63dc673115"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>default_crypt_byte_block</b></td></tr>
+<tr class="separator:af57bfae6416cc8108c147c63dc673115"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9b802171a2ce8b80226312014e2a82ca"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9b802171a2ce8b80226312014e2a82ca"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>default_skip_byte_block</b></td></tr>
+<tr class="separator:a9b802171a2ce8b80226312014e2a82ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae42888ed109fe36b0cb773313a75d72f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae42888ed109fe36b0cb773313a75d72f"></a>
+std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>default_constant_iv</b></td></tr>
+<tr class="separator:ae42888ed109fe36b0cb773313a75d72f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_attribs_structedash__packager_1_1media_1_1mp4_1_1FullBox"><td colspan="2" onclick="javascript:toggleInherit('pub_attribs_structedash__packager_1_1media_1_1mp4_1_1FullBox')"><img src="../../closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html">edash_packager::media::mp4::FullBox</a></td></tr>
 <tr class="memitem:a8504557a176cc9d6322a6d77fb9fba6f inherit pub_attribs_structedash__packager_1_1media_1_1mp4_1_1FullBox"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8504557a176cc9d6322a6d77fb9fba6f"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>version</b></td></tr>
@@ -177,7 +186,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a504e7612c24f7d788748dff9940e46ea">edash_packager::media::mp4::Box</a>.</p>
 
-<p>Definition at line <a class="el" href="../../dd/dee/box__definitions_8cc_source.html#l00397">397</a> of file <a class="el" href="../../dd/dee/box__definitions_8cc_source.html">box_definitions.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/dee/box__definitions_8cc_source.html#l00406">406</a> of file <a class="el" href="../../dd/dee/box__definitions_8cc_source.html">box_definitions.cc</a>.</p>
 
 </div>
 </div>
@@ -188,7 +197,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 14 2016 18:27:44 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 14 2016 20:07:51 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -96,19 +96,28 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a80674cdf00aca02cc37b6439affaa133"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a80674cdf00aca02cc37b6439affaa133"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_encrypted</b></td></tr>
-<tr class="separator:a80674cdf00aca02cc37b6439affaa133"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3807a7f2a75b47a070ef005f995920db"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3807a7f2a75b47a070ef005f995920db"></a>
-uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>iv_size</b></td></tr>
-<tr class="separator:a3807a7f2a75b47a070ef005f995920db"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a114d4b12f78a5679d8aefdda091ad470"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a114d4b12f78a5679d8aefdda091ad470"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>is_protected</b></td></tr>
+<tr class="separator:a114d4b12f78a5679d8aefdda091ad470"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5f702fc11df63f1e47e1dfa75c453017"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5f702fc11df63f1e47e1dfa75c453017"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>per_sample_iv_size</b></td></tr>
+<tr class="separator:a5f702fc11df63f1e47e1dfa75c453017"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5e676cca685425f73b9231d4707a3646"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5e676cca685425f73b9231d4707a3646"></a>
 std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>key_id</b></td></tr>
 <tr class="separator:a5e676cca685425f73b9231d4707a3646"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19636ae41a72b977caa62d9de7e74e7f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a19636ae41a72b977caa62d9de7e74e7f"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>crypt_byte_block</b></td></tr>
+<tr class="separator:a19636ae41a72b977caa62d9de7e74e7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a30b6343dda0dd827dd173c7aca866e44"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a30b6343dda0dd827dd173c7aca866e44"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>skip_byte_block</b></td></tr>
+<tr class="separator:a30b6343dda0dd827dd173c7aca866e44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abab545d6b2d606f3e47b99f8b956f124"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abab545d6b2d606f3e47b99f8b956f124"></a>
+std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>constant_iv</b></td></tr>
+<tr class="separator:abab545d6b2d606f3e47b99f8b956f124"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p>Definition at line <a class="el" href="../../d5/d7b/box__definitions_8h_source.html#l00659">659</a> of file <a class="el" href="../../d5/d7b/box__definitions_8h_source.html">box_definitions.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d7b/box__definitions_8h_source.html#l00666">666</a> of file <a class="el" href="../../d5/d7b/box__definitions_8h_source.html">box_definitions.h</a>.</p>
 </div><hr/>The documentation for this struct was generated from the following files:<ul>
 <li>media/formats/mp4/<a class="el" href="../../d5/d7b/box__definitions_8h_source.html">box_definitions.h</a></li>
 <li>media/formats/mp4/<a class="el" href="../../dd/dee/box__definitions_8cc_source.html">box_definitions.cc</a></li>
@@ -116,7 +125,7 @@ std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom">
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 14 2016 18:27:45 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 14 2016 20:07:53 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

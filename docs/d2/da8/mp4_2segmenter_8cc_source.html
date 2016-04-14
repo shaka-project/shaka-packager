@@ -147,9 +147,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  sinf-&gt;type.version = kCencSchemeVersion;</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keyword">auto</span>&amp; track_encryption = sinf-&gt;info.track_encryption;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  track_encryption.is_encrypted = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  track_encryption.default_is_protected = 1;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  DCHECK(!encryption_key.iv.empty());</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  track_encryption.default_iv_size = encryption_key.iv.size();</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  track_encryption.default_per_sample_iv_size = encryption_key.iv.size();</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  track_encryption.default_kid = encryption_key.key_id;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
@@ -525,7 +525,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1webm_1_1Segmenter_html_a6ec4149813741e894a9c5083eaf99689"><div class="ttname"><a href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#a6ec4149813741e894a9c5083eaf99689">edash_packager::media::webm::Segmenter::GetDuration</a></div><div class="ttdeci">float GetDuration() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d53/webm_2segmenter_8cc_source.html#l00182">segmenter.cc:182</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Fragmenter_html"><div class="ttname"><a href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html">edash_packager::media::mp4::Fragmenter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd1/fragmenter_8h_source.html#l00030">fragmenter.h:30</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1SampleDescription_html"><div class="ttname"><a href="../../d3/d74/structedash__packager_1_1media_1_1mp4_1_1SampleDescription.html">edash_packager::media::mp4::SampleDescription</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00368">box_definitions.h:368</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1SampleDescription_html"><div class="ttname"><a href="../../d3/d74/structedash__packager_1_1media_1_1mp4_1_1SampleDescription.html">edash_packager::media::mp4::SampleDescription</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00375">box_definitions.h:375</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html_a1754599c00fdf4c474d3072abf71c1de"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a1754599c00fdf4c474d3072abf71c1de">edash_packager::media::MuxerOptions::fragment_duration</a></div><div class="ttdeci">double fragment_duration</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00034">muxer_options.h:34</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_ae1000d8809b293738dca06c1a5f916bf"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ae1000d8809b293738dca06c1a5f916bf">edash_packager::media::KeySource::GetKey</a></div><div class="ttdeci">virtual Status GetKey(TrackType track_type, EncryptionKey *key)=0</div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1webm_1_1Segmenter_html_a5918dc2431560b2ae816c0840ddf7728"><div class="ttname"><a href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#a5918dc2431560b2ae816c0840ddf7728">edash_packager::media::webm::Segmenter::Initialize</a></div><div class="ttdeci">Status Initialize(scoped_ptr&lt; MkvWriter &gt; writer, StreamInfo *info, ProgressListener *progress_listener, MuxerListener *muxer_listener, KeySource *encryption_key_source, uint32_t max_sd_pixels, double clear_lead_in_seconds)</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d53/webm_2segmenter_8cc_source.html#l00046">segmenter.cc:46</a></div></div>
@@ -550,7 +550,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 14 2016 18:27:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 14 2016 20:07:48 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
