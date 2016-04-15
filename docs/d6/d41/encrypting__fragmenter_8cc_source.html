@@ -419,27 +419,22 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    traf()-&gt;auxiliary_size.sample_info_sizes.push_back(</div>
 <div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;        sample_encryption_entry.ComputeSize());</div>
 <div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    uint64_t encryption_data_size = sample-&gt;data_size();</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    <span class="comment">// AES-CBC mode requires all encrypted cipher blocks to be 16 bytes. The</span></div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    <span class="comment">// partial blocks are left unencrypted.</span></div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    <span class="keywordflow">if</span> (protection_scheme_ == FOURCC_cbc1)</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;      encryption_data_size -= encryption_data_size % kCencBlockSize;</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    EncryptBytes(data, encryption_data_size);</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  }</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;  traf()-&gt;sample_encryption.sample_encryption_entries.push_back(</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;      sample_encryption_entry);</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;  encryptor_-&gt;UpdateIv();</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;}</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;<span class="keywordtype">bool</span> EncryptingFragmenter::IsSubsampleEncryptionRequired() {</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  <span class="keywordflow">return</span> vpx_parser_ || nalu_length_size_ != 0;</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;}</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    EncryptBytes(data, sample-&gt;data_size());</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;  }</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  traf()-&gt;sample_encryption.sample_encryption_entries.push_back(</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;      sample_encryption_entry);</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;  encryptor_-&gt;UpdateIv();</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;}</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;<span class="keywordtype">bool</span> EncryptingFragmenter::IsSubsampleEncryptionRequired() {</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;  <span class="keywordflow">return</span> vpx_parser_ || nalu_length_size_ != 0;</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;}</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1SampleAuxiliaryInformationSize_html"><div class="ttname"><a href="../../d2/d51/structedash__packager_1_1media_1_1mp4_1_1SampleAuxiliaryInformationSize.html">edash_packager::media::mp4::SampleAuxiliaryInformationSize</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00069">box_definitions.h:69</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Fragmenter_html"><div class="ttname"><a href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html">edash_packager::media::mp4::Fragmenter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd1/fragmenter_8h_source.html#l00030">fragmenter.h:30</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1H265VideoSliceHeaderParser_html"><div class="ttname"><a href="../../db/dbf/classedash__packager_1_1media_1_1mp4_1_1H265VideoSliceHeaderParser.html">edash_packager::media::mp4::H265VideoSliceHeaderParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d33/video__slice__header__parser_8h_source.html#l00054">video_slice_header_parser.h:54</a></div></div>
@@ -460,12 +455,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser_html"><div class="ttname"><a href="../../d6/dc2/classedash__packager_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser.html">edash_packager::media::mp4::H264VideoSliceHeaderParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d33/video__slice__header__parser_8h_source.html#l00037">video_slice_header_parser.h:37</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a0184deccbe7e99ea7a685cf0de2f9156"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a0184deccbe7e99ea7a685cf0de2f9156">edash_packager::media::mp4::EncryptingFragmenter::FinalizeFragmentForEncryption</a></div><div class="ttdeci">virtual void FinalizeFragmentForEncryption()</div><div class="ttdoc">Finalize current fragment for encryption. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00164">encrypting_fragmenter.cc:164</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Fragmenter_html_a5f346308fec8fa24cf47cf7ffd21d741"><div class="ttname"><a href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#a5f346308fec8fa24cf47cf7ffd21d741">edash_packager::media::mp4::Fragmenter::FinalizeFragment</a></div><div class="ttdeci">virtual void FinalizeFragment()</div><div class="ttdoc">Finalize and optimize the fragment. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d9a/fragmenter_8cc_source.html#l00093">fragmenter.cc:93</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCbcEncryptor_html"><div class="ttname"><a href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html">edash_packager::media::AesCbcEncryptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df0/aes__encryptor_8h_source.html#l00082">aes_encryptor.h:82</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCbcEncryptor_html"><div class="ttname"><a href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html">edash_packager::media::AesCbcEncryptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df0/aes__encryptor_8h_source.html#l00086">aes_encryptor.h:86</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter_html_a2abceb986f85741abf36367a79393098"><div class="ttname"><a href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a2abceb986f85741abf36367a79393098">edash_packager::media::mp4::EncryptingFragmenter::EncryptingFragmenter</a></div><div class="ttdeci">EncryptingFragmenter(scoped_refptr&lt; StreamInfo &gt; info, TrackFragment *traf, scoped_ptr&lt; EncryptionKey &gt; encryption_key, int64_t clear_time, FourCC protection_scheme, uint8_t crypt_byte_block, uint8_t skip_byte_block)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00062">encrypting_fragmenter.cc:62</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 15 2016 19:07:43 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 15 2016 21:32:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

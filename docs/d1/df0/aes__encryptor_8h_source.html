@@ -151,40 +151,44 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;};</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keyword">enum</span> CbcPaddingScheme {</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  kNoPadding,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  kPkcs5Padding,</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  kCtsPadding,</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;};</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="keyword">const</span> <span class="keywordtype">bool</span> kChainAcrossCalls = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="comment">// Class which implements AES-CBC (Cipher block chaining) encryption.</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html">   82</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html">AesCbcEncryptor</a> : <span class="keyword">public</span> <a class="code" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html">AesEncryptor</a> {</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <a class="code" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html#a36366598b1550470f167bec1ee0ff640">AesCbcEncryptor</a>(CbcPaddingScheme padding_scheme, <span class="keywordtype">bool</span> chain_across_calls);</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  ~<a class="code" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html">AesCbcEncryptor</a>() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html#ac075650788539c041b465aff6356a2b9">UpdateIv</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="comment">// Residual block is left unencrypted.</span></div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  kNoPadding,</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">// Residual block is padded with pkcs5 and encrypted.</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  kPkcs5Padding,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// Residual block and the next-to-last block are encrypted using ciphertext</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">// stealing method.</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  kCtsPadding,</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;};</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keyword">const</span> <span class="keywordtype">bool</span> kChainAcrossCalls = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="comment">// Class which implements AES-CBC (Cipher block chaining) encryption.</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno"><a class="line" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html">   86</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html">AesCbcEncryptor</a> : <span class="keyword">public</span> <a class="code" href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html">AesEncryptor</a> {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <a class="code" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html#a36366598b1550470f167bec1ee0ff640">AesCbcEncryptor</a>(CbcPaddingScheme padding_scheme, <span class="keywordtype">bool</span> chain_across_calls);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  ~<a class="code" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html">AesCbcEncryptor</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html#ab5436c698f7691f2558514088559dc7e">SetIv</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">iv</a>) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keywordtype">bool</span> CryptInternal(<span class="keyword">const</span> uint8_t* plaintext,</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                     <span class="keywordtype">size_t</span> plaintext_size,</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;                     uint8_t* ciphertext,</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;                     <span class="keywordtype">size_t</span>* ciphertext_size) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordtype">size_t</span> NumPaddingBytes(<span class="keywordtype">size_t</span> size) <span class="keyword">const override</span>;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  <span class="keyword">const</span> CbcPaddingScheme padding_scheme_;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> chain_across_calls_;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html">AesCbcEncryptor</a>);</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;};</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_AES_ENCRYPTOR_H_</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html#ac075650788539c041b465aff6356a2b9">UpdateIv</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html#ab5436c698f7691f2558514088559dc7e">SetIv</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">iv</a>) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordtype">bool</span> CryptInternal(<span class="keyword">const</span> uint8_t* plaintext,</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                     <span class="keywordtype">size_t</span> plaintext_size,</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                     uint8_t* ciphertext,</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;                     <span class="keywordtype">size_t</span>* ciphertext_size) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="keywordtype">size_t</span> NumPaddingBytes(<span class="keywordtype">size_t</span> size) <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="keyword">const</span> CbcPaddingScheme padding_scheme_;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> chain_across_calls_;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html">AesCbcEncryptor</a>);</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;};</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_AES_ENCRYPTOR_H_</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html">edash_packager::media::AesCryptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/aes__cryptor_8h_source.html#l00025">aes_cryptor.h:25</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1AesCbcEncryptor_html_ac075650788539c041b465aff6356a2b9"><div class="ttname"><a href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html#ac075650788539c041b465aff6356a2b9">edash_packager::media::AesCbcEncryptor::UpdateIv</a></div><div class="ttdeci">void UpdateIv() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/da4/aes__encryptor_8cc_source.html#l00147">aes_encryptor.cc:147</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1AesEncryptor_html_a6fc9c04be119f35fb0557f6f348be4f9"><div class="ttname"><a href="../../dc/d92/classedash__packager_1_1media_1_1AesEncryptor.html#a6fc9c04be119f35fb0557f6f348be4f9">edash_packager::media::AesEncryptor::InitializeWithIv</a></div><div class="ttdeci">bool InitializeWithIv(const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;iv) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/da4/aes__encryptor_8cc_source.html#l00041">aes_encryptor.cc:41</a></div></div>
@@ -195,11 +199,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classedash__packager_1_1media_1_1AesCbcEncryptor_html_ab5436c698f7691f2558514088559dc7e"><div class="ttname"><a href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html#ab5436c698f7691f2558514088559dc7e">edash_packager::media::AesCbcEncryptor::SetIv</a></div><div class="ttdeci">bool SetIv(const std::vector&lt; uint8_t &gt; &amp;iv) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/da4/aes__encryptor_8cc_source.html#l00157">aes_encryptor.cc:157</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1AesCbcEncryptor_html_a36366598b1550470f167bec1ee0ff640"><div class="ttname"><a href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html#a36366598b1550470f167bec1ee0ff640">edash_packager::media::AesCbcEncryptor::AesCbcEncryptor</a></div><div class="ttdeci">AesCbcEncryptor(CbcPaddingScheme padding_scheme, bool chain_across_calls)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/da4/aes__encryptor_8cc_source.html#l00136">aes_encryptor.cc:136</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a049b4b415e44428c4543f7e2f7b36b34"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">edash_packager::media::AesCryptor::iv</a></div><div class="ttdeci">const std::vector&lt; uint8_t &gt; &amp; iv() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/aes__cryptor_8h_source.html#l00060">aes_cryptor.h:60</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCbcEncryptor_html"><div class="ttname"><a href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html">edash_packager::media::AesCbcEncryptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df0/aes__encryptor_8h_source.html#l00082">aes_encryptor.h:82</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCbcEncryptor_html"><div class="ttname"><a href="../../da/d7f/classedash__packager_1_1media_1_1AesCbcEncryptor.html">edash_packager::media::AesCbcEncryptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df0/aes__encryptor_8h_source.html#l00086">aes_encryptor.h:86</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 15 2016 19:07:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 15 2016 21:32:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

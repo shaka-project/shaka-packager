@@ -260,39 +260,39 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  DCHECK(aes_key());</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;</div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> residual_block_size = plaintext_size % AES_BLOCK_SIZE;</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <span class="keywordflow">if</span> (padding_scheme_ == kNoPadding &amp;&amp; residual_block_size != 0) {</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Expecting input size to be multiple of &quot;</span> &lt;&lt; AES_BLOCK_SIZE</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;               &lt;&lt; <span class="stringliteral">&quot;, got &quot;</span> &lt;&lt; plaintext_size;</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  }</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> num_padding_bytes = NumPaddingBytes(plaintext_size);</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> required_ciphertext_size = plaintext_size + num_padding_bytes;</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  <span class="keywordflow">if</span> (*ciphertext_size &lt; required_ciphertext_size) {</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Expecting output size of at least &quot;</span></div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;               &lt;&lt; required_ciphertext_size &lt;&lt; <span class="stringliteral">&quot; bytes.&quot;</span>;</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  }</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  *ciphertext_size = required_ciphertext_size;</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  <span class="comment">// Encrypt everything but the residual block using CBC.</span></div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> cbc_size = plaintext_size - residual_block_size;</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  std::vector&lt;uint8_t&gt; local_iv(<a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">iv</a>());</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <span class="keywordflow">if</span> (cbc_size != 0) {</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;    AES_cbc_encrypt(plaintext, ciphertext, cbc_size, aes_key(), local_iv.data(),</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;                    AES_ENCRYPT);</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (padding_scheme_ == kCtsPadding) {</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;    <span class="comment">// Don&#39;t have a full block, leave unencrypted.</span></div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    memcpy(ciphertext, plaintext, plaintext_size);</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> num_padding_bytes = NumPaddingBytes(plaintext_size);</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> required_ciphertext_size = plaintext_size + num_padding_bytes;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  <span class="keywordflow">if</span> (*ciphertext_size &lt; required_ciphertext_size) {</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Expecting output size of at least &quot;</span></div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;               &lt;&lt; required_ciphertext_size &lt;&lt; <span class="stringliteral">&quot; bytes.&quot;</span>;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  }</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  *ciphertext_size = required_ciphertext_size;</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  <span class="comment">// Encrypt everything but the residual block using CBC.</span></div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> cbc_size = plaintext_size - residual_block_size;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  std::vector&lt;uint8_t&gt; local_iv(<a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">iv</a>());</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  <span class="keywordflow">if</span> (cbc_size != 0) {</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    AES_cbc_encrypt(plaintext, ciphertext, cbc_size, aes_key(), local_iv.data(),</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;                    AES_ENCRYPT);</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (padding_scheme_ == kCtsPadding) {</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <span class="comment">// Don&#39;t have a full block, leave unencrypted.</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    memcpy(ciphertext, plaintext, plaintext_size);</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  }</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="keywordflow">if</span> (residual_block_size == 0 &amp;&amp; padding_scheme_ != kPkcs5Padding) {</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;    <span class="keywordflow">if</span> (chain_across_calls_)</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;      set_iv(local_iv);</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;    <span class="comment">// No residual block. No need to do padding.</span></div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  }</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;  <span class="keywordflow">if</span> (residual_block_size == 0 &amp;&amp; padding_scheme_ != kPkcs5Padding) {</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;    <span class="keywordflow">if</span> (chain_across_calls_)</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;      set_iv(local_iv);</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    <span class="comment">// No residual block. No need to do padding.</span></div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  }</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  DCHECK(!chain_across_calls_);</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;  DCHECK(!chain_across_calls_);</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;  <span class="keywordflow">if</span> (padding_scheme_ == kNoPadding) {</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    <span class="comment">// The residual block is left unencrypted.</span></div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;    memcpy(ciphertext + cbc_size, plaintext + cbc_size, residual_block_size);</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  }</div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;</div>
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  std::vector&lt;uint8_t&gt; residual_block(plaintext + cbc_size,</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;                                      plaintext + plaintext_size);</div>
@@ -347,7 +347,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 15 2016 19:07:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 15 2016 21:32:41 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
