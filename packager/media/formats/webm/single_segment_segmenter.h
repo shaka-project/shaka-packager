@@ -30,14 +30,15 @@ class SingleSegmentSegmenter : public Segmenter {
 
   /// @name Segmenter implementation overrides.
   /// @{
-  bool GetInitRangeStartAndEnd(uint32_t* start, uint32_t* end) override;
-  bool GetIndexRangeStartAndEnd(uint32_t* start, uint32_t* end) override;
+  bool GetInitRangeStartAndEnd(uint64_t* start, uint64_t* end) override;
+  bool GetIndexRangeStartAndEnd(uint64_t* start, uint64_t* end) override;
   /// @}
 
  protected:
   MkvWriter* writer() { return writer_.get(); }
   void set_init_end(uint64_t end) { init_end_ = end; }
   void set_index_start(uint64_t start) { index_start_ = start; }
+  void set_index_end(uint64_t end) { index_end_ = end; }
   void set_writer(scoped_ptr<MkvWriter> writer) { writer_ = writer.Pass(); }
 
   // Segmenter implementation overrides.
@@ -50,8 +51,9 @@ class SingleSegmentSegmenter : public Segmenter {
   Status NewSegment(uint64_t start_timescale) override;
 
   scoped_ptr<MkvWriter> writer_;
-  uint32_t init_end_;
-  uint32_t index_start_;
+  uint64_t init_end_;
+  uint64_t index_start_;
+  uint64_t index_end_;
 
   DISALLOW_COPY_AND_ASSIGN(SingleSegmentSegmenter);
 };

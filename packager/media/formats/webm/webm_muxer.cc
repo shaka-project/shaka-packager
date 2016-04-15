@@ -97,13 +97,13 @@ void WebMMuxer::FireOnMediaEndEvent() {
   if (!muxer_listener())
     return;
 
-  uint32_t init_range_start = 0;
-  uint32_t init_range_end = 0;
+  uint64_t init_range_start = 0;
+  uint64_t init_range_end = 0;
   const bool has_init_range =
       segmenter_->GetInitRangeStartAndEnd(&init_range_start, &init_range_end);
 
-  uint32_t index_range_start = 0;
-  uint32_t index_range_end = 0;
+  uint64_t index_range_start = 0;
+  uint64_t index_range_end = 0;
   const bool has_index_range = segmenter_->GetIndexRangeStartAndEnd(
       &index_range_start, &index_range_end);
 

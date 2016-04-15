@@ -29,8 +29,8 @@ class MultiSegmentSegmenter : public Segmenter {
 
   /// @name Segmenter implementation overrides.
   /// @{
-  bool GetInitRangeStartAndEnd(uint32_t* start, uint32_t* end) override;
-  bool GetIndexRangeStartAndEnd(uint32_t* start, uint32_t* end) override;
+  bool GetInitRangeStartAndEnd(uint64_t* start, uint64_t* end) override;
+  bool GetIndexRangeStartAndEnd(uint64_t* start, uint64_t* end) override;
   /// @}
 
  protected:

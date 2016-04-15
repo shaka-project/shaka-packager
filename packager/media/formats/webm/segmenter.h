@@ -69,11 +69,11 @@ class Segmenter {
 
   /// @return true if there is an initialization range, while setting @a start
   ///         and @a end; or false if initialization range does not apply.
-  virtual bool GetInitRangeStartAndEnd(uint32_t* start, uint32_t* end) = 0;
+  virtual bool GetInitRangeStartAndEnd(uint64_t* start, uint64_t* end) = 0;
 
   /// @return true if there is an index byte range, while setting @a start
   ///         and @a end; or false if index byte range does not apply.
-  virtual bool GetIndexRangeStartAndEnd(uint32_t* start, uint32_t* end) = 0;
+  virtual bool GetIndexRangeStartAndEnd(uint64_t* start, uint64_t* end) = 0;
 
   /// @return The total length, in seconds, of segmented media files.
   float GetDuration() const;
