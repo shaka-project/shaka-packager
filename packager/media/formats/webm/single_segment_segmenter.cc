@@ -36,11 +36,12 @@ Status SingleSegmentSegmenter::DoFinalize() {
   if (!cues()->Write(writer_.get()))
     return Status(error::FILE_FAILURE, "Error writing Cues data.");
 
-  uint64_t file_size = writer_->Position();
+  // The WebM index is at the end of the file.
+  index_end_ = writer_->Position() - 1;
   writer_->Position(0);
 
-  Status status = WriteSegmentHeader(file_size, writer_.get());
-  writer_->Position(file_size);
+  Status status = WriteSegmentHeader(index_end_ + 1, writer_.get());
+  status.Update(writer_->Close());
   return status;
 }
 
@@ -66,8 +67,8 @@ Status SingleSegmentSegmenter::NewSegment(uint64_t start_timescale) {
   return SetCluster(start_webm_timecode, position, writer_.get());
 }
 
-bool SingleSegmentSegmenter::GetInitRangeStartAndEnd(uint32_t* start,
-                                                     uint32_t* end) {
+bool SingleSegmentSegmenter::GetInitRangeStartAndEnd(uint64_t* start,
+                                                     uint64_t* end) {
   // The init range is the header, from the start of the file to the size of
   // the header.
   *start = 0;
@@ -75,12 +76,12 @@ bool SingleSegmentSegmenter::GetInitRangeStartAndEnd(uint32_t* start,
   return true;
 }
 
-bool SingleSegmentSegmenter::GetIndexRangeStartAndEnd(uint32_t* start,
-                                                      uint32_t* end) {
+bool SingleSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* start,
+                                                      uint64_t* end) {
   // The index is the Cues element, which is always placed at the end of the
   // file.
   *start = index_start_;
-  *end = writer_->file()->Size() - 1;
+  *end = index_end_;
   return true;
 }
 

@@ -127,9 +127,9 @@ Status TwoPassSingleSegmentSegmenter::DoFinalize() {
     LOG(WARNING) << "Unable to delete temporary file " << temp_file_name_;
   }
 
-  // Set the writer back to the real file so GetIndexRangeStartAndEnd works.
-  set_writer(real_writer_.Pass());
-  return Status::OK;
+  // The WebM index is at the end of the file.
+  set_index_end(real_writer_->file()->Size() - 1);
+  return real_writer_->Close();
 }
 
 bool TwoPassSingleSegmentSegmenter::CopyFileWithClusterRewrite(

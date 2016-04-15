@@ -28,6 +28,8 @@ class MkvWriter : public mkvmuxer::IMkvWriter {
   /// @param name The path to the file to open.
   /// @return Whether the operation succeeded.
   Status Open(const std::string& name);
+  /// Closes the file.  MUST call Open before calling any other methods.
+  Status Close();
 
   /// Writes out @a len bytes of @a buf.
   /// @return 0 on success.

@@ -26,6 +26,14 @@ Status MkvWriter::Open(const std::string& name) {
   return Status::OK;
 }
 
+Status MkvWriter::Close() {
+  const std::string file_name = file_->file_name();
+  if (!file_.release()->Close()) {
+    return Status(error::FILE_FAILURE, "Cannot close file " + file_name);
+  }
+  return Status::OK;
+}
+
 mkvmuxer::int32 MkvWriter::Write(const void* buf, mkvmuxer::uint32 len) {
   DCHECK(file_);
 

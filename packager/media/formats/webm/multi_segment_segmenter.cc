@@ -21,13 +21,13 @@ MultiSegmentSegmenter::MultiSegmentSegmenter(const MuxerOptions& options)
 
 MultiSegmentSegmenter::~MultiSegmentSegmenter() {}
 
-bool MultiSegmentSegmenter::GetInitRangeStartAndEnd(uint32_t* start,
-                                                    uint32_t* end) {
+bool MultiSegmentSegmenter::GetInitRangeStartAndEnd(uint64_t* start,
+                                                    uint64_t* end) {
   return false;
 }
 
-bool MultiSegmentSegmenter::GetIndexRangeStartAndEnd(uint32_t* start,
-                                                     uint32_t* end) {
+bool MultiSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* start,
+                                                     uint64_t* end) {
   return false;
 }
 
@@ -37,7 +37,9 @@ Status MultiSegmentSegmenter::DoInitialize(scoped_ptr<MkvWriter> writer) {
 }
 
 Status MultiSegmentSegmenter::DoFinalize() {
-  return FinalizeSegment();
+  Status status = FinalizeSegment();
+  status.Update(writer_->Close());
+  return status;
 }
 
 Status MultiSegmentSegmenter::FinalizeSegment() {
