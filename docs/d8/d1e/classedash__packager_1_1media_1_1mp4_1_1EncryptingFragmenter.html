@@ -112,8 +112,8 @@ Inheritance diagram for edash_packager::media::mp4::EncryptingFragmenter:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a162003f797e713059d2c32b0c2998fdc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a162003f797e713059d2c32b0c2998fdc">EncryptingFragmenter</a> (scoped_refptr&lt; <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; info, <a class="el" href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a> *traf, scoped_ptr&lt; <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt; encryption_key, int64_t clear_time, FourCC protection_scheme)</td></tr>
-<tr class="separator:a162003f797e713059d2c32b0c2998fdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2abceb986f85741abf36367a79393098"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a2abceb986f85741abf36367a79393098">EncryptingFragmenter</a> (scoped_refptr&lt; <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; info, <a class="el" href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a> *traf, scoped_ptr&lt; <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt; encryption_key, int64_t clear_time, FourCC protection_scheme, uint8_t crypt_byte_block, uint8_t skip_byte_block)</td></tr>
+<tr class="separator:a2abceb986f85741abf36367a79393098"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Fragmenter implementation overrides.</div></td></tr>
 <tr class="memitem:ae8fd13a579fee2167167bcdbb9637dcc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#ae8fd13a579fee2167167bcdbb9637dcc">AddSample</a> (scoped_refptr&lt; <a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample) override</td></tr>
 <tr class="separator:ae8fd13a579fee2167167bcdbb9637dcc"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -168,6 +168,12 @@ const <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1Encrypt
 <tr class="memitem:a3c9cde10e0b0d48dfb91ea3ff87202e9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3c9cde10e0b0d48dfb91ea3ff87202e9"></a>
 FourCC&#160;</td><td class="memItemRight" valign="bottom"><b>protection_scheme</b> () const </td></tr>
 <tr class="separator:a3c9cde10e0b0d48dfb91ea3ff87202e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31284345a74d08e0eb971f5c4e52e347"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a31284345a74d08e0eb971f5c4e52e347"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>crypt_byte_block</b> () const </td></tr>
+<tr class="separator:a31284345a74d08e0eb971f5c4e52e347"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17d367b7df67fabedfb35a83fc0838b7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a17d367b7df67fabedfb35a83fc0838b7"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>skip_byte_block</b> () const </td></tr>
+<tr class="separator:a17d367b7df67fabedfb35a83fc0838b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9eef04c1a1d9777bfcc087300a3c9cea"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9eef04c1a1d9777bfcc087300a3c9cea"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b> (scoped_ptr&lt; <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt; encryption_key)</td></tr>
 <tr class="separator:a9eef04c1a1d9777bfcc087300a3c9cea"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -184,7 +190,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 
 <p>Definition at line <a class="el" href="../../d1/dcb/encrypting__fragmenter_8h_source.html#l00027">27</a> of file <a class="el" href="../../d1/dcb/encrypting__fragmenter_8h_source.html">encrypting_fragmenter.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a162003f797e713059d2c32b0c2998fdc"></a>
+<a class="anchor" id="a2abceb986f85741abf36367a79393098"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -216,7 +222,19 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">FourCC&#160;</td>
-          <td class="paramname"><em>protection_scheme</em>&#160;</td>
+          <td class="paramname"><em>protection_scheme</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>crypt_byte_block</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>skip_byte_block</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -231,11 +249,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
     <tr><td class="paramname">encryption_key</td><td>contains the encryption parameters. </td></tr>
     <tr><td class="paramname">clear_time</td><td>specifies clear lead duration in units of the current track's timescale. </td></tr>
     <tr><td class="paramname">protection_scheme</td><td>specifies the protection scheme: 'cenc', 'cens', 'cbc1', 'cbcs'. </td></tr>
+    <tr><td class="paramname">crypt_byte_block</td><td>indicates number of encrypted blocks (16-byte) in pattern based encryption. </td></tr>
+    <tr><td class="paramname">skip_byte_block</td><td>indicates number of unencrypted blocks (16-byte) in pattern based encryption. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00061">61</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00062">62</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -272,7 +292,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 
 <p>Reimplemented from <a class="el" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#a81d8b1f324bdd2bc9cc2e5a469243926">edash_packager::media::mp4::Fragmenter</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00091">91</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00103">103</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -299,7 +319,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 <p>Create the encryptor for the internal encryption key. The existing encryptor will be reset if it is not NULL. </p>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00173">173</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00192">192</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -335,7 +355,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 
 <p>Reimplemented from <a class="el" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#ab55cbcb40b4c1308d70052a4b8ccd6af">edash_packager::media::mp4::Fragmenter</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00106">106</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00118">118</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -365,7 +385,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 
 <p>Reimplemented in <a class="el" href="../../dc/d8a/classedash__packager_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a8c526a2a3f0555be9030f87ef1015bd8">edash_packager::media::mp4::KeyRotationFragmenter</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00147">147</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00159">159</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -376,7 +396,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 14 2016 20:07:53 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 15 2016 19:07:48 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

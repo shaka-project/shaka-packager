@@ -101,29 +101,33 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a271d0e6319a0542e00a2dd7005293bd2">   12</a></span>&#160;<a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a271d0e6319a0542e00a2dd7005293bd2">DecryptConfig::DecryptConfig</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;                             <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv,</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;                             <span class="keyword">const</span> std::vector&lt;SubsampleEntry&gt;&amp; subsamples)</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    : <a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html">DecryptConfig</a>(key_id, iv, subsamples, FOURCC_cenc) {}</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;    : <a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html">DecryptConfig</a>(key_id, iv, subsamples, FOURCC_cenc, 0, 0) {}</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a8df7a59d0af30c39eb4a231fc12b56bc">   17</a></span>&#160;<a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a271d0e6319a0542e00a2dd7005293bd2">DecryptConfig::DecryptConfig</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a0529f4dc1db173b898142bb095bd084b">   17</a></span>&#160;<a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a271d0e6319a0542e00a2dd7005293bd2">DecryptConfig::DecryptConfig</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key_id,</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                             <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv,</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                             <span class="keyword">const</span> std::vector&lt;SubsampleEntry&gt;&amp; subsamples,</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                             FourCC protection_scheme)</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;    : key_id_(key_id),</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;      iv_(iv),</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;      subsamples_(subsamples),</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      protection_scheme_(protection_scheme) {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  CHECK_GT(key_id.size(), 0u);</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;}</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;DecryptConfig::~DecryptConfig() {}</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                             FourCC protection_scheme,</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                             uint8_t crypt_byte_block,</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                             uint8_t skip_byte_block)</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    : key_id_(key_id),</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      iv_(iv),</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;      subsamples_(subsamples),</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;      protection_scheme_(protection_scheme),</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;      crypt_byte_block_(crypt_byte_block),</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      skip_byte_block_(skip_byte_block) {</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  CHECK_GT(key_id.size(), 0u);</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;}</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;DecryptConfig::~DecryptConfig() {}</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1DecryptConfig_html"><div class="ttname"><a href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html">edash_packager::media::DecryptConfig</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00040">decrypt_config.h:40</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1DecryptConfig_html_a271d0e6319a0542e00a2dd7005293bd2"><div class="ttname"><a href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a271d0e6319a0542e00a2dd7005293bd2">edash_packager::media::DecryptConfig::DecryptConfig</a></div><div class="ttdeci">DecryptConfig(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; SubsampleEntry &gt; &amp;subsamples)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d56/decrypt__config_8cc_source.html#l00012">decrypt_config.cc:12</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 14 2016 20:07:47 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 15 2016 19:07:42 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
