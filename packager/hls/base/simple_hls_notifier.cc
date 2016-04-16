@@ -58,12 +58,6 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
                                         const std::string& group_id,
                                         uint32_t* stream_id) {
   DCHECK(stream_id);
-  if (!media_info.has_media_file_name()) {
-    LOG(ERROR) << "MediaInfo.media_file_name is required to generate a Media "
-                  "Playlist name.";
-    return false;
-  }
-
   *stream_id = sequence_number_.GetNext();
 
   scoped_ptr<MediaPlaylist> media_playlist =

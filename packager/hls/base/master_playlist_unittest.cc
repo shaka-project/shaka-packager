@@ -82,7 +82,7 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
 
   const std::string expected =
       "#EXTM3U\n"
-      "#EXT-X-STREAM-INF:CODEC=\"avc1\",BANDWIDTH=435889\n"
+      "#EXT-X-STREAM-INF:CODECS=\"avc1\",BANDWIDTH=435889\n"
       "http://myplaylistdomain.com/media1.m3u8\n";
 
   ASSERT_EQ(expected, actual);
@@ -152,11 +152,11 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audiogroup\",NAME=\"espanol\","
       "URI=\"http://playlists.org/spa.m3u8\"\n"
       "#EXT-X-STREAM-INF:AUDIO=\"audiogroup\","
-      "CODEC=\"sdvideocodec,audiocodec\","
+      "CODECS=\"sdvideocodec,audiocodec\","
       "BANDWIDTH=360000\n"
       "http://playlists.org/sd.m3u8\n"
       "#EXT-X-STREAM-INF:AUDIO=\"audiogroup\","
-      "CODEC=\"hdvideocodec,audiocodec\","
+      "CODECS=\"hdvideocodec,audiocodec\","
       "BANDWIDTH=760000\n"
       "http://playlists.org/hd.m3u8\n";
 
@@ -214,11 +214,11 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audio_lo\",NAME=\"english_lo\","
       "URI=\"http://anydomain.com/eng_lo.m3u8\"\n"
       "#EXT-X-STREAM-INF:AUDIO=\"audio_hi\","
-      "CODEC=\"videocodec,audiocodec_hi\","
+      "CODECS=\"videocodec,audiocodec_hi\","
       "BANDWIDTH=400000\n"
       "http://anydomain.com/video.m3u8\n"
       "#EXT-X-STREAM-INF:AUDIO=\"audio_lo\","
-      "CODEC=\"videocodec,audiocodec_lo\","
+      "CODECS=\"videocodec,audiocodec_lo\","
       "BANDWIDTH=350000\n"
       "http://anydomain.com/video.m3u8\n";
 

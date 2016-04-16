@@ -125,7 +125,7 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
       const std::string& audio_codec = audio_playlists.front()->codec();
       base::StringAppendF(
           &video_output,
-          "#EXT-X-STREAM-INF:AUDIO=\"%s\",CODEC=\"%s\",BANDWIDTH=%" PRIu64 "\n"
+          "#EXT-X-STREAM-INF:AUDIO=\"%s\",CODECS=\"%s\",BANDWIDTH=%" PRIu64 "\n"
           "%s\n",
           group_id.c_str(), (video_codec + "," + audio_codec).c_str(),
           video_bitrate + max_audio_bitrate,
@@ -138,7 +138,7 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
       const std::string& video_codec = video_playlist->codec();
       const uint64_t video_bitrate = video_playlist->Bitrate();
       base::StringAppendF(&video_output,
-                          "#EXT-X-STREAM-INF:CODEC=\"%s\",BANDWIDTH=%" PRIu64
+                          "#EXT-X-STREAM-INF:CODECS=\"%s\",BANDWIDTH=%" PRIu64
                           "\n%s\n",
                           video_codec.c_str(), video_bitrate,
                           (base_url + video_playlist->file_name()).c_str());

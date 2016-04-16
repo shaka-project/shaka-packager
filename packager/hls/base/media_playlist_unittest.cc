@@ -113,6 +113,7 @@ TEST_F(MediaPlaylistTest, WriteToFile) {
   ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));
   const std::string kExpectedOutput =
       "#EXTM3U\n"
+      "#EXT-X-VERSION:4\n"
       "#EXT-X-TARGETDURATION:0\n";
 
   MockFile file;
@@ -142,8 +143,8 @@ TEST_F(MediaPlaylistTest, GetBitrateFromSegments) {
   // 20 seconds, 5MB.
   media_playlist_.AddSegment("file2.ts", 1800000, 5000000);
 
-  // 200KB per second.
-  EXPECT_EQ(200000u, media_playlist_.Bitrate());
+  // 200KB per second which is 1600K bits / sec.
+  EXPECT_EQ(1600000u, media_playlist_.Bitrate());
 }
 
 TEST_F(MediaPlaylistTest, GetLongestSegmentDuration) {
@@ -165,6 +166,7 @@ TEST_F(MediaPlaylistTest, SetTargetDuration) {
   EXPECT_TRUE(media_playlist_.SetTargetDuration(20));
   const std::string kExpectedOutput =
       "#EXTM3U\n"
+      "#EXT-X-VERSION:4\n"
       "#EXT-X-TARGETDURATION:20\n";
 
   MockFile file;
@@ -188,6 +190,7 @@ TEST_F(MediaPlaylistTest, WriteToFileWithSegments) {
   media_playlist_.AddSegment("file2.ts", 2700000, 5000000);
   const std::string kExpectedOutput =
       "#EXTM3U\n"
+      "#EXT-X-VERSION:4\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXTINF:10.000\n"
       "file1.ts\n"
@@ -214,6 +217,7 @@ TEST_F(MediaPlaylistTest, WriteToFileWithEncryptionInfo) {
   media_playlist_.AddSegment("file2.ts", 2700000, 5000000);
   const std::string kExpectedOutput =
       "#EXTM3U\n"
+      "#EXT-X-VERSION:4\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-KEY:METHOD=SAMPLE-AES,"
       "URI=\"http://example.com\",IV=0x12345678,KEYFORMATVERSIONS=\"1/2/4\","
@@ -243,6 +247,7 @@ TEST_F(MediaPlaylistTest, WriteToFileWithEncryptionInfoEmptyIv) {
   media_playlist_.AddSegment("file2.ts", 2700000, 5000000);
   const std::string kExpectedOutput =
       "#EXTM3U\n"
+      "#EXT-X-VERSION:4\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-KEY:METHOD=SAMPLE-AES,"
       "URI=\"http://example.com\",KEYFORMAT=\"com.widevine\"\n"
@@ -270,6 +275,7 @@ TEST_F(MediaPlaylistTest, RemoveOldestSegment) {
 
   const std::string kExpectedOutput =
       "#EXTM3U\n"
+      "#EXT-X-VERSION:4\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXTINF:30.000\n"
       "file2.ts\n";

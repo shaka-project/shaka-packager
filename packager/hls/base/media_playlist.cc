@@ -169,15 +169,16 @@ void MediaPlaylist::AddSegment(const std::string& file_name,
     return;
   }
 
-  const double segment_duration = static_cast<double>(duration) / time_scale_;
-  if (segment_duration > longest_segment_duration_)
-    longest_segment_duration_ = segment_duration;
+  const double segment_duration_seconds =
+      static_cast<double>(duration) / time_scale_;
+  if (segment_duration_seconds > longest_segment_duration_)
+    longest_segment_duration_ = segment_duration_seconds;
 
-  total_duration_in_seconds_ += segment_duration;
+  total_duration_in_seconds_ += segment_duration_seconds;
   total_segments_size_ += size;
   ++total_num_segments_;
 
-  entries_.push_back(new SegmentInfoEntry(file_name, segment_duration));
+  entries_.push_back(new SegmentInfoEntry(file_name, segment_duration_seconds));
 }
 
 // TODO(rkuroiwa): This works for single key format but won't work for multiple
@@ -264,7 +265,9 @@ bool MediaPlaylist::WriteToFile(media::File* file) {
     SetTargetDuration(ceil(GetLongestSegmentDuration()));
   }
 
+  // EXTINF with floating point duration requires version 4.
   std::string header = base::StringPrintf("#EXTM3U\n"
+                                          "#EXT-X-VERSION:4\n"
                                           "#EXT-X-TARGETDURATION:%d\n",
                                           target_duration_);
   std::string body;
@@ -298,7 +301,8 @@ uint64_t MediaPlaylist::Bitrate() const {
     return 0;
   if (total_segments_size_ == 0)
     return 0;
-  return total_segments_size_ / total_duration_in_seconds_;
+  const int kBytesToBits = 8;
+  return total_segments_size_ * kBytesToBits / total_duration_in_seconds_;
 }
 
 double MediaPlaylist::GetLongestSegmentDuration() const {

@@ -93,8 +93,6 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewStream) {
   InjectMediaPlaylistFactory(factory.Pass());
   EXPECT_TRUE(notifier_.Init());
   MediaInfo media_info;
-  media_info.set_media_file_name("media_file.mp4");
-  media_info.mutable_video_info()->set_codec("videocodec");
   uint32_t stream_id;
   EXPECT_TRUE(notifier_.NotifyNewStream(media_info, "video_playlist.m3u8",
                                         "name", "groupid", &stream_id));
@@ -126,8 +124,6 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
   InjectMediaPlaylistFactory(factory.Pass());
   EXPECT_TRUE(notifier_.Init());
   MediaInfo media_info;
-  media_info.set_media_file_name("media_file.mp4");
-  media_info.mutable_video_info()->set_codec("videocodec");
   uint32_t stream_id;
   EXPECT_TRUE(notifier_.NotifyNewStream(media_info, "playlist.m3u8", "name",
                                         "groupid", &stream_id));
@@ -159,8 +155,6 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdate) {
   InjectMediaPlaylistFactory(factory.Pass());
   EXPECT_TRUE(notifier_.Init());
   MediaInfo media_info;
-  media_info.set_media_file_name("media_file.mp4");
-  media_info.mutable_video_info()->set_codec("videocodec");
   uint32_t stream_id;
   EXPECT_TRUE(notifier_.NotifyNewStream(media_info, "playlist.m3u8", "name",
                                         "groupid", &stream_id));
@@ -225,8 +219,6 @@ TEST_F(SimpleHlsNotifierTest, MultipleKeyIdsInPssh) {
   InjectMediaPlaylistFactory(factory.Pass());
   EXPECT_TRUE(notifier_.Init());
   MediaInfo media_info;
-  media_info.set_media_file_name("media_file.mp4");
-  media_info.mutable_video_info()->set_codec("videocodec");
   uint32_t stream_id;
   EXPECT_TRUE(notifier_.NotifyNewStream(media_info, "playlist.m3u8", "name",
                                         "groupid", &stream_id));
@@ -297,8 +289,6 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateEmptyIv) {
   InjectMediaPlaylistFactory(factory.Pass());
   EXPECT_TRUE(notifier_.Init());
   MediaInfo media_info;
-  media_info.set_media_file_name("media_file.mp4");
-  media_info.mutable_video_info()->set_codec("videocodec");
   uint32_t stream_id;
   EXPECT_TRUE(notifier_.NotifyNewStream(media_info, "playlist.m3u8", "name",
                                         "groupid", &stream_id));
