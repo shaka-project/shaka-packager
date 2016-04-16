@@ -10,6 +10,7 @@
 
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/base/status.h"
+#include "packager/media/event/muxer_listener.h"
 
 namespace edash_packager {
 namespace media {
@@ -19,8 +20,9 @@ namespace {
 const double kTsTimescale = 90000;
 }  // namespace
 
-TsSegmenter::TsSegmenter(const MuxerOptions& options)
+TsSegmenter::TsSegmenter(const MuxerOptions& options, MuxerListener* listener)
     : muxer_options_(options),
+      listener_(listener),
       ts_writer_(new TsWriter()),
       pes_packet_generator_(new PesPacketGenerator()) {}
 TsSegmenter::~TsSegmenter() {}
@@ -91,6 +93,8 @@ Status TsSegmenter::OpenNewSegmentIfClosed(uint32_t next_pts) {
                      segment_number_++, muxer_options_.bandwidth);
   if (!ts_writer_->NewSegment(segment_name))
     return Status(error::MUXER_FAILURE, "Failed to initilize TsPacketWriter.");
+  current_segment_start_time_ = next_pts;
+  current_segment_path_ = segment_name;
   ts_writer_file_opened_ = true;
   return Status::OK;
 }
@@ -125,9 +129,18 @@ Status TsSegmenter::Flush() {
     if (!ts_writer_->FinalizeSegment()) {
       return Status(error::MUXER_FAILURE, "Failed to finalize TsWriter.");
     }
+    if (listener_) {
+      const int64_t file_size =
+          File::GetFileSize(current_segment_path_.c_str());
+      listener_->OnNewSegment(
+          current_segment_path_, current_segment_start_time_,
+          current_segment_total_sample_duration_ * kTsTimescale, file_size);
+    }
     ts_writer_file_opened_ = false;
   }
   current_segment_total_sample_duration_ = 0.0;
+  current_segment_start_time_ = 0;
+  current_segment_path_.clear();
   return Status::OK;
 }
 

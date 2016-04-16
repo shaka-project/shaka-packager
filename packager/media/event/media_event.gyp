@@ -33,6 +33,18 @@
       ],
     },
     {
+      'target_name': 'mock_muxer_listener',
+      'type': '<(component)',
+      'sources': [
+        'mock_muxer_listener.cc',
+        'mock_muxer_listener.h',
+      ],
+      'dependencies': [
+        '../../testing/gmock.gyp:gmock',
+        'media_event',
+      ],
+    },
+    {
       'target_name': 'media_event_unittest',
       'type': '<(gtest_target_type)',
       'sources': [

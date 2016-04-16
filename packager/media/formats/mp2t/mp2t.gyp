@@ -64,6 +64,7 @@
       'dependencies': [
         '../../../testing/gtest.gyp:gtest',
         '../../../testing/gmock.gyp:gmock',
+        '../../event/media_event.gyp:mock_muxer_listener',
         '../../filters/filters.gyp:filters',
         '../../test/media_test.gyp:media_test_support',
         '../mpeg/mpeg.gyp:mpeg',

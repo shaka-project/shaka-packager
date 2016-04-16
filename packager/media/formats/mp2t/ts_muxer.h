@@ -29,7 +29,10 @@ class TsMuxer : public Muxer {
   Status DoAddSample(const MediaStream* stream,
                      scoped_refptr<MediaSample> sample) override;
 
-  TsSegmenter segmenter_;
+  void FireOnMediaStartEvent();
+  void FireOnMediaEndEvent();
+
+  scoped_ptr<TsSegmenter> segmenter_;
 
   DISALLOW_COPY_AND_ASSIGN(TsMuxer);
 };

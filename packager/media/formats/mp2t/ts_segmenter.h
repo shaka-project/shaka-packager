@@ -17,6 +17,9 @@
 
 namespace edash_packager {
 namespace media {
+
+class MuxerListener;
+
 namespace mp2t {
 
 // TODO(rkuroiwa): For now, this implements multifile segmenter. Like other
@@ -26,7 +29,9 @@ class TsSegmenter {
  public:
   /// @param options is the options for this muxer. This must stay valid
   ///        throughout the life time of the instance.
-  explicit TsSegmenter(const MuxerOptions& options);
+  /// @param listener is the MuxerListener that should be used to notify events.
+  ///        This may be null, in which case no events are sent.
+  TsSegmenter(const MuxerOptions& options, MuxerListener* listener);
   ~TsSegmenter();
 
   /// Initialize the object.
@@ -65,6 +70,7 @@ class TsSegmenter {
   Status Flush();
 
   const MuxerOptions& muxer_options_;
+  MuxerListener* const listener_;
 
   // Scale used to scale the input stream to TS's timesccale (which is 90000).
   // Used for calculating the duration in seconds fo the current segment.
@@ -84,6 +90,12 @@ class TsSegmenter {
   // TsWriter::FinalizeFile() succeeds.
   bool ts_writer_file_opened_ = false;
   scoped_ptr<PesPacketGenerator> pes_packet_generator_;
+
+  // For OnNewSegment().
+  uint64_t current_segment_start_time_ = 0;
+  // Path of the current segment so that File::GetFileSize() can be used after
+  // the segment has been finalized.
+  std::string current_segment_path_;
 
   DISALLOW_COPY_AND_ASSIGN(TsSegmenter);
 };

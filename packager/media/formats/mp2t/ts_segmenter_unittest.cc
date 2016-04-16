@@ -10,6 +10,7 @@
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/test/status_test_util.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/event/mock_muxer_listener.h"
 #include "packager/media/formats/mp2t/ts_segmenter.h"
 
 namespace edash_packager {
@@ -94,7 +95,7 @@ TEST_F(TsSegmenterTest, Initialize) {
       kNaluLengthSize, kExtraData, arraysize(kExtraData), kIsEncrypted));
   MuxerOptions options;
   options.segment_template = "file$Number$.ts";
-  TsSegmenter segmenter(options);
+  TsSegmenter segmenter(options, nullptr);
 
   EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
@@ -115,7 +116,7 @@ TEST_F(TsSegmenterTest, AddSample) {
   MuxerOptions options;
   options.segment_duration = 10.0;
   options.segment_template = "file$Number$.ts";
-  TsSegmenter segmenter(options);
+  TsSegmenter segmenter(options, nullptr);
 
   EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
@@ -173,7 +174,11 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   MuxerOptions options;
   options.segment_duration = 10.0;
   options.segment_template = "file$Number$.ts";
-  TsSegmenter segmenter(options);
+
+  MockMuxerListener mock_listener;
+  TsSegmenter segmenter(options, &mock_listener);
+
+  const uint32_t kFirstPts = 1000;
 
   EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
@@ -190,6 +195,12 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
   // 11 seconds > 10 seconds (segment duration).
   // Expect the segment to be finalized.
   sample1->set_duration(kInputTimescale * 11);
+
+  // (Finalize is not called at the end of this test so) Expect one segment
+  // event. The length should be the same as the above sample that exceeds the
+  // duration.
+  EXPECT_CALL(mock_listener,
+              OnNewSegment("file1.ts", kFirstPts, kTimeScale * 11, _));
 
   // Doesn't really matter how long this is.
   sample2->set_duration(kInputTimescale * 7);
@@ -239,9 +250,11 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
 
   // The pointers are released inside the segmenter.
   Sequence pes_packet_sequence;
+  PesPacket* first_pes = new PesPacket();
+  first_pes->set_pts(kFirstPts);
   EXPECT_CALL(*mock_pes_packet_generator_, GetNextPesPacketMock())
       .InSequence(pes_packet_sequence)
-      .WillOnce(Return(new PesPacket()));
+      .WillOnce(Return(first_pes));
   EXPECT_CALL(*mock_pes_packet_generator_, GetNextPesPacketMock())
       .InSequence(pes_packet_sequence)
       .WillOnce(Return(new PesPacket()));
@@ -263,7 +276,7 @@ TEST_F(TsSegmenterTest, InitializeThenFinalize) {
   MuxerOptions options;
   options.segment_duration = 10.0;
   options.segment_template = "file$Number$.ts";
-  TsSegmenter segmenter(options);
+  TsSegmenter segmenter(options, nullptr);
 
   EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
@@ -292,7 +305,7 @@ TEST_F(TsSegmenterTest, Finalize) {
   MuxerOptions options;
   options.segment_duration = 10.0;
   options.segment_template = "file$Number$.ts";
-  TsSegmenter segmenter(options);
+  TsSegmenter segmenter(options, nullptr);
 
   EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
@@ -321,7 +334,7 @@ TEST_F(TsSegmenterTest, SegmentOnlyBeforeKeyFrame) {
   MuxerOptions options;
   options.segment_duration = 10.0;
   options.segment_template = "file$Number$.ts";
-  TsSegmenter segmenter(options);
+  TsSegmenter segmenter(options, nullptr);
 
   EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))

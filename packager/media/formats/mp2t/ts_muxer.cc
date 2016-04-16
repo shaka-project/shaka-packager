@@ -10,23 +10,50 @@ namespace edash_packager {
 namespace media {
 namespace mp2t {
 
-TsMuxer::TsMuxer(const MuxerOptions& muxer_options)
-    : Muxer(muxer_options), segmenter_(options()) {}
+namespace {
+const uint32_t kTsTimescale = 90000;
+}  // namespace
+
+TsMuxer::TsMuxer(const MuxerOptions& muxer_options) : Muxer(muxer_options) {}
 TsMuxer::~TsMuxer() {}
 
 Status TsMuxer::Initialize() {
   if (streams().size() > 1u)
     return Status(error::MUXER_FAILURE, "Cannot handle more than one streams.");
-  return segmenter_.Initialize(*streams()[0]->info());
+
+  segmenter_.reset(new TsSegmenter(options(), muxer_listener()));
+  Status status = segmenter_->Initialize(*streams()[0]->info());
+  FireOnMediaStartEvent();
+  return status;
 }
 
 Status TsMuxer::Finalize() {
-  return segmenter_.Finalize();
+  FireOnMediaEndEvent();
+  return segmenter_->Finalize();
 }
 
 Status TsMuxer::DoAddSample(const MediaStream* stream,
                             scoped_refptr<MediaSample> sample) {
-  return segmenter_.AddSample(sample);
+  return segmenter_->AddSample(sample);
+}
+
+void TsMuxer::FireOnMediaStartEvent() {
+  if (!muxer_listener())
+    return;
+  muxer_listener()->OnMediaStart(options(), *streams().front()->info(),
+                                 kTsTimescale, MuxerListener::kContainerWebM);
+}
+
+void TsMuxer::FireOnMediaEndEvent() {
+  if (!muxer_listener())
+    return;
+
+  // For now, there is no single file TS segmenter. So all the values passed
+  // here are false and 0. Called just to notify the MuxerListener.
+  const bool kHasInitRange = true;
+  const bool kHasIndexRange = true;
+  muxer_listener()->OnMediaEnd(!kHasInitRange, 0, 0, !kHasIndexRange, 0, 0, 0,
+                               0);
 }
 
 }  // namespace mp2t
