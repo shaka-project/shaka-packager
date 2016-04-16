@@ -15,6 +15,8 @@
       'sources': [
         'app/fixed_key_encryption_flags.cc',
         'app/fixed_key_encryption_flags.h',
+        'app/hls_flags.cc',
+        'app/hls_flags.h',
         'app/libcrypto_threading.cc',
         'app/libcrypto_threading.h',
         'app/mpd_flags.cc',

@@ -60,17 +60,6 @@ struct MuxerOptions {
   /// Optional.
   std::string segment_template;
 
-  /// name of the output stream. This is not (necessarily) the same as @a
-  /// output_file_name. For HLS this is used as the NAME attribute for
-  /// EXT-X-MEDIA.
-  /// Required for audio when outputting HLS.
-  std::string hls_name;
-
-  /// The group ID for the output stream.
-  /// For HLS this is used as the GROUP-ID attribute for EXT-X-MEDIA.
-  /// Required for audio when outputting HLS.
-  std::string hls_group_id;
-
   /// Specify temporary directory for intermediate files.
   std::string temp_dir;
 

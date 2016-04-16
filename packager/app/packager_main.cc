@@ -8,6 +8,7 @@
 #include <iostream>
 
 #include "packager/app/fixed_key_encryption_flags.h"
+#include "packager/app/hls_flags.h"
 #include "packager/app/libcrypto_threading.h"
 #include "packager/app/mpd_flags.h"
 #include "packager/app/muxer_flags.h"
@@ -17,18 +18,22 @@
 #include "packager/app/widevine_encryption_flags.h"
 #include "packager/base/at_exit.h"
 #include "packager/base/command_line.h"
+#include "packager/base/files/file_path.h"
 #include "packager/base/logging.h"
 #include "packager/base/stl_util.h"
 #include "packager/base/strings/string_split.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/threading/simple_thread.h"
 #include "packager/base/time/clock.h"
+#include "packager/hls/base/hls_notifier.h"
+#include "packager/hls/base/simple_hls_notifier.h"
 #include "packager/media/base/container_names.h"
 #include "packager/media/base/demuxer.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/muxer_util.h"
+#include "packager/media/event/hls_notify_muxer_listener.h"
 #include "packager/media/event/mpd_notify_muxer_listener.h"
 #include "packager/media/event/vod_media_info_dump_muxer_listener.h"
 #include "packager/media/file/file.h"
@@ -76,7 +81,15 @@ const char kUsage[] =
     "    metadata in the input track.\n"
     "  - output_format (format): Optional value which specifies the format\n"
     "    of the output files (MP4 or WebM).  If not specified, it will be\n"
-    "    derived from the file extension of the output file.\n";
+    "    derived from the file extension of the output file.\n"
+    "  - hls_name: Required for audio when outputting HLS.\n"
+    "    name of the output stream. This is not (necessarily) the same as\n"
+    "    output. This is used as the NAME attribute for EXT-X-MEDIA\n"
+    "  - hls_group_id: Required for audio when outputting HLS.\n"
+    "    The group ID for the output stream. For HLS this is used as the\n"
+    "    GROUP-ID attribute for EXT-X-MEDIA.\n"
+    "  - playlist_name: Required for HLS output.\n"
+    "    Name of the playlist for the stream. Usually ends with '.m3u8'.\n";
 
 const char kMediaInfoSuffix[] = ".media_info";
 
@@ -219,9 +232,14 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                      FakeClock* fake_clock,
                      KeySource* key_source,
                      MpdNotifier* mpd_notifier,
+                     hls::HlsNotifier* hls_notifier,
                      std::vector<RemuxJob*>* remux_jobs) {
+  // No notifiers OR (mpd_notifier XOR hls_notifier); which is NAND.
+  DCHECK(!(mpd_notifier && hls_notifier));
   DCHECK(remux_jobs);
 
+  // This is the counter for audio that doesn't have a name set.
+  int hls_audio_name_counter = 0;
   std::string previous_input;
   for (StreamDescriptorList::const_iterator stream_iter =
            stream_descriptors.begin();
@@ -334,14 +352,30 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       muxer_listener = mpd_notify_muxer_listener.Pass();
     }
 
+    if (hls_notifier) {
+      // TODO(rkuroiwa): Do some smart stuff to group the audios, e.g. detect
+      // languages. Also detect whether it is audio so that the counter for
+      // audio%d is continuous.
+      std::string group_id = stream_iter->hls_group_id;
+      std::string name = stream_iter->hls_name;
+      if (group_id.empty())
+        group_id = "audio";
+      if (name.empty())
+        name = base::StringPrintf("audio%d", hls_audio_name_counter++);
+
+      muxer_listener.reset(new HlsNotifyMuxerListener(
+          stream_iter->hls_playlist_name, name, group_id, hls_notifier));
+    }
+
     if (muxer_listener)
       muxer->SetMuxerListener(muxer_listener.Pass());
 
     if (!AddStreamToMuxer(remux_jobs->back()->demuxer()->streams(),
                           stream_iter->stream_selector,
                           stream_iter->language,
-                          muxer.get()))
+                          muxer.get())) {
       return false;
+    }
     remux_jobs->back()->AddMuxer(muxer.Pass());
   }
 
@@ -398,6 +432,13 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
     return false;
   }
 
+  // Since there isn't a muxer listener that can output both MPD and HLS,
+  // disallow specifying both MPD and HLS flags.
+  if (!FLAGS_mpd_output.empty() && !FLAGS_hls_master_playlist_output.empty()) {
+    LOG(ERROR) << "Cannot output both MPD and HLS.";
+    return false;
+  }
+
   // Get basic muxer options.
   MuxerOptions muxer_options;
   if (!GetMuxerOptions(&muxer_options))
@@ -434,12 +475,23 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
     }
   }
 
+  scoped_ptr<hls::HlsNotifier> hls_notifier;
+  if (!FLAGS_hls_master_playlist_output.empty()) {
+    base::FilePath master_playlist_path(FLAGS_hls_master_playlist_output);
+    base::FilePath master_playlist_name = master_playlist_path.BaseName();
+
+    hls_notifier.reset(new hls::SimpleHlsNotifier(
+        hls::HlsNotifier::HlsProfile::kOnDemandProfile, FLAGS_hls_base_url,
+        master_playlist_path.DirName().AsEndingWithSeparator().value(),
+        master_playlist_name.value()));
+  }
+
   std::vector<RemuxJob*> remux_jobs;
   STLElementDeleter<std::vector<RemuxJob*> > scoped_jobs_deleter(&remux_jobs);
   FakeClock fake_clock;
   if (!CreateRemuxJobs(stream_descriptors, muxer_options, &fake_clock,
                        encryption_key_source.get(), mpd_notifier.get(),
-                       &remux_jobs)) {
+                       hls_notifier.get(), &remux_jobs)) {
     return false;
   }
 
@@ -447,6 +499,15 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
   if (!status.ok()) {
     LOG(ERROR) << "Packaging Error: " << status.ToString();
     return false;
+  }
+
+  if (hls_notifier) {
+    if (!hls_notifier->Flush())
+      return false;
+  }
+  if (mpd_notifier) {
+    if (!mpd_notifier->Flush())
+      return false;
   }
 
   printf("Packaging completed successfully.\n");

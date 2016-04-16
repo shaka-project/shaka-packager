@@ -30,6 +30,9 @@ struct StreamDescriptor {
   uint32_t bandwidth;
   std::string language;
   MediaContainerName output_format;
+  std::string hls_name;
+  std::string hls_group_id;
+  std::string hls_playlist_name;
 };
 
 class StreamDescriptorCompareFn {

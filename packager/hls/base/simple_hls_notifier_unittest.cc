@@ -55,6 +55,15 @@ class MockMediaPlaylistFactory : public MediaPlaylistFactory {
 const char kTestPrefix[] = "http://testprefix.com/";
 const char kAnyOutputDir[] = "anything/";
 
+const uint64_t kAnyStartTime = 10;
+const uint64_t kAnyDuration = 1000;
+const uint64_t kAnySize = 2000;
+
+MATCHER_P(SegmentTemplateEq, expected_template, "") {
+  *result_listener << " which is " << arg.segment_template();
+  return arg.segment_template() == expected_template;
+}
+
 }  // namespace
 
 class SimpleHlsNotifierTest : public ::testing::Test {
@@ -69,8 +78,18 @@ class SimpleHlsNotifierTest : public ::testing::Test {
     notifier_.media_playlist_factory_ = factory.Pass();
   }
 
+  void InjectMediaPlaylistFactory(scoped_ptr<MediaPlaylistFactory> factory,
+                                  SimpleHlsNotifier* notifier) {
+    notifier->media_playlist_factory_ = factory.Pass();
+  }
+
   void InjectMasterPlaylist(scoped_ptr<MasterPlaylist> playlist) {
     notifier_.master_playlist_ = playlist.Pass();
+  }
+
+  void InjectMasterPlaylist(scoped_ptr<MasterPlaylist> playlist,
+                            SimpleHlsNotifier* notifier) {
+    notifier->master_playlist_ = playlist.Pass();
   }
 
   const std::map<uint32_t, MediaPlaylist*>& GetMediaPlaylistMap() {
@@ -82,6 +101,128 @@ class SimpleHlsNotifierTest : public ::testing::Test {
 
 TEST_F(SimpleHlsNotifierTest, Init) {
   EXPECT_TRUE(notifier_.Init());
+}
+
+// Verify that relative paths can be handled.
+// For this test, since the prefix "anything/" matches, the prefix should be
+// stripped.
+TEST_F(SimpleHlsNotifierTest, RebaseSegmentTemplateRelative) {
+  scoped_ptr<MockMasterPlaylist> mock_master_playlist(new MockMasterPlaylist());
+  scoped_ptr<MockMediaPlaylistFactory> factory(new MockMediaPlaylistFactory());
+
+  // Pointer released by SimpleHlsNotifier.
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(kVodPlaylist, "", "", "");
+  EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
+
+  EXPECT_CALL(
+      *mock_media_playlist,
+      SetMediaInfo(SegmentTemplateEq("path/to/media$Number$.ts")))
+      .WillOnce(Return(true));
+
+  // Verify that the common prefix is stripped for AddSegment().
+  EXPECT_CALL(*mock_media_playlist,
+              AddSegment("http://testprefix.com/path/to/media1.ts", _, _));
+  EXPECT_CALL(*factory, CreateMock(kVodPlaylist, StrEq("video_playlist.m3u8"),
+                                   StrEq("name"), StrEq("groupid")))
+      .WillOnce(Return(mock_media_playlist));
+
+  InjectMasterPlaylist(mock_master_playlist.Pass());
+  InjectMediaPlaylistFactory(factory.Pass());
+  EXPECT_TRUE(notifier_.Init());
+  MediaInfo media_info;
+  media_info.set_segment_template("anything/path/to/media$Number$.ts");
+  uint32_t stream_id;
+  EXPECT_TRUE(notifier_.NotifyNewStream(media_info, "video_playlist.m3u8",
+                                        "name", "groupid", &stream_id));
+
+  EXPECT_TRUE(
+      notifier_.NotifyNewSegment(stream_id, "anything/path/to/media1.ts",
+                                 kAnyStartTime, kAnyDuration, kAnySize));
+}
+
+// Verify that when segment template's prefix and output dir match, then the
+// prefix is stripped from segment template.
+TEST_F(SimpleHlsNotifierTest,
+       RebaseAbsoluteSegmentTemplatePrefixAndOutputDirMatch) {
+  const char kAbsoluteOutputDir[] = "/tmp/something/";
+  // Require a separate instance to set kAbsoluteOutputDir.
+  SimpleHlsNotifier test_notifier(HlsNotifier::HlsProfile::kOnDemandProfile,
+                                  kTestPrefix, kAbsoluteOutputDir,
+                                  kMasterPlaylistName);
+
+  scoped_ptr<MockMasterPlaylist> mock_master_playlist(new MockMasterPlaylist());
+  scoped_ptr<MockMediaPlaylistFactory> factory(new MockMediaPlaylistFactory());
+
+  // Pointer released by SimpleHlsNotifier.
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(kVodPlaylist, "", "", "");
+  EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
+
+  EXPECT_CALL(*mock_media_playlist,
+              SetMediaInfo(SegmentTemplateEq("media$Number$.ts")))
+      .WillOnce(Return(true));
+
+  // Verify that the output_dir is stripped and then kTestPrefix is prepended.
+  EXPECT_CALL(*mock_media_playlist,
+              AddSegment("http://testprefix.com/media1.ts", _, _));
+  EXPECT_CALL(*factory, CreateMock(kVodPlaylist, StrEq("video_playlist.m3u8"),
+                                   StrEq("name"), StrEq("groupid")))
+      .WillOnce(Return(mock_media_playlist));
+
+  InjectMasterPlaylist(mock_master_playlist.Pass(), &test_notifier);
+  InjectMediaPlaylistFactory(factory.Pass(), &test_notifier);
+  EXPECT_TRUE(test_notifier.Init());
+  MediaInfo media_info;
+  media_info.set_segment_template("/tmp/something/media$Number$.ts");
+  uint32_t stream_id;
+  EXPECT_TRUE(test_notifier.NotifyNewStream(media_info, "video_playlist.m3u8",
+                                            "name", "groupid", &stream_id));
+
+  EXPECT_TRUE(
+      test_notifier.NotifyNewSegment(stream_id, "/tmp/something/media1.ts",
+                                     kAnyStartTime, kAnyDuration, kAnySize));
+}
+
+// If the paths don't match at all and they are both absolute and completely
+// different, then keep it as is.
+TEST_F(SimpleHlsNotifierTest,
+       RebaseAbsoluteSegmentTemplateCompletelyDifferentDirectory) {
+  const char kAbsoluteOutputDir[] = "/tmp/something/";
+  SimpleHlsNotifier test_notifier(HlsNotifier::HlsProfile::kOnDemandProfile,
+                                  kTestPrefix, kAbsoluteOutputDir,
+                                  kMasterPlaylistName);
+
+  scoped_ptr<MockMasterPlaylist> mock_master_playlist(new MockMasterPlaylist());
+  scoped_ptr<MockMediaPlaylistFactory> factory(new MockMediaPlaylistFactory());
+
+  // Pointer released by SimpleHlsNotifier.
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(kVodPlaylist, "", "", "");
+  EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
+
+  EXPECT_CALL(
+      *mock_media_playlist,
+      SetMediaInfo(SegmentTemplateEq("/var/somewhereelse/media$Number$.ts")))
+      .WillOnce(Return(true));
+  EXPECT_CALL(
+      *mock_media_playlist,
+      AddSegment("http://testprefix.com//var/somewhereelse/media1.ts", _, _));
+  EXPECT_CALL(*factory, CreateMock(kVodPlaylist, StrEq("video_playlist.m3u8"),
+                                   StrEq("name"), StrEq("groupid")))
+      .WillOnce(Return(mock_media_playlist));
+
+  InjectMasterPlaylist(mock_master_playlist.Pass(), &test_notifier);
+  InjectMediaPlaylistFactory(factory.Pass(), &test_notifier);
+  EXPECT_TRUE(test_notifier.Init());
+  MediaInfo media_info;
+  media_info.set_segment_template("/var/somewhereelse/media$Number$.ts");
+  uint32_t stream_id;
+  EXPECT_TRUE(test_notifier.NotifyNewStream(media_info, "video_playlist.m3u8",
+                                            "name", "groupid", &stream_id));
+  EXPECT_TRUE(
+      test_notifier.NotifyNewSegment(stream_id, "/var/somewhereelse/media1.ts",
+                                     kAnyStartTime, kAnyDuration, kAnySize));
 }
 
 TEST_F(SimpleHlsNotifierTest, NotifyNewStream) {

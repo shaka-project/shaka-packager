@@ -7,6 +7,7 @@
 #include "packager/hls/base/simple_hls_notifier.h"
 
 #include "packager/base/base64.h"
+#include "packager/base/files/file_path.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
@@ -23,6 +24,43 @@ const uint8_t kSystemIdWidevine[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,
 bool IsWidevineSystemId(const std::vector<uint8_t>& system_id) {
   return system_id.size() == arraysize(kSystemIdWidevine) &&
          std::equal(system_id.begin(), system_id.end(), kSystemIdWidevine);
+}
+
+// TODO(rkuroiwa): Dedup these with the functions in MpdBuilder.
+std::string MakePathRelative(const std::string& original_path,
+                             const std::string& output_dir) {
+  return (original_path.find(output_dir) == 0)
+             ? original_path.substr(output_dir.size())
+             : original_path;
+}
+
+void MakePathsRelativeToOutputDirectory(const std::string& output_dir,
+                                        MediaInfo* media_info) {
+  DCHECK(media_info);
+  const std::string kFileProtocol("file://");
+  std::string prefix_stripped_output_dir =
+      (output_dir.find(kFileProtocol) == 0)
+          ? output_dir.substr(kFileProtocol.size())
+          : output_dir;
+
+  if (prefix_stripped_output_dir.empty())
+    return;
+
+  std::string directory_with_separator(
+      base::FilePath(prefix_stripped_output_dir)
+          .AsEndingWithSeparator()
+          .value());
+  if (directory_with_separator.empty())
+    return;
+
+  if (media_info->has_media_file_name()) {
+    media_info->set_media_file_name(MakePathRelative(
+        media_info->media_file_name(), directory_with_separator));
+  }
+  if (media_info->has_segment_template()) {
+    media_info->set_segment_template(MakePathRelative(
+        media_info->segment_template(), directory_with_separator));
+  }
 }
 }  // namespace
 
@@ -74,9 +112,13 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
       NOTREACHED();
       return false;
   }
+
+  MediaInfo adjusted_media_info(media_info);
+  MakePathsRelativeToOutputDirectory(output_dir_, &adjusted_media_info);
+
   scoped_ptr<MediaPlaylist> media_playlist =
       media_playlist_factory_->Create(type, playlist_name, name, group_id);
-  if (!media_playlist->SetMediaInfo(media_info)) {
+  if (!media_playlist->SetMediaInfo(adjusted_media_info)) {
     LOG(ERROR) << "Failed to set media info for playlist " << playlist_name;
     return false;
   }
@@ -99,8 +141,11 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
     return false;
   }
+  const std::string relative_segment_name =
+      MakePathRelative(segment_name, output_dir_);
+
   auto& media_playlist = result->second;
-  media_playlist->AddSegment(prefix_ + segment_name, duration, size);
+  media_playlist->AddSegment(prefix_ + relative_segment_name, duration, size);
   return true;
 }
 

@@ -26,6 +26,9 @@ enum FieldType {
   kBandwidthField,
   kLanguageField,
   kOutputFormatField,
+  kHlsNameField,
+  kHlsGroupIdField,
+  kHlsPlaylistNameField,
 };
 
 struct FieldNameToTypeMapping {
@@ -34,22 +37,25 @@ struct FieldNameToTypeMapping {
 };
 
 const FieldNameToTypeMapping kFieldNameTypeMappings[] = {
-  { "stream_selector", kStreamSelectorField },
-  { "stream", kStreamSelectorField },
-  { "input", kInputField },
-  { "in", kInputField },
-  { "output", kOutputField },
-  { "out", kOutputField },
-  { "init_segment", kOutputField },
-  { "segment_template", kSegmentTemplateField },
-  { "template", kSegmentTemplateField },
-  { "bandwidth", kBandwidthField },
-  { "bw", kBandwidthField },
-  { "bitrate", kBandwidthField },
-  { "language", kLanguageField },
-  { "lang", kLanguageField },
-  { "output_format", kOutputFormatField },
-  { "format", kOutputFormatField },
+    {"stream_selector", kStreamSelectorField},
+    {"stream", kStreamSelectorField},
+    {"input", kInputField},
+    {"in", kInputField},
+    {"output", kOutputField},
+    {"out", kOutputField},
+    {"init_segment", kOutputField},
+    {"segment_template", kSegmentTemplateField},
+    {"template", kSegmentTemplateField},
+    {"bandwidth", kBandwidthField},
+    {"bw", kBandwidthField},
+    {"bitrate", kBandwidthField},
+    {"language", kLanguageField},
+    {"lang", kLanguageField},
+    {"output_format", kOutputFormatField},
+    {"format", kOutputFormatField},
+    {"hls_name", kHlsNameField},
+    {"hls_group_id", kHlsGroupIdField},
+    {"playlist_name", kHlsPlaylistNameField},
 };
 
 FieldType GetFieldType(const std::string& field_name) {
@@ -124,6 +130,18 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
         descriptor.output_format = output_format;
         break;
       }
+      case kHlsNameField: {
+        descriptor.hls_name = iter->second;
+        break;
+      }
+      case kHlsGroupIdField: {
+        descriptor.hls_group_id = iter->second;
+        break;
+      }
+      case kHlsPlaylistNameField: {
+        descriptor.hls_playlist_name = iter->second;
+        break;
+      }
       default:
         LOG(ERROR) << "Unknown field in stream descriptor (\"" << iter->first
                    << "\").";
@@ -140,7 +158,14 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
     LOG(ERROR) << "Stream stream_selector not specified.";
     return false;
   }
-  if (!FLAGS_dump_stream_info && descriptor.output.empty()) {
+
+  // Note that MPEG2 TS doesn't need a separate initialization segment, so
+  // output field is ignored.
+  const bool is_mpeg2ts_with_segment_template =
+      descriptor.output_format == MediaContainerName::CONTAINER_MPEG2TS &&
+      !descriptor.segment_template.empty();
+  if (!FLAGS_dump_stream_info && descriptor.output.empty() &&
+      !is_mpeg2ts_with_segment_template) {
     LOG(ERROR) << "Stream output not specified.";
     return false;
   }
