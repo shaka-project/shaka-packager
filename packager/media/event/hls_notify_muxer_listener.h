@@ -24,8 +24,16 @@ namespace media {
 class HlsNotifyMuxerListener : public MuxerListener {
  public:
   /// @param playlist_name is the name of the playlist for the muxer's stream.
+  /// @param ext_x_media_name is the name of this playlist. This is the
+  ///        value of the NAME attribute for EXT-X-MEDIA, it is not the same as
+  ///        @a playlist_name. This may be empty for video.
+  /// @param ext_x_media_group_id is the group ID for this playlist. This is the
+  ///        value of GROUP-ID attribute for EXT-X-MEDIA. This may be empty for
+  ///        video.
   /// @param hls_notifier used by this listener. Ownership does not transfer.
   HlsNotifyMuxerListener(const std::string& playlist_name,
+                         const std::string& ext_x_media_name,
+                         const std::string& ext_x_media_group_id,
                          hls::HlsNotifier* hls_notifier);
   ~HlsNotifyMuxerListener() override;
 
@@ -58,6 +66,8 @@ class HlsNotifyMuxerListener : public MuxerListener {
 
  private:
   const std::string playlist_name_;
+  const std::string ext_x_media_name_;
+  const std::string ext_x_media_group_id_;
   hls::HlsNotifier* const hls_notifier_;
   uint32_t stream_id_ = 0;
 

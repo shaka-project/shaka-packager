@@ -16,9 +16,15 @@
 namespace shaka {
 namespace media {
 
-HlsNotifyMuxerListener::HlsNotifyMuxerListener(const std::string& playlist_name,
-                                               hls::HlsNotifier* hls_notifier)
-    : playlist_name_(playlist_name), hls_notifier_(hls_notifier) {
+HlsNotifyMuxerListener::HlsNotifyMuxerListener(
+    const std::string& playlist_name,
+    const std::string& ext_x_media_name,
+    const std::string& ext_x_media_group_id,
+    hls::HlsNotifier* hls_notifier)
+    : playlist_name_(playlist_name),
+      ext_x_media_name_(ext_x_media_name),
+      ext_x_media_group_id_(ext_x_media_group_id),
+      hls_notifier_(hls_notifier) {
   DCHECK(hls_notifier);
 }
 
@@ -48,13 +54,12 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
     return;
   }
   const bool result = hls_notifier_->NotifyNewStream(
-      media_info, playlist_name_, muxer_options.hls_name,
-      muxer_options.hls_group_id, &stream_id_);
+      media_info, playlist_name_, ext_x_media_name_, ext_x_media_group_id_,
+      &stream_id_);
   LOG_IF(WARNING, !result) << "Failed to notify new stream.";
 }
 
-void HlsNotifyMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {
-}
+void HlsNotifyMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {}
 
 void HlsNotifyMuxerListener::OnMediaEnd(bool has_init_range,
                                         uint64_t init_range_start,
@@ -64,8 +69,9 @@ void HlsNotifyMuxerListener::OnMediaEnd(bool has_init_range,
                                         uint64_t index_range_end,
                                         float duration_seconds,
                                         uint64_t file_size) {
-  const bool result = hls_notifier_->Flush();
-  LOG_IF(WARNING, !result) << "Failed to flush.";
+  // Don't flush the notifier here. Flushing here would write all the playlists
+  // before all Media Playlists are read. Which could cause problems
+  // setting the correct EXT-X-TARGETDURATION.
 }
 
 void HlsNotifyMuxerListener::OnNewSegment(const std::string& file_name,

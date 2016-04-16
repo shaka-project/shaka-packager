@@ -66,13 +66,18 @@ const uint8_t kAnyData[] = {
 const bool kInitialEncryptionInfo = true;
 
 const char kDefaultPlaylistName[] = "default_playlist.m3u8";
+const char kDefaultName[] = "DEFAULTNAME";
+const char kDefaultGroupId[] = "DEFAULTGROUPID";
 
 }  // namespace
 
 class HlsNotifyMuxerListenerTest : public ::testing::Test {
  protected:
   HlsNotifyMuxerListenerTest()
-      : listener_(kDefaultPlaylistName, &mock_notifier_) {}
+      : listener_(kDefaultPlaylistName,
+                  kDefaultName,
+                  kDefaultGroupId,
+                  &mock_notifier_) {}
 
   MockHlsNotifier mock_notifier_;
   HlsNotifyMuxerListener listener_;
@@ -100,29 +105,27 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReady) {
 }
 
 TEST_F(HlsNotifyMuxerListenerTest, OnMediaStart) {
-  MuxerOptions muxer_options;
-  muxer_options.hls_name = "Name";
-  muxer_options.hls_group_id = "GroupID";
-  SetDefaultMuxerOptionsValues(&muxer_options);
   VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
   scoped_refptr<StreamInfo> video_stream_info =
       CreateVideoStreamInfo(video_params);
 
   EXPECT_CALL(mock_notifier_,
-              NotifyNewStream(_, StrEq(kDefaultPlaylistName), StrEq("Name"),
-                              StrEq("GroupID"), _))
+              NotifyNewStream(_, StrEq(kDefaultPlaylistName),
+                              StrEq("DEFAULTNAME"), StrEq("DEFAULTGROUPID"), _))
       .WillOnce(Return(true));
 
+  MuxerOptions muxer_options;
   listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,
                          MuxerListener::kContainerMpeg2ts);
 }
 
+// Make sure it doesn't crash.
 TEST_F(HlsNotifyMuxerListenerTest, OnSampleDurationReady) {
   listener_.OnSampleDurationReady(2340);
 }
 
+// Make sure it doesn't crash.
 TEST_F(HlsNotifyMuxerListenerTest, OnMediaEnd) {
-  EXPECT_CALL(mock_notifier_, Flush()).WillOnce(Return(true));
   // None of these values matter, they are not used.
   listener_.OnMediaEnd(false, 0, 0, false, 0, 0, 0, 0);
 }
