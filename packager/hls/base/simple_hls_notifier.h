@@ -10,6 +10,7 @@
 #include "packager/base/atomic_sequence_num.h"
 #include "packager/base/macros.h"
 #include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/stl_util.h"
 #include "packager/base/synchronization/lock.h"
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/hls/base/master_playlist.h"
@@ -72,7 +73,8 @@ class SimpleHlsNotifier : public HlsNotifier {
 
   scoped_ptr<MediaPlaylistFactory> media_playlist_factory_;
   scoped_ptr<MasterPlaylist> master_playlist_;
-  std::map<uint32_t, scoped_ptr<MediaPlaylist>> media_playlist_map_;
+  std::map<uint32_t, MediaPlaylist*> media_playlist_map_;
+  STLValueDeleter<decltype(media_playlist_map_)> media_playlist_map_deleter_;
 
   base::AtomicSequenceNumber sequence_number_;
 

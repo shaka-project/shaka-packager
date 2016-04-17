@@ -65,7 +65,7 @@ class SimpleHlsNotifierTest : public ::testing::Test {
     notifier_.master_playlist_ = playlist.Pass();
   }
 
-  const std::map<uint32_t, scoped_ptr<MediaPlaylist>>& GetMediaPlaylistMap() {
+  const std::map<uint32_t, MediaPlaylist*>& GetMediaPlaylistMap() {
     return notifier_.media_playlist_map_;
   }
 
