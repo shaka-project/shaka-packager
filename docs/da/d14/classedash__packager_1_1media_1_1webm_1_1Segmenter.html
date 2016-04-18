@@ -117,10 +117,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aaa092bb01c45c1d7ec84a8f370978bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff9c729f9464540eafc6571d4a42df47"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#aff9c729f9464540eafc6571d4a42df47">AddSample</a> (scoped_refptr&lt; <a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
 <tr class="separator:aff9c729f9464540eafc6571d4a42df47"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a60f2c77beb6fd3314d8dda4a31bd5316"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#a60f2c77beb6fd3314d8dda4a31bd5316">GetInitRangeStartAndEnd</a> (uint32_t *start, uint32_t *end)=0</td></tr>
-<tr class="separator:a60f2c77beb6fd3314d8dda4a31bd5316"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a725cddcb0a0aeac17400dc3cfb8d0b6a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#a725cddcb0a0aeac17400dc3cfb8d0b6a">GetIndexRangeStartAndEnd</a> (uint32_t *start, uint32_t *end)=0</td></tr>
-<tr class="separator:a725cddcb0a0aeac17400dc3cfb8d0b6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae7de9af689424e6637fd98e61e3feaad"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#ae7de9af689424e6637fd98e61e3feaad">GetInitRangeStartAndEnd</a> (uint64_t *start, uint64_t *end)=0</td></tr>
+<tr class="separator:ae7de9af689424e6637fd98e61e3feaad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaee674048fd7b841ade7cc27d1c27cc7"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#aaee674048fd7b841ade7cc27d1c27cc7">GetIndexRangeStartAndEnd</a> (uint64_t *start, uint64_t *end)=0</td></tr>
+<tr class="separator:aaee674048fd7b841ade7cc27d1c27cc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6ec4149813741e894a9c5083eaf99689"><td class="memItemLeft" align="right" valign="top">float&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#a6ec4149813741e894a9c5083eaf99689">GetDuration</a> () const </td></tr>
 <tr class="separator:a6ec4149813741e894a9c5083eaf99689"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -275,7 +275,7 @@ virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status
 
 </div>
 </div>
-<a class="anchor" id="a725cddcb0a0aeac17400dc3cfb8d0b6a"></a>
+<a class="anchor" id="aaee674048fd7b841ade7cc27d1c27cc7"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -285,13 +285,13 @@ virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status
         <tr>
           <td class="memname">virtual bool edash_packager::media::webm::Segmenter::GetIndexRangeStartAndEnd </td>
           <td>(</td>
-          <td class="paramtype">uint32_t *&#160;</td>
+          <td class="paramtype">uint64_t *&#160;</td>
           <td class="paramname"><em>start</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32_t *&#160;</td>
+          <td class="paramtype">uint64_t *&#160;</td>
           <td class="paramname"><em>end</em>&#160;</td>
         </tr>
         <tr>
@@ -308,11 +308,11 @@ virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>true if there is an index byte range, while setting <em>start</em> and <em>end</em>; or false if index byte range does not apply. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a901bc02ef22e9d40c6ca9bce6edfaa36">edash_packager::media::webm::SingleSegmentSegmenter</a>, and <a class="el" href="../../df/d4e/classedash__packager_1_1media_1_1webm_1_1MultiSegmentSegmenter.html#a9449b54cea9c16fd343c4b8530d4b745">edash_packager::media::webm::MultiSegmentSegmenter</a>.</p>
+<p>Implemented in <a class="el" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a504500e68bce5e9733da158d50148352">edash_packager::media::webm::SingleSegmentSegmenter</a>, and <a class="el" href="../../df/d4e/classedash__packager_1_1media_1_1webm_1_1MultiSegmentSegmenter.html#ad2a9d662f165b56888182e884b6a14e0">edash_packager::media::webm::MultiSegmentSegmenter</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a60f2c77beb6fd3314d8dda4a31bd5316"></a>
+<a class="anchor" id="ae7de9af689424e6637fd98e61e3feaad"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -322,13 +322,13 @@ virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status
         <tr>
           <td class="memname">virtual bool edash_packager::media::webm::Segmenter::GetInitRangeStartAndEnd </td>
           <td>(</td>
-          <td class="paramtype">uint32_t *&#160;</td>
+          <td class="paramtype">uint64_t *&#160;</td>
           <td class="paramname"><em>start</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint32_t *&#160;</td>
+          <td class="paramtype">uint64_t *&#160;</td>
           <td class="paramname"><em>end</em>&#160;</td>
         </tr>
         <tr>
@@ -345,7 +345,7 @@ virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>true if there is an initialization range, while setting <em>start</em> and <em>end</em>; or false if initialization range does not apply. </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#ad27df2d1c96cd582aa33e020ec94d9b7">edash_packager::media::webm::SingleSegmentSegmenter</a>, and <a class="el" href="../../df/d4e/classedash__packager_1_1media_1_1webm_1_1MultiSegmentSegmenter.html#ad34baffe9e95d2b6f4fb090394a15c9b">edash_packager::media::webm::MultiSegmentSegmenter</a>.</p>
+<p>Implemented in <a class="el" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a9d6cfa03d2c6f32cd482c3002cd3df16">edash_packager::media::webm::SingleSegmentSegmenter</a>, and <a class="el" href="../../df/d4e/classedash__packager_1_1media_1_1webm_1_1MultiSegmentSegmenter.html#a147076886250e8f787f52107f34ad8c3">edash_packager::media::webm::MultiSegmentSegmenter</a>.</p>
 
 </div>
 </div>
@@ -427,7 +427,7 @@ virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 18 2016 19:18:07 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 18 2016 21:33:00 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

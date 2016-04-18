@@ -111,6 +111,10 @@ Inheritance diagram for edash_packager::media::MkvWriter:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aad173b6f71e6c93e2dba2a61270f0843"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d8c/classedash__packager_1_1media_1_1MkvWriter.html#aad173b6f71e6c93e2dba2a61270f0843">Open</a> (const std::string &amp;name)</td></tr>
 <tr class="separator:aad173b6f71e6c93e2dba2a61270f0843"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac9a013bca6aa63d5361eba647d6bd4c2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac9a013bca6aa63d5361eba647d6bd4c2"></a>
+<a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d8c/classedash__packager_1_1media_1_1MkvWriter.html#ac9a013bca6aa63d5361eba647d6bd4c2">Close</a> ()</td></tr>
+<tr class="memdesc:ac9a013bca6aa63d5361eba647d6bd4c2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Closes the file. MUST call Open before calling any other methods. <br/></td></tr>
+<tr class="separator:ac9a013bca6aa63d5361eba647d6bd4c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aee60c2f736f3a5411529cf9cdd3e21f9"><td class="memItemLeft" align="right" valign="top">mkvmuxer::int32&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d8c/classedash__packager_1_1media_1_1MkvWriter.html#aee60c2f736f3a5411529cf9cdd3e21f9">Write</a> (const void *buf, mkvmuxer::uint32 len) override</td></tr>
 <tr class="separator:aee60c2f736f3a5411529cf9cdd3e21f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad9aca56b48f2b833b7fb91cb4a5492e0"><td class="memItemLeft" align="right" valign="top">mkvmuxer::int64&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d8c/classedash__packager_1_1media_1_1MkvWriter.html#ad9aca56b48f2b833b7fb91cb4a5492e0">Position</a> () const override</td></tr>
@@ -167,7 +171,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p><a class="el" href="../../d5/d7a/structedash__packager_1_1Element.html">Element</a> start notification. Called whenever an element identifier is about to be written to the stream. <em>element_id</em> is the element identifier, and <em>position</em> is the location in the WebM stream where the first octet of the element identifier will be written. Note: the |MkvId| enumeration in webmids.hpp defines element values. </p>
 
-<p>Definition at line <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html#l00082">82</a> of file <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html">mkv_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html#l00090">90</a> of file <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html">mkv_writer.cc</a>.</p>
 
 </div>
 </div>
@@ -219,7 +223,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The offset of the output position from the beginning of the output. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html#l00063">63</a> of file <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html">mkv_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html#l00071">71</a> of file <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html">mkv_writer.cc</a>.</p>
 
 </div>
 </div>
@@ -247,7 +251,7 @@ Public Member Functions</h2></td></tr>
 <p>Set the current <a class="el" href="../../de/d19/classedash__packager_1_1media_1_1File.html" title="Define an abstract file interface. ">File</a> position. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html#l00067">67</a> of file <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html">mkv_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html#l00075">75</a> of file <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html">mkv_writer.cc</a>.</p>
 
 </div>
 </div>
@@ -273,7 +277,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>true if the writer is seekable. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html#l00078">78</a> of file <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html">mkv_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html#l00086">86</a> of file <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html">mkv_writer.cc</a>.</p>
 
 </div>
 </div>
@@ -311,7 +315,7 @@ Public Member Functions</h2></td></tr>
 <p>Writes out <em>len</em> bytes of <em>buf</em>. </p>
 <dl class="section return"><dt>Returns</dt><dd>0 on success. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html#l00029">29</a> of file <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html">mkv_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html#l00037">37</a> of file <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html">mkv_writer.cc</a>.</p>
 
 </div>
 </div>
@@ -331,7 +335,7 @@ Public Member Functions</h2></td></tr>
 <p>Writes the contents of the given file to this file. </p>
 <dl class="section return"><dt>Returns</dt><dd>The number of bytes written; or &lt; 0 on error. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html#l00048">48</a> of file <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html">mkv_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html#l00056">56</a> of file <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html">mkv_writer.cc</a>.</p>
 
 </div>
 </div>
@@ -361,7 +365,7 @@ Public Member Functions</h2></td></tr>
 <p>Writes the contents of the given file to this file, up to a maximum number of bytes. If <em>max_copy</em> is negative, will copy to EOF. </p>
 <dl class="section return"><dt>Returns</dt><dd>The number of bytes written; or &lt; 0 on error. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html#l00052">52</a> of file <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html">mkv_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html#l00060">60</a> of file <a class="el" href="../../d6/dc8/mkv__writer_8cc_source.html">mkv_writer.cc</a>.</p>
 
 </div>
 </div>
@@ -372,7 +376,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 18 2016 19:18:04 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 18 2016 21:32:57 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -114,47 +114,49 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html">SingleSegmentSegmenter</a>(<span class="keyword">const</span> <a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a>&amp; options);</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  ~<a class="code" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html">SingleSegmentSegmenter</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#ad27df2d1c96cd582aa33e020ec94d9b7">GetInitRangeStartAndEnd</a>(uint32_t* start, uint32_t* end) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a901bc02ef22e9d40c6ca9bce6edfaa36">GetIndexRangeStartAndEnd</a>(uint32_t* start, uint32_t* end) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a9d6cfa03d2c6f32cd482c3002cd3df16">GetInitRangeStartAndEnd</a>(uint64_t* start, uint64_t* end) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a504500e68bce5e9733da158d50148352">GetIndexRangeStartAndEnd</a>(uint64_t* start, uint64_t* end) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; <span class="keyword">protected</span>:</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="../../d4/d8c/classedash__packager_1_1media_1_1MkvWriter.html">MkvWriter</a>* writer() { <span class="keywordflow">return</span> writer_.get(); }</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordtype">void</span> set_init_end(uint64_t end) { init_end_ = end; }</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordtype">void</span> set_index_start(uint64_t start) { index_start_ = start; }</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordtype">void</span> set_writer(scoped_ptr&lt;MkvWriter&gt; writer) { writer_ = writer.Pass(); }</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="comment">// Segmenter implementation overrides.</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> DoInitialize(scoped_ptr&lt;MkvWriter&gt; writer) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> DoFinalize() <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="comment">// Segmenter implementation overrides.</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> NewSubsegment(uint64_t start_timescale) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> NewSegment(uint64_t start_timescale) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  scoped_ptr&lt;MkvWriter&gt; writer_;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  uint32_t init_end_;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  uint32_t index_start_;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html">SingleSegmentSegmenter</a>);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;};</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;}  <span class="comment">// namespace webm</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_SINGLE_SEGMENT_SEGMENTER_H_</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordtype">void</span> set_index_end(uint64_t end) { index_end_ = end; }</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordtype">void</span> set_writer(scoped_ptr&lt;MkvWriter&gt; writer) { writer_ = writer.Pass(); }</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="comment">// Segmenter implementation overrides.</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> DoInitialize(scoped_ptr&lt;MkvWriter&gt; writer) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> DoFinalize() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="comment">// Segmenter implementation overrides.</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> NewSubsegment(uint64_t start_timescale) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> NewSegment(uint64_t start_timescale) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  scoped_ptr&lt;MkvWriter&gt; writer_;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  uint64_t init_end_;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  uint64_t index_start_;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  uint64_t index_end_;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html">SingleSegmentSegmenter</a>);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;};</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}  <span class="comment">// namespace webm</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_SINGLE_SEGMENT_SEGMENTER_H_</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1MkvWriter_html"><div class="ttname"><a href="../../d4/d8c/classedash__packager_1_1media_1_1MkvWriter.html">edash_packager::media::MkvWriter</a></div><div class="ttdoc">An implementation of IMkvWriter using our File type. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/dd6/mkv__writer_8h_source.html#l00021">mkv_writer.h:21</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter_html_a901bc02ef22e9d40c6ca9bce6edfaa36"><div class="ttname"><a href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a901bc02ef22e9d40c6ca9bce6edfaa36">edash_packager::media::webm::SingleSegmentSegmenter::GetIndexRangeStartAndEnd</a></div><div class="ttdeci">bool GetIndexRangeStartAndEnd(uint32_t *start, uint32_t *end) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/df0/webm_2single__segment__segmenter_8cc_source.html#l00078">single_segment_segmenter.cc:78</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter_html_ad27df2d1c96cd582aa33e020ec94d9b7"><div class="ttname"><a href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#ad27df2d1c96cd582aa33e020ec94d9b7">edash_packager::media::webm::SingleSegmentSegmenter::GetInitRangeStartAndEnd</a></div><div class="ttdeci">bool GetInitRangeStartAndEnd(uint32_t *start, uint32_t *end) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/df0/webm_2single__segment__segmenter_8cc_source.html#l00069">single_segment_segmenter.cc:69</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter_html_a9d6cfa03d2c6f32cd482c3002cd3df16"><div class="ttname"><a href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a9d6cfa03d2c6f32cd482c3002cd3df16">edash_packager::media::webm::SingleSegmentSegmenter::GetInitRangeStartAndEnd</a></div><div class="ttdeci">bool GetInitRangeStartAndEnd(uint64_t *start, uint64_t *end) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/df0/webm_2single__segment__segmenter_8cc_source.html#l00070">single_segment_segmenter.cc:70</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter_html"><div class="ttname"><a href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html">edash_packager::media::webm::SingleSegmentSegmenter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d40/webm_2single__segment__segmenter_8h_source.html#l00026">single_segment_segmenter.h:26</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Status_html"><div class="ttname"><a href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">edash_packager::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter_html_a504500e68bce5e9733da158d50148352"><div class="ttname"><a href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a504500e68bce5e9733da158d50148352">edash_packager::media::webm::SingleSegmentSegmenter::GetIndexRangeStartAndEnd</a></div><div class="ttdeci">bool GetIndexRangeStartAndEnd(uint64_t *start, uint64_t *end) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/df0/webm_2single__segment__segmenter_8cc_source.html#l00079">single_segment_segmenter.cc:79</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1webm_1_1Segmenter_html"><div class="ttname"><a href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html">edash_packager::media::webm::Segmenter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/ddc/webm_2segmenter_8h_source.html#l00034">segmenter.h:34</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">edash_packager::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 18 2016 19:18:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 18 2016 21:32:56 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

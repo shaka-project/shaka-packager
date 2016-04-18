@@ -125,62 +125,63 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keywordflow">if</span> (!cues()-&gt;Write(writer_.get()))</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Error writing Cues data.&quot;</span>);</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  uint64_t file_size = writer_-&gt;Position();</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  writer_-&gt;Position(0);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  Status status = WriteSegmentHeader(file_size, writer_.get());</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  writer_-&gt;Position(file_size);</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;}</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;Status SingleSegmentSegmenter::NewSubsegment(uint64_t start_timescale) {</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;}</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;Status SingleSegmentSegmenter::NewSegment(uint64_t start_timescale) {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordflow">if</span> (cluster() &amp;&amp; !cluster()-&gt;<a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">Finalize</a>())</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Error finalizing cluster.&quot;</span>);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="comment">// Create a new Cue point.</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  uint64_t position = writer_-&gt;Position();</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  uint64_t start_webm_timecode = FromBMFFTimescale(start_timescale);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  mkvmuxer::CuePoint* cue_point = <span class="keyword">new</span> mkvmuxer::CuePoint;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  cue_point-&gt;set_time(start_webm_timecode);</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  cue_point-&gt;set_track(track_id());</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  cue_point-&gt;set_cluster_pos(position - segment_payload_pos());</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keywordflow">if</span> (!cues()-&gt;AddCue(cue_point))</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordflow">return</span> Status(error::INTERNAL_ERROR, <span class="stringliteral">&quot;Error adding CuePoint.&quot;</span>);</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordflow">return</span> SetCluster(start_webm_timecode, position, writer_.get());</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#ad27df2d1c96cd582aa33e020ec94d9b7">   69</a></span>&#160;<span class="keywordtype">bool</span> SingleSegmentSegmenter::GetInitRangeStartAndEnd(uint32_t* start,</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                                                     uint32_t* end) {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="comment">// The init range is the header, from the start of the file to the size of</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="comment">// the header.</span></div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  *start = 0;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  *end = init_end_;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;}</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a901bc02ef22e9d40c6ca9bce6edfaa36">   78</a></span>&#160;<span class="keywordtype">bool</span> SingleSegmentSegmenter::GetIndexRangeStartAndEnd(uint32_t* start,</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                                                      uint32_t* end) {</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// The index is the Cues element, which is always placed at the end of the</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// file.</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  *start = index_start_;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  *end = writer_-&gt;file()-&gt;Size() - 1;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;}  <span class="comment">// namespace webm</span></div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="comment">// The WebM index is at the end of the file.</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  index_end_ = writer_-&gt;Position() - 1;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  writer_-&gt;Position(0);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  Status status = WriteSegmentHeader(index_end_ + 1, writer_.get());</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  status.Update(writer_-&gt;Close());</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;}</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;Status SingleSegmentSegmenter::NewSubsegment(uint64_t start_timescale) {</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;Status SingleSegmentSegmenter::NewSegment(uint64_t start_timescale) {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordflow">if</span> (cluster() &amp;&amp; !cluster()-&gt;<a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">Finalize</a>())</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Error finalizing cluster.&quot;</span>);</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="comment">// Create a new Cue point.</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  uint64_t position = writer_-&gt;Position();</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  uint64_t start_webm_timecode = FromBMFFTimescale(start_timescale);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  mkvmuxer::CuePoint* cue_point = <span class="keyword">new</span> mkvmuxer::CuePoint;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  cue_point-&gt;set_time(start_webm_timecode);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  cue_point-&gt;set_track(track_id());</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  cue_point-&gt;set_cluster_pos(position - segment_payload_pos());</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordflow">if</span> (!cues()-&gt;AddCue(cue_point))</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordflow">return</span> Status(error::INTERNAL_ERROR, <span class="stringliteral">&quot;Error adding CuePoint.&quot;</span>);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordflow">return</span> SetCluster(start_webm_timecode, position, writer_.get());</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a9d6cfa03d2c6f32cd482c3002cd3df16">   70</a></span>&#160;<span class="keywordtype">bool</span> SingleSegmentSegmenter::GetInitRangeStartAndEnd(uint64_t* start,</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                                                     uint64_t* end) {</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="comment">// The init range is the header, from the start of the file to the size of</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="comment">// the header.</span></div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  *start = 0;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  *end = init_end_;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
+<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a504500e68bce5e9733da158d50148352">   79</a></span>&#160;<span class="keywordtype">bool</span> SingleSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* start,</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                                                      uint64_t* end) {</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// The index is the Cues element, which is always placed at the end of the</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// file.</span></div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  *start = index_start_;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  *end = index_end_;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}  <span class="comment">// namespace webm</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_ad1136a3e7c2e796267fbd3879d108c2a"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">edash_packager::media::mp4::Segmenter::Finalize</a></div><div class="ttdeci">Status Finalize()</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00289">segmenter.cc:289</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 18 2016 19:18:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 18 2016 21:32:56 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

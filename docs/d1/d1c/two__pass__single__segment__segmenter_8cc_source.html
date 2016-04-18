@@ -215,9 +215,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Unable to delete temporary file &quot;</span> &lt;&lt; temp_file_name_;</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  }</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="comment">// Set the writer back to the real file so GetIndexRangeStartAndEnd works.</span></div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  set_writer(real_writer_.Pass());</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="comment">// The WebM index is at the end of the file.</span></div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  set_index_end(real_writer_-&gt;file()-&gt;Size() - 1);</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordflow">return</span> real_writer_-&gt;Close();</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;}</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;</div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;<span class="keywordtype">bool</span> TwoPassSingleSegmentSegmenter::CopyFileWithClusterRewrite(</div>
@@ -275,7 +275,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 18 2016 19:18:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 18 2016 21:32:56 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
