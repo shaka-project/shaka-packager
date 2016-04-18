@@ -315,25 +315,27 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  <a class="code" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#af7abae8ef77450c272f6ca6ce98df361">UpdateProgress</a>(vod_ref.subsegment_duration);</div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  <span class="keywordflow">if</span> (muxer_listener()) {</div>
 <div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    muxer_listener()-&gt;<a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a5626ff553138db438c561db2ca0d05f2">OnSampleDurationReady</a>(sample_duration());</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    muxer_listener()-&gt;OnNewSegment(vod_ref.earliest_presentation_time,</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;                                   vod_ref.subsegment_duration, segment_size);</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  }</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;}</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    muxer_listener()-&gt;<a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#aff0980f1631ab866ca5598fbe5f59859">OnNewSegment</a>(options().output_file_name,</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;                                   vod_ref.earliest_presentation_time,</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;                                   vod_ref.subsegment_duration, segment_size);</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  }</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;}</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html_addd401a47b287f3c18cbdc4bfa1a6963"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#addd401a47b287f3c18cbdc4bfa1a6963">edash_packager::media::MuxerOptions::output_file_name</a></div><div class="ttdeci">std::string output_file_name</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00055">muxer_options.h:55</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1File_html_a7e0fcd3c439e810e8e17baf32dcc75af"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a7e0fcd3c439e810e8e17baf32dcc75af">edash_packager::media::File::Delete</a></div><div class="ttdeci">static bool Delete(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00162">file.cc:162</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1File_html_a0933ccd7df76fcf8fbcfe12c15dbf6c5"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a0933ccd7df76fcf8fbcfe12c15dbf6c5">edash_packager::media::File::Open</a></div><div class="ttdeci">virtual bool Open()=0</div><div class="ttdoc">Internal open. Should not be used directly. </div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Status_html"><div class="ttname"><a href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">edash_packager::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1webm_1_1Segmenter_html_af7abae8ef77450c272f6ca6ce98df361"><div class="ttname"><a href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#af7abae8ef77450c272f6ca6ce98df361">edash_packager::media::webm::Segmenter::UpdateProgress</a></div><div class="ttdeci">void UpdateProgress(uint64_t progress)</div><div class="ttdoc">Update segmentation progress using ProgressListener. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d53/webm_2segmenter_8cc_source.html#l00247">segmenter.cc:247</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html_aff0980f1631ab866ca5598fbe5f59859"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#aff0980f1631ab866ca5598fbe5f59859">edash_packager::media::MuxerListener::OnNewSegment</a></div><div class="ttdeci">virtual void OnNewSegment(const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size)=0</div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html_a5626ff553138db438c561db2ca0d05f2"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a5626ff553138db438c561db2ca0d05f2">edash_packager::media::MuxerListener::OnSampleDurationReady</a></div><div class="ttdeci">virtual void OnSampleDurationReady(uint32_t sample_duration)=0</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 18 2016 18:07:49 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 18 2016 18:52:58 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -414,7 +414,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  DCHECK(!streams().empty()) &lt;&lt; <span class="stringliteral">&quot;Media started without a stream.&quot;</span>;</div>
 <div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;</div>
 <div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  <span class="keyword">const</span> uint32_t timescale = segmenter_-&gt;GetReferenceTimeScale();</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  muxer_listener()-&gt;OnMediaStart(options(),</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#ac6ef1d524f12f21c6250653dbdbaca20">OnMediaStart</a>(options(),</div>
 <div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;                                 *streams().front()-&gt;info(),</div>
 <div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;                                 timescale,</div>
 <div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;                                 MuxerListener::kContainerMp4);</div>
@@ -443,7 +443,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;    <span class="keywordflow">return</span>;</div>
 <div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;  }</div>
 <div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;  muxer_listener()-&gt;OnMediaEnd(has_init_range,</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;  muxer_listener()-&gt;<a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a6e2a4029988230dbd7fc24b482ce1866">OnMediaEnd</a>(has_init_range,</div>
 <div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;                               init_range_start,</div>
 <div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;                               init_range_end,</div>
 <div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;                               has_index_range,</div>
@@ -466,13 +466,15 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html_addd401a47b287f3c18cbdc4bfa1a6963"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#addd401a47b287f3c18cbdc4bfa1a6963">edash_packager::media::MuxerOptions::output_file_name</a></div><div class="ttdeci">std::string output_file_name</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00055">muxer_options.h:55</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1MP4Muxer_html_ae787aeba358f95d73edf5b80d4fc43fe"><div class="ttname"><a href="../../d1/d78/classedash__packager_1_1media_1_1mp4_1_1MP4Muxer.html#ae787aeba358f95d73edf5b80d4fc43fe">edash_packager::media::mp4::MP4Muxer::MP4Muxer</a></div><div class="ttdeci">MP4Muxer(const MuxerOptions &amp;options)</div><div class="ttdoc">Create a MP4Muxer object from MuxerOptions. </div><div class="ttdef"><b>Definition:</b> <a href="../../da/d88/mp4__muxer_8cc_source.html#l00087">mp4_muxer.cc:87</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Status_html"><div class="ttname"><a href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">edash_packager::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html_ac6ef1d524f12f21c6250653dbdbaca20"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#ac6ef1d524f12f21c6250653dbdbaca20">edash_packager::media::MuxerListener::OnMediaStart</a></div><div class="ttdeci">virtual void OnMediaStart(const MuxerOptions &amp;muxer_options, const StreamInfo &amp;stream_info, uint32_t time_scale, ContainerType container_type)=0</div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Muxer_html"><div class="ttname"><a href="../../d4/d1d/classedash__packager_1_1media_1_1Muxer.html">edash_packager::media::Muxer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/df6/muxer_8h_source.html#l00033">muxer.h:33</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">edash_packager::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html_a6e2a4029988230dbd7fc24b482ce1866"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a6e2a4029988230dbd7fc24b482ce1866">edash_packager::media::MuxerListener::OnMediaEnd</a></div><div class="ttdeci">virtual void OnMediaEnd(bool has_init_range, uint64_t init_range_start, uint64_t init_range_end, bool has_index_range, uint64_t index_range_start, uint64_t index_range_end, float duration_seconds, uint64_t file_size)=0</div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1File_html_a239a76adb5ff5c5340c58f96d7034ec6"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a239a76adb5ff5c5340c58f96d7034ec6">edash_packager::media::File::GetFileSize</a></div><div class="ttdeci">static int64_t GetFileSize(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00175">file.cc:175</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 18 2016 18:07:49 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 18 2016 18:52:58 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

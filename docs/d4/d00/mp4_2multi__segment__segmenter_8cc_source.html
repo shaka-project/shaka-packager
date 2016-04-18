@@ -237,46 +237,46 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;          <span class="stringliteral">&quot;Cannot open file for append &quot;</span> + options().output_file_name);</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    }</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    file = <a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a0933ccd7df76fcf8fbcfe12c15dbf6c5">File::Open</a>(GetSegmentName(options().segment_template,</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;                                     sidx()-&gt;earliest_presentation_time,</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;                                     num_segments_++,</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;                                     options().bandwidth).c_str(),</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;                      <span class="stringliteral">&quot;w&quot;</span>);</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    <span class="keywordflow">if</span> (file == NULL) {</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      <span class="keywordflow">return</span> Status(error::FILE_FAILURE,</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;                    <span class="stringliteral">&quot;Cannot open file for write &quot;</span> + file_name);</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    }</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    styp_-&gt;Write(buffer.get());</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  }</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="comment">// If num_subsegments_per_sidx is negative, no SIDX box is generated.</span></div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  <span class="keywordflow">if</span> (options().<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a93714f081569ea56ed626eb057c1761f">num_subsegments_per_sidx</a> &gt;= 0)</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    sidx()-&gt;<a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa7a756828b5514fcd3eaf16d86c413c0">Write</a>(buffer.get());</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> segment_size = buffer-&gt;Size() + fragment_buffer()-&gt;Size();</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  DCHECK_NE(segment_size, 0u);</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  Status status = buffer-&gt;WriteToFile(file);</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <span class="keywordflow">if</span> (status.ok())</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    status = fragment_buffer()-&gt;<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#aa83fe945386e5a75d3c377904fdddce2">WriteToFile</a>(file);</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;  <span class="keywordflow">if</span> (!file-&gt;Close())</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Failed to close the file properly: &quot;</span> &lt;&lt; file_name;</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  uint64_t segment_duration = 0;</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  <span class="comment">// ISO/IEC 23009-1:2012: the value shall be identical to sum of the the</span></div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  <span class="comment">// values of all Subsegment_duration fields in the first ‘sidx’ box.</span></div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; sidx()-&gt;references.size(); ++i)</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    segment_duration += sidx()-&gt;references[i].subsegment_duration;</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a287d51571c92704274550d9f1d246cf9">UpdateProgress</a>(segment_duration);</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  <span class="keywordflow">if</span> (muxer_listener()) {</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    muxer_listener()-&gt;<a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a5626ff553138db438c561db2ca0d05f2">OnSampleDurationReady</a>(<a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ac2883a5eb0bd7abb50bc3968ac417901">sample_duration</a>());</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    muxer_listener()-&gt;OnNewSegment(</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;        sidx()-&gt;earliest_presentation_time, segment_duration, segment_size);</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    file_name = GetSegmentName(options().segment_template,</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;                               sidx()-&gt;earliest_presentation_time,</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;                               num_segments_++, options().bandwidth);</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    file = <a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a0933ccd7df76fcf8fbcfe12c15dbf6c5">File::Open</a>(file_name.c_str(), <span class="stringliteral">&quot;w&quot;</span>);</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    <span class="keywordflow">if</span> (file == NULL) {</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      <span class="keywordflow">return</span> Status(error::FILE_FAILURE,</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;                    <span class="stringliteral">&quot;Cannot open file for write &quot;</span> + file_name);</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    }</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    styp_-&gt;Write(buffer.get());</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  }</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  <span class="comment">// If num_subsegments_per_sidx is negative, no SIDX box is generated.</span></div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="keywordflow">if</span> (options().<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a93714f081569ea56ed626eb057c1761f">num_subsegments_per_sidx</a> &gt;= 0)</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    sidx()-&gt;<a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa7a756828b5514fcd3eaf16d86c413c0">Write</a>(buffer.get());</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> segment_size = buffer-&gt;Size() + fragment_buffer()-&gt;Size();</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  DCHECK_NE(segment_size, 0u);</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  Status status = buffer-&gt;WriteToFile(file);</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  <span class="keywordflow">if</span> (status.ok())</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    status = fragment_buffer()-&gt;<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#aa83fe945386e5a75d3c377904fdddce2">WriteToFile</a>(file);</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  <span class="keywordflow">if</span> (!file-&gt;Close())</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Failed to close the file properly: &quot;</span> &lt;&lt; file_name;</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;    <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  uint64_t segment_duration = 0;</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  <span class="comment">// ISO/IEC 23009-1:2012: the value shall be identical to sum of the the</span></div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  <span class="comment">// values of all Subsegment_duration fields in the first ‘sidx’ box.</span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; sidx()-&gt;references.size(); ++i)</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    segment_duration += sidx()-&gt;references[i].subsegment_duration;</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  <a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a287d51571c92704274550d9f1d246cf9">UpdateProgress</a>(segment_duration);</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  <span class="keywordflow">if</span> (muxer_listener()) {</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    muxer_listener()-&gt;<a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a5626ff553138db438c561db2ca0d05f2">OnSampleDurationReady</a>(<a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ac2883a5eb0bd7abb50bc3968ac417901">sample_duration</a>());</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    muxer_listener()-&gt;<a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#aff0980f1631ab866ca5598fbe5f59859">OnNewSegment</a>(file_name,</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;                                   sidx()-&gt;earliest_presentation_time,</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;                                   segment_duration, segment_size);</div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  }</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;</div>
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
@@ -293,17 +293,18 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1MultiSegmentSegmenter_html_a789a8b0449e433076dfc0c2344d32280"><div class="ttname"><a href="../../dc/d7a/classedash__packager_1_1media_1_1mp4_1_1MultiSegmentSegmenter.html#a789a8b0449e433076dfc0c2344d32280">edash_packager::media::mp4::MultiSegmentSegmenter::GetIndexRange</a></div><div class="ttdeci">bool GetIndexRange(size_t *offset, size_t *size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d00/mp4_2multi__segment__segmenter_8cc_source.html#l00042">multi_segment_segmenter.cc:42</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1BufferWriter_html_aa83fe945386e5a75d3c377904fdddce2"><div class="ttname"><a href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#aa83fe945386e5a75d3c377904fdddce2">edash_packager::media::BufferWriter::WriteToFile</a></div><div class="ttdeci">Status WriteToFile(File *file)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd3/buffer__writer_8cc_source.html#l00066">buffer_writer.cc:66</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_ac2883a5eb0bd7abb50bc3968ac417901"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ac2883a5eb0bd7abb50bc3968ac417901">edash_packager::media::mp4::Segmenter::sample_duration</a></div><div class="ttdeci">uint32_t sample_duration() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d3b/mp4_2segmenter_8h_source.html#l00101">segmenter.h:101</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_a287d51571c92704274550d9f1d246cf9"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a287d51571c92704274550d9f1d246cf9">edash_packager::media::mp4::Segmenter::UpdateProgress</a></div><div class="ttdeci">void UpdateProgress(uint64_t progress)</div><div class="ttdoc">Update segmentation progress using ProgressListener. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00380">segmenter.cc:380</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_a287d51571c92704274550d9f1d246cf9"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a287d51571c92704274550d9f1d246cf9">edash_packager::media::mp4::Segmenter::UpdateProgress</a></div><div class="ttdeci">void UpdateProgress(uint64_t progress)</div><div class="ttdoc">Update segmentation progress using ProgressListener. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00382">segmenter.cc:382</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html_a93714f081569ea56ed626eb057c1761f"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a93714f081569ea56ed626eb057c1761f">edash_packager::media::MuxerOptions::num_subsegments_per_sidx</a></div><div class="ttdeci">int num_subsegments_per_sidx</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00050">muxer_options.h:50</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_aa7a756828b5514fcd3eaf16d86c413c0"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa7a756828b5514fcd3eaf16d86c413c0">edash_packager::media::mp4::Box::Write</a></div><div class="ttdeci">void Write(BufferWriter *writer)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00025">box.cc:25</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_a4e58a007d4daafe1b49a70d39e52e339"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a4e58a007d4daafe1b49a70d39e52e339">edash_packager::media::mp4::Segmenter::SetComplete</a></div><div class="ttdeci">void SetComplete()</div><div class="ttdoc">Set progress to 100%. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00396">segmenter.cc:396</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_a4e58a007d4daafe1b49a70d39e52e339"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#a4e58a007d4daafe1b49a70d39e52e339">edash_packager::media::mp4::Segmenter::SetComplete</a></div><div class="ttdeci">void SetComplete()</div><div class="ttdoc">Set progress to 100%. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00398">segmenter.cc:398</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html_aff0980f1631ab866ca5598fbe5f59859"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#aff0980f1631ab866ca5598fbe5f59859">edash_packager::media::MuxerListener::OnNewSegment</a></div><div class="ttdeci">virtual void OnNewSegment(const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size)=0</div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1MultiSegmentSegmenter_html_a88be93ad6cce209ceaf086ab98009516"><div class="ttname"><a href="../../dc/d7a/classedash__packager_1_1media_1_1mp4_1_1MultiSegmentSegmenter.html#a88be93ad6cce209ceaf086ab98009516">edash_packager::media::mp4::MultiSegmentSegmenter::GetInitRange</a></div><div class="ttdeci">bool GetInitRange(size_t *offset, size_t *size) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d00/mp4_2multi__segment__segmenter_8cc_source.html#l00036">multi_segment_segmenter.cc:36</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html_a5626ff553138db438c561db2ca0d05f2"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a5626ff553138db438c561db2ca0d05f2">edash_packager::media::MuxerListener::OnSampleDurationReady</a></div><div class="ttdeci">virtual void OnSampleDurationReady(uint32_t sample_duration)=0</div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1BufferWriter_html"><div class="ttname"><a href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html">edash_packager::media::BufferWriter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd2/buffer__writer_8h_source.html#l00022">buffer_writer.h:22</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 18 2016 18:07:49 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 18 2016 18:52:58 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

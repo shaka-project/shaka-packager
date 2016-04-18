@@ -207,25 +207,27 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keywordflow">if</span> (muxer_listener) {</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">bool</span> kInitialEncryptionInfo = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    muxer_listener-&gt;OnEncryptionInfoReady(kInitialEncryptionInfo,</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    muxer_listener-&gt;<a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a9fbfab6fc603afd8468db9d02b3a2474">OnEncryptionInfoReady</a>(kInitialEncryptionInfo,</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;                                          encryption_key-&gt;key_id,</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;                                          encryption_key-&gt;key_system_info);</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  }</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  key_ = encryption_key.Pass();</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  encryptor_ = encryptor.Pass();</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;}</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;}  <span class="comment">// namespace webm</span></div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;                                          encryptor-&gt;iv(),</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;                                          encryption_key-&gt;key_system_info);</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  }</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  key_ = encryption_key.Pass();</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  encryptor_ = encryptor.Pass();</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;}</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;}  <span class="comment">// namespace webm</span></div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1webm_1_1Encryptor_html_ac7293db5bad8b0cd86ee428efaaf5318"><div class="ttname"><a href="../../d2/d76/classedash__packager_1_1media_1_1webm_1_1Encryptor.html#ac7293db5bad8b0cd86ee428efaaf5318">edash_packager::media::webm::Encryptor::EncryptFrame</a></div><div class="ttdeci">Status EncryptFrame(scoped_refptr&lt; MediaSample &gt; sample, bool encrypt_frame)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d98/encryptor_8cc_source.html#l00067">encryptor.cc:67</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_ae1000d8809b293738dca06c1a5f916bf"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ae1000d8809b293738dca06c1a5f916bf">edash_packager::media::KeySource::GetKey</a></div><div class="ttdeci">virtual Status GetKey(TrackType track_type, EncryptionKey *key)=0</div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html_a9fbfab6fc603afd8468db9d02b3a2474"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a9fbfab6fc603afd8468db9d02b3a2474">edash_packager::media::MuxerListener::OnEncryptionInfoReady</a></div><div class="ttdeci">virtual void OnEncryptionInfoReady(bool is_initial_encryption_info, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; ProtectionSystemSpecificInfo &gt; &amp;key_system_info)=0</div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1EncryptionKey_html"><div class="ttname"><a href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">edash_packager::media::EncryptionKey</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00020">key_source.h:20</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a0fccd9fe2270f0c584ff1f6c5dd6bd91"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a0fccd9fe2270f0c584ff1f6c5dd6bd91">edash_packager::media::AesCryptor::GenerateRandomIv</a></div><div class="ttdeci">static bool GenerateRandomIv(FourCC protection_scheme, std::vector&lt; uint8_t &gt; *iv)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00058">aes_cryptor.cc:58</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Status_html"><div class="ttname"><a href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">edash_packager::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">edash_packager::media::MuxerListener</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dfa/muxer__listener_8h_source.html#l00030">muxer_listener.h:30</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">edash_packager::media::MuxerListener</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dfa/muxer__listener_8h_source.html#l00028">muxer_listener.h:28</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">edash_packager::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00031">key_source.h:31</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1webm_1_1Encryptor_html_ab37db1af563c523c84ef1addb9594175"><div class="ttname"><a href="../../d2/d76/classedash__packager_1_1media_1_1webm_1_1Encryptor.html#ab37db1af563c523c84ef1addb9594175">edash_packager::media::webm::Encryptor::Initialize</a></div><div class="ttdeci">Status Initialize(MuxerListener *muxer_listener, KeySource::TrackType track_type, KeySource *key_source)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d98/encryptor_8cc_source.html#l00055">encryptor.cc:55</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1AesCtrEncryptor_html"><div class="ttname"><a href="../../dd/d79/classedash__packager_1_1media_1_1AesCtrEncryptor.html">edash_packager::media::AesCtrEncryptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df0/aes__encryptor_8h_source.html#l00037">aes_encryptor.h:37</a></div></div>
@@ -233,7 +235,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 18 2016 18:07:49 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 18 2016 18:52:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
