@@ -1808,34 +1808,38 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01719"></a><span class="lineno"> 1719</span>&#160;             base::EqualsCaseInsensitiveASCII(format_name, <span class="stringliteral">&quot;mp4&quot;</span>) ||</div>
 <div class="line"><a name="l01720"></a><span class="lineno"> 1720</span>&#160;             base::EqualsCaseInsensitiveASCII(format_name, <span class="stringliteral">&quot;mov&quot;</span>)) {</div>
 <div class="line"><a name="l01721"></a><span class="lineno"> 1721</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MOV;</div>
-<div class="line"><a name="l01722"></a><span class="lineno"> 1722</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l01723"></a><span class="lineno"> 1723</span>&#160;    <span class="keywordflow">return</span> CONTAINER_UNKNOWN;</div>
-<div class="line"><a name="l01724"></a><span class="lineno"> 1724</span>&#160;  }</div>
-<div class="line"><a name="l01725"></a><span class="lineno"> 1725</span>&#160;}</div>
-<div class="line"><a name="l01726"></a><span class="lineno"> 1726</span>&#160;</div>
-<div class="line"><a name="l01727"></a><span class="lineno"> 1727</span>&#160;MediaContainerName DetermineContainerFromFileName(</div>
-<div class="line"><a name="l01728"></a><span class="lineno"> 1728</span>&#160;    <span class="keyword">const</span> std::string&amp; file_name) {</div>
-<div class="line"><a name="l01729"></a><span class="lineno"> 1729</span>&#160;  <span class="keywordflow">if</span> (base::EndsWith(file_name, <span class="stringliteral">&quot;.webm&quot;</span>,</div>
-<div class="line"><a name="l01730"></a><span class="lineno"> 1730</span>&#160;                     base::CompareCase::INSENSITIVE_ASCII)) {</div>
-<div class="line"><a name="l01731"></a><span class="lineno"> 1731</span>&#160;    <span class="keywordflow">return</span> CONTAINER_WEBM;</div>
-<div class="line"><a name="l01732"></a><span class="lineno"> 1732</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (base::EndsWith(file_name, <span class="stringliteral">&quot;.mp4&quot;</span>,</div>
-<div class="line"><a name="l01733"></a><span class="lineno"> 1733</span>&#160;                            base::CompareCase::INSENSITIVE_ASCII) ||</div>
-<div class="line"><a name="l01734"></a><span class="lineno"> 1734</span>&#160;             base::EndsWith(file_name, <span class="stringliteral">&quot;.m4a&quot;</span>,</div>
+<div class="line"><a name="l01722"></a><span class="lineno"> 1722</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (base::EqualsCaseInsensitiveASCII(format_name, <span class="stringliteral">&quot;ts&quot;</span>) ||</div>
+<div class="line"><a name="l01723"></a><span class="lineno"> 1723</span>&#160;             base::EqualsCaseInsensitiveASCII(format_name, <span class="stringliteral">&quot;mpeg2ts&quot;</span>)) {</div>
+<div class="line"><a name="l01724"></a><span class="lineno"> 1724</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MPEG2TS;</div>
+<div class="line"><a name="l01725"></a><span class="lineno"> 1725</span>&#160;  }</div>
+<div class="line"><a name="l01726"></a><span class="lineno"> 1726</span>&#160;  <span class="keywordflow">return</span> CONTAINER_UNKNOWN;</div>
+<div class="line"><a name="l01727"></a><span class="lineno"> 1727</span>&#160;}</div>
+<div class="line"><a name="l01728"></a><span class="lineno"> 1728</span>&#160;</div>
+<div class="line"><a name="l01729"></a><span class="lineno"> 1729</span>&#160;MediaContainerName DetermineContainerFromFileName(</div>
+<div class="line"><a name="l01730"></a><span class="lineno"> 1730</span>&#160;    <span class="keyword">const</span> std::string&amp; file_name) {</div>
+<div class="line"><a name="l01731"></a><span class="lineno"> 1731</span>&#160;  <span class="keywordflow">if</span> (base::EndsWith(file_name, <span class="stringliteral">&quot;.webm&quot;</span>,</div>
+<div class="line"><a name="l01732"></a><span class="lineno"> 1732</span>&#160;                     base::CompareCase::INSENSITIVE_ASCII)) {</div>
+<div class="line"><a name="l01733"></a><span class="lineno"> 1733</span>&#160;    <span class="keywordflow">return</span> CONTAINER_WEBM;</div>
+<div class="line"><a name="l01734"></a><span class="lineno"> 1734</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (base::EndsWith(file_name, <span class="stringliteral">&quot;.mp4&quot;</span>,</div>
 <div class="line"><a name="l01735"></a><span class="lineno"> 1735</span>&#160;                            base::CompareCase::INSENSITIVE_ASCII) ||</div>
-<div class="line"><a name="l01736"></a><span class="lineno"> 1736</span>&#160;             base::EndsWith(file_name, <span class="stringliteral">&quot;.m4v&quot;</span>,</div>
-<div class="line"><a name="l01737"></a><span class="lineno"> 1737</span>&#160;                            base::CompareCase::INSENSITIVE_ASCII)) {</div>
-<div class="line"><a name="l01738"></a><span class="lineno"> 1738</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MOV;</div>
-<div class="line"><a name="l01739"></a><span class="lineno"> 1739</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l01740"></a><span class="lineno"> 1740</span>&#160;    <span class="keywordflow">return</span> CONTAINER_UNKNOWN;</div>
-<div class="line"><a name="l01741"></a><span class="lineno"> 1741</span>&#160;  }</div>
-<div class="line"><a name="l01742"></a><span class="lineno"> 1742</span>&#160;}</div>
-<div class="line"><a name="l01743"></a><span class="lineno"> 1743</span>&#160;</div>
-<div class="line"><a name="l01744"></a><span class="lineno"> 1744</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l01745"></a><span class="lineno"> 1745</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l01736"></a><span class="lineno"> 1736</span>&#160;             base::EndsWith(file_name, <span class="stringliteral">&quot;.m4a&quot;</span>,</div>
+<div class="line"><a name="l01737"></a><span class="lineno"> 1737</span>&#160;                            base::CompareCase::INSENSITIVE_ASCII) ||</div>
+<div class="line"><a name="l01738"></a><span class="lineno"> 1738</span>&#160;             base::EndsWith(file_name, <span class="stringliteral">&quot;.m4v&quot;</span>,</div>
+<div class="line"><a name="l01739"></a><span class="lineno"> 1739</span>&#160;                            base::CompareCase::INSENSITIVE_ASCII)) {</div>
+<div class="line"><a name="l01740"></a><span class="lineno"> 1740</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MOV;</div>
+<div class="line"><a name="l01741"></a><span class="lineno"> 1741</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (base::EndsWith(file_name, <span class="stringliteral">&quot;.ts&quot;</span>,</div>
+<div class="line"><a name="l01742"></a><span class="lineno"> 1742</span>&#160;                            base::CompareCase::INSENSITIVE_ASCII)) {</div>
+<div class="line"><a name="l01743"></a><span class="lineno"> 1743</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MPEG2TS;</div>
+<div class="line"><a name="l01744"></a><span class="lineno"> 1744</span>&#160;  }</div>
+<div class="line"><a name="l01745"></a><span class="lineno"> 1745</span>&#160;  <span class="keywordflow">return</span> CONTAINER_UNKNOWN;</div>
+<div class="line"><a name="l01746"></a><span class="lineno"> 1746</span>&#160;}</div>
+<div class="line"><a name="l01747"></a><span class="lineno"> 1747</span>&#160;</div>
+<div class="line"><a name="l01748"></a><span class="lineno"> 1748</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l01749"></a><span class="lineno"> 1749</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 18 2016 18:52:58 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Apr 18 2016 19:18:01 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
