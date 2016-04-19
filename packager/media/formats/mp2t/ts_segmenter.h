@@ -66,7 +66,14 @@ class TsSegmenter {
 
   const MuxerOptions& muxer_options_;
 
-  // in seconds.
+  // Scale used to scale the input stream to TS's timesccale (which is 90000).
+  // Used for calculating the duration in seconds fo the current segment.
+  double timescale_scale_ = 1.0;
+
+  // This is the sum of the durations of the samples that were added to
+  // PesPacketGenerator for the current segment (in seconds). Note that this is
+  // not necessarily the same as the length of the PesPackets that have been
+  // written to the current segment in WritePesPacketsToFile().
   double current_segment_total_sample_duration_ = 0.0;
 
   // Used for segment template.

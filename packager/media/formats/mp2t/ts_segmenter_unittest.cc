@@ -72,9 +72,6 @@ class MockTsWriter : public TsWriter {
     // No need to keep the pes packet around for the current tests.
     return AddPesPacketMock(pes_packet.get());
   }
-
-  MOCK_METHOD0(NotifyReinjectPsi, bool());
-  MOCK_CONST_METHOD0(TimeScale, uint32_t());
 };
 
 }  // namespace
@@ -119,9 +116,6 @@ TEST_F(TsSegmenterTest, AddSample) {
   options.segment_duration = 10.0;
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options);
-
-  ON_CALL(*mock_ts_writer_, TimeScale())
-      .WillByDefault(Return(kTimeScale));
 
   EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
@@ -169,16 +163,17 @@ TEST_F(TsSegmenterTest, AddSample) {
 // This will add 2 samples and verify that the first segment is closed when the
 // second sample is added.
 TEST_F(TsSegmenterTest, PassedSegmentDuration) {
+  // Use something significantly smaller than 90000 to check that the scaling is
+  // done correctly in the segmenter.
+  const uint32_t kInputTimescale = 1001;
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, kH264VideoCodec, kCodecString, kLanguage,
-      kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
+      kTrackId, kInputTimescale, kDuration, kH264VideoCodec, kCodecString,
+      kLanguage, kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
       kNaluLengthSize, kExtraData, arraysize(kExtraData), kIsEncrypted));
   MuxerOptions options;
   options.segment_duration = 10.0;
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options);
-
-  ON_CALL(*mock_ts_writer_, TimeScale()).WillByDefault(Return(kTimeScale));
 
   EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
@@ -194,10 +189,10 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
 
   // 11 seconds > 10 seconds (segment duration).
   // Expect the segment to be finalized.
-  sample1->set_duration(kTimeScale * 11);
+  sample1->set_duration(kInputTimescale * 11);
 
   // Doesn't really matter how long this is.
-  sample2->set_duration(kTimeScale * 7);
+  sample2->set_duration(kInputTimescale * 7);
 
   Sequence writer_sequence;
   EXPECT_CALL(*mock_ts_writer_, NewSegment(StrEq("file1.ts")))
@@ -327,8 +322,6 @@ TEST_F(TsSegmenterTest, SegmentOnlyBeforeKeyFrame) {
   options.segment_duration = 10.0;
   options.segment_template = "file$Number$.ts";
   TsSegmenter segmenter(options);
-
-  ON_CALL(*mock_ts_writer_, TimeScale()).WillByDefault(Return(kTimeScale));
 
   EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))

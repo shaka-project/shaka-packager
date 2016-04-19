@@ -16,7 +16,7 @@ namespace media {
 namespace mp2t {
 
 namespace {
-const int kTsTimescale = 90000;
+const double kTsTimescale = 90000;
 }  // namespace
 
 TsSegmenter::TsSegmenter(const MuxerOptions& options)
@@ -35,6 +35,7 @@ Status TsSegmenter::Initialize(const StreamInfo& stream_info) {
                   "Failed to initialize PesPacketGenerator.");
   }
 
+  timescale_scale_ = kTsTimescale / stream_info.time_scale();
   return Status::OK;
 }
 
@@ -62,7 +63,9 @@ Status TsSegmenter::AddSample(scoped_refptr<MediaSample> sample) {
                   "Failed to add sample to PesPacketGenerator.");
   }
 
-  current_segment_total_sample_duration_ += sample->duration() / kTsTimescale;
+  const double scaled_sample_duration = sample->duration() * timescale_scale_;
+  current_segment_total_sample_duration_ +=
+      scaled_sample_duration / kTsTimescale;
 
   return WritePesPacketsToFile();
 }
