@@ -19,6 +19,7 @@ var searchData=
   ['h265sliceheader',['H265SliceHeader',['../d7/de6/structedash__packager_1_1media_1_1H265SliceHeader.html',1,'edash_packager::media']]],
   ['h265sps',['H265Sps',['../dc/d96/structedash__packager_1_1media_1_1H265Sps.html',1,'edash_packager::media']]],
   ['h265videosliceheaderparser',['H265VideoSliceHeaderParser',['../db/dbf/classedash__packager_1_1media_1_1mp4_1_1H265VideoSliceHeaderParser.html',1,'edash_packager::media::mp4']]],
+  ['h265vuiparameters',['H265VuiParameters',['../d5/d49/structedash__packager_1_1media_1_1H265VuiParameters.html',1,'edash_packager::media']]],
   ['h26xbitreader',['H26xBitReader',['../d3/dec/classedash__packager_1_1media_1_1H26xBitReader.html',1,'edash_packager::media']]],
   ['h26xbytetounitstreamconverter',['H26xByteToUnitStreamConverter',['../d4/dd8/classedash__packager_1_1media_1_1H26xByteToUnitStreamConverter.html',1,'edash_packager::media']]],
   ['handlerreference',['HandlerReference',['../d3/dbd/structedash__packager_1_1media_1_1mp4_1_1HandlerReference.html',1,'edash_packager::media::mp4']]],

@@ -122,7 +122,7 @@ Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A class to parse H.265 streams. This is incomplete and skips many pieces. This will mostly parse PPS and SPS elements as well as fully parse a slice header. </p>
 
-<p>Definition at line <a class="el" href="../../da/d24/h265__parser_8h_source.html#l00250">250</a> of file <a class="el" href="../../da/d24/h265__parser_8h_source.html">h265_parser.h</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d24/h265__parser_8h_source.html#l00277">277</a> of file <a class="el" href="../../da/d24/h265__parser_8h_source.html">h265_parser.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="ad5d72fcb094f5db8921ba149974f9f3e"></a>
 <div class="memitem">
@@ -139,7 +139,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>a pointer to the PPS with the given ID, or NULL if none exists. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../db/dde/h265__parser_8cc_source.html#l00532">532</a> of file <a class="el" href="../../db/dde/h265__parser_8cc_source.html">h265_parser.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../db/dde/h265__parser_8cc_source.html#l00630">630</a> of file <a class="el" href="../../db/dde/h265__parser_8cc_source.html">h265_parser.cc</a>.</p>
 
 </div>
 </div>
@@ -158,7 +158,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>a pointer to the SPS with the given ID, or NULL if none exists. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../db/dde/h265__parser_8cc_source.html#l00536">536</a> of file <a class="el" href="../../db/dde/h265__parser_8cc_source.html">h265_parser.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../db/dde/h265__parser_8cc_source.html#l00634">634</a> of file <a class="el" href="../../db/dde/h265__parser_8cc_source.html">h265_parser.cc</a>.</p>
 
 </div>
 </div>
@@ -187,7 +187,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Parses a PPS element. This object is owned and managed by this class. The unique ID of the parsed PPS is stored in |*pps_id| if kOk is returned. </p>
 
-<p>Definition at line <a class="el" href="../../db/dde/h265__parser_8cc_source.html#l00312">312</a> of file <a class="el" href="../../db/dde/h265__parser_8cc_source.html">h265_parser.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../db/dde/h265__parser_8cc_source.html#l00404">404</a> of file <a class="el" href="../../db/dde/h265__parser_8cc_source.html">h265_parser.cc</a>.</p>
 
 </div>
 </div>
@@ -216,7 +216,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Parses a video slice header. If this returns kOk, then |*slice_header| will contain the parsed header; if it returns something else, the contents of |*slice_header| are undefined. </p>
 
-<p>Definition at line <a class="el" href="../../db/dde/h265__parser_8cc_source.html#l00095">95</a> of file <a class="el" href="../../db/dde/h265__parser_8cc_source.html">h265_parser.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../db/dde/h265__parser_8cc_source.html#l00187">187</a> of file <a class="el" href="../../db/dde/h265__parser_8cc_source.html">h265_parser.cc</a>.</p>
 
 </div>
 </div>
@@ -245,7 +245,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>Parses a SPS element. This object is owned and managed by this class. The unique ID of the parsed SPS is stored in |*sps_id| if kOk is returned. </p>
 
-<p>Definition at line <a class="el" href="../../db/dde/h265__parser_8cc_source.html#l00421">421</a> of file <a class="el" href="../../db/dde/h265__parser_8cc_source.html">h265_parser.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../db/dde/h265__parser_8cc_source.html#l00513">513</a> of file <a class="el" href="../../db/dde/h265__parser_8cc_source.html">h265_parser.cc</a>.</p>
 
 </div>
 </div>
@@ -256,7 +256,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 19 2016 01:37:49 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 19 2016 23:17:56 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
