@@ -105,7 +105,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>mp2t {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>{</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">const</span> <span class="keywordtype">int</span> kTsTimescale = 90000;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">const</span> <span class="keywordtype">double</span> kTsTimescale = 90000;</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;}  <span class="comment">// namespace</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
 <div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#ab00bb02904501df4ecc7bdf08b77cb51">   22</a></span>&#160;<a class="code" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#ab00bb02904501df4ecc7bdf08b77cb51">TsSegmenter::TsSegmenter</a>(<span class="keyword">const</span> <a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a>&amp; options)</div>
@@ -124,121 +124,124 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;                  <span class="stringliteral">&quot;Failed to initialize PesPacketGenerator.&quot;</span>);</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  }</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a480d6c01383303b53f3ca0a99e5a888e">   41</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a480d6c01383303b53f3ca0a99e5a888e">TsSegmenter::Finalize</a>() {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordflow">return</span> Flush();</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;}</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;<span class="comment">// First checks whether the sample is a key frame. If so and the segment has</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">// passed the segment duration, then flush the generator and write all the data</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">// to file.</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno"><a class="line" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a9694d0a74ff49958c3a56f92d05ed992">   48</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a9694d0a74ff49958c3a56f92d05ed992">TsSegmenter::AddSample</a>(scoped_refptr&lt;MediaSample&gt; sample) {</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> passed_segment_duration =</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      current_segment_total_sample_duration_ &gt; muxer_options_.<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#ad6f281dfd832bd073f5fb5fc46342f9f">segment_duration</a>;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordflow">if</span> (sample-&gt;is_key_frame() &amp;&amp; passed_segment_duration) {</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = Flush();</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;      <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  }</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordflow">if</span> (!ts_writer_file_opened_ &amp;&amp; !sample-&gt;is_key_frame())</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;A segment will start with a non key frame.&quot;</span>;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordflow">if</span> (!pes_packet_generator_-&gt;PushSample(sample)) {</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::MUXER_FAILURE,</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                  <span class="stringliteral">&quot;Failed to add sample to PesPacketGenerator.&quot;</span>);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  }</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  current_segment_total_sample_duration_ += sample-&gt;duration() / kTsTimescale;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordflow">return</span> WritePesPacketsToFile();</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  timescale_scale_ = kTsTimescale / stream_info.time_scale();</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a480d6c01383303b53f3ca0a99e5a888e">   42</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a480d6c01383303b53f3ca0a99e5a888e">TsSegmenter::Finalize</a>() {</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordflow">return</span> Flush();</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;}</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="comment">// First checks whether the sample is a key frame. If so and the segment has</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="comment">// passed the segment duration, then flush the generator and write all the data</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">// to file.</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a9694d0a74ff49958c3a56f92d05ed992">   49</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a9694d0a74ff49958c3a56f92d05ed992">TsSegmenter::AddSample</a>(scoped_refptr&lt;MediaSample&gt; sample) {</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> passed_segment_duration =</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      current_segment_total_sample_duration_ &gt; muxer_options_.<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#ad6f281dfd832bd073f5fb5fc46342f9f">segment_duration</a>;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordflow">if</span> (sample-&gt;is_key_frame() &amp;&amp; passed_segment_duration) {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = Flush();</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  }</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordflow">if</span> (!ts_writer_file_opened_ &amp;&amp; !sample-&gt;is_key_frame())</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;A segment will start with a non key frame.&quot;</span>;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordflow">if</span> (!pes_packet_generator_-&gt;PushSample(sample)) {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::MUXER_FAILURE,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                  <span class="stringliteral">&quot;Failed to add sample to PesPacketGenerator.&quot;</span>);</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  }</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">double</span> scaled_sample_duration = sample-&gt;duration() * timescale_scale_;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  current_segment_total_sample_duration_ +=</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      scaled_sample_duration / kTsTimescale;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a1722d50d19b4fc5c0e98969a0790800a">   70</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a1722d50d19b4fc5c0e98969a0790800a">TsSegmenter::InjectTsWriterForTesting</a>(scoped_ptr&lt;TsWriter&gt; writer) {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  ts_writer_ = writer.Pass();</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;}</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a5302a3cb21f99896f4e33961d7a4b0b3">   74</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a5302a3cb21f99896f4e33961d7a4b0b3">TsSegmenter::InjectPesPacketGeneratorForTesting</a>(</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    scoped_ptr&lt;PesPacketGenerator&gt; generator) {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  pes_packet_generator_ = generator.Pass();</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a40d75415d9af12a092d9555bddb77804">   79</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a40d75415d9af12a092d9555bddb77804">TsSegmenter::SetTsWriterFileOpenedForTesting</a>(<span class="keywordtype">bool</span> value) {</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  ts_writer_file_opened_ = value;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;}</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> TsSegmenter::OpenNewSegmentIfClosed(uint32_t next_pts) {</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordflow">if</span> (ts_writer_file_opened_)</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keyword">const</span> std::string segment_name =</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;      GetSegmentName(muxer_options_.<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a1303b2f8efb19af4728513ba2eeea2d1">segment_template</a>, next_pts,</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                     segment_number_++, muxer_options_.<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a94fa00f788f9c39cba593004a1cd8849">bandwidth</a>);</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordflow">if</span> (!ts_writer_-&gt;NewSegment(segment_name))</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to initilize TsPacketWriter.&quot;</span>);</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  ts_writer_file_opened_ = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> TsSegmenter::WritePesPacketsToFile() {</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keywordflow">while</span> (pes_packet_generator_-&gt;NumberOfReadyPesPackets() &gt; 0u) {</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    scoped_ptr&lt;PesPacket&gt; pes_packet =</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        pes_packet_generator_-&gt;GetNextPesPacket();</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = OpenNewSegmentIfClosed(pes_packet-&gt;pts());</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;      <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keywordflow">if</span> (!ts_writer_-&gt;AddPesPacket(pes_packet.Pass()))</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to add PES packet.&quot;</span>);</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  }</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;}</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;Status TsSegmenter::Flush() {</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordflow">if</span> (!pes_packet_generator_-&gt;Flush()) {</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">return</span> Status(error::MUXER_FAILURE,</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;                  <span class="stringliteral">&quot;Failed to flush PesPacketGenerator.&quot;</span>);</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  }</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  Status status = WritePesPacketsToFile();</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="comment">// This method may be called from Finalize() so ts_writer_file_opened_ could</span></div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <span class="comment">// be false.</span></div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="keywordflow">if</span> (ts_writer_file_opened_) {</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;    <span class="keywordflow">if</span> (!ts_writer_-&gt;FinalizeSegment()) {</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;      <span class="keywordflow">return</span> Status(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to finalize TsWriter.&quot;</span>);</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    }</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    ts_writer_file_opened_ = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  }</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  current_segment_total_sample_duration_ = 0.0;</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;}</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordflow">return</span> WritePesPacketsToFile();</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;}</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno"><a class="line" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a1722d50d19b4fc5c0e98969a0790800a">   73</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a1722d50d19b4fc5c0e98969a0790800a">TsSegmenter::InjectTsWriterForTesting</a>(scoped_ptr&lt;TsWriter&gt; writer) {</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  ts_writer_ = writer.Pass();</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;}</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno"><a class="line" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a5302a3cb21f99896f4e33961d7a4b0b3">   77</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a5302a3cb21f99896f4e33961d7a4b0b3">TsSegmenter::InjectPesPacketGeneratorForTesting</a>(</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    scoped_ptr&lt;PesPacketGenerator&gt; generator) {</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  pes_packet_generator_ = generator.Pass();</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;}</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno"><a class="line" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a40d75415d9af12a092d9555bddb77804">   82</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a40d75415d9af12a092d9555bddb77804">TsSegmenter::SetTsWriterFileOpenedForTesting</a>(<span class="keywordtype">bool</span> value) {</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  ts_writer_file_opened_ = value;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> TsSegmenter::OpenNewSegmentIfClosed(uint32_t next_pts) {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordflow">if</span> (ts_writer_file_opened_)</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keyword">const</span> std::string segment_name =</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;      GetSegmentName(muxer_options_.<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a1303b2f8efb19af4728513ba2eeea2d1">segment_template</a>, next_pts,</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                     segment_number_++, muxer_options_.<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a94fa00f788f9c39cba593004a1cd8849">bandwidth</a>);</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordflow">if</span> (!ts_writer_-&gt;NewSegment(segment_name))</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to initilize TsPacketWriter.&quot;</span>);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  ts_writer_file_opened_ = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;}</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> TsSegmenter::WritePesPacketsToFile() {</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keywordflow">while</span> (pes_packet_generator_-&gt;NumberOfReadyPesPackets() &gt; 0u) {</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    scoped_ptr&lt;PesPacket&gt; pes_packet =</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;        pes_packet_generator_-&gt;GetNextPesPacket();</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = OpenNewSegmentIfClosed(pes_packet-&gt;pts());</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;      <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordflow">if</span> (!ts_writer_-&gt;AddPesPacket(pes_packet.Pass()))</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to add PES packet.&quot;</span>);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  }</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;}</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;Status TsSegmenter::Flush() {</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="keywordflow">if</span> (!pes_packet_generator_-&gt;Flush()) {</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    <span class="keywordflow">return</span> Status(error::MUXER_FAILURE,</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;                  <span class="stringliteral">&quot;Failed to flush PesPacketGenerator.&quot;</span>);</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  }</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  Status status = WritePesPacketsToFile();</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <span class="comment">// This method may be called from Finalize() so ts_writer_file_opened_ could</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="comment">// be false.</span></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="keywordflow">if</span> (ts_writer_file_opened_) {</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    <span class="keywordflow">if</span> (!ts_writer_-&gt;FinalizeSegment()) {</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;      <span class="keywordflow">return</span> Status(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to finalize TsWriter.&quot;</span>);</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    }</div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    ts_writer_file_opened_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  }</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  current_segment_total_sample_duration_ = 0.0;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;}</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html_a94fa00f788f9c39cba593004a1cd8849"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a94fa00f788f9c39cba593004a1cd8849">edash_packager::media::MuxerOptions::bandwidth</a></div><div class="ttdeci">uint32_t bandwidth</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00079">muxer_options.h:79</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter_html_a7b399c00cca9e450cc8b2d33aca1bfd1"><div class="ttname"><a href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a7b399c00cca9e450cc8b2d33aca1bfd1">edash_packager::media::mp2t::TsSegmenter::Initialize</a></div><div class="ttdeci">Status Initialize(const StreamInfo &amp;stream_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de9/ts__segmenter_8cc_source.html#l00028">ts_segmenter.cc:28</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">edash_packager::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00026">stream_info.h:26</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Status_html"><div class="ttname"><a href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">edash_packager::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter_html_a40d75415d9af12a092d9555bddb77804"><div class="ttname"><a href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a40d75415d9af12a092d9555bddb77804">edash_packager::media::mp2t::TsSegmenter::SetTsWriterFileOpenedForTesting</a></div><div class="ttdeci">void SetTsWriterFileOpenedForTesting(bool value)</div><div class="ttdoc">Only for testing. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de9/ts__segmenter_8cc_source.html#l00079">ts_segmenter.cc:79</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter_html_a40d75415d9af12a092d9555bddb77804"><div class="ttname"><a href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a40d75415d9af12a092d9555bddb77804">edash_packager::media::mp2t::TsSegmenter::SetTsWriterFileOpenedForTesting</a></div><div class="ttdeci">void SetTsWriterFileOpenedForTesting(bool value)</div><div class="ttdoc">Only for testing. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de9/ts__segmenter_8cc_source.html#l00082">ts_segmenter.cc:82</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsWriter_html"><div class="ttname"><a href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html">edash_packager::media::mp2t::TsWriter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d8/dca/ts__writer_8h_source.html#l00041">ts_writer.h:41</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1PesPacketGenerator_html"><div class="ttname"><a href="../../de/d1a/classedash__packager_1_1media_1_1mp2t_1_1PesPacketGenerator.html">edash_packager::media::mp2t::PesPacketGenerator</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d88/pes__packet__generator_8h_source.html#l00033">pes_packet_generator.h:33</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter_html_a1722d50d19b4fc5c0e98969a0790800a"><div class="ttname"><a href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a1722d50d19b4fc5c0e98969a0790800a">edash_packager::media::mp2t::TsSegmenter::InjectTsWriterForTesting</a></div><div class="ttdeci">void InjectTsWriterForTesting(scoped_ptr&lt; TsWriter &gt; writer)</div><div class="ttdoc">Only for testing. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de9/ts__segmenter_8cc_source.html#l00070">ts_segmenter.cc:70</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter_html_a9694d0a74ff49958c3a56f92d05ed992"><div class="ttname"><a href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a9694d0a74ff49958c3a56f92d05ed992">edash_packager::media::mp2t::TsSegmenter::AddSample</a></div><div class="ttdeci">Status AddSample(scoped_refptr&lt; MediaSample &gt; sample)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de9/ts__segmenter_8cc_source.html#l00048">ts_segmenter.cc:48</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter_html_a5302a3cb21f99896f4e33961d7a4b0b3"><div class="ttname"><a href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a5302a3cb21f99896f4e33961d7a4b0b3">edash_packager::media::mp2t::TsSegmenter::InjectPesPacketGeneratorForTesting</a></div><div class="ttdeci">void InjectPesPacketGeneratorForTesting(scoped_ptr&lt; PesPacketGenerator &gt; generator)</div><div class="ttdoc">Only for testing. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de9/ts__segmenter_8cc_source.html#l00074">ts_segmenter.cc:74</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter_html_a1722d50d19b4fc5c0e98969a0790800a"><div class="ttname"><a href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a1722d50d19b4fc5c0e98969a0790800a">edash_packager::media::mp2t::TsSegmenter::InjectTsWriterForTesting</a></div><div class="ttdeci">void InjectTsWriterForTesting(scoped_ptr&lt; TsWriter &gt; writer)</div><div class="ttdoc">Only for testing. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de9/ts__segmenter_8cc_source.html#l00073">ts_segmenter.cc:73</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter_html_a9694d0a74ff49958c3a56f92d05ed992"><div class="ttname"><a href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a9694d0a74ff49958c3a56f92d05ed992">edash_packager::media::mp2t::TsSegmenter::AddSample</a></div><div class="ttdeci">Status AddSample(scoped_refptr&lt; MediaSample &gt; sample)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de9/ts__segmenter_8cc_source.html#l00049">ts_segmenter.cc:49</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter_html_a5302a3cb21f99896f4e33961d7a4b0b3"><div class="ttname"><a href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a5302a3cb21f99896f4e33961d7a4b0b3">edash_packager::media::mp2t::TsSegmenter::InjectPesPacketGeneratorForTesting</a></div><div class="ttdeci">void InjectPesPacketGeneratorForTesting(scoped_ptr&lt; PesPacketGenerator &gt; generator)</div><div class="ttdoc">Only for testing. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de9/ts__segmenter_8cc_source.html#l00077">ts_segmenter.cc:77</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html_a1303b2f8efb19af4728513ba2eeea2d1"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a1303b2f8efb19af4728513ba2eeea2d1">edash_packager::media::MuxerOptions::segment_template</a></div><div class="ttdeci">std::string segment_template</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00061">muxer_options.h:61</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter_html_ab00bb02904501df4ecc7bdf08b77cb51"><div class="ttname"><a href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#ab00bb02904501df4ecc7bdf08b77cb51">edash_packager::media::mp2t::TsSegmenter::TsSegmenter</a></div><div class="ttdeci">TsSegmenter(const MuxerOptions &amp;options)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de9/ts__segmenter_8cc_source.html#l00022">ts_segmenter.cc:22</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">edash_packager::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter_html_a480d6c01383303b53f3ca0a99e5a888e"><div class="ttname"><a href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a480d6c01383303b53f3ca0a99e5a888e">edash_packager::media::mp2t::TsSegmenter::Finalize</a></div><div class="ttdeci">Status Finalize()</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de9/ts__segmenter_8cc_source.html#l00041">ts_segmenter.cc:41</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter_html_a480d6c01383303b53f3ca0a99e5a888e"><div class="ttname"><a href="../../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#a480d6c01383303b53f3ca0a99e5a888e">edash_packager::media::mp2t::TsSegmenter::Finalize</a></div><div class="ttdeci">Status Finalize()</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de9/ts__segmenter_8cc_source.html#l00042">ts_segmenter.cc:42</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html_ad6f281dfd832bd073f5fb5fc46342f9f"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#ad6f281dfd832bd073f5fb5fc46342f9f">edash_packager::media::MuxerOptions::segment_duration</a></div><div class="ttdeci">double segment_duration</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00030">muxer_options.h:30</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 19 2016 23:17:54 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 19 2016 23:23:01 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
