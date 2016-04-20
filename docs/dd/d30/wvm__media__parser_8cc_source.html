@@ -1203,7 +1203,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01114"></a><span class="lineno"> 1114</span>&#160;      encryption_key.key.begin(),</div>
 <div class="line"><a name="l01115"></a><span class="lineno"> 1115</span>&#160;      encryption_key.key.begin() + kAssetKeySizeBytes);</div>
 <div class="line"><a name="l01116"></a><span class="lineno"> 1116</span>&#160;  std::vector&lt;uint8_t&gt; iv(kInitializationVectorSizeBytes);</div>
-<div class="line"><a name="l01117"></a><span class="lineno"> 1117</span>&#160;  AesCbcDecryptor asset_decryptor(kCtsPadding, !kChainAcrossCalls);</div>
+<div class="line"><a name="l01117"></a><span class="lineno"> 1117</span>&#160;  AesCbcDecryptor asset_decryptor(kCtsPadding, AesCryptor::kUseConstantIv);</div>
 <div class="line"><a name="l01118"></a><span class="lineno"> 1118</span>&#160;  <span class="keywordflow">if</span> (!asset_decryptor.InitializeWithIv(asset_key, iv)) {</div>
 <div class="line"><a name="l01119"></a><span class="lineno"> 1119</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to initialize asset_decryptor.&quot;</span>;</div>
 <div class="line"><a name="l01120"></a><span class="lineno"> 1120</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -1220,7 +1220,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01131"></a><span class="lineno"> 1131</span>&#160;      content_key_buffer.begin() + 4,</div>
 <div class="line"><a name="l01132"></a><span class="lineno"> 1132</span>&#160;      content_key_buffer.begin() + 20);</div>
 <div class="line"><a name="l01133"></a><span class="lineno"> 1133</span>&#160;  scoped_ptr&lt;AesCbcDecryptor&gt; content_decryptor(</div>
-<div class="line"><a name="l01134"></a><span class="lineno"> 1134</span>&#160;      <span class="keyword">new</span> AesCbcDecryptor(kCtsPadding, !kChainAcrossCalls));</div>
+<div class="line"><a name="l01134"></a><span class="lineno"> 1134</span>&#160;      <span class="keyword">new</span> AesCbcDecryptor(kCtsPadding, AesCryptor::kUseConstantIv));</div>
 <div class="line"><a name="l01135"></a><span class="lineno"> 1135</span>&#160;  <span class="keywordflow">if</span> (!content_decryptor-&gt;InitializeWithIv(decrypted_content_key_vec, iv)) {</div>
 <div class="line"><a name="l01136"></a><span class="lineno"> 1136</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to initialize content decryptor.&quot;</span>;</div>
 <div class="line"><a name="l01137"></a><span class="lineno"> 1137</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -1261,7 +1261,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 20 2016 05:38:00 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 20 2016 21:57:52 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -473,118 +473,112 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;  <span class="keyword">const</span> FourCC protection_scheme = GetProtectionScheme(FLAGS_protection_scheme);</div>
 <div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;  <span class="keywordflow">if</span> (protection_scheme == FOURCC_NULL)</div>
 <div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;  <span class="keywordflow">if</span> (protection_scheme == FOURCC_cbc1 || protection_scheme == FOURCC_cbcs) {</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;    <span class="keywordflow">if</span> (!FLAGS_iv.empty() &amp;&amp; FLAGS_iv.size() != 16) {</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Iv size should be 16 bytes for CBC encryption mode.&quot;</span>;</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;    }</div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;  }</div>
-<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;</div>
-<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;  <span class="keywordflow">if</span> (!AssignFlagsFromProfile())</div>
-<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;</div>
-<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;  <span class="keywordflow">if</span> (FLAGS_output_media_info &amp;&amp; !FLAGS_mpd_output.empty()) {</div>
-<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;    NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;ERROR: --output_media_info and --mpd_output do not &quot;</span></div>
-<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;                        <span class="stringliteral">&quot;work together.&quot;</span>;</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;  <span class="keywordflow">if</span> (!AssignFlagsFromProfile())</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;</div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;  <span class="keywordflow">if</span> (FLAGS_output_media_info &amp;&amp; !FLAGS_mpd_output.empty()) {</div>
+<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;    NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;ERROR: --output_media_info and --mpd_output do not &quot;</span></div>
+<div class="line"><a name="l00393"></a><span class="lineno">  393</span>&#160;                        <span class="stringliteral">&quot;work together.&quot;</span>;</div>
+<div class="line"><a name="l00394"></a><span class="lineno">  394</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00395"></a><span class="lineno">  395</span>&#160;  }</div>
+<div class="line"><a name="l00396"></a><span class="lineno">  396</span>&#160;  <span class="keywordflow">if</span> (FLAGS_output_media_info &amp;&amp; !FLAGS_single_segment) {</div>
+<div class="line"><a name="l00397"></a><span class="lineno">  397</span>&#160;    <span class="comment">// TODO(rkuroiwa, kqyang): Support partial media info dump for live.</span></div>
+<div class="line"><a name="l00398"></a><span class="lineno">  398</span>&#160;    NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;ERROR: --output_media_info is only supported if &quot;</span></div>
+<div class="line"><a name="l00399"></a><span class="lineno">  399</span>&#160;                        <span class="stringliteral">&quot;--single_segment is true.&quot;</span>;</div>
 <div class="line"><a name="l00400"></a><span class="lineno">  400</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00401"></a><span class="lineno">  401</span>&#160;  }</div>
-<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;  <span class="keywordflow">if</span> (FLAGS_output_media_info &amp;&amp; !FLAGS_single_segment) {</div>
-<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;    <span class="comment">// TODO(rkuroiwa, kqyang): Support partial media info dump for live.</span></div>
-<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;    NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;ERROR: --output_media_info is only supported if &quot;</span></div>
-<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;                        <span class="stringliteral">&quot;--single_segment is true.&quot;</span>;</div>
+<div class="line"><a name="l00402"></a><span class="lineno">  402</span>&#160;</div>
+<div class="line"><a name="l00403"></a><span class="lineno">  403</span>&#160;  <span class="comment">// Get basic muxer options.</span></div>
+<div class="line"><a name="l00404"></a><span class="lineno">  404</span>&#160;  MuxerOptions muxer_options;</div>
+<div class="line"><a name="l00405"></a><span class="lineno">  405</span>&#160;  <span class="keywordflow">if</span> (!GetMuxerOptions(&amp;muxer_options))</div>
 <div class="line"><a name="l00406"></a><span class="lineno">  406</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;  }</div>
-<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;</div>
-<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;  <span class="comment">// Get basic muxer options.</span></div>
-<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;  MuxerOptions muxer_options;</div>
-<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;  <span class="keywordflow">if</span> (!GetMuxerOptions(&amp;muxer_options))</div>
-<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;  MpdOptions mpd_options;</div>
-<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;  <span class="keywordflow">if</span> (!GetMpdOptions(&amp;mpd_options))</div>
-<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;</div>
-<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;  <span class="comment">// Create encryption key source if needed.</span></div>
-<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;  scoped_ptr&lt;KeySource&gt; encryption_key_source;</div>
-<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;  <span class="keywordflow">if</span> (FLAGS_enable_widevine_encryption || FLAGS_enable_fixed_key_encryption) {</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;    encryption_key_source = CreateEncryptionKeySource();</div>
-<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;    <span class="keywordflow">if</span> (!encryption_key_source)</div>
-<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;  }</div>
-<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;  scoped_ptr&lt;MpdNotifier&gt; mpd_notifier;</div>
-<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;  <span class="keywordflow">if</span> (!FLAGS_mpd_output.empty()) {</div>
-<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;    DashProfile profile =</div>
-<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;        FLAGS_single_segment ? kOnDemandProfile : kLiveProfile;</div>
-<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;    std::vector&lt;std::string&gt; base_urls;</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;    base::SplitString(FLAGS_base_urls, <span class="charliteral">&#39;,&#39;</span>, &amp;base_urls);</div>
-<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    <span class="keywordflow">if</span> (FLAGS_generate_dash_if_iop_compliant_mpd) {</div>
-<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;      mpd_notifier.reset(<span class="keyword">new</span> DashIopMpdNotifier(profile, mpd_options, base_urls,</div>
-<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;                                                FLAGS_mpd_output));</div>
-<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;      mpd_notifier.reset(<span class="keyword">new</span> SimpleMpdNotifier(profile, mpd_options, base_urls,</div>
-<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;                                               FLAGS_mpd_output));</div>
-<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;    }</div>
-<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;    <span class="keywordflow">if</span> (!mpd_notifier-&gt;Init()) {</div>
-<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;MpdNotifier failed to initialize.&quot;</span>;</div>
-<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;    }</div>
-<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;  }</div>
-<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;</div>
-<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;  std::vector&lt;RemuxJob*&gt; remux_jobs;</div>
-<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;  STLElementDeleter&lt;std::vector&lt;RemuxJob*&gt; &gt; scoped_jobs_deleter(&amp;remux_jobs);</div>
-<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;  FakeClock fake_clock;</div>
-<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;  <span class="keywordflow">if</span> (!CreateRemuxJobs(stream_descriptors, muxer_options, &amp;fake_clock,</div>
-<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;                       encryption_key_source.get(), mpd_notifier.get(),</div>
-<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;                       &amp;remux_jobs)) {</div>
+<div class="line"><a name="l00407"></a><span class="lineno">  407</span>&#160;</div>
+<div class="line"><a name="l00408"></a><span class="lineno">  408</span>&#160;  MpdOptions mpd_options;</div>
+<div class="line"><a name="l00409"></a><span class="lineno">  409</span>&#160;  <span class="keywordflow">if</span> (!GetMpdOptions(&amp;mpd_options))</div>
+<div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;</div>
+<div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;  <span class="comment">// Create encryption key source if needed.</span></div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;  scoped_ptr&lt;KeySource&gt; encryption_key_source;</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;  <span class="keywordflow">if</span> (FLAGS_enable_widevine_encryption || FLAGS_enable_fixed_key_encryption) {</div>
+<div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;    encryption_key_source = CreateEncryptionKeySource();</div>
+<div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;    <span class="keywordflow">if</span> (!encryption_key_source)</div>
+<div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;  }</div>
+<div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;</div>
+<div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;  scoped_ptr&lt;MpdNotifier&gt; mpd_notifier;</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;  <span class="keywordflow">if</span> (!FLAGS_mpd_output.empty()) {</div>
+<div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;    DashProfile profile =</div>
+<div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;        FLAGS_single_segment ? kOnDemandProfile : kLiveProfile;</div>
+<div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;    std::vector&lt;std::string&gt; base_urls;</div>
+<div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;    base::SplitString(FLAGS_base_urls, <span class="charliteral">&#39;,&#39;</span>, &amp;base_urls);</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;    <span class="keywordflow">if</span> (FLAGS_generate_dash_if_iop_compliant_mpd) {</div>
+<div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;      mpd_notifier.reset(<span class="keyword">new</span> DashIopMpdNotifier(profile, mpd_options, base_urls,</div>
+<div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;                                                FLAGS_mpd_output));</div>
+<div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;      mpd_notifier.reset(<span class="keyword">new</span> SimpleMpdNotifier(profile, mpd_options, base_urls,</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;                                               FLAGS_mpd_output));</div>
+<div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;    }</div>
+<div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;    <span class="keywordflow">if</span> (!mpd_notifier-&gt;Init()) {</div>
+<div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;MpdNotifier failed to initialize.&quot;</span>;</div>
+<div class="line"><a name="l00435"></a><span class="lineno">  435</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00436"></a><span class="lineno">  436</span>&#160;    }</div>
+<div class="line"><a name="l00437"></a><span class="lineno">  437</span>&#160;  }</div>
+<div class="line"><a name="l00438"></a><span class="lineno">  438</span>&#160;</div>
+<div class="line"><a name="l00439"></a><span class="lineno">  439</span>&#160;  std::vector&lt;RemuxJob*&gt; remux_jobs;</div>
+<div class="line"><a name="l00440"></a><span class="lineno">  440</span>&#160;  STLElementDeleter&lt;std::vector&lt;RemuxJob*&gt; &gt; scoped_jobs_deleter(&amp;remux_jobs);</div>
+<div class="line"><a name="l00441"></a><span class="lineno">  441</span>&#160;  FakeClock fake_clock;</div>
+<div class="line"><a name="l00442"></a><span class="lineno">  442</span>&#160;  <span class="keywordflow">if</span> (!CreateRemuxJobs(stream_descriptors, muxer_options, &amp;fake_clock,</div>
+<div class="line"><a name="l00443"></a><span class="lineno">  443</span>&#160;                       encryption_key_source.get(), mpd_notifier.get(),</div>
+<div class="line"><a name="l00444"></a><span class="lineno">  444</span>&#160;                       &amp;remux_jobs)) {</div>
+<div class="line"><a name="l00445"></a><span class="lineno">  445</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00446"></a><span class="lineno">  446</span>&#160;  }</div>
+<div class="line"><a name="l00447"></a><span class="lineno">  447</span>&#160;</div>
+<div class="line"><a name="l00448"></a><span class="lineno">  448</span>&#160;  Status status = RunRemuxJobs(remux_jobs);</div>
+<div class="line"><a name="l00449"></a><span class="lineno">  449</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
+<div class="line"><a name="l00450"></a><span class="lineno">  450</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Packaging Error: &quot;</span> &lt;&lt; status.ToString();</div>
 <div class="line"><a name="l00451"></a><span class="lineno">  451</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00452"></a><span class="lineno">  452</span>&#160;  }</div>
 <div class="line"><a name="l00453"></a><span class="lineno">  453</span>&#160;</div>
-<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;  Status status = RunRemuxJobs(remux_jobs);</div>
-<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) {</div>
-<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Packaging Error: &quot;</span> &lt;&lt; status.ToString();</div>
-<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;  }</div>
-<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;</div>
-<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;  printf(<span class="stringliteral">&quot;Packaging completed successfully.\n&quot;</span>);</div>
-<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;}</div>
+<div class="line"><a name="l00454"></a><span class="lineno">  454</span>&#160;  printf(<span class="stringliteral">&quot;Packaging completed successfully.\n&quot;</span>);</div>
+<div class="line"><a name="l00455"></a><span class="lineno">  455</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00456"></a><span class="lineno">  456</span>&#160;}</div>
+<div class="line"><a name="l00457"></a><span class="lineno">  457</span>&#160;</div>
+<div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;<span class="keywordtype">int</span> PackagerMain(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>** argv) {</div>
+<div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;  base::AtExitManager exit;</div>
+<div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;  <span class="comment">// Needed to enable VLOG/DVLOG through --vmodule or --v.</span></div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;  base::CommandLine::Init(argc, argv);</div>
+<div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;  CHECK(logging::InitLogging(logging::LoggingSettings()));</div>
 <div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;</div>
-<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;<span class="keywordtype">int</span> PackagerMain(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>** argv) {</div>
-<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;  base::AtExitManager exit;</div>
-<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;  <span class="comment">// Needed to enable VLOG/DVLOG through --vmodule or --v.</span></div>
-<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;  base::CommandLine::Init(argc, argv);</div>
-<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;  CHECK(logging::InitLogging(logging::LoggingSettings()));</div>
-<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;</div>
-<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;  google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));</div>
-<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;  google::ParseCommandLineFlags(&amp;argc, &amp;argv, <span class="keyword">true</span>);</div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;  <span class="keywordflow">if</span> (argc &lt; 2) {</div>
-<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;    std::string version_string =</div>
-<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;        base::StringPrintf(<span class="stringliteral">&quot;edash-packager version %s&quot;</span>, kPackagerVersion);</div>
-<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;    google::ShowUsageWithFlags(version_string.c_str());</div>
-<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;    <span class="keywordflow">return</span> kSuccess;</div>
-<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;  }</div>
-<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;</div>
-<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../db/d09/namespaceedash__packager.html#a95bb52262b99e97fd7f8f9f0075fe1e6">ValidateWidevineCryptoFlags</a>() || !<a class="code" href="../../db/d09/namespaceedash__packager.html#a87cbb414bc89b31dc8ba8de91ac9c438">ValidateFixedCryptoFlags</a>())</div>
-<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;    <span class="keywordflow">return</span> kArgumentValidationFailed;</div>
-<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;</div>
-<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;  <a class="code" href="../../de/de9/classedash__packager_1_1media_1_1LibcryptoThreading.html">edash_packager::media::LibcryptoThreading</a> libcrypto_threading;</div>
-<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;  <span class="comment">// TODO(tinskip): Make InsertStreamDescriptor a member of</span></div>
-<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;  <span class="comment">// StreamDescriptorList.</span></div>
-<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;  StreamDescriptorList stream_descriptors;</div>
-<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 1; i &lt; argc; ++i) {</div>
-<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;    <span class="keywordflow">if</span> (!InsertStreamDescriptor(argv[i], &amp;stream_descriptors))</div>
-<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;      <span class="keywordflow">return</span> kArgumentValidationFailed;</div>
-<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;  }</div>
-<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;  <span class="keywordflow">return</span> RunPackager(stream_descriptors) ? kSuccess : kPackagingFailed;</div>
-<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;}</div>
-<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;</div>
-<div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;</div>
-<div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;<span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>** argv) {</div>
-<div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;  <span class="keywordflow">return</span> edash_packager::media::PackagerMain(argc, argv);</div>
-<div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;}</div>
+<div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;  google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));</div>
+<div class="line"><a name="l00465"></a><span class="lineno">  465</span>&#160;  google::ParseCommandLineFlags(&amp;argc, &amp;argv, <span class="keyword">true</span>);</div>
+<div class="line"><a name="l00466"></a><span class="lineno">  466</span>&#160;  <span class="keywordflow">if</span> (argc &lt; 2) {</div>
+<div class="line"><a name="l00467"></a><span class="lineno">  467</span>&#160;    std::string version_string =</div>
+<div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;        base::StringPrintf(<span class="stringliteral">&quot;edash-packager version %s&quot;</span>, kPackagerVersion);</div>
+<div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;    google::ShowUsageWithFlags(version_string.c_str());</div>
+<div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;    <span class="keywordflow">return</span> kSuccess;</div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;  }</div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;</div>
+<div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../db/d09/namespaceedash__packager.html#a95bb52262b99e97fd7f8f9f0075fe1e6">ValidateWidevineCryptoFlags</a>() || !<a class="code" href="../../db/d09/namespaceedash__packager.html#a87cbb414bc89b31dc8ba8de91ac9c438">ValidateFixedCryptoFlags</a>())</div>
+<div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;    <span class="keywordflow">return</span> kArgumentValidationFailed;</div>
+<div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;</div>
+<div class="line"><a name="l00476"></a><span class="lineno">  476</span>&#160;  <a class="code" href="../../de/de9/classedash__packager_1_1media_1_1LibcryptoThreading.html">edash_packager::media::LibcryptoThreading</a> libcrypto_threading;</div>
+<div class="line"><a name="l00477"></a><span class="lineno">  477</span>&#160;  <span class="comment">// TODO(tinskip): Make InsertStreamDescriptor a member of</span></div>
+<div class="line"><a name="l00478"></a><span class="lineno">  478</span>&#160;  <span class="comment">// StreamDescriptorList.</span></div>
+<div class="line"><a name="l00479"></a><span class="lineno">  479</span>&#160;  StreamDescriptorList stream_descriptors;</div>
+<div class="line"><a name="l00480"></a><span class="lineno">  480</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">int</span> i = 1; i &lt; argc; ++i) {</div>
+<div class="line"><a name="l00481"></a><span class="lineno">  481</span>&#160;    <span class="keywordflow">if</span> (!InsertStreamDescriptor(argv[i], &amp;stream_descriptors))</div>
+<div class="line"><a name="l00482"></a><span class="lineno">  482</span>&#160;      <span class="keywordflow">return</span> kArgumentValidationFailed;</div>
+<div class="line"><a name="l00483"></a><span class="lineno">  483</span>&#160;  }</div>
+<div class="line"><a name="l00484"></a><span class="lineno">  484</span>&#160;  <span class="keywordflow">return</span> RunPackager(stream_descriptors) ? kSuccess : kPackagingFailed;</div>
+<div class="line"><a name="l00485"></a><span class="lineno">  485</span>&#160;}</div>
+<div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;</div>
+<div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;</div>
+<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;<span class="keywordtype">int</span> main(<span class="keywordtype">int</span> argc, <span class="keywordtype">char</span>** argv) {</div>
+<div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;  <span class="keywordflow">return</span> edash_packager::media::PackagerMain(argc, argv);</div>
+<div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;}</div>
 <div class="ttc" id="namespaceedash__packager_html_a87cbb414bc89b31dc8ba8de91ac9c438"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a87cbb414bc89b31dc8ba8de91ac9c438">edash_packager::ValidateFixedCryptoFlags</a></div><div class="ttdeci">bool ValidateFixedCryptoFlags()</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3b/fixed__key__encryption__flags_8cc_source.html#l00033">fixed_key_encryption_flags.cc:33</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1File_html_a9a4f45dcab338be2b6843e0de87ce8f1"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a9a4f45dcab338be2b6843e0de87ce8f1">edash_packager::media::File::ReadFileToString</a></div><div class="ttdeci">static bool ReadFileToString(const char *file_name, std::string *contents)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00184">file.cc:184</a></div></div>
 <div class="ttc" id="namespaceedash__packager_html_a95bb52262b99e97fd7f8f9f0075fe1e6"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a95bb52262b99e97fd7f8f9f0075fe1e6">edash_packager::ValidateWidevineCryptoFlags</a></div><div class="ttdeci">bool ValidateWidevineCryptoFlags()</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/widevine__encryption__flags_8cc_source.html#l00069">widevine_encryption_flags.cc:69</a></div></div>
@@ -594,7 +588,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 20 2016 05:37:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 20 2016 21:57:52 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -111,160 +111,154 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#ab813a2b1a8f31aa15161c33a686b0908">   25</a></span>&#160;<a class="code" href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#ab813a2b1a8f31aa15161c33a686b0908">AesCbcDecryptor::AesCbcDecryptor</a>(CbcPaddingScheme padding_scheme,</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;                                 <span class="keywordtype">bool</span> chain_across_calls)</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    : padding_scheme_(padding_scheme),</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      chain_across_calls_(chain_across_calls) {</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="keywordflow">if</span> (padding_scheme_ != kNoPadding) {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    CHECK(!chain_across_calls) &lt;&lt; <span class="stringliteral">&quot;cipher block chain across calls only makes &quot;</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                                  <span class="stringliteral">&quot;sense if the padding_scheme is kNoPadding.&quot;</span>;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  }</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;}</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;AesCbcDecryptor::~AesCbcDecryptor() {}</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#a59bac38018c269795c588169e98a5b41">   37</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#a59bac38018c269795c588169e98a5b41">AesCbcDecryptor::InitializeWithIv</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key,</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                                       <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv) {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordflow">if</span> (!IsKeySizeValidForAes(key.size())) {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Invalid AES key size: &quot;</span> &lt;&lt; key.size();</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  }</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  CHECK_EQ(AES_set_decrypt_key(key.data(), key.size() * 8, mutable_aes_key()),</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;           0);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#a4e949751428f80a05a2093d54ffab7c8">SetIv</a>(iv);</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;}</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#a4e949751428f80a05a2093d54ffab7c8">   49</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#a4e949751428f80a05a2093d54ffab7c8">AesCbcDecryptor::SetIv</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv) {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordflow">if</span> (iv.size() != AES_BLOCK_SIZE) {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Invalid IV size: &quot;</span> &lt;&lt; iv.size();</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  }</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  set_iv(iv);</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;}</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="keywordtype">bool</span> AesCbcDecryptor::CryptInternal(<span class="keyword">const</span> uint8_t* ciphertext,</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;                                    <span class="keywordtype">size_t</span> ciphertext_size,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;                                    uint8_t* plaintext,</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;                                    <span class="keywordtype">size_t</span>* plaintext_size) {</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  DCHECK(plaintext_size);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  DCHECK(aes_key());</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="comment">// Plaintext size is the same as ciphertext size except for pkcs5 padding.</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="comment">// Will update later if using pkcs5 padding. For pkcs5 padding, we still</span></div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="comment">// need at least |ciphertext_size| bytes for intermediate operation.</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keywordflow">if</span> (*plaintext_size &lt; ciphertext_size) {</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Expecting output size of at least &quot;</span> &lt;&lt; ciphertext_size</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;               &lt;&lt; <span class="stringliteral">&quot; bytes.&quot;</span>;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  }</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  *plaintext_size = ciphertext_size;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordflow">if</span> (ciphertext_size == 0) {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordflow">if</span> (padding_scheme_ == kPkcs5Padding) {</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Expected ciphertext to be at least &quot;</span> &lt;&lt; AES_BLOCK_SIZE</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                 &lt;&lt; <span class="stringliteral">&quot; bytes with Pkcs5 padding.&quot;</span>;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    }</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  }</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  DCHECK(plaintext);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  std::vector&lt;uint8_t&gt; local_iv(<a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">iv</a>());</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> residual_block_size = ciphertext_size % AES_BLOCK_SIZE;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> cbc_size = ciphertext_size - residual_block_size;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordflow">if</span> (residual_block_size == 0) {</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    AES_cbc_encrypt(ciphertext, plaintext, ciphertext_size, aes_key(),</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                    local_iv.data(), AES_DECRYPT);</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordflow">if</span> (chain_across_calls_)</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;      set_iv(local_iv);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordflow">if</span> (padding_scheme_ != kPkcs5Padding)</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="comment">// Strip off PKCS5 padding bytes.</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keyword">const</span> uint8_t num_padding_bytes = plaintext[ciphertext_size - 1];</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;    <span class="keywordflow">if</span> (num_padding_bytes &gt; AES_BLOCK_SIZE) {</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Padding length is too large : &quot;</span></div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;                 &lt;&lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(num_padding_bytes);</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    }</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    *plaintext_size -= num_padding_bytes;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (padding_scheme_ == kNoPadding) {</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    AES_cbc_encrypt(ciphertext, plaintext, cbc_size, aes_key(), local_iv.data(),</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;                    AES_DECRYPT);</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;    <span class="keywordflow">if</span> (chain_across_calls_)</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      set_iv(local_iv);</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="comment">// The residual block is not encrypted.</span></div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    memcpy(plaintext + cbc_size, ciphertext + cbc_size, residual_block_size);</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (padding_scheme_ != kCtsPadding) {</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Expecting cipher text size to be multiple of &quot;</span></div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;               &lt;&lt; AES_BLOCK_SIZE &lt;&lt; <span class="stringliteral">&quot;, got &quot;</span> &lt;&lt; ciphertext_size;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  }</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  DCHECK(!chain_across_calls_);</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  DCHECK_EQ(padding_scheme_, kCtsPadding);</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <span class="keywordflow">if</span> (ciphertext_size &lt; AES_BLOCK_SIZE) {</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;    <span class="comment">// Don&#39;t have a full block, leave unencrypted.</span></div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    memcpy(plaintext, ciphertext, ciphertext_size);</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  }</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="comment">// AES-CBC decrypt everything up to the next-to-last full block.</span></div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keywordflow">if</span> (cbc_size &gt; AES_BLOCK_SIZE) {</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    AES_cbc_encrypt(ciphertext, plaintext, cbc_size - AES_BLOCK_SIZE, aes_key(),</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;                    local_iv.data(), AES_DECRYPT);</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  }</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  <span class="keyword">const</span> uint8_t* next_to_last_ciphertext_block =</div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;      ciphertext + ciphertext_size - residual_block_size - AES_BLOCK_SIZE;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  uint8_t* next_to_last_plaintext_block =</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;      plaintext + ciphertext_size - residual_block_size - AES_BLOCK_SIZE;</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  <span class="comment">// Determine what the last IV should be so that we can &quot;skip ahead&quot; in the</span></div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  <span class="comment">// CBC decryption.</span></div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  std::vector&lt;uint8_t&gt; last_iv(</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;      ciphertext + ciphertext_size - residual_block_size,</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;      ciphertext + ciphertext_size);</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  last_iv.resize(AES_BLOCK_SIZE, 0);</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  <span class="comment">// Decrypt the next-to-last block using the IV determined above. This decrypts</span></div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  <span class="comment">// the residual block bits.</span></div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  AES_cbc_encrypt(next_to_last_ciphertext_block, next_to_last_plaintext_block,</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;                  AES_BLOCK_SIZE, aes_key(), last_iv.data(), AES_DECRYPT);</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  <span class="comment">// Swap back the residual block bits and the next-to-last block.</span></div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  <span class="keywordflow">if</span> (plaintext == ciphertext) {</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    std::swap_ranges(next_to_last_plaintext_block,</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;                     next_to_last_plaintext_block + residual_block_size,</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;                     next_to_last_plaintext_block + AES_BLOCK_SIZE);</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;    memcpy(next_to_last_plaintext_block + AES_BLOCK_SIZE,</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;           next_to_last_plaintext_block, residual_block_size);</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    memcpy(next_to_last_plaintext_block,</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;           next_to_last_ciphertext_block + AES_BLOCK_SIZE, residual_block_size);</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  }</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="comment">// Decrypt the next-to-last full block.</span></div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  AES_cbc_encrypt(next_to_last_plaintext_block, next_to_last_plaintext_block,</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;                  AES_BLOCK_SIZE, aes_key(), local_iv.data(), AES_DECRYPT);</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;}</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCbcDecryptor_html_a4e949751428f80a05a2093d54ffab7c8"><div class="ttname"><a href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#a4e949751428f80a05a2093d54ffab7c8">edash_packager::media::AesCbcDecryptor::SetIv</a></div><div class="ttdeci">bool SetIv(const std::vector&lt; uint8_t &gt; &amp;iv) override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/df4/aes__decryptor_8cc_source.html#l00049">aes_decryptor.cc:49</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCbcDecryptor_html_a59bac38018c269795c588169e98a5b41"><div class="ttname"><a href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#a59bac38018c269795c588169e98a5b41">edash_packager::media::AesCbcDecryptor::InitializeWithIv</a></div><div class="ttdeci">bool InitializeWithIv(const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;iv) override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/df4/aes__decryptor_8cc_source.html#l00037">aes_decryptor.cc:37</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCbcDecryptor_html_ab813a2b1a8f31aa15161c33a686b0908"><div class="ttname"><a href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#ab813a2b1a8f31aa15161c33a686b0908">edash_packager::media::AesCbcDecryptor::AesCbcDecryptor</a></div><div class="ttdeci">AesCbcDecryptor(CbcPaddingScheme padding_scheme, bool chain_across_calls)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/df4/aes__decryptor_8cc_source.html#l00025">aes_decryptor.cc:25</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a049b4b415e44428c4543f7e2f7b36b34"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">edash_packager::media::AesCryptor::iv</a></div><div class="ttdeci">const std::vector&lt; uint8_t &gt; &amp; iv() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/aes__cryptor_8h_source.html#l00060">aes_cryptor.h:60</a></div></div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#ac7839cefe8e1f1c4e98de45816ba8107">   25</a></span>&#160;<a class="code" href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#ac7839cefe8e1f1c4e98de45816ba8107">AesCbcDecryptor::AesCbcDecryptor</a>(CbcPaddingScheme padding_scheme)</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    : <a class="code" href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html">AesCbcDecryptor</a>(padding_scheme, kDontUseConstantIv) {}</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#aa855b42ca3d2cc60a0897408d6131448">   28</a></span>&#160;<a class="code" href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#ac7839cefe8e1f1c4e98de45816ba8107">AesCbcDecryptor::AesCbcDecryptor</a>(CbcPaddingScheme padding_scheme,</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                                 ConstantIvFlag constant_iv_flag)</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;    : <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html">AesCryptor</a>(constant_iv_flag), padding_scheme_(padding_scheme) {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordflow">if</span> (padding_scheme_ != kNoPadding) {</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    CHECK_EQ(constant_iv_flag, kUseConstantIv)</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;        &lt;&lt; <span class="stringliteral">&quot;non-constant iv (cipher block chain across calls) only makes sense &quot;</span></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;           <span class="stringliteral">&quot;if the padding_scheme is kNoPadding.&quot;</span>;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  }</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;AesCbcDecryptor::~AesCbcDecryptor() {}</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#a59bac38018c269795c588169e98a5b41">   40</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#a59bac38018c269795c588169e98a5b41">AesCbcDecryptor::InitializeWithIv</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                                       <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv) {</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordflow">if</span> (!IsKeySizeValidForAes(key.size())) {</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Invalid AES key size: &quot;</span> &lt;&lt; key.size();</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  }</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  CHECK_EQ(AES_set_decrypt_key(key.data(), key.size() * 8, mutable_aes_key()),</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;           0);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a77b4444a269aaa9a4bfd347ebf02b649">SetIv</a>(iv);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keywordtype">bool</span> AesCbcDecryptor::CryptInternal(<span class="keyword">const</span> uint8_t* ciphertext,</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                                    <span class="keywordtype">size_t</span> ciphertext_size,</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                                    uint8_t* plaintext,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                                    <span class="keywordtype">size_t</span>* plaintext_size) {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  DCHECK(plaintext_size);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  DCHECK(aes_key());</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="comment">// Plaintext size is the same as ciphertext size except for pkcs5 padding.</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="comment">// Will update later if using pkcs5 padding. For pkcs5 padding, we still</span></div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="comment">// need at least |ciphertext_size| bytes for intermediate operation.</span></div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordflow">if</span> (*plaintext_size &lt; ciphertext_size) {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Expecting output size of at least &quot;</span> &lt;&lt; ciphertext_size</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;               &lt;&lt; <span class="stringliteral">&quot; bytes.&quot;</span>;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  }</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  *plaintext_size = ciphertext_size;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keywordflow">if</span> (ciphertext_size == 0) {</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordflow">if</span> (padding_scheme_ == kPkcs5Padding) {</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Expected ciphertext to be at least &quot;</span> &lt;&lt; AES_BLOCK_SIZE</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                 &lt;&lt; <span class="stringliteral">&quot; bytes with Pkcs5 padding.&quot;</span>;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    }</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  }</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  DCHECK(plaintext);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> residual_block_size = ciphertext_size % AES_BLOCK_SIZE;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> cbc_size = ciphertext_size - residual_block_size;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordflow">if</span> (residual_block_size == 0) {</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    AES_cbc_encrypt(ciphertext, plaintext, ciphertext_size, aes_key(),</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;                    internal_iv_.data(), AES_DECRYPT);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    <span class="keywordflow">if</span> (padding_scheme_ != kPkcs5Padding)</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    <span class="comment">// Strip off PKCS5 padding bytes.</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keyword">const</span> uint8_t num_padding_bytes = plaintext[ciphertext_size - 1];</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="keywordflow">if</span> (num_padding_bytes &gt; AES_BLOCK_SIZE) {</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Padding length is too large : &quot;</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;                 &lt;&lt; <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(num_padding_bytes);</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    }</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    *plaintext_size -= num_padding_bytes;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (padding_scheme_ == kNoPadding) {</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    AES_cbc_encrypt(ciphertext, plaintext, cbc_size, aes_key(),</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                    internal_iv_.data(), AES_DECRYPT);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="comment">// The residual block is not encrypted.</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    memcpy(plaintext + cbc_size, ciphertext + cbc_size, residual_block_size);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (padding_scheme_ != kCtsPadding) {</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Expecting cipher text size to be multiple of &quot;</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;               &lt;&lt; AES_BLOCK_SIZE &lt;&lt; <span class="stringliteral">&quot;, got &quot;</span> &lt;&lt; ciphertext_size;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  }</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  DCHECK_EQ(padding_scheme_, kCtsPadding);</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordflow">if</span> (ciphertext_size &lt; AES_BLOCK_SIZE) {</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="comment">// Don&#39;t have a full block, leave unencrypted.</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    memcpy(plaintext, ciphertext, ciphertext_size);</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  }</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <span class="comment">// AES-CBC decrypt everything up to the next-to-last full block.</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="keywordflow">if</span> (cbc_size &gt; AES_BLOCK_SIZE) {</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    AES_cbc_encrypt(ciphertext, plaintext, cbc_size - AES_BLOCK_SIZE, aes_key(),</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;                    internal_iv_.data(), AES_DECRYPT);</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  }</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="keyword">const</span> uint8_t* next_to_last_ciphertext_block =</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      ciphertext + ciphertext_size - residual_block_size - AES_BLOCK_SIZE;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  uint8_t* next_to_last_plaintext_block =</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      plaintext + ciphertext_size - residual_block_size - AES_BLOCK_SIZE;</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="comment">// Determine what the last IV should be so that we can &quot;skip ahead&quot; in the</span></div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="comment">// CBC decryption.</span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  std::vector&lt;uint8_t&gt; last_iv(</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;      ciphertext + ciphertext_size - residual_block_size,</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;      ciphertext + ciphertext_size);</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  last_iv.resize(AES_BLOCK_SIZE, 0);</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  <span class="comment">// Decrypt the next-to-last block using the IV determined above. This decrypts</span></div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  <span class="comment">// the residual block bits.</span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  AES_cbc_encrypt(next_to_last_ciphertext_block, next_to_last_plaintext_block,</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;                  AES_BLOCK_SIZE, aes_key(), last_iv.data(), AES_DECRYPT);</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;  <span class="comment">// Swap back the residual block bits and the next-to-last block.</span></div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  <span class="keywordflow">if</span> (plaintext == ciphertext) {</div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    std::swap_ranges(next_to_last_plaintext_block,</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;                     next_to_last_plaintext_block + residual_block_size,</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;                     next_to_last_plaintext_block + AES_BLOCK_SIZE);</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;    memcpy(next_to_last_plaintext_block + AES_BLOCK_SIZE,</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;           next_to_last_plaintext_block, residual_block_size);</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    memcpy(next_to_last_plaintext_block,</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;           next_to_last_ciphertext_block + AES_BLOCK_SIZE, residual_block_size);</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  }</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <span class="comment">// Decrypt the next-to-last full block.</span></div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  AES_cbc_encrypt(next_to_last_plaintext_block, next_to_last_plaintext_block,</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;                  AES_BLOCK_SIZE, aes_key(), internal_iv_.data(), AES_DECRYPT);</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;}</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;<span class="keywordtype">void</span> AesCbcDecryptor::SetIvInternal() {</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  internal_iv_ = <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">iv</a>();</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  internal_iv_.resize(AES_BLOCK_SIZE, 0);</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;}</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html">edash_packager::media::AesCryptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/aes__cryptor_8h_source.html#l00025">aes_cryptor.h:25</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCbcDecryptor_html"><div class="ttname"><a href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html">edash_packager::media::AesCbcDecryptor</a></div><div class="ttdoc">Class which implements AES-CBC (Cipher block chaining) decryption. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d4d/aes__decryptor_8h_source.html#l00025">aes_decryptor.h:25</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCbcDecryptor_html_ac7839cefe8e1f1c4e98de45816ba8107"><div class="ttname"><a href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#ac7839cefe8e1f1c4e98de45816ba8107">edash_packager::media::AesCbcDecryptor::AesCbcDecryptor</a></div><div class="ttdeci">AesCbcDecryptor(CbcPaddingScheme padding_scheme)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/df4/aes__decryptor_8cc_source.html#l00025">aes_decryptor.cc:25</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCbcDecryptor_html_a59bac38018c269795c588169e98a5b41"><div class="ttname"><a href="../../d5/dcb/classedash__packager_1_1media_1_1AesCbcDecryptor.html#a59bac38018c269795c588169e98a5b41">edash_packager::media::AesCbcDecryptor::InitializeWithIv</a></div><div class="ttdeci">bool InitializeWithIv(const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;iv) override</div><div class="ttdef"><b>Definition:</b> <a href="../../da/df4/aes__decryptor_8cc_source.html#l00040">aes_decryptor.cc:40</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a049b4b415e44428c4543f7e2f7b36b34"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">edash_packager::media::AesCryptor::iv</a></div><div class="ttdeci">const std::vector&lt; uint8_t &gt; &amp; iv() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/aes__cryptor_8h_source.html#l00081">aes_cryptor.h:81</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a77b4444a269aaa9a4bfd347ebf02b649"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a77b4444a269aaa9a4bfd347ebf02b649">edash_packager::media::AesCryptor::SetIv</a></div><div class="ttdeci">bool SetIv(const std::vector&lt; uint8_t &gt; &amp;iv)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00069">aes_cryptor.cc:69</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 20 2016 05:37:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 20 2016 21:57:52 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -113,80 +113,106 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="comment">// implementations.</span></div>
 <div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html">   25</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html">AesCryptor</a> {</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html">AesCryptor</a>();</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html">AesCryptor</a>();</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#abf57fe34c90b57abdcc33230f022adbe">InitializeWithIv</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key,</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                                <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">iv</a>) = 0;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordtype">bool</span> Crypt(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; text,</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;             std::vector&lt;uint8_t&gt;* crypt_text);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordtype">bool</span> Crypt(<span class="keyword">const</span> std::string&amp; text, std::string* crypt_text);</div>
-<div class="line"><a name="l00044"></a><span class="lineno"><a class="line" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a7e2bedb13dbc242a1a4ede6ad500068c">   44</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a7e2bedb13dbc242a1a4ede6ad500068c">Crypt</a>(<span class="keyword">const</span> uint8_t* text, <span class="keywordtype">size_t</span> text_size, uint8_t* crypt_text) {</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keywordtype">size_t</span> crypt_text_size = text_size;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="keywordflow">return</span> CryptInternal(text, text_size, crypt_text, &amp;crypt_text_size);</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  }</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a04a5cce8c499ed9a41da6c8f067c63ed">SetIv</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv) = 0;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#aa1a444b41561c6c249c57b8390364f85">UpdateIv</a>() = 0;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">   60</a></span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">iv</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> iv_; }</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a0fccd9fe2270f0c584ff1f6c5dd6bd91">GenerateRandomIv</a>(FourCC protection_scheme,</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                               std::vector&lt;uint8_t&gt;* iv);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordtype">void</span> set_iv(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv) { iv_ = <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">iv</a>; }</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keyword">const</span> AES_KEY* aes_key()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> aes_key_.get(); }</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  AES_KEY* mutable_aes_key() { <span class="keywordflow">return</span> aes_key_.get(); }</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">// Internal implementation of crypt function.</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">// |text| points to the input text.</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// |text_size| is the size of input text.</span></div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// |crypt_text| points to the output encrypted or decrypted text, depends on</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">// whether it is an encryption or decryption. |text| and |crypt_text| can</span></div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// point to the same address for in place encryption/decryption.</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// |crypt_text_size| contains the size of |crypt_text| and it will be updated</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// to contain the actual encrypted/decrypted size for |crypt_text| on success.</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="comment">// Return false if the input |crypt_text_size| is not large enough to hold the</span></div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">// output |crypt_text| or if there is any error in encryption/decryption.</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> CryptInternal(<span class="keyword">const</span> uint8_t* text,</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                             <span class="keywordtype">size_t</span> text_size,</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;                             uint8_t* crypt_text,</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                             <span class="keywordtype">size_t</span>* crypt_text_size) = 0;</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keyword">enum</span> ConstantIvFlag {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;    kUseConstantIv,</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;    kDontUseConstantIv,</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  };</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#afedfeff8fdfcc25f32f7381f8b7ccdcb">AesCryptor</a>(ConstantIvFlag constant_iv_flag);</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html">AesCryptor</a>();</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#abf57fe34c90b57abdcc33230f022adbe">InitializeWithIv</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; key,</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                                <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">iv</a>) = 0;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordtype">bool</span> Crypt(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; text,</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;             std::vector&lt;uint8_t&gt;* crypt_text);</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordtype">bool</span> Crypt(<span class="keyword">const</span> std::string&amp; text, std::string* crypt_text);</div>
+<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a7e2bedb13dbc242a1a4ede6ad500068c">   55</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a7e2bedb13dbc242a1a4ede6ad500068c">Crypt</a>(<span class="keyword">const</span> uint8_t* text, <span class="keywordtype">size_t</span> text_size, uint8_t* crypt_text) {</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordtype">size_t</span> crypt_text_size = text_size;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">return</span> Crypt(text, text_size, crypt_text, &amp;crypt_text_size);</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  }</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordtype">bool</span> Crypt(<span class="keyword">const</span> uint8_t* text,</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;             <span class="keywordtype">size_t</span> text_size,</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;             uint8_t* crypt_text,</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;             <span class="keywordtype">size_t</span>* crypt_text_size) {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordflow">if</span> (constant_iv_flag_ == kUseConstantIv)</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;      SetIvInternal();</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordflow">else</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;      num_crypt_bytes_ += text_size;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">return</span> CryptInternal(text, text_size, crypt_text, crypt_text_size);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  }</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a77b4444a269aaa9a4bfd347ebf02b649">SetIv</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a4fb26ca8346208a7d2dab4e1f6327a43">UpdateIv</a>();</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno"><a class="line" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">   81</a></span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">iv</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> iv_; }</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a0fccd9fe2270f0c584ff1f6c5dd6bd91">GenerateRandomIv</a>(FourCC protection_scheme,</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;                               std::vector&lt;uint8_t&gt;* iv);</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="comment">// |size| specifies the input text size.</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="comment">// Return the number of padding bytes needed.</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="comment">// Note: No paddings should be needed except for pkcs5-cbc encryptor.</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> NumPaddingBytes(<span class="keywordtype">size_t</span> size) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="comment">// Initialization vector, with size 8 or 16.</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  std::vector&lt;uint8_t&gt; iv_;</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="comment">// Openssl AES_KEY.</span></div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  scoped_ptr&lt;AES_KEY&gt; aes_key_;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  DISALLOW_COPY_AND_ASSIGN(AesCryptor);</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;};</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;<span class="preprocessor">#endif  // PACKAGER_MEDIA_BASE_AES_CRYPTOR_H_</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160; <span class="keyword">protected</span>:</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keyword">const</span> AES_KEY* aes_key()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> aes_key_.get(); }</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  AES_KEY* mutable_aes_key() { <span class="keywordflow">return</span> aes_key_.get(); }</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="comment">// Internal implementation of crypt function.</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="comment">// |text| points to the input text.</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="comment">// |text_size| is the size of input text.</span></div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  <span class="comment">// |crypt_text| points to the output encrypted or decrypted text, depends on</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="comment">// whether it is an encryption or decryption. |text| and |crypt_text| can</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="comment">// point to the same address for in place encryption/decryption.</span></div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="comment">// |crypt_text_size| contains the size of |crypt_text| and it will be updated</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">// to contain the actual encrypted/decrypted size for |crypt_text| on success.</span></div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="comment">// Return false if the input |crypt_text_size| is not large enough to hold the</span></div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="comment">// output |crypt_text| or if there is any error in encryption/decryption.</span></div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> CryptInternal(<span class="keyword">const</span> uint8_t* text,</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;                             <span class="keywordtype">size_t</span> text_size,</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;                             uint8_t* crypt_text,</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                             <span class="keywordtype">size_t</span>* crypt_text_size) = 0;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="comment">// Internal implementation of SetIv, which setup internal iv.</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">void</span> SetIvInternal() = 0;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="comment">// |size| specifies the input text size.</span></div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  <span class="comment">// Return the number of padding bytes needed.</span></div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  <span class="comment">// Note: No paddings should be needed except for pkcs5-cbc encryptor.</span></div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> NumPaddingBytes(<span class="keywordtype">size_t</span> size) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="comment">// Openssl AES_KEY.</span></div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  scoped_ptr&lt;AES_KEY&gt; aes_key_;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  <span class="comment">// Indicates whether a constant iv is used. Internal iv will be reset to</span></div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  <span class="comment">// |iv_| before calling Crypt if that is the case.</span></div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keyword">const</span> ConstantIvFlag constant_iv_flag_;</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  <span class="comment">// Initialization vector from by SetIv or InitializeWithIv, with size 8 or 16</span></div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  <span class="comment">// bytes.</span></div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  std::vector&lt;uint8_t&gt; iv_;</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;  <span class="comment">// Tracks number of crypt bytes. It is used to calculate how many blocks</span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="comment">// should iv advance in UpdateIv(). It will be reset to 0 after iv is updated.</span></div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keywordtype">size_t</span> num_crypt_bytes_;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#afedfeff8fdfcc25f32f7381f8b7ccdcb">AesCryptor</a>);</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;};</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;<span class="preprocessor">#endif  // PACKAGER_MEDIA_BASE_AES_CRYPTOR_H_</span></div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;<span class="preprocessor"></span></div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;</div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_afedfeff8fdfcc25f32f7381f8b7ccdcb"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#afedfeff8fdfcc25f32f7381f8b7ccdcb">edash_packager::media::AesCryptor::AesCryptor</a></div><div class="ttdeci">AesCryptor(ConstantIvFlag constant_iv_flag)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00032">aes_cryptor.cc:32</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html">edash_packager::media::AesCryptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/aes__cryptor_8h_source.html#l00025">aes_cryptor.h:25</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a0fccd9fe2270f0c584ff1f6c5dd6bd91"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a0fccd9fe2270f0c584ff1f6c5dd6bd91">edash_packager::media::AesCryptor::GenerateRandomIv</a></div><div class="ttdeci">static bool GenerateRandomIv(FourCC protection_scheme, std::vector&lt; uint8_t &gt; *iv)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00058">aes_cryptor.cc:58</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a04a5cce8c499ed9a41da6c8f067c63ed"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a04a5cce8c499ed9a41da6c8f067c63ed">edash_packager::media::AesCryptor::SetIv</a></div><div class="ttdeci">virtual bool SetIv(const std::vector&lt; uint8_t &gt; &amp;iv)=0</div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a0fccd9fe2270f0c584ff1f6c5dd6bd91"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a0fccd9fe2270f0c584ff1f6c5dd6bd91">edash_packager::media::AesCryptor::GenerateRandomIv</a></div><div class="ttdeci">static bool GenerateRandomIv(FourCC protection_scheme, std::vector&lt; uint8_t &gt; *iv)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00109">aes_cryptor.cc:109</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_abf57fe34c90b57abdcc33230f022adbe"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#abf57fe34c90b57abdcc33230f022adbe">edash_packager::media::AesCryptor::InitializeWithIv</a></div><div class="ttdeci">virtual bool InitializeWithIv(const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;iv)=0</div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_aa1a444b41561c6c249c57b8390364f85"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#aa1a444b41561c6c249c57b8390364f85">edash_packager::media::AesCryptor::UpdateIv</a></div><div class="ttdeci">virtual void UpdateIv()=0</div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a049b4b415e44428c4543f7e2f7b36b34"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">edash_packager::media::AesCryptor::iv</a></div><div class="ttdeci">const std::vector&lt; uint8_t &gt; &amp; iv() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/aes__cryptor_8h_source.html#l00060">aes_cryptor.h:60</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a7e2bedb13dbc242a1a4ede6ad500068c"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a7e2bedb13dbc242a1a4ede6ad500068c">edash_packager::media::AesCryptor::Crypt</a></div><div class="ttdeci">bool Crypt(const uint8_t *text, size_t text_size, uint8_t *crypt_text)</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/aes__cryptor_8h_source.html#l00044">aes_cryptor.h:44</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a4fb26ca8346208a7d2dab4e1f6327a43"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a4fb26ca8346208a7d2dab4e1f6327a43">edash_packager::media::AesCryptor::UpdateIv</a></div><div class="ttdeci">void UpdateIv()</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00080">aes_cryptor.cc:80</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a049b4b415e44428c4543f7e2f7b36b34"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">edash_packager::media::AesCryptor::iv</a></div><div class="ttdeci">const std::vector&lt; uint8_t &gt; &amp; iv() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/aes__cryptor_8h_source.html#l00081">aes_cryptor.h:81</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a7e2bedb13dbc242a1a4ede6ad500068c"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a7e2bedb13dbc242a1a4ede6ad500068c">edash_packager::media::AesCryptor::Crypt</a></div><div class="ttdeci">bool Crypt(const uint8_t *text, size_t text_size, uint8_t *crypt_text)</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/aes__cryptor_8h_source.html#l00055">aes_cryptor.h:55</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a77b4444a269aaa9a4bfd347ebf02b649"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a77b4444a269aaa9a4bfd347ebf02b649">edash_packager::media::AesCryptor::SetIv</a></div><div class="ttdeci">bool SetIv(const std::vector&lt; uint8_t &gt; &amp;iv)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00069">aes_cryptor.cc:69</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Apr 20 2016 05:37:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Apr 20 2016 21:57:52 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
