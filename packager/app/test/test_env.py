@@ -20,13 +20,12 @@ import sys
 
 
 # Define static global objects and attributes.
-SRC_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../../..')
-OUT_DIR = os.path.join(SRC_DIR, os.getenv('builddir_name', 'out'))
+SCRIPT_DIR = os.path.dirname(os.path.realpath(__file__))
+SRC_DIR = os.path.join(SCRIPT_DIR, os.pardir, os.pardir)
 
 # Parse arguments and calculate dynamic global objects and attributes.
 parser = argparse.ArgumentParser()
 
-parser.add_argument('--build_type', default='Debug')
 parser.add_argument('--test_update_golden_files', default=0, type=int)
 
 aes = parser.add_argument_group(

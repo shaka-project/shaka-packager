@@ -91,6 +91,19 @@
       ],
     },
     {
+      'target_name': 'packager_test_py_copy',
+      'type': 'none',
+      'copies': [{
+        'destination': '<(PRODUCT_DIR)',
+        'files': [
+          'app/test/packager_app.py',
+          'app/test/packager_test.py',
+          'app/test/test_env.py',
+        ],
+      }],
+      'dependencies': ['packager'],
+    },
+    {
       'target_name': 'packager_builder_tests',
       'type': 'none',
       'dependencies': [

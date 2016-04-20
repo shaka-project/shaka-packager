@@ -35,9 +35,6 @@ class PackagerAppTest(unittest.TestCase):
   def tearDown(self):
     shutil.rmtree(self.tmp_dir)
 
-  def testBuildingCode(self):
-    self.assertEqual(0, self.packager.BuildSrc())
-
   def testVersion(self):
     self.assertRegexpMatches(
         self.packager.Version(), '^edash-packager version '

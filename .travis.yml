@@ -27,7 +27,7 @@ before_script:
 
 script:
   - ( find out/${BUILD_TYPE} -name "*_*test" | while read i ; do $i || exit ; done )
-  - packager/app/test/packager_test.py -v --build_type ${BUILD_TYPE}
+  - out/${BUILD_TYPE}/packager_test.py -v
 
 before_deploy:
   - mv out/${BUILD_TYPE}/packager out/${BUILD_TYPE}/packager-${TRAVIS_OS_NAME}

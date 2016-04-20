@@ -19,12 +19,9 @@ class PackagerApp(object):
   """Main integration class for testing the packager binary."""
 
   def __init__(self):
-    self.build_dir = os.path.join(test_env.OUT_DIR,
-                                  test_env.options.build_type)
-    self.binary = os.path.join(self.build_dir, 'packager')
-
-  def BuildSrc(self):
-    return subprocess.call(['ninja', '-C', self.build_dir])
+    self.binary = os.path.join(test_env.SCRIPT_DIR, 'packager')
+    assert os.path.exists(self.binary), ('Please run from output directory, '
+                                         'e.g. out/Debug/packager_test.py')
 
   def DumpStreamInfo(self, stream):
     input_str = 'input=%s' % stream
