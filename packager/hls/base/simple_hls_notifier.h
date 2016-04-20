@@ -14,6 +14,7 @@
 #include "packager/base/synchronization/lock.h"
 #include "packager/hls/base/hls_notifier.h"
 #include "packager/hls/base/master_playlist.h"
+#include "packager/hls/base/media_playlist.h"
 
 namespace edash_packager {
 namespace hls {
@@ -23,9 +24,11 @@ namespace hls {
 class MediaPlaylistFactory {
  public:
   virtual ~MediaPlaylistFactory();
-  virtual scoped_ptr<MediaPlaylist> Create(const std::string& file_name,
-                                           const std::string& name,
-                                           const std::string& group_id);
+  virtual scoped_ptr<MediaPlaylist> Create(
+      MediaPlaylist::MediaPlaylistType type,
+      const std::string& file_name,
+      const std::string& name,
+      const std::string& group_id);
 };
 
 /// This is thread safe.
@@ -33,12 +36,14 @@ class SimpleHlsNotifier : public HlsNotifier {
  public:
   /// @a prefix is used as hte prefix for all the URIs for Media Playlist. This
   /// includes the segment URIs in the Media Playlists.
+  /// @param profile is the profile of the playlists.
   /// @param prefix is the used as the prefix for MediaPlaylist URIs. May be
   ///        empty for relative URI from the playlist.
   /// @param output_dir is the output directory of the playlists. May be empty
   ///        to write to current directory.
   /// @param master_playlist_name is the name of the master playlist.
-  SimpleHlsNotifier(const std::string& prefix,
+  SimpleHlsNotifier(HlsProfile profile,
+                    const std::string& prefix,
                     const std::string& output_dir,
                     const std::string& master_playlist_name);
   ~SimpleHlsNotifier() override;

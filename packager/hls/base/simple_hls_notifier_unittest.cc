@@ -21,6 +21,8 @@ using ::testing::_;
 
 namespace {
 const char kMasterPlaylistName[] = "master.m3u8";
+const MediaPlaylist::MediaPlaylistType kVodPlaylist =
+    MediaPlaylist::MediaPlaylistType::kVod;
 
 class MockMasterPlaylist : public MasterPlaylist {
  public:
@@ -35,15 +37,18 @@ class MockMasterPlaylist : public MasterPlaylist {
 
 class MockMediaPlaylistFactory : public MediaPlaylistFactory {
  public:
-  MOCK_METHOD3(CreateMock,
-               MediaPlaylist*(const std::string& file_name,
+  MOCK_METHOD4(CreateMock,
+               MediaPlaylist*(MediaPlaylist::MediaPlaylistType type,
+                              const std::string& file_name,
                               const std::string& name,
                               const std::string& group_id));
 
-  scoped_ptr<MediaPlaylist> Create(const std::string& file_name,
+  scoped_ptr<MediaPlaylist> Create(MediaPlaylist::MediaPlaylistType type,
+                                   const std::string& file_name,
                                    const std::string& name,
                                    const std::string& group_id) override {
-    return scoped_ptr<MediaPlaylist>(CreateMock(file_name, name, group_id));
+    return scoped_ptr<MediaPlaylist>(
+        CreateMock(type, file_name, name, group_id));
   }
 };
 
@@ -55,7 +60,10 @@ const char kAnyOutputDir[] = "anything/";
 class SimpleHlsNotifierTest : public ::testing::Test {
  protected:
   SimpleHlsNotifierTest()
-      : notifier_(kTestPrefix, kAnyOutputDir, kMasterPlaylistName) {}
+      : notifier_(HlsNotifier::HlsProfile::kOnDemandProfile,
+                  kTestPrefix,
+                  kAnyOutputDir,
+                  kMasterPlaylistName) {}
 
   void InjectMediaPlaylistFactory(scoped_ptr<MediaPlaylistFactory> factory) {
     notifier_.media_playlist_factory_ = factory.Pass();
@@ -81,12 +89,13 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewStream) {
   scoped_ptr<MockMediaPlaylistFactory> factory(new MockMediaPlaylistFactory());
 
   // Pointer released by SimpleHlsNotifier.
-  MockMediaPlaylist* mock_media_playlist = new MockMediaPlaylist("", "", "");
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(kVodPlaylist, "", "", "");
   EXPECT_CALL(*mock_master_playlist, AddMediaPlaylist(mock_media_playlist));
 
   EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
-  EXPECT_CALL(*factory, CreateMock(StrEq("video_playlist.m3u8"), StrEq("name"),
-                                   StrEq("groupid")))
+  EXPECT_CALL(*factory, CreateMock(kVodPlaylist, StrEq("video_playlist.m3u8"),
+                                   StrEq("name"), StrEq("groupid")))
       .WillOnce(Return(mock_media_playlist));
 
   InjectMasterPlaylist(mock_master_playlist.Pass());
@@ -104,13 +113,14 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
   scoped_ptr<MockMediaPlaylistFactory> factory(new MockMediaPlaylistFactory());
 
   // Pointer released by SimpleHlsNotifier.
-  MockMediaPlaylist* mock_media_playlist = new MockMediaPlaylist("", "", "");
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(kVodPlaylist, "", "", "");
 
   EXPECT_CALL(
       *mock_master_playlist,
       AddMediaPlaylist(static_cast<MediaPlaylist*>(mock_media_playlist)));
   EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
-  EXPECT_CALL(*factory, CreateMock(_, _, _))
+  EXPECT_CALL(*factory, CreateMock(_, _, _, _))
       .WillOnce(Return(mock_media_playlist));
 
   const uint64_t kStartTime = 1328;
@@ -142,13 +152,14 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdate) {
   scoped_ptr<MockMediaPlaylistFactory> factory(new MockMediaPlaylistFactory());
 
   // Pointer released by SimpleHlsNotifier.
-  MockMediaPlaylist* mock_media_playlist = new MockMediaPlaylist("", "", "");
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(kVodPlaylist, "", "", "");
 
   EXPECT_CALL(
       *mock_master_playlist,
       AddMediaPlaylist(static_cast<MediaPlaylist*>(mock_media_playlist)));
   EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
-  EXPECT_CALL(*factory, CreateMock(_, _, _))
+  EXPECT_CALL(*factory, CreateMock(_, _, _, _))
       .WillOnce(Return(mock_media_playlist));
 
   InjectMasterPlaylist(mock_master_playlist.Pass());
@@ -206,13 +217,14 @@ TEST_F(SimpleHlsNotifierTest, MultipleKeyIdsInPssh) {
   scoped_ptr<MockMediaPlaylistFactory> factory(new MockMediaPlaylistFactory());
 
   // Pointer released by SimpleHlsNotifier.
-  MockMediaPlaylist* mock_media_playlist = new MockMediaPlaylist("", "", "");
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(kVodPlaylist, "", "", "");
 
   EXPECT_CALL(
       *mock_master_playlist,
       AddMediaPlaylist(static_cast<MediaPlaylist*>(mock_media_playlist)));
   EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
-  EXPECT_CALL(*factory, CreateMock(_, _, _))
+  EXPECT_CALL(*factory, CreateMock(_, _, _, _))
       .WillOnce(Return(mock_media_playlist));
 
   InjectMasterPlaylist(mock_master_playlist.Pass());
@@ -276,13 +288,14 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateEmptyIv) {
   scoped_ptr<MockMediaPlaylistFactory> factory(new MockMediaPlaylistFactory());
 
   // Pointer released by SimpleHlsNotifier.
-  MockMediaPlaylist* mock_media_playlist = new MockMediaPlaylist("", "", "");
+  MockMediaPlaylist* mock_media_playlist =
+      new MockMediaPlaylist(kVodPlaylist, "", "", "");
 
   EXPECT_CALL(
       *mock_master_playlist,
       AddMediaPlaylist(static_cast<MediaPlaylist*>(mock_media_playlist)));
   EXPECT_CALL(*mock_media_playlist, SetMediaInfo(_)).WillOnce(Return(true));
-  EXPECT_CALL(*factory, CreateMock(_, _, _))
+  EXPECT_CALL(*factory, CreateMock(_, _, _, _))
       .WillOnce(Return(mock_media_playlist));
 
   InjectMasterPlaylist(mock_master_playlist.Pass());

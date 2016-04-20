@@ -51,7 +51,7 @@ SegmentInfoEntry::SegmentInfoEntry(const std::string& file_name,
 SegmentInfoEntry::~SegmentInfoEntry() {}
 
 std::string SegmentInfoEntry::ToString() {
-  return base::StringPrintf("#EXTINF:%.3f\n%s\n", duration_,
+  return base::StringPrintf("#EXTINF:%.3f,\n%s\n", duration_,
                             file_name_.c_str());
 }
 
@@ -120,15 +120,23 @@ std::string EncryptionInfoEntry::ToString() {
 HlsEntry::HlsEntry(HlsEntry::EntryType type) : type_(type) {}
 HlsEntry::~HlsEntry() {}
 
-MediaPlaylist::MediaPlaylist(const std::string& file_name,
+MediaPlaylist::MediaPlaylist(MediaPlaylistType type,
+                             const std::string& file_name,
                              const std::string& name,
                              const std::string& group_id)
-    : file_name_(file_name), name_(name), group_id_(group_id),
-      entries_deleter_(&entries_) {}
+    : file_name_(file_name),
+      name_(name),
+      group_id_(group_id),
+      type_(type),
+      entries_deleter_(&entries_) {
+  LOG_IF(WARNING, type != MediaPlaylistType::kVod)
+      << "Non VOD Media Playlist is not supported.";
+}
 MediaPlaylist::~MediaPlaylist() {}
 
-void MediaPlaylist::SetTypeForTesting(MediaPlaylistType type) {
-  type_ = type;
+void MediaPlaylist::SetStreamTypeForTesting(
+    MediaPlaylistStreamType stream_type) {
+  stream_type_ = stream_type;
 }
 
 void MediaPlaylist::SetCodecForTesting(const std::string& codec) {
@@ -143,10 +151,10 @@ bool MediaPlaylist::SetMediaInfo(const MediaInfo& media_info) {
   }
 
   if (media_info.has_video_info()) {
-    type_ = MediaPlaylistType::kPlayListVideo;
+    stream_type_ = MediaPlaylistStreamType::kPlayListVideo;
     codec_ = media_info.video_info().codec();
   } else if (media_info.has_audio_info()) {
-    type_ = MediaPlaylistType::kPlayListAudio;
+    stream_type_ = MediaPlaylistStreamType::kPlayListAudio;
     codec_ = media_info.audio_info().codec();
   } else {
     NOTIMPLEMENTED();
@@ -270,12 +278,20 @@ bool MediaPlaylist::WriteToFile(media::File* file) {
                                           "#EXT-X-VERSION:4\n"
                                           "#EXT-X-TARGETDURATION:%d\n",
                                           target_duration_);
+  if (type_ == MediaPlaylistType::kVod) {
+    header += "#EXT-X-PLAYLIST-TYPE:VOD\n";
+  }
   std::string body;
   for (const auto& entry : entries_) {
     body.append(entry->ToString());
   }
 
   std::string content = header + body;
+
+  if (type_ == MediaPlaylistType::kVod) {
+    content += "#EXT-X-ENDLIST\n";
+  }
+
   int64_t bytes_written = file->Write(content.data(), content.size());
   if (bytes_written < 0) {
     LOG(ERROR) << "Error while writing playlist to file.";

@@ -9,10 +9,11 @@
 namespace edash_packager {
 namespace hls {
 
-MockMediaPlaylist::MockMediaPlaylist(const std::string& file_name,
+MockMediaPlaylist::MockMediaPlaylist(MediaPlaylistType type,
+                                     const std::string& file_name,
                                      const std::string& name,
                                      const std::string& group_id)
-    : MediaPlaylist(file_name, name, group_id) {}
+    : MediaPlaylist(type, file_name, name, group_id) {}
 MockMediaPlaylist::~MockMediaPlaylist() {}
 
 }  // namespace hls

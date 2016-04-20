@@ -29,17 +29,19 @@ bool IsWidevineSystemId(const std::vector<uint8_t>& system_id) {
 MediaPlaylistFactory::~MediaPlaylistFactory() {}
 
 scoped_ptr<MediaPlaylist> MediaPlaylistFactory::Create(
+    MediaPlaylist::MediaPlaylistType type,
     const std::string& file_name,
     const std::string& name,
     const std::string& group_id) {
   return scoped_ptr<MediaPlaylist>(
-      new MediaPlaylist(file_name, name, group_id));
+      new MediaPlaylist(type, file_name, name, group_id));
 }
 
-SimpleHlsNotifier::SimpleHlsNotifier(const std::string& prefix,
+SimpleHlsNotifier::SimpleHlsNotifier(HlsProfile profile,
+                                     const std::string& prefix,
                                      const std::string& output_dir,
                                      const std::string& master_playlist_name)
-    : HlsNotifier(HlsNotifier::HlsProfile::kOnDemandProfile),
+    : HlsNotifier(profile),
       prefix_(prefix),
       output_dir_(output_dir),
       media_playlist_factory_(new MediaPlaylistFactory()),
@@ -60,8 +62,20 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
   DCHECK(stream_id);
   *stream_id = sequence_number_.GetNext();
 
+  MediaPlaylist::MediaPlaylistType type;
+  switch (profile()) {
+    case HlsProfile::kLiveProfile:
+      type = MediaPlaylist::MediaPlaylistType::kLive;
+      break;
+    case HlsProfile::kOnDemandProfile:
+      type = MediaPlaylist::MediaPlaylistType::kVod;
+      break;
+    default:
+      NOTREACHED();
+      return false;
+  }
   scoped_ptr<MediaPlaylist> media_playlist =
-      media_playlist_factory_->Create(playlist_name, name, group_id);
+      media_playlist_factory_->Create(type, playlist_name, name, group_id);
   if (!media_playlist->SetMediaInfo(media_info)) {
     LOG(ERROR) << "Failed to set media info for playlist " << playlist_name;
     return false;

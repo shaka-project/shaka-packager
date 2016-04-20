@@ -50,7 +50,10 @@ class MediaPlaylistTest : public ::testing::Test {
       : default_file_name_(kDefaultPlaylistFileName),
         default_name_("default_name"),
         default_group_id_("default_group_id"),
-        media_playlist_(default_file_name_, default_name_, default_group_id_) {}
+        media_playlist_(MediaPlaylist::MediaPlaylistType::kVod,
+                        default_file_name_,
+                        default_name_,
+                        default_group_id_) {}
 
   void SetUp() override {
     MediaInfo::VideoInfo* video_info =
@@ -114,7 +117,9 @@ TEST_F(MediaPlaylistTest, WriteToFile) {
   const std::string kExpectedOutput =
       "#EXTM3U\n"
       "#EXT-X-VERSION:4\n"
-      "#EXT-X-TARGETDURATION:0\n";
+      "#EXT-X-TARGETDURATION:0\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
+      "#EXT-X-ENDLIST\n";
 
   MockFile file;
   EXPECT_CALL(file,
@@ -167,7 +172,9 @@ TEST_F(MediaPlaylistTest, SetTargetDuration) {
   const std::string kExpectedOutput =
       "#EXTM3U\n"
       "#EXT-X-VERSION:4\n"
-      "#EXT-X-TARGETDURATION:20\n";
+      "#EXT-X-TARGETDURATION:20\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
+      "#EXT-X-ENDLIST\n";
 
   MockFile file;
   EXPECT_CALL(file,
@@ -192,10 +199,12 @@ TEST_F(MediaPlaylistTest, WriteToFileWithSegments) {
       "#EXTM3U\n"
       "#EXT-X-VERSION:4\n"
       "#EXT-X-TARGETDURATION:30\n"
-      "#EXTINF:10.000\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
+      "#EXTINF:10.000,\n"
       "file1.ts\n"
-      "#EXTINF:30.000\n"
-      "file2.ts\n";
+      "#EXTINF:30.000,\n"
+      "file2.ts\n"
+      "#EXT-X-ENDLIST\n";
 
   MockFile file;
   EXPECT_CALL(file,
@@ -219,13 +228,15 @@ TEST_F(MediaPlaylistTest, WriteToFileWithEncryptionInfo) {
       "#EXTM3U\n"
       "#EXT-X-VERSION:4\n"
       "#EXT-X-TARGETDURATION:30\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-KEY:METHOD=SAMPLE-AES,"
       "URI=\"http://example.com\",IV=0x12345678,KEYFORMATVERSIONS=\"1/2/4\","
       "KEYFORMAT=\"com.widevine\"\n"
-      "#EXTINF:10.000\n"
+      "#EXTINF:10.000,\n"
       "file1.ts\n"
-      "#EXTINF:30.000\n"
-      "file2.ts\n";
+      "#EXTINF:30.000,\n"
+      "file2.ts\n"
+      "#EXT-X-ENDLIST\n";
 
   MockFile file;
   EXPECT_CALL(file,
@@ -249,12 +260,14 @@ TEST_F(MediaPlaylistTest, WriteToFileWithEncryptionInfoEmptyIv) {
       "#EXTM3U\n"
       "#EXT-X-VERSION:4\n"
       "#EXT-X-TARGETDURATION:30\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-KEY:METHOD=SAMPLE-AES,"
       "URI=\"http://example.com\",KEYFORMAT=\"com.widevine\"\n"
-      "#EXTINF:10.000\n"
+      "#EXTINF:10.000,\n"
       "file1.ts\n"
-      "#EXTINF:30.000\n"
-      "file2.ts\n";
+      "#EXTINF:30.000,\n"
+      "file2.ts\n"
+      "#EXT-X-ENDLIST\n";
 
   MockFile file;
   EXPECT_CALL(file,
@@ -277,8 +290,10 @@ TEST_F(MediaPlaylistTest, RemoveOldestSegment) {
       "#EXTM3U\n"
       "#EXT-X-VERSION:4\n"
       "#EXT-X-TARGETDURATION:30\n"
-      "#EXTINF:30.000\n"
-      "file2.ts\n";
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
+      "#EXTINF:30.000,\n"
+      "file2.ts\n"
+      "#EXT-X-ENDLIST\n";
 
   MockFile file;
   EXPECT_CALL(file,

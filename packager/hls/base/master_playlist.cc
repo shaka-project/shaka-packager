@@ -87,14 +87,16 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
   std::map<std::string, std::list<const MediaPlaylist*>> audio_group_map;
   std::list<const MediaPlaylist*> video_playlists;
   for (const MediaPlaylist* media_playlist : media_playlists_) {
-    MediaPlaylist::MediaPlaylistType type = media_playlist->type();
-    if (type == MediaPlaylist::MediaPlaylistType::kPlayListAudio) {
+    MediaPlaylist::MediaPlaylistStreamType stream_type =
+        media_playlist->stream_type();
+    if (stream_type == MediaPlaylist::MediaPlaylistStreamType::kPlayListAudio) {
       auto& audio_playlists = audio_group_map[media_playlist->group_id()];
       audio_playlists.push_back(media_playlist);
-    } else if (type == MediaPlaylist::MediaPlaylistType::kPlayListVideo) {
+    } else if (stream_type ==
+               MediaPlaylist::MediaPlaylistStreamType::kPlayListVideo) {
       video_playlists.push_back(media_playlist);
     } else {
-      NOTIMPLEMENTED() << static_cast<int>(type) << " not handled.";
+      NOTIMPLEMENTED() << static_cast<int>(stream_type) << " not handled.";
     }
   }
 

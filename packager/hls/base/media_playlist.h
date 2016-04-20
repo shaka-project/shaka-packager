@@ -45,6 +45,11 @@ class HlsEntry {
 class MediaPlaylist {
  public:
   enum class MediaPlaylistType {
+    kVod,
+    kEvent,
+    kLive,
+  };
+  enum class MediaPlaylistStreamType {
     kPlaylistUnknown,
     kPlayListAudio,
     kPlayListVideo,
@@ -56,26 +61,27 @@ class MediaPlaylist {
     kSampleAes,  // Encrypted using Sample AES method.
   };
 
+  /// @param type is the type of this media playlist.
   /// @param file_name is the file name of this media playlist.
   /// @param name is the name of this playlist. In other words this is the
   ///        value of the NAME attribute for EXT-X-MEDIA. This is not
   ///        necessarily the same as @a file_name.
   /// @param group_id is the group ID for this playlist. This is the value of
   ///        GROUP-ID attribute for EXT-X-MEDIA.
-  MediaPlaylist(
-      const std::string& file_name,
-      const std::string& name,
-      const std::string& group_id);
+  MediaPlaylist(MediaPlaylistType type,
+                const std::string& file_name,
+                const std::string& name,
+                const std::string& group_id);
   virtual ~MediaPlaylist();
 
   const std::string& file_name() const { return file_name_; }
   const std::string& name() const { return name_; }
   const std::string& group_id() const { return group_id_; }
-  MediaPlaylistType type() const { return type_; }
+  MediaPlaylistStreamType stream_type() const { return stream_type_; }
   const std::string& codec() const { return codec_; }
 
   /// For testing only.
-  void SetTypeForTesting(MediaPlaylistType type);
+  void SetStreamTypeForTesting(MediaPlaylistStreamType stream_type);
 
   /// For testing only.
   void SetCodecForTesting(const std::string& codec);
@@ -151,7 +157,9 @@ class MediaPlaylist {
   const std::string name_;
   const std::string group_id_;
   MediaInfo media_info_;
-  MediaPlaylistType type_ = MediaPlaylistType::kPlaylistUnknown;
+  const MediaPlaylistType type_;
+  MediaPlaylistStreamType stream_type_ =
+      MediaPlaylistStreamType::kPlaylistUnknown;
   std::string codec_;
 
   double longest_segment_duration_ = 0.0;

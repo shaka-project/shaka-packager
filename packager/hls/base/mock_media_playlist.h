@@ -18,7 +18,8 @@ class MockMediaPlaylist : public MediaPlaylist {
  public:
   // The actual parameters to MediaPlaylist() (parent) constructor doesn't
   // matter because the return value can be mocked.
-  MockMediaPlaylist(const std::string& file_name,
+  MockMediaPlaylist(MediaPlaylistType type,
+                    const std::string& file_name,
                     const std::string& name,
                     const std::string& group_id);
   ~MockMediaPlaylist() override;
