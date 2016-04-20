@@ -33,6 +33,8 @@ var searchData=
   ['hextouuid',['HexToUUID',['../db/d09/namespaceedash__packager.html#a7015ba137f31c7ae734dc7abb254be64',1,'edash_packager']]],
   ['hls_5fgroup_5fid',['hls_group_id',['../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a9e19ac2eafe896c4e0c4d7fe1149af60',1,'edash_packager::media::MuxerOptions']]],
   ['hls_5fname',['hls_name',['../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a025be3ae8c52cb276351f656c6fa0735',1,'edash_packager::media::MuxerOptions']]],
-  ['httpkeyfetcher',['HttpKeyFetcher',['../d3/d3e/classedash__packager_1_1media_1_1HttpKeyFetcher.html#a2dc7f2f968a87e5c532d1e3d6516237b',1,'edash_packager::media::HttpKeyFetcher::HttpKeyFetcher()'],['../d3/d3e/classedash__packager_1_1media_1_1HttpKeyFetcher.html#a5fdf1c838667e9280eb71e1682692a80',1,'edash_packager::media::HttpKeyFetcher::HttpKeyFetcher(uint32_t timeout_in_seconds)']]],
-  ['httpkeyfetcher',['HttpKeyFetcher',['../d3/d3e/classedash__packager_1_1media_1_1HttpKeyFetcher.html',1,'edash_packager::media']]]
+  ['hlsnotifymuxerlistener',['HlsNotifyMuxerListener',['../d5/d89/classedash__packager_1_1media_1_1HlsNotifyMuxerListener.html#a15a39a4408cdf65c468ab6ec539cc567',1,'edash_packager::media::HlsNotifyMuxerListener']]],
+  ['hlsnotifymuxerlistener',['HlsNotifyMuxerListener',['../d5/d89/classedash__packager_1_1media_1_1HlsNotifyMuxerListener.html',1,'edash_packager::media']]],
+  ['httpkeyfetcher',['HttpKeyFetcher',['../d3/d3e/classedash__packager_1_1media_1_1HttpKeyFetcher.html',1,'edash_packager::media']]],
+  ['httpkeyfetcher',['HttpKeyFetcher',['../d3/d3e/classedash__packager_1_1media_1_1HttpKeyFetcher.html#a2dc7f2f968a87e5c532d1e3d6516237b',1,'edash_packager::media::HttpKeyFetcher::HttpKeyFetcher()'],['../d3/d3e/classedash__packager_1_1media_1_1HttpKeyFetcher.html#a5fdf1c838667e9280eb71e1682692a80',1,'edash_packager::media::HttpKeyFetcher::HttpKeyFetcher(uint32_t timeout_in_seconds)']]]
 ];

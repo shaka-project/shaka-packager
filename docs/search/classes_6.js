@@ -24,5 +24,6 @@ var searchData=
   ['h26xbytetounitstreamconverter',['H26xByteToUnitStreamConverter',['../d4/dd8/classedash__packager_1_1media_1_1H26xByteToUnitStreamConverter.html',1,'edash_packager::media']]],
   ['handlerreference',['HandlerReference',['../d3/dbd/structedash__packager_1_1media_1_1mp4_1_1HandlerReference.html',1,'edash_packager::media::mp4']]],
   ['hevcdecoderconfiguration',['HEVCDecoderConfiguration',['../d6/d5d/classedash__packager_1_1media_1_1HEVCDecoderConfiguration.html',1,'edash_packager::media']]],
+  ['hlsnotifymuxerlistener',['HlsNotifyMuxerListener',['../d5/d89/classedash__packager_1_1media_1_1HlsNotifyMuxerListener.html',1,'edash_packager::media']]],
   ['httpkeyfetcher',['HttpKeyFetcher',['../d3/d3e/classedash__packager_1_1media_1_1HttpKeyFetcher.html',1,'edash_packager::media']]]
 ];
