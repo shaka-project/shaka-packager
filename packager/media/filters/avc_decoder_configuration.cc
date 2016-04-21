@@ -54,7 +54,7 @@ bool AVCDecoderConfiguration::ParseInternal() {
     RCHECK(reader.SkipBytes(size));
 
     Nalu nalu;
-    RCHECK(nalu.InitializeFromH264(nalu_data, size));
+    RCHECK(nalu.Initialize(Nalu::kH264, nalu_data, size));
     RCHECK(nalu.type() == Nalu::H264_SPS);
     AddNalu(nalu);
 
@@ -80,7 +80,7 @@ bool AVCDecoderConfiguration::ParseInternal() {
     RCHECK(reader.SkipBytes(size));
 
     Nalu nalu;
-    RCHECK(nalu.InitializeFromH264(nalu_data, size));
+    RCHECK(nalu.Initialize(Nalu::kH264, nalu_data, size));
     RCHECK(nalu.type() == Nalu::H264_PPS);
     AddNalu(nalu);
   }

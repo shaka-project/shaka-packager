@@ -20,7 +20,7 @@ TEST(NaluReaderTest, StartCodeSearch) {
       0x00, 0x00, 0x00, 0x01, 0x67, 0xbb, 0xcc, 0xdd,
   };
 
-  NaluReader reader(NaluReader::kH264, kIsAnnexbByteStream, kNaluData,
+  NaluReader reader(Nalu::kH264, kIsAnnexbByteStream, kNaluData,
                     arraysize(kNaluData));
 
   Nalu nalu;
@@ -54,7 +54,7 @@ TEST(NaluReaderTest, StartCodeSearchWithStartCodeInsideNalUnit) {
       0x00, 0x00, 0x01,
   };
 
-  NaluReader reader(NaluReader::kH264, kIsAnnexbByteStream, kNaluData,
+  NaluReader reader(Nalu::kH264, kIsAnnexbByteStream, kNaluData,
                     arraysize(kNaluData));
 
   Nalu nalu;
@@ -83,7 +83,7 @@ TEST(NaluReaderTest, OneByteNaluLength) {
       0x06, 0x67, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e,
   };
 
-  NaluReader reader(NaluReader::kH264, 1, kNaluData, arraysize(kNaluData));
+  NaluReader reader(Nalu::kH264, 1, kNaluData, arraysize(kNaluData));
 
   Nalu nalu;
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
@@ -111,7 +111,7 @@ TEST(NaluReaderTest, FourByteNaluLength) {
       0x00, 0x00, 0x00, 0x03, 0x67, 0x0a, 0x0b,
   };
 
-  NaluReader reader(NaluReader::kH264, 4, kNaluData, arraysize(kNaluData));
+  NaluReader reader(Nalu::kH264, 4, kNaluData, arraysize(kNaluData));
 
   Nalu nalu;
   ASSERT_EQ(NaluReader::kOk, reader.Advance(&nalu));
@@ -137,7 +137,7 @@ TEST(NaluReaderTest, ErrorForNotEnoughForNaluLength) {
       0x00,
   };
 
-  NaluReader reader(NaluReader::kH264, 3, kNaluData, arraysize(kNaluData));
+  NaluReader reader(Nalu::kH264, 3, kNaluData, arraysize(kNaluData));
 
   Nalu nalu;
   EXPECT_EQ(NaluReader::kInvalidStream, reader.Advance(&nalu));
@@ -149,7 +149,7 @@ TEST(NaluReaderTest, ErrorForNaluLengthExceedsRemainingData) {
       0xFF, 0x08, 0x00,
   };
 
-  NaluReader reader(NaluReader::kH264, 1, kNaluData, arraysize(kNaluData));
+  NaluReader reader(Nalu::kH264, 1, kNaluData, arraysize(kNaluData));
 
   Nalu nalu;
   EXPECT_EQ(NaluReader::kInvalidStream, reader.Advance(&nalu));
@@ -160,7 +160,7 @@ TEST(NaluReaderTest, ErrorForNaluLengthExceedsRemainingData) {
       0x04, 0x08, 0x00, 0x00,
   };
 
-  NaluReader reader2(NaluReader::kH264, 1, kNaluData2, arraysize(kNaluData2));
+  NaluReader reader2(Nalu::kH264, 1, kNaluData2, arraysize(kNaluData2));
   EXPECT_EQ(NaluReader::kInvalidStream, reader2.Advance(&nalu));
 }
 
@@ -170,7 +170,7 @@ TEST(NaluReaderTest, ErrorForForbiddenBitSet) {
       0x03, 0x80, 0x00, 0x00,
   };
 
-  NaluReader reader(NaluReader::kH264, 1, kNaluData, arraysize(kNaluData));
+  NaluReader reader(Nalu::kH264, 1, kNaluData, arraysize(kNaluData));
 
   Nalu nalu;
   EXPECT_EQ(NaluReader::kInvalidStream, reader.Advance(&nalu));
@@ -183,8 +183,8 @@ TEST(NaluReaderTest, ErrorForZeroSize) {
   };
 
   Nalu nalu;
-  EXPECT_FALSE(nalu.InitializeFromH264(kNaluData, 0));
-  EXPECT_FALSE(nalu.InitializeFromH265(kNaluData, 0));
+  EXPECT_FALSE(nalu.Initialize(Nalu::kH264, kNaluData, 0));
+  EXPECT_FALSE(nalu.Initialize(Nalu::kH265, kNaluData, 0));
 }
 
 }  // namespace media

@@ -182,8 +182,7 @@ bool EsParserH264::ParseInternal() {
   int access_unit_size = base::checked_cast<int, int64_t>(
       next_access_unit_pos_ - current_access_unit_pos_);
   DCHECK_LE(access_unit_size, size);
-  NaluReader reader(NaluReader::kH264, kIsAnnexbByteStream, es,
-                    access_unit_size);
+  NaluReader reader(Nalu::kH264, kIsAnnexbByteStream, es, access_unit_size);
 
   while (true) {
     Nalu nalu;

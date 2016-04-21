@@ -23,7 +23,7 @@ class H26xByteToUnitStreamConverter {
  public:
   static const size_t kUnitStreamNaluLengthSize = 4;
 
-  H26xByteToUnitStreamConverter(NaluReader::CodecType type);
+  H26xByteToUnitStreamConverter(Nalu::CodecType type);
   virtual ~H26xByteToUnitStreamConverter();
 
   /// Converts a whole byte stream encoded video frame to NAL unit stream
@@ -52,7 +52,7 @@ class H26xByteToUnitStreamConverter {
   // not be copied to the buffer.
   virtual bool ProcessNalu(const Nalu& nalu) = 0;
 
-  NaluReader::CodecType type_;
+  Nalu::CodecType type_;
 
   DISALLOW_COPY_AND_ASSIGN(H26xByteToUnitStreamConverter);
 };

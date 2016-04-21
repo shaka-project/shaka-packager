@@ -18,7 +18,7 @@ TEST(H264ParserTest, StreamFileParsing) {
   int num_nalus = 759;
 
   H264Parser parser;
-  NaluReader reader(NaluReader::kH264, kIsAnnexbByteStream, buffer.data(),
+  NaluReader reader(Nalu::kH264, kIsAnnexbByteStream, buffer.data(),
                     buffer.size());
 
   // Parse until the end of stream/unsupported stream/error in stream is found.
@@ -74,7 +74,7 @@ TEST(H264ParserTest, ExtractResolutionFromSpsData) {
   H264Parser parser;
   int sps_id = 0;
   Nalu nalu;
-  ASSERT_TRUE(nalu.InitializeFromH264(kSps, arraysize(kSps)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps, arraysize(kSps)));
   ASSERT_EQ(H264Parser::kOk, parser.ParseSps(nalu, &sps_id));
 
   uint32_t coded_width = 0;
@@ -99,7 +99,7 @@ TEST(H264ParserTest, ExtractResolutionFromSpsDataWithCropping) {
   H264Parser parser;
   int sps_id = 0;
   Nalu nalu;
-  ASSERT_TRUE(nalu.InitializeFromH264(kSps, arraysize(kSps)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH264, kSps, arraysize(kSps)));
   ASSERT_EQ(H264Parser::kOk, parser.ParseSps(nalu, &sps_id));
 
   uint32_t coded_width = 0;

@@ -31,6 +31,17 @@ Nalu::Nalu()
       type_(0),
       is_video_slice_(false) {}
 
+bool Nalu::Initialize(CodecType type,
+                      const uint8_t* data,
+                      uint64_t size) {
+  if (type == Nalu::kH264) {
+    return InitializeFromH264(data, size);
+  } else {
+    DCHECK_EQ(Nalu::kH265, type);
+    return InitializeFromH265(data, size);
+  }
+}
+
 // ITU-T H.264 (02/2014) 7.4.1 NAL unit semantics
 bool Nalu::InitializeFromH264(const uint8_t* data, uint64_t size) {
   DCHECK(data);
@@ -142,7 +153,7 @@ bool Nalu::InitializeFromH265(const uint8_t* data, uint64_t size) {
   return true;
 }
 
-NaluReader::NaluReader(CodecType type,
+NaluReader::NaluReader(Nalu::CodecType type,
                        uint8_t nal_length_size,
                        const uint8_t* stream,
                        uint64_t stream_size)
@@ -193,14 +204,8 @@ NaluReader::Result NaluReader::Advance(Nalu* nalu) {
   }
 
   const uint8_t* nalu_data = stream_ + nalu_length_size_or_start_code_size;
-  if (nalu_type_ == kH264) {
-    if (!nalu->InitializeFromH264(nalu_data, nalu_length))
-      return NaluReader::kInvalidStream;
-  } else {
-    DCHECK_EQ(kH265, nalu_type_);
-    if (!nalu->InitializeFromH265(nalu_data, nalu_length))
-      return NaluReader::kInvalidStream;
-  }
+  if (!nalu->Initialize(nalu_type_, nalu_data, nalu_length))
+    return NaluReader::kInvalidStream;
 
   // Move parser state to after this NALU, so next time Advance
   // is called, we will effectively be skipping it.
@@ -302,9 +307,7 @@ bool NaluReader::LocateNaluByStartCode(uint64_t* nalu_size,
     // If it is not a valid NAL unit, we will continue searching. This is to
     // handle the case where emulation prevention are not applied.
     Nalu nalu;
-    if (nalu_type_ == kH264
-            ? nalu.InitializeFromH264(nalu_data, max_nalu_data_size)
-            : nalu.InitializeFromH265(nalu_data, max_nalu_data_size)) {
+    if (nalu.Initialize(nalu_type_, nalu_data, max_nalu_data_size)) {
       nalu_data -= next_start_code_size;
       break;
     }

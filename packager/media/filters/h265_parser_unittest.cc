@@ -36,13 +36,13 @@ TEST(H265ParserTest, ParseSliceHeader) {
   int id;
   Nalu nalu;
   H265Parser parser;
-  ASSERT_TRUE(nalu.InitializeFromH265(kSpsData, arraysize(kSpsData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSpsData, arraysize(kSpsData)));
   ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &id));
-  ASSERT_TRUE(nalu.InitializeFromH265(kPpsData, arraysize(kPpsData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kPpsData, arraysize(kPpsData)));
   ASSERT_EQ(H265Parser::kOk, parser.ParsePps(nalu, &id));
 
   // Parse the slice header.
-  ASSERT_TRUE(nalu.InitializeFromH265(kSliceData, arraysize(kSliceData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSliceData, arraysize(kSliceData)));
   ASSERT_EQ(Nalu::H265_IDR_W_RADL, nalu.type());
 
   H265SliceHeader header;
@@ -63,13 +63,14 @@ TEST(H265ParserTest, ParseSliceHeader_NonIDR) {
   int id;
   Nalu nalu;
   H265Parser parser;
-  ASSERT_TRUE(nalu.InitializeFromH265(kSpsData, arraysize(kSpsData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSpsData, arraysize(kSpsData)));
   ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &id));
-  ASSERT_TRUE(nalu.InitializeFromH265(kPpsData, arraysize(kPpsData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kPpsData, arraysize(kPpsData)));
   ASSERT_EQ(H265Parser::kOk, parser.ParsePps(nalu, &id));
 
   // Parse the slice header.
-  ASSERT_TRUE(nalu.InitializeFromH265(kSliceData2, arraysize(kSliceData2)));
+  ASSERT_TRUE(
+      nalu.Initialize(Nalu::kH265, kSliceData2, arraysize(kSliceData2)));
   ASSERT_EQ(1 /* TRAIL_R */, nalu.type());
 
   H265SliceHeader header;
@@ -85,7 +86,7 @@ TEST(H265ParserTest, ParseSliceHeader_NonIDR) {
 
 TEST(H265ParserTest, ParseSps) {
   Nalu nalu;
-  ASSERT_TRUE(nalu.InitializeFromH265(kSpsData, arraysize(kSpsData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSpsData, arraysize(kSpsData)));
   ASSERT_EQ(Nalu::H265_SPS, nalu.type());
 
   int id = 12;
@@ -108,7 +109,7 @@ TEST(H265ParserTest, ParseSps) {
 
 TEST(H265ParserTest, ParsePps) {
   Nalu nalu;
-  ASSERT_TRUE(nalu.InitializeFromH265(kPpsData, arraysize(kPpsData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kPpsData, arraysize(kPpsData)));
   ASSERT_EQ(Nalu::H265_PPS, nalu.type());
 
   int id = 12;
@@ -129,7 +130,7 @@ TEST(H265ParserTest, ExtractResolutionFromSpsData) {
   H265Parser parser;
   int sps_id = 0;
   Nalu nalu;
-  ASSERT_TRUE(nalu.InitializeFromH265(kSpsData, arraysize(kSpsData)));
+  ASSERT_TRUE(nalu.Initialize(Nalu::kH265, kSpsData, arraysize(kSpsData)));
   ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &sps_id));
 
   uint32_t coded_width = 0;
@@ -155,7 +156,8 @@ TEST(H265ParserTest, ExtractResolutionFromSpsDataWithCrop) {
   H265Parser parser;
   int sps_id = 0;
   Nalu nalu;
-  ASSERT_TRUE(nalu.InitializeFromH265(kSpsCropData, arraysize(kSpsCropData)));
+  ASSERT_TRUE(
+      nalu.Initialize(Nalu::kH265, kSpsCropData, arraysize(kSpsCropData)));
   ASSERT_EQ(H265Parser::kOk, parser.ParseSps(nalu, &sps_id));
 
   uint32_t coded_width = 0;

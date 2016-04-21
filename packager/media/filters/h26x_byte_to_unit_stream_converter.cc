@@ -21,7 +21,7 @@ const size_t kStreamConversionOverhead = 100;
 }
 
 H26xByteToUnitStreamConverter::H26xByteToUnitStreamConverter(
-    NaluReader::CodecType type)
+    Nalu::CodecType type)
     : type_(type) {}
 H26xByteToUnitStreamConverter::~H26xByteToUnitStreamConverter() {}
 

@@ -155,8 +155,7 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStream(
   if (is_key_frame)
     buffer_writer.AppendVector(decoder_configuration_in_byte_stream_);
 
-  NaluReader nalu_reader(NaluReader::kH264, nalu_length_size_, sample,
-                         sample_size);
+  NaluReader nalu_reader(Nalu::kH264, nalu_length_size_, sample, sample_size);
   Nalu nalu;
   NaluReader::Result result = nalu_reader.Advance(&nalu);
 

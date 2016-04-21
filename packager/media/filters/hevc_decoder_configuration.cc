@@ -122,7 +122,7 @@ bool HEVCDecoderConfiguration::ParseInternal() {
       RCHECK(reader.SkipBytes(nalu_length));
 
       Nalu nalu;
-      RCHECK(nalu.InitializeFromH265(data() + nalu_offset, nalu_length));
+      RCHECK(nalu.Initialize(Nalu::kH265, data() + nalu_offset, nalu_length));
       RCHECK(nalu.type() == nal_unit_type);
       AddNalu(nalu);
     }

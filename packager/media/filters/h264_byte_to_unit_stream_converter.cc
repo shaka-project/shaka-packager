@@ -16,7 +16,7 @@ namespace edash_packager {
 namespace media {
 
 H264ByteToUnitStreamConverter::H264ByteToUnitStreamConverter()
-    : H26xByteToUnitStreamConverter(NaluReader::kH264) {}
+    : H26xByteToUnitStreamConverter(Nalu::kH264) {}
 H264ByteToUnitStreamConverter::~H264ByteToUnitStreamConverter() {}
 
 bool H264ByteToUnitStreamConverter::GetDecoderConfigurationRecord(

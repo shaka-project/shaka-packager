@@ -271,10 +271,10 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
         data += frame.frame_size;
       }
     } else {
-      const NaluReader::CodecType nalu_type =
+      const Nalu::CodecType nalu_type =
           (video_codec_ == kCodecHVC1 || video_codec_ == kCodecHEV1)
-              ? NaluReader::kH265
-              : NaluReader::kH264;
+              ? Nalu::kH265
+              : Nalu::kH264;
       NaluReader reader(nalu_type, nalu_length_size_, data,
                         sample->data_size());
 

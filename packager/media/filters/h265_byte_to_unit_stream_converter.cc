@@ -17,7 +17,7 @@ namespace edash_packager {
 namespace media {
 
 H265ByteToUnitStreamConverter::H265ByteToUnitStreamConverter()
-    : H26xByteToUnitStreamConverter(NaluReader::kH265) {}
+    : H26xByteToUnitStreamConverter(Nalu::kH265) {}
 H265ByteToUnitStreamConverter::~H265ByteToUnitStreamConverter() {}
 
 bool H265ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
@@ -33,7 +33,7 @@ bool H265ByteToUnitStreamConverter::GetDecoderConfigurationRecord(
   int id;
   Nalu nalu;
   H265Parser parser;
-  RCHECK(nalu.InitializeFromH265(last_sps_.data(), last_sps_.size()));
+  RCHECK(nalu.Initialize(Nalu::kH265, last_sps_.data(), last_sps_.size()));
   RCHECK(parser.ParseSps(nalu, &id) == H265Parser::kOk);
   const H265Sps* sps = parser.GetSps(id);
 
