@@ -27,12 +27,14 @@ VodMediaInfoDumpMuxerListener::~VodMediaInfoDumpMuxerListener() {}
 
 void VodMediaInfoDumpMuxerListener::OnEncryptionInfoReady(
     bool is_initial_encryption_info,
+    FourCC protection_scheme,
     const std::vector<uint8_t>& default_key_id,
     const std::vector<uint8_t>& iv,
     const std::vector<ProtectionSystemSpecificInfo>& key_system_info) {
   LOG_IF(WARNING, !is_initial_encryption_info)
       << "Updating (non initial) encryption info is not supported by "
          "this module.";
+  protection_scheme_ = protection_scheme;
   default_key_id_.assign(default_key_id.begin(), default_key_id.end());
   key_system_info_ = key_system_info;
   is_encrypted_ = true;
@@ -55,8 +57,8 @@ void VodMediaInfoDumpMuxerListener::OnMediaStart(
   }
 
   if (is_encrypted_) {
-    internal::SetContentProtectionFields(
-        default_key_id_, key_system_info_, media_info_.get());
+    internal::SetContentProtectionFields(protection_scheme_, default_key_id_,
+                                         key_system_info_, media_info_.get());
   }
 }
 

@@ -11,6 +11,7 @@
 
 #include "packager/base/files/file_util.h"
 #include "packager/base/files/file_path.h"
+#include "packager/media/base/fourccs.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/event/muxer_listener_test_helper.h"
@@ -83,7 +84,7 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
           kBogusDefaultKeyId + arraysize(kBogusDefaultKeyId));
       std::vector<uint8_t> bogus_iv(kBogusIv, kBogusIv + arraysize(kBogusIv));
 
-      listener_->OnEncryptionInfoReady(kInitialEncryptionInfo,
+      listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cenc,
                                        bogus_default_key_id, bogus_iv,
                                        GetDefaultKeySystemInfo());
     }
@@ -189,6 +190,7 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, EncryptedStream_Normal) {
       "    pssh: '" + std::string(kExpectedDefaultPsshBox) + "'\n"
       "  }\n"
       "  default_key_id: '_default_key_id_'\n"
+      "  protection_scheme: 'cenc'\n"
       "}\n";
 
   ASSERT_NO_FATAL_FAILURE(ExpectTempFileToEqual(kExpectedProtobufOutput));

@@ -26,6 +26,7 @@ HlsNotifyMuxerListener::~HlsNotifyMuxerListener() {}
 
 void HlsNotifyMuxerListener::OnEncryptionInfoReady(
     bool is_initial_encryption_info,
+    FourCC protection_scheme,
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& iv,
     const std::vector<ProtectionSystemSpecificInfo>& key_system_infos) {

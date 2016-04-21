@@ -45,12 +45,15 @@ bool SetVodInformation(bool has_init_range,
                        uint64_t file_size,
                        MediaInfo* media_info);
 
+/// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',
+///        'cbc1', 'cbcs'.
 /// @param default_key_id is the key ID for this media in hex (i.e. non-human
 ///        readable, typically 16 bytes.)
 /// @param key_system_info the key-system specific info for the media.
 /// @param media_info is where the content protection information is stored and
 ///        cannot be null.
 void SetContentProtectionFields(
+    FourCC protection_scheme,
     const std::string& default_key_id,
     const std::vector<ProtectionSystemSpecificInfo>& key_system_info,
     MediaInfo* media_info);

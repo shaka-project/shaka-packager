@@ -118,10 +118,9 @@ Status Encryptor::CreateEncryptor(MuxerListener* muxer_listener,
 
   if (muxer_listener) {
     const bool kInitialEncryptionInfo = true;
-    muxer_listener->OnEncryptionInfoReady(kInitialEncryptionInfo,
-                                          encryption_key->key_id,
-                                          encryptor->iv(),
-                                          encryption_key->key_system_info);
+    muxer_listener->OnEncryptionInfoReady(
+        kInitialEncryptionInfo, FOURCC_cenc, encryption_key->key_id,
+        encryptor->iv(), encryption_key->key_system_info);
   }
 
   key_ = encryption_key.Pass();

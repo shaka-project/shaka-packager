@@ -215,7 +215,8 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
                                    local_protection_scheme, &description);
       if (muxer_listener_) {
         muxer_listener_->OnEncryptionInfoReady(
-            kInitialEncryptionInfo, encryption_key.key_id, encryption_key.iv,
+            kInitialEncryptionInfo, local_protection_scheme,
+            encryption_key.key_id, encryption_key.iv,
             encryption_key.key_system_info);
       }
 
@@ -251,10 +252,10 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
       }
 
       if (muxer_listener_) {
-        muxer_listener_->OnEncryptionInfoReady(kInitialEncryptionInfo,
-                                               encryption_key->key_id,
-                                               encryption_key->iv,
-                                               encryption_key->key_system_info);
+        muxer_listener_->OnEncryptionInfoReady(
+            kInitialEncryptionInfo, local_protection_scheme,
+            encryption_key->key_id, encryption_key->iv,
+            encryption_key->key_system_info);
       }
     }
 

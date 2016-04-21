@@ -158,6 +158,7 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
   const std::string kExpectedMediaInfo =
       std::string(kExpectedDefaultMediaInfo) +
       "protected_content {\n"
+      "  protection_scheme: 'cenc'\n"
       "  content_protection_entry {\n"
       "    uuid: '00010203-0405-0607-0809-0a0b0c0d0e0f'\n"
       "    pssh: '" + std::string(kExpectedDefaultPsshBox) + "'\n"
@@ -168,7 +169,8 @@ TEST_F(MpdNotifyMuxerListenerTest, VodEncryptedContent) {
   EXPECT_CALL(*notifier_, NotifyNewContainer(_, _)).Times(0);
 
   std::vector<uint8_t> iv(kBogusIv, kBogusIv + arraysize(kBogusIv));
-  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, default_key_id, iv,
+  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cenc,
+                                   default_key_id, iv,
                                    GetDefaultKeySystemInfo());
 
   listener_->OnMediaStart(muxer_options, *video_stream_info,
@@ -296,6 +298,7 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
       "    uuid: '00010203-0405-0607-0809-0a0b0c0d0e0f'\n"
       "    pssh: \"" + std::string(kExpectedDefaultPsshBox) + "\"\n"
       "  }\n"
+      "  protection_scheme: 'cbcs'\n"
       "}\n";
 
   const uint64_t kStartTime1 = 0u;
@@ -320,7 +323,8 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveNoKeyRotation) {
   EXPECT_CALL(*notifier_, Flush());
 
   std::vector<uint8_t> iv(kBogusIv, kBogusIv + arraysize(kBogusIv));
-  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, default_key_id, iv,
+  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbcs,
+                                   default_key_id, iv,
                                    GetDefaultKeySystemInfo());
   listener_->OnMediaStart(muxer_options, *video_stream_info,
                           kDefaultReferenceTimeScale,
@@ -359,6 +363,7 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
       "container_type: CONTAINER_MP4\n"
       "protected_content {\n"
       "  default_key_id: \"defaultkeyid\"\n"
+      "  protection_scheme: 'cbc1'\n"
       "}\n";
 
   const uint64_t kStartTime1 = 0u;
@@ -383,12 +388,13 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
   EXPECT_CALL(*notifier_, Flush());
 
   std::vector<uint8_t> iv(kBogusIv, kBogusIv + arraysize(kBogusIv));
-  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, default_key_id, iv,
+  listener_->OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbc1,
+                                   default_key_id, iv,
                                    std::vector<ProtectionSystemSpecificInfo>());
   listener_->OnMediaStart(muxer_options, *video_stream_info,
                           kDefaultReferenceTimeScale,
                           MuxerListener::kContainerMp4);
-  listener_->OnEncryptionInfoReady(kNonInitialEncryptionInfo,
+  listener_->OnEncryptionInfoReady(kNonInitialEncryptionInfo, FOURCC_cbc1,
                                    std::vector<uint8_t>(), iv,
                                    GetDefaultKeySystemInfo());
   listener_->OnNewSegment("", kStartTime1, kDuration1, kSegmentFileSize1);

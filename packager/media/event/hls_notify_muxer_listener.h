@@ -32,6 +32,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
   /// @name MuxerListener implementation overrides.
   /// @{
   void OnEncryptionInfoReady(bool is_initial_encryption_info,
+                             FourCC protection_scheme,
                              const std::vector<uint8_t>& key_id,
                              const std::vector<uint8_t>& iv,
                              const std::vector<ProtectionSystemSpecificInfo>&

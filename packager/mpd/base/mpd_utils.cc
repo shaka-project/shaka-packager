@@ -288,7 +288,7 @@ void AddContentProtectionElementsHelperTemplated(
   if (is_mp4_container) {
     ContentProtectionElement mp4_content_protection;
     mp4_content_protection.scheme_id_uri = kEncryptedMp4Scheme;
-    mp4_content_protection.value = kEncryptedMp4Value;
+    mp4_content_protection.value = protected_content.protection_scheme();
     if (!key_id_uuid_format.empty()) {
       mp4_content_protection.additional_attributes["cenc:default_KID"] =
           key_id_uuid_format;

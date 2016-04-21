@@ -30,17 +30,20 @@ MpdNotifyMuxerListener::~MpdNotifyMuxerListener() {}
 
 void MpdNotifyMuxerListener::OnEncryptionInfoReady(
     bool is_initial_encryption_info,
+    FourCC protection_scheme,
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& iv,
     const std::vector<ProtectionSystemSpecificInfo>& key_system_info) {
   if (is_initial_encryption_info) {
     LOG_IF(WARNING, is_encrypted_)
         << "Updating initial encryption information.";
+    protection_scheme_ = protection_scheme;
     default_key_id_.assign(key_id.begin(), key_id.end());
     key_system_info_ = key_system_info;
     is_encrypted_ = true;
     return;
   }
+  DCHECK_EQ(protection_scheme, protection_scheme_);
 
   for (const ProtectionSystemSpecificInfo& info : key_system_info) {
     std::string drm_uuid = internal::CreateUUIDString(info.system_id());
@@ -67,8 +70,8 @@ void MpdNotifyMuxerListener::OnMediaStart(
   }
 
   if (is_encrypted_) {
-    internal::SetContentProtectionFields(default_key_id_, key_system_info_,
-                                         media_info.get());
+    internal::SetContentProtectionFields(protection_scheme_, default_key_id_,
+                                         key_system_info_, media_info.get());
   }
 
   if (mpd_notifier_->dash_profile() == kLiveProfile) {

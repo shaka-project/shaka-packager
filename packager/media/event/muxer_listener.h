@@ -14,6 +14,8 @@
 #include <string>
 #include <vector>
 
+#include "packager/media/base/fourccs.h"
+
 namespace edash_packager {
 namespace media {
 
@@ -48,6 +50,8 @@ class MuxerListener {
   /// @param is_initial_encryption_info is true if this is the first encryption
   ///        info for the media. In general, this flag should always be true for
   ///        non-key-rotated media and should be called only once.
+  /// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',
+  ///        'cbc1', 'cbcs'.
   /// @param key_id is the key ID for the media.  The format should be a vector
   ///        of uint8_t, i.e. not (necessarily) human readable hex string.
   /// @param iv is the initialization vector. For most cases this should be 16
@@ -55,6 +59,7 @@ class MuxerListener {
   ///        implementation.
   virtual void OnEncryptionInfoReady(
       bool is_initial_encryption_info,
+      FourCC protection_scheme,
       const std::vector<uint8_t>& key_id,
       const std::vector<uint8_t>& iv,
       const std::vector<ProtectionSystemSpecificInfo>& key_system_info) = 0;

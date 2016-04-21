@@ -59,7 +59,7 @@ class Segmenter {
   ///        pixels per frame than max_sd_pixels, it is HD, SD otherwise.
   /// @param clear_time specifies clear lead duration in seconds.
   /// @param crypto_period_duration specifies crypto period duration in seconds.
-  /// @param protection_scheme specifies the protection scheme: 'senc', 'sens',
+  /// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',
   ///        'cbc1', 'cbcs'.
   /// @return OK on success, an error status otherwise.
   Status Initialize(const std::vector<MediaStream*>& streams,

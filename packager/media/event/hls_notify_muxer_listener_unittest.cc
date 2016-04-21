@@ -95,8 +95,8 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReady) {
   EXPECT_CALL(mock_notifier_,
               NotifyEncryptionUpdate(_, key_id, system_id, iv, pssh_data))
       .WillOnce(Return(true));
-  listener_.OnEncryptionInfoReady(kInitialEncryptionInfo, key_id, iv,
-                                  key_system_infos);
+  listener_.OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbcs, key_id,
+                                  iv, key_system_infos);
 }
 
 TEST_F(HlsNotifyMuxerListenerTest, OnMediaStart) {

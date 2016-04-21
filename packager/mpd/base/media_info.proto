@@ -83,6 +83,8 @@ message MediaInfo {
     // The default key ID for the encrypted media.
     optional bytes default_key_id = 1;
     repeated ContentProtectionEntry content_protection_entry = 2;
+    // Specifies the protection scheme: 'cenc', 'cens', 'cbc1', 'cbcs'.
+    optional string protection_scheme = 3 [default = 'cenc'];
   }
 
   // TODO(rkuroiwa): Remove this. <ContentProtection> element that must be added
