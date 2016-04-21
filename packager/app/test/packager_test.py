@@ -66,8 +66,8 @@ class PackagerAppTest(unittest.TestCase):
                             ' sampling_frequency: 44100\n'
                             ' language: und\n')
     self.assertIn(expected_stream_info, stream_info,
-                  '\nExpecting: \n %s\n\nBut seeing: \n%s' % (
-                      expected_stream_info, stream_info))
+                  '\nExpecting: \n %s\n\nBut seeing: \n%s' %
+                  (expected_stream_info, stream_info))
 
   def testPackageFirstStream(self):
     self.packager.Package(self._GetStreams(['0']), self._GetFlags())
@@ -76,8 +76,7 @@ class PackagerAppTest(unittest.TestCase):
 
   def testPackageText(self):
     self.packager.Package(
-        self._GetStreams(['text'],
-                         test_files=['subtitle-english.vtt']),
+        self._GetStreams(['text'], test_files=['subtitle-english.vtt']),
         self._GetFlags())
     self._DiffGold(self.output[0], 'subtitle-english-golden.vtt')
     self._DiffGold(self.mpd_output, 'subtitle-english-vtt-golden.mpd')
@@ -135,6 +134,8 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
   def testPackageWebmWithEncryption(self):
     self.packager.Package(
@@ -144,14 +145,16 @@ class PackagerAppTest(unittest.TestCase):
         self._GetFlags(encryption=True))
     self._DiffGold(self.output[0], 'bear-640x360-vp8-cenc-golden.webm')
     self._DiffGold(self.mpd_output, 'bear-640x360-vp8-cenc-webm-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-640x360-vp8-golden.webm')
 
   def testPackageHevcWithEncryption(self):
     self.packager.Package(
         self._GetStreams(['video'],
                          test_files=['bear-640x360-hevc.mp4']),
         self._GetFlags(encryption=True))
-    self._DiffGold(self.output[0], 'bear-640x360-hevc-v-cenc-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-640x360-hevc-v-cenc-golden.mpd')
+    self._DiffGold(self.output[0], 'bear-640x360-hevc-cenc-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-hevc-cenc-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-640x360-hevc-golden.mp4')
 
   def testPackageVp8Mp4WithEncryption(self):
     self.packager.Package(
@@ -161,6 +164,7 @@ class PackagerAppTest(unittest.TestCase):
         self._GetFlags(encryption=True))
     self._DiffGold(self.output[0], 'bear-640x360-vp8-cenc-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-vp8-cenc-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-640x360-vp8-golden.mp4')
 
   def testPackageVp9Mp4WithEncryption(self):
     self.packager.Package(
@@ -170,12 +174,12 @@ class PackagerAppTest(unittest.TestCase):
         self._GetFlags(encryption=True))
     self._DiffGold(self.output[0], 'bear-320x240-vp9-cenc-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-320x240-vp9-cenc-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-640x360-vp9-golden.mp4')
 
   def testPackageWithEncryptionAndRandomIv(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video']),
-        self._GetFlags(encryption=True,
-                       random_iv=True))
+        self._GetFlags(encryption=True, random_iv=True))
     self._AssertStreamInfo(self.output[0], 'is_encrypted: true')
     self._AssertStreamInfo(self.output[1], 'is_encrypted: true')
     # The outputs are encrypted with random iv, so they are not the same as
@@ -185,12 +189,13 @@ class PackagerAppTest(unittest.TestCase):
     self.assertFalse(self._CompareWithGold(self.output[1],
                                            'bear-640x360-v-cenc-golden.mp4'))
     self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
   def testPackageWithEncryptionAndRealClock(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video']),
-        self._GetFlags(encryption=True,
-                       use_fake_clock=False))
+        self._GetFlags(encryption=True, use_fake_clock=False))
     self._AssertStreamInfo(self.output[0], 'is_encrypted: true')
     self._AssertStreamInfo(self.output[1], 'is_encrypted: true')
     # The outputs are generated with real clock, so they are not the same as
@@ -200,12 +205,13 @@ class PackagerAppTest(unittest.TestCase):
     self.assertFalse(self._CompareWithGold(self.output[1],
                                            'bear-640x360-v-cenc-golden.mp4'))
     self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
   def testPackageWithEncryptionAndDashIfIop(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video']),
-        self._GetFlags(encryption=True,
-                       dash_if_iop=True))
+        self._GetFlags(encryption=True, dash_if_iop=True))
     self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-av-cenc-iop-golden.mpd')
@@ -213,8 +219,7 @@ class PackagerAppTest(unittest.TestCase):
   def testPackageWithEncryptionAndOutputMediaInfo(self):
     self.packager.Package(
         self._GetStreams(['audio', 'video']),
-        self._GetFlags(encryption=True,
-                       output_media_info=True))
+        self._GetFlags(encryption=True, output_media_info=True))
     self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-cenc-golden.mp4')
     self._DiffMediaInfoGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
@@ -223,8 +228,7 @@ class PackagerAppTest(unittest.TestCase):
   def testPackageWithLiveProfile(self):
     self.packager.Package(
         self._GetStreams(
-            ['audio', 'video'],
-            live=True),
+            ['audio', 'video'], live=True),
         self._GetFlags(live=True))
     self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-golden')
     self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-golden')
@@ -233,10 +237,8 @@ class PackagerAppTest(unittest.TestCase):
   def testPackageWithLiveProfileAndEncryption(self):
     self.packager.Package(
         self._GetStreams(
-            ['audio', 'video'],
-            live=True),
-        self._GetFlags(encryption=True,
-                       live=True))
+            ['audio', 'video'], live=True),
+        self._GetFlags(encryption=True, live=True))
     self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-cenc-golden')
     self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-cenc-golden')
     self._DiffLiveMpdGold(self.mpd_output,
@@ -245,11 +247,9 @@ class PackagerAppTest(unittest.TestCase):
   def testPackageWithLiveProfileAndEncryptionAndDashIfIop(self):
     self.packager.Package(
         self._GetStreams(
-            ['audio', 'video'],
-            live=True),
+            ['audio', 'video'], live=True),
         self._GetFlags(encryption=True,
-                       live=True,
-                       dash_if_iop=True))
+                       live=True, dash_if_iop=True))
     self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-cenc-golden')
     self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-cenc-golden')
     self._DiffLiveMpdGold(self.mpd_output,
@@ -263,8 +263,7 @@ class PackagerAppTest(unittest.TestCase):
             test_files=['bear-1280x720.mp4', 'bear-640x360.mp4',
                         'bear-320x180.mp4']),
         self._GetFlags(encryption=True,
-                       live=True,
-                       dash_if_iop=True))
+                       live=True, dash_if_iop=True))
     self._DiffLiveGold(self.output[2], 'bear-640x360-a-live-cenc-golden')
     self._DiffLiveGold(self.output[3], 'bear-640x360-v-live-cenc-golden')
     # Mpd cannot be validated right now since we don't generate determinstic
@@ -274,8 +273,7 @@ class PackagerAppTest(unittest.TestCase):
   def testPackageWithLiveProfileAndKeyRotation(self):
     self.packager.Package(
         self._GetStreams(
-            ['audio', 'video'],
-            live=True),
+            ['audio', 'video'], live=True),
         self._GetFlags(encryption=True,
                        key_rotation=True,
                        live=True))
@@ -289,8 +287,7 @@ class PackagerAppTest(unittest.TestCase):
   def testPackageWithLiveProfileAndKeyRotationAndDashIfIop(self):
     self.packager.Package(
         self._GetStreams(
-            ['audio', 'video'],
-            live=True),
+            ['audio', 'video'], live=True),
         self._GetFlags(encryption=True,
                        key_rotation=True,
                        live=True,
@@ -371,6 +368,7 @@ class PackagerAppTest(unittest.TestCase):
 
   def _GetFlags(self,
                 encryption=False,
+                decryption=False,
                 random_iv=False,
                 widevine_encryption=False,
                 key_rotation=False,
@@ -392,10 +390,16 @@ class PackagerAppTest(unittest.TestCase):
                   '31323334353637383930313233343536')  # Data
       flags += ['--enable_fixed_key_encryption',
                 '--key_id=31323334353637383930313233343536',
-                '--key=32333435363738393021323334353637',
-                '--pssh=' + pssh_box, '--clear_lead=1']
+                '--key=32333435363738393021323334353637', '--pssh=' + pssh_box,
+                '--clear_lead=1']
       if not random_iv:
         flags.append('--iv=3334353637383930')
+
+    if decryption:
+      flags += ['--enable_fixed_key_decryption',
+                '--key_id=31323334353637383930313233343536',
+                '--key=32333435363738393021323334353637']
+
     if key_rotation:
       flags.append('--crypto_period_duration=1')
 
@@ -488,6 +492,15 @@ class PackagerAppTest(unittest.TestCase):
     stream_info = self.packager.DumpStreamInfo(stream)
     self.assertIn('Found 1 stream(s).', stream_info)
     self.assertIn(info, stream_info)
+
+  def _VerifyDecryption(self, test_encrypted_file, golden_clear_file):
+    output_extension = os.path.splitext(golden_clear_file)[1][1:]
+    self.packager.Package(
+        self._GetStreams(['0'],
+                         output_format=output_extension,
+                         test_files=[test_encrypted_file]),
+        self._GetFlags(decryption=True))
+    self._DiffGold(self.output[-1], golden_clear_file)
 
 
 if __name__ == '__main__':
