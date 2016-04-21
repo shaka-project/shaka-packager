@@ -93,8 +93,10 @@ EncryptingFragmenter::EncryptingFragmenter(
       header_parser_.reset(new H265VideoSliceHeaderParser);
       break;
     default:
-      LOG(WARNING) << "Unknown video codec '" << video_codec_
-                   << "', whole subsamples will be encrypted.";
+      if (nalu_length_size_ > 0) {
+        LOG(WARNING) << "Unknown video codec '" << video_codec_
+                     << "', whole subsamples will be encrypted.";
+      }
   }
 }
 
