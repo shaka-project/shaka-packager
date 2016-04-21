@@ -244,44 +244,43 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  <span class="keywordflow">if</span> (is_key_frame)</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    buffer_writer.AppendVector(decoder_configuration_in_byte_stream_);</div>
 <div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  <a class="code" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html">NaluReader</a> nalu_reader(NaluReader::kH264, nalu_length_size_, sample,</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;                         sample_size);</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  <a class="code" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a> nalu;</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  NaluReader::Result result = nalu_reader.<a class="code" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#af9382cd46f2f4d22636f7f5513e8df1d">Advance</a>(&amp;nalu);</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="keywordflow">while</span> (result == NaluReader::kOk) {</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    <span class="keywordflow">switch</span> (nalu.type()) {</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_AUD:</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;        FALLTHROUGH_INTENDED;</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_SPS:</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;        FALLTHROUGH_INTENDED;</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_PPS:</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;      <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        AppendNalu(nalu, nalu_length_size_, escape_data_, &amp;buffer_writer);</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    }</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;    result = nalu_reader.<a class="code" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#af9382cd46f2f4d22636f7f5513e8df1d">Advance</a>(&amp;nalu);</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  }</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  DCHECK_NE(result, NaluReader::kOk);</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  <span class="keywordflow">if</span> (result != NaluReader::kEOStream) {</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Stopped reading before end of stream.&quot;</span>;</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  }</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  buffer_writer.SwapBuffer(output);</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;}</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1NaluReader_html"><div class="ttname"><a href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html">edash_packager::media::NaluReader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00121">nalu_reader.h:121</a></div></div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  <a class="code" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html">NaluReader</a> nalu_reader(Nalu::kH264, nalu_length_size_, sample, sample_size);</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  <a class="code" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a> nalu;</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  NaluReader::Result result = nalu_reader.<a class="code" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#af9382cd46f2f4d22636f7f5513e8df1d">Advance</a>(&amp;nalu);</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  <span class="keywordflow">while</span> (result == NaluReader::kOk) {</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    <span class="keywordflow">switch</span> (nalu.type()) {</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_AUD:</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        FALLTHROUGH_INTENDED;</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_SPS:</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;        FALLTHROUGH_INTENDED;</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_PPS:</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;      <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;        buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;        AppendNalu(nalu, nalu_length_size_, escape_data_, &amp;buffer_writer);</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    }</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;    result = nalu_reader.<a class="code" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#af9382cd46f2f4d22636f7f5513e8df1d">Advance</a>(&amp;nalu);</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  }</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  DCHECK_NE(result, NaluReader::kOk);</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  <span class="keywordflow">if</span> (result != NaluReader::kEOStream) {</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Stopped reading before end of stream.&quot;</span>;</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  }</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  buffer_writer.SwapBuffer(output);</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;}</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1NaluReader_html"><div class="ttname"><a href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html">edash_packager::media::NaluReader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00126">nalu_reader.h:126</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1DecoderConfiguration_html_a86ff42b376de43256704b6eaaeabf9a7"><div class="ttname"><a href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a86ff42b376de43256704b6eaaeabf9a7">edash_packager::media::DecoderConfiguration::nalu_count</a></div><div class="ttdeci">size_t nalu_count() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d09/decoder__configuration_8h_source.html#l00040">decoder_configuration.h:40</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Nalu_html"><div class="ttname"><a href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">edash_packager::media::Nalu</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00026">nalu_reader.h:26</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1NalUnitToByteStreamConverter_html_a7f11850cfce911e3aec88974fc76105c"><div class="ttname"><a href="../../d4/dbe/classedash__packager_1_1media_1_1NalUnitToByteStreamConverter.html#a7f11850cfce911e3aec88974fc76105c">edash_packager::media::NalUnitToByteStreamConverter::Initialize</a></div><div class="ttdeci">virtual bool Initialize(const uint8_t *decoder_configuration_data, size_t decoder_configuration_data_size, bool escape_data)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00092">nal_unit_to_byte_stream_converter.cc:92</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1NaluReader_html_af9382cd46f2f4d22636f7f5513e8df1d"><div class="ttname"><a href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#af9382cd46f2f4d22636f7f5513e8df1d">edash_packager::media::NaluReader::Advance</a></div><div class="ttdeci">Result Advance(Nalu *nalu)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df5/nalu__reader_8cc_source.html#l00159">nalu_reader.cc:159</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1NaluReader_html_af9382cd46f2f4d22636f7f5513e8df1d"><div class="ttname"><a href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#af9382cd46f2f4d22636f7f5513e8df1d">edash_packager::media::NaluReader::Advance</a></div><div class="ttdeci">Result Advance(Nalu *nalu)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df5/nalu__reader_8cc_source.html#l00170">nalu_reader.cc:170</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1DecoderConfiguration_html_a7e8ebb71676d606bc8690c3ede399629"><div class="ttname"><a href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a7e8ebb71676d606bc8690c3ede399629">edash_packager::media::DecoderConfiguration::nalu</a></div><div class="ttdeci">const Nalu &amp; nalu(size_t i) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d09/decoder__configuration_8h_source.html#l00044">decoder_configuration.h:44</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1DecoderConfiguration_html_ad00b3a249d68e70c5f2375a0e4fb0428"><div class="ttname"><a href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#ad00b3a249d68e70c5f2375a0e4fb0428">edash_packager::media::DecoderConfiguration::nalu_length_size</a></div><div class="ttdeci">uint8_t nalu_length_size() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d09/decoder__configuration_8h_source.html#l00037">decoder_configuration.h:37</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1AVCDecoderConfiguration_html"><div class="ttname"><a href="../../d6/d49/classedash__packager_1_1media_1_1AVCDecoderConfiguration.html">edash_packager::media::AVCDecoderConfiguration</a></div><div class="ttdoc">Class for parsing AVC decoder configuration. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d98/avc__decoder__configuration_8h_source.html#l00021">avc_decoder_configuration.h:21</a></div></div>
@@ -291,7 +290,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 21 2016 19:13:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 21 2016 22:57:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

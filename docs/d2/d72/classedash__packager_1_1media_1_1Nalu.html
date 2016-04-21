@@ -152,15 +152,16 @@ Public Types</h2></td></tr>
 <br/>
  }</td></tr>
 <tr class="separator:af290f7a2b18ab31252705bb439d0fb03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af860c4388e21c42694ce65cc8fa7daf1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><b>CodecType</b> { <b>kH264</b>, 
+<b>kH265</b>
+ }</td></tr>
+<tr class="separator:af860c4388e21c42694ce65cc8fa7daf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a6c6b323f5a5bb91d394e4a532eb75aac"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6c6b323f5a5bb91d394e4a532eb75aac"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>InitializeFromH264</b> (const uint8_t *data, uint64_t size) WARN_UNUSED_RESULT</td></tr>
-<tr class="separator:a6c6b323f5a5bb91d394e4a532eb75aac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abaa7aafcc02c494511dcf7326856e304"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abaa7aafcc02c494511dcf7326856e304"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>InitializeFromH265</b> (const uint8_t *data, uint64_t size) WARN_UNUSED_RESULT</td></tr>
-<tr class="separator:abaa7aafcc02c494511dcf7326856e304"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04726caeb2a6bbe203ad94a57320369e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a04726caeb2a6bbe203ad94a57320369e"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>Initialize</b> (CodecType type, const uint8_t *data, uint64_t size) WARN_UNUSED_RESULT</td></tr>
+<tr class="separator:a04726caeb2a6bbe203ad94a57320369e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:added3e272e1a6b5842028e8af58db4df"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="added3e272e1a6b5842028e8af58db4df"></a>
 const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><b>data</b> () const </td></tr>
 <tr class="separator:added3e272e1a6b5842028e8af58db4df"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -197,7 +198,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_video_slice</b> ()
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 21 2016 19:13:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 21 2016 22:58:01 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

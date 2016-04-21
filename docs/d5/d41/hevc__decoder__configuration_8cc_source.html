@@ -211,7 +211,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      RCHECK(reader.SkipBytes(nalu_length));</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      Nalu <a class="code" href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a7e8ebb71676d606bc8690c3ede399629">nalu</a>;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;      RCHECK(nalu.InitializeFromH265(<a class="code" href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#ae2c11d7dc33c3f90535218797ca6b4d2">data</a>() + nalu_offset, nalu_length));</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;      RCHECK(nalu.Initialize(Nalu::kH265, <a class="code" href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#ae2c11d7dc33c3f90535218797ca6b4d2">data</a>() + nalu_offset, nalu_length));</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;      RCHECK(nalu.type() == nal_unit_type);</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;      <a class="code" href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a9e094293bce0ea72b2546088f6c250d8">AddNalu</a>(nalu);</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    }</div>
@@ -256,7 +256,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 21 2016 19:13:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 21 2016 22:57:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

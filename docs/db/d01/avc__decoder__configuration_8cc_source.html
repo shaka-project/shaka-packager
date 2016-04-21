@@ -143,7 +143,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    RCHECK(reader.SkipBytes(size));</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    Nalu <a class="code" href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a7e8ebb71676d606bc8690c3ede399629">nalu</a>;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    RCHECK(nalu.InitializeFromH264(nalu_data, size));</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    RCHECK(nalu.Initialize(Nalu::kH264, nalu_data, size));</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    RCHECK(nalu.type() == Nalu::H264_SPS);</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <a class="code" href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a9e094293bce0ea72b2546088f6c250d8">AddNalu</a>(nalu);</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
@@ -169,7 +169,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    RCHECK(reader.SkipBytes(size));</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    Nalu <a class="code" href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a7e8ebb71676d606bc8690c3ede399629">nalu</a>;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    RCHECK(nalu.InitializeFromH264(nalu_data, size));</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    RCHECK(nalu.Initialize(Nalu::kH264, nalu_data, size));</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    RCHECK(nalu.type() == Nalu::H264_PPS);</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <a class="code" href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a9e094293bce0ea72b2546088f6c250d8">AddNalu</a>(nalu);</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  }</div>
@@ -203,7 +203,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 21 2016 19:13:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 21 2016 22:57:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

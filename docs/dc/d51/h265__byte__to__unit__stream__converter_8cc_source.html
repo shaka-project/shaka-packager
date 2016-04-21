@@ -106,7 +106,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;H265ByteToUnitStreamConverter::H265ByteToUnitStreamConverter()</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    : H26xByteToUnitStreamConverter(NaluReader::kH265) {}</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    : H26xByteToUnitStreamConverter(Nalu::kH265) {}</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;H265ByteToUnitStreamConverter::~H265ByteToUnitStreamConverter() {}</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
 <div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="../../d8/d4d/classedash__packager_1_1media_1_1H265ByteToUnitStreamConverter.html#a5c946b1ccf1c07ceebe363cdca9f0927">   23</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/d4d/classedash__packager_1_1media_1_1H265ByteToUnitStreamConverter.html#a5c946b1ccf1c07ceebe363cdca9f0927">H265ByteToUnitStreamConverter::GetDecoderConfigurationRecord</a>(</div>
@@ -122,7 +122,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordtype">int</span> id;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <a class="code" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a> nalu;</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <a class="code" href="../../d6/dff/classedash__packager_1_1media_1_1H265Parser.html">H265Parser</a> parser;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  RCHECK(nalu.InitializeFromH265(last_sps_.data(), last_sps_.size()));</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  RCHECK(nalu.Initialize(Nalu::kH265, last_sps_.data(), last_sps_.size()));</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  RCHECK(parser.<a class="code" href="../../d6/dff/classedash__packager_1_1media_1_1H265Parser.html#adbf504a9c2ca024bab1bcf71e4e902b6">ParseSps</a>(nalu, &amp;<span class="keywordtype">id</span>) == H265Parser::kOk);</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keyword">const</span> <a class="code" href="../../dc/d96/structedash__packager_1_1media_1_1H265Sps.html">H265Sps</a>* sps = parser.<a class="code" href="../../d6/dff/classedash__packager_1_1media_1_1H265Parser.html#a931c6d60e6449f1d691a7ac4c92a0453">GetSps</a>(<span class="keywordtype">id</span>);</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
@@ -222,7 +222,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 21 2016 19:13:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 21 2016 22:57:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

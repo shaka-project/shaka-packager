@@ -360,10 +360,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        data += frame.frame_size;</div>
 <div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;      }</div>
 <div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;      <span class="keyword">const</span> NaluReader::CodecType nalu_type =</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;      <span class="keyword">const</span> Nalu::CodecType nalu_type =</div>
 <div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;          (video_codec_ == kCodecHVC1 || video_codec_ == kCodecHEV1)</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;              ? NaluReader::kH265</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;              : NaluReader::kH264;</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;              ? Nalu::kH265</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;              : Nalu::kH264;</div>
 <div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;      NaluReader reader(nalu_type, nalu_length_size_, data,</div>
 <div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;                        sample-&gt;data_size());</div>
 <div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;</div>
@@ -459,7 +459,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 21 2016 19:13:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 21 2016 22:58:00 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -271,220 +271,219 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  <span class="keywordtype">int</span> access_unit_size = base::checked_cast&lt;int, int64_t&gt;(</div>
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;      next_access_unit_pos_ - current_access_unit_pos_);</div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;  DCHECK_LE(access_unit_size, size);</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  NaluReader reader(NaluReader::kH264, kIsAnnexbByteStream, es,</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;                    access_unit_size);</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    Nalu nalu;</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <span class="keywordtype">bool</span> is_eos = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;    <span class="keywordflow">switch</span> (reader.Advance(&amp;nalu)) {</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;      <span class="keywordflow">case</span> NaluReader::kOk:</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;      <span class="keywordflow">case</span> NaluReader::kEOStream:</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        is_eos = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;      <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    }</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    <span class="keywordflow">if</span> (is_eos)</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;      <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;    <span class="keywordflow">switch</span> (nalu.type()) {</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_AUD: {</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Nalu: AUD&quot;</span>;</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;      }</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_SPS: {</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;        DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Nalu: SPS&quot;</span>;</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;        <span class="keywordtype">int</span> sps_id;</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;        <span class="keywordflow">if</span> (h264_parser_-&gt;ParseSps(nalu, &amp;sps_id) != H264Parser::kOk)</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;        decoder_config_check_pending_ = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;      }</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_PPS: {</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;        DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Nalu: PPS&quot;</span>;</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        <span class="keywordtype">int</span> pps_id;</div>
-<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;        <span class="keywordflow">if</span> (h264_parser_-&gt;ParsePps(nalu, &amp;pps_id) != H264Parser::kOk) {</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;          <span class="comment">// Allow PPS parsing to fail if waiting for SPS.</span></div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;          <span class="keywordflow">if</span> (last_video_decoder_config_)</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;          decoder_config_check_pending_ = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;        }</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;      }</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_IDRSlice:</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_NonIDRSlice: {</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;        is_key_frame = (nalu.type() == Nalu::H264_IDRSlice);</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;        DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Nalu: slice IDR=&quot;</span> &lt;&lt; is_key_frame;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;        H264SliceHeader shdr;</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;        <span class="keywordflow">if</span> (h264_parser_-&gt;ParseSliceHeader(nalu, &amp;shdr) != H264Parser::kOk) {</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;          <span class="comment">// Only accept an invalid SPS/PPS at the beginning when the stream</span></div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;          <span class="comment">// does not necessarily start with an SPS/PPS/IDR.</span></div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;          <span class="keywordflow">if</span> (last_video_decoder_config_)</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;          pps_id_for_access_unit = shdr.pic_parameter_set_id;</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;        }</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;      }</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;      <span class="keywordflow">default</span>: {</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;        DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Nalu: &quot;</span> &lt;&lt; nalu.type();</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;      }</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    }</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;  }</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  <span class="keywordflow">if</span> (waiting_for_key_frame_) {</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;    waiting_for_key_frame_ = !is_key_frame;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  }</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  <span class="keywordflow">if</span> (!waiting_for_key_frame_) {</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    <span class="comment">// Emit a frame and move the stream to the next AUD position.</span></div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    RCHECK(EmitFrame(current_access_unit_pos_, access_unit_size,</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;                     is_key_frame, pps_id_for_access_unit));</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;  }</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;  current_access_unit_pos_ = next_access_unit_pos_;</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;  es_queue_-&gt;Trim(current_access_unit_pos_);</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;}</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="keywordtype">bool</span> EsParserH264::EmitFrame(int64_t access_unit_pos,</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;                             <span class="keywordtype">int</span> access_unit_size,</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;                             <span class="keywordtype">bool</span> is_key_frame,</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;                             <span class="keywordtype">int</span> pps_id) {</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  <span class="comment">// Get the access unit timing info.</span></div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  TimingDesc current_timing_desc = {kNoTimestamp, kNoTimestamp};</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  <span class="keywordflow">while</span> (!timing_desc_list_.empty() &amp;&amp;</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;         timing_desc_list_.front().first &lt;= access_unit_pos) {</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    current_timing_desc = timing_desc_list_.front().second;</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;    timing_desc_list_.pop_front();</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  }</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  <span class="keywordflow">if</span> (current_timing_desc.pts == kNoTimestamp)</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  <span class="comment">// Emit a frame.</span></div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Emit frame: stream_pos=&quot;</span> &lt;&lt; current_access_unit_pos_</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; size=&quot;</span> &lt;&lt; access_unit_size;</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  <span class="keywordtype">int</span> es_size;</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  <span class="keyword">const</span> uint8_t* es;</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  es_queue_-&gt;PeekAt(current_access_unit_pos_, &amp;es, &amp;es_size);</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  CHECK_GE(es_size, access_unit_size);</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  <span class="comment">// Convert frame to unit stream format.</span></div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;  std::vector&lt;uint8_t&gt; converted_frame;</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  <span class="keywordflow">if</span> (!stream_converter_-&gt;ConvertByteStreamToNalUnitStream(</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;          es, access_unit_size, &amp;converted_frame)) {</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    DLOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failure to convert video frame to unit stream format.&quot;</span>;</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  }</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  <span class="keywordflow">if</span> (decoder_config_check_pending_) {</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    <span class="comment">// Update the video decoder configuration if needed.</span></div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    <span class="keyword">const</span> H264Pps* pps = h264_parser_-&gt;GetPps(pps_id);</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;    <span class="keywordflow">if</span> (!pps) {</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;      <span class="comment">// Only accept an invalid PPS at the beginning when the stream</span></div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;      <span class="comment">// does not necessarily start with an SPS/PPS/IDR.</span></div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;      <span class="comment">// In this case, the initial frames are conveyed to the upper layer with</span></div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;      <span class="comment">// an invalid VideoDecoderConfig and it&#39;s up to the upper layer</span></div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;      <span class="comment">// to process this kind of frame accordingly.</span></div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;      <span class="keywordflow">if</span> (last_video_decoder_config_)</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;      <span class="keyword">const</span> H264Sps* sps = h264_parser_-&gt;GetSps(pps-&gt;seq_parameter_set_id);</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;      <span class="keywordflow">if</span> (!sps)</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;      RCHECK(UpdateVideoDecoderConfig(sps));</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;      decoder_config_check_pending_ = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    }</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;  }</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;  <span class="comment">// Create the media sample, emitting always the previous sample after</span></div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  <span class="comment">// calculating its duration.</span></div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  scoped_refptr&lt;MediaSample&gt; media_sample = <a class="code" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html#ac65ec88fbe6d8b72c65b1ff3f68c5b02">MediaSample::CopyFrom</a>(</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;      converted_frame.data(), converted_frame.size(), is_key_frame);</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  media_sample-&gt;set_dts(current_timing_desc.dts);</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;  media_sample-&gt;set_pts(current_timing_desc.pts);</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;  <span class="keywordflow">if</span> (pending_sample_) {</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    DCHECK_GT(media_sample-&gt;dts(), pending_sample_-&gt;dts());</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    pending_sample_duration_ = media_sample-&gt;dts() - pending_sample_-&gt;dts();</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    pending_sample_-&gt;set_duration(pending_sample_duration_);</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    emit_sample_cb_.Run(pid(), pending_sample_);</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  }</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;  pending_sample_ = media_sample;</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;}</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;<span class="keywordtype">bool</span> EsParserH264::UpdateVideoDecoderConfig(<span class="keyword">const</span> H264Sps* sps) {</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  std::vector&lt;uint8_t&gt; decoder_config_record;</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;  <span class="keywordflow">if</span> (!stream_converter_-&gt;GetDecoderConfigurationRecord(</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;          &amp;decoder_config_record)) {</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    DLOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failure to construct an AVCDecoderConfigurationRecord&quot;</span>;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;  }</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;  <span class="keywordflow">if</span> (last_video_decoder_config_) {</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;    <span class="keywordflow">if</span> (last_video_decoder_config_-&gt;extra_data() != decoder_config_record) {</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;      <span class="comment">// Video configuration has changed. Issue warning.</span></div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;      <span class="comment">// TODO(tinskip): Check the nature of the configuration change. Only</span></div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;      <span class="comment">// minor configuration changes (such as frame ordering) can be handled</span></div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;      <span class="comment">// gracefully by decoders without notification. Major changes (such as</span></div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;      <span class="comment">// video resolution changes) should be treated as errors.</span></div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;      LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;H.264 decoder configuration has changed.&quot;</span>;</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;      last_video_decoder_config_-&gt;set_extra_data(decoder_config_record);</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;    }</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;  }</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;  uint32_t coded_width = 0;</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;  uint32_t coded_height = 0;</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;  uint32_t pixel_width = 0;</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;  uint32_t pixel_height = 0;</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;  <span class="keywordflow">if</span> (!ExtractResolutionFromSps(*sps, &amp;coded_width, &amp;coded_height, &amp;pixel_width,</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;                                &amp;pixel_height)) {</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to parse SPS.&quot;</span>;</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;  }</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;  last_video_decoder_config_ = scoped_refptr&lt;StreamInfo&gt;(</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;      <span class="keyword">new</span> VideoStreamInfo(</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;          pid(),</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;          kMpeg2Timescale,</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;          kInfiniteDuration,</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;          kCodecH264,</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;          <a class="code" href="../../d6/d49/classedash__packager_1_1media_1_1AVCDecoderConfiguration.html#ad03be6192998b36ef2364266e5604c19">AVCDecoderConfiguration::GetCodecString</a>(decoder_config_record[1],</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;                                                  decoder_config_record[2],</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;                                                  decoder_config_record[3]),</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;          std::string(),</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;          coded_width,</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;          coded_height,</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;          pixel_width,</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;          pixel_height,</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;          0,</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;          H264ByteToUnitStreamConverter::kUnitStreamNaluLengthSize,</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;          decoder_config_record.data(),</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;          decoder_config_record.size(),</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;          <span class="keyword">false</span>));</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Profile IDC: &quot;</span> &lt;&lt; sps-&gt;profile_idc;</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Level IDC: &quot;</span> &lt;&lt; sps-&gt;level_idc;</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;log2_max_frame_num_minus4: &quot;</span> &lt;&lt; sps-&gt;log2_max_frame_num_minus4;</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;  <span class="comment">// Video config notification.</span></div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;  new_stream_info_cb_.Run(last_video_decoder_config_);</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;</div>
-<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;}</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  NaluReader reader(Nalu::kH264, kIsAnnexbByteStream, es, access_unit_size);</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    Nalu nalu;</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    <span class="keywordtype">bool</span> is_eos = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;    <span class="keywordflow">switch</span> (reader.Advance(&amp;nalu)) {</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;      <span class="keywordflow">case</span> NaluReader::kOk:</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;      <span class="keywordflow">case</span> NaluReader::kEOStream:</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;        is_eos = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;      <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;    }</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;    <span class="keywordflow">if</span> (is_eos)</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;      <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    <span class="keywordflow">switch</span> (nalu.type()) {</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_AUD: {</div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;        DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Nalu: AUD&quot;</span>;</div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;      }</div>
+<div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_SPS: {</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;        DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Nalu: SPS&quot;</span>;</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;        <span class="keywordtype">int</span> sps_id;</div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;        <span class="keywordflow">if</span> (h264_parser_-&gt;ParseSps(nalu, &amp;sps_id) != H264Parser::kOk)</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;        decoder_config_check_pending_ = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;      }</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_PPS: {</div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;        DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Nalu: PPS&quot;</span>;</div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;        <span class="keywordtype">int</span> pps_id;</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;        <span class="keywordflow">if</span> (h264_parser_-&gt;ParsePps(nalu, &amp;pps_id) != H264Parser::kOk) {</div>
+<div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;          <span class="comment">// Allow PPS parsing to fail if waiting for SPS.</span></div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;          <span class="keywordflow">if</span> (last_video_decoder_config_)</div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;          decoder_config_check_pending_ = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;        }</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;      }</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_IDRSlice:</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_NonIDRSlice: {</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;        is_key_frame = (nalu.type() == Nalu::H264_IDRSlice);</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;        DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Nalu: slice IDR=&quot;</span> &lt;&lt; is_key_frame;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;        H264SliceHeader shdr;</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;        <span class="keywordflow">if</span> (h264_parser_-&gt;ParseSliceHeader(nalu, &amp;shdr) != H264Parser::kOk) {</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;          <span class="comment">// Only accept an invalid SPS/PPS at the beginning when the stream</span></div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;          <span class="comment">// does not necessarily start with an SPS/PPS/IDR.</span></div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;          <span class="keywordflow">if</span> (last_video_decoder_config_)</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;          pps_id_for_access_unit = shdr.pic_parameter_set_id;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;        }</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;      }</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;      <span class="keywordflow">default</span>: {</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;        DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Nalu: &quot;</span> &lt;&lt; nalu.type();</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;      }</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    }</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;  }</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  <span class="keywordflow">if</span> (waiting_for_key_frame_) {</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;    waiting_for_key_frame_ = !is_key_frame;</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  }</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  <span class="keywordflow">if</span> (!waiting_for_key_frame_) {</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;    <span class="comment">// Emit a frame and move the stream to the next AUD position.</span></div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;    RCHECK(EmitFrame(current_access_unit_pos_, access_unit_size,</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;                     is_key_frame, pps_id_for_access_unit));</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  }</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;  current_access_unit_pos_ = next_access_unit_pos_;</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;  es_queue_-&gt;Trim(current_access_unit_pos_);</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;}</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;<span class="keywordtype">bool</span> EsParserH264::EmitFrame(int64_t access_unit_pos,</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;                             <span class="keywordtype">int</span> access_unit_size,</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;                             <span class="keywordtype">bool</span> is_key_frame,</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;                             <span class="keywordtype">int</span> pps_id) {</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  <span class="comment">// Get the access unit timing info.</span></div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  TimingDesc current_timing_desc = {kNoTimestamp, kNoTimestamp};</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;  <span class="keywordflow">while</span> (!timing_desc_list_.empty() &amp;&amp;</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;         timing_desc_list_.front().first &lt;= access_unit_pos) {</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;    current_timing_desc = timing_desc_list_.front().second;</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;    timing_desc_list_.pop_front();</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  }</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  <span class="keywordflow">if</span> (current_timing_desc.pts == kNoTimestamp)</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  <span class="comment">// Emit a frame.</span></div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Emit frame: stream_pos=&quot;</span> &lt;&lt; current_access_unit_pos_</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; size=&quot;</span> &lt;&lt; access_unit_size;</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;  <span class="keywordtype">int</span> es_size;</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;  <span class="keyword">const</span> uint8_t* es;</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;  es_queue_-&gt;PeekAt(current_access_unit_pos_, &amp;es, &amp;es_size);</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  CHECK_GE(es_size, access_unit_size);</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;  <span class="comment">// Convert frame to unit stream format.</span></div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  std::vector&lt;uint8_t&gt; converted_frame;</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;  <span class="keywordflow">if</span> (!stream_converter_-&gt;ConvertByteStreamToNalUnitStream(</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;          es, access_unit_size, &amp;converted_frame)) {</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;    DLOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failure to convert video frame to unit stream format.&quot;</span>;</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  }</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;  <span class="keywordflow">if</span> (decoder_config_check_pending_) {</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    <span class="comment">// Update the video decoder configuration if needed.</span></div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    <span class="keyword">const</span> H264Pps* pps = h264_parser_-&gt;GetPps(pps_id);</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;    <span class="keywordflow">if</span> (!pps) {</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;      <span class="comment">// Only accept an invalid PPS at the beginning when the stream</span></div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;      <span class="comment">// does not necessarily start with an SPS/PPS/IDR.</span></div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;      <span class="comment">// In this case, the initial frames are conveyed to the upper layer with</span></div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;      <span class="comment">// an invalid VideoDecoderConfig and it&#39;s up to the upper layer</span></div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;      <span class="comment">// to process this kind of frame accordingly.</span></div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;      <span class="keywordflow">if</span> (last_video_decoder_config_)</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;      <span class="keyword">const</span> H264Sps* sps = h264_parser_-&gt;GetSps(pps-&gt;seq_parameter_set_id);</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;      <span class="keywordflow">if</span> (!sps)</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;      RCHECK(UpdateVideoDecoderConfig(sps));</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;      decoder_config_check_pending_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;    }</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  }</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;  <span class="comment">// Create the media sample, emitting always the previous sample after</span></div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;  <span class="comment">// calculating its duration.</span></div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  scoped_refptr&lt;MediaSample&gt; media_sample = <a class="code" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html#ac65ec88fbe6d8b72c65b1ff3f68c5b02">MediaSample::CopyFrom</a>(</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;      converted_frame.data(), converted_frame.size(), is_key_frame);</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  media_sample-&gt;set_dts(current_timing_desc.dts);</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;  media_sample-&gt;set_pts(current_timing_desc.pts);</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;  <span class="keywordflow">if</span> (pending_sample_) {</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;    DCHECK_GT(media_sample-&gt;dts(), pending_sample_-&gt;dts());</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;    pending_sample_duration_ = media_sample-&gt;dts() - pending_sample_-&gt;dts();</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;    pending_sample_-&gt;set_duration(pending_sample_duration_);</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;    emit_sample_cb_.Run(pid(), pending_sample_);</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;  }</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;  pending_sample_ = media_sample;</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;}</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;<span class="keywordtype">bool</span> EsParserH264::UpdateVideoDecoderConfig(<span class="keyword">const</span> H264Sps* sps) {</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;  std::vector&lt;uint8_t&gt; decoder_config_record;</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  <span class="keywordflow">if</span> (!stream_converter_-&gt;GetDecoderConfigurationRecord(</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;          &amp;decoder_config_record)) {</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    DLOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failure to construct an AVCDecoderConfigurationRecord&quot;</span>;</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;  }</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  <span class="keywordflow">if</span> (last_video_decoder_config_) {</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;    <span class="keywordflow">if</span> (last_video_decoder_config_-&gt;extra_data() != decoder_config_record) {</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;      <span class="comment">// Video configuration has changed. Issue warning.</span></div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;      <span class="comment">// TODO(tinskip): Check the nature of the configuration change. Only</span></div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;      <span class="comment">// minor configuration changes (such as frame ordering) can be handled</span></div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;      <span class="comment">// gracefully by decoders without notification. Major changes (such as</span></div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;      <span class="comment">// video resolution changes) should be treated as errors.</span></div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;      LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;H.264 decoder configuration has changed.&quot;</span>;</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;      last_video_decoder_config_-&gt;set_extra_data(decoder_config_record);</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;    }</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;  }</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;  uint32_t coded_width = 0;</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;  uint32_t coded_height = 0;</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;  uint32_t pixel_width = 0;</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;  uint32_t pixel_height = 0;</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;  <span class="keywordflow">if</span> (!ExtractResolutionFromSps(*sps, &amp;coded_width, &amp;coded_height, &amp;pixel_width,</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;                                &amp;pixel_height)) {</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to parse SPS.&quot;</span>;</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;  }</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;  last_video_decoder_config_ = scoped_refptr&lt;StreamInfo&gt;(</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;      <span class="keyword">new</span> VideoStreamInfo(</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;          pid(),</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;          kMpeg2Timescale,</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;          kInfiniteDuration,</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;          kCodecH264,</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;          <a class="code" href="../../d6/d49/classedash__packager_1_1media_1_1AVCDecoderConfiguration.html#ad03be6192998b36ef2364266e5604c19">AVCDecoderConfiguration::GetCodecString</a>(decoder_config_record[1],</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;                                                  decoder_config_record[2],</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;                                                  decoder_config_record[3]),</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;          std::string(),</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;          coded_width,</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;          coded_height,</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;          pixel_width,</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;          pixel_height,</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;          0,</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;          H264ByteToUnitStreamConverter::kUnitStreamNaluLengthSize,</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;          decoder_config_record.data(),</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;          decoder_config_record.size(),</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;          <span class="keyword">false</span>));</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Profile IDC: &quot;</span> &lt;&lt; sps-&gt;profile_idc;</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Level IDC: &quot;</span> &lt;&lt; sps-&gt;level_idc;</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;log2_max_frame_num_minus4: &quot;</span> &lt;&lt; sps-&gt;log2_max_frame_num_minus4;</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;  <span class="comment">// Video config notification.</span></div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;  new_stream_info_cb_.Run(last_video_decoder_config_);</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;}</div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;</div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
+<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1AVCDecoderConfiguration_html_ad03be6192998b36ef2364266e5604c19"><div class="ttname"><a href="../../d6/d49/classedash__packager_1_1media_1_1AVCDecoderConfiguration.html#ad03be6192998b36ef2364266e5604c19">edash_packager::media::AVCDecoderConfiguration::GetCodecString</a></div><div class="ttdeci">std::string GetCodecString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../db/d01/avc__decoder__configuration_8cc_source.html#l00091">avc_decoder_configuration.cc:91</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1MediaSample_html_ac65ec88fbe6d8b72c65b1ff3f68c5b02"><div class="ttname"><a href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html#ac65ec88fbe6d8b72c65b1ff3f68c5b02">edash_packager::media::MediaSample::CopyFrom</a></div><div class="ttdeci">static scoped_refptr&lt; MediaSample &gt; CopyFrom(const uint8_t *data, size_t size, bool is_key_frame)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00045">media_sample.cc:45</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Apr 21 2016 19:13:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Apr 21 2016 22:57:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
