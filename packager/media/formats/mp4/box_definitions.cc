@@ -449,6 +449,7 @@ bool TrackEncryption::ReadWriteInternal(BoxBuffer* buffer) {
     // of |default_is_protected| is not supported.
     RCHECK(default_is_protected == 0);
     RCHECK(default_per_sample_iv_size == 0);
+    RCHECK(default_constant_iv.empty());
   }
   return true;
 }
@@ -482,8 +483,9 @@ bool ProtectionSchemeInfo::ReadWriteInternal(BoxBuffer* buffer) {
          buffer->PrepareChildren() &&
          buffer->ReadWriteChild(&format) &&
          buffer->ReadWriteChild(&type));
-  if (type.type == FOURCC_cenc || type.type == FOURCC_cbc1)
-    RCHECK(buffer->ReadWriteChild(&info));
+  RCHECK(type.type == FOURCC_cenc || type.type == FOURCC_cbc1 ||
+         type.type == FOURCC_cens || type.type == FOURCC_cbcs);
+  RCHECK(buffer->ReadWriteChild(&info));
   // Other protection schemes are silently ignored. Since the protection scheme
   // type can't be determined until this box is opened, we return 'true' for
   // non-CENC protection scheme types. It is the parent box's responsibility to
@@ -1328,18 +1330,8 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
 
   RCHECK(buffer->PrepareChildren());
 
-  if (format == FOURCC_encv) {
-    if (buffer->Reading()) {
-      // Continue scanning until a recognized protection scheme is found,
-      // or until we run out of protection schemes.
-      while (sinf.type.type != FOURCC_cenc && sinf.type.type != FOURCC_cbc1) {
-        if (!buffer->ReadWriteChild(&sinf))
-          return false;
-      }
-    } else {
-      RCHECK(buffer->ReadWriteChild(&sinf));
-    }
-  }
+  if (format == FOURCC_encv)
+    RCHECK(buffer->ReadWriteChild(&sinf));
 
   const FourCC actual_format = GetActualFormat();
   switch (actual_format) {
@@ -1513,18 +1505,8 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   samplerate >>= 16;
 
   RCHECK(buffer->PrepareChildren());
-  if (format == FOURCC_enca) {
-    if (buffer->Reading()) {
-      // Continue scanning until a recognized protection scheme is found,
-      // or until we run out of protection schemes.
-      while (sinf.type.type != FOURCC_cenc && sinf.type.type != FOURCC_cbc1) {
-        if (!buffer->ReadWriteChild(&sinf))
-          return false;
-      }
-    } else {
-      RCHECK(buffer->ReadWriteChild(&sinf));
-    }
-  }
+  if (format == FOURCC_enca)
+    RCHECK(buffer->ReadWriteChild(&sinf));
 
   RCHECK(buffer->TryReadWriteChild(&esds));
   RCHECK(buffer->TryReadWriteChild(&ddts));

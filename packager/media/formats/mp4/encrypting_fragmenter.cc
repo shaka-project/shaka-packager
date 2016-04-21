@@ -256,9 +256,11 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
         // encrypted bytes of each frame within the superframe must be block
         // aligned so that the counter state can be computed for each frame
         // within the superframe.
-        // For AES-CBC mode 'cbc1' scheme, clear data is sized appropriately so
-        // that the cipher data is block aligned.
-        if (is_superframe || protection_scheme_ == FOURCC_cbc1) {
+        // ISO/IEC 23001-7:2016 10.2 'cbc1' 10.3 'cens'
+        // The BytesOfProtectedData size SHALL be a multiple of 16 bytes to
+        // avoid partial blocks in Subsamples.
+        if (is_superframe || protection_scheme_ == FOURCC_cbc1 ||
+            protection_scheme_ == FOURCC_cens) {
           const uint16_t misalign_bytes =
               subsample.cipher_bytes % kCencBlockSize;
           subsample.clear_bytes += misalign_bytes;
@@ -298,9 +300,11 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
               nalu.header_size() + video_slice_header_size;
           uint64_t cipher_bytes = nalu.payload_size() - video_slice_header_size;
 
-          // For AES-CBC mode 'cbc1' scheme, clear data is sized appropriately
-          // so that the cipher data is block aligned.
-          if (protection_scheme_ == FOURCC_cbc1) {
+          // ISO/IEC 23001-7:2016 10.2 'cbc1' 10.3 'cens'
+          // The BytesOfProtectedData size SHALL be a multiple of 16 bytes to
+          // avoid partial blocks in Subsamples.
+          if (protection_scheme_ == FOURCC_cbc1 ||
+              protection_scheme_ == FOURCC_cens) {
             const uint16_t misalign_bytes = cipher_bytes % kCencBlockSize;
             current_clear_bytes += misalign_bytes;
             cipher_bytes -= misalign_bytes;

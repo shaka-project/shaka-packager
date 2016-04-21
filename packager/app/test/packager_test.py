@@ -137,6 +137,39 @@ class PackagerAppTest(unittest.TestCase):
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
+  def testPackageWithEncryptionCbc1(self):
+    self.packager.Package(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(encryption=True,
+                       protection_scheme='cbc1'))
+    self._DiffGold(self.output[0], 'bear-640x360-a-cbc1-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-cbc1-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-av-cbc1-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+
+  def testPackageWithEncryptionCens(self):
+    self.packager.Package(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(encryption=True,
+                       protection_scheme='cens'))
+    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-cens-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-av-cens-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+
+  def testPackageWithEncryptionCbcs(self):
+    self.packager.Package(
+        self._GetStreams(['audio', 'video']),
+        self._GetFlags(encryption=True,
+                       protection_scheme='cbcs'))
+    self._DiffGold(self.output[0], 'bear-640x360-a-cbc1-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-640x360-v-cbcs-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-640x360-av-cbcs-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
+    self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+
   def testPackageWebmWithEncryption(self):
     self.packager.Package(
         self._GetStreams(['video'],
@@ -368,6 +401,7 @@ class PackagerAppTest(unittest.TestCase):
 
   def _GetFlags(self,
                 encryption=False,
+                protection_scheme=None,
                 decryption=False,
                 random_iv=False,
                 widevine_encryption=False,
@@ -394,6 +428,8 @@ class PackagerAppTest(unittest.TestCase):
                 '--clear_lead=1']
       if not random_iv:
         flags.append('--iv=3334353637383930')
+    if protection_scheme:
+      flags += ['--protection_scheme', protection_scheme]
 
     if decryption:
       flags += ['--enable_fixed_key_decryption',

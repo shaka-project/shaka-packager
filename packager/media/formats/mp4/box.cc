@@ -31,7 +31,8 @@ void Box::Write(BufferWriter* writer) {
   size_t buffer_size_before_write = writer->Size();
   BoxBuffer buffer(writer);
   CHECK(ReadWriteInternal(&buffer));
-  DCHECK_EQ(box_size_, writer->Size() - buffer_size_before_write);
+  DCHECK_EQ(box_size_, writer->Size() - buffer_size_before_write)
+      << FourCCToString(BoxType());
 }
 
 void Box::WriteHeader(BufferWriter* writer) {
