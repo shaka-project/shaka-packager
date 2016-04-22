@@ -14,7 +14,6 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/media/base/bit_reader.h"
-#include "packager/media/base/rcheck.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
 namespace edash_packager {
@@ -24,6 +23,12 @@ namespace media {
   ((static_cast<uint32_t>(static_cast<uint8_t>(a)) << 24) |           \
    (static_cast<uint8_t>(b) << 16) | (static_cast<uint8_t>(c) << 8) | \
    (static_cast<uint8_t>(d)))
+
+#define RCHECK(x)   \
+  do {              \
+    if (!(x))       \
+      return false; \
+  } while (0)
 
 #define UTF8_BYTE_ORDER_MARK "\xef\xbb\xbf"
 
