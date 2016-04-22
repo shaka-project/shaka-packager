@@ -1202,58 +1202,60 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01113"></a><span class="lineno"> 1113</span>&#160;  std::vector&lt;uint8_t&gt; asset_key(</div>
 <div class="line"><a name="l01114"></a><span class="lineno"> 1114</span>&#160;      encryption_key.key.begin(),</div>
 <div class="line"><a name="l01115"></a><span class="lineno"> 1115</span>&#160;      encryption_key.key.begin() + kAssetKeySizeBytes);</div>
-<div class="line"><a name="l01116"></a><span class="lineno"> 1116</span>&#160;  std::vector&lt;uint8_t&gt; iv(kInitializationVectorSizeBytes);</div>
-<div class="line"><a name="l01117"></a><span class="lineno"> 1117</span>&#160;  AesCbcDecryptor asset_decryptor(kCtsPadding, AesCryptor::kUseConstantIv);</div>
-<div class="line"><a name="l01118"></a><span class="lineno"> 1118</span>&#160;  <span class="keywordflow">if</span> (!asset_decryptor.InitializeWithIv(asset_key, iv)) {</div>
-<div class="line"><a name="l01119"></a><span class="lineno"> 1119</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to initialize asset_decryptor.&quot;</span>;</div>
-<div class="line"><a name="l01120"></a><span class="lineno"> 1120</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01121"></a><span class="lineno"> 1121</span>&#160;  }</div>
-<div class="line"><a name="l01122"></a><span class="lineno"> 1122</span>&#160;</div>
-<div class="line"><a name="l01123"></a><span class="lineno"> 1123</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> content_key_buffer_size =</div>
-<div class="line"><a name="l01124"></a><span class="lineno"> 1124</span>&#160;      kEcmFlagsSizeBytes + kEcmContentKeySizeBytes +</div>
-<div class="line"><a name="l01125"></a><span class="lineno"> 1125</span>&#160;      kEcmPaddingSizeBytes;  <span class="comment">// flags + contentKey + padding.</span></div>
-<div class="line"><a name="l01126"></a><span class="lineno"> 1126</span>&#160;  std::vector&lt;uint8_t&gt; content_key_buffer(content_key_buffer_size);</div>
-<div class="line"><a name="l01127"></a><span class="lineno"> 1127</span>&#160;  CHECK(asset_decryptor.Crypt(ecm_data, content_key_buffer_size,</div>
-<div class="line"><a name="l01128"></a><span class="lineno"> 1128</span>&#160;                              content_key_buffer.data()));</div>
-<div class="line"><a name="l01129"></a><span class="lineno"> 1129</span>&#160;</div>
-<div class="line"><a name="l01130"></a><span class="lineno"> 1130</span>&#160;  std::vector&lt;uint8_t&gt; decrypted_content_key_vec(</div>
-<div class="line"><a name="l01131"></a><span class="lineno"> 1131</span>&#160;      content_key_buffer.begin() + 4,</div>
-<div class="line"><a name="l01132"></a><span class="lineno"> 1132</span>&#160;      content_key_buffer.begin() + 20);</div>
-<div class="line"><a name="l01133"></a><span class="lineno"> 1133</span>&#160;  scoped_ptr&lt;AesCbcDecryptor&gt; content_decryptor(</div>
-<div class="line"><a name="l01134"></a><span class="lineno"> 1134</span>&#160;      <span class="keyword">new</span> AesCbcDecryptor(kCtsPadding, AesCryptor::kUseConstantIv));</div>
-<div class="line"><a name="l01135"></a><span class="lineno"> 1135</span>&#160;  <span class="keywordflow">if</span> (!content_decryptor-&gt;InitializeWithIv(decrypted_content_key_vec, iv)) {</div>
-<div class="line"><a name="l01136"></a><span class="lineno"> 1136</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to initialize content decryptor.&quot;</span>;</div>
-<div class="line"><a name="l01137"></a><span class="lineno"> 1137</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l01138"></a><span class="lineno"> 1138</span>&#160;  }</div>
-<div class="line"><a name="l01139"></a><span class="lineno"> 1139</span>&#160;</div>
-<div class="line"><a name="l01140"></a><span class="lineno"> 1140</span>&#160;  content_decryptor_ = content_decryptor.Pass();</div>
-<div class="line"><a name="l01141"></a><span class="lineno"> 1141</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l01142"></a><span class="lineno"> 1142</span>&#160;}</div>
-<div class="line"><a name="l01143"></a><span class="lineno"> 1143</span>&#160;</div>
-<div class="line"><a name="l01144"></a><span class="lineno"> 1144</span>&#160;DemuxStreamIdMediaSample::DemuxStreamIdMediaSample() :</div>
-<div class="line"><a name="l01145"></a><span class="lineno"> 1145</span>&#160;  demux_stream_id(0),</div>
-<div class="line"><a name="l01146"></a><span class="lineno"> 1146</span>&#160;  parsed_audio_or_video_stream_id(0) {}</div>
-<div class="line"><a name="l01147"></a><span class="lineno"> 1147</span>&#160;</div>
-<div class="line"><a name="l01148"></a><span class="lineno"> 1148</span>&#160;DemuxStreamIdMediaSample::~DemuxStreamIdMediaSample() {}</div>
+<div class="line"><a name="l01116"></a><span class="lineno"> 1116</span>&#160;  <span class="comment">// WVM format always uses all zero IV.</span></div>
+<div class="line"><a name="l01117"></a><span class="lineno"> 1117</span>&#160;  std::vector&lt;uint8_t&gt; zero_iv(kInitializationVectorSizeBytes, 0);</div>
+<div class="line"><a name="l01118"></a><span class="lineno"> 1118</span>&#160;  AesCbcDecryptor asset_decryptor(kCtsPadding, AesCryptor::kUseConstantIv);</div>
+<div class="line"><a name="l01119"></a><span class="lineno"> 1119</span>&#160;  <span class="keywordflow">if</span> (!asset_decryptor.InitializeWithIv(asset_key, zero_iv)) {</div>
+<div class="line"><a name="l01120"></a><span class="lineno"> 1120</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to initialize asset_decryptor.&quot;</span>;</div>
+<div class="line"><a name="l01121"></a><span class="lineno"> 1121</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01122"></a><span class="lineno"> 1122</span>&#160;  }</div>
+<div class="line"><a name="l01123"></a><span class="lineno"> 1123</span>&#160;</div>
+<div class="line"><a name="l01124"></a><span class="lineno"> 1124</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> content_key_buffer_size =</div>
+<div class="line"><a name="l01125"></a><span class="lineno"> 1125</span>&#160;      kEcmFlagsSizeBytes + kEcmContentKeySizeBytes +</div>
+<div class="line"><a name="l01126"></a><span class="lineno"> 1126</span>&#160;      kEcmPaddingSizeBytes;  <span class="comment">// flags + contentKey + padding.</span></div>
+<div class="line"><a name="l01127"></a><span class="lineno"> 1127</span>&#160;  std::vector&lt;uint8_t&gt; content_key_buffer(content_key_buffer_size);</div>
+<div class="line"><a name="l01128"></a><span class="lineno"> 1128</span>&#160;  CHECK(asset_decryptor.Crypt(ecm_data, content_key_buffer_size,</div>
+<div class="line"><a name="l01129"></a><span class="lineno"> 1129</span>&#160;                              content_key_buffer.data()));</div>
+<div class="line"><a name="l01130"></a><span class="lineno"> 1130</span>&#160;</div>
+<div class="line"><a name="l01131"></a><span class="lineno"> 1131</span>&#160;  std::vector&lt;uint8_t&gt; decrypted_content_key_vec(</div>
+<div class="line"><a name="l01132"></a><span class="lineno"> 1132</span>&#160;      content_key_buffer.begin() + 4,</div>
+<div class="line"><a name="l01133"></a><span class="lineno"> 1133</span>&#160;      content_key_buffer.begin() + 20);</div>
+<div class="line"><a name="l01134"></a><span class="lineno"> 1134</span>&#160;  scoped_ptr&lt;AesCbcDecryptor&gt; content_decryptor(</div>
+<div class="line"><a name="l01135"></a><span class="lineno"> 1135</span>&#160;      <span class="keyword">new</span> AesCbcDecryptor(kCtsPadding, AesCryptor::kUseConstantIv));</div>
+<div class="line"><a name="l01136"></a><span class="lineno"> 1136</span>&#160;  <span class="keywordflow">if</span> (!content_decryptor-&gt;InitializeWithIv(decrypted_content_key_vec,</div>
+<div class="line"><a name="l01137"></a><span class="lineno"> 1137</span>&#160;                                           zero_iv)) {</div>
+<div class="line"><a name="l01138"></a><span class="lineno"> 1138</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to initialize content decryptor.&quot;</span>;</div>
+<div class="line"><a name="l01139"></a><span class="lineno"> 1139</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l01140"></a><span class="lineno"> 1140</span>&#160;  }</div>
+<div class="line"><a name="l01141"></a><span class="lineno"> 1141</span>&#160;</div>
+<div class="line"><a name="l01142"></a><span class="lineno"> 1142</span>&#160;  content_decryptor_ = content_decryptor.Pass();</div>
+<div class="line"><a name="l01143"></a><span class="lineno"> 1143</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l01144"></a><span class="lineno"> 1144</span>&#160;}</div>
+<div class="line"><a name="l01145"></a><span class="lineno"> 1145</span>&#160;</div>
+<div class="line"><a name="l01146"></a><span class="lineno"> 1146</span>&#160;DemuxStreamIdMediaSample::DemuxStreamIdMediaSample() :</div>
+<div class="line"><a name="l01147"></a><span class="lineno"> 1147</span>&#160;  demux_stream_id(0),</div>
+<div class="line"><a name="l01148"></a><span class="lineno"> 1148</span>&#160;  parsed_audio_or_video_stream_id(0) {}</div>
 <div class="line"><a name="l01149"></a><span class="lineno"> 1149</span>&#160;</div>
-<div class="line"><a name="l01150"></a><span class="lineno"> 1150</span>&#160;PrevSampleData::PrevSampleData() {</div>
-<div class="line"><a name="l01151"></a><span class="lineno"> 1151</span>&#160;  Reset();</div>
-<div class="line"><a name="l01152"></a><span class="lineno"> 1152</span>&#160;}</div>
-<div class="line"><a name="l01153"></a><span class="lineno"> 1153</span>&#160;</div>
-<div class="line"><a name="l01154"></a><span class="lineno"> 1154</span>&#160;PrevSampleData::~PrevSampleData() {}</div>
+<div class="line"><a name="l01150"></a><span class="lineno"> 1150</span>&#160;DemuxStreamIdMediaSample::~DemuxStreamIdMediaSample() {}</div>
+<div class="line"><a name="l01151"></a><span class="lineno"> 1151</span>&#160;</div>
+<div class="line"><a name="l01152"></a><span class="lineno"> 1152</span>&#160;PrevSampleData::PrevSampleData() {</div>
+<div class="line"><a name="l01153"></a><span class="lineno"> 1153</span>&#160;  Reset();</div>
+<div class="line"><a name="l01154"></a><span class="lineno"> 1154</span>&#160;}</div>
 <div class="line"><a name="l01155"></a><span class="lineno"> 1155</span>&#160;</div>
-<div class="line"><a name="l01156"></a><span class="lineno"> 1156</span>&#160;<span class="keywordtype">void</span> PrevSampleData::Reset() {</div>
-<div class="line"><a name="l01157"></a><span class="lineno"> 1157</span>&#160;  audio_sample = NULL;</div>
-<div class="line"><a name="l01158"></a><span class="lineno"> 1158</span>&#160;  video_sample = NULL;</div>
-<div class="line"><a name="l01159"></a><span class="lineno"> 1159</span>&#160;  audio_stream_id = 0;</div>
-<div class="line"><a name="l01160"></a><span class="lineno"> 1160</span>&#160;  video_stream_id = 0;</div>
-<div class="line"><a name="l01161"></a><span class="lineno"> 1161</span>&#160;  audio_sample_duration = 0;</div>
-<div class="line"><a name="l01162"></a><span class="lineno"> 1162</span>&#160;  video_sample_duration = 0;</div>
-<div class="line"><a name="l01163"></a><span class="lineno"> 1163</span>&#160;}</div>
-<div class="line"><a name="l01164"></a><span class="lineno"> 1164</span>&#160;</div>
-<div class="line"><a name="l01165"></a><span class="lineno"> 1165</span>&#160;}  <span class="comment">// namespace wvm</span></div>
-<div class="line"><a name="l01166"></a><span class="lineno"> 1166</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l01167"></a><span class="lineno"> 1167</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l01156"></a><span class="lineno"> 1156</span>&#160;PrevSampleData::~PrevSampleData() {}</div>
+<div class="line"><a name="l01157"></a><span class="lineno"> 1157</span>&#160;</div>
+<div class="line"><a name="l01158"></a><span class="lineno"> 1158</span>&#160;<span class="keywordtype">void</span> PrevSampleData::Reset() {</div>
+<div class="line"><a name="l01159"></a><span class="lineno"> 1159</span>&#160;  audio_sample = NULL;</div>
+<div class="line"><a name="l01160"></a><span class="lineno"> 1160</span>&#160;  video_sample = NULL;</div>
+<div class="line"><a name="l01161"></a><span class="lineno"> 1161</span>&#160;  audio_stream_id = 0;</div>
+<div class="line"><a name="l01162"></a><span class="lineno"> 1162</span>&#160;  video_stream_id = 0;</div>
+<div class="line"><a name="l01163"></a><span class="lineno"> 1163</span>&#160;  audio_sample_duration = 0;</div>
+<div class="line"><a name="l01164"></a><span class="lineno"> 1164</span>&#160;  video_sample_duration = 0;</div>
+<div class="line"><a name="l01165"></a><span class="lineno"> 1165</span>&#160;}</div>
+<div class="line"><a name="l01166"></a><span class="lineno"> 1166</span>&#160;</div>
+<div class="line"><a name="l01167"></a><span class="lineno"> 1167</span>&#160;}  <span class="comment">// namespace wvm</span></div>
+<div class="line"><a name="l01168"></a><span class="lineno"> 1168</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l01169"></a><span class="lineno"> 1169</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1AdtsHeader_html_aacce540b215432703697c6a1172c3011"><div class="ttname"><a href="../../db/d69/classedash__packager_1_1media_1_1mp2t_1_1AdtsHeader.html#aacce540b215432703697c6a1172c3011">edash_packager::media::mp2t::AdtsHeader::GetAdtsFrameSize</a></div><div class="ttdeci">static size_t GetAdtsFrameSize(const uint8_t *data, size_t num_bytes)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d5b/adts__header_8cc_source.html#l00023">adts_header.cc:23</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">edash_packager::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00031">key_source.h:31</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1MediaSample_html_ac30e98c643959047439a3b71baa399ca"><div class="ttname"><a href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html#ac30e98c643959047439a3b71baa399ca">edash_packager::media::MediaSample::CreateEmptyMediaSample</a></div><div class="ttdeci">static scoped_refptr&lt; MediaSample &gt; CreateEmptyMediaSample()</div><div class="ttdoc">Create a MediaSample object with default members. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00074">media_sample.cc:74</a></div></div>
@@ -1261,7 +1263,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Apr 22 2016 18:52:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Apr 22 2016 21:18:04 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
