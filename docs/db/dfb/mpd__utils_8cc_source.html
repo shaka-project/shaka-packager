@@ -377,7 +377,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;  <span class="keywordflow">if</span> (is_mp4_container) {</div>
 <div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;    ContentProtectionElement mp4_content_protection;</div>
 <div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;    mp4_content_protection.scheme_id_uri = kEncryptedMp4Scheme;</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    mp4_content_protection.value = kEncryptedMp4Value;</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;    mp4_content_protection.value = protected_content.protection_scheme();</div>
 <div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;    <span class="keywordflow">if</span> (!key_id_uuid_format.empty()) {</div>
 <div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;      mp4_content_protection.additional_attributes[<span class="stringliteral">&quot;cenc:default_KID&quot;</span>] =</div>
 <div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;          key_id_uuid_format;</div>
@@ -443,7 +443,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 25 2016 20:27:57 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 26 2016 17:33:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

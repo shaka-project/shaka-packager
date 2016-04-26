@@ -113,8 +113,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a15a39a4408cdf65c468ab6ec539cc567"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d89/classedash__packager_1_1media_1_1HlsNotifyMuxerListener.html#a15a39a4408cdf65c468ab6ec539cc567">HlsNotifyMuxerListener</a> (const std::string &amp;playlist_name, hls::HlsNotifier *hls_notifier)</td></tr>
 <tr class="separator:a15a39a4408cdf65c468ab6ec539cc567"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">MuxerListener implementation overrides.</div></td></tr>
-<tr class="memitem:ada246c3038c7b6029eb0f2ff9a7a2027"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d89/classedash__packager_1_1media_1_1HlsNotifyMuxerListener.html#ada246c3038c7b6029eb0f2ff9a7a2027">OnEncryptionInfoReady</a> (bool is_initial_encryption_info, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; <a class="el" href="../../db/da0/classedash__packager_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;key_system_info) override</td></tr>
-<tr class="separator:ada246c3038c7b6029eb0f2ff9a7a2027"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a73f99bdf0b5fcef6474f21b152ff4eae"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d89/classedash__packager_1_1media_1_1HlsNotifyMuxerListener.html#a73f99bdf0b5fcef6474f21b152ff4eae">OnEncryptionInfoReady</a> (bool is_initial_encryption_info, FourCC protection_scheme, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; <a class="el" href="../../db/da0/classedash__packager_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;key_system_info) override</td></tr>
+<tr class="separator:a73f99bdf0b5fcef6474f21b152ff4eae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abed52027b47ec4f75b1e6581f8bd38d3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d89/classedash__packager_1_1media_1_1HlsNotifyMuxerListener.html#abed52027b47ec4f75b1e6581f8bd38d3">OnMediaStart</a> (const <a class="el" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;muxer_options, const <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream_info, uint32_t time_scale, ContainerType container_type) override</td></tr>
 <tr class="separator:abed52027b47ec4f75b1e6581f8bd38d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af11507851036805b167d7d46e032677f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d89/classedash__packager_1_1media_1_1HlsNotifyMuxerListener.html#af11507851036805b167d7d46e032677f">OnSampleDurationReady</a> (uint32_t sample_duration) override</td></tr>
@@ -175,7 +175,7 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="ada246c3038c7b6029eb0f2ff9a7a2027"></a>
+<a class="anchor" id="a73f99bdf0b5fcef6474f21b152ff4eae"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -187,6 +187,12 @@ Additional Inherited Members</h2></td></tr>
           <td>(</td>
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>is_initial_encryption_info</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">FourCC&#160;</td>
+          <td class="paramname"><em>protection_scheme</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -222,13 +228,14 @@ Additional Inherited Members</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">is_initial_encryption_info</td><td>is true if this is the first encryption info for the media. In general, this flag should always be true for non-key-rotated media and should be called only once. </td></tr>
+    <tr><td class="paramname">protection_scheme</td><td>specifies the protection scheme: 'cenc', 'cens', 'cbc1', 'cbcs'. </td></tr>
     <tr><td class="paramname">key_id</td><td>is the key ID for the media. The format should be a vector of uint8_t, i.e. not (necessarily) human readable hex string. </td></tr>
     <tr><td class="paramname">iv</td><td>is the initialization vector. For most cases this should be 16 bytes, but whether the input is accepted is up to the implementation. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a9fbfab6fc603afd8468db9d02b3a2474">edash_packager::media::MuxerListener</a>.</p>
+<p>Implements <a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a77a5c5548e585547db828683cc55ca87">edash_packager::media::MuxerListener</a>.</p>
 
 <p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00027">27</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
@@ -318,7 +325,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a6e2a4029988230dbd7fc24b482ce1866">edash_packager::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00058">58</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00059">59</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -378,7 +385,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#ac6ef1d524f12f21c6250653dbdbaca20">edash_packager::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00039">39</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00040">40</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -438,7 +445,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#aff0980f1631ab866ca5598fbe5f59859">edash_packager::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00070">70</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00071">71</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -473,7 +480,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a5626ff553138db438c561db2ca0d05f2">edash_packager::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00055">55</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html#l00056">56</a> of file <a class="el" href="../../d0/d3a/hls__notify__muxer__listener_8cc_source.html">hls_notify_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -484,7 +491,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 25 2016 20:27:58 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 26 2016 17:33:04 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

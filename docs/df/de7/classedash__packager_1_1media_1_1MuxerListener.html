@@ -120,8 +120,8 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a9fbfab6fc603afd8468db9d02b3a2474"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a9fbfab6fc603afd8468db9d02b3a2474">OnEncryptionInfoReady</a> (bool is_initial_encryption_info, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; <a class="el" href="../../db/da0/classedash__packager_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;key_system_info)=0</td></tr>
-<tr class="separator:a9fbfab6fc603afd8468db9d02b3a2474"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77a5c5548e585547db828683cc55ca87"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a77a5c5548e585547db828683cc55ca87">OnEncryptionInfoReady</a> (bool is_initial_encryption_info, FourCC protection_scheme, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; <a class="el" href="../../db/da0/classedash__packager_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;key_system_info)=0</td></tr>
+<tr class="separator:a77a5c5548e585547db828683cc55ca87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac6ef1d524f12f21c6250653dbdbaca20"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#ac6ef1d524f12f21c6250653dbdbaca20">OnMediaStart</a> (const <a class="el" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;muxer_options, const <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream_info, uint32_t time_scale, ContainerType container_type)=0</td></tr>
 <tr class="separator:ac6ef1d524f12f21c6250653dbdbaca20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5626ff553138db438c561db2ca0d05f2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a5626ff553138db438c561db2ca0d05f2">OnSampleDurationReady</a> (uint32_t sample_duration)=0</td></tr>
@@ -134,9 +134,9 @@ Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">MuxerListener</a> is an event handler that can be registered to a muxer. A <a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">MuxerListener</a> cannot be shared amongst muxer instances, in other words, every muxer instance either owns a unique <a class="el" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html">MuxerListener</a> instance. This also assumes that there is one media stream per muxer. </p>
 
-<p>Definition at line <a class="el" href="../../de/dfa/muxer__listener_8h_source.html#l00028">28</a> of file <a class="el" href="../../de/dfa/muxer__listener_8h_source.html">muxer_listener.h</a>.</p>
+<p>Definition at line <a class="el" href="../../de/dfa/muxer__listener_8h_source.html#l00030">30</a> of file <a class="el" href="../../de/dfa/muxer__listener_8h_source.html">muxer_listener.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a9fbfab6fc603afd8468db9d02b3a2474"></a>
+<a class="anchor" id="a77a5c5548e585547db828683cc55ca87"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -148,6 +148,12 @@ Public Member Functions</h2></td></tr>
           <td>(</td>
           <td class="paramtype">bool&#160;</td>
           <td class="paramname"><em>is_initial_encryption_info</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">FourCC&#160;</td>
+          <td class="paramname"><em>protection_scheme</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -183,13 +189,14 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">is_initial_encryption_info</td><td>is true if this is the first encryption info for the media. In general, this flag should always be true for non-key-rotated media and should be called only once. </td></tr>
+    <tr><td class="paramname">protection_scheme</td><td>specifies the protection scheme: 'cenc', 'cens', 'cbc1', 'cbcs'. </td></tr>
     <tr><td class="paramname">key_id</td><td>is the key ID for the media. The format should be a vector of uint8_t, i.e. not (necessarily) human readable hex string. </td></tr>
     <tr><td class="paramname">iv</td><td>is the initialization vector. For most cases this should be 16 bytes, but whether the input is accepted is up to the implementation. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="../../d3/d0e/classedash__packager_1_1media_1_1MpdNotifyMuxerListener.html#a83c4efc19a0dcc40ff8a999e18c2ecf6">edash_packager::media::MpdNotifyMuxerListener</a>, <a class="el" href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html#aea2a7ee9449d5c367ad62abf5fc18368">edash_packager::media::VodMediaInfoDumpMuxerListener</a>, and <a class="el" href="../../d5/d89/classedash__packager_1_1media_1_1HlsNotifyMuxerListener.html#ada246c3038c7b6029eb0f2ff9a7a2027">edash_packager::media::HlsNotifyMuxerListener</a>.</p>
+<p>Implemented in <a class="el" href="../../d3/d0e/classedash__packager_1_1media_1_1MpdNotifyMuxerListener.html#a8cb35589d58b392cea115eb8a7d4d87d">edash_packager::media::MpdNotifyMuxerListener</a>, <a class="el" href="../../d9/db4/classedash__packager_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a66623407b0af603c3e90ae4b436e0fff">edash_packager::media::VodMediaInfoDumpMuxerListener</a>, and <a class="el" href="../../d5/d89/classedash__packager_1_1media_1_1HlsNotifyMuxerListener.html#a73f99bdf0b5fcef6474f21b152ff4eae">edash_packager::media::HlsNotifyMuxerListener</a>.</p>
 
 </div>
 </div>
@@ -434,7 +441,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Apr 25 2016 20:27:58 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 26 2016 17:33:04 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
