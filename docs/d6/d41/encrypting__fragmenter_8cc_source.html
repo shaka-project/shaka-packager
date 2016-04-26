@@ -345,95 +345,99 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;        <span class="comment">// encrypted bytes of each frame within the superframe must be block</span></div>
 <div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;        <span class="comment">// aligned so that the counter state can be computed for each frame</span></div>
 <div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;        <span class="comment">// within the superframe.</span></div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        <span class="comment">// For AES-CBC mode &#39;cbc1&#39; scheme, clear data is sized appropriately so</span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        <span class="comment">// that the cipher data is block aligned.</span></div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        <span class="keywordflow">if</span> (is_superframe || protection_scheme_ == FOURCC_cbc1) {</div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;          <span class="keyword">const</span> uint16_t misalign_bytes =</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;              subsample.cipher_bytes % kCencBlockSize;</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;          subsample.clear_bytes += misalign_bytes;</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;          subsample.cipher_bytes -= misalign_bytes;</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;        }</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        sample_encryption_entry.subsamples.push_back(subsample);</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;        <span class="keywordflow">if</span> (subsample.cipher_bytes &gt; 0)</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;          EncryptBytes(data + subsample.clear_bytes, subsample.cipher_bytes);</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        data += frame.frame_size;</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;      }</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;    } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;      <span class="keyword">const</span> Nalu::CodecType nalu_type =</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;          (video_codec_ == kCodecHVC1 || video_codec_ == kCodecHEV1)</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;              ? Nalu::kH265</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;              : Nalu::kH264;</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;      NaluReader reader(nalu_type, nalu_length_size_, data,</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;                        sample-&gt;data_size());</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;      <span class="comment">// Store the current length of clear data.  This is used to squash</span></div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;      <span class="comment">// multiple unencrypted NAL units into fewer subsample entries.</span></div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;      uint64_t accumulated_clear_bytes = 0;</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;      Nalu nalu;</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;      NaluReader::Result result;</div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;      <span class="keywordflow">while</span> ((result = reader.Advance(&amp;nalu)) == NaluReader::kOk) {</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;        <span class="keywordflow">if</span> (nalu.is_video_slice()) {</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;          <span class="comment">// For video-slice NAL units, encrypt the video slice.  This skips</span></div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;          <span class="comment">// the frame header.  If this is an unrecognized codec (e.g. H.265),</span></div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;          <span class="comment">// the whole NAL unit will be encrypted.</span></div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;          <span class="keyword">const</span> int64_t video_slice_header_size =</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;              header_parser_ ? header_parser_-&gt;GetHeaderSize(nalu) : 0;</div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;          <span class="keywordflow">if</span> (video_slice_header_size &lt; 0)</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;            <span class="keywordflow">return</span> Status(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to read slice header.&quot;</span>);</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;          uint64_t current_clear_bytes =</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;              nalu.header_size() + video_slice_header_size;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;          uint64_t cipher_bytes = nalu.payload_size() - video_slice_header_size;</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;          <span class="comment">// For AES-CBC mode &#39;cbc1&#39; scheme, clear data is sized appropriately</span></div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;          <span class="comment">// so that the cipher data is block aligned.</span></div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;          <span class="keywordflow">if</span> (protection_scheme_ == FOURCC_cbc1) {</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;            <span class="keyword">const</span> uint16_t misalign_bytes = cipher_bytes % kCencBlockSize;</div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;            current_clear_bytes += misalign_bytes;</div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;            cipher_bytes -= misalign_bytes;</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;          }</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;          <span class="keyword">const</span> uint8_t* nalu_data = nalu.data() + current_clear_bytes;</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;          EncryptBytes(const_cast&lt;uint8_t*&gt;(nalu_data), cipher_bytes);</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;          AddSubsamples(</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;              accumulated_clear_bytes + nalu_length_size_ + current_clear_bytes,</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;              cipher_bytes, &amp;sample_encryption_entry.subsamples);</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;          accumulated_clear_bytes = 0;</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;          <span class="comment">// For non-video-slice NAL units, don&#39;t encrypt.</span></div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;          accumulated_clear_bytes +=</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;              nalu_length_size_ + nalu.header_size() + nalu.payload_size();</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;        }</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;      }</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;      <span class="keywordflow">if</span> (result != NaluReader::kEOStream)</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;        <span class="keywordflow">return</span> Status(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to parse NAL units.&quot;</span>);</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;      AddSubsamples(accumulated_clear_bytes, 0,</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;                    &amp;sample_encryption_entry.subsamples);</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;    }</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    <span class="comment">// The length of per-sample auxiliary datum, defined in CENC ch. 7.</span></div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;    traf()-&gt;auxiliary_size.sample_info_sizes.push_back(</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;        sample_encryption_entry.ComputeSize());</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    EncryptBytes(data, sample-&gt;data_size());</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  }</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;  traf()-&gt;sample_encryption.sample_encryption_entries.push_back(</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;      sample_encryption_entry);</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  encryptor_-&gt;UpdateIv();</div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;}</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;<span class="keywordtype">bool</span> EncryptingFragmenter::IsSubsampleEncryptionRequired() {</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  <span class="keywordflow">return</span> vpx_parser_ || nalu_length_size_ != 0;</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;        <span class="comment">// ISO/IEC 23001-7:2016 10.2 &#39;cbc1&#39; 10.3 &#39;cens&#39;</span></div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;        <span class="comment">// The BytesOfProtectedData size SHALL be a multiple of 16 bytes to</span></div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;        <span class="comment">// avoid partial blocks in Subsamples.</span></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;        <span class="keywordflow">if</span> (is_superframe || protection_scheme_ == FOURCC_cbc1 ||</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;            protection_scheme_ == FOURCC_cens) {</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;          <span class="keyword">const</span> uint16_t misalign_bytes =</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;              subsample.cipher_bytes % kCencBlockSize;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;          subsample.clear_bytes += misalign_bytes;</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;          subsample.cipher_bytes -= misalign_bytes;</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;        }</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;        sample_encryption_entry.subsamples.push_back(subsample);</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;        <span class="keywordflow">if</span> (subsample.cipher_bytes &gt; 0)</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;          EncryptBytes(data + subsample.clear_bytes, subsample.cipher_bytes);</div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;        data += frame.frame_size;</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;      }</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;    } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;      <span class="keyword">const</span> Nalu::CodecType nalu_type =</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;          (video_codec_ == kCodecHVC1 || video_codec_ == kCodecHEV1)</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;              ? Nalu::kH265</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;              : Nalu::kH264;</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;      NaluReader reader(nalu_type, nalu_length_size_, data,</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;                        sample-&gt;data_size());</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;</div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;      <span class="comment">// Store the current length of clear data.  This is used to squash</span></div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;      <span class="comment">// multiple unencrypted NAL units into fewer subsample entries.</span></div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;      uint64_t accumulated_clear_bytes = 0;</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;      Nalu nalu;</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;      NaluReader::Result result;</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;      <span class="keywordflow">while</span> ((result = reader.Advance(&amp;nalu)) == NaluReader::kOk) {</div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;        <span class="keywordflow">if</span> (nalu.is_video_slice()) {</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;          <span class="comment">// For video-slice NAL units, encrypt the video slice.  This skips</span></div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;          <span class="comment">// the frame header.  If this is an unrecognized codec (e.g. H.265),</span></div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;          <span class="comment">// the whole NAL unit will be encrypted.</span></div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;          <span class="keyword">const</span> int64_t video_slice_header_size =</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;              header_parser_ ? header_parser_-&gt;GetHeaderSize(nalu) : 0;</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;          <span class="keywordflow">if</span> (video_slice_header_size &lt; 0)</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;            <span class="keywordflow">return</span> Status(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to read slice header.&quot;</span>);</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;          uint64_t current_clear_bytes =</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;              nalu.header_size() + video_slice_header_size;</div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;          uint64_t cipher_bytes = nalu.payload_size() - video_slice_header_size;</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;          <span class="comment">// ISO/IEC 23001-7:2016 10.2 &#39;cbc1&#39; 10.3 &#39;cens&#39;</span></div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;          <span class="comment">// The BytesOfProtectedData size SHALL be a multiple of 16 bytes to</span></div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;          <span class="comment">// avoid partial blocks in Subsamples.</span></div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;          <span class="keywordflow">if</span> (protection_scheme_ == FOURCC_cbc1 ||</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;              protection_scheme_ == FOURCC_cens) {</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;            <span class="keyword">const</span> uint16_t misalign_bytes = cipher_bytes % kCencBlockSize;</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;            current_clear_bytes += misalign_bytes;</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;            cipher_bytes -= misalign_bytes;</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;          }</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;          <span class="keyword">const</span> uint8_t* nalu_data = nalu.data() + current_clear_bytes;</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;          EncryptBytes(const_cast&lt;uint8_t*&gt;(nalu_data), cipher_bytes);</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;          AddSubsamples(</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;              accumulated_clear_bytes + nalu_length_size_ + current_clear_bytes,</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;              cipher_bytes, &amp;sample_encryption_entry.subsamples);</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;          accumulated_clear_bytes = 0;</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;        } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;          <span class="comment">// For non-video-slice NAL units, don&#39;t encrypt.</span></div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;          accumulated_clear_bytes +=</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;              nalu_length_size_ + nalu.header_size() + nalu.payload_size();</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;        }</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;      }</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;      <span class="keywordflow">if</span> (result != NaluReader::kEOStream)</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;        <span class="keywordflow">return</span> Status(error::MUXER_FAILURE, <span class="stringliteral">&quot;Failed to parse NAL units.&quot;</span>);</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;      AddSubsamples(accumulated_clear_bytes, 0,</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;                    &amp;sample_encryption_entry.subsamples);</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    }</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    <span class="comment">// The length of per-sample auxiliary datum, defined in CENC ch. 7.</span></div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;    traf()-&gt;auxiliary_size.sample_info_sizes.push_back(</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;        sample_encryption_entry.ComputeSize());</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;    EncryptBytes(data, sample-&gt;data_size());</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;  }</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;  traf()-&gt;sample_encryption.sample_encryption_entries.push_back(</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;      sample_encryption_entry);</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;  encryptor_-&gt;UpdateIv();</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
 <div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;}</div>
 <div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;<span class="keywordtype">bool</span> EncryptingFragmenter::IsSubsampleEncryptionRequired() {</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;  <span class="keywordflow">return</span> vpx_parser_ || nalu_length_size_ != 0;</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;}</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1SampleAuxiliaryInformationSize_html"><div class="ttname"><a href="../../d2/d51/structedash__packager_1_1media_1_1mp4_1_1SampleAuxiliaryInformationSize.html">edash_packager::media::mp4::SampleAuxiliaryInformationSize</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d7b/box__definitions_8h_source.html#l00069">box_definitions.h:69</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Fragmenter_html"><div class="ttname"><a href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html">edash_packager::media::mp4::Fragmenter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/dd1/fragmenter_8h_source.html#l00030">fragmenter.h:30</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1H265VideoSliceHeaderParser_html"><div class="ttname"><a href="../../db/dbf/classedash__packager_1_1media_1_1mp4_1_1H265VideoSliceHeaderParser.html">edash_packager::media::mp4::H265VideoSliceHeaderParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d33/video__slice__header__parser_8h_source.html#l00054">video_slice_header_parser.h:54</a></div></div>
@@ -459,7 +463,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 26 2016 17:33:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 26 2016 18:23:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

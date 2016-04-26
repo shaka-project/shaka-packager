@@ -120,86 +120,87 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordtype">size_t</span> buffer_size_before_write = writer-&gt;Size();</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html">BoxBuffer</a> buffer(writer);</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  CHECK(ReadWriteInternal(&amp;buffer));</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  DCHECK_EQ(box_size_, writer-&gt;Size() - buffer_size_before_write);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a814444b1b4e8b7d4e54d104be788bd6c">   37</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a814444b1b4e8b7d4e54d104be788bd6c">Box::WriteHeader</a>(<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html">BufferWriter</a>* writer) {</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  DCHECK(writer);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="comment">// Compute and update box size.</span></div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  uint32_t size = <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9a242fb1434e99256e2a6f4ad294a63d">ComputeSize</a>();</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  DCHECK_EQ(size, box_size_);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordtype">size_t</span> buffer_size_before_write = writer-&gt;Size();</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html">BoxBuffer</a> buffer(writer);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  CHECK(<a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa2a13963677aa8d2bea33d1ed6eec9d6">ReadWriteHeaderInternal</a>(&amp;buffer));</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  DCHECK_EQ(<a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9fbafc4d6ba2187325349dcd406b490a">HeaderSize</a>(), writer-&gt;Size() - buffer_size_before_write);</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;}</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno"><a class="line" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9a242fb1434e99256e2a6f4ad294a63d">   49</a></span>&#160;uint32_t <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9a242fb1434e99256e2a6f4ad294a63d">Box::ComputeSize</a>() {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  box_size_ = ComputeSizeInternal();</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="keywordflow">return</span> box_size_;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;}</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno"><a class="line" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9fbafc4d6ba2187325349dcd406b490a">   54</a></span>&#160;uint32_t <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9fbafc4d6ba2187325349dcd406b490a">Box::HeaderSize</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keyword">const</span> uint32_t kFourCCSize = 4;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="comment">// We don&#39;t support 64-bit size.</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordflow">return</span> kFourCCSize + <span class="keyword">sizeof</span>(uint32_t);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;}</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno"><a class="line" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa2a13963677aa8d2bea33d1ed6eec9d6">   60</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa2a13963677aa8d2bea33d1ed6eec9d6">Box::ReadWriteHeaderInternal</a>(<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html">BoxBuffer</a>* buffer) {</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordflow">if</span> (buffer-&gt;<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a36c0d8448dab759db37f9581ea602807">Reading</a>()) {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="comment">// Skip for read mode, which is handled already in BoxReader.</span></div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    CHECK(buffer-&gt;ReadWriteUInt32(&amp;box_size_));</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    FourCC fourcc = <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a504e7612c24f7d788748dff9940e46ea">BoxType</a>();</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    CHECK(buffer-&gt;ReadWriteFourCC(&amp;fourcc));</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  }</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;FullBox::FullBox() : version(0), flags(0) {}</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;FullBox::~FullBox() {}</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
-<div class="line"><a name="l00074"></a><span class="lineno"><a class="line" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a58b21910baf781792d0893b6d805e2c6">   74</a></span>&#160;uint32_t <a class="code" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a58b21910baf781792d0893b6d805e2c6">FullBox::HeaderSize</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">// Additional 1-byte version and 3-byte flags.</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9fbafc4d6ba2187325349dcd406b490a">Box::HeaderSize</a>() + 1 + 3;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a0a8b32da93e6d94198a3f295e72980da">   79</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a0a8b32da93e6d94198a3f295e72980da">FullBox::ReadWriteHeaderInternal</a>(<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html">BoxBuffer</a>* buffer) {</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  RCHECK(<a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa2a13963677aa8d2bea33d1ed6eec9d6">Box::ReadWriteHeaderInternal</a>(buffer));</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  uint32_t vflags;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordflow">if</span> (buffer-&gt;<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a36c0d8448dab759db37f9581ea602807">Reading</a>()) {</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    RCHECK(buffer-&gt;ReadWriteUInt32(&amp;vflags));</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    this-&gt;version = vflags &gt;&gt; 24;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    this-&gt;flags = vflags &amp; 0x00FFFFFF;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    vflags = (this-&gt;version &lt;&lt; 24) | this-&gt;flags;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    RCHECK(buffer-&gt;ReadWriteUInt32(&amp;vflags));</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  }</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_aa2a13963677aa8d2bea33d1ed6eec9d6"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa2a13963677aa8d2bea33d1ed6eec9d6">edash_packager::media::mp4::Box::ReadWriteHeaderInternal</a></div><div class="ttdeci">virtual bool ReadWriteHeaderInternal(BoxBuffer *buffer)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00060">box.cc:60</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1FullBox_html_a0a8b32da93e6d94198a3f295e72980da"><div class="ttname"><a href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a0a8b32da93e6d94198a3f295e72980da">edash_packager::media::mp4::FullBox::ReadWriteHeaderInternal</a></div><div class="ttdeci">bool ReadWriteHeaderInternal(BoxBuffer *buffer) final</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00079">box.cc:79</a></div></div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  DCHECK_EQ(box_size_, writer-&gt;Size() - buffer_size_before_write)</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      &lt;&lt; FourCCToString(<a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a504e7612c24f7d788748dff9940e46ea">BoxType</a>());</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
+<div class="line"><a name="l00038"></a><span class="lineno"><a class="line" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a814444b1b4e8b7d4e54d104be788bd6c">   38</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a814444b1b4e8b7d4e54d104be788bd6c">Box::WriteHeader</a>(<a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html">BufferWriter</a>* writer) {</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  DCHECK(writer);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="comment">// Compute and update box size.</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  uint32_t size = <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9a242fb1434e99256e2a6f4ad294a63d">ComputeSize</a>();</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  DCHECK_EQ(size, box_size_);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordtype">size_t</span> buffer_size_before_write = writer-&gt;Size();</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html">BoxBuffer</a> buffer(writer);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  CHECK(<a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa2a13963677aa8d2bea33d1ed6eec9d6">ReadWriteHeaderInternal</a>(&amp;buffer));</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  DCHECK_EQ(<a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9fbafc4d6ba2187325349dcd406b490a">HeaderSize</a>(), writer-&gt;Size() - buffer_size_before_write);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;}</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9a242fb1434e99256e2a6f4ad294a63d">   50</a></span>&#160;uint32_t <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9a242fb1434e99256e2a6f4ad294a63d">Box::ComputeSize</a>() {</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  box_size_ = ComputeSizeInternal();</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordflow">return</span> box_size_;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno"><a class="line" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9fbafc4d6ba2187325349dcd406b490a">   55</a></span>&#160;uint32_t <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9fbafc4d6ba2187325349dcd406b490a">Box::HeaderSize</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keyword">const</span> uint32_t kFourCCSize = 4;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="comment">// We don&#39;t support 64-bit size.</span></div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordflow">return</span> kFourCCSize + <span class="keyword">sizeof</span>(uint32_t);</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;}</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa2a13963677aa8d2bea33d1ed6eec9d6">   61</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa2a13963677aa8d2bea33d1ed6eec9d6">Box::ReadWriteHeaderInternal</a>(<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html">BoxBuffer</a>* buffer) {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordflow">if</span> (buffer-&gt;<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a36c0d8448dab759db37f9581ea602807">Reading</a>()) {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="comment">// Skip for read mode, which is handled already in BoxReader.</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    CHECK(buffer-&gt;ReadWriteUInt32(&amp;box_size_));</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    FourCC fourcc = <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a504e7612c24f7d788748dff9940e46ea">BoxType</a>();</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    CHECK(buffer-&gt;ReadWriteFourCC(&amp;fourcc));</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  }</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;}</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;FullBox::FullBox() : version(0), flags(0) {}</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;FullBox::~FullBox() {}</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a58b21910baf781792d0893b6d805e2c6">   75</a></span>&#160;uint32_t <a class="code" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a58b21910baf781792d0893b6d805e2c6">FullBox::HeaderSize</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">// Additional 1-byte version and 3-byte flags.</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordflow">return</span> <a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9fbafc4d6ba2187325349dcd406b490a">Box::HeaderSize</a>() + 1 + 3;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
+<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a0a8b32da93e6d94198a3f295e72980da">   80</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a0a8b32da93e6d94198a3f295e72980da">FullBox::ReadWriteHeaderInternal</a>(<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html">BoxBuffer</a>* buffer) {</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  RCHECK(<a class="code" href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa2a13963677aa8d2bea33d1ed6eec9d6">Box::ReadWriteHeaderInternal</a>(buffer));</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  uint32_t vflags;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordflow">if</span> (buffer-&gt;<a class="code" href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a36c0d8448dab759db37f9581ea602807">Reading</a>()) {</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    RCHECK(buffer-&gt;ReadWriteUInt32(&amp;vflags));</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    this-&gt;version = vflags &gt;&gt; 24;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    this-&gt;flags = vflags &amp; 0x00FFFFFF;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    vflags = (this-&gt;version &lt;&lt; 24) | this-&gt;flags;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    RCHECK(buffer-&gt;ReadWriteUInt32(&amp;vflags));</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  }</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;}  <span class="comment">// namespace mp4</span></div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_aa2a13963677aa8d2bea33d1ed6eec9d6"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa2a13963677aa8d2bea33d1ed6eec9d6">edash_packager::media::mp4::Box::ReadWriteHeaderInternal</a></div><div class="ttdeci">virtual bool ReadWriteHeaderInternal(BoxBuffer *buffer)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00061">box.cc:61</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1FullBox_html_a0a8b32da93e6d94198a3f295e72980da"><div class="ttname"><a href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a0a8b32da93e6d94198a3f295e72980da">edash_packager::media::mp4::FullBox::ReadWriteHeaderInternal</a></div><div class="ttdeci">bool ReadWriteHeaderInternal(BoxBuffer *buffer) final</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00080">box.cc:80</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1BoxBuffer_html"><div class="ttname"><a href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html">edash_packager::media::mp4::BoxBuffer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/dbf/box__buffer_8h_source.html#l00025">box_buffer.h:25</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_a7b62a3983faafbea54a32486df60ed96"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a7b62a3983faafbea54a32486df60ed96">edash_packager::media::mp4::Box::Parse</a></div><div class="ttdeci">bool Parse(BoxReader *reader)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00019">box.cc:19</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1BoxBuffer_html_a36c0d8448dab759db37f9581ea602807"><div class="ttname"><a href="../../dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a36c0d8448dab759db37f9581ea602807">edash_packager::media::mp4::BoxBuffer::Reading</a></div><div class="ttdeci">bool Reading() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/dbf/box__buffer_8h_source.html#l00040">box_buffer.h:40</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_a814444b1b4e8b7d4e54d104be788bd6c"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a814444b1b4e8b7d4e54d104be788bd6c">edash_packager::media::mp4::Box::WriteHeader</a></div><div class="ttdeci">void WriteHeader(BufferWriter *writer)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00037">box.cc:37</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_a9a242fb1434e99256e2a6f4ad294a63d"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9a242fb1434e99256e2a6f4ad294a63d">edash_packager::media::mp4::Box::ComputeSize</a></div><div class="ttdeci">uint32_t ComputeSize()</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00049">box.cc:49</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_a9fbafc4d6ba2187325349dcd406b490a"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9fbafc4d6ba2187325349dcd406b490a">edash_packager::media::mp4::Box::HeaderSize</a></div><div class="ttdeci">virtual uint32_t HeaderSize() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00054">box.cc:54</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_a814444b1b4e8b7d4e54d104be788bd6c"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a814444b1b4e8b7d4e54d104be788bd6c">edash_packager::media::mp4::Box::WriteHeader</a></div><div class="ttdeci">void WriteHeader(BufferWriter *writer)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00038">box.cc:38</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_a9a242fb1434e99256e2a6f4ad294a63d"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9a242fb1434e99256e2a6f4ad294a63d">edash_packager::media::mp4::Box::ComputeSize</a></div><div class="ttdeci">uint32_t ComputeSize()</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00050">box.cc:50</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_a9fbafc4d6ba2187325349dcd406b490a"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9fbafc4d6ba2187325349dcd406b490a">edash_packager::media::mp4::Box::HeaderSize</a></div><div class="ttdeci">virtual uint32_t HeaderSize() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00055">box.cc:55</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_aa7a756828b5514fcd3eaf16d86c413c0"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#aa7a756828b5514fcd3eaf16d86c413c0">edash_packager::media::mp4::Box::Write</a></div><div class="ttdeci">void Write(BufferWriter *writer)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00025">box.cc:25</a></div></div>
 <div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1Box_html_a504e7612c24f7d788748dff9940e46ea"><div class="ttname"><a href="../../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a504e7612c24f7d788748dff9940e46ea">edash_packager::media::mp4::Box::BoxType</a></div><div class="ttdeci">virtual FourCC BoxType() const =0</div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1BoxReader_html"><div class="ttname"><a href="../../db/d6c/classedash__packager_1_1media_1_1mp4_1_1BoxReader.html">edash_packager::media::mp4::BoxReader</a></div><div class="ttdoc">Class for reading MP4 boxes. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d92/box__reader_8h_source.html#l00024">box_reader.h:24</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1FullBox_html_a58b21910baf781792d0893b6d805e2c6"><div class="ttname"><a href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a58b21910baf781792d0893b6d805e2c6">edash_packager::media::mp4::FullBox::HeaderSize</a></div><div class="ttdeci">uint32_t HeaderSize() const final</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00074">box.cc:74</a></div></div>
+<div class="ttc" id="structedash__packager_1_1media_1_1mp4_1_1FullBox_html_a58b21910baf781792d0893b6d805e2c6"><div class="ttname"><a href="../../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a58b21910baf781792d0893b6d805e2c6">edash_packager::media::mp4::FullBox::HeaderSize</a></div><div class="ttdeci">uint32_t HeaderSize() const final</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d4d/box_8cc_source.html#l00075">box.cc:75</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1BufferWriter_html"><div class="ttname"><a href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html">edash_packager::media::BufferWriter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd2/buffer__writer_8h_source.html#l00022">buffer_writer.h:22</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Apr 26 2016 17:33:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Apr 26 2016 18:23:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
