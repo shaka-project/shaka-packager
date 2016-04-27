@@ -8,9 +8,13 @@
 
 #include <memory>
 
+#include "packager/media/base/aes_encryptor.h"
+#include "packager/media/base/key_source.h"
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/base/status.h"
+#include "packager/media/base/video_stream_info.h"
 #include "packager/media/event/muxer_listener.h"
+#include "packager/media/event/progress_listener.h"
 
 namespace edash_packager {
 namespace media {
@@ -27,7 +31,10 @@ TsSegmenter::TsSegmenter(const MuxerOptions& options, MuxerListener* listener)
       pes_packet_generator_(new PesPacketGenerator()) {}
 TsSegmenter::~TsSegmenter() {}
 
-Status TsSegmenter::Initialize(const StreamInfo& stream_info) {
+Status TsSegmenter::Initialize(const StreamInfo& stream_info,
+                               KeySource* encryption_key_source,
+                               uint32_t max_sd_pixels,
+                               double clear_lead_in_seconds) {
   if (muxer_options_.segment_template.empty())
     return Status(error::MUXER_FAILURE, "Segment template not specified.");
   if (!ts_writer_->Initialize(stream_info, false))
@@ -35,6 +42,26 @@ Status TsSegmenter::Initialize(const StreamInfo& stream_info) {
   if (!pes_packet_generator_->Initialize(stream_info)) {
     return Status(error::MUXER_FAILURE,
                   "Failed to initialize PesPacketGenerator.");
+  }
+
+  if (encryption_key_source) {
+    scoped_ptr<EncryptionKey> encryption_key(new EncryptionKey());
+    const KeySource::TrackType type =
+        GetTrackTypeForEncryption(stream_info, max_sd_pixels);
+    Status status = encryption_key_source->GetKey(type, encryption_key.get());
+
+    if (encryption_key->iv.empty()) {
+      if (!AesCryptor::GenerateRandomIv(FOURCC_cbcs, &encryption_key->iv)) {
+        return Status(error::INTERNAL_ERROR, "Failed to generate random iv.");
+      }
+    }
+    if (!status.ok())
+      return status;
+    encryption_key_ = encryption_key.Pass();
+    clear_lead_in_seconds_ = clear_lead_in_seconds;
+    status = NotifyEncrypted();
+    if (!status.ok())
+      return status;
   }
 
   timescale_scale_ = kTsTimescale / stream_info.time_scale();
@@ -137,10 +164,28 @@ Status TsSegmenter::Flush() {
           current_segment_total_sample_duration_ * kTsTimescale, file_size);
     }
     ts_writer_file_opened_ = false;
+    total_duration_in_seconds_ += current_segment_total_sample_duration_;
   }
   current_segment_total_sample_duration_ = 0.0;
   current_segment_start_time_ = 0;
   current_segment_path_.clear();
+  return NotifyEncrypted();
+}
+
+Status TsSegmenter::NotifyEncrypted() {
+  if (encryption_key_ && total_duration_in_seconds_ >= clear_lead_in_seconds_) {
+    if (listener_) {
+      // For now this only happens once, so send true.
+      const bool kIsInitialEncryptionInfo = true;
+      listener_->OnEncryptionInfoReady(
+          kIsInitialEncryptionInfo, FOURCC_cbcs, encryption_key_->key_id,
+          encryption_key_->iv, encryption_key_->key_system_info);
+    }
+
+    if (!pes_packet_generator_->SetEncryptionKey(encryption_key_.Pass()))
+      return Status(error::INTERNAL_ERROR, "Failed to set encryption key.");
+    ts_writer_->SignalEncypted();
+  }
   return Status::OK;
 }
 

@@ -13,8 +13,12 @@
 
 #include <string>
 
+#include "packager/media/base/key_source.h"
+
 namespace edash_packager {
 namespace media {
+
+class StreamInfo;
 
 /// Validates the segment template against segment URL construction rule
 /// specified in ISO/IEC 23009-1:2012 5.3.9.4.4.
@@ -34,6 +38,14 @@ std::string GetSegmentName(const std::string& segment_template,
                            uint64_t segment_start_time,
                            uint32_t segment_index,
                            uint32_t bandwidth);
+
+/// Determine the track type for encryption from input.
+/// @param stream_info is the info of the stream.
+/// @param max_sd_pixels is the maximum number of pixels to be considered SD.
+///        Anything above is HD.
+/// @return track type for encryption.
+KeySource::TrackType GetTrackTypeForEncryption(const StreamInfo& stream_info,
+                                               uint32_t max_sd_pixels);
 
 }  // namespace media
 }  // namespace edash_packager

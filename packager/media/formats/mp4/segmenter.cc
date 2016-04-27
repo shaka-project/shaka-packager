@@ -16,6 +16,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
+#include "packager/media/base/muxer_util.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/event/muxer_listener.h"
 #include "packager/media/event/progress_listener.h"
@@ -120,19 +121,6 @@ void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
     GenerateSinf(encryption_key, entry.format, protection_scheme, &entry.sinf);
     entry.format = FOURCC_enca;
   }
-}
-
-KeySource::TrackType GetTrackTypeForEncryption(const StreamInfo& stream_info,
-                                               uint32_t max_sd_pixels) {
-  if (stream_info.stream_type() == kStreamAudio)
-    return KeySource::TRACK_TYPE_AUDIO;
-
-  DCHECK_EQ(kStreamVideo, stream_info.stream_type());
-  const VideoStreamInfo& video_stream_info =
-      static_cast<const VideoStreamInfo&>(stream_info);
-  uint32_t pixels = video_stream_info.width() * video_stream_info.height();
-  return (pixels > max_sd_pixels) ? KeySource::TRACK_TYPE_HD
-                                  : KeySource::TRACK_TYPE_SD;
 }
 
 }  // namespace

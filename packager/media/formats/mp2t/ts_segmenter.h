@@ -18,6 +18,7 @@
 namespace edash_packager {
 namespace media {
 
+class KeySource;
 class MuxerListener;
 
 namespace mp2t {
@@ -27,6 +28,7 @@ namespace mp2t {
 // segmenters.
 class TsSegmenter {
  public:
+  // TODO(rkuroiwa): Add progress listener?
   /// @param options is the options for this muxer. This must stay valid
   ///        throughout the life time of the instance.
   /// @param listener is the MuxerListener that should be used to notify events.
@@ -35,9 +37,13 @@ class TsSegmenter {
   ~TsSegmenter();
 
   /// Initialize the object.
+  /// Key rotation is not supported.
   /// @param stream_info is the stream info for the segmenter.
   /// @return OK on success.
-  Status Initialize(const StreamInfo& stream_info);
+  Status Initialize(const StreamInfo& stream_info,
+                    KeySource* encryption_key_source,
+                    uint32_t max_sd_pixels,
+                    double clear_lead_in_seconds);
 
   /// Finalize the segmenter.
   /// @return OK on success.
@@ -69,6 +75,9 @@ class TsSegmenter {
   // before calling this, this will open one and write them to file.
   Status Flush();
 
+  // If conditions are met, notify objects that the data is encrypted.
+  Status NotifyEncrypted();
+
   const MuxerOptions& muxer_options_;
   MuxerListener* const listener_;
 
@@ -96,6 +105,14 @@ class TsSegmenter {
   // Path of the current segment so that File::GetFileSize() can be used after
   // the segment has been finalized.
   std::string current_segment_path_;
+
+  scoped_ptr<EncryptionKey> encryption_key_;
+  double clear_lead_in_seconds_ = 0;
+
+  // The total duration of the segments that it has segmented. This only
+  // includes segments that have been finailzed. IOW, this does not count the
+  // current segments duration.
+  double total_duration_in_seconds_ = 0.0;
 
   DISALLOW_COPY_AND_ASSIGN(TsSegmenter);
 };

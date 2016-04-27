@@ -15,6 +15,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_split.h"
 #include "packager/base/strings/stringprintf.h"
+#include "packager/media/base/video_stream_info.h"
 
 namespace edash_packager {
 namespace {
@@ -151,6 +152,22 @@ std::string GetSegmentName(const std::string& segment_template,
     }
   }
   return segment_name;
+}
+
+KeySource::TrackType GetTrackTypeForEncryption(const StreamInfo& stream_info,
+                                               uint32_t max_sd_pixels) {
+  if (stream_info.stream_type() == kStreamAudio)
+    return KeySource::TRACK_TYPE_AUDIO;
+
+  if (stream_info.stream_type() != kStreamVideo)
+    return KeySource::TRACK_TYPE_UNKNOWN;
+
+  DCHECK_EQ(kStreamVideo, stream_info.stream_type());
+  const VideoStreamInfo& video_stream_info =
+      static_cast<const VideoStreamInfo&>(stream_info);
+  uint32_t pixels = video_stream_info.width() * video_stream_info.height();
+  return (pixels > max_sd_pixels) ? KeySource::TRACK_TYPE_HD
+                                  : KeySource::TRACK_TYPE_SD;
 }
 
 }  // namespace media

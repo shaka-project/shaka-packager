@@ -22,7 +22,9 @@ Status TsMuxer::Initialize() {
     return Status(error::MUXER_FAILURE, "Cannot handle more than one streams.");
 
   segmenter_.reset(new TsSegmenter(options(), muxer_listener()));
-  Status status = segmenter_->Initialize(*streams()[0]->info());
+  Status status =
+      segmenter_->Initialize(*streams()[0]->info(), encryption_key_source(),
+                             max_sd_pixels(), clear_lead_in_seconds());
   FireOnMediaStartEvent();
   return status;
 }

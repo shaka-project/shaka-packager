@@ -47,7 +47,7 @@ class TsWriter {
 
   /// Signals the writer that the rest of the segments are encrypted.
   /// |will_be_encrypted| passed to Initialize() should be true.
-  void SignalEncypted();
+  virtual void SignalEncypted();
 
   /// Flush all the pending PesPackets that have not been written to file and
   /// close the file.

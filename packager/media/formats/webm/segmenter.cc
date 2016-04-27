@@ -11,6 +11,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
+#include "packager/media/base/muxer_util.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/event/muxer_listener.h"
@@ -334,22 +335,11 @@ Status Segmenter::CreateAudioTrack(AudioStreamInfo* info) {
 Status Segmenter::InitializeEncryptor(KeySource* key_source,
                                       uint32_t max_sd_pixels) {
   encryptor_.reset(new Encryptor());
-  switch (info_->stream_type()) {
-    case kStreamVideo: {
-      VideoStreamInfo* video_info = static_cast<VideoStreamInfo*>(info_);
-      uint32_t pixels = video_info->width() * video_info->height();
-      KeySource::TrackType type = (pixels > max_sd_pixels)
-                                      ? KeySource::TRACK_TYPE_HD
-                                      : KeySource::TRACK_TYPE_SD;
-      return encryptor_->Initialize(muxer_listener_, type, key_source);
-    }
-    case kStreamAudio:
-      return encryptor_->Initialize(
-          muxer_listener_, KeySource::TrackType::TRACK_TYPE_AUDIO, key_source);
-    default:
-      // Other streams are not encrypted.
-      return Status::OK;
-  }
+  const KeySource::TrackType track_type =
+      GetTrackTypeForEncryption(*info_, max_sd_pixels);
+  if (track_type == KeySource::TrackType::TRACK_TYPE_UNKNOWN)
+    return Status::OK;
+  return encryptor_->Initialize(muxer_listener_, track_type, key_source);
 }
 
 Status Segmenter::WriteFrame(bool write_duration) {
