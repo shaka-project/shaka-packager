@@ -15,10 +15,31 @@ namespace media {
 /// Implements pattern-based encryption/decryption.
 class AesPatternCryptor : public AesCryptor {
  public:
+  /// Enumerator for controling encrytion/decryption mode for the last
+  /// encryption/decrytion block(s).
+  enum PatternEncryptionMode {
+    /// Use kEncryptIfCryptByteBlockRemaining if the last blocks is exactly the
+    /// same as the number of remaining bytes. IOW
+    /// if (remaining_bytes == encryption_block_bytes)
+    ///   encrypt(remaining_data)
+    kEncryptIfCryptByteBlockRemaining,
+    /// Use kSkipIfCryptByteBlockRemaining to not encrypt/decrypt the last
+    /// clocks if it is exactly the same as the number of remaining bytes.
+    /// if (remaining_bytes > encryption_block_bytes) {
+    ///   // Since this is the last blocks, this is effectively the same
+    ///   // condition as remaining_bytes != encryption_block_bytes.
+    ///   encrypt().
+    /// }
+    /// Use this mode for HLS SAMPLE-AES.
+    kSkipIfCryptByteBlockRemaining,
+  };
+
   /// @param crypt_byte_block indicates number of encrypted blocks (16-byte) in
   ///        pattern based encryption.
   /// @param skip_byte_block indicates number of unencrypted blocks (16-byte)
   ///        in pattern based encryption.
+  /// @param encryption_mode is used to determine the behavior for the last
+  ///        block.
   /// @param constant_iv_flag indicates whether a constant iv is used,
   ///        kUseConstantIv means that the same iv is used for all Crypt calls
   ///        until iv is changed via SetIv; otherwise, iv can be incremented
@@ -29,6 +50,7 @@ class AesPatternCryptor : public AesCryptor {
   ///        encryption/decryption.
   AesPatternCryptor(uint8_t crypt_byte_block,
                     uint8_t skip_byte_block,
+                    PatternEncryptionMode encryption_mode,
                     ConstantIvFlag constant_iv_flag,
                     scoped_ptr<AesCryptor> cryptor);
   ~AesPatternCryptor() override;
@@ -46,8 +68,11 @@ class AesPatternCryptor : public AesCryptor {
                      size_t* crypt_text_size) override;
   void SetIvInternal() override;
 
+  bool NeedEncrypt(size_t input_size, size_t target_data_size);
+
   const uint8_t crypt_byte_block_;
   const uint8_t skip_byte_block_;
+  const PatternEncryptionMode encryption_mode_;
   scoped_ptr<AesCryptor> cryptor_;
 
   DISALLOW_COPY_AND_ASSIGN(AesPatternCryptor);

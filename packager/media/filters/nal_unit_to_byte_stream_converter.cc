@@ -27,10 +27,30 @@ const uint8_t kEmulationPreventionByte = 0x03;
 
 const uint8_t kAccessUnitDelimiterRbspAnyPrimaryPicType = 0xF0;
 
-// Inserts emulation byte where necessary.
-void EscapeRawByteSequencePayload(const uint8_t* input,
-                                  size_t input_size,
-                                  BufferWriter* output_writer) {
+void AppendNalu(const Nalu& nalu,
+                int nalu_length_size,
+                bool escape_data,
+                BufferWriter* buffer_writer) {
+  if (escape_data) {
+    EscapeNalByteSequence(nalu.data(), nalu.header_size() + nalu.payload_size(),
+                          buffer_writer);
+  } else {
+    buffer_writer->AppendArray(nalu.data(),
+                               nalu.header_size() + nalu.payload_size());
+  }
+}
+
+void AddAccessUnitDelimiter(BufferWriter* buffer_writer) {
+  buffer_writer->AppendInt(static_cast<uint8_t>(Nalu::H264_AUD));
+  // For now, primary_pic_type is 7 which is "anything".
+  buffer_writer->AppendInt(kAccessUnitDelimiterRbspAnyPrimaryPicType);
+}
+
+}  // namespace
+
+void EscapeNalByteSequence(const uint8_t* input,
+                           size_t input_size,
+                           BufferWriter* output_writer) {
   // Keep track of consecutive zeros that it has seen (not including the current
   // byte), so that the algorithm doesn't need to go back to check the same
   // bytes.
@@ -43,6 +63,7 @@ void EscapeRawByteSequencePayload(const uint8_t* input,
         // Must be escaped.
         output_writer->AppendInt(kEmulationPreventionByte);
       }
+
       output_writer->AppendInt(input[i]);
       // Note that input[i] can be 0.
       // 00 00 00 00 00 00 should become
@@ -63,27 +84,6 @@ void EscapeRawByteSequencePayload(const uint8_t* input,
     output_writer->AppendInt(kEmulationPreventionByte);
   }
 }
-
-void AppendNalu(const Nalu& nalu,
-                int nalu_length_size,
-                bool escape_data,
-                BufferWriter* buffer_writer) {
-  if (escape_data) {
-    EscapeRawByteSequencePayload(
-        nalu.data(), nalu.header_size() + nalu.payload_size(), buffer_writer);
-  } else {
-    buffer_writer->AppendArray(nalu.data(),
-                               nalu.header_size() + nalu.payload_size());
-  }
-}
-
-void AddAccessUnitDelimiter(BufferWriter* buffer_writer) {
-  buffer_writer->AppendInt(static_cast<uint8_t>(Nalu::H264_AUD));
-  // For now, primary_pic_type is 7 which is "anything".
-  buffer_writer->AppendInt(kAccessUnitDelimiterRbspAnyPrimaryPicType);
-}
-
-}  // namespace
 
 NalUnitToByteStreamConverter::NalUnitToByteStreamConverter()
     : nalu_length_size_(0), escape_data_(false) {}

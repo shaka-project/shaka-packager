@@ -51,13 +51,17 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
       case FOURCC_cens:
         aes_decryptor.reset(new AesPatternCryptor(
             decrypt_config->crypt_byte_block(),
-            decrypt_config->skip_byte_block(), AesCryptor::kDontUseConstantIv,
-            scoped_ptr<AesCryptor>(new AesCtrDecryptor)));
+            decrypt_config->skip_byte_block(),
+            AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
+            AesCryptor::kDontUseConstantIv,
+            scoped_ptr<AesCryptor>(new AesCtrDecryptor())));
         break;
       case FOURCC_cbcs:
         aes_decryptor.reset(new AesPatternCryptor(
             decrypt_config->crypt_byte_block(),
-            decrypt_config->skip_byte_block(), AesCryptor::kUseConstantIv,
+            decrypt_config->skip_byte_block(),
+            AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
+            AesCryptor::kUseConstantIv,
             scoped_ptr<AesCryptor>(new AesCbcDecryptor(kNoPadding))));
         break;
       default:

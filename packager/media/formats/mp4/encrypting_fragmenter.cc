@@ -203,12 +203,16 @@ Status EncryptingFragmenter::CreateEncryptor() {
       break;
     case FOURCC_cens:
       encryptor.reset(new AesPatternCryptor(
-          crypt_byte_block(), skip_byte_block(), AesCryptor::kDontUseConstantIv,
-          scoped_ptr<AesCryptor>(new AesCtrEncryptor)));
+          crypt_byte_block(), skip_byte_block(),
+          AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
+          AesCryptor::kDontUseConstantIv,
+          scoped_ptr<AesCryptor>(new AesCtrEncryptor())));
       break;
     case FOURCC_cbcs:
       encryptor.reset(new AesPatternCryptor(
-          crypt_byte_block(), skip_byte_block(), AesCryptor::kUseConstantIv,
+          crypt_byte_block(), skip_byte_block(),
+          AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
+          AesCryptor::kUseConstantIv,
           scoped_ptr<AesCryptor>(new AesCbcEncryptor(kNoPadding))));
       break;
     default:

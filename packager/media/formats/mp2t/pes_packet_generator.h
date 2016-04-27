@@ -11,6 +11,8 @@
 
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/stl_util.h"
+#include "packager/media/base/aes_cryptor.h"
+#include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/stream_info.h"
 
@@ -48,6 +50,12 @@ class PesPacketGenerator {
   /// @return true on success, false otherwise.
   virtual bool PushSample(scoped_refptr<MediaSample> sample);
 
+  /// Sets the encryption key for encrypting samples.
+  /// @param encryption_key is the key that will be used to encrypt further
+  ///        samples.
+  /// @return true on success, false otherwise.
+  virtual bool SetEncryptionKey(scoped_ptr<EncryptionKey> encryption_key);
+
   /// @return The number of PES packets that are ready to be consumed.
   virtual size_t NumberOfReadyPesPackets();
 
@@ -79,6 +87,9 @@ class PesPacketGenerator {
 
   std::list<PesPacket*> pes_packets_;
   STLElementDeleter<decltype(pes_packets_)> pes_packets_deleter_;
+
+  // Current encryption key.
+  scoped_ptr<AesCryptor> encryptor_;
 
   DISALLOW_COPY_AND_ASSIGN(PesPacketGenerator);
 };

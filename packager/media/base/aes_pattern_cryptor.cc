@@ -15,11 +15,13 @@ namespace media {
 
 AesPatternCryptor::AesPatternCryptor(uint8_t crypt_byte_block,
                                      uint8_t skip_byte_block,
+                                     PatternEncryptionMode encryption_mode,
                                      ConstantIvFlag constant_iv_flag,
                                      scoped_ptr<AesCryptor> cryptor)
     : AesCryptor(constant_iv_flag),
       crypt_byte_block_(crypt_byte_block),
       skip_byte_block_(skip_byte_block),
+      encryption_mode_(encryption_mode),
       cryptor_(cryptor.Pass()) {
   DCHECK(cryptor_);
 }
@@ -45,7 +47,7 @@ bool AesPatternCryptor::CryptInternal(const uint8_t* text,
 
   while (text_size > 0) {
     const size_t crypt_byte_size = crypt_byte_block_ * AES_BLOCK_SIZE;
-    if (text_size >= crypt_byte_size) {
+    if (NeedEncrypt(text_size, crypt_byte_size)) {
       if (!cryptor_->Crypt(text, crypt_byte_size, crypt_text))
         return false;
     } else {
@@ -69,6 +71,13 @@ bool AesPatternCryptor::CryptInternal(const uint8_t* text,
 
 void AesPatternCryptor::SetIvInternal() {
   CHECK(cryptor_->SetIv(iv()));
+}
+
+bool AesPatternCryptor::NeedEncrypt(size_t input_size,
+                                    size_t target_data_size) {
+  if (encryption_mode_ == kSkipIfCryptByteBlockRemaining)
+    return input_size > target_data_size;
+  return input_size >= target_data_size;
 }
 
 }  // namespace media

@@ -92,8 +92,12 @@ class Nalu {
                   const uint8_t* data,
                   uint64_t size) WARN_UNUSED_RESULT;
 
+  /// This is the pointer to the Nalu data, pointing to the header.
   const uint8_t* data() const { return data_; }
+
+  /// The size of the header, e.g. 1 for H.264.
   uint64_t header_size() const { return header_size_; }
+  /// Size of this Nalu minus header_size().
   uint64_t payload_size() const { return payload_size_; }
 
   // H.264 Specific:
@@ -103,6 +107,8 @@ class Nalu {
   int nuh_layer_id() const { return nuh_layer_id_; }
   int nuh_temporal_id() const { return nuh_temporal_id_; }
 
+  /// H264NaluType and H265NaluType enums may be used to compare against the
+  /// return value.
   int type() const { return type_; }
   bool is_video_slice() const { return is_video_slice_; }
   bool can_start_access_unit() const { return can_start_access_unit_; }

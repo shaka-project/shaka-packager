@@ -43,6 +43,7 @@ class AesPatternCryptorTest : public ::testing::Test {
       : mock_cryptor_(new MockAesCryptor),
         pattern_cryptor_(kCryptByteBlock,
                          kSkipByteBlock,
+                         AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
                          AesCryptor::kDontUseConstantIv,
                          scoped_ptr<MockAesCryptor>(mock_cryptor_)) {}
 
@@ -141,9 +142,11 @@ INSTANTIATE_TEST_CASE_P(PatternTestCases,
 
 TEST(AesPatternCryptorConstIvTest, UseConstantIv) {
   MockAesCryptor* mock_cryptor = new MockAesCryptor;
-  AesPatternCryptor pattern_cryptor(kCryptByteBlock, kSkipByteBlock,
-                                    AesPatternCryptor::kUseConstantIv,
-                                    scoped_ptr<MockAesCryptor>(mock_cryptor));
+  AesPatternCryptor pattern_cryptor(
+      kCryptByteBlock, kSkipByteBlock,
+      AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
+      AesPatternCryptor::kUseConstantIv,
+      scoped_ptr<MockAesCryptor>(mock_cryptor));
 
   std::vector<uint8_t> iv(8, 'i');
   // SetIv will be called twice:
@@ -158,9 +161,11 @@ TEST(AesPatternCryptorConstIvTest, UseConstantIv) {
 
 TEST(AesPatternCryptorConstIvTest, DontUseConstantIv) {
   MockAesCryptor* mock_cryptor = new MockAesCryptor;
-  AesPatternCryptor pattern_cryptor(kCryptByteBlock, kSkipByteBlock,
-                                    AesPatternCryptor::kDontUseConstantIv,
-                                    scoped_ptr<MockAesCryptor>(mock_cryptor));
+  AesPatternCryptor pattern_cryptor(
+      kCryptByteBlock, kSkipByteBlock,
+      AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
+      AesPatternCryptor::kDontUseConstantIv,
+      scoped_ptr<MockAesCryptor>(mock_cryptor));
 
   std::vector<uint8_t> iv(8, 'i');
   // SetIv will be called only once by AesPatternCryptor::SetIv.
@@ -169,6 +174,49 @@ TEST(AesPatternCryptorConstIvTest, DontUseConstantIv) {
 
   std::string crypt_text;
   ASSERT_TRUE(pattern_cryptor.Crypt("010203", &crypt_text));
+}
+
+TEST(SampleAesPatternCryptor, 16Bytes) {
+  MockAesCryptor* mock_cryptor = new MockAesCryptor();
+  EXPECT_CALL(*mock_cryptor, CryptInternal(_, _, _, _)).Times(0);
+
+  const uint8_t kSampleAesEncryptedBlock = 1;
+  const uint8_t kSampleAesClearBlock = 9;
+  AesPatternCryptor pattern_cryptor(
+      kSampleAesEncryptedBlock, kSampleAesClearBlock,
+      AesPatternCryptor::kSkipIfCryptByteBlockRemaining,
+      AesPatternCryptor::kUseConstantIv,
+      scoped_ptr<MockAesCryptor>(mock_cryptor));
+
+  std::vector<uint8_t> iv(8, 'i');
+  // SetIv will be called only once by AesPatternCryptor::SetIv.
+  EXPECT_TRUE(pattern_cryptor.SetIv(iv));
+
+  std::string crypt_text;
+  // Exactly 16 bytes, mock's Crypt should not be called.
+  ASSERT_TRUE(pattern_cryptor.Crypt("0123456789abcdef", &crypt_text));
+}
+
+TEST(SampleAesPatternCryptor, MoreThan16Bytes) {
+  MockAesCryptor* mock_cryptor = new MockAesCryptor();
+  EXPECT_CALL(*mock_cryptor, CryptInternal(_, 16u, _, _))
+      .WillOnce(Return(true));
+
+  const uint8_t kSampleAesEncryptedBlock = 1;
+  const uint8_t kSampleAesClearBlock = 9;
+  AesPatternCryptor pattern_cryptor(
+      kSampleAesEncryptedBlock, kSampleAesClearBlock,
+      AesPatternCryptor::kSkipIfCryptByteBlockRemaining,
+      AesPatternCryptor::kUseConstantIv,
+      scoped_ptr<MockAesCryptor>(mock_cryptor));
+
+  std::vector<uint8_t> iv(8, 'i');
+  // SetIv will be called only once by AesPatternCryptor::SetIv.
+  EXPECT_TRUE(pattern_cryptor.SetIv(iv));
+
+  std::string crypt_text;
+  // More than 16 bytes so mock's CryptInternal should be called.
+  ASSERT_TRUE(pattern_cryptor.Crypt("0123456789abcdef012", &crypt_text));
 }
 
 }  // namespace media

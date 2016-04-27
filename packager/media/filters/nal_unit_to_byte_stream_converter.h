@@ -16,7 +16,19 @@
 namespace edash_packager {
 namespace media {
 
+class BufferWriter;
 class VideoStreamInfo;
+
+/// Inserts emulation prevention byte (0x03) where necessary.
+/// It is safe to call this again on the output, i.e. it is OK to "re-escape".
+/// This cannot do in-place escaping.
+/// @param input is the data to be escaped. This may not be the same (internal)
+///        buffer as @a output.
+/// @param input_size is the size of the input.
+/// @param output is the escaped data.
+void EscapeNalByteSequence(const uint8_t* input,
+                           size_t input_size,
+                           BufferWriter* output);
 
 // Methods are virtual for mocking.
 class NalUnitToByteStreamConverter {
