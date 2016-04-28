@@ -27,7 +27,7 @@ namespace media {
 namespace {
 
 const char* kMediaFiles[] = {"bear-640x360.mp4", "bear-640x360-av_frag.mp4",
-                             "bear-1280x720.ts"};
+                             "bear-640x360.ts"};
 
 // Muxer options.
 const double kSegmentDurationInSeconds = 1.0;

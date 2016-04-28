@@ -100,6 +100,24 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffGold(self.output[2], 'subtitle-english-golden.vtt')
     self._DiffGold(self.mpd_output, 'bear-640x360-avt-golden.mpd')
 
+  def testPackageAvcTs(self):
+    # Currently we only support live packaging for ts.
+    self.packager.Package(
+        self._GetStreams(
+            ['audio', 'video'],
+            output_format='ts',
+            live=True,
+            test_files=['bear-640x360.ts']),
+        self._GetFlags(live=True))
+    self._DiffLiveGold(self.output[0],
+                       'bear-640x360-a-golden',
+                       has_init_segment=False,
+                       segment_extension='ts')
+    self._DiffLiveGold(self.output[1],
+                       'bear-640x360-v-golden',
+                       has_init_segment=False,
+                       segment_extension='ts')
+
   def testPackageVp8Webm(self):
     self.packager.Package(
         self._GetStreams(['video'],
@@ -378,10 +396,10 @@ class PackagerAppTest(unittest.TestCase):
           output_prefix = '%s_%d_%s' % (self.output_prefix, test_file_index,
                                         stream_descriptor)
         if live:
-          stream = ('input=%s,stream=%s,init_segment=%s-init.mp4,'
+          stream = ('input=%s,stream=%s,format=%s,init_segment=%s-init.mp4,'
                     'segment_template=%s-$Number$.m4s')
-          streams.append(stream % (test_file, stream_descriptor, output_prefix,
-                                   output_prefix))
+          streams.append(stream % (test_file, stream_descriptor, output_format,
+                                   output_prefix, output_prefix))
           self.output.append(output_prefix)
         else:
           output = '%s.%s' % (
@@ -491,13 +509,18 @@ class PackagerAppTest(unittest.TestCase):
       f.write(content.replace(test_output, 'place_holder'))
     self._DiffGold(media_info_output, golden_file_name + '.media_info')
 
-  def _DiffLiveGold(self, test_output_prefix, golden_file_name_prefix):
+  def _DiffLiveGold(self,
+                    test_output_prefix,
+                    golden_file_name_prefix,
+                    has_init_segment=True,
+                    segment_extension='m4s'):
     # Compare init and the first three segments.
-    self._DiffGold(test_output_prefix + '-init.mp4',
-                   golden_file_name_prefix + '-init.mp4')
+    if has_init_segment:
+      self._DiffGold(test_output_prefix + '-init.mp4',
+                     golden_file_name_prefix + '-init.mp4')
     for i in range(1, 4):
-      self._DiffGold(test_output_prefix + '-%d.m4s' % i,
-                     golden_file_name_prefix + '-%d.m4s' % i)
+      self._DiffGold('%s-%d.m4s' % (test_output_prefix, i), '%s-%d.%s' %
+                     (golden_file_name_prefix, i, segment_extension))
 
   # Live mpd contains current availabilityStartTime and publishTime, which
   # needs to be replaced for comparison.
