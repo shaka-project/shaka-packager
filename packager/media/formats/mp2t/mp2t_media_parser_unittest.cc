@@ -74,6 +74,7 @@ class Mp2tMediaParserTest : public testing::Test {
   bool OnNewSample(uint32_t track_id,
                    const scoped_refptr<MediaSample>& sample) {
     StreamMap::const_iterator stream = stream_map_.find(track_id);
+    EXPECT_NE(stream_map_.end(), stream);
     if (stream != stream_map_.end()) {
       if (stream->second->stream_type() == kStreamAudio) {
         ++audio_frame_count_;

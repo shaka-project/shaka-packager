@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <deque>
 #include <list>
 
 #include "packager/base/callback.h"
@@ -47,6 +48,15 @@ class EsParserH26x : public EsParser {
     int64_t dts;
     int64_t pts;
   };
+  struct NaluInfo {
+    // NOTE: Nalu does not own the memory pointed by its data pointers.  The
+    // caller owns and maintains the memory.
+    Nalu nalu;
+    // The offset of the NALU from the beginning of the stream, usable as an
+    // argument to OffsetByteQueue.  This points to the start code.
+    uint64_t position;
+    uint8_t start_code_size;
+  };
 
   // Processes a NAL unit found in ParseInternal.  The @a pps_id_for_access_unit
   // value will be passed to UpdateVideoDecoderConfig.
@@ -58,13 +68,20 @@ class EsParserH26x : public EsParser {
   // Return true if successful.
   virtual bool UpdateVideoDecoderConfig(int pps_id) = 0;
 
-  // Find the start of the next access unit staring at |stream_pos|.
-  // Return true if the end is found.
-  // If found, |*next_unit_start| contains the start of the next access unit.
-  // Otherwise, |*next_unit_start| is unchanged.
-  bool FindNextAccessUnit(int64_t stream_pos, int64_t* next_unit_start);
+  // Skips to the first access unit available.  Returns whether an access unit
+  // is found.
+  bool SkipToFirstAccessUnit();
 
-  // Resumes the H264 ES parsing.
+  // Finds the next NAL unit by finding the next start code.  This will modify
+  // the search position.
+  // Returns true when it has found the next NALU.
+  bool SearchForNextNalu();
+
+  // Process an access unit that spans the given NAL units (end is exclusive
+  // and should point to a valid object).
+  bool ProcessAccessUnit(std::deque<NaluInfo>::iterator end);
+
+  // Resumes the H26x ES parsing.
   // Return true if successful.
   bool ParseInternal();
 
@@ -86,10 +103,12 @@ class EsParserH26x : public EsParser {
   std::list<std::pair<int64_t, TimingDesc>> timing_desc_list_;
 
   // Parser state.
-  // - |current_access_unit_pos_| is pointing to an annexB syncword
-  // representing the first NALU of an access unit.
-  int64_t current_access_unit_pos_;
-  bool found_access_unit_;
+  // The position of the search head.
+  uint64_t current_search_position_;
+  // The NALU that make up the current access unit.  This may include elements
+  // from the next access unit.  The last item is the NAL unit currently
+  // being processed.
+  std::deque<NaluInfo> access_unit_nalus_;
 
   // Filter to convert H.264/H.265 Annex B byte stream to unit stream.
   scoped_ptr<H26xByteToUnitStreamConverter> stream_converter_;

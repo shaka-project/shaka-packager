@@ -12,13 +12,21 @@
 #include "packager/media/base/offset_byte_queue.h"
 #include "packager/media/base/timestamp.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/codecs/h264_byte_to_unit_stream_converter.h"
-#include "packager/media/codecs/h265_byte_to_unit_stream_converter.h"
+#include "packager/media/codecs/h26x_byte_to_unit_stream_converter.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 
 namespace shaka {
 namespace media {
 namespace mp2t {
+
+namespace {
+
+const int kStartCodeSize = 3;
+const int kH264NaluHeaderSize = 1;
+const int kH265NaluHeaderSize = 2;
+
+}  // namespace
+
 
 EsParserH26x::EsParserH26x(
     Nalu::CodecType type,
@@ -29,8 +37,7 @@ EsParserH26x::EsParserH26x(
       emit_sample_cb_(emit_sample_cb),
       type_(type),
       es_queue_(new media::OffsetByteQueue()),
-      current_access_unit_pos_(0),
-      found_access_unit_(false),
+      current_search_position_(0),
       stream_converter_(stream_converter.Pass()),
       pending_sample_duration_(0),
       waiting_for_key_frame_(true) {}
@@ -64,15 +71,15 @@ bool EsParserH26x::Parse(const uint8_t* buf,
   // Add the incoming bytes to the ES queue.
   es_queue_->Push(buf, size);
 
-  // Skip to the first access unit.
-  if (!found_access_unit_) {
-    if (!FindNextAccessUnit(current_access_unit_pos_,
-                            &current_access_unit_pos_)) {
+  // We should always have entries in the vector and it should always start
+  // with |can_start_access_unit == true|.  If not, we are just starting and
+  // should skip to the first access unit.
+  if (access_unit_nalus_.empty()) {
+    if (!SkipToFirstAccessUnit())
       return true;
-    }
-    es_queue_->Trim(current_access_unit_pos_);
-    found_access_unit_ = true;
   }
+  DCHECK(!access_unit_nalus_.empty());
+  DCHECK(access_unit_nalus_.front().nalu.can_start_access_unit());
 
   return ParseInternal();
 }
@@ -83,14 +90,22 @@ void EsParserH26x::Flush() {
   // Simulate an additional AUD to force emitting the last access unit
   // which is assumed to be complete at this point.
   if (type_ == Nalu::kH264) {
-    uint8_t aud[] = {0x00, 0x00, 0x01, 0x09};
+    const uint8_t aud[] = {0x00, 0x00, 0x01, 0x09};
     es_queue_->Push(aud, sizeof(aud));
   } else {
     DCHECK_EQ(Nalu::kH265, type_);
-    uint8_t aud[] = {0x00, 0x00, 0x01, 0x46, 0x01};
+    const uint8_t aud[] = {0x00, 0x00, 0x01, 0x46, 0x01};
     es_queue_->Push(aud, sizeof(aud));
   }
-  ParseInternal();
+
+  CHECK(ParseInternal());
+
+  // Note that the end argument is exclusive.  We do not want to include the
+  // fake AUD we just added, so the argument should point to the AUD.
+  if (access_unit_nalus_.size() > 1 &&
+      !ProcessAccessUnit(access_unit_nalus_.end() - 1)) {
+    LOG(WARNING) << "Error processing last access unit.";
+  }
 
   if (pending_sample_) {
     // Flush pending sample.
@@ -103,130 +118,156 @@ void EsParserH26x::Flush() {
 
 void EsParserH26x::Reset() {
   es_queue_.reset(new media::OffsetByteQueue());
-  current_access_unit_pos_ = 0;
-  found_access_unit_ = false;
+  current_search_position_ = 0;
+  access_unit_nalus_.clear();
   timing_desc_list_.clear();
   pending_sample_ = scoped_refptr<MediaSample>();
   pending_sample_duration_ = 0;
   waiting_for_key_frame_ = true;
 }
 
-bool EsParserH26x::FindNextAccessUnit(int64_t stream_pos,
-                                      int64_t* next_unit_pos) {
-  // TODO(modmaker): Avoid re-parsing by saving old position.
-  // Every access unit must have a VCL entry and defines the end of the access
-  // unit.  Track it to return on the element after it so we get the whole
-  // access unit.
-  bool seen_vcl_nalu = false;
-  while (true) {
-    const uint8_t* es;
-    int size;
-    es_queue_->PeekAt(stream_pos, &es, &size);
-
-    // Find a start code.
-    uint64_t start_code_offset;
-    uint8_t start_code_size;
-    bool start_code_found = NaluReader::FindStartCode(
-        es, size, &start_code_offset, &start_code_size);
-    stream_pos += start_code_offset;
-
-    // No start code found or NALU type not available yet.
-    if (!start_code_found ||
-        start_code_offset + start_code_size >= static_cast<uint64_t>(size)) {
+bool EsParserH26x::SkipToFirstAccessUnit() {
+  DCHECK(access_unit_nalus_.empty());
+  while (access_unit_nalus_.empty()) {
+    if (!SearchForNextNalu())
       return false;
-    }
 
-    Nalu nalu;
-    const uint8_t* nalu_ptr = es + start_code_offset + start_code_size;
-    size_t nalu_size = size - (start_code_offset + start_code_size);
-    if (nalu.Initialize(type_, nalu_ptr, nalu_size)) {
-      // ITU H.264 sec. 7.4.1.2.3
-      // H264: The first of the NAL units with |can_start_access_unit() == true|
-      //   after the last VCL NAL unit of a primary coded picture specifies the
-      //   start of a new access unit. |nuh_layer_id()| is for H265 only; it is
-      //   included below for ease of computation (the value is always 0).
-      // ITU H.265 sec. 7.4.2.4.4
-      // H265: The first of the NAL units with |can_start_access_unit() == true|
-      //   after the last VCL NAL unit preceding firstBlPicNalUnit (the first
-      //   VCL NAL unit of a coded picture with nuh_layer_id equal to 0), if
-      //   any, specifies the start of a new access unit.
-      // TODO(modmaker): This does not handle nuh_layer_id != 0 correctly.
-      // AUD  VCL  SEI  VCL*  VPS  VCL
-      //         | Current method splits here.
-      //                    | Should split here.
-      // If we are searching for the first access unit, then stop at the first
-      // NAL unit that can start an access unit.
-      if ((seen_vcl_nalu || !found_access_unit_) &&
-          nalu.can_start_access_unit()) {
-        break;
-      }
-      bool is_vcl_nalu = nalu.is_video_slice() && nalu.nuh_layer_id() == 0;
-      seen_vcl_nalu |= is_vcl_nalu;
-    }
+    // If we can't start an access unit, remove it and continue.
+    DCHECK_EQ(1u, access_unit_nalus_.size());
+    if (!access_unit_nalus_.back().nalu.can_start_access_unit())
+      access_unit_nalus_.clear();
+  }
+  return true;
+}
 
-    // The current NALU is not an AUD, skip the start code
-    // and continue parsing the stream.
-    stream_pos += start_code_size;
+bool EsParserH26x::SearchForNextNalu() {
+  const uint8_t* es;
+  int es_size;
+  es_queue_->PeekAt(current_search_position_, &es, &es_size);
+
+  // Find a start code.
+  uint64_t start_code_offset;
+  uint8_t start_code_size;
+  const bool start_code_found = NaluReader::FindStartCode(
+      es, es_size, &start_code_offset, &start_code_size);
+
+  if (!start_code_found) {
+    // We didn't find a start code, so we don't have to search this data again.
+    if (es_size > kStartCodeSize)
+      current_search_position_ += es_size - kStartCodeSize;
+    return false;
   }
 
-  *next_unit_pos = stream_pos;
+  // Ensure the next NAL unit is a real NAL unit.
+  const uint8_t* nalu_ptr = es + start_code_offset + start_code_size;
+  // This size is likely inaccurate, this is just to get the header info.
+  const int64_t next_nalu_size = es_size - start_code_offset - start_code_size;
+  if (next_nalu_size <
+      (type_ == Nalu::kH264 ? kH264NaluHeaderSize : kH265NaluHeaderSize)) {
+    // There was not enough data, wait for more.
+    return false;
+  }
+
+  Nalu next_nalu;
+  if (!next_nalu.Initialize(type_, nalu_ptr, next_nalu_size)) {
+    // The next NAL unit is invalid, skip it and search again.
+    current_search_position_ += start_code_offset + start_code_size;
+    return SearchForNextNalu();
+  }
+
+  current_search_position_ += start_code_offset + start_code_size;
+
+  NaluInfo info;
+  info.position = current_search_position_ - start_code_size;
+  info.start_code_size = start_code_size;
+  info.nalu = next_nalu;
+  access_unit_nalus_.push_back(info);
+
+  return true;
+}
+
+bool EsParserH26x::ProcessAccessUnit(std::deque<NaluInfo>::iterator end) {
+  DCHECK(end < access_unit_nalus_.end());
+  auto begin = access_unit_nalus_.begin();
+  const uint8_t* es;
+  int es_size;
+  es_queue_->PeekAt(begin->position, &es, &es_size);
+  DCHECK_GE(static_cast<uint64_t>(es_size), (end->position - begin->position));
+
+  // Process the NAL units in the access unit.
+  bool is_key_frame = false;
+  int pps_id = -1;
+  for (auto it = begin; it != end; ++it) {
+    if (it->nalu.nuh_layer_id() == 0) {
+      // Update the NALU because the data pointer may have been invalidated.
+      CHECK(it->nalu.Initialize(
+          type_, es + (it->position - begin->position) + it->start_code_size,
+          ((it+1)->position - it->position) - it->start_code_size));
+      if (!ProcessNalu(it->nalu, &is_key_frame, &pps_id))
+        return false;
+    }
+  }
+
+  if (is_key_frame)
+    waiting_for_key_frame_ = false;
+  if (!waiting_for_key_frame_) {
+    const uint64_t access_unit_size = end->position - begin->position;
+    RCHECK(EmitFrame(begin->position, access_unit_size, is_key_frame, pps_id));
+  }
+
   return true;
 }
 
 bool EsParserH26x::ParseInternal() {
-  DCHECK_LE(es_queue_->head(), current_access_unit_pos_);
-  DCHECK_LE(current_access_unit_pos_, es_queue_->tail());
-
-  // Resume parsing later if no AUD was found.
-  int64_t access_unit_end;
-  if (!FindNextAccessUnit(current_access_unit_pos_, &access_unit_end))
-    return true;
-
-  // At this point, we know we have a full access unit.
-  bool is_key_frame = false;
-  int pps_id_for_access_unit = -1;
-
-  const uint8_t* es;
-  int size;
-  es_queue_->PeekAt(current_access_unit_pos_, &es, &size);
-  int access_unit_size = base::checked_cast<int, int64_t>(
-      access_unit_end - current_access_unit_pos_);
-  DCHECK_LE(access_unit_size, size);
-  NaluReader reader(type_, kIsAnnexbByteStream, es, access_unit_size);
-
-  // TODO(modmaker): Consider combining with FindNextAccessUnit to avoid
-  // scanning the data twice.
   while (true) {
-    Nalu nalu;
-    bool is_eos = false;
-    switch (reader.Advance(&nalu)) {
-      case NaluReader::kOk:
-        break;
-      case NaluReader::kEOStream:
-        is_eos = true;
-        break;
-      default:
-        return false;
+    if (!SearchForNextNalu())
+      return true;
+
+    // ITU H.264 sec. 7.4.1.2.3
+    // H264: The first of the NAL units with |can_start_access_unit() == true|
+    //   after the last VCL NAL unit of a primary coded picture specifies the
+    //   start of a new access unit. |nuh_layer_id()| is for H265 only; it is
+    //   included below for ease of computation (the value is always 0).
+    // ITU H.265 sec. 7.4.2.4.4
+    // H265: The first of the NAL units with |can_start_access_unit() == true|
+    //   after the last VCL NAL unit preceding firstBlPicNalUnit (the first
+    //   VCL NAL unit of a coded picture with nuh_layer_id equal to 0), if
+    //   any, specifies the start of a new access unit.
+    DCHECK(!access_unit_nalus_.empty());
+    if (!access_unit_nalus_.back().nalu.is_video_slice() ||
+        access_unit_nalus_.back().nalu.nuh_layer_id() != 0) {
+      continue;
     }
-    if (is_eos)
-      break;
 
-    if (!ProcessNalu(nalu, &is_key_frame, &pps_id_for_access_unit))
+    // First, find the end of the access unit.  Search backward to find the
+    // first VCL NALU before the current one.
+    auto access_unit_end_rit = access_unit_nalus_.rbegin();
+    bool found_vcl = false;
+    for (auto rit = access_unit_nalus_.rbegin() + 1;
+         rit != access_unit_nalus_.rend(); ++rit) {
+      if (rit->nalu.is_video_slice()) {
+        found_vcl = true;
+        break;
+      } else if (rit->nalu.can_start_access_unit()) {
+        // The start of the next access unit is the first unit with
+        // |can_start_access_unit| after the previous VCL unit.
+        access_unit_end_rit = rit;
+      }
+    }
+    if (!found_vcl)
+      return true;
+
+    // Get a forward iterator that corresponds to the same element pointed by
+    // |access_unit_end_rit|. Note: |end| refers to the exclusive end and
+    // will point to a valid object.
+    auto end = (access_unit_end_rit + 1).base();
+    if (!ProcessAccessUnit(end))
       return false;
-  }
 
-  if (waiting_for_key_frame_) {
-    waiting_for_key_frame_ = !is_key_frame;
+    // Delete the data we have already processed.
+    es_queue_->Trim(end->position);
+    access_unit_nalus_.erase(access_unit_nalus_.begin(), end);
   }
-  if (!waiting_for_key_frame_) {
-    // Emit a frame and move the stream to the next AUD position.
-    RCHECK(EmitFrame(current_access_unit_pos_, access_unit_size,
-                     is_key_frame, pps_id_for_access_unit));
-  }
-  current_access_unit_pos_ = access_unit_end;
-  es_queue_->Trim(current_access_unit_pos_);
-
-  return true;
 }
 
 bool EsParserH26x::EmitFrame(int64_t access_unit_pos,
@@ -244,12 +285,11 @@ bool EsParserH26x::EmitFrame(int64_t access_unit_pos,
     return false;
 
   // Emit a frame.
-  DVLOG(LOG_LEVEL_ES) << "Emit frame: stream_pos=" << current_access_unit_pos_
+  DVLOG(LOG_LEVEL_ES) << "Emit frame: stream_pos=" << access_unit_pos
                       << " size=" << access_unit_size;
   int es_size;
   const uint8_t* es;
-  es_queue_->PeekAt(current_access_unit_pos_, &es, &es_size);
-  CHECK_GE(es_size, access_unit_size);
+  es_queue_->PeekAt(access_unit_pos, &es, &es_size);
 
   // Convert frame to unit stream format.
   std::vector<uint8_t> converted_frame;

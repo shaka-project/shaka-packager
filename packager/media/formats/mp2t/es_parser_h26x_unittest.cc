@@ -182,7 +182,14 @@ void EsParserH26xTest::RunTest(const H265NaluType* types,
       // This may process the previous sample; but since we don't know whether
       // we are at the end yet, this will not process the current sample until
       // later.
-      ASSERT_TRUE(es_parser.Parse(es_data.data(), es_data.size(), pts, dts));
+      size_t offset = 0;
+      size_t size = 1;
+      while (offset < es_data.size()) {
+        // Insert the data in parts to test partial data searches.
+        size = std::min(size + 1, es_data.size() - offset);
+        ASSERT_TRUE(es_parser.Parse(&es_data[offset], size, pts, dts));
+        offset += size;
+      }
     }
   }
   if (seen_key_frame)
@@ -228,7 +235,7 @@ TEST_F(EsParserH26xTest, DoesNotStartOnRsv) {
   EXPECT_TRUE(has_stream_info_);
 }
 
-TEST_F(EsParserH26xTest, DISABLED_SupportsNonZeroNuhLayerId) {
+TEST_F(EsParserH26xTest, SupportsNonZeroNuhLayerId) {
   const H265NaluType kData[] = {
     kSeparator, kSps, kVclKeyFrame,
     kSeparator, kAud, kVcl, kSei, kSei, kVclWithNuhLayer, kRsv,
@@ -268,9 +275,7 @@ TEST_F(EsParserH26xTest, EmitsFramesWithNoStreamInfo) {
   EXPECT_FALSE(has_stream_info_);
 }
 
-// TODO(modmaker): Currently, the SEI here will not be included.  This needs to
-// be fixed.
-TEST_F(EsParserH26xTest, DISABLED_EmitsLastFrameWhenDoesntEndOnVCL) {
+TEST_F(EsParserH26xTest, EmitsLastFrameWhenDoesntEndOnVCL) {
   // This tests that it will emit the last frame and last frame will include
   // the correct data and nothing extra.
   const H265NaluType kData[] = {
@@ -284,7 +289,7 @@ TEST_F(EsParserH26xTest, DISABLED_EmitsLastFrameWhenDoesntEndOnVCL) {
   EXPECT_FALSE(has_stream_info_);
 }
 
-TEST_F(EsParserH26xTest, DISABLED_EmitsLastFrameWithNuhLayerId) {
+TEST_F(EsParserH26xTest, EmitsLastFrameWithNuhLayerId) {
   const H265NaluType kData[] = {
     kSeparator, kVclKeyFrame,
     kSeparator, kVcl,
