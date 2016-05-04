@@ -46,6 +46,7 @@ class Nalu {
   };
   enum H265NaluType {
     H265_TRAIL_N = 0,
+    H265_TRAIL_R = 1,
     H265_TSA_N = 2,
     H265_TSA_R = 3,
     H265_STSA_N = 4,
@@ -71,6 +72,7 @@ class Nalu {
 
     H265_EOS = 36,
     H265_EOB = 37,
+    H265_FD = 38,
 
     H265_PREFIX_SEI = 39,
 

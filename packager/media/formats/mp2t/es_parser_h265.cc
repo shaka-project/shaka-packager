@@ -14,8 +14,8 @@
 #include "packager/media/base/timestamp.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/filters/hevc_decoder_configuration.h"
+#include "packager/media/filters/h265_byte_to_unit_stream_converter.h"
 #include "packager/media/filters/h265_parser.h"
-#include "packager/media/filters/h26x_byte_to_unit_stream_converter.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 
 namespace edash_packager {
@@ -25,7 +25,11 @@ namespace mp2t {
 EsParserH265::EsParserH265(uint32_t pid,
                            const NewStreamInfoCB& new_stream_info_cb,
                            const EmitSampleCB& emit_sample_cb)
-    : EsParserH26x(Nalu::kH265, pid, emit_sample_cb),
+    : EsParserH26x(Nalu::kH265,
+                   scoped_ptr<H26xByteToUnitStreamConverter>(
+                       new H265ByteToUnitStreamConverter()),
+                   pid,
+                   emit_sample_cb),
       new_stream_info_cb_(new_stream_info_cb),
       decoder_config_check_pending_(false),
       h265_parser_(new H265Parser()) {}

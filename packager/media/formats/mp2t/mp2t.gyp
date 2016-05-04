@@ -61,6 +61,7 @@
       'sources': [
         'adts_header_unittest.cc',
         'es_parser_h264_unittest.cc',
+        'es_parser_h26x_unittest.cc',
         'mp2t_media_parser_unittest.cc',
         'pes_packet_generator_unittest.cc',
         'ts_segmenter_unittest.cc',

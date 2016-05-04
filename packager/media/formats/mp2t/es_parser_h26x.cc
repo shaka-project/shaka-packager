@@ -20,32 +20,20 @@ namespace edash_packager {
 namespace media {
 namespace mp2t {
 
-namespace {
-
-H26xByteToUnitStreamConverter* CreateStreamConverter(Nalu::CodecType type) {
-  if (type == Nalu::kH264) {
-    return new H264ByteToUnitStreamConverter();
-  } else {
-    DCHECK_EQ(Nalu::kH265, type);
-    return new H265ByteToUnitStreamConverter();
-  }
-}
-
-}  // anonymous namespace
-
-EsParserH26x::EsParserH26x(Nalu::CodecType type,
-                           uint32_t pid,
-                           const EmitSampleCB& emit_sample_cb)
+EsParserH26x::EsParserH26x(
+    Nalu::CodecType type,
+    scoped_ptr<H26xByteToUnitStreamConverter> stream_converter,
+    uint32_t pid,
+    const EmitSampleCB& emit_sample_cb)
     : EsParser(pid),
       emit_sample_cb_(emit_sample_cb),
       type_(type),
       es_queue_(new media::OffsetByteQueue()),
       current_access_unit_pos_(0),
       found_access_unit_(false),
-      stream_converter_(CreateStreamConverter(type)),
+      stream_converter_(stream_converter.Pass()),
       pending_sample_duration_(0),
-      waiting_for_key_frame_(true) {
-}
+      waiting_for_key_frame_(true) {}
 
 EsParserH26x::~EsParserH26x() {}
 

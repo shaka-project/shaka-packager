@@ -22,7 +22,11 @@ namespace mp2t {
 EsParserH264::EsParserH264(uint32_t pid,
                            const NewStreamInfoCB& new_stream_info_cb,
                            const EmitSampleCB& emit_sample_cb)
-    : EsParserH26x(Nalu::kH264, pid, emit_sample_cb),
+    : EsParserH26x(Nalu::kH264,
+                   scoped_ptr<H26xByteToUnitStreamConverter>(
+                       new H264ByteToUnitStreamConverter()),
+                   pid,
+                   emit_sample_cb),
       new_stream_info_cb_(new_stream_info_cb),
       decoder_config_check_pending_(false),
       h264_parser_(new H264Parser()) {}

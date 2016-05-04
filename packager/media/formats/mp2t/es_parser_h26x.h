@@ -27,6 +27,7 @@ namespace mp2t {
 class EsParserH26x : public EsParser {
  public:
   EsParserH26x(Nalu::CodecType type,
+               scoped_ptr<H26xByteToUnitStreamConverter> stream_converter,
                uint32_t pid,
                const EmitSampleCB& emit_sample_cb);
   ~EsParserH26x() override;
