@@ -112,12 +112,15 @@ Public Types</h2></td></tr>
 <br/>
 &#160;&#160;<b>H264_FillerData</b> = 12, 
 <b>H264_SPSExtension</b> = 13, 
+<b>H264_PrefixNALUnit</b> = 14, 
 <b>H264_SubsetSPS</b> = 15, 
-<b>H264_Reserved17</b> = 17, 
 <br/>
-&#160;&#160;<b>H264_Reserved18</b> = 18, 
+&#160;&#160;<b>H264_DepthParameterSet</b> = 16, 
+<b>H264_Reserved17</b> = 17, 
+<b>H264_Reserved18</b> = 18, 
 <b>H264_CodedSliceExtension</b> = 20, 
-<b>H264_Reserved22</b> = 22
+<br/>
+&#160;&#160;<b>H264_Reserved22</b> = 22
 <br/>
  }</td></tr>
 <tr class="separator:a9ba57b723ae9c4feaf127238dfac4547"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -148,7 +151,12 @@ Public Types</h2></td></tr>
 <b>H265_EOS</b> = 36, 
 <br/>
 &#160;&#160;<b>H265_EOB</b> = 37, 
-<b>H265_RSV_NVCL41</b> = 41
+<b>H265_PREFIX_SEI</b> = 39, 
+<b>H265_RSV_NVCL41</b> = 41, 
+<b>H265_RSV_NVCL44</b> = 44, 
+<br/>
+&#160;&#160;<b>H265_UNSPEC48</b> = 48, 
+<b>H265_UNSPEC55</b> = 55
 <br/>
  }</td></tr>
 <tr class="separator:af290f7a2b18ab31252705bb439d0fb03"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -186,6 +194,9 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>type</b> () const </td
 <tr class="memitem:a1c3079607c3466aa9ca491cb27cc18c8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c3079607c3466aa9ca491cb27cc18c8"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_video_slice</b> () const </td></tr>
 <tr class="separator:a1c3079607c3466aa9ca491cb27cc18c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32f5aee8f9d419074b140705003ed7cd"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a32f5aee8f9d419074b140705003ed7cd"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>can_start_access_unit</b> () const </td></tr>
+<tr class="separator:a32f5aee8f9d419074b140705003ed7cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>For explanations of each struct and its members, see H.264 specification at <a href="http://www.itu.int/rec/T-REC-H.264">http://www.itu.int/rec/T-REC-H.264</a>. </p>
@@ -198,7 +209,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_video_slice</b> ()
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 2 2016 17:37:56 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 4 2016 00:08:01 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
