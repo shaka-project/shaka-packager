@@ -6,6 +6,8 @@
 
 #include "packager/media/base/audio_stream_info.h"
 
+#include <inttypes.h>
+
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
@@ -55,6 +57,8 @@ AudioStreamInfo::AudioStreamInfo(int track_id,
                                  uint8_t sample_bits,
                                  uint8_t num_channels,
                                  uint32_t sampling_frequency,
+                                 uint64_t seek_preroll_ns,
+                                 uint64_t codec_delay_ns,
                                  uint32_t max_bitrate,
                                  uint32_t avg_bitrate,
                                  const uint8_t* extra_data,
@@ -73,6 +77,8 @@ AudioStreamInfo::AudioStreamInfo(int track_id,
       sample_bits_(sample_bits),
       num_channels_(num_channels),
       sampling_frequency_(sampling_frequency),
+      seek_preroll_ns_(seek_preroll_ns),
+      codec_delay_ns_(codec_delay_ns),
       max_bitrate_(max_bitrate),
       avg_bitrate_(avg_bitrate) {}
 
@@ -87,11 +93,20 @@ bool AudioStreamInfo::IsValidConfig() const {
 }
 
 std::string AudioStreamInfo::ToString() const {
-  return base::StringPrintf(
+  std::string str = base::StringPrintf(
       "%s codec: %s\n sample_bits: %d\n num_channels: %d\n "
       "sampling_frequency: %d\n language: %s\n",
       StreamInfo::ToString().c_str(), AudioCodecToString(codec_).c_str(),
       sample_bits_, num_channels_, sampling_frequency_, language().c_str());
+  if (seek_preroll_ns_ != 0) {
+    base::StringAppendF(&str, " seek_preroll_ns: %" PRIu64 "d\n",
+                        seek_preroll_ns_);
+  }
+  if (codec_delay_ns_ != 0) {
+    base::StringAppendF(&str, " codec_delay_ns: %" PRIu64 "d\n",
+                        codec_delay_ns_);
+  }
+  return str;
 }
 
 std::string AudioStreamInfo::GetCodecString(AudioCodec codec,

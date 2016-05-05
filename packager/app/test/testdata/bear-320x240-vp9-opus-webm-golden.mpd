@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Generated with https://github.com/google/edash-packager version <tag>-<hash>-<test>-->
+<MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" minBufferTime="PT2S" type="static" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" mediaPresentationDuration="PT2.7809998989105225S">
+  <Period id="0">
+    <AdaptationSet id="0" contentType="audio">
+      <Representation id="0" bandwidth="76531" codecs="opus" mimeType="audio/webm" audioSamplingRate="48000">
+        <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
+        <BaseURL>output_audio.webm</BaseURL>
+        <SegmentBase indexRange="26555-26603" timescale="1000000">
+          <Initialization range="0-322"/>
+        </SegmentBase>
+      </Representation>
+    </AdaptationSet>
+    <AdaptationSet id="1" contentType="video" width="320" height="240" frameRate="1000000/34000" par="16:9">
+      <Representation id="1" bandwidth="203313" codecs="vp9" mimeType="video/webm" sar="427:320">
+        <BaseURL>output_video.webm</BaseURL>
+        <SegmentBase indexRange="69485-69532" timescale="1000000">
+          <Initialization range="0-286"/>
+        </SegmentBase>
+      </Representation>
+    </AdaptationSet>
+  </Period>
+</MPD>

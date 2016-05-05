@@ -32,6 +32,8 @@ scoped_refptr<AudioStreamInfo> WebMAudioClient::GetAudioStreamInfo(
     int64_t track_num,
     const std::string& codec_id,
     const std::vector<uint8_t>& codec_private,
+    int64_t seek_preroll,
+    int64_t codec_delay,
     const std::string& language,
     bool is_encrypted) {
   AudioCodec audio_codec = kUnknownAudioCodec;
@@ -69,8 +71,9 @@ scoped_refptr<AudioStreamInfo> WebMAudioClient::GetAudioStreamInfo(
   return scoped_refptr<AudioStreamInfo>(new AudioStreamInfo(
       track_num, kWebMTimeScale, 0, audio_codec,
       AudioStreamInfo::GetCodecString(audio_codec, 0), language,
-      kSampleSizeInBits, channels_, sampling_frequency, 0, 0, extra_data,
-      extra_data_size, is_encrypted));
+      kSampleSizeInBits, channels_, sampling_frequency,
+      seek_preroll < 0 ? 0 : seek_preroll, codec_delay < 0 ? 0 : codec_delay, 0,
+      0, extra_data, extra_data_size, is_encrypted));
 }
 
 bool WebMAudioClient::OnUInt(int id, int64_t val) {

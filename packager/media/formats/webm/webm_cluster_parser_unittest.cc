@@ -82,6 +82,8 @@ const char kLanguage[] = "eng";
 const uint8_t kBitsPerSample = 8u;
 const uint8_t kNumChannels = 2u;
 const uint32_t kSamplingFrequency = 48000u;
+const uint64_t kSeekPreroll = 0u;
+const uint64_t kCodecDelay = 0u;
 const size_t kExtraDataSize = 0u;
 const bool kEncrypted = true;
 const uint16_t kWidth = 320u;
@@ -323,6 +325,8 @@ class WebMClusterParserTest : public testing::Test {
                                                kBitsPerSample,
                                                kNumChannels,
                                                kSamplingFrequency,
+                                               kSeekPreroll,
+                                               kCodecDelay,
                                                0,
                                                0,
                                                NULL,

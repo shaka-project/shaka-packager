@@ -323,6 +323,8 @@ Status Segmenter::CreateAudioTrack(AudioStreamInfo* info) {
   track->set_type(mkvmuxer::Tracks::kAudio);
   track->set_sample_rate(info->sampling_frequency());
   track->set_channels(info->num_channels());
+  track->set_seek_pre_roll(info->seek_preroll_ns());
+  track->set_codec_delay(info->codec_delay_ns());
 
   if (encryptor_)
     encryptor_->AddTrackInfo(track);

@@ -443,6 +443,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           entry.samplesize,
           num_channels,
           sampling_frequency,
+          0 /* seek preroll */,
+          0 /* codec delay */,
           max_bitrate,
           avg_bitrate,
           extra_data.data(),

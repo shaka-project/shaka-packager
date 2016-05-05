@@ -25,9 +25,18 @@ class WebMAudioClient : public WebMParserClient {
   /// Reset this object's state so it can process a new audio track element.
   void Reset();
 
-  /// Create an AudioStreamInfo with the data in |track_num|, |codec_id|,
-  /// |codec_private|, |is_encrypted| and the fields parsed from the last audio
-  /// track element this object was used to parse.
+  /// Create an AudioStreamInfo with the parameters specified.
+  /// @param track_num indicates the track number.
+  /// @param codec_id is the codec identifier.
+  /// @param codec_private contains codec specific data.
+  /// @param seek_preroll indicates seek preroll in nanoseconds. A negative
+  ///        value means that the value is not set; in this case, a default
+  ///        value of 0 is used.
+  /// @param codec delay indicates codec delay in nanoseconds. A negative
+  ///        value means that the value is not set; in this case, a default
+  ///        value of 0 is used.
+  /// @param language indicates the language for the track.
+  /// @param is_encrypted indicates whether the stream is encrypted.
   /// @return An AudioStreamInfo scoped_refptr if successful.
   /// @return An empty scoped_refptr if there was unexpected values in the
   ///         provided parameters or audio track element fields.
@@ -35,6 +44,8 @@ class WebMAudioClient : public WebMParserClient {
       int64_t track_num,
       const std::string& codec_id,
       const std::vector<uint8_t>& codec_private,
+      int64_t seek_preroll,
+      int64_t codec_delay,
       const std::string& language,
       bool is_encrypted);
 

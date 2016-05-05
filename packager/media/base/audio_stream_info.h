@@ -44,6 +44,8 @@ class AudioStreamInfo : public StreamInfo {
                   uint8_t sample_bits,
                   uint8_t num_channels,
                   uint32_t sampling_frequency,
+                  uint64_t seek_preroll_ns,
+                  uint64_t codec_delay_ns,
                   uint32_t max_bitrate,
                   uint32_t avg_bitrate,
                   const uint8_t* extra_data,
@@ -64,6 +66,8 @@ class AudioStreamInfo : public StreamInfo {
   uint32_t bytes_per_frame() const {
     return static_cast<uint32_t>(num_channels_) * sample_bits_ / 8;
   }
+  uint64_t seek_preroll_ns() const { return seek_preroll_ns_; }
+  uint64_t codec_delay_ns() const { return codec_delay_ns_; }
   uint32_t max_bitrate() const { return max_bitrate_; }
   uint32_t avg_bitrate() const { return avg_bitrate_; }
 
@@ -84,6 +88,8 @@ class AudioStreamInfo : public StreamInfo {
   uint8_t sample_bits_;
   uint8_t num_channels_;
   uint32_t sampling_frequency_;
+  uint64_t seek_preroll_ns_;
+  uint64_t codec_delay_ns_;
   uint32_t max_bitrate_;
   uint32_t avg_bitrate_;
 

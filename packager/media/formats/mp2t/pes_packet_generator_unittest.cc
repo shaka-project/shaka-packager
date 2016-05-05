@@ -78,6 +78,8 @@ const bool kIsEncrypted = false;
 const uint8_t kSampleBits = 16;
 const uint8_t kNumChannels = 2;
 const uint32_t kSamplingFrequency = 44100;
+const uint64_t kSeekPreroll = 0;
+const uint64_t kCodecDelay = 0;
 const uint32_t kMaxBitrate = 320000;
 const uint32_t kAverageBitrate = 256000;
 
@@ -111,9 +113,9 @@ scoped_refptr<VideoStreamInfo> CreateVideoStreamInfo(VideoCodec codec) {
 
 scoped_refptr<AudioStreamInfo> CreateAudioStreamInfo(AudioCodec codec) {
   scoped_refptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
-      kTrackId, kTimeScale, kDuration, codec, kCodecString,
-      kLanguage, kSampleBits, kNumChannels, kSamplingFrequency, kMaxBitrate,
-      kAverageBitrate, kAudioExtraData, arraysize(kAudioExtraData),
+      kTrackId, kTimeScale, kDuration, codec, kCodecString, kLanguage,
+      kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll, kCodecDelay,
+      kMaxBitrate, kAverageBitrate, kAudioExtraData, arraysize(kAudioExtraData),
       kIsEncrypted));
   return stream_info;
 }

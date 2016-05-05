@@ -203,8 +203,8 @@ bool WebMTracksParser::OnListEnd(int id) {
 
         DCHECK(!audio_stream_info_);
         audio_stream_info_ = audio_client_.GetAudioStreamInfo(
-            audio_track_num_, codec_id_, codec_private_, track_language_,
-            !audio_encryption_key_id_.empty());
+            audio_track_num_, codec_id_, codec_private_, seek_preroll_,
+            codec_delay_, track_language_, !audio_encryption_key_id_.empty());
         if (!audio_stream_info_)
           return false;
       } else {

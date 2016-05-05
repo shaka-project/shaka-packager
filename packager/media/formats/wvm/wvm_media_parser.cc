@@ -752,12 +752,13 @@ bool WvmMediaParser::ParseIndexEntry() {
           stream_id_count_++;
     }
     if (has_audio) {
-      AudioCodec audio_codec = kCodecAAC;
+      const AudioCodec audio_codec = kCodecAAC;
       // TODO(beil): Pass in max and average bitrate in wvm container.
       stream_infos_.push_back(new AudioStreamInfo(
           stream_id_count_, time_scale, track_duration, audio_codec,
           std::string(), std::string(), kAacSampleSizeBits, num_channels,
-          sampling_frequency, 0, 0, audio_codec_config.data(),
+          sampling_frequency, 0 /* seek preroll */, 0 /* codec delay */,
+          0 /* max bitrate */, 0 /* avg bitrate */, audio_codec_config.data(),
           audio_codec_config.size(), true));
       program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
                                 base::UintToString(audio_pes_stream_id ?

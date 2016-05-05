@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 bear-320x240.webm - WebM encode of bear.1280x720.mp4 resized to 320x240.
-bear-320x240-vp9.webm - Same as above, but with vp9 codec.
+bear-320x240-vp9-opus.webm - Same as above, but with vp9 and opus codec.
 no_streams.webm - Header, Info, & Tracks element from bear-320x240.webm slightly corrupted so it looks
                   like there are no tracks.
 nonzero-start-time.webm - Has the same headers as bear-320x240.webm but the first cluster of this file

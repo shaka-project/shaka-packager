@@ -129,12 +129,14 @@ class PackagerAppTest(unittest.TestCase):
 
   def testPackageVp9Webm(self):
     self.packager.Package(
-        self._GetStreams(['video'],
-                         output_format='webm',
-                         test_files=['bear-320x240-vp9.webm']),
+        self._GetStreams(
+            ['audio', 'video'],
+            output_format='webm',
+            test_files=['bear-320x240-vp9-opus.webm']),
         self._GetFlags())
-    self._DiffGold(self.output[0], 'bear-320x240-vp9-golden.webm')
-    self._DiffGold(self.mpd_output, 'bear-320x240-vp9-webm-golden.mpd')
+    self._DiffGold(self.output[0], 'bear-320x240-opus-golden.webm')
+    self._DiffGold(self.output[1], 'bear-320x240-vp9-golden.webm')
+    self._DiffGold(self.mpd_output, 'bear-320x240-vp9-opus-webm-golden.mpd')
 
   def testPackageVorbisWebm(self):
     self.packager.Package(
@@ -221,11 +223,11 @@ class PackagerAppTest(unittest.TestCase):
     self.packager.Package(
         self._GetStreams(['video'],
                          output_format='mp4',
-                         test_files=['bear-320x240-vp9.webm']),
+                         test_files=['bear-320x240-vp9-opus.webm']),
         self._GetFlags(encryption=True))
     self._DiffGold(self.output[0], 'bear-320x240-vp9-cenc-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-320x240-vp9-cenc-golden.mpd')
-    self._VerifyDecryption(self.output[0], 'bear-640x360-vp9-golden.mp4')
+    self._VerifyDecryption(self.output[0], 'bear-320x240-vp9-golden.mp4')
 
   def testPackageWithEncryptionAndRandomIv(self):
     self.packager.Package(

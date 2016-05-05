@@ -46,6 +46,8 @@ const bool kIsEncrypted = false;
 const uint8_t kSampleBits = 16;
 const uint8_t kNumChannels = 2;
 const uint32_t kSamplingFrequency = 44100;
+const uint64_t kSeekPreroll = 0;
+const uint64_t kCodecDelay = 0;
 const uint32_t kMaxBitrate = 320000;
 const uint32_t kAverageBitrate = 256000;
 
@@ -175,16 +177,18 @@ TEST_F(TsWriterTest, InitializeVideoNonH264) {
 TEST_F(TsWriterTest, InitializeAudioAac) {
   scoped_refptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
       kTrackId, kTimeScale, kDuration, kAacAudioCodec, kCodecString, kLanguage,
-      kSampleBits, kNumChannels, kSamplingFrequency, kMaxBitrate,
-      kAverageBitrate, kExtraData, arraysize(kExtraData), kIsEncrypted));
+      kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll, kCodecDelay,
+      kMaxBitrate, kAverageBitrate, kExtraData, arraysize(kExtraData),
+      kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info, !kWillBeEncrypted));
 }
 
 TEST_F(TsWriterTest, InitializeAudioNonAac) {
   scoped_refptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
       kTrackId, kTimeScale, kDuration, AudioCodec::kCodecOpus, kCodecString,
-      kLanguage, kSampleBits, kNumChannels, kSamplingFrequency, kMaxBitrate,
-      kAverageBitrate, kExtraData, arraysize(kExtraData), kIsEncrypted));
+      kLanguage, kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll,
+      kCodecDelay, kMaxBitrate, kAverageBitrate, kExtraData,
+      arraysize(kExtraData), kIsEncrypted));
   EXPECT_FALSE(ts_writer_.Initialize(*stream_info, !kWillBeEncrypted));
 }
 
@@ -252,8 +256,8 @@ TEST_F(TsWriterTest, ClearAacPmt) {
 
   scoped_refptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
       kTrackId, kTimeScale, kDuration, kAacAudioCodec, kCodecString, kLanguage,
-      kSampleBits, kNumChannels, kSamplingFrequency, kMaxBitrate,
-      kAverageBitrate, kAacBasicProfileExtraData,
+      kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll, kCodecDelay,
+      kMaxBitrate, kAverageBitrate, kAacBasicProfileExtraData,
       arraysize(kAacBasicProfileExtraData), kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info, !kWillBeEncrypted));
 
@@ -340,8 +344,8 @@ TEST_F(TsWriterTest, ClearLeadAacPmt) {
 
   scoped_refptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
       kTrackId, kTimeScale, kDuration, kAacAudioCodec, kCodecString, kLanguage,
-      kSampleBits, kNumChannels, kSamplingFrequency, kMaxBitrate,
-      kAverageBitrate, kAacBasicProfileExtraData,
+      kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll, kCodecDelay,
+      kMaxBitrate, kAverageBitrate, kAacBasicProfileExtraData,
       arraysize(kAacBasicProfileExtraData), kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info, kWillBeEncrypted));
 
@@ -370,8 +374,8 @@ TEST_F(TsWriterTest, EncryptedSegmentsAacPmt) {
 
   scoped_refptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
       kTrackId, kTimeScale, kDuration, kAacAudioCodec, kCodecString, kLanguage,
-      kSampleBits, kNumChannels, kSamplingFrequency, kMaxBitrate,
-      kAverageBitrate, kAacBasicProfileExtraData,
+      kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll, kCodecDelay,
+      kMaxBitrate, kAverageBitrate, kAacBasicProfileExtraData,
       arraysize(kAacBasicProfileExtraData), kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info, kWillBeEncrypted));
 
