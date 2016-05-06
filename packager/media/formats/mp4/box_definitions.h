@@ -468,6 +468,67 @@ struct SyncSample : FullBox {
   std::vector<uint32_t> sample_number;
 };
 
+struct CencSampleEncryptionInfoEntry {
+  CencSampleEncryptionInfoEntry();
+  ~CencSampleEncryptionInfoEntry();
+
+  bool ReadWrite(BoxBuffer* buffer);
+  uint32_t ComputeSize() const;
+
+  uint8_t is_protected;
+  uint8_t per_sample_iv_size;
+  std::vector<uint8_t> key_id;
+
+  // For pattern-based encryption.
+  uint8_t crypt_byte_block;
+  uint8_t skip_byte_block;
+
+  // Present only if |is_protected == 1 && per_sample_iv_size == 0|.
+  std::vector<uint8_t> constant_iv;
+};
+
+struct AudioRollRecoveryEntry {
+  AudioRollRecoveryEntry();
+  ~AudioRollRecoveryEntry();
+
+  bool ReadWrite(BoxBuffer* buffer);
+  uint32_t ComputeSize() const;
+
+  int16_t roll_distance;
+};
+
+struct SampleGroupDescription : FullBox {
+  DECLARE_BOX_METHODS(SampleGroupDescription);
+
+  template <typename T>
+  bool ReadWriteEntries(BoxBuffer* buffer, std::vector<T>* entries);
+
+  uint32_t grouping_type;
+  // Only present if grouping_type == 'seig'.
+  std::vector<CencSampleEncryptionInfoEntry>
+      cenc_sample_encryption_info_entries;
+  // Only present if grouping_type == 'roll'.
+  std::vector<AudioRollRecoveryEntry> audio_roll_recovery_entries;
+};
+
+struct SampleToGroupEntry {
+  enum GroupDescriptionIndexBase {
+    kTrackGroupDescriptionIndexBase = 0,
+    kTrackFragmentGroupDescriptionIndexBase = 0x10000,
+  };
+
+  uint32_t sample_count;
+  uint32_t group_description_index;
+};
+
+struct SampleToGroup : FullBox {
+  DECLARE_BOX_METHODS(SampleToGroup);
+
+  uint32_t grouping_type;
+  uint32_t grouping_type_parameter;  // Version 1 only.
+  std::vector<SampleToGroupEntry> entries;
+};
+
 struct SampleTable : Box {
   DECLARE_BOX_METHODS(SampleTable);
 
@@ -481,6 +542,8 @@ struct SampleTable : Box {
   // ChunkLargeOffset.
   ChunkLargeOffset chunk_large_offset;
   SyncSample sync_sample;
+  std::vector<SampleGroupDescription> sample_group_descriptions;
+  std::vector<SampleToGroup> sample_to_groups;
 };
 
 struct MediaHeader : FullBox {
@@ -654,47 +717,6 @@ struct TrackFragmentRun : FullBox {
   std::vector<int64_t> sample_composition_time_offsets;
 };
 
-struct SampleToGroupEntry {
-  enum GroupDescriptionIndexBase {
-    kTrackGroupDescriptionIndexBase = 0,
-    kTrackFragmentGroupDescriptionIndexBase = 0x10000,
-  };
-
-  uint32_t sample_count;
-  uint32_t group_description_index;
-};
-
-struct SampleToGroup : FullBox {
-  DECLARE_BOX_METHODS(SampleToGroup);
-
-  uint32_t grouping_type;
-  uint32_t grouping_type_parameter;  // Version 1 only.
-  std::vector<SampleToGroupEntry> entries;
-};
-
-struct CencSampleEncryptionInfoEntry {
-  CencSampleEncryptionInfoEntry();
-  ~CencSampleEncryptionInfoEntry();
-
-  uint8_t is_protected;
-  uint8_t per_sample_iv_size;
-  std::vector<uint8_t> key_id;
-
-  // For pattern-based encryption.
-  uint8_t crypt_byte_block;
-  uint8_t skip_byte_block;
-
-  // Present only if |is_protected == 1 && per_sample_iv_size == 0|.
-  std::vector<uint8_t> constant_iv;
-};
-
-struct SampleGroupDescription : FullBox {
-  DECLARE_BOX_METHODS(SampleGroupDescription);
-
-  uint32_t grouping_type;
-  std::vector<CencSampleEncryptionInfoEntry> entries;
-};
-
 struct TrackFragment : Box {
   DECLARE_BOX_METHODS(TrackFragment);
 
@@ -702,8 +724,8 @@ struct TrackFragment : Box {
   std::vector<TrackFragmentRun> runs;
   bool decode_time_absent;
   TrackFragmentDecodeTime decode_time;
-  SampleToGroup sample_to_group;
-  SampleGroupDescription sample_group_description;
+  std::vector<SampleGroupDescription> sample_group_descriptions;
+  std::vector<SampleToGroup> sample_to_groups;
   SampleAuxiliaryInformationSize auxiliary_size;
   SampleAuxiliaryInformationOffset auxiliary_offset;
   SampleEncryption sample_encryption;

@@ -107,9 +107,15 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption(
   // i.e. there is at most one key for the fragment. So there should be only
   // one entry in SampleGroupDescription box and one entry in SampleToGroup box.
   // Fill in SampleGroupDescription box information.
-  traf()->sample_group_description.grouping_type = FOURCC_seig;
-  traf()->sample_group_description.entries.resize(1);
-  auto& sample_group_entry = traf()->sample_group_description.entries[0];
+  traf()->sample_group_descriptions.resize(
+      traf()->sample_group_descriptions.size() + 1);
+  SampleGroupDescription& sample_group_description =
+      traf()->sample_group_descriptions.back();
+  sample_group_description.grouping_type = FOURCC_seig;
+
+  sample_group_description.cenc_sample_encryption_info_entries.resize(1);
+  CencSampleEncryptionInfoEntry& sample_group_entry =
+      sample_group_description.cenc_sample_encryption_info_entries.back();
   sample_group_entry.is_protected = 1;
   if (protection_scheme() == FOURCC_cbcs) {
     // For 'cbcs' scheme, Constant IVs SHALL be used.
@@ -122,21 +128,7 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption(
   sample_group_entry.skip_byte_block = skip_byte_block();
   sample_group_entry.key_id = encryption_key()->key_id;
 
-  // Fill in SampleToGroup box information.
-  traf()->sample_to_group.grouping_type = FOURCC_seig;
-  traf()->sample_to_group.entries.resize(1);
-  // sample_count is adjusted in |FinalizeFragment| later.
-  traf()->sample_to_group.entries[0].group_description_index =
-      SampleToGroupEntry::kTrackFragmentGroupDescriptionIndexBase + 1;
-
   return Status::OK;
-}
-
-void KeyRotationFragmenter::FinalizeFragmentForEncryption() {
-  EncryptingFragmenter::FinalizeFragmentForEncryption();
-  DCHECK_EQ(1u, traf()->sample_to_group.entries.size());
-  traf()->sample_to_group.entries[0].sample_count =
-      traf()->auxiliary_size.sample_count;
 }
 
 }  // namespace mp4

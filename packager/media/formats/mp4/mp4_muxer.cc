@@ -287,10 +287,41 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
   audio.channelcount = audio_info->num_channels();
   audio.samplesize = audio_info->sample_bits();
   audio.samplerate = audio_info->sampling_frequency();
-  SampleDescription& sample_description =
-      trak->media.information.sample_table.description;
+  SampleTable& sample_table = trak->media.information.sample_table;
+  SampleDescription& sample_description = sample_table.description;
   sample_description.type = kAudio;
   sample_description.audio_entries.push_back(audio);
+
+  // Opus requires at least one sample group description box and at least one
+  // sample to group box with grouping type 'roll' within sample table box.
+  if (audio_info->codec() == kCodecOpus) {
+    sample_table.sample_group_descriptions.resize(1);
+    SampleGroupDescription& sample_group_description =
+        sample_table.sample_group_descriptions.back();
+    sample_group_description.grouping_type = FOURCC_roll;
+    sample_group_description.audio_roll_recovery_entries.resize(1);
+    // The roll distance is expressed in sample units and always takes negative
+    // values.
+    const uint64_t kNanosecondsPerSecond = 1000000000ull;
+    sample_group_description.audio_roll_recovery_entries[0].roll_distance =
+        -(audio_info->seek_preroll_ns() * audio.samplerate +
+          kNanosecondsPerSecond / 2) /
+        kNanosecondsPerSecond;
+
+    sample_table.sample_to_groups.resize(1);
+    SampleToGroup& sample_to_group = sample_table.sample_to_groups.back();
+    sample_to_group.grouping_type = FOURCC_roll;
+
+    sample_to_group.entries.resize(1);
+    SampleToGroupEntry& sample_to_group_entry = sample_to_group.entries.back();
+    // All samples are in track fragments.
+    sample_to_group_entry.sample_count = 0;
+    sample_to_group_entry.group_description_index =
+        SampleToGroupEntry::kTrackGroupDescriptionIndexBase + 1;
+  } else if (audio_info->seek_preroll_ns() != 0) {
+    LOG(WARNING) << "Unexpected seek preroll for codec " << audio_info->codec();
+    return;
+  }
 }
 
 bool MP4Muxer::GetInitRangeStartAndEnd(uint32_t* start, uint32_t* end) {

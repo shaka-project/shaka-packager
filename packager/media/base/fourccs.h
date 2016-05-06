@@ -82,6 +82,7 @@ enum FourCC : uint32_t {
   FOURCC_pdin = 0x7064696e,
   FOURCC_prft = 0x70726674,
   FOURCC_pssh = 0x70737368,
+  FOURCC_roll = 0x726f6c6c,
   FOURCC_saio = 0x7361696f,
   FOURCC_saiz = 0x7361697a,
   FOURCC_sbgp = 0x73626770,

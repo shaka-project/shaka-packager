@@ -921,6 +921,187 @@ uint32_t SyncSample::ComputeSizeInternal() {
          sizeof(uint32_t) * sample_number.size();
 }
 
+CencSampleEncryptionInfoEntry::CencSampleEncryptionInfoEntry()
+    : is_protected(0),
+      per_sample_iv_size(0),
+      crypt_byte_block(0),
+      skip_byte_block(0) {}
+CencSampleEncryptionInfoEntry::~CencSampleEncryptionInfoEntry() {};
+
+bool CencSampleEncryptionInfoEntry::ReadWrite(BoxBuffer* buffer) {
+  if (!buffer->Reading()) {
+    if (key_id.size() != kCencKeyIdSize) {
+      LOG(WARNING) << "CENC defines key id length of " << kCencKeyIdSize
+                   << " bytes; got " << key_id.size()
+                   << ". Resized accordingly.";
+      key_id.resize(kCencKeyIdSize);
+    }
+    RCHECK(crypt_byte_block < 16 && skip_byte_block < 16);
+  }
+
+  RCHECK(buffer->IgnoreBytes(1));  // reserved.
+
+  uint8_t pattern = crypt_byte_block << 4 | skip_byte_block;
+  RCHECK(buffer->ReadWriteUInt8(&pattern));
+  crypt_byte_block = pattern >> 4;
+  skip_byte_block = pattern & 0x0F;
+
+  RCHECK(buffer->ReadWriteUInt8(&is_protected) &&
+         buffer->ReadWriteUInt8(&per_sample_iv_size) &&
+         buffer->ReadWriteVector(&key_id, kCencKeyIdSize));
+
+  if (is_protected == 1) {
+    if (per_sample_iv_size == 0) {  // For constant iv.
+      uint8_t constant_iv_size = constant_iv.size();
+      RCHECK(buffer->ReadWriteUInt8(&constant_iv_size));
+      RCHECK(constant_iv_size == 8 || constant_iv_size == 16);
+      RCHECK(buffer->ReadWriteVector(&constant_iv, constant_iv_size));
+    } else {
+      RCHECK(per_sample_iv_size == 8 || per_sample_iv_size == 16);
+      DCHECK(constant_iv.empty());
+    }
+  } else {
+    // Expect |is_protected| to be 0, i.e. not protected. Other values of
+    // |is_protected| is not supported.
+    RCHECK(is_protected == 0);
+    RCHECK(per_sample_iv_size == 0);
+  }
+  return true;
+}
+
+uint32_t CencSampleEncryptionInfoEntry::ComputeSize() const {
+  return sizeof(uint32_t) + kCencKeyIdSize +
+         (constant_iv.empty() ? 0 : (sizeof(uint8_t) + constant_iv.size()));
+}
+
+AudioRollRecoveryEntry::AudioRollRecoveryEntry(): roll_distance(0) {}
+AudioRollRecoveryEntry::~AudioRollRecoveryEntry() {}
+
+bool AudioRollRecoveryEntry::ReadWrite(BoxBuffer* buffer) {
+  RCHECK(buffer->ReadWriteInt16(&roll_distance));
+  return true;
+}
+
+uint32_t AudioRollRecoveryEntry::ComputeSize() const {
+  return sizeof(roll_distance);
+}
+
+SampleGroupDescription::SampleGroupDescription() : grouping_type(0) {}
+SampleGroupDescription::~SampleGroupDescription() {}
+FourCC SampleGroupDescription::BoxType() const { return FOURCC_sgpd; }
+
+bool SampleGroupDescription::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer) &&
+         buffer->ReadWriteUInt32(&grouping_type));
+
+  switch (grouping_type) {
+    case FOURCC_seig:
+      return ReadWriteEntries(buffer, &cenc_sample_encryption_info_entries);
+    case FOURCC_roll:
+      return ReadWriteEntries(buffer, &audio_roll_recovery_entries);
+    default:
+      DCHECK(buffer->Reading());
+      DLOG(WARNING) << "Sample group '" << grouping_type
+                    << "' is not supported.";
+      return true;
+  }
+}
+
+template <typename T>
+bool SampleGroupDescription::ReadWriteEntries(BoxBuffer* buffer,
+                                              std::vector<T>* entries) {
+  uint32_t default_length = 0;
+  if (!buffer->Reading()) {
+    DCHECK(!entries->empty());
+    default_length = (*entries)[0].ComputeSize();
+    DCHECK_NE(default_length, 0u);
+  }
+  if (version == 1)
+    RCHECK(buffer->ReadWriteUInt32(&default_length));
+  if (version >= 2) {
+    NOTIMPLEMENTED() << "Unsupported SampleGroupDescriptionBox 'sgpd' version "
+                     << static_cast<int>(version);
+    return false;
+  }
+
+  uint32_t count = entries->size();
+  RCHECK(buffer->ReadWriteUInt32(&count));
+  RCHECK(count != 0);
+  entries->resize(count);
+
+  for (T& entry : *entries) {
+    if (version == 1) {
+      uint32_t description_length = default_length;
+      if (buffer->Reading() && default_length == 0)
+        RCHECK(buffer->ReadWriteUInt32(&description_length));
+      RCHECK(entry.ReadWrite(buffer));
+      RCHECK(entry.ComputeSize() == description_length);
+    } else {
+      RCHECK(entry.ReadWrite(buffer));
+    }
+  }
+  return true;
+}
+
+uint32_t SampleGroupDescription::ComputeSizeInternal() {
+  // Version 0 is obsoleted, so always generate version 1 box.
+  version = 1;
+  size_t entries_size = 0;
+  switch (grouping_type) {
+    case FOURCC_seig:
+      for (const auto& entry : cenc_sample_encryption_info_entries)
+        entries_size += entry.ComputeSize();
+      break;
+    case FOURCC_roll:
+      for (const auto& entry : audio_roll_recovery_entries)
+        entries_size += entry.ComputeSize();
+      break;
+  }
+  // This box is optional. Skip it if it is not used.
+  if (entries_size == 0)
+    return 0;
+  return HeaderSize() + sizeof(grouping_type) +
+         (version == 1 ? sizeof(uint32_t) : 0) + sizeof(uint32_t) +
+         entries_size;
+}
+
+SampleToGroup::SampleToGroup() : grouping_type(0), grouping_type_parameter(0) {}
+SampleToGroup::~SampleToGroup() {}
+FourCC SampleToGroup::BoxType() const { return FOURCC_sbgp; }
+
+bool SampleToGroup::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer) &&
+         buffer->ReadWriteUInt32(&grouping_type));
+  if (version == 1)
+    RCHECK(buffer->ReadWriteUInt32(&grouping_type_parameter));
+
+  if (grouping_type != FOURCC_seig && grouping_type != FOURCC_roll) {
+    DCHECK(buffer->Reading());
+    DLOG(WARNING) << "Sample group "
+                  << FourCCToString(static_cast<FourCC>(grouping_type))
+                  << " is not supported.";
+    return true;
+  }
+
+  uint32_t count = entries.size();
+  RCHECK(buffer->ReadWriteUInt32(&count));
+  entries.resize(count);
+  for (uint32_t i = 0; i < count; ++i) {
+    RCHECK(buffer->ReadWriteUInt32(&entries[i].sample_count) &&
+           buffer->ReadWriteUInt32(&entries[i].group_description_index));
+  }
+  return true;
+}
+
+uint32_t SampleToGroup::ComputeSizeInternal() {
+  // This box is optional. Skip it if it is not used.
+  if (entries.empty())
+    return 0;
+  return HeaderSize() + sizeof(grouping_type) +
+         (version == 1 ? sizeof(grouping_type_parameter) : 0) +
+         sizeof(uint32_t) + entries.size() * sizeof(entries[0]);
+}
+
 SampleTable::SampleTable() {}
 SampleTable::~SampleTable() {}
 FourCC SampleTable::BoxType() const { return FOURCC_stbl; }
@@ -961,15 +1142,30 @@ bool SampleTable::ReadWriteInternal(BoxBuffer* buffer) {
            buffer->ReadWriteChild(&chunk_large_offset));
   }
   RCHECK(buffer->TryReadWriteChild(&sync_sample));
+  if (buffer->Reading()) {
+    RCHECK(buffer->reader()->TryReadChildren(&sample_group_descriptions) &&
+           buffer->reader()->TryReadChildren(&sample_to_groups));
+  } else {
+    for (auto& sample_group_description : sample_group_descriptions)
+      RCHECK(buffer->ReadWriteChild(&sample_group_description));
+    for (auto& sample_to_group : sample_to_groups)
+      RCHECK(buffer->ReadWriteChild(&sample_to_group));
+  }
   return true;
 }
 
 uint32_t SampleTable::ComputeSizeInternal() {
-  return HeaderSize() + description.ComputeSize() +
-         decoding_time_to_sample.ComputeSize() +
-         composition_time_to_sample.ComputeSize() +
-         sample_to_chunk.ComputeSize() + sample_size.ComputeSize() +
-         chunk_large_offset.ComputeSize() + sync_sample.ComputeSize();
+  uint32_t box_size =
+      HeaderSize() + description.ComputeSize() +
+      decoding_time_to_sample.ComputeSize() +
+      composition_time_to_sample.ComputeSize() + sample_to_chunk.ComputeSize() +
+      sample_size.ComputeSize() + chunk_large_offset.ComputeSize() +
+      sync_sample.ComputeSize();
+  for (auto& sample_group_description : sample_group_descriptions)
+    box_size += sample_group_description.ComputeSize();
+  for (auto& sample_to_group : sample_to_groups)
+    box_size += sample_to_group.ComputeSize();
+  return box_size;
 }
 
 EditList::EditList() {}
@@ -2199,152 +2395,6 @@ uint32_t TrackFragmentRun::ComputeSizeInternal() {
   return box_size;
 }
 
-SampleToGroup::SampleToGroup() : grouping_type(0), grouping_type_parameter(0) {}
-SampleToGroup::~SampleToGroup() {}
-FourCC SampleToGroup::BoxType() const { return FOURCC_sbgp; }
-
-bool SampleToGroup::ReadWriteInternal(BoxBuffer* buffer) {
-  RCHECK(ReadWriteHeaderInternal(buffer) &&
-         buffer->ReadWriteUInt32(&grouping_type));
-  if (version == 1)
-    RCHECK(buffer->ReadWriteUInt32(&grouping_type_parameter));
-
-  if (grouping_type != FOURCC_seig) {
-    DCHECK(buffer->Reading());
-    DLOG(WARNING) << "Sample group "
-                  << FourCCToString(static_cast<FourCC>(grouping_type))
-                  << " is not supported.";
-    return true;
-  }
-
-  uint32_t count = entries.size();
-  RCHECK(buffer->ReadWriteUInt32(&count));
-  entries.resize(count);
-  for (uint32_t i = 0; i < count; ++i) {
-    RCHECK(buffer->ReadWriteUInt32(&entries[i].sample_count) &&
-           buffer->ReadWriteUInt32(&entries[i].group_description_index));
-  }
-  return true;
-}
-
-uint32_t SampleToGroup::ComputeSizeInternal() {
-  // This box is optional. Skip it if it is not used.
-  if (entries.empty())
-    return 0;
-  return HeaderSize() + sizeof(grouping_type) +
-         (version == 1 ? sizeof(grouping_type_parameter) : 0) +
-         sizeof(uint32_t) + entries.size() * sizeof(entries[0]);
-}
-
-CencSampleEncryptionInfoEntry::CencSampleEncryptionInfoEntry()
-    : is_protected(0),
-      per_sample_iv_size(0),
-      crypt_byte_block(0),
-      skip_byte_block(0) {}
-CencSampleEncryptionInfoEntry::~CencSampleEncryptionInfoEntry() {};
-
-SampleGroupDescription::SampleGroupDescription() : grouping_type(0) {}
-SampleGroupDescription::~SampleGroupDescription() {}
-FourCC SampleGroupDescription::BoxType() const { return FOURCC_sgpd; }
-
-bool SampleGroupDescription::ReadWriteInternal(BoxBuffer* buffer) {
-  RCHECK(ReadWriteHeaderInternal(buffer) &&
-         buffer->ReadWriteUInt32(&grouping_type));
-
-  if (grouping_type != FOURCC_seig) {
-    DCHECK(buffer->Reading());
-    DLOG(WARNING) << "Sample group '" << grouping_type << "' is not supported.";
-    return true;
-  }
-
-  const size_t kEntrySize = sizeof(uint32_t) + kCencKeyIdSize;
-  uint32_t default_length = 0;
-  if (version == 1) {
-    if (buffer->Reading()) {
-      RCHECK(buffer->ReadWriteUInt32(&default_length));
-      RCHECK(default_length == 0 || default_length >= kEntrySize);
-    } else {
-      default_length = kEntrySize;
-      RCHECK(buffer->ReadWriteUInt32(&default_length));
-    }
-  }
-
-  uint32_t count = entries.size();
-  RCHECK(buffer->ReadWriteUInt32(&count));
-  entries.resize(count);
-  for (uint32_t i = 0; i < count; ++i) {
-    if (version == 1) {
-      if (buffer->Reading() && default_length == 0) {
-        uint32_t description_length = 0;
-        RCHECK(buffer->ReadWriteUInt32(&description_length));
-        RCHECK(description_length >= kEntrySize);
-      }
-    }
-
-    if (!buffer->Reading()) {
-      if (entries[i].key_id.size() != kCencKeyIdSize) {
-        LOG(WARNING) << "CENC defines key id length of " << kCencKeyIdSize
-                     << " bytes; got " << entries[i].key_id.size()
-                     << ". Resized accordingly.";
-        entries[i].key_id.resize(kCencKeyIdSize);
-      }
-      RCHECK(entries[i].crypt_byte_block < 16 &&
-             entries[i].skip_byte_block < 16);
-    }
-
-    RCHECK(buffer->IgnoreBytes(1));  // reserved.
-
-    uint8_t pattern =
-        entries[i].crypt_byte_block << 4 | entries[i].skip_byte_block;
-    RCHECK(buffer->ReadWriteUInt8(&pattern));
-    entries[i].crypt_byte_block = pattern >> 4;
-    entries[i].skip_byte_block = pattern & 0x0F;
-
-    RCHECK(buffer->ReadWriteUInt8(&entries[i].is_protected) &&
-           buffer->ReadWriteUInt8(&entries[i].per_sample_iv_size) &&
-           buffer->ReadWriteVector(&entries[i].key_id, kCencKeyIdSize));
-
-    if (entries[i].is_protected == 1) {
-      if (entries[i].per_sample_iv_size == 0) {  // For constant iv.
-        uint8_t constant_iv_size = entries[i].constant_iv.size();
-        RCHECK(buffer->ReadWriteUInt8(&constant_iv_size));
-        RCHECK(constant_iv_size == 8 || constant_iv_size == 16);
-        RCHECK(
-            buffer->ReadWriteVector(&entries[i].constant_iv, constant_iv_size));
-      } else {
-        RCHECK(entries[i].per_sample_iv_size == 8 ||
-               entries[i].per_sample_iv_size == 16);
-        RCHECK(entries[i].constant_iv.empty());
-      }
-    } else {
-      // Expect |is_protected| to be 0, i.e. not protected. Other values of
-      // |is_protected| is not supported.
-      RCHECK(entries[i].is_protected == 0);
-      RCHECK(entries[i].per_sample_iv_size == 0);
-    }
-
-  }
-  return true;
-}
-
-uint32_t SampleGroupDescription::ComputeSizeInternal() {
-  // Version 0 is obsoleted, so always generate version 1 box.
-  version = 1;
-  // This box is optional. Skip it if it is not used.
-  if (entries.empty())
-    return 0;
-  size_t entries_size = 0;
-  for (const auto& entry : entries) {
-    entries_size += sizeof(uint32_t) + kCencKeyIdSize +
-                    (entry.constant_iv.empty()
-                         ? 0
-                         : (sizeof(uint8_t) + entry.constant_iv.size()));
-  }
-  return HeaderSize() + sizeof(grouping_type) +
-         (version == 1 ? sizeof(uint32_t) : 0) + sizeof(uint32_t) +
-         entries_size;
-}
-
 TrackFragment::TrackFragment() : decode_time_absent(false) {}
 TrackFragment::~TrackFragment() {}
 FourCC TrackFragment::BoxType() const { return FOURCC_traf; }
@@ -2358,27 +2408,18 @@ bool TrackFragment::ReadWriteInternal(BoxBuffer* buffer) {
     decode_time_absent = !buffer->reader()->ChildExist(&decode_time);
     if (!decode_time_absent)
       RCHECK(buffer->ReadWriteChild(&decode_time));
-    RCHECK(buffer->reader()->TryReadChildren(&runs));
-
-    // There could be multiple SampleGroupDescription and SampleToGroup boxes
-    // with different grouping types. For common encryption, the relevant
-    // grouping type is 'seig'. Continue reading until 'seig' is found, or
-    // until running out of child boxes.
-    while (sample_to_group.grouping_type != FOURCC_seig &&
-           buffer->reader()->ChildExist(&sample_to_group)) {
-      RCHECK(buffer->reader()->ReadChild(&sample_to_group));
-    }
-    while (sample_group_description.grouping_type != FOURCC_seig &&
-           buffer->reader()->ChildExist(&sample_group_description)) {
-      RCHECK(buffer->reader()->ReadChild(&sample_group_description));
-    }
+    RCHECK(buffer->reader()->TryReadChildren(&runs) &&
+           buffer->reader()->TryReadChildren(&sample_group_descriptions) &&
+           buffer->reader()->TryReadChildren(&sample_to_groups));
   } else {
     if (!decode_time_absent)
       RCHECK(buffer->ReadWriteChild(&decode_time));
     for (uint32_t i = 0; i < runs.size(); ++i)
       RCHECK(buffer->ReadWriteChild(&runs[i]));
-    RCHECK(buffer->TryReadWriteChild(&sample_to_group) &&
-           buffer->TryReadWriteChild(&sample_group_description));
+    for (uint32_t i = 0; i < sample_to_groups.size(); ++i)
+      RCHECK(buffer->ReadWriteChild(&sample_to_groups[i]));
+    for (uint32_t i = 0; i < sample_group_descriptions.size(); ++i)
+      RCHECK(buffer->ReadWriteChild(&sample_group_descriptions[i]));
   }
   return buffer->TryReadWriteChild(&auxiliary_size) &&
          buffer->TryReadWriteChild(&auxiliary_offset) &&
@@ -2388,11 +2429,14 @@ bool TrackFragment::ReadWriteInternal(BoxBuffer* buffer) {
 uint32_t TrackFragment::ComputeSizeInternal() {
   uint32_t box_size =
       HeaderSize() + header.ComputeSize() + decode_time.ComputeSize() +
-      sample_to_group.ComputeSize() + sample_group_description.ComputeSize() +
       auxiliary_size.ComputeSize() + auxiliary_offset.ComputeSize() +
       sample_encryption.ComputeSize();
   for (uint32_t i = 0; i < runs.size(); ++i)
     box_size += runs[i].ComputeSize();
+  for (uint32_t i = 0; i < sample_group_descriptions.size(); ++i)
+    box_size += sample_group_descriptions[i].ComputeSize();
+  for (uint32_t i = 0; i < sample_to_groups.size(); ++i)
+    box_size += sample_to_groups[i].ComputeSize();
   return box_size;
 }
 

@@ -440,6 +440,34 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           return false;
       }
 
+      // Extract possible seek preroll.
+      uint64_t seek_preroll_ns = 0;
+      for (const auto& sample_group_description :
+           track->media.information.sample_table.sample_group_descriptions) {
+        if (sample_group_description.grouping_type != FOURCC_roll)
+          continue;
+        const auto& audio_roll_recovery_entries =
+            sample_group_description.audio_roll_recovery_entries;
+        if (audio_roll_recovery_entries.size() != 1) {
+          LOG(WARNING) << "Unexpected number of entries in "
+                          "SampleGroupDescription table with grouping type "
+                          "'roll'.";
+          break;
+        }
+        const int16_t roll_distance_in_samples =
+            audio_roll_recovery_entries[0].roll_distance;
+        if (roll_distance_in_samples < 0) {
+          RCHECK(sampling_frequency != 0);
+          seek_preroll_ns = kNanosecondsPerSecond *
+                            (-roll_distance_in_samples) / sampling_frequency;
+        } else {
+          LOG(WARNING)
+              << "Roll distance is supposed to be negative, but seeing "
+              << roll_distance_in_samples;
+        }
+        break;
+      }
+
       const bool is_encrypted =
           entry.sinf.info.track_encryption.default_is_protected == 1;
       DVLOG(1) << "is_audio_track_encrypted_: " << is_encrypted;
@@ -453,7 +481,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           entry.samplesize,
           num_channels,
           sampling_frequency,
-          0 /* seek preroll */,
+          seek_preroll_ns,
           codec_delay_ns,
           max_bitrate,
           avg_bitrate,

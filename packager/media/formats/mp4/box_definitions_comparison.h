@@ -156,6 +156,42 @@ inline bool operator==(const SyncSample& lhs, const SyncSample& rhs) {
   return lhs.sample_number == rhs.sample_number;
 }
 
+inline bool operator==(const CencSampleEncryptionInfoEntry& lhs,
+                       const CencSampleEncryptionInfoEntry& rhs) {
+  return lhs.is_protected == rhs.is_protected &&
+         lhs.per_sample_iv_size == rhs.per_sample_iv_size &&
+         lhs.key_id == rhs.key_id &&
+         lhs.crypt_byte_block == rhs.crypt_byte_block &&
+         lhs.skip_byte_block == rhs.skip_byte_block &&
+         lhs.constant_iv == rhs.constant_iv;
+}
+
+inline bool operator==(const AudioRollRecoveryEntry& lhs,
+                       const AudioRollRecoveryEntry& rhs) {
+  return lhs.roll_distance == rhs.roll_distance;
+}
+
+inline bool operator==(const SampleGroupDescription& lhs,
+                       const SampleGroupDescription& rhs) {
+  return lhs.grouping_type == rhs.grouping_type &&
+         lhs.cenc_sample_encryption_info_entries ==
+             rhs.cenc_sample_encryption_info_entries &&
+         lhs.audio_roll_recovery_entries == rhs.audio_roll_recovery_entries;
+}
+
+inline bool operator==(const SampleToGroupEntry& lhs,
+                       const SampleToGroupEntry& rhs) {
+  return lhs.sample_count == rhs.sample_count &&
+         lhs.group_description_index == rhs.group_description_index;
+}
+
+inline bool operator==(const SampleToGroup& lhs,
+                       const SampleToGroup& rhs) {
+  return lhs.grouping_type == rhs.grouping_type &&
+         lhs.grouping_type_parameter == rhs.grouping_type_parameter &&
+         lhs.entries == rhs.entries;
+}
+
 inline bool operator==(const SampleTable& lhs, const SampleTable& rhs) {
   return lhs.description == rhs.description &&
          lhs.decoding_time_to_sample == rhs.decoding_time_to_sample &&
@@ -163,7 +199,9 @@ inline bool operator==(const SampleTable& lhs, const SampleTable& rhs) {
          lhs.sample_to_chunk == rhs.sample_to_chunk &&
          lhs.sample_size == rhs.sample_size &&
          lhs.chunk_large_offset == rhs.chunk_large_offset &&
-         lhs.sync_sample == rhs.sync_sample;
+         lhs.sync_sample == rhs.sync_sample &&
+         lhs.sample_group_descriptions == rhs.sample_group_descriptions &&
+         lhs.sample_to_groups == rhs.sample_to_groups;
 }
 
 inline bool operator==(const EditListEntry& lhs, const EditListEntry& rhs) {
@@ -383,35 +421,6 @@ inline bool operator==(const TrackFragmentRun& lhs,
          lhs.sample_durations == rhs.sample_durations &&
          lhs.sample_composition_time_offsets ==
              rhs.sample_composition_time_offsets;
-}
-
-inline bool operator==(const SampleToGroupEntry& lhs,
-                       const SampleToGroupEntry& rhs) {
-  return lhs.sample_count == rhs.sample_count &&
-         lhs.group_description_index == rhs.group_description_index;
-}
-
-inline bool operator==(const SampleToGroup& lhs,
-                       const SampleToGroup& rhs) {
-  return lhs.grouping_type == rhs.grouping_type &&
-         lhs.grouping_type_parameter == rhs.grouping_type_parameter &&
-         lhs.entries == rhs.entries;
-}
-
-inline bool operator==(const CencSampleEncryptionInfoEntry& lhs,
-                       const CencSampleEncryptionInfoEntry& rhs) {
-  return lhs.is_protected == rhs.is_protected &&
-         lhs.per_sample_iv_size == rhs.per_sample_iv_size &&
-         lhs.key_id == rhs.key_id &&
-         lhs.crypt_byte_block == rhs.crypt_byte_block &&
-         lhs.skip_byte_block == rhs.skip_byte_block &&
-         lhs.constant_iv == rhs.constant_iv;
-}
-
-inline bool operator==(const SampleGroupDescription& lhs,
-                       const SampleGroupDescription& rhs) {
-  return lhs.grouping_type == rhs.grouping_type &&
-         lhs.entries == rhs.entries;
 }
 
 inline bool operator==(const TrackFragment& lhs, const TrackFragment& rhs) {

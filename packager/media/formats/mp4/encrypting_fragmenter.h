@@ -26,6 +26,7 @@ namespace mp4 {
 /// EncryptingFragmenter generates MP4 fragments with sample encrypted.
 class EncryptingFragmenter : public Fragmenter {
  public:
+  /// @param info contains stream information.
   /// @param traf points to a TrackFragment box.
   /// @param encryption_key contains the encryption parameters.
   /// @param clear_time specifies clear lead duration in units of the current

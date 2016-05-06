@@ -567,6 +567,45 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Modify(SyncSample* stss) { stss->sample_number.pop_back(); }
 
+  void Fill(SampleGroupDescription* sgpd) {
+    sgpd->grouping_type = FOURCC_seig;
+    sgpd->cenc_sample_encryption_info_entries.resize(2);
+    sgpd->cenc_sample_encryption_info_entries[0].is_protected = 1;
+    sgpd->cenc_sample_encryption_info_entries[0].per_sample_iv_size = 8;
+    sgpd->cenc_sample_encryption_info_entries[0].key_id.assign(
+        kData16Bytes, kData16Bytes + arraysize(kData16Bytes));
+    sgpd->cenc_sample_encryption_info_entries[0].crypt_byte_block = 3;
+    sgpd->cenc_sample_encryption_info_entries[0].skip_byte_block = 7;
+    sgpd->cenc_sample_encryption_info_entries[1].is_protected = 0;
+    sgpd->cenc_sample_encryption_info_entries[1].per_sample_iv_size = 0;
+    sgpd->cenc_sample_encryption_info_entries[1].key_id.resize(16);
+    sgpd->version = 1;
+  }
+
+  void Modify(SampleGroupDescription* sgpd) {
+    sgpd->cenc_sample_encryption_info_entries.resize(1);
+    sgpd->cenc_sample_encryption_info_entries[0].is_protected = 1;
+    sgpd->cenc_sample_encryption_info_entries[0].per_sample_iv_size = 0;
+    sgpd->cenc_sample_encryption_info_entries[0].constant_iv.assign(
+        kData16Bytes, kData16Bytes + arraysize(kData16Bytes));
+    sgpd->cenc_sample_encryption_info_entries[0].key_id.resize(16);
+  }
+
+  void Fill(SampleToGroup* sbgp) {
+    sbgp->grouping_type = FOURCC_seig;
+    sbgp->entries.resize(2);
+    sbgp->entries[0].sample_count = 3;
+    sbgp->entries[0].group_description_index = 0x10002;
+    sbgp->entries[1].sample_count = 1212;
+    sbgp->entries[1].group_description_index = 0x10001;
+  }
+
+  void Modify(SampleToGroup* sbgp) {
+    sbgp->entries.resize(1);
+    sbgp->entries[0].sample_count = 5;
+    sbgp->entries[0].group_description_index = 0x10001;
+  }
+
   void Fill(SampleTable* stbl) {
     Fill(&stbl->description);
     Fill(&stbl->decoding_time_to_sample);
@@ -575,11 +614,17 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     Fill(&stbl->sample_size);
     Fill(&stbl->chunk_large_offset);
     Fill(&stbl->sync_sample);
+    stbl->sample_group_descriptions.resize(1);
+    Fill(&stbl->sample_group_descriptions[0]);
+    stbl->sample_to_groups.resize(1);
+    Fill(&stbl->sample_to_groups[0]);
   }
 
   void Modify(SampleTable* stbl) {
     Modify(&stbl->chunk_large_offset);
     Modify(&stbl->sync_sample);
+    stbl->sample_group_descriptions.clear();
+    stbl->sample_to_groups.clear();
   }
 
   void Fill(MediaHeader* mdhd) {
@@ -768,47 +813,6 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     trun->version = 0;
   }
 
-  void Fill(SampleToGroup* sbgp) {
-    sbgp->grouping_type = FOURCC_seig;
-    sbgp->entries.resize(2);
-    sbgp->entries[0].sample_count = 3;
-    sbgp->entries[0].group_description_index = 0x10002;
-    sbgp->entries[1].sample_count = 1212;
-    sbgp->entries[1].group_description_index = 0x10001;
-  }
-
-  void Modify(SampleToGroup* sbgp) {
-    sbgp->entries.resize(1);
-    sbgp->entries[0].sample_count = 5;
-    sbgp->entries[0].group_description_index = 0x10001;
-  }
-
-  void Fill(SampleGroupDescription* sgpd) {
-    sgpd->grouping_type = FOURCC_seig;
-    sgpd->entries.resize(3);
-    sgpd->entries[0].is_protected = 1;
-    sgpd->entries[0].per_sample_iv_size = 8;
-    sgpd->entries[0].key_id.assign(kData16Bytes,
-                                   kData16Bytes + arraysize(kData16Bytes));
-    sgpd->entries[0].crypt_byte_block = 3;
-    sgpd->entries[0].skip_byte_block = 7;
-    sgpd->entries[1].is_protected = 0;
-    sgpd->entries[1].per_sample_iv_size = 0;
-    sgpd->entries[1].key_id.resize(16);
-    sgpd->entries[2].is_protected = 1;
-    sgpd->entries[2].per_sample_iv_size = 0;
-    sgpd->entries[2].constant_iv.assign(kData16Bytes,
-                                        kData16Bytes + arraysize(kData16Bytes));
-    sgpd->entries[2].key_id.resize(16);
-    sgpd->version = 1;
-  }
-
-  void Modify(SampleGroupDescription* sgpd) {
-    sgpd->entries.resize(1);
-    sgpd->entries[0].key_id[4] = 88;
-    sgpd->version = 1;
-  }
-
   void Fill(TrackFragment* traf) {
     Fill(&traf->header);
     traf->runs.resize(1);
@@ -821,8 +825,19 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   void Modify(TrackFragment* traf) {
     Modify(&traf->header);
     Modify(&traf->decode_time);
-    Fill(&traf->sample_to_group);
-    Fill(&traf->sample_group_description);
+
+    traf->sample_group_descriptions.resize(2);
+    Fill(&traf->sample_group_descriptions[0]);
+    traf->sample_group_descriptions[1].grouping_type = FOURCC_roll;
+    traf->sample_group_descriptions[1].audio_roll_recovery_entries.resize(1);
+    traf->sample_group_descriptions[1]
+        .audio_roll_recovery_entries[0]
+        .roll_distance = -10;
+
+    traf->sample_to_groups.resize(2);
+    Fill(&traf->sample_to_groups[0]);
+    Modify(&traf->sample_to_groups[1]);
+    traf->sample_to_groups[1].grouping_type = FOURCC_roll;
   }
 
   void Fill(MovieFragment* moof) {
@@ -951,10 +966,10 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   bool IsOptional(const WebVTTSourceLabelBox* box) { return true; }
   bool IsOptional(const CompositionTimeToSample* box) { return true; }
   bool IsOptional(const SyncSample* box) { return true; }
+  bool IsOptional(const SampleGroupDescription* box) { return true; }
+  bool IsOptional(const SampleToGroup* box) { return true; }
   bool IsOptional(const MovieExtendsHeader* box) { return true; }
   bool IsOptional(const MovieExtends* box) { return true; }
-  bool IsOptional(const SampleToGroup* box) { return true; }
-  bool IsOptional(const SampleGroupDescription* box) { return true; }
   bool IsOptional(const CueSourceIDBox* box) { return true; }
   bool IsOptional(const CueIDBox* box) { return true; }
   bool IsOptional(const CueTimeBox* box) { return true; }
@@ -1006,6 +1021,8 @@ typedef testing::Types<FileType,
                        ChunkLargeOffset,
                        ChunkOffset,
                        SyncSample,
+                       SampleGroupDescription,
+                       SampleToGroup,
                        SampleTable>
     Boxes;
 typedef testing::Types<MediaHeader,
@@ -1029,8 +1046,6 @@ typedef testing::Types<MediaHeader,
                        TrackFragment,
                        MovieFragment,
                        SegmentIndex,
-                       SampleToGroup,
-                       SampleGroupDescription,
                        CueSourceIDBox,
                        CueTimeBox,
                        CueIDBox,

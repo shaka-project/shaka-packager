@@ -9,6 +9,7 @@
 #include <limits>
 
 #include "packager/media/base/buffer_writer.h"
+#include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 
@@ -18,10 +19,18 @@ namespace mp4 {
 
 namespace {
 const int64_t kInvalidTime = std::numeric_limits<int64_t>::max();
+
+uint64_t GetSeekPreroll(const StreamInfo& stream_info) {
+  if (stream_info.stream_type() != kStreamAudio) return 0;
+  const AudioStreamInfo& audio_stream_info =
+      static_cast<const AudioStreamInfo&>(stream_info);
+  return audio_stream_info.seek_preroll_ns();
+}
 }  // namespace
 
-Fragmenter::Fragmenter(TrackFragment* traf)
+Fragmenter::Fragmenter(scoped_refptr<StreamInfo> info, TrackFragment* traf)
     : traf_(traf),
+      seek_preroll_(GetSeekPreroll(*info)),
       fragment_initialized_(false),
       fragment_finalized_(false),
       fragment_duration_(0),
@@ -80,6 +89,8 @@ Status Fragmenter::InitializeFragment(int64_t first_sample_dts) {
   traf_->runs.clear();
   traf_->runs.resize(1);
   traf_->runs[0].flags = TrackFragmentRun::kDataOffsetPresentMask;
+  traf_->sample_group_descriptions.clear();
+  traf_->sample_to_groups.clear();
   traf_->header.sample_description_index = 1;  // 1-based.
   traf_->header.flags = TrackFragmentHeader::kDefaultBaseIsMoofMask |
                         TrackFragmentHeader::kSampleDescriptionIndexPresentMask;
@@ -111,6 +122,35 @@ void Fragmenter::FinalizeFragment() {
     traf_->header.flags |= TrackFragmentHeader::kDefaultSampleFlagsPresentMask;
   } else {
     traf_->runs[0].flags |= TrackFragmentRun::kSampleFlagsPresentMask;
+  }
+
+  // Add SampleToGroup boxes. A SampleToGroup box with grouping type of 'roll'
+  // needs to be added if there is seek preroll, referencing sample group
+  // description in track level; Also need to add SampleToGroup boxes
+  // correponding to every SampleGroupDescription boxes, referencing sample
+  // group description in fragment level.
+  DCHECK_EQ(traf_->sample_to_groups.size(), 0u);
+  if (seek_preroll_ > 0) {
+    traf_->sample_to_groups.resize(traf_->sample_to_groups.size() + 1);
+    SampleToGroup& sample_to_group = traf_->sample_to_groups.back();
+    sample_to_group.grouping_type = FOURCC_roll;
+
+    sample_to_group.entries.resize(1);
+    SampleToGroupEntry& sample_to_group_entry = sample_to_group.entries.back();
+    sample_to_group_entry.sample_count = traf_->runs[0].sample_count;
+    sample_to_group_entry.group_description_index =
+        SampleToGroupEntry::kTrackGroupDescriptionIndexBase + 1;
+  }
+  for (const auto& sample_group_description : traf_->sample_group_descriptions) {
+    traf_->sample_to_groups.resize(traf_->sample_to_groups.size() + 1);
+    SampleToGroup& sample_to_group = traf_->sample_to_groups.back();
+    sample_to_group.grouping_type = sample_group_description.grouping_type;
+
+    sample_to_group.entries.resize(1);
+    SampleToGroupEntry& sample_to_group_entry = sample_to_group.entries.back();
+    sample_to_group_entry.sample_count = traf_->runs[0].sample_count;
+    sample_to_group_entry.group_description_index =
+        SampleToGroupEntry::kTrackFragmentGroupDescriptionIndexBase + 1;
   }
 
   fragment_finalized_ = true;

@@ -170,7 +170,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
         sidx_->reference_id = i + 1;
     }
     if (!encryption_key_source) {
-      fragmenters_[i] = new Fragmenter(&moof_->tracks[i]);
+      fragmenters_[i] = new Fragmenter(streams[i]->info(), &moof_->tracks[i]);
       continue;
     }
 

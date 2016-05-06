@@ -67,7 +67,7 @@ EncryptingFragmenter::EncryptingFragmenter(
     FourCC protection_scheme,
     uint8_t crypt_byte_block,
     uint8_t skip_byte_block)
-    : Fragmenter(traf),
+    : Fragmenter(info, traf),
       info_(info),
       encryption_key_(encryption_key.Pass()),
       nalu_length_size_(GetNaluLengthSize(*info)),

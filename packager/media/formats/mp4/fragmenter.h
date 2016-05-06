@@ -19,6 +19,7 @@ namespace media {
 
 class BufferWriter;
 class MediaSample;
+class StreamInfo;
 
 namespace mp4 {
 
@@ -29,8 +30,9 @@ struct TrackFragment;
 /// box and corresponding 'mdat' box.
 class Fragmenter {
  public:
+  /// @param info contains stream information.
   /// @param traf points to a TrackFragment box.
-  Fragmenter(TrackFragment* traf);
+  Fragmenter(scoped_refptr<StreamInfo> info, TrackFragment* traf);
 
   virtual ~Fragmenter();
 
@@ -74,6 +76,7 @@ class Fragmenter {
   bool StartsWithSAP();
 
   TrackFragment* traf_;
+  uint64_t seek_preroll_;
   bool fragment_initialized_;
   bool fragment_finalized_;
   uint64_t fragment_duration_;

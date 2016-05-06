@@ -23,6 +23,7 @@ struct MovieFragment;
 class KeyRotationFragmenter : public EncryptingFragmenter {
  public:
   /// @param moof points to a MovieFragment box.
+  /// @param info contains stream information.
   /// @param traf points to a TrackFragment box.
   /// @param encryption_key_source points to the source which generates
   ///        encryption keys.
@@ -57,7 +58,6 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
   /// @name Fragmenter implementation overrides.
   /// @{
   Status PrepareFragmentForEncryption(bool enable_encryption) override;
-  void FinalizeFragmentForEncryption() override;
   /// @}
 
  private:
