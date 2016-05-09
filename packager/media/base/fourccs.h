@@ -14,6 +14,8 @@ enum FourCC : uint32_t {
   FOURCC_NULL = 0,
 
   FOURCC_ID32 = 0x49443332,
+  FOURCC_Head = 0x48656164,
+  FOURCC_Opus = 0x4f707573,
   FOURCC_PRIV = 0x50524956,
 
   FOURCC_aacd = 0x61616364,
@@ -29,6 +31,7 @@ enum FourCC : uint32_t {
   FOURCC_co64 = 0x636f3634,
   FOURCC_ctim = 0x6374696d,
   FOURCC_ctts = 0x63747473,
+  FOURCC_dOps = 0x644f7073,
   FOURCC_dac3 = 0x64616333,
   FOURCC_dash = 0x64617368,
   FOURCC_ddts = 0x64647473,

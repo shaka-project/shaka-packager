@@ -234,8 +234,7 @@ inline bool operator==(const ElementaryStreamDescriptor& lhs,
   return lhs.es_descriptor == rhs.es_descriptor;
 }
 
-inline bool operator==(const DTSSpecific& lhs,
-                       const DTSSpecific& rhs) {
+inline bool operator==(const DTSSpecific& lhs, const DTSSpecific& rhs) {
   return lhs.sampling_frequency == rhs.sampling_frequency &&
          lhs.max_bitrate == rhs.max_bitrate &&
          lhs.avg_bitrate == rhs.avg_bitrate &&
@@ -243,14 +242,17 @@ inline bool operator==(const DTSSpecific& lhs,
          lhs.extra_data == rhs.extra_data;
 }
 
-inline bool operator==(const AC3Specific& lhs,
-                       const AC3Specific& rhs) {
+inline bool operator==(const AC3Specific& lhs, const AC3Specific& rhs) {
   return lhs.data == rhs.data;
 }
 
-inline bool operator==(const EC3Specific& lhs,
-                       const EC3Specific& rhs) {
+inline bool operator==(const EC3Specific& lhs, const EC3Specific& rhs) {
   return lhs.data == rhs.data;
+}
+
+inline bool operator==(const OpusSpecific& lhs, const OpusSpecific& rhs) {
+  return lhs.opus_identification_header == rhs.opus_identification_header &&
+         lhs.preskip == rhs.preskip;
 }
 
 inline bool operator==(const AudioSampleEntry& lhs,
@@ -260,7 +262,7 @@ inline bool operator==(const AudioSampleEntry& lhs,
          lhs.channelcount == rhs.channelcount &&
          lhs.samplesize == rhs.samplesize && lhs.samplerate == rhs.samplerate &&
          lhs.sinf == rhs.sinf && lhs.esds == rhs.esds && lhs.ddts == rhs.ddts &&
-         lhs.dac3 == rhs.dac3 && lhs.dec3 == rhs.dec3;
+         lhs.dac3 == rhs.dac3 && lhs.dec3 == rhs.dec3 && lhs.dops == rhs.dops;
 }
 
 inline bool operator==(const WebVTTConfigurationBox& lhs,

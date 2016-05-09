@@ -1467,6 +1467,57 @@ uint32_t EC3Specific::ComputeSizeInternal() {
   return HeaderSize() + data.size();
 }
 
+OpusSpecific::OpusSpecific() : preskip(0) {}
+OpusSpecific::~OpusSpecific() {}
+
+FourCC OpusSpecific::BoxType() const { return FOURCC_dOps; }
+
+bool OpusSpecific::ReadWriteInternal(BoxBuffer* buffer) {
+  RCHECK(ReadWriteHeaderInternal(buffer));
+  if (buffer->Reading()) {
+    std::vector<uint8_t> data;
+    const int kMinOpusSpecificBoxDataSize = 11;
+    RCHECK(buffer->BytesLeft() >= kMinOpusSpecificBoxDataSize);
+    RCHECK(buffer->ReadWriteVector(&data, buffer->BytesLeft()));
+    preskip = data[2] + (data[3] << 8);
+
+    // https://tools.ietf.org/html/draft-ietf-codec-oggopus-06#section-5
+    BufferWriter writer;
+    writer.AppendInt(FOURCC_Opus);
+    writer.AppendInt(FOURCC_Head);
+    // The version must always be 1.
+    const uint8_t kOpusIdentificationHeaderVersion = 1;
+    data[0] = kOpusIdentificationHeaderVersion;
+    writer.AppendVector(data);
+    writer.SwapBuffer(&opus_identification_header);
+  } else {
+    // https://tools.ietf.org/html/draft-ietf-codec-oggopus-06#section-5
+    // The first 8 bytes is "magic signature".
+    const size_t kOpusMagicSignatureSize = 8u;
+    DCHECK_GT(opus_identification_header.size(), kOpusMagicSignatureSize);
+    // https://www.opus-codec.org/docs/opus_in_isobmff.html
+    // The version field shall be set to 0.
+    const uint8_t kOpusSpecificBoxVersion = 0;
+    buffer->writer()->AppendInt(kOpusSpecificBoxVersion);
+    buffer->writer()->AppendArray(
+        &opus_identification_header[kOpusMagicSignatureSize + 1],
+        opus_identification_header.size() - kOpusMagicSignatureSize - 1);
+  }
+  return true;
+}
+
+uint32_t OpusSpecific::ComputeSizeInternal() {
+  // This box is optional. Skip it if not initialized.
+  if (opus_identification_header.empty())
+    return 0;
+  // https://tools.ietf.org/html/draft-ietf-codec-oggopus-06#section-5
+  // The first 8 bytes is "magic signature".
+  const size_t kOpusMagicSignatureSize = 8u;
+  DCHECK_GT(opus_identification_header.size(), kOpusMagicSignatureSize);
+  return HeaderSize() + opus_identification_header.size() -
+         kOpusMagicSignatureSize;
+}
+
 AudioSampleEntry::AudioSampleEntry()
     : format(FOURCC_NULL),
       data_reference_index(1),
@@ -1512,6 +1563,7 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   RCHECK(buffer->TryReadWriteChild(&ddts));
   RCHECK(buffer->TryReadWriteChild(&dac3));
   RCHECK(buffer->TryReadWriteChild(&dec3));
+  RCHECK(buffer->TryReadWriteChild(&dops));
   return true;
 }
 
@@ -1519,7 +1571,7 @@ uint32_t AudioSampleEntry::ComputeSizeInternal() {
   return HeaderSize() + sizeof(data_reference_index) + sizeof(channelcount) +
          sizeof(samplesize) + sizeof(samplerate) + sinf.ComputeSize() +
          esds.ComputeSize() + ddts.ComputeSize() + dac3.ComputeSize() +
-         dec3.ComputeSize() +
+         dec3.ComputeSize() + dops.ComputeSize() +
          6 + 8 +  // 6 + 8 bytes reserved.
          4;       // 4 bytes predefined.
 }

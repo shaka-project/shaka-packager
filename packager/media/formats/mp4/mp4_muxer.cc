@@ -77,6 +77,8 @@ FourCC AudioCodecToFourCC(AudioCodec codec) {
       return FOURCC_dtsm;
     case kCodecEAC3:
       return FOURCC_ec_3;
+    case kCodecOpus:
+      return FOURCC_Opus;
     default:
       return FOURCC_NULL;
   }
@@ -273,6 +275,9 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       break;
     case kCodecEAC3:
       audio.dec3.data = audio_info->extra_data();
+      break;
+    case kCodecOpus:
+      audio.dops.opus_identification_header = audio_info->extra_data();
       break;
     default:
       NOTIMPLEMENTED();

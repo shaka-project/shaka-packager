@@ -67,7 +67,7 @@ scoped_refptr<AudioStreamInfo> WebMAudioClient::GetAudioStreamInfo(
     extra_data_size = codec_private.size();
   }
 
-  const uint32_t kSampleSizeInBits = 4u;
+  const uint8_t kSampleSizeInBits = 16u;
   return scoped_refptr<AudioStreamInfo>(new AudioStreamInfo(
       track_num, kWebMTimeScale, 0, audio_codec,
       AudioStreamInfo::GetCodecString(audio_codec, 0), language,

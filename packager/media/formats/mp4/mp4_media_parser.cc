@@ -84,6 +84,7 @@ AudioCodec FourCCToAudioCodec(FourCC fourcc) {
 
 // Default DTS audio number of channels for 5.1 channel layout.
 const uint8_t kDtsAudioNumChannels = 6;
+const uint64_t kNanosecondsPerSecond = 1000000000ull;
 
 }  // namespace
 
@@ -344,6 +345,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       AudioCodec codec = FourCCToAudioCodec(actual_format);
       uint8_t num_channels = 0;
       uint32_t sampling_frequency = 0;
+      uint64_t codec_delay_ns = 0;
       uint8_t audio_object_type = 0;
       uint32_t max_bitrate = 0;
       uint32_t avg_bitrate = 0;
@@ -424,6 +426,14 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           num_channels = entry.channelcount;
           sampling_frequency = entry.samplerate;
           break;
+        case FOURCC_Opus:
+          extra_data = entry.dops.opus_identification_header;
+          num_channels = entry.channelcount;
+          sampling_frequency = entry.samplerate;
+          RCHECK(sampling_frequency != 0);
+          codec_delay_ns =
+              entry.dops.preskip * kNanosecondsPerSecond / sampling_frequency;
+          break;
         default:
           LOG(ERROR) << "Unsupported audio format 0x" << std::hex
                      << actual_format << " in stsd box.";
@@ -444,7 +454,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           num_channels,
           sampling_frequency,
           0 /* seek preroll */,
-          0 /* codec delay */,
+          codec_delay_ns,
           max_bitrate,
           avg_bitrate,
           extra_data.data(),

@@ -326,6 +326,14 @@ struct EC3Specific : Box {
   std::vector<uint8_t> data;
 };
 
+struct OpusSpecific : Box {
+  DECLARE_BOX_METHODS(OpusSpecific);
+
+  std::vector<uint8_t> opus_identification_header;
+  // The number of priming samples. Extracted from |opus_identification_header|.
+  uint16_t preskip;
+};
+
 struct AudioSampleEntry : Box {
   DECLARE_BOX_METHODS(AudioSampleEntry);
   // Returns actual format of this sample entry.
@@ -345,6 +353,7 @@ struct AudioSampleEntry : Box {
   DTSSpecific ddts;
   AC3Specific dac3;
   EC3Specific dec3;
+  OpusSpecific dops;
 };
 
 struct WebVTTConfigurationBox : Box {

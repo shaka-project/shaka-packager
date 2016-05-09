@@ -417,6 +417,21 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     dec3->data.assign(kEc3Data, kEc3Data + arraysize(kEc3Data));
   }
 
+  void Fill(OpusSpecific* dops) {
+    const uint8_t kOpusIdentificationHeader[] = {
+        0x4f, 0x70, 0x75, 0x73, 0x48, 0x65, 0x61, 0x64, 0x01, 0x02,
+        0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x00};
+    dops->opus_identification_header.assign(
+        kOpusIdentificationHeader,
+        kOpusIdentificationHeader + arraysize(kOpusIdentificationHeader));
+    dops->preskip = 0x0403;
+  }
+
+  void Modify(OpusSpecific* dops) {
+    dops->opus_identification_header.resize(
+        dops->opus_identification_header.size() - 1);
+  }
+
   void Fill(AudioSampleEntry* enca) {
     enca->format = FOURCC_enca;
     enca->data_reference_index = 2;
@@ -945,6 +960,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   bool IsOptional(const CueTimeBox* box) { return true; }
   bool IsOptional(const CueSettingsBox* box) { return true; }
   bool IsOptional(const DTSSpecific* box) {return true; }
+  bool IsOptional(const OpusSpecific* box) {return true; }
 
  protected:
   scoped_ptr<BufferWriter> buffer_;
@@ -976,6 +992,7 @@ typedef testing::Types<FileType,
                        DTSSpecific,
                        AC3Specific,
                        EC3Specific,
+                       OpusSpecific,
                        AudioSampleEntry,
                        WebVTTConfigurationBox,
                        WebVTTSourceLabelBox,
@@ -1144,6 +1161,21 @@ TEST_F(BoxDefinitionsTest, EC3SampleEntry) {
   entry.samplesize = 16;
   entry.samplerate = 44100;
   Fill(&entry.dec3);
+  entry.Write(this->buffer_.get());
+
+  AudioSampleEntry entry_readback;
+  ASSERT_TRUE(ReadBack(&entry_readback));
+  ASSERT_EQ(entry, entry_readback);
+}
+
+TEST_F(BoxDefinitionsTest, OpusSampleEntry) {
+  AudioSampleEntry entry;
+  entry.format = FOURCC_Opus;
+  entry.data_reference_index = 2;
+  entry.channelcount = 2;
+  entry.samplesize = 16;
+  entry.samplerate = 48000;
+  Fill(&entry.dops);
   entry.Write(this->buffer_.get());
 
   AudioSampleEntry entry_readback;
