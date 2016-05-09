@@ -104,68 +104,68 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_stream.h&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file_closer.h&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp2t/pes_packet.h&quot;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">namespace </span>media {</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">namespace </span>mp2t {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="../../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html">   24</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html">ContinuityCounter</a> {</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <a class="code" href="../../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html">ContinuityCounter</a>();</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  ~<a class="code" href="../../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html">ContinuityCounter</a>();</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordtype">int</span> <a class="code" href="../../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html#af5d5fdfbb974a4709d727304204380d6">GetNext</a>();</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordtype">int</span> counter_ = 0;</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html">ContinuityCounter</a>);</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;};</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html">   41</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html">TsWriter</a> {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html">TsWriter</a>();</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html">TsWriter</a>();</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a17147205cdc4f959c67cc2e803e59e27">Initialize</a>(<span class="keyword">const</span> <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a>&amp; stream_info);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#ac4695ef9da2fa8006102d8adb61598a3">NewSegment</a>(<span class="keyword">const</span> std::string&amp; file_name);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a34adca8447b1692556343774f3ef2777">FinalizeSegment</a>();</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a33a3c6b81d629fac0087139241bdcb69">AddPesPacket</a>(scoped_ptr&lt;PesPacket&gt; pes_packet);</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  std::vector&lt;uint8_t&gt; psi_ts_packets_;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  uint32_t time_scale_ = 0u;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <a class="code" href="../../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html">ContinuityCounter</a> pmt_continuity_counter_;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <a class="code" href="../../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html">ContinuityCounter</a> pat_continuity_counter_;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <a class="code" href="../../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html">ContinuityCounter</a> elementary_stream_continuity_counter_;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  scoped_ptr&lt;File, FileCloser&gt; current_file_;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp2t/continuity_counter.h&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp2t/pes_packet.h&quot;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp2t/program_map_table_writer.h&quot;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">namespace </span>media {</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="keyword">namespace </span>mp2t {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;</div>
+<div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html">   28</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html">TsWriter</a> {</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html">TsWriter</a>();</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keyword">virtual</span> ~<a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html">TsWriter</a>();</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a4627d8f22a4d9d8840be26e6c464d491">Initialize</a>(<span class="keyword">const</span> <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a>&amp; stream_info,</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                          <span class="keywordtype">bool</span> will_be_encrypted);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#ac4695ef9da2fa8006102d8adb61598a3">NewSegment</a>(<span class="keyword">const</span> std::string&amp; file_name);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a5a133827fd34934bb246603d08c83060">SignalEncypted</a>();</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a34adca8447b1692556343774f3ef2777">FinalizeSegment</a>();</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a33a3c6b81d629fac0087139241bdcb69">AddPesPacket</a>(scoped_ptr&lt;PesPacket&gt; pes_packet);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a8bbea13c62da6ec79b2abb377edad050">SetProgramMapTableWriterForTesting</a>(</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;      scoped_ptr&lt;ProgramMapTableWriter&gt; table_writer);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="comment">// True if further segments generated by this instance should be encrypted.</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordtype">bool</span> encrypted_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="comment">// The stream will be encrypted some time later.</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordtype">bool</span> will_be_encrypted_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <a class="code" href="../../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html">ContinuityCounter</a> pmt_continuity_counter_;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <a class="code" href="../../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html">ContinuityCounter</a> pat_continuity_counter_;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <a class="code" href="../../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html">ContinuityCounter</a> elementary_stream_continuity_counter_;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html">TsWriter</a>);</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;};</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  scoped_ptr&lt;ProgramMapTableWriter&gt; pmt_writer_;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  scoped_ptr&lt;File, FileCloser&gt; current_file_;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html">TsWriter</a>);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;};</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;<span class="preprocessor">#endif  // PACKAGER_MEDIA_FORMATS_MP2T_TS_WRITER_H_</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor">#endif  // PACKAGER_MEDIA_FORMATS_MP2T_TS_WRITER_H_</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">edash_packager::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00026">stream_info.h:26</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsWriter_html_a17147205cdc4f959c67cc2e803e59e27"><div class="ttname"><a href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a17147205cdc4f959c67cc2e803e59e27">edash_packager::media::mp2t::TsWriter::Initialize</a></div><div class="ttdeci">virtual bool Initialize(const StreamInfo &amp;stream_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d13/ts__writer_8cc_source.html#l00386">ts_writer.cc:386</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter_html_af5d5fdfbb974a4709d727304204380d6"><div class="ttname"><a href="../../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html#af5d5fdfbb974a4709d727304204380d6">edash_packager::media::mp2t::ContinuityCounter::GetNext</a></div><div class="ttdeci">int GetNext()</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d13/ts__writer_8cc_source.html#l00376">ts_writer.cc:376</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsWriter_html"><div class="ttname"><a href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html">edash_packager::media::mp2t::TsWriter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d8/dca/ts__writer_8h_source.html#l00041">ts_writer.h:41</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsWriter_html_ac4695ef9da2fa8006102d8adb61598a3"><div class="ttname"><a href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#ac4695ef9da2fa8006102d8adb61598a3">edash_packager::media::mp2t::TsWriter::NewSegment</a></div><div class="ttdeci">virtual bool NewSegment(const std::string &amp;file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d13/ts__writer_8cc_source.html#l00439">ts_writer.cc:439</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsWriter_html_a34adca8447b1692556343774f3ef2777"><div class="ttname"><a href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a34adca8447b1692556343774f3ef2777">edash_packager::media::mp2t::TsWriter::FinalizeSegment</a></div><div class="ttdeci">virtual bool FinalizeSegment()</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d13/ts__writer_8cc_source.html#l00462">ts_writer.cc:462</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsWriter_html_a33a3c6b81d629fac0087139241bdcb69"><div class="ttname"><a href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a33a3c6b81d629fac0087139241bdcb69">edash_packager::media::mp2t::TsWriter::AddPesPacket</a></div><div class="ttdeci">virtual bool AddPesPacket(scoped_ptr&lt; PesPacket &gt; pes_packet)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d13/ts__writer_8cc_source.html#l00466">ts_writer.cc:466</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter_html"><div class="ttname"><a href="../../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html">edash_packager::media::mp2t::ContinuityCounter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d8/dca/ts__writer_8h_source.html#l00024">ts_writer.h:24</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsWriter_html_a8bbea13c62da6ec79b2abb377edad050"><div class="ttname"><a href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a8bbea13c62da6ec79b2abb377edad050">edash_packager::media::mp2t::TsWriter::SetProgramMapTableWriterForTesting</a></div><div class="ttdeci">void SetProgramMapTableWriterForTesting(scoped_ptr&lt; ProgramMapTableWriter &gt; table_writer)</div><div class="ttdoc">Only for testing. </div><div class="ttdef"><b>Definition:</b> <a href="../../de/d13/ts__writer_8cc_source.html#l00256">ts_writer.cc:256</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsWriter_html"><div class="ttname"><a href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html">edash_packager::media::mp2t::TsWriter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d8/dca/ts__writer_8h_source.html#l00028">ts_writer.h:28</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsWriter_html_ac4695ef9da2fa8006102d8adb61598a3"><div class="ttname"><a href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#ac4695ef9da2fa8006102d8adb61598a3">edash_packager::media::mp2t::TsWriter::NewSegment</a></div><div class="ttdeci">virtual bool NewSegment(const std::string &amp;file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d13/ts__writer_8cc_source.html#l00201">ts_writer.cc:201</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsWriter_html_a34adca8447b1692556343774f3ef2777"><div class="ttname"><a href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a34adca8447b1692556343774f3ef2777">edash_packager::media::mp2t::TsWriter::FinalizeSegment</a></div><div class="ttdeci">virtual bool FinalizeSegment()</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d13/ts__writer_8cc_source.html#l00240">ts_writer.cc:240</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsWriter_html_a33a3c6b81d629fac0087139241bdcb69"><div class="ttname"><a href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a33a3c6b81d629fac0087139241bdcb69">edash_packager::media::mp2t::TsWriter::AddPesPacket</a></div><div class="ttdeci">virtual bool AddPesPacket(scoped_ptr&lt; PesPacket &gt; pes_packet)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d13/ts__writer_8cc_source.html#l00244">ts_writer.cc:244</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter_html"><div class="ttname"><a href="../../d8/d37/classedash__packager_1_1media_1_1mp2t_1_1ContinuityCounter.html">edash_packager::media::mp2t::ContinuityCounter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d62/continuity__counter_8h_source.html#l00016">continuity_counter.h:16</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsWriter_html_a4627d8f22a4d9d8840be26e6c464d491"><div class="ttname"><a href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a4627d8f22a4d9d8840be26e6c464d491">edash_packager::media::mp2t::TsWriter::Initialize</a></div><div class="ttdeci">virtual bool Initialize(const StreamInfo &amp;stream_info, bool will_be_encrypted)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d13/ts__writer_8cc_source.html#l00165">ts_writer.cc:165</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1TsWriter_html_a5a133827fd34934bb246603d08c83060"><div class="ttname"><a href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a5a133827fd34934bb246603d08c83060">edash_packager::media::mp2t::TsWriter::SignalEncypted</a></div><div class="ttdeci">void SignalEncypted()</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d13/ts__writer_8cc_source.html#l00236">ts_writer.cc:236</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu May 5 2016 19:53:07 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon May 9 2016 18:43:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

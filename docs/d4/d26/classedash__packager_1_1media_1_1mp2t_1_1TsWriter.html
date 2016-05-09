@@ -98,19 +98,25 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a17147205cdc4f959c67cc2e803e59e27"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a17147205cdc4f959c67cc2e803e59e27">Initialize</a> (const <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream_info)</td></tr>
-<tr class="separator:a17147205cdc4f959c67cc2e803e59e27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4627d8f22a4d9d8840be26e6c464d491"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a4627d8f22a4d9d8840be26e6c464d491">Initialize</a> (const <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream_info, bool will_be_encrypted)</td></tr>
+<tr class="separator:a4627d8f22a4d9d8840be26e6c464d491"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac4695ef9da2fa8006102d8adb61598a3"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#ac4695ef9da2fa8006102d8adb61598a3">NewSegment</a> (const std::string &amp;file_name)</td></tr>
 <tr class="separator:ac4695ef9da2fa8006102d8adb61598a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5a133827fd34934bb246603d08c83060"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a5a133827fd34934bb246603d08c83060">SignalEncypted</a> ()</td></tr>
+<tr class="separator:a5a133827fd34934bb246603d08c83060"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34adca8447b1692556343774f3ef2777"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a34adca8447b1692556343774f3ef2777">FinalizeSegment</a> ()</td></tr>
 <tr class="separator:a34adca8447b1692556343774f3ef2777"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33a3c6b81d629fac0087139241bdcb69"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a33a3c6b81d629fac0087139241bdcb69">AddPesPacket</a> (scoped_ptr&lt; <a class="el" href="../../d6/d3e/classedash__packager_1_1media_1_1mp2t_1_1PesPacket.html">PesPacket</a> &gt; pes_packet)</td></tr>
 <tr class="separator:a33a3c6b81d629fac0087139241bdcb69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8bbea13c62da6ec79b2abb377edad050"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8bbea13c62da6ec79b2abb377edad050"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a8bbea13c62da6ec79b2abb377edad050">SetProgramMapTableWriterForTesting</a> (scoped_ptr&lt; <a class="el" href="../../dd/d15/classedash__packager_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html">ProgramMapTableWriter</a> &gt; table_writer)</td></tr>
+<tr class="memdesc:a8bbea13c62da6ec79b2abb377edad050"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only for testing. <br/></td></tr>
+<tr class="separator:a8bbea13c62da6ec79b2abb377edad050"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This class takes PesPackets, encapsulates them into TS packets, and write the data to file. This also creates PSI from <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html" title="Abstract class holds stream information. ">StreamInfo</a>. </p>
 
-<p>Definition at line <a class="el" href="../../d8/dca/ts__writer_8h_source.html#l00041">41</a> of file <a class="el" href="../../d8/dca/ts__writer_8h_source.html">ts_writer.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/dca/ts__writer_8h_source.html#l00028">28</a> of file <a class="el" href="../../d8/dca/ts__writer_8h_source.html">ts_writer.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a33a3c6b81d629fac0087139241bdcb69"></a>
 <div class="memitem">
@@ -142,7 +148,7 @@ Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00466">466</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00244">244</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
 
 </div>
 </div>
@@ -169,11 +175,11 @@ Public Member Functions</h2></td></tr>
 <p>Flush all the pending PesPackets that have not been written to file and close the file. </p>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00462">462</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00240">240</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a17147205cdc4f959c67cc2e803e59e27"></a>
+<a class="anchor" id="a4627d8f22a4d9d8840be26e6c464d491"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -184,8 +190,18 @@ Public Member Functions</h2></td></tr>
           <td class="memname">bool edash_packager::media::mp2t::TsWriter::Initialize </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;&#160;</td>
-          <td class="paramname"><em>stream_info</em></td><td>)</td>
+          <td class="paramname"><em>stream_info</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>will_be_encrypted</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -195,9 +211,16 @@ Public Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>This must be called before calling other methods. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">stream_info</td><td>is the information about this stream. </td></tr>
+    <tr><td class="paramname">will_be_encrypted</td><td>must be true if some segment would be encrypted. It is ok if the entire stream is not encrypted but have this true e.g. if the clear lead is very long. </td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00386">386</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00165">165</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
 
 </div>
 </div>
@@ -226,12 +249,31 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">file_name</td><td>is the output file name. </td></tr>
+    <tr><td class="paramname">encrypted</td><td>must be true if the new segment is encrypted. </td></tr>
   </table>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00439">439</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00201">201</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a5a133827fd34934bb246603d08c83060"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void edash_packager::media::mp2t::TsWriter::SignalEncypted </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Signals the writer that the rest of the segments are encrypted. |will_be_encrypted| passed to <a class="el" href="../../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html#a4627d8f22a4d9d8840be26e6c464d491">Initialize()</a> should be true. </p>
+
+<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00236">236</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
 
 </div>
 </div>
@@ -242,7 +284,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu May 5 2016 19:53:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon May 9 2016 18:43:06 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
