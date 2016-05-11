@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -103,6 +103,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a00c8ff143e59d207fbb09e092802f6fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a343f7775ce1131ad27fdf49295c75be7"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d1a/classedash__packager_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a343f7775ce1131ad27fdf49295c75be7">PushSample</a> (scoped_refptr&lt; <a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
 <tr class="separator:a343f7775ce1131ad27fdf49295c75be7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a677350b7c56240dbb3b5e0fbf34176b4"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d1a/classedash__packager_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a677350b7c56240dbb3b5e0fbf34176b4">SetEncryptionKey</a> (scoped_ptr&lt; <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt; encryption_key)</td></tr>
+<tr class="separator:a677350b7c56240dbb3b5e0fbf34176b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c8463f5d9c68f9a2a76a2d0f2e35e8d"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d1a/classedash__packager_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a7c8463f5d9c68f9a2a76a2d0f2e35e8d">NumberOfReadyPesPackets</a> ()</td></tr>
 <tr class="separator:a7c8463f5d9c68f9a2a76a2d0f2e35e8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2b945f33d9c8c03300f24158f39a31dd"><td class="memItemLeft" align="right" valign="top">virtual scoped_ptr&lt; <a class="el" href="../../d6/d3e/classedash__packager_1_1media_1_1mp2t_1_1PesPacket.html">PesPacket</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d1a/classedash__packager_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a2b945f33d9c8c03300f24158f39a31dd">GetNextPesPacket</a> ()</td></tr>
@@ -119,7 +121,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Generates PesPackets from MediaSamples. Methods are virtual for mocking. </p>
 
-<p>Definition at line <a class="el" href="../../dd/d88/pes__packet__generator_8h_source.html#l00033">33</a> of file <a class="el" href="../../dd/d88/pes__packet__generator_8h_source.html">pes_packet_generator.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d88/pes__packet__generator_8h_source.html#l00035">35</a> of file <a class="el" href="../../dd/d88/pes__packet__generator_8h_source.html">pes_packet_generator.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a812e776f3064d22f60e742fb1f6aa700"></a>
 <div class="memitem">
@@ -144,7 +146,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 <p>Flush the object. This may increase <a class="el" href="../../de/d1a/classedash__packager_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a7c8463f5d9c68f9a2a76a2d0f2e35e8d">NumberOfReadyPesPackets()</a>. </p>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00108">108</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00217">217</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
 
 </div>
 </div>
@@ -171,7 +173,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 <p>Removes the next PES packet from the stream and returns it. Must have at least one packet ready. </p>
 <dl class="section return"><dt>Returns</dt><dd>Next PES packet that is ready. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00101">101</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00210">210</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
 
 </div>
 </div>
@@ -205,7 +207,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00029">29</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00093">93</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
 
 </div>
 </div>
@@ -231,7 +233,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The number of PES packets that are ready to be consumed. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00097">97</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00206">206</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
 
 </div>
 </div>
@@ -259,7 +261,41 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 <p>Add a sample to the generator. This does not necessarily increase <a class="el" href="../../de/d1a/classedash__packager_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a7c8463f5d9c68f9a2a76a2d0f2e35e8d">NumberOfReadyPesPackets()</a>. If this returns false, the object may end up in an undefined state. </p>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00063">63</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00127">127</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a677350b7c56240dbb3b5e0fbf34176b4"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool edash_packager::media::mp2t::PesPacketGenerator::SetEncryptionKey </td>
+          <td>(</td>
+          <td class="paramtype">scoped_ptr&lt; <a class="el" href="../../d0/d86/structedash__packager_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt;&#160;</td>
+          <td class="paramname"><em>encryption_key</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Sets the encryption key for encrypting samples. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">encryption_key</td><td>is the key that will be used to encrypt further samples. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html#l00182">182</a> of file <a class="el" href="../../d2/dee/pes__packet__generator_8cc_source.html">pes_packet_generator.cc</a>.</p>
 
 </div>
 </div>
@@ -270,7 +306,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 9 2016 18:43:06 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 11 2016 18:03:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

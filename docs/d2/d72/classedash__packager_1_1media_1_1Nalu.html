@@ -71,7 +71,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -170,16 +170,19 @@ Public Types</h2></td></tr>
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a04726caeb2a6bbe203ad94a57320369e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a04726caeb2a6bbe203ad94a57320369e"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>Initialize</b> (CodecType type, const uint8_t *data, uint64_t size) WARN_UNUSED_RESULT</td></tr>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>Initialize</b> (CodecType <a class="el" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html#adf9667e2d1195c619e27f0f2167f67f7">type</a>, const uint8_t *<a class="el" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html#added3e272e1a6b5842028e8af58db4df">data</a>, uint64_t size) WARN_UNUSED_RESULT</td></tr>
 <tr class="separator:a04726caeb2a6bbe203ad94a57320369e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:added3e272e1a6b5842028e8af58db4df"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="added3e272e1a6b5842028e8af58db4df"></a>
-const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><b>data</b> () const </td></tr>
+const uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html#added3e272e1a6b5842028e8af58db4df">data</a> () const </td></tr>
+<tr class="memdesc:added3e272e1a6b5842028e8af58db4df"><td class="mdescLeft">&#160;</td><td class="mdescRight">This is the pointer to the <a class="el" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a> data, pointing to the header. <br/></td></tr>
 <tr class="separator:added3e272e1a6b5842028e8af58db4df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab55885e007cfce4b59c09f34eb608fcf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab55885e007cfce4b59c09f34eb608fcf"></a>
-uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>header_size</b> () const </td></tr>
+uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html#ab55885e007cfce4b59c09f34eb608fcf">header_size</a> () const </td></tr>
+<tr class="memdesc:ab55885e007cfce4b59c09f34eb608fcf"><td class="mdescLeft">&#160;</td><td class="mdescRight">The size of the header, e.g. 1 for H.264. <br/></td></tr>
 <tr class="separator:ab55885e007cfce4b59c09f34eb608fcf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7616b4a2ce45a837e3dbe2e7aa0a816"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab7616b4a2ce45a837e3dbe2e7aa0a816"></a>
-uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>payload_size</b> () const </td></tr>
+uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html#ab7616b4a2ce45a837e3dbe2e7aa0a816">payload_size</a> () const </td></tr>
+<tr class="memdesc:ab7616b4a2ce45a837e3dbe2e7aa0a816"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of this <a class="el" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a> minus <a class="el" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html#ab55885e007cfce4b59c09f34eb608fcf" title="The size of the header, e.g. 1 for H.264. ">header_size()</a>. <br/></td></tr>
 <tr class="separator:ab7616b4a2ce45a837e3dbe2e7aa0a816"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e13bd803ed030dcb6118694cfbc46fb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6e13bd803ed030dcb6118694cfbc46fb"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>ref_idc</b> () const </td></tr>
@@ -190,8 +193,7 @@ int&#160;</td><td class="memItemRight" valign="bottom"><b>nuh_layer_id</b> () co
 <tr class="memitem:a03884ced6a31cd38e18275405fa435e9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a03884ced6a31cd38e18275405fa435e9"></a>
 int&#160;</td><td class="memItemRight" valign="bottom"><b>nuh_temporal_id</b> () const </td></tr>
 <tr class="separator:a03884ced6a31cd38e18275405fa435e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf9667e2d1195c619e27f0f2167f67f7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="adf9667e2d1195c619e27f0f2167f67f7"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>type</b> () const </td></tr>
+<tr class="memitem:adf9667e2d1195c619e27f0f2167f67f7"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html#adf9667e2d1195c619e27f0f2167f67f7">type</a> () const </td></tr>
 <tr class="separator:adf9667e2d1195c619e27f0f2167f67f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1c3079607c3466aa9ca491cb27cc18c8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a1c3079607c3466aa9ca491cb27cc18c8"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_video_slice</b> () const </td></tr>
@@ -204,14 +206,41 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>can_start_access_unit
 <div class="textblock"><p>For explanations of each struct and its members, see H.264 specification at <a href="http://www.itu.int/rec/T-REC-H.264">http://www.itu.int/rec/T-REC-H.264</a>. </p>
 
 <p>Definition at line <a class="el" href="../../d4/d87/nalu__reader_8h_source.html#l00026">26</a> of file <a class="el" href="../../d4/d87/nalu__reader_8h_source.html">nalu_reader.h</a>.</p>
-</div><hr/>The documentation for this class was generated from the following files:<ul>
+</div><h2 class="groupheader">Member Function Documentation</h2>
+<a class="anchor" id="adf9667e2d1195c619e27f0f2167f67f7"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">int edash_packager::media::Nalu::type </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>H264NaluType and H265NaluType enums may be used to compare against the return value. </p>
+
+<p>Definition at line <a class="el" href="../../d4/d87/nalu__reader_8h_source.html#l00112">112</a> of file <a class="el" href="../../d4/d87/nalu__reader_8h_source.html">nalu_reader.h</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
 <li>media/filters/<a class="el" href="../../d4/d87/nalu__reader_8h_source.html">nalu_reader.h</a></li>
 <li>media/filters/<a class="el" href="../../d1/df5/nalu__reader_8cc_source.html">nalu_reader.cc</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 9 2016 18:43:05 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 11 2016 18:03:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

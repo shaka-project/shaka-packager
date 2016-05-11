@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -140,71 +140,76 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      <span class="keywordflow">case</span> FOURCC_cens:</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        aes_decryptor.reset(<span class="keyword">new</span> AesPatternCryptor(</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            decrypt_config-&gt;crypt_byte_block(),</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            decrypt_config-&gt;skip_byte_block(), AesCryptor::kDontUseConstantIv,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            scoped_ptr&lt;AesCryptor&gt;(<span class="keyword">new</span> AesCtrDecryptor)));</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      <span class="keywordflow">case</span> FOURCC_cbcs:</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        aes_decryptor.reset(<span class="keyword">new</span> AesPatternCryptor(</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;            decrypt_config-&gt;crypt_byte_block(),</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;            decrypt_config-&gt;skip_byte_block(), AesCryptor::kUseConstantIv,</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;            scoped_ptr&lt;AesCryptor&gt;(<span class="keyword">new</span> AesCbcDecryptor(kNoPadding))));</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;      <span class="keywordflow">default</span>:</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unsupported protection scheme: &quot;</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                   &lt;&lt; decrypt_config-&gt;protection_scheme();</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    }</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordflow">if</span> (!aes_decryptor-&gt;InitializeWithIv(key.key, decrypt_config-&gt;iv())) {</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to initialize AesDecryptor for decryption.&quot;</span>;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    }</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    decryptor = aes_decryptor.release();</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    decryptor_map_[decrypt_config-&gt;key_id()] = decryptor;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    decryptor = found-&gt;second;</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  }</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="keywordflow">if</span> (!decryptor-&gt;SetIv(decrypt_config-&gt;iv())) {</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Invalid initialization vector.&quot;</span>;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            decrypt_config-&gt;skip_byte_block(),</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <a class="code" href="../../dc/d54/classedash__packager_1_1media_1_1AesPatternCryptor.html#a1e8a70b19ee184a4769a88bd0f26b90aab8cf8251e6268da29f43c834b2ae7b7a">AesPatternCryptor::kEncryptIfCryptByteBlockRemaining</a>,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            AesCryptor::kDontUseConstantIv,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            scoped_ptr&lt;AesCryptor&gt;(<span class="keyword">new</span> AesCtrDecryptor())));</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      <span class="keywordflow">case</span> FOURCC_cbcs:</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        aes_decryptor.reset(<span class="keyword">new</span> AesPatternCryptor(</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;            decrypt_config-&gt;crypt_byte_block(),</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            decrypt_config-&gt;skip_byte_block(),</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            <a class="code" href="../../dc/d54/classedash__packager_1_1media_1_1AesPatternCryptor.html#a1e8a70b19ee184a4769a88bd0f26b90aab8cf8251e6268da29f43c834b2ae7b7a">AesPatternCryptor::kEncryptIfCryptByteBlockRemaining</a>,</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;            AesCryptor::kUseConstantIv,</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;            scoped_ptr&lt;AesCryptor&gt;(<span class="keyword">new</span> AesCbcDecryptor(kNoPadding))));</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      <span class="keywordflow">default</span>:</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;        LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unsupported protection scheme: &quot;</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                   &lt;&lt; decrypt_config-&gt;protection_scheme();</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    }</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordflow">if</span> (!aes_decryptor-&gt;InitializeWithIv(key.key, decrypt_config-&gt;iv())) {</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to initialize AesDecryptor for decryption.&quot;</span>;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    }</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    decryptor = aes_decryptor.release();</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    decryptor_map_[decrypt_config-&gt;key_id()] = decryptor;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    decryptor = found-&gt;second;</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  }</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordflow">if</span> (decrypt_config-&gt;subsamples().empty()) {</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="comment">// Sample not encrypted using subsample encryption. Decrypt whole.</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordflow">if</span> (!decryptor-&gt;Crypt(buffer, buffer_size, buffer)) {</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Error during bulk sample decryption.&quot;</span>;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    }</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  }</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="comment">// Subsample decryption.</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keyword">const</span> std::vector&lt;SubsampleEntry&gt;&amp; subsamples = decrypt_config-&gt;subsamples();</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  uint8_t* current_ptr = buffer;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  <span class="keyword">const</span> uint8_t* <span class="keyword">const</span> buffer_end = buffer + buffer_size;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; subsample : subsamples) {</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordflow">if</span> ((current_ptr + subsample.clear_bytes + subsample.cipher_bytes) &gt;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;        buffer_end) {</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Subsamples overflow sample buffer.&quot;</span>;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    }</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    current_ptr += subsample.clear_bytes;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;    <span class="keywordflow">if</span> (!decryptor-&gt;Crypt(current_ptr, subsample.cipher_bytes, current_ptr)) {</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Error decrypting subsample buffer.&quot;</span>;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    }</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    current_ptr += subsample.cipher_bytes;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  }</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;}</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordflow">if</span> (!decryptor-&gt;SetIv(decrypt_config-&gt;iv())) {</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Invalid initialization vector.&quot;</span>;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  }</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordflow">if</span> (decrypt_config-&gt;subsamples().empty()) {</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    <span class="comment">// Sample not encrypted using subsample encryption. Decrypt whole.</span></div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keywordflow">if</span> (!decryptor-&gt;Crypt(buffer, buffer_size, buffer)) {</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Error during bulk sample decryption.&quot;</span>;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    }</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  }</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="comment">// Subsample decryption.</span></div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="keyword">const</span> std::vector&lt;SubsampleEntry&gt;&amp; subsamples = decrypt_config-&gt;subsamples();</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  uint8_t* current_ptr = buffer;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  <span class="keyword">const</span> uint8_t* <span class="keyword">const</span> buffer_end = buffer + buffer_size;</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; subsample : subsamples) {</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    <span class="keywordflow">if</span> ((current_ptr + subsample.clear_bytes + subsample.cipher_bytes) &gt;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;        buffer_end) {</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Subsamples overflow sample buffer.&quot;</span>;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    }</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    current_ptr += subsample.clear_bytes;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordflow">if</span> (!decryptor-&gt;Crypt(current_ptr, subsample.cipher_bytes, current_ptr)) {</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Error decrypting subsample buffer.&quot;</span>;</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    }</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    current_ptr += subsample.cipher_bytes;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  }</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;}</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_ae1000d8809b293738dca06c1a5f916bf"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ae1000d8809b293738dca06c1a5f916bf">edash_packager::media::KeySource::GetKey</a></div><div class="ttdeci">virtual Status GetKey(TrackType track_type, EncryptionKey *key)=0</div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1AesPatternCryptor_html_a1e8a70b19ee184a4769a88bd0f26b90aab8cf8251e6268da29f43c834b2ae7b7a"><div class="ttname"><a href="../../dc/d54/classedash__packager_1_1media_1_1AesPatternCryptor.html#a1e8a70b19ee184a4769a88bd0f26b90aab8cf8251e6268da29f43c834b2ae7b7a">edash_packager::media::AesPatternCryptor::kEncryptIfCryptByteBlockRemaining</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d09/aes__pattern__cryptor_8h_source.html#l00025">aes_pattern_cryptor.h:25</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 9 2016 18:43:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 11 2016 18:02:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

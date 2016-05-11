@@ -2,7 +2,7 @@ var searchData=
 [
   ['dash_5fprofile',['dash_profile',['../da/d38/classedash__packager_1_1MpdNotifier.html#ad49d92e75fcbb2ad1d5e43cd3d0716f7',1,'edash_packager::MpdNotifier']]],
   ['dashiopmpdnotifier',['DashIopMpdNotifier',['../da/d49/classedash__packager_1_1DashIopMpdNotifier.html',1,'edash_packager']]],
-  ['data',['data',['../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#ae2c11d7dc33c3f90535218797ca6b4d2',1,'edash_packager::media::DecoderConfiguration']]],
+  ['data',['data',['../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#ae2c11d7dc33c3f90535218797ca6b4d2',1,'edash_packager::media::DecoderConfiguration::data()'],['../d2/d72/classedash__packager_1_1media_1_1Nalu.html#added3e272e1a6b5842028e8af58db4df',1,'edash_packager::media::Nalu::data()']]],
   ['data_5fsize',['data_size',['../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a5233b5e870d55f0487ee0387ad69921f',1,'edash_packager::media::DecoderConfiguration']]],
   ['dataentryurl',['DataEntryUrl',['../d6/d6c/structedash__packager_1_1media_1_1mp4_1_1DataEntryUrl.html',1,'edash_packager::media::mp4']]],
   ['datainformation',['DataInformation',['../d6/d59/structedash__packager_1_1media_1_1mp4_1_1DataInformation.html',1,'edash_packager::media::mp4']]],

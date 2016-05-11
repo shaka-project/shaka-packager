@@ -72,6 +72,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       <li><a href="functions_func.html"><span>Functions</span></a></li>
       <li><a href="functions_vars.html"><span>Variables</span></a></li>
       <li><a href="functions_type.html"><span>Typedefs</span></a></li>
+      <li><a href="functions_enum.html"><span>Enumerations</span></a></li>
       <li><a href="functions_eval.html"><span>Enumerator</span></a></li>
     </ul>
   </div>
@@ -108,7 +109,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -168,6 +169,12 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <li>PassScopedPtr()
 : <a class="el" href="dd/d85/classedash__packager_1_1xml_1_1XmlNode.html#a903bda1e35b396e8e182b77b5334e5ba">edash_packager::xml::XmlNode</a>
 </li>
+<li>PatternEncryptionMode
+: <a class="el" href="dc/d54/classedash__packager_1_1media_1_1AesPatternCryptor.html#a1e8a70b19ee184a4769a88bd0f26b90a">edash_packager::media::AesPatternCryptor</a>
+</li>
+<li>payload_size()
+: <a class="el" href="d2/d72/classedash__packager_1_1media_1_1Nalu.html#ab7616b4a2ce45a837e3dbe2e7aa0a816">edash_packager::media::Nalu</a>
+</li>
 <li>Peek()
 : <a class="el" href="d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#a8253df160751462f3b75290a7c525e56">edash_packager::media::ByteQueue</a>
 , <a class="el" href="d5/d02/classedash__packager_1_1media_1_1ProducerConsumerQueue.html#acf87e686e78d6cb962f39bb2acca7180">edash_packager::media::ProducerConsumerQueue&lt; T &gt;</a>
@@ -189,7 +196,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 : <a class="el" href="dd/d4f/classedash__packager_1_1media_1_1mp4_1_1BoxBuffer.html#a0b34f56b01acc899ae44ab9f4cb0b783">edash_packager::media::mp4::BoxBuffer</a>
 </li>
 <li>Position()
-: <a class="el" href="d4/d8c/classedash__packager_1_1media_1_1MkvWriter.html#ad9aca56b48f2b833b7fb91cb4a5492e0">edash_packager::media::MkvWriter</a>
+: <a class="el" href="d4/d8c/classedash__packager_1_1media_1_1MkvWriter.html#a68f61d873bdea1176437af9b1b008aa5">edash_packager::media::MkvWriter</a>
 </li>
 <li>Post()
 : <a class="el" href="d3/d3e/classedash__packager_1_1media_1_1HttpKeyFetcher.html#a651b1c5ef001dc365488829266908691">edash_packager::media::HttpKeyFetcher</a>
@@ -225,7 +232,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 9 2016 18:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 11 2016 18:03:05 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

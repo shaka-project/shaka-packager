@@ -39,5 +39,5 @@ var searchData=
   ['tssegmenter',['TsSegmenter',['../df/df0/classedash__packager_1_1media_1_1mp2t_1_1TsSegmenter.html#aca8080dc21d574f19bdd9d0ccf2d6d2c',1,'edash_packager::media::mp2t::TsSegmenter']]],
   ['tswriter',['TsWriter',['../d4/d26/classedash__packager_1_1media_1_1mp2t_1_1TsWriter.html',1,'edash_packager::media::mp2t']]],
   ['twopasssinglesegmentsegmenter',['TwoPassSingleSegmentSegmenter',['../d7/dfa/classedash__packager_1_1media_1_1webm_1_1TwoPassSingleSegmentSegmenter.html',1,'edash_packager::media::webm']]],
-  ['type',['type',['../d3/dfa/classedash__packager_1_1MpdBuilder.html#ab23432768423d4489380f45c292c7648',1,'edash_packager::MpdBuilder']]]
+  ['type',['type',['../d2/d72/classedash__packager_1_1media_1_1Nalu.html#adf9667e2d1195c619e27f0f2167f67f7',1,'edash_packager::media::Nalu::type()'],['../d3/dfa/classedash__packager_1_1MpdBuilder.html#ab23432768423d4489380f45c292c7648',1,'edash_packager::MpdBuilder::type()']]]
 ];

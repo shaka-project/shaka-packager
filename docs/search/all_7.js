@@ -28,14 +28,15 @@ var searchData=
   ['has_5fpts',['has_pts',['../d6/d3e/classedash__packager_1_1media_1_1mp2t_1_1PesPacket.html#a9412d0711527d5ecfda691945d786513',1,'edash_packager::media::mp2t::PesPacket']]],
   ['hasbytes',['HasBytes',['../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a61ac255662b847f0ef25a8228c4ba009',1,'edash_packager::media::BufferReader']]],
   ['head',['head',['../d1/d92/classedash__packager_1_1media_1_1OffsetByteQueue.html#aa9d018636705cab1759978cd7c6d17da',1,'edash_packager::media::OffsetByteQueue']]],
+  ['header_5fsize',['header_size',['../d2/d72/classedash__packager_1_1media_1_1Nalu.html#ab55885e007cfce4b59c09f34eb608fcf',1,'edash_packager::media::Nalu']]],
   ['headersize',['HeaderSize',['../d7/d8a/structedash__packager_1_1media_1_1mp4_1_1Box.html#a9fbafc4d6ba2187325349dcd406b490a',1,'edash_packager::media::mp4::Box::HeaderSize()'],['../d6/d8f/structedash__packager_1_1media_1_1mp4_1_1FullBox.html#a58b21910baf781792d0893b6d805e2c6',1,'edash_packager::media::mp4::FullBox::HeaderSize()']]],
   ['headpos',['HeadPos',['../d5/d02/classedash__packager_1_1media_1_1ProducerConsumerQueue.html#a7af8ad77c837db03402ac0947cc73ebf',1,'edash_packager::media::ProducerConsumerQueue']]],
   ['hevcdecoderconfiguration',['HEVCDecoderConfiguration',['../d6/d5d/classedash__packager_1_1media_1_1HEVCDecoderConfiguration.html',1,'edash_packager::media']]],
   ['hextouuid',['HexToUUID',['../db/d09/namespaceedash__packager.html#a7015ba137f31c7ae734dc7abb254be64',1,'edash_packager']]],
   ['hls_5fgroup_5fid',['hls_group_id',['../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a9e19ac2eafe896c4e0c4d7fe1149af60',1,'edash_packager::media::MuxerOptions']]],
   ['hls_5fname',['hls_name',['../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#a025be3ae8c52cb276351f656c6fa0735',1,'edash_packager::media::MuxerOptions']]],
-  ['hlsnotifymuxerlistener',['HlsNotifyMuxerListener',['../d5/d89/classedash__packager_1_1media_1_1HlsNotifyMuxerListener.html',1,'edash_packager::media']]],
   ['hlsnotifymuxerlistener',['HlsNotifyMuxerListener',['../d5/d89/classedash__packager_1_1media_1_1HlsNotifyMuxerListener.html#a15a39a4408cdf65c468ab6ec539cc567',1,'edash_packager::media::HlsNotifyMuxerListener']]],
+  ['hlsnotifymuxerlistener',['HlsNotifyMuxerListener',['../d5/d89/classedash__packager_1_1media_1_1HlsNotifyMuxerListener.html',1,'edash_packager::media']]],
   ['httpkeyfetcher',['HttpKeyFetcher',['../d3/d3e/classedash__packager_1_1media_1_1HttpKeyFetcher.html#a2dc7f2f968a87e5c532d1e3d6516237b',1,'edash_packager::media::HttpKeyFetcher::HttpKeyFetcher()'],['../d3/d3e/classedash__packager_1_1media_1_1HttpKeyFetcher.html#a5fdf1c838667e9280eb71e1682692a80',1,'edash_packager::media::HttpKeyFetcher::HttpKeyFetcher(uint32_t timeout_in_seconds)']]],
   ['httpkeyfetcher',['HttpKeyFetcher',['../d3/d3e/classedash__packager_1_1media_1_1HttpKeyFetcher.html',1,'edash_packager::media']]]
 ];

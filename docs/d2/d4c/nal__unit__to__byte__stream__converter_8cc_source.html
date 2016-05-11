@@ -68,7 +68,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
      onmouseover="return searchBox.OnSearchSelectShow()"
      onmouseout="return searchBox.OnSearchSelectHide()"
      onkeydown="return searchBox.OnSearchSelectKey(event)">
-<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
+<a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(0)"><span class="SelectionMark">&#160;</span>All</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(1)"><span class="SelectionMark">&#160;</span>Classes</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(2)"><span class="SelectionMark">&#160;</span>Namespaces</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(3)"><span class="SelectionMark">&#160;</span>Functions</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(4)"><span class="SelectionMark">&#160;</span>Variables</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(5)"><span class="SelectionMark">&#160;</span>Typedefs</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(6)"><span class="SelectionMark">&#160;</span>Enumerations</a><a class="SelectItem" href="javascript:void(0)" onclick="searchBox.OnSelectItem(7)"><span class="SelectionMark">&#160;</span>Enumerator</a></div>
 
 <!-- iframe showing the search results (closed by default) -->
 <div id="MSearchResultsWindow">
@@ -116,63 +116,63 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">const</span> uint8_t kAccessUnitDelimiterRbspAnyPrimaryPicType = 0xF0;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="comment">// Inserts emulation byte where necessary.</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keywordtype">void</span> EscapeRawByteSequencePayload(<span class="keyword">const</span> uint8_t* input,</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                                  <span class="keywordtype">size_t</span> input_size,</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                                  BufferWriter* output_writer) {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="comment">// Keep track of consecutive zeros that it has seen (not including the current</span></div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="comment">// byte), so that the algorithm doesn&#39;t need to go back to check the same</span></div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="comment">// bytes.</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keywordtype">int</span> consecutive_zero_count = 0;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; input_size; ++i) {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;    <span class="keywordflow">if</span> (consecutive_zero_count &lt;= 1) {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      output_writer-&gt;AppendInt(input[i]);</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (consecutive_zero_count == 2) {</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      <span class="keywordflow">if</span> (input[i] == 0 || input[i] == 1 || input[i] == 2 || input[i] == 3) {</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        <span class="comment">// Must be escaped.</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;        output_writer-&gt;AppendInt(kEmulationPreventionByte);</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      }</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      output_writer-&gt;AppendInt(input[i]);</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      <span class="comment">// Note that input[i] can be 0.</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      <span class="comment">// 00 00 00 00 00 00 should become</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      <span class="comment">// 00 00 03 00 00 03 00 00 03</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      <span class="comment">// So consecutive_zero_count is reset here and incremented below if</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;      <span class="comment">// input[i] is 0.</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;      consecutive_zero_count = 0;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    }</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    consecutive_zero_count = input[i] == 0 ? consecutive_zero_count + 1 : 0;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  }</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="comment">// ISO 14496-10 Section 7.4.1.1 mentions that if the last byte is 0 (which</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="comment">// only happens if RBSP has cabac_zero_word), 0x03 must be appended.</span></div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordflow">if</span> (consecutive_zero_count &gt; 0) {</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    DCHECK_GT(input_size, 0u);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    DCHECK_EQ(input[input_size - 1], 0u);</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    output_writer-&gt;AppendInt(kEmulationPreventionByte);</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  }</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keywordtype">void</span> AppendNalu(<span class="keyword">const</span> Nalu&amp; nalu,</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                <span class="keywordtype">int</span> nalu_length_size,</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                <span class="keywordtype">bool</span> escape_data,</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                BufferWriter* buffer_writer) {</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keywordflow">if</span> (escape_data) {</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    EscapeNalByteSequence(nalu.data(), nalu.header_size() + nalu.payload_size(),</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                          buffer_writer);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    buffer_writer-&gt;AppendArray(nalu.data(),</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                               nalu.header_size() + nalu.payload_size());</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  }</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;}</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">void</span> AddAccessUnitDelimiter(BufferWriter* buffer_writer) {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  buffer_writer-&gt;AppendInt(static_cast&lt;uint8_t&gt;(Nalu::H264_AUD));</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="comment">// For now, primary_pic_type is 7 which is &quot;anything&quot;.</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  buffer_writer-&gt;AppendInt(kAccessUnitDelimiterRbspAnyPrimaryPicType);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;}</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;}  <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;<span class="keywordtype">void</span> EscapeNalByteSequence(<span class="keyword">const</span> uint8_t* input,</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                           <span class="keywordtype">size_t</span> input_size,</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                           BufferWriter* output_writer) {</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="comment">// Keep track of consecutive zeros that it has seen (not including the current</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="comment">// byte), so that the algorithm doesn&#39;t need to go back to check the same</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="comment">// bytes.</span></div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordtype">int</span> consecutive_zero_count = 0;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordflow">for</span> (<span class="keywordtype">size_t</span> i = 0; i &lt; input_size; ++i) {</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordflow">if</span> (consecutive_zero_count &lt;= 1) {</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;      output_writer-&gt;AppendInt(input[i]);</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (consecutive_zero_count == 2) {</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;      <span class="keywordflow">if</span> (input[i] == 0 || input[i] == 1 || input[i] == 2 || input[i] == 3) {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;        <span class="comment">// Must be escaped.</span></div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        output_writer-&gt;AppendInt(kEmulationPreventionByte);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;      }</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="keywordtype">void</span> AppendNalu(<span class="keyword">const</span> Nalu&amp; nalu,</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                <span class="keywordtype">int</span> nalu_length_size,</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;                <span class="keywordtype">bool</span> escape_data,</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;                BufferWriter* buffer_writer) {</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordflow">if</span> (escape_data) {</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    EscapeRawByteSequencePayload(</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;        nalu.data(), nalu.header_size() + nalu.payload_size(), buffer_writer);</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    buffer_writer-&gt;AppendArray(nalu.data(),</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                               nalu.header_size() + nalu.payload_size());</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      output_writer-&gt;AppendInt(input[i]);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;      <span class="comment">// Note that input[i] can be 0.</span></div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;      <span class="comment">// 00 00 00 00 00 00 should become</span></div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;      <span class="comment">// 00 00 03 00 00 03 00 00 03</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      <span class="comment">// So consecutive_zero_count is reset here and incremented below if</span></div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      <span class="comment">// input[i] is 0.</span></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      consecutive_zero_count = 0;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    }</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    consecutive_zero_count = input[i] == 0 ? consecutive_zero_count + 1 : 0;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  }</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="keywordtype">void</span> AddAccessUnitDelimiter(BufferWriter* buffer_writer) {</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  buffer_writer-&gt;AppendInt(static_cast&lt;uint8_t&gt;(Nalu::H264_AUD));</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// For now, primary_pic_type is 7 which is &quot;anything&quot;.</span></div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  buffer_writer-&gt;AppendInt(kAccessUnitDelimiterRbspAnyPrimaryPicType);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}  <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">// ISO 14496-10 Section 7.4.1.1 mentions that if the last byte is 0 (which</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// only happens if RBSP has cabac_zero_word), 0x03 must be appended.</span></div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordflow">if</span> (consecutive_zero_count &gt; 0) {</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    DCHECK_GT(input_size, 0u);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    DCHECK_EQ(input[input_size - 1], 0u);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    output_writer-&gt;AppendInt(kEmulationPreventionByte);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  }</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;NalUnitToByteStreamConverter::NalUnitToByteStreamConverter()</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    : nalu_length_size_(0), escape_data_(false) {}</div>
@@ -207,11 +207,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="keywordtype">bool</span> found_pps = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; decoder_config.<a class="code" href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a86ff42b376de43256704b6eaaeabf9a7">nalu_count</a>(); ++i) {</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu = decoder_config.<a class="code" href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a7e8ebb71676d606bc8690c3ede399629">nalu</a>(i);</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keywordflow">if</span> (nalu.type() == Nalu::H264NaluType::H264_SPS) {</div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keywordflow">if</span> (nalu.<a class="code" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html#adf9667e2d1195c619e27f0f2167f67f7">type</a>() == Nalu::H264NaluType::H264_SPS) {</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;      AppendNalu(nalu, nalu_length_size_, escape_data, &amp;buffer_writer);</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      found_sps = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (nalu.type() == Nalu::H264NaluType::H264_PPS) {</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (nalu.<a class="code" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html#adf9667e2d1195c619e27f0f2167f67f7">type</a>() == Nalu::H264NaluType::H264_PPS) {</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;      buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;      AppendNalu(nalu, nalu_length_size_, escape_data, &amp;buffer_writer);</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;      found_pps = <span class="keyword">true</span>;</div>
@@ -249,7 +249,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  NaluReader::Result result = nalu_reader.<a class="code" href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html#af9382cd46f2f4d22636f7f5513e8df1d">Advance</a>(&amp;nalu);</div>
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
 <div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  <span class="keywordflow">while</span> (result == NaluReader::kOk) {</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    <span class="keywordflow">switch</span> (nalu.type()) {</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;    <span class="keywordflow">switch</span> (nalu.<a class="code" href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html#adf9667e2d1195c619e27f0f2167f67f7">type</a>()) {</div>
 <div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_AUD:</div>
 <div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        FALLTHROUGH_INTENDED;</div>
 <div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;      <span class="keywordflow">case</span> Nalu::H264_SPS:</div>
@@ -276,7 +276,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;</div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1NaluReader_html"><div class="ttname"><a href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html">edash_packager::media::NaluReader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00137">nalu_reader.h:137</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1Nalu_html_adf9667e2d1195c619e27f0f2167f67f7"><div class="ttname"><a href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html#adf9667e2d1195c619e27f0f2167f67f7">edash_packager::media::Nalu::type</a></div><div class="ttdeci">int type() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00112">nalu_reader.h:112</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1NaluReader_html"><div class="ttname"><a href="../../d3/d6a/classedash__packager_1_1media_1_1NaluReader.html">edash_packager::media::NaluReader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00143">nalu_reader.h:143</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1DecoderConfiguration_html_a86ff42b376de43256704b6eaaeabf9a7"><div class="ttname"><a href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html#a86ff42b376de43256704b6eaaeabf9a7">edash_packager::media::DecoderConfiguration::nalu_count</a></div><div class="ttdeci">size_t nalu_count() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d09/decoder__configuration_8h_source.html#l00040">decoder_configuration.h:40</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1Nalu_html"><div class="ttname"><a href="../../d2/d72/classedash__packager_1_1media_1_1Nalu.html">edash_packager::media::Nalu</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00026">nalu_reader.h:26</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1NalUnitToByteStreamConverter_html_a7f11850cfce911e3aec88974fc76105c"><div class="ttname"><a href="../../d4/dbe/classedash__packager_1_1media_1_1NalUnitToByteStreamConverter.html#a7f11850cfce911e3aec88974fc76105c">edash_packager::media::NalUnitToByteStreamConverter::Initialize</a></div><div class="ttdeci">virtual bool Initialize(const uint8_t *decoder_configuration_data, size_t decoder_configuration_data_size, bool escape_data)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00092">nal_unit_to_byte_stream_converter.cc:92</a></div></div>
@@ -290,7 +291,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon May 9 2016 18:43:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 11 2016 18:03:00 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
