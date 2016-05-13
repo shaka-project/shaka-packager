@@ -23,6 +23,7 @@
       ],
       'dependencies': [
         '../base/base.gyp:base',
+        '../media/base/media_base.gyp:widevine_pssh_data_proto',
         '../media/file/file.gyp:file',
         '../mpd/mpd.gyp:media_info_proto',
       ],
