@@ -20,7 +20,7 @@ before_script:
   - mkdir src
   - shopt -s extglob dotglob
   - mv !(src) src
-  - gclient config https://widevine-internal.googlesource.com/packager.git --name=src --unmanaged
+  - gclient config https://github.com/google/shaka-packager.git --name=src --unmanaged
   - gclient sync
   - cd src
   - ninja -C out/${BUILD_TYPE}

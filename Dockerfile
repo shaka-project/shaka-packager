@@ -14,10 +14,10 @@ RUN apt-get install -y \
 RUN git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 ENV PATH /depot_tools:$PATH
 
-# install edash-packager
-RUN mkdir edash_packager
-WORKDIR edash_packager
-RUN gclient config https://www.github.com/google/edash-packager.git --name=src
+# install shaka-packager
+RUN mkdir shaka_packager
+WORKDIR shaka_packager
+RUN gclient config https://www.github.com/google/shaka-packager.git --name=src
 RUN gclient sync --no-history
 RUN cd src && ninja -C out/Release
-ENV PATH /edash_packager/src/out/Release:$PATH
+ENV PATH /shaka_packager/src/out/Release:$PATH

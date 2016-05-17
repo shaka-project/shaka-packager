@@ -1,4 +1,6 @@
-[![Build Status](https://travis-ci.org/google/edash-packager.svg?branch=master)](https://travis-ci.org/google/edash-packager)
+![Shaka Packager](docs/shaka-packager.png)
+
+[![Build Status](https://travis-ci.org/google/shaka-packager.svg?branch=master)](https://travis-ci.org/google/shaka-packager)
 
 Media packaging SDK intended for C++ programmers writing DASH packager applications with common encryption support, Widevine DRM support, Live, and Video-On-Demand.
 
@@ -20,16 +22,16 @@ Current supported codecs:
 ** I for input and O for output.
 ** We will update this table once new formats are supported.
 
-Right now this project is supported directly on Linux and MacOSX platforms only. One option to run edash-packager on other platforms is using [docker] (#Using docker for testing /development).
+Right now this project is supported directly on Linux and MacOSX platforms only. One option to run shaka-packager on other platforms is using [docker] (#Using docker for testing /development).
 
 
 # Mailing list #
 
-We have a [public mailing list](https://groups.google.com/forum/#!forum/edash-users) for discussion and announcements. To receive notifications about new versions, please join the list. You can also use the list to ask questions or discuss eDash Packager developments.
+We have a [public mailing list](https://groups.google.com/forum/#!forum/shaka-packager-users) for discussion and announcements. To receive notifications about new versions, please join the list. You can also use the list to ask questions or discuss Shaka Packager developments.
 
 # Setting up for development #
 
-1. Packager source is managed by Git at https://www.github.com/google/edash-packager. We use gclient tool from Chromium to manage third party libraries. You will need Git (v1.7.5 or above) installed on your machine to access the source code.
+1. Packager source is managed by Git at https://www.github.com/google/shaka-packager. We use gclient tool from Chromium to manage third party libraries. You will need Git (v1.7.5 or above) installed on your machine to access the source code.
 
 2. Install Chromium depot tools which contains gclient and ninja
 
@@ -38,9 +40,9 @@ We have a [public mailing list](https://groups.google.com/forum/#!forum/edash-us
 3. Get the source
 
   ```Shell
-  mkdir edash_packager
-  cd edash_packager
-  gclient config https://www.github.com/google/edash-packager.git --name=src
+  mkdir shaka_packager
+  cd shaka_packager
+  gclient config https://www.github.com/google/shaka-packager.git --name=src
   gclient sync
   ```
   To sync to a particular commit or version, use 'gclient sync -r \<revision\>', e.g.
@@ -81,7 +83,7 @@ We have a [public mailing list](https://groups.google.com/forum/#!forum/edash-us
 
 6. Contributing
 
-  See https://github.com/google/edash-packager/blob/master/CONTRIBUTING.md for details.
+  See https://github.com/google/shaka-packager/blob/master/CONTRIBUTING.md for details.
 
 
 # Using docker for testing / development #
@@ -95,19 +97,19 @@ We have a [public mailing list](https://groups.google.com/forum/#!forum/edash-us
   2.a. Pull prebuilt image from Dockerhub
 
     ```Shell
-    docker pull google/edash-packager
+    docker pull google/shaka-packager
     ```
 
   2.b. Build an image locally
 
     ```Shell
-    docker build -t google/edash-packager github.com/google/edash-packager.git
+    docker build -t google/shaka-packager github.com/google/shaka-packager.git
     ```
 
 3. Run the container (`your_media_path` should be your media folder)
 
   ```Shell
-  docker run -v /your_media_path/:/media -it --rm google/edash-packager
+  docker run -v /your_media_path/:/media -it --rm google/shaka-packager
   ```
 
 4. Testing
@@ -141,7 +143,7 @@ Demuxer and Muxer are connected using MediaStream. MediaStream wraps the element
 
 MpdBuilder is responsible for the creation of Media Presentation Description as specified in ISO/IEC 23009-1 DASH MPD spec.
 
-Refer to [Design](docs/design.md), [API](https://google.github.io/edash-packager/docs) for details.
+Refer to [Design](docs/design.md), [API](https://google.github.io/shaka-packager/docs) for details.
 
 
 # DASH-IF IOP Compliance #

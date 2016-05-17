@@ -3,7 +3,7 @@
 Profiling code is enabled when the `use_allocator` variable in gyp is set to
 `tcmalloc` (currently the default) and `profiling` variable in gyp is set to
 `1`. That will build the tcmalloc library, including the cpu profiling and heap
-profiling code into edash-packager, e.g.
+profiling code into shaka-packager, e.g.
 
     GYP_DEFINES='profiling=1 use_allocator="tcmalloc"' gclient runhooks
 
@@ -14,7 +14,7 @@ frame pointers in some of the libraries. A workaround is to use the
 
 ## CPU Profiling
 
-In order to enable cpu profiling, run edash-packager with the environment
+In order to enable cpu profiling, run shaka-packager with the environment
 variable `CPUPROFILE` set to a filename. For example:
 
     CPUPROFILE=/tmp/cpuprofile out/Release/packager
@@ -34,7 +34,7 @@ http://google-perftools.googlecode.com/svn/trunk/doc/cpuprofile.html.
 
 ## Heap Profiling
 
-To turn on the heap profiler on edash-packager, use the `HEAPPROFILE`
+To turn on the heap profiler on shaka-packager, use the `HEAPPROFILE`
 environment variable to specify a filename for the heap profile. For example:
 
     HEAPPROFILE=/tmp/heapprofile out/Release/packager
