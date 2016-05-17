@@ -315,7 +315,9 @@ void AddContentProtectionElementsHelperTemplated(
 
     if (entry.has_pssh()) {
       std::string base64_encoded_pssh;
-      base::Base64Encode(entry.pssh(), &base64_encoded_pssh);
+      base::Base64Encode(
+          base::StringPiece(entry.pssh().data(), entry.pssh().size()),
+          &base64_encoded_pssh);
       Element cenc_pssh;
       cenc_pssh.name = kPsshElementName;
       cenc_pssh.content = base64_encoded_pssh;

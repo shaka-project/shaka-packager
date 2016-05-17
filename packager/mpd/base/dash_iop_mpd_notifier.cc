@@ -21,11 +21,8 @@ const int kStartingGroupId = 1;
 bool ProtectedContentEq(
     const MediaInfo::ProtectedContent& content_protection1,
     const MediaInfo::ProtectedContent& content_protection2) {
-  std::string s1;
-  std::string s2;
-  return content_protection1.SerializeToString(&s1) &&
-         content_protection2.SerializeToString(&s2) &&
-         s1 == s2;
+  return content_protection1.SerializeAsString() ==
+         content_protection2.SerializeAsString();
 }
 
 std::set<std::string> GetUUIDs(
