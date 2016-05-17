@@ -111,10 +111,10 @@ Inheritance diagram for edash_packager::media::AudioStreamInfo:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a3a75339290a004cc4b2dd232e4561ed8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3a75339290a004cc4b2dd232e4561ed8"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a3a75339290a004cc4b2dd232e4561ed8">AudioStreamInfo</a> (int track_id, uint32_t time_scale, uint64_t duration, AudioCodec codec, const std::string &amp;codec_string, const std::string &amp;language, uint8_t sample_bits, uint8_t num_channels, uint32_t sampling_frequency, uint32_t max_bitrate, uint32_t avg_bitrate, const uint8_t *extra_data, size_t extra_data_size, bool is_encrypted)</td></tr>
-<tr class="memdesc:a3a75339290a004cc4b2dd232e4561ed8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an initialized audio stream info object. <br/></td></tr>
-<tr class="separator:a3a75339290a004cc4b2dd232e4561ed8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaae3780aafebf76f852d43415e7e772a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaae3780aafebf76f852d43415e7e772a"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#aaae3780aafebf76f852d43415e7e772a">AudioStreamInfo</a> (int track_id, uint32_t time_scale, uint64_t duration, AudioCodec codec, const std::string &amp;codec_string, const std::string &amp;language, uint8_t sample_bits, uint8_t num_channels, uint32_t sampling_frequency, uint64_t seek_preroll_ns, uint64_t codec_delay_ns, uint32_t max_bitrate, uint32_t avg_bitrate, const uint8_t *extra_data, size_t extra_data_size, bool is_encrypted)</td></tr>
+<tr class="memdesc:aaae3780aafebf76f852d43415e7e772a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct an initialized audio stream info object. <br/></td></tr>
+<tr class="separator:aaae3780aafebf76f852d43415e7e772a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af9fd7a97d26f612ceaae4653793d24c4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af9fd7a97d26f612ceaae4653793d24c4"></a>
 AudioCodec&#160;</td><td class="memItemRight" valign="bottom"><b>codec</b> () const </td></tr>
 <tr class="separator:af9fd7a97d26f612ceaae4653793d24c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -133,6 +133,12 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>sampling_frequenc
 <tr class="memitem:ac5cd8096015b8889175c32822fdd22ff"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac5cd8096015b8889175c32822fdd22ff"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>bytes_per_frame</b> () const </td></tr>
 <tr class="separator:ac5cd8096015b8889175c32822fdd22ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3fb2855197751259e3699da952d868eb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3fb2855197751259e3699da952d868eb"></a>
+uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>seek_preroll_ns</b> () const </td></tr>
+<tr class="separator:a3fb2855197751259e3699da952d868eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a82e06f308ca490efb2a8067af1a95daa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a82e06f308ca490efb2a8067af1a95daa"></a>
+uint64_t&#160;</td><td class="memItemRight" valign="bottom"><b>codec_delay_ns</b> () const </td></tr>
+<tr class="separator:a82e06f308ca490efb2a8067af1a95daa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac0de50d3e1c459d713a66bc1083ec7a6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac0de50d3e1c459d713a66bc1083ec7a6"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><b>max_bitrate</b> () const </td></tr>
 <tr class="separator:ac0de50d3e1c459d713a66bc1083ec7a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -240,7 +246,7 @@ Static Public Member Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>The codec string. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html#l00097">97</a> of file <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html">audio_stream_info.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html#l00112">112</a> of file <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html">audio_stream_info.cc</a>.</p>
 
 </div>
 </div>
@@ -268,7 +274,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Implements <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html#ac2a38c803b8baf748ed66b4cf681518f">edash_packager::media::StreamInfo</a>.</p>
 
-<p>Definition at line <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html#l00081">81</a> of file <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html">audio_stream_info.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html#l00087">87</a> of file <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html">audio_stream_info.cc</a>.</p>
 
 </div>
 </div>
@@ -296,7 +302,7 @@ Static Public Member Functions</h2></td></tr>
 
 <p>Reimplemented from <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html#ac09810e16cf5cee2f87987bfcc70fece">edash_packager::media::StreamInfo</a>.</p>
 
-<p>Definition at line <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html#l00089">89</a> of file <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html">audio_stream_info.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html#l00095">95</a> of file <a class="el" href="../../da/d04/audio__stream__info_8cc_source.html">audio_stream_info.cc</a>.</p>
 
 </div>
 </div>
@@ -307,7 +313,7 @@ Static Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri May 13 2016 19:37:58 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 17 2016 00:15:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

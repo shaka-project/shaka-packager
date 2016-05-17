@@ -112,37 +112,39 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html#af0d4c26a9ad38ab4757779915d72c8b8">Reset</a>();</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  scoped_refptr&lt;AudioStreamInfo&gt; <a class="code" href="../../de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html#aa1adf8eaedbb721b663e67630e54e36a">GetAudioStreamInfo</a>(</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      int64_t track_num,</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      <span class="keyword">const</span> std::string&amp; codec_id,</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; codec_private,</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      <span class="keyword">const</span> std::string&amp; language,</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      <span class="keywordtype">bool</span> is_encrypted);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="comment">// WebMParserClient implementation.</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordtype">bool</span> OnUInt(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, int64_t val) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordtype">bool</span> OnFloat(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keywordtype">double</span> val) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keywordtype">int</span> channels_;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keywordtype">double</span> samples_per_second_;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keywordtype">double</span> output_samples_per_second_;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html">WebMAudioClient</a>);</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;};</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_WEBM_AUDIO_CLIENT_H_</span></div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  scoped_refptr&lt;AudioStreamInfo&gt; <a class="code" href="../../de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html#a8fe05588ffbcf8882c3125cc3f0229a2">GetAudioStreamInfo</a>(</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      int64_t track_num,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      <span class="keyword">const</span> std::string&amp; codec_id,</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; codec_private,</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      int64_t seek_preroll,</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      int64_t codec_delay,</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;      <span class="keyword">const</span> std::string&amp; language,</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;      <span class="keywordtype">bool</span> is_encrypted);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="comment">// WebMParserClient implementation.</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keywordtype">bool</span> OnUInt(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, int64_t val) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keywordtype">bool</span> OnFloat(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, <span class="keywordtype">double</span> val) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordtype">int</span> channels_;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordtype">double</span> samples_per_second_;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordtype">double</span> output_samples_per_second_;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html">WebMAudioClient</a>);</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;};</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_WEBM_AUDIO_CLIENT_H_</span></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1WebMParserClient_html"><div class="ttname"><a href="../../de/da5/classedash__packager_1_1media_1_1WebMParserClient.html">edash_packager::media::WebMParserClient</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d46/webm__parser_8h_source.html#l00030">webm_parser.h:30</a></div></div>
+<div class="ttc" id="classedash__packager_1_1media_1_1WebMAudioClient_html_a8fe05588ffbcf8882c3125cc3f0229a2"><div class="ttname"><a href="../../de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html#a8fe05588ffbcf8882c3125cc3f0229a2">edash_packager::media::WebMAudioClient::GetAudioStreamInfo</a></div><div class="ttdeci">scoped_refptr&lt; AudioStreamInfo &gt; GetAudioStreamInfo(int64_t track_num, const std::string &amp;codec_id, const std::vector&lt; uint8_t &gt; &amp;codec_private, int64_t seek_preroll, int64_t codec_delay, const std::string &amp;language, bool is_encrypted)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d8e/webm__audio__client_8cc_source.html#l00031">webm_audio_client.cc:31</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1WebMAudioClient_html_af0d4c26a9ad38ab4757779915d72c8b8"><div class="ttname"><a href="../../de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html#af0d4c26a9ad38ab4757779915d72c8b8">edash_packager::media::WebMAudioClient::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset this object&#39;s state so it can process a new audio track element. </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d8e/webm__audio__client_8cc_source.html#l00025">webm_audio_client.cc:25</a></div></div>
 <div class="ttc" id="classedash__packager_1_1media_1_1WebMAudioClient_html"><div class="ttname"><a href="../../de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html">edash_packager::media::WebMAudioClient</a></div><div class="ttdoc">Helper class used to parse an Audio element inside a TrackEntry element. </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d8d/webm__audio__client_8h_source.html#l00020">webm_audio_client.h:20</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1WebMAudioClient_html_aa1adf8eaedbb721b663e67630e54e36a"><div class="ttname"><a href="../../de/d98/classedash__packager_1_1media_1_1WebMAudioClient.html#aa1adf8eaedbb721b663e67630e54e36a">edash_packager::media::WebMAudioClient::GetAudioStreamInfo</a></div><div class="ttdeci">scoped_refptr&lt; AudioStreamInfo &gt; GetAudioStreamInfo(int64_t track_num, const std::string &amp;codec_id, const std::vector&lt; uint8_t &gt; &amp;codec_private, const std::string &amp;language, bool is_encrypted)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d8e/webm__audio__client_8cc_source.html#l00031">webm_audio_client.cc:31</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri May 13 2016 19:37:58 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 17 2016 00:15:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

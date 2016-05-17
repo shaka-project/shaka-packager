@@ -33,6 +33,6 @@ var searchData=
   ['appendnbytes',['AppendNBytes',['../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#ac929211fc97bc8ec880109775757bb81',1,'edash_packager::media::BufferWriter']]],
   ['audio_5fdescription',['audio_description',['../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a2c58182a77817e4ed4a2860ae3be73df',1,'edash_packager::media::mp4::TrackRunIterator']]],
   ['audio_5fobject_5ftype',['audio_object_type',['../dc/dc6/classedash__packager_1_1media_1_1mp4_1_1AACAudioSpecificConfig.html#a12bcda441f7745bd70cb9b4fdfb4b9b5',1,'edash_packager::media::mp4::AACAudioSpecificConfig']]],
-  ['audiostreaminfo',['AudioStreamInfo',['../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#a3a75339290a004cc4b2dd232e4561ed8',1,'edash_packager::media::AudioStreamInfo']]],
+  ['audiostreaminfo',['AudioStreamInfo',['../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#aaae3780aafebf76f852d43415e7e772a',1,'edash_packager::media::AudioStreamInfo']]],
   ['auxinfoneedstobecached',['AuxInfoNeedsToBeCached',['../db/d26/classedash__packager_1_1media_1_1mp4_1_1TrackRunIterator.html#a3538a0f31238843afd2dfb4e94587f03',1,'edash_packager::media::mp4::TrackRunIterator']]]
 ];

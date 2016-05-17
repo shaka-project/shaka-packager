@@ -109,8 +109,8 @@ Inheritance diagram for edash_packager::media::mp4::Fragmenter:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ae285aba21b3099fe0d5b9e5236583bc8"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#ae285aba21b3099fe0d5b9e5236583bc8">Fragmenter</a> (<a class="el" href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a> *traf)</td></tr>
-<tr class="separator:ae285aba21b3099fe0d5b9e5236583bc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24a46b332d8ecb297d74df8b8a646158"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#a24a46b332d8ecb297d74df8b8a646158">Fragmenter</a> (scoped_refptr&lt; <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; info, <a class="el" href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a> *traf)</td></tr>
+<tr class="separator:a24a46b332d8ecb297d74df8b8a646158"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a81d8b1f324bdd2bc9cc2e5a469243926"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#a81d8b1f324bdd2bc9cc2e5a469243926">AddSample</a> (scoped_refptr&lt; <a class="el" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
 <tr class="separator:a81d8b1f324bdd2bc9cc2e5a469243926"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab55cbcb40b4c1308d70052a4b8ccd6af"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html#ab55cbcb40b4c1308d70052a4b8ccd6af">InitializeFragment</a> (int64_t first_sample_dts)</td></tr>
@@ -154,29 +154,40 @@ Protected Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../db/dae/classedash__packager_1_1media_1_1mp4_1_1Fragmenter.html">Fragmenter</a> is responsible for the generation of MP4 fragments, i.e. 'traf' box and corresponding 'mdat' box. </p>
 
-<p>Definition at line <a class="el" href="../../da/dd1/fragmenter_8h_source.html#l00030">30</a> of file <a class="el" href="../../da/dd1/fragmenter_8h_source.html">fragmenter.h</a>.</p>
+<p>Definition at line <a class="el" href="../../da/dd1/fragmenter_8h_source.html#l00031">31</a> of file <a class="el" href="../../da/dd1/fragmenter_8h_source.html">fragmenter.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="ae285aba21b3099fe0d5b9e5236583bc8"></a>
+<a class="anchor" id="a24a46b332d8ecb297d74df8b8a646158"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">edash_packager::media::mp4::Fragmenter::Fragmenter </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a> *&#160;</td>
-          <td class="paramname"><em>traf</em></td><td>)</td>
+          <td class="paramtype">scoped_refptr&lt; <a class="el" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt;&#160;</td>
+          <td class="paramname"><em>info</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a> *&#160;</td>
+          <td class="paramname"><em>traf</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
+    <tr><td class="paramname">info</td><td>contains stream information. </td></tr>
     <tr><td class="paramname">traf</td><td>points to a <a class="el" href="../../d4/dd9/structedash__packager_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a> box. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html#l00023">23</a> of file <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html">fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html#l00031">31</a> of file <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html">fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -213,7 +224,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#ae8fd13a579fee2167167bcdbb9637dcc">edash_packager::media::mp4::EncryptingFragmenter</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html#l00036">36</a> of file <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html">fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html#l00045">45</a> of file <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html">fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -249,7 +260,7 @@ Protected Member Functions</h2></td></tr>
 
 <p>Reimplemented in <a class="el" href="../../d8/d1e/classedash__packager_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3159dcc8d0f02da113715a97d096afef">edash_packager::media::mp4::EncryptingFragmenter</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html#l00076">76</a> of file <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html">fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html#l00085">85</a> of file <a class="el" href="../../d8/d9a/fragmenter_8cc_source.html">fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -288,7 +299,7 @@ template&lt;typename T &gt; </div>
 </div><div class="memdoc">
 <p>Optimize sample entries table. If all values in <em>entries</em> are identical, then <em>entries</em> is cleared and the value is assigned to <em>default_value</em>; otherwise it is a NOP. Return true if the table is optimized. </p>
 
-<p>Definition at line <a class="el" href="../../da/dd1/fragmenter_8h_source.html#l00089">89</a> of file <a class="el" href="../../da/dd1/fragmenter_8h_source.html">fragmenter.h</a>.</p>
+<p>Definition at line <a class="el" href="../../da/dd1/fragmenter_8h_source.html#l00092">92</a> of file <a class="el" href="../../da/dd1/fragmenter_8h_source.html">fragmenter.h</a>.</p>
 
 </div>
 </div>
@@ -299,7 +310,7 @@ template&lt;typename T &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri May 13 2016 19:38:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 17 2016 00:15:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
