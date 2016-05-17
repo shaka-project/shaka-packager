@@ -420,7 +420,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   void Fill(OpusSpecific* dops) {
     const uint8_t kOpusIdentificationHeader[] = {
         0x4f, 0x70, 0x75, 0x73, 0x48, 0x65, 0x61, 0x64, 0x01, 0x02,
-        0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x00};
+        0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10, 0x01, 0x11};
     dops->opus_identification_header.assign(
         kOpusIdentificationHeader,
         kOpusIdentificationHeader + arraysize(kOpusIdentificationHeader));
@@ -589,6 +589,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     sgpd->cenc_sample_encryption_info_entries[0].constant_iv.assign(
         kData16Bytes, kData16Bytes + arraysize(kData16Bytes));
     sgpd->cenc_sample_encryption_info_entries[0].key_id.resize(16);
+    sgpd->version = 1;
   }
 
   void Fill(SampleToGroup* sbgp) {
