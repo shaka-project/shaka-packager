@@ -404,46 +404,48 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;</div>
 <div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;    <span class="keywordflow">if</span> (entry.has_pssh()) {</div>
 <div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;      std::string base64_encoded_pssh;</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;      base::Base64Encode(entry.pssh(), &amp;base64_encoded_pssh);</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;      Element cenc_pssh;</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;      cenc_pssh.name = kPsshElementName;</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;      cenc_pssh.content = base64_encoded_pssh;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;      drm_content_protection.subelements.push_back(cenc_pssh);</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;    }</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    <span class="keywordflow">if</span> (!key_id_uuid_format.empty() &amp;&amp; !is_mp4_container) {</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;      drm_content_protection.additional_attributes[<span class="stringliteral">&quot;cenc:default_KID&quot;</span>] =</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;          key_id_uuid_format;</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;    }</div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;</div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    parent-&gt;AddContentProtectionElement(drm_content_protection);</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;  }</div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  LOG_IF(WARNING, protected_content.content_protection_entry().size() == 0)</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;The media is encrypted but no content protection specified.&quot;</span>;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;}</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;}  <span class="comment">// namespace</span></div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;</div>
-<div class="line"><a name="l00338"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">  338</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;                                  <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a>* parent) {</div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;  AddContentProtectionElementsHelperTemplated(media_info, parent);</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;}</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;</div>
-<div class="line"><a name="l00343"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html#a63896c3ea3c207506f18095624f2ed84">  343</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;                                  <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>* parent) {</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;  AddContentProtectionElementsHelperTemplated(media_info, parent);</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;}</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;      base::Base64Encode(</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;          base::StringPiece(entry.pssh().data(), entry.pssh().size()),</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;          &amp;base64_encoded_pssh);</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;      Element cenc_pssh;</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;      cenc_pssh.name = kPsshElementName;</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;      cenc_pssh.content = base64_encoded_pssh;</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;      drm_content_protection.subelements.push_back(cenc_pssh);</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;    }</div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;</div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;    <span class="keywordflow">if</span> (!key_id_uuid_format.empty() &amp;&amp; !is_mp4_container) {</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;      drm_content_protection.additional_attributes[<span class="stringliteral">&quot;cenc:default_KID&quot;</span>] =</div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;          key_id_uuid_format;</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;    }</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;    parent-&gt;AddContentProtectionElement(drm_content_protection);</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;  }</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;</div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;  LOG_IF(WARNING, protected_content.content_protection_entry().size() == 0)</div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;      &lt;&lt; <span class="stringliteral">&quot;The media is encrypted but no content protection specified.&quot;</span>;</div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;}</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;}  <span class="comment">// namespace</span></div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;</div>
+<div class="line"><a name="l00340"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">  340</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;                                  <a class="code" href="../../d7/d15/classedash__packager_1_1Representation.html">Representation</a>* parent) {</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;  AddContentProtectionElementsHelperTemplated(media_info, parent);</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;}</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;</div>
+<div class="line"><a name="l00345"></a><span class="lineno"><a class="line" href="../../db/d09/namespaceedash__packager.html#a63896c3ea3c207506f18095624f2ed84">  345</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;                                  <a class="code" href="../../db/de4/classedash__packager_1_1AdaptationSet.html">AdaptationSet</a>* parent) {</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;  AddContentProtectionElementsHelperTemplated(media_info, parent);</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;}</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
 <div class="ttc" id="classedash__packager_1_1Representation_html"><div class="ttname"><a href="../../d7/d15/classedash__packager_1_1Representation.html">edash_packager::Representation</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00428">mpd_builder.h:428</a></div></div>
-<div class="ttc" id="namespaceedash__packager_html_a6f62cefcc7cf1a95f19bbea3b310fbab"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">edash_packager::AddContentProtectionElements</a></div><div class="ttdeci">void AddContentProtectionElements(const MediaInfo &amp;media_info, Representation *parent)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00338">mpd_utils.cc:338</a></div></div>
+<div class="ttc" id="namespaceedash__packager_html_a6f62cefcc7cf1a95f19bbea3b310fbab"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">edash_packager::AddContentProtectionElements</a></div><div class="ttdeci">void AddContentProtectionElements(const MediaInfo &amp;media_info, Representation *parent)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00340">mpd_utils.cc:340</a></div></div>
 <div class="ttc" id="classedash__packager_1_1AdaptationSet_html"><div class="ttname"><a href="../../db/de4/classedash__packager_1_1AdaptationSet.html">edash_packager::AdaptationSet</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00167">mpd_builder.h:167</a></div></div>
 <div class="ttc" id="namespaceedash__packager_html_a7015ba137f31c7ae734dc7abb254be64"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a7015ba137f31c7ae734dc7abb254be64">edash_packager::HexToUUID</a></div><div class="ttdeci">bool HexToUUID(const std::string &amp;data, std::string *uuid_format)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00175">mpd_utils.cc:175</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 17 2016 16:48:01 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed May 18 2016 00:33:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
