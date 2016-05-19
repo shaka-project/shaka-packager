@@ -19,12 +19,10 @@
 #include "packager/mpd/base/mpd_options.h"
 
 namespace edash_packager {
+
 namespace media {
 class File;
 }  // namespace media
-}  // namespace edash_packager
-
-namespace edash_packager {
 
 class MediaInfo;
 

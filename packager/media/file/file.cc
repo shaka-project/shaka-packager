@@ -206,8 +206,7 @@ bool File::Copy(const char* from_file_name, const char* to_file_name) {
     return false;
   }
 
-  scoped_ptr<edash_packager::media::File, edash_packager::media::FileCloser>
-      output_file(edash_packager::media::File::Open(to_file_name, "w"));
+  scoped_ptr<File, FileCloser> output_file(File::Open(to_file_name, "w"));
   if (!output_file) {
     LOG(ERROR) << "Failed to write to " << to_file_name;
     return false;

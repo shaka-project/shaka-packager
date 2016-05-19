@@ -93,4 +93,4 @@ TEST(BandwidthEstimatorTest, FirstOneBlock) {
   EXPECT_EQ(kExptectedEstimate, be.Estimate());
 }
 
-} // edash_packager
+} // namespace edash_packager

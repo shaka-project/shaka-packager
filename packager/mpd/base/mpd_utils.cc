@@ -15,8 +15,7 @@
 namespace edash_packager {
 namespace {
 
-std::string TextCodecString(
-    const edash_packager::MediaInfo& media_info) {
+std::string TextCodecString(const MediaInfo& media_info) {
   CHECK(media_info.has_text_info());
   const std::string& format = media_info.text_info().format();
   // DASH IOP mentions that the codec for ttml in mp4 is stpp.

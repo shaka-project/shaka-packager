@@ -47,7 +47,10 @@ DEFINE_bool(use_fake_clock_for_muxer,
             "creation time and modification time in outputs are set to 0. "
             "Should only be used for testing.");
 
+namespace edash_packager {
+namespace media {
 namespace {
+
 const char kUsage[] =
     "Packager driver program. Usage:\n\n"
     "%s [flags] <stream_descriptor> ...\n"
@@ -89,43 +92,38 @@ enum ExitStatus {
 // CreateRemuxJobs() shouldn't treat text as a special case.
 std::string DetermineTextFileFormat(const std::string& file) {
   std::string content;
-  if (!edash_packager::media::File::ReadFileToString(file.c_str(), &content)) {
+  if (!File::ReadFileToString(file.c_str(), &content)) {
     LOG(ERROR) << "Failed to open file " << file
                << " to determine file format.";
     return "";
   }
-  edash_packager::media::MediaContainerName container_name =
-      edash_packager::media::DetermineContainer(
-          reinterpret_cast<const uint8_t*>(content.data()), content.size());
-  if (container_name == edash_packager::media::CONTAINER_WEBVTT) {
+  MediaContainerName container_name = DetermineContainer(
+      reinterpret_cast<const uint8_t*>(content.data()), content.size());
+  if (container_name == CONTAINER_WEBVTT) {
     return "vtt";
-  } else if (container_name == edash_packager::media::CONTAINER_TTML) {
+  } else if (container_name == CONTAINER_TTML) {
     return "ttml";
   }
 
   return "";
 }
 
-edash_packager::media::FourCC GetProtectionScheme(
-    const std::string& protection_scheme) {
+FourCC GetProtectionScheme(const std::string& protection_scheme) {
   if (protection_scheme == "cenc") {
-    return edash_packager::media::FOURCC_cenc;
+    return FOURCC_cenc;
   } else if (protection_scheme == "cens") {
-    return edash_packager::media::FOURCC_cens;
+    return FOURCC_cens;
   } else if (protection_scheme == "cbc1") {
-    return edash_packager::media::FOURCC_cbc1;
+    return FOURCC_cbc1;
   } else if (protection_scheme == "cbcs") {
-    return edash_packager::media::FOURCC_cbcs;
+    return FOURCC_cbcs;
   } else {
     LOG(ERROR) << "Unknown protection scheme: " << protection_scheme;
-    return edash_packager::media::FOURCC_NULL;
+    return FOURCC_NULL;
   }
 }
 
 }  // namespace
-
-namespace edash_packager {
-namespace media {
 
 // A fake clock that always return time 0 (epoch). Should only be used for
 // testing.
@@ -473,7 +471,7 @@ int PackagerMain(int argc, char** argv) {
   if (!ValidateWidevineCryptoFlags() || !ValidateFixedCryptoFlags())
     return kArgumentValidationFailed;
 
-  edash_packager::media::LibcryptoThreading libcrypto_threading;
+  LibcryptoThreading libcrypto_threading;
   // TODO(tinskip): Make InsertStreamDescriptor a member of
   // StreamDescriptorList.
   StreamDescriptorList stream_descriptors;

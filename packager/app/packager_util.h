@@ -50,7 +50,7 @@ bool AssignFlagsFromProfile();
 bool GetMuxerOptions(MuxerOptions* muxer_options);
 
 /// Fill MpdOptions members using provided command line options.
-bool GetMpdOptions(edash_packager::MpdOptions* mpd_options);
+bool GetMpdOptions(MpdOptions* mpd_options);
 
 /// Select and add a stream from a provided set to a muxer.
 /// @param streams contains the set of MediaStreams from which to select.

@@ -62,7 +62,7 @@ ExitStatus RunMpdGenerator() {
     base::SplitString(FLAGS_base_urls, ',', &base_urls);
   }
 
-  edash_packager::MpdWriter mpd_writer;
+  MpdWriter mpd_writer;
   for (Iterator it = base_urls.begin(); it != base_urls.end(); ++it)
     mpd_writer.AddBaseUrl(*it);
 

@@ -17,15 +17,11 @@
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/segment_info.h"
 
-using edash_packager::xml::XmlNode;
-
-using edash_packager::MediaInfo;
-typedef edash_packager::MediaInfo::AudioInfo AudioInfo;
-typedef edash_packager::MediaInfo::VideoInfo VideoInfo;
-typedef MediaInfo::ContentProtectionXml ContentProtectionXml;
-typedef ContentProtectionXml::AttributeNameValuePair AttributeNameValuePair;
-
 namespace edash_packager {
+
+using xml::XmlNode;
+typedef MediaInfo::AudioInfo AudioInfo;
+typedef MediaInfo::VideoInfo VideoInfo;
 
 namespace {
 const char kEC3Codec[] = "ec-3";

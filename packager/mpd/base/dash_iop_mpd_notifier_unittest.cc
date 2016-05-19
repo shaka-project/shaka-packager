@@ -39,8 +39,7 @@ const uint32_t kDefaultAdaptationSetId = 0u;
 const uint32_t kDefaultRepresentationId = 1u;
 const int kDefaultGroupId = -1;
 
-bool ElementEqual(const edash_packager::Element& lhs,
-                  const edash_packager::Element& rhs) {
+bool ElementEqual(const Element& lhs, const Element& rhs) {
   const bool all_equal_except_sublement_check =
       lhs.name == rhs.name && lhs.attributes.size() == rhs.attributes.size() &&
       std::equal(lhs.attributes.begin(), lhs.attributes.end(),
@@ -59,9 +58,8 @@ bool ElementEqual(const edash_packager::Element& lhs,
   return true;
 }
 
-bool ContentProtectionElementEqual(
-    const edash_packager::ContentProtectionElement& lhs,
-    const edash_packager::ContentProtectionElement& rhs) {
+bool ContentProtectionElementEqual(const ContentProtectionElement& lhs,
+                                   const ContentProtectionElement& rhs) {
   const bool all_equal_except_sublement_check =
       lhs.value == rhs.value && lhs.scheme_id_uri == rhs.scheme_id_uri &&
       lhs.additional_attributes.size() == rhs.additional_attributes.size() &&

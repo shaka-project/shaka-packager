@@ -101,7 +101,7 @@ void VodMediaInfoDumpMuxerListener::OnNewSegment(const std::string& file_name,
 
 // static
 bool VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
-    const edash_packager::MediaInfo& media_info,
+    const MediaInfo& media_info,
     const std::string& output_file_path) {
   std::string output_string;
   if (!google::protobuf::TextFormat::PrintToString(media_info,

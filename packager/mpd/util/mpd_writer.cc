@@ -25,8 +25,6 @@ DEFINE_bool(generate_dash_if_iop_compliant_mpd,
             "and does not guarantee compliance. Off by default until players "
             "support IOP MPDs.");
 
-using edash_packager::media::File;
-
 namespace edash_packager {
 
 namespace {
