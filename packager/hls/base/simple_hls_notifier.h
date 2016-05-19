@@ -7,6 +7,10 @@
 #ifndef PACKAGER_HLS_BASE_SIMPLE_HLS_NOTIFIER_H_
 #define PACKAGER_HLS_BASE_SIMPLE_HLS_NOTIFIER_H_
 
+#include <map>
+#include <string>
+#include <vector>
+
 #include "packager/base/atomic_sequence_num.h"
 #include "packager/base/macros.h"
 #include "packager/base/memory/scoped_ptr.h"

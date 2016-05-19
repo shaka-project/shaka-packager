@@ -136,7 +136,9 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
   }
 
   std::string content_id_base64;
-  base::Base64Encode(pssh_data.content_id(), &content_id_base64);
+  base::Base64Encode(base::StringPiece(pssh_data.content_id().data(),
+                                       pssh_data.content_id().size()),
+                     &content_id_base64);
   std::string json_format = base::StringPrintf(
       "{"
       "\"provider\":\"%s\","

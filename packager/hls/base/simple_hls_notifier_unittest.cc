@@ -185,8 +185,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdate) {
   };
   widevine_pssh_data.add_key_id()->assign(kAnyKeyId,
                                           kAnyKeyId + arraysize(kAnyKeyId));
-  std::string widevine_pssh_data_str;
-  ASSERT_TRUE(widevine_pssh_data.SerializeToString(&widevine_pssh_data_str));
+  std::string widevine_pssh_data_str = widevine_pssh_data.SerializeAsString();
+  EXPECT_TRUE(!widevine_pssh_data_str.empty());
   std::vector<uint8_t> pssh_data(widevine_pssh_data_str.begin(),
                                  widevine_pssh_data_str.end());
 
@@ -255,8 +255,8 @@ TEST_F(SimpleHlsNotifierTest, MultipleKeyIdsInPssh) {
                                           kFirstKeyId + arraysize(kFirstKeyId));
   widevine_pssh_data.add_key_id()->assign(
       kSecondKeyId, kSecondKeyId + arraysize(kSecondKeyId));
-  std::string widevine_pssh_data_str;
-  ASSERT_TRUE(widevine_pssh_data.SerializeToString(&widevine_pssh_data_str));
+  std::string widevine_pssh_data_str = widevine_pssh_data.SerializeAsString();
+  EXPECT_TRUE(!widevine_pssh_data_str.empty());
   std::vector<uint8_t> pssh_data(widevine_pssh_data_str.begin(),
                                  widevine_pssh_data_str.end());
 
@@ -320,8 +320,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateEmptyIv) {
   };
   widevine_pssh_data.add_key_id()->assign(kAnyKeyId,
                                           kAnyKeyId + arraysize(kAnyKeyId));
-  std::string widevine_pssh_data_str;
-  ASSERT_TRUE(widevine_pssh_data.SerializeToString(&widevine_pssh_data_str));
+  std::string widevine_pssh_data_str = widevine_pssh_data.SerializeAsString();
+  EXPECT_TRUE(!widevine_pssh_data_str.empty());
   std::vector<uint8_t> pssh_data(widevine_pssh_data_str.begin(),
                                  widevine_pssh_data_str.end());
 
