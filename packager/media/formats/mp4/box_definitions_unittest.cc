@@ -309,7 +309,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Fill(ID3v2* id3v2) {
     id3v2->language.code = "eng";
-    id3v2->private_frame.owner = "edash-packager";
+    id3v2->private_frame.owner = "shaka-packager";
     id3v2->private_frame.value = "version 1.2.0-debug";
   }
 

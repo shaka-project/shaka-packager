@@ -270,7 +270,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
   moov_->metadata.handler.handler_type = FOURCC_ID32;
   moov_->metadata.id3v2.language.code = "eng";
   moov_->metadata.id3v2.private_frame.owner =
-      "https://github.com/google/edash-packager";
+      "https://github.com/google/shaka-packager";
   moov_->metadata.id3v2.private_frame.value = options_.packager_version_string;
   return DoInitialize();
 }

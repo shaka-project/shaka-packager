@@ -506,7 +506,7 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
 
   DCHECK(doc);
   std::string version_string =
-      "Generated with https://github.com/google/edash-packager version " +
+      "Generated with https://github.com/google/shaka-packager version " +
       mpd_options_.packager_version_string;
   xml::scoped_xml_ptr<xmlNode> comment(
       xmlNewDocComment(doc.get(), BAD_CAST version_string.c_str()));

@@ -60,7 +60,7 @@ Status Segmenter::Initialize(scoped_ptr<MkvWriter> writer,
   progress_listener_ = progress_listener;
 
   const std::string version_string =
-      "https://github.com/google/edash-packager version " +
+      "https://github.com/google/shaka-packager version " +
       options().packager_version_string;
 
   segment_info_.Init();

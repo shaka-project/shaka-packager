@@ -37,7 +37,7 @@ class PackagerAppTest(unittest.TestCase):
 
   def testVersion(self):
     self.assertRegexpMatches(
-        self.packager.Version(), '^edash-packager version '
+        self.packager.Version(), '^shaka-packager version '
         r'((?P<tag>[\w\.]+)-)?(?P<hash>[a-f\d]+)-(debug|release)$')
 
   def testDumpStreamInfo(self):

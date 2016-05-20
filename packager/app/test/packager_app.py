@@ -31,7 +31,7 @@ class PackagerApp(object):
   def Version(self):
     output = subprocess.check_output([self.binary])
     # The output should of the form:
-    #   edash-packager version xxx: Description...
+    #   shaka-packager version xxx: Description...
     # We consider everything before ':' part of version.
     return output.split(':')[0]
 

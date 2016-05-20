@@ -182,7 +182,7 @@ TEST_F(SimpleMpdNotifierTest, OnDemandNotifySampleDuration) {
 
 // This test is mainly for tsan. Using both the notifier and the MpdBuilder.
 // Although locks in MpdBuilder have been removed,
-// https://github.com/google/edash-packager/issues/45
+// https://github.com/google/shaka-packager/issues/45
 // This issue identified a bug where using SimpleMpdNotifier with multiple
 // threads causes a deadlock.
 TEST_F(SimpleMpdNotifierTest, NotifyNewContainerAndSampleDurationNoMock) {

@@ -463,7 +463,7 @@ int PackagerMain(int argc, char** argv) {
   google::ParseCommandLineFlags(&argc, &argv, true);
   if (argc < 2) {
     std::string version_string =
-        base::StringPrintf("edash-packager version %s", kPackagerVersion);
+        base::StringPrintf("shaka-packager version %s", kPackagerVersion);
     google::ShowUsageWithFlags(version_string.c_str());
     return kSuccess;
   }

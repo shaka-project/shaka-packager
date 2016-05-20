@@ -15,7 +15,7 @@
 namespace edash_packager {
 
 namespace {
-const char kUserAgentString[] = "edash-packager-http_fetcher/1.0";
+const char kUserAgentString[] = "shaka-packager-http_fetcher/1.0";
 
 // Scoped CURL implementation which cleans up itself when goes out of scope.
 class ScopedCurl {
