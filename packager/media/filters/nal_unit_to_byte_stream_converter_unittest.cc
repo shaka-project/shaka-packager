@@ -9,7 +9,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/filters/nal_unit_to_byte_stream_converter.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -371,4 +371,4 @@ TEST(NalUnitToByteStreamConverterTest, DoNotEscape) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

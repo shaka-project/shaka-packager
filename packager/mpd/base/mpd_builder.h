@@ -38,7 +38,7 @@
 // TODO(rkuroiwa): For classes with |id_|, consider removing the field and let
 // the MPD (XML) generation functions take care of assigning an ID to each
 // element.
-namespace edash_packager {
+namespace shaka {
 
 namespace media {
 class File;
@@ -575,6 +575,6 @@ class Representation {
   DISALLOW_COPY_AND_ASSIGN(Representation);
 };
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MPD_BASE_MPD_BUILDER_H_

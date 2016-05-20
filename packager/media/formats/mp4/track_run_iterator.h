@@ -10,7 +10,7 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class DecryptConfig;
@@ -122,6 +122,6 @@ class TrackRunIterator {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_MP4_TRACK_RUN_ITERATOR_H_

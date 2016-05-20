@@ -11,7 +11,7 @@
 
 #include "packager/version/version.h"
 
-namespace edash_packager {
+namespace shaka {
 
 /// Defines Mpd Options.
 struct MpdOptions {
@@ -34,7 +34,7 @@ struct MpdOptions {
   std::string packager_version_string;
 };
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MPD_BASE_MPD_OPTIONS_H_
 

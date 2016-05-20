@@ -11,7 +11,7 @@
 
 #include "packager/base/files/file_path.h"
 
-namespace edash_packager {
+namespace shaka {
 
 class MediaInfo;
 
@@ -71,6 +71,6 @@ void ExpectMpdToEqualExpectedOutputFile(
     const std::string& mpd_string,
     const std::string& expected_output_file);
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MPD_TEST_MPD_BUILDER_TEST_HELPER_H_

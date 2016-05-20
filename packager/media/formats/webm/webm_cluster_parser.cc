@@ -17,7 +17,7 @@
 #include "packager/media/formats/webm/webm_crypto_helpers.h"
 #include "packager/media/formats/webm/webm_webvtt_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace {
 
@@ -631,4 +631,4 @@ WebMClusterParser::FindTextTrack(int track_num) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -25,12 +25,12 @@ DECLARE_string(rsa_signing_key_path);
 DECLARE_int32(crypto_period_duration);
 DECLARE_string(protection_scheme);
 
-namespace edash_packager {
+namespace shaka {
 
 /// Validate widevine encryption/decryption flags.
 /// @return true on success, false otherwise.
 bool ValidateWidevineCryptoFlags();
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // APP_WIDEVINE_ENCRYPTION_FLAGS_H_

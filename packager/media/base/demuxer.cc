@@ -31,7 +31,7 @@ const size_t kBufSize = 0x200000;  // 2MB
 const size_t kQueuedSamplesLimit = 10000;
 }
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 Demuxer::Demuxer(const std::string& file_name)
@@ -234,4 +234,4 @@ void Demuxer::Cancel() {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

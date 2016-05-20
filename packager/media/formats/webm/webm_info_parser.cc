@@ -7,7 +7,7 @@
 #include "packager/base/logging.h"
 #include "packager/media/formats/webm/webm_constants.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // Default timecode scale if the TimecodeScale element is
@@ -102,4 +102,4 @@ bool WebMInfoParser::OnString(int id, const std::string& str) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

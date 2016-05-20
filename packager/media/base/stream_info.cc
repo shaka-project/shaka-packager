@@ -11,7 +11,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/stringprintf.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 StreamInfo::StreamInfo(StreamType stream_type,
@@ -49,4 +49,4 @@ std::string StreamInfo::ToString() const {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

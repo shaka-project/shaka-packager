@@ -29,7 +29,7 @@
       return status;     \
   } while (false)
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -1113,4 +1113,4 @@ H265Parser::Result H265Parser::SkipSubLayerHrdParameters(
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

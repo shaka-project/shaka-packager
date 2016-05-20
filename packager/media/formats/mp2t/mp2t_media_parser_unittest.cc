@@ -19,7 +19,7 @@
 #include "packager/media/formats/mp2t/mp2t_media_parser.h"
 #include "packager/media/test/test_data_util.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -163,4 +163,4 @@ TEST_F(Mp2tMediaParserTest, TimestampWrapAround) {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -14,7 +14,7 @@
 
 #include "packager/media/event/muxer_listener.h"
 
-namespace edash_packager {
+namespace shaka {
 
 class MediaInfo;
 
@@ -64,5 +64,5 @@ std::string CreateUUIDString(const std::vector<uint8_t>& data);
 
 }  // namespace internal
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 #endif  // MEDIA_EVENT_MUXER_LISTENER_INTERNAL_H_

@@ -11,7 +11,7 @@
 #include "packager/third_party/libwebm/src/mkvmuxerutil.hpp"
 #include "packager/third_party/libwebm/src/webmids.hpp"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace {
 const mkvmuxer::uint64 kElementIds[] = {
@@ -121,4 +121,4 @@ uint64_t SeekHead::GetPayloadSize(std::vector<uint64_t>* data) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -11,7 +11,7 @@
 
 #include <string>
 
-namespace edash_packager {
+namespace shaka {
 
 /// Validate a flag against the given condition.
 /// @param flag_name is the name of the flag.
@@ -33,6 +33,6 @@ bool ValidateFlag(const char* flag_name,
 /// @param error_message specifies the error message.
 void PrintError(const std::string& error_message);
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // APP_VALIDATE_FLAG_H_

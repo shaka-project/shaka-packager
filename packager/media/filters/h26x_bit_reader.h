@@ -12,7 +12,7 @@
 
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // A class to provide bit-granularity reading of H.264/H.265 streams.
@@ -96,6 +96,6 @@ class H26xBitReader {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FILTERS_H264_BIT_READER_H_

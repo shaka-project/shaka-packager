@@ -19,7 +19,7 @@
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace hls {
 
 MasterPlaylist::MasterPlaylist(const std::string& file_name)
@@ -163,4 +163,4 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
 }
 
 }  // namespace hls
-}  // namespace edash_packager
+}  // namespace shaka

@@ -19,7 +19,7 @@ namespace {
 const int64_t kInvalidOffset = std::numeric_limits<int64_t>::max();
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -626,4 +626,4 @@ scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

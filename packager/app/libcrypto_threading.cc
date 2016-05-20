@@ -15,7 +15,7 @@
 #include "packager/base/synchronization/lock.h"
 #include "packager/base/threading/platform_thread.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -50,4 +50,4 @@ LibcryptoThreading::~LibcryptoThreading() {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

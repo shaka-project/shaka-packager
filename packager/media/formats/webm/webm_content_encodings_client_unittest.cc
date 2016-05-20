@@ -12,7 +12,7 @@
 #include "packager/media/formats/webm/webm_constants.h"
 #include "packager/media/formats/webm/webm_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class WebMContentEncodingsClientTest : public testing::Test {
@@ -240,4 +240,4 @@ TEST_F(WebMContentEncodingsClientTest, InvalidContentEncAlgo) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

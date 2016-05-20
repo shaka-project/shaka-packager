@@ -14,7 +14,7 @@
 
 #include "packager/media/file/file.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Implements a File that is stored in memory.  This should be only used for
@@ -55,7 +55,7 @@ class MemoryFile : public File {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FILE_MEDIA_FILE_H_
 

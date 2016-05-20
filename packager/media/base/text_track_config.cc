@@ -4,7 +4,7 @@
 
 #include "packager/media/base/text_track_config.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 TextTrackConfig::TextTrackConfig()
@@ -29,4 +29,4 @@ bool TextTrackConfig::Matches(const TextTrackConfig& config) const {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

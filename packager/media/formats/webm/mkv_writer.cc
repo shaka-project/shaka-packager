@@ -6,7 +6,7 @@
 
 #include "packager/media/formats/webm/mkv_writer.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 MkvWriter::MkvWriter() : position_(0) {}
@@ -91,4 +91,4 @@ void MkvWriter::ElementStartNotify(mkvmuxer::uint64 element_id,
                                    mkvmuxer::int64 position) {}
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

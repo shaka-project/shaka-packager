@@ -16,7 +16,7 @@
 #include "packager/media/base/status.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 struct MuxerOptions;
@@ -149,6 +149,6 @@ class Segmenter {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_MP4_SEGMENTER_H_

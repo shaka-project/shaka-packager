@@ -14,7 +14,7 @@
 #include "packager/media/event/mock_muxer_listener.h"
 #include "packager/media/formats/mp2t/ts_segmenter.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -584,4 +584,4 @@ TEST_F(TsSegmenterTest, WithEncryptionWithClearLead) {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

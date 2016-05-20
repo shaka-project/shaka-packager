@@ -2,7 +2,7 @@
 
 #include "packager/mpd/base/media_info.pb.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace {
 const char kEmptyLang[] = "";
 const MpdOptions kDefaultMpdOptions;
@@ -30,4 +30,4 @@ MockRepresentation::MockRepresentation(uint32_t representation_id)
                      scoped_ptr<RepresentationStateChangeListener>()) {}
 MockRepresentation::~MockRepresentation() {}
 
-}  // namespace edash_packager
+}  // namespace shaka

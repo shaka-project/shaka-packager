@@ -14,7 +14,7 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/status.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class BufferWriter;
@@ -109,6 +109,6 @@ bool Fragmenter::OptimizeSampleEntries(std::vector<T>* entries,
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_MP4_FRAGMENTER_H_

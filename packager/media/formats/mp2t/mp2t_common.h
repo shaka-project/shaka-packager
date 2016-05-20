@@ -19,10 +19,10 @@
 
 #endif
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 const uint32_t kMpeg2Timescale = 90000;
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -13,7 +13,7 @@
 #include "packager/base/macros.h"
 #include "packager/media/filters/vp_codec_configuration.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 struct VPxFrameInfo {
@@ -53,6 +53,6 @@ class VPxParser {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FILTERS_VPX_PARSER_H_

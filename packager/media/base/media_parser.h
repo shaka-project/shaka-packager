@@ -16,7 +16,7 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/container_names.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class KeySource;
@@ -68,6 +68,6 @@ class MediaParser {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_MEDIA_PARSER_H_

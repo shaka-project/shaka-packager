@@ -10,7 +10,7 @@
 #include "base/macros.h"
 #include "packager/media/base/status.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Base class for fetching keys from the license service.
@@ -34,7 +34,7 @@ class KeyFetcher {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_KEY_FETCHER_H_
 

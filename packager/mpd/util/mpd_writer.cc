@@ -25,7 +25,7 @@ DEFINE_bool(generate_dash_if_iop_compliant_mpd,
             "and does not guarantee compliance. Off by default until players "
             "support IOP MPDs.");
 
-namespace edash_packager {
+namespace shaka {
 
 namespace {
 
@@ -126,4 +126,4 @@ void MpdWriter::SetMpdNotifierFactoryForTest(
   notifier_factory_ = factory.Pass();
 }
 
-}  // namespace edash_packager
+}  // namespace shaka

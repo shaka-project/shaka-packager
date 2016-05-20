@@ -10,7 +10,7 @@
 #include "packager/base/sys_byteorder.h"
 #include "packager/media/file/file.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 BufferWriter::BufferWriter() {
@@ -88,4 +88,4 @@ void BufferWriter::AppendInternal(T v) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

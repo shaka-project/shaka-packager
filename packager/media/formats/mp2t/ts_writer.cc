@@ -15,7 +15,7 @@
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/formats/mp2t/ts_packet_writer_util.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -260,4 +260,4 @@ void TsWriter::SetProgramMapTableWriterForTesting(
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

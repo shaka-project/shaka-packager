@@ -21,7 +21,7 @@
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 #include "packager/mpd/test/xml_compare.h"
 
-namespace edash_packager {
+namespace shaka {
 
 using base::FilePath;
 
@@ -2518,4 +2518,4 @@ TEST(RelativePaths, PathsNotModified) {
   EXPECT_EQ(kSegmentTemplate, media_info.segment_template());
 }
 
-}  // namespace edash_packager
+}  // namespace shaka

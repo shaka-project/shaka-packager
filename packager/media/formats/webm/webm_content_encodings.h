@@ -10,7 +10,7 @@
 
 #include "packager/base/memory/scoped_ptr.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class ContentEncoding {
@@ -84,6 +84,6 @@ class ContentEncoding {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_CONTENT_ENCODINGS_H_

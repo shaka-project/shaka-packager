@@ -11,7 +11,7 @@
 #include "packager/base/location.h"
 #include "packager/base/threading/worker_pool.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 using base::subtle::NoBarrier_Load;
@@ -209,4 +209,4 @@ void ThreadedIoFile::RunInOutputMode() {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

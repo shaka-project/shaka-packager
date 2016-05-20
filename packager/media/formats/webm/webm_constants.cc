@@ -4,7 +4,7 @@
 
 #include "packager/media/formats/webm/webm_constants.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 const char kWebMCodecSubtitles[] = "D_WEBVTT/SUBTITLES";
@@ -13,4 +13,4 @@ const char kWebMCodecDescriptions[] = "D_WEBVTT/DESCRIPTIONS";
 const char kWebMCodecMetadata[] = "D_WEBVTT/METADATA";
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

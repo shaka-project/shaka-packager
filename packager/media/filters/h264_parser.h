@@ -15,7 +15,7 @@
 #include "packager/media/filters/h26x_bit_reader.h"
 #include "packager/media/filters/nalu_reader.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // On success, |coded_width| and |coded_height| contains coded resolution after
@@ -333,6 +333,6 @@ class H264Parser {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FILTERS_H264_PARSER_H_

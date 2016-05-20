@@ -21,7 +21,7 @@ using ::testing::DoAll;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -283,4 +283,4 @@ TEST_F(MP4MediaParserTest, CencWithDecryptionSourceAndSenc) {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

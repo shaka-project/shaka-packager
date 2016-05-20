@@ -13,7 +13,7 @@
 #include "packager/media/filters/h264_parser.h"
 #include "packager/media/filters/h265_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -70,7 +70,7 @@ class H265VideoSliceHeaderParser : public VideoSliceHeaderParser {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_MP4_VIDEO_SLICE_HEADER_PARSER_H_
 

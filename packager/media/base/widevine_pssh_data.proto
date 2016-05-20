@@ -9,7 +9,7 @@
 syntax = "proto2";
 option optimize_for = LITE_RUNTIME;
 
-package edash_packager.media;
+package shaka.media;
 
 message WidevinePsshData {
   enum Algorithm {

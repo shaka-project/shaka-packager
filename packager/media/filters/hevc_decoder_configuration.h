@@ -15,7 +15,7 @@
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/filters/decoder_configuration.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Class for parsing HEVC decoder configuration.
@@ -42,6 +42,6 @@ class HEVCDecoderConfiguration : public DecoderConfiguration {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FILTERS_HEVC_DECODER_CONFIGURATION_H_

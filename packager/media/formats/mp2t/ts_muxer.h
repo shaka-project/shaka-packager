@@ -11,7 +11,7 @@
 #include "packager/media/base/muxer.h"
 #include "packager/media/formats/mp2t/ts_segmenter.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -39,6 +39,6 @@ class TsMuxer : public Muxer {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_FORMATS_MP2T_TS_MUXER_H_

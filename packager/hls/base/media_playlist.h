@@ -15,7 +15,7 @@
 #include "packager/base/stl_util.h"
 #include "packager/mpd/base/media_info.pb.h"
 
-namespace edash_packager {
+namespace shaka {
 
 namespace media {
 class File;
@@ -181,6 +181,6 @@ class MediaPlaylist {
 };
 
 }  // namespace hls
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_

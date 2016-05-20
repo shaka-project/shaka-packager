@@ -19,7 +19,7 @@ bool IsKeySizeValidForAes(size_t key_size) {
 
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 AesCbcDecryptor::AesCbcDecryptor(CbcPaddingScheme padding_scheme)
@@ -159,4 +159,4 @@ void AesCbcDecryptor::SetIvInternal() {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

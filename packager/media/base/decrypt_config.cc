@@ -6,7 +6,7 @@
 
 #include "packager/base/logging.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 DecryptConfig::DecryptConfig(const std::vector<uint8_t>& key_id,
@@ -32,4 +32,4 @@ DecryptConfig::DecryptConfig(const std::vector<uint8_t>& key_id,
 DecryptConfig::~DecryptConfig() {}
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

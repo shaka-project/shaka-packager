@@ -94,7 +94,7 @@ const uint8_t kKeyId[] = {
 
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -699,4 +699,4 @@ TEST_F(TrackRunIteratorTest, UnexpectedOrderingTest) {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

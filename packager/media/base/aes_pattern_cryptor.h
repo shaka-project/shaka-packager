@@ -9,7 +9,7 @@
 #include "packager/base/macros.h"
 #include "packager/base/memory/scoped_ptr.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Implements pattern-based encryption/decryption.
@@ -79,4 +79,4 @@ class AesPatternCryptor : public AesCryptor {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

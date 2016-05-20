@@ -15,7 +15,7 @@
 #include "packager/mpd/base/xml/xml_node.h"
 #include "packager/mpd/test/xml_compare.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace xml {
 
 namespace {
@@ -257,4 +257,4 @@ TEST_F(RepresentationTest, InvalidLiveInitSegmentName) {
 }
 
 }  // namespace xml
-}  // namespace edash_packager
+}  // namespace shaka

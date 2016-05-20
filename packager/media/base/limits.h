@@ -7,7 +7,7 @@
 #ifndef MEDIA_BASE_LIMITS_H_
 #define MEDIA_BASE_LIMITS_H_
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace limits {
@@ -46,6 +46,6 @@ enum {
 }  // namespace limits
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_LIMITS_H_

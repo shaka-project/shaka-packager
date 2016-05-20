@@ -8,7 +8,7 @@
 
 #include "packager/base/logging.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 EncryptionKey::EncryptionKey() {}
@@ -47,4 +47,4 @@ std::string KeySource::TrackTypeToString(TrackType track_type) {
 KeySource::KeySource() {}
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

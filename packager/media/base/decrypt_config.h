@@ -13,7 +13,7 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/fourccs.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// The Common Encryption spec provides for subsample encryption, where portions
@@ -99,6 +99,6 @@ class DecryptConfig {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_DECRYPT_CONFIG_H_

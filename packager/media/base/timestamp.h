@@ -12,13 +12,13 @@
 
 #include <limits>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 const int64_t kNoTimestamp = std::numeric_limits<int64_t>::min();
 const int64_t kInfiniteDuration = std::numeric_limits<int64_t>::max();
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_TIMESTAMP_H_

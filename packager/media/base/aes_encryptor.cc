@@ -29,7 +29,7 @@ bool IsKeySizeValidForAes(size_t key_size) {
 
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 AesEncryptor::AesEncryptor(ConstantIvFlag constant_iv_flag)
@@ -196,4 +196,4 @@ size_t AesCbcEncryptor::NumPaddingBytes(size_t size) const {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

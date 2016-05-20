@@ -17,7 +17,7 @@
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/segment_info.h"
 
-namespace edash_packager {
+namespace shaka {
 
 using xml::XmlNode;
 typedef MediaInfo::AudioInfo AudioInfo;
@@ -376,4 +376,4 @@ void RepresentationXmlNode::AddAudioSamplingRateInfo(
 }
 
 }  // namespace xml
-}  // namespace edash_packager
+}  // namespace shaka

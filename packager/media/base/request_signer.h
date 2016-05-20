@@ -11,7 +11,7 @@
 
 #include "packager/base/memory/scoped_ptr.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class AesCbcEncryptor;
@@ -87,6 +87,6 @@ class RsaRequestSigner : public RequestSigner {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_REQUEST_SIGNER_H_

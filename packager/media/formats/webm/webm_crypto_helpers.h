@@ -10,7 +10,7 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/decrypt_config.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Fills an initialized DecryptConfig, which can be sent to the Decryptor if
@@ -29,6 +29,6 @@ bool WebMCreateDecryptConfig(const uint8_t* data,
                              int* data_offset);
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_CRYPT_HELPERS_H_

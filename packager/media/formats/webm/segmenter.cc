@@ -19,7 +19,7 @@
 #include "packager/third_party/libwebm/src/mkvmuxerutil.hpp"
 #include "packager/third_party/libwebm/src/webmids.hpp"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace webm {
 namespace {
@@ -412,4 +412,4 @@ Status Segmenter::WriteFrame(bool write_duration) {
 
 }  // namespace webm
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

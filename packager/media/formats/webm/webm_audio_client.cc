@@ -12,7 +12,7 @@ namespace {
 const uint32_t kWebMTimeScale = 1000000u;
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 WebMAudioClient::WebMAudioClient() {
@@ -117,4 +117,4 @@ bool WebMAudioClient::OnFloat(int id, double val) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

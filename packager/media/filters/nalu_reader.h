@@ -13,7 +13,7 @@
 #include "packager/base/compiler_specific.h"
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // Used as the |nalu_length_size| argument to NaluReader to indicate to use
@@ -212,6 +212,6 @@ class NaluReader {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FILTERS_NALU_READER_H_

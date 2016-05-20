@@ -10,7 +10,7 @@
 #include "packager/media/filters/avc_decoder_configuration.h"
 #include "packager/media/filters/hevc_decoder_configuration.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -92,5 +92,5 @@ int64_t H265VideoSliceHeaderParser::GetHeaderSize(const Nalu& nalu) {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 

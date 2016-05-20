@@ -94,7 +94,7 @@ bool IsFitIn32Bits(T1 a1, T2 a2, T3 a3) {
 
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -2690,4 +2690,4 @@ uint32_t VTTCueBox::ComputeSizeInternal() {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

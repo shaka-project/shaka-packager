@@ -9,7 +9,7 @@
 #include "packager/base/stl_util.h"
 #include "packager/media/base/buffer_reader.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // Implemented according to ISO/IEC 14496-10:2005 7.4.2.1 Sequence parameter set
@@ -1174,4 +1174,4 @@ H264Parser::Result H264Parser::ParseSEI(const Nalu& nalu,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

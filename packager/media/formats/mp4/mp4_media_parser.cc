@@ -29,7 +29,7 @@
 #include "packager/media/formats/mp4/es_descriptor.h"
 #include "packager/media/formats/mp4/track_run_iterator.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 namespace {
@@ -763,4 +763,4 @@ void MP4MediaParser::ChangeState(State new_state) {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -12,7 +12,7 @@
 #include "packager/base/strings/string_util.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
-namespace edash_packager {
+namespace shaka {
 
 namespace {
 xml::scoped_xml_ptr<xmlDoc> GetDocFromString(const std::string& xml_str) {
@@ -168,4 +168,4 @@ bool XmlEqual(xmlDocPtr xml1, xmlDocPtr xml2) {
   return CompareNodes(xml1_root_element, xml2_root_element);
 }
 
-}  // namespace edash_packager
+}  // namespace shaka

@@ -8,7 +8,7 @@
 
 #include <gtest/gtest.h>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 TEST(AVCDecoderConfigurationTest, Success) {
@@ -61,4 +61,4 @@ TEST(AVCDecoderConfigurationTest, GetCodecString) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

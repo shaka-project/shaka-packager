@@ -14,7 +14,7 @@
 #include "packager/base/compiler_specific.h"
 #include "packager/media/base/media_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // If comment is not empty, then this is metadata and other fields must
@@ -80,6 +80,6 @@ class WebVttMediaParser : public MediaParser {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBVTT_WEBVTT_MEDIA_PARSER_H_

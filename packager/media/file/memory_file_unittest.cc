@@ -9,7 +9,7 @@
 #include "packager/media/file/file_closer.h"
 #include "packager/media/file/memory_file.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace {
 
@@ -112,4 +112,4 @@ TEST_F(MemoryFileTest, WriteExistingFileDeletes) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

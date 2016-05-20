@@ -9,7 +9,7 @@
 #include "packager/base/compiler_specific.h"
 #include "packager/media/formats/mp2t/ts_section_psi.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -36,7 +36,7 @@ class TsSectionPat : public TsSectionPsi {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif
 

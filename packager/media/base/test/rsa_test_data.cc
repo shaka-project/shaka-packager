@@ -445,7 +445,7 @@ const uint8_t kTestSignature_2048[] = {
 
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 RsaTestSet::RsaTestSet() {}
@@ -481,4 +481,4 @@ RsaTestData::RsaTestData() {
 RsaTestData::~RsaTestData() {}
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

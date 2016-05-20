@@ -12,7 +12,7 @@
 
 #include "packager/mpd/base/media_info.pb.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace hls {
 
 // TODO(rkuroiwa): Consider merging this with MpdNotifier.
@@ -84,5 +84,5 @@ class HlsNotifier {
 };
 
 }  // namespace hls
-}  // namespace edash_packager
+}  // namespace shaka
 #endif  // PACKAGER_HLS_BASE_HLS_NOTIFIER_H_

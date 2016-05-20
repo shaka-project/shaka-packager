@@ -10,7 +10,7 @@
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/media_sample.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace webm {
 namespace {
@@ -130,4 +130,4 @@ Status Encryptor::CreateEncryptor(MuxerListener* muxer_listener,
 
 }  // namespace webm
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

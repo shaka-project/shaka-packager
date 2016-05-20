@@ -11,7 +11,7 @@
 #include "packager/media/base/aes_decryptor.h"
 #include "packager/media/base/aes_pattern_cryptor.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 DecryptorSource::DecryptorSource(KeySource* key_source)
@@ -114,4 +114,4 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

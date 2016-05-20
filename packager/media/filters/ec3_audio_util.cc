@@ -8,7 +8,7 @@
 #include "packager/media/base/rcheck.h"
 #include "packager/media/filters/ec3_audio_util.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -152,4 +152,4 @@ bool CalculateEC3ChannelMap(const std::vector<uint8_t>& ec3_data, uint32_t* chan
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

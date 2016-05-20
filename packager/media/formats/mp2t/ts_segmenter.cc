@@ -16,7 +16,7 @@
 #include "packager/media/event/muxer_listener.h"
 #include "packager/media/event/progress_listener.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -191,4 +191,4 @@ Status TsSegmenter::NotifyEncrypted() {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

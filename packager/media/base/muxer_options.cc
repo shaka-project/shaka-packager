@@ -7,7 +7,7 @@
 #include "packager/media/base/muxer_options.h"
 #include "packager/version/version.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 MuxerOptions::MuxerOptions()
@@ -22,4 +22,4 @@ MuxerOptions::MuxerOptions()
 MuxerOptions::~MuxerOptions() {}
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

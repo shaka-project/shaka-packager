@@ -9,7 +9,7 @@
 
 #include "packager/media/base/byte_queue.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Wrapper around ByteQueue, which encapsulates the notion of a
@@ -67,6 +67,6 @@ class OffsetByteQueue {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_OFFSET_BYTE_QUEUE_H_

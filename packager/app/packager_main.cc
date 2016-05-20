@@ -47,7 +47,7 @@ DEFINE_bool(use_fake_clock_for_muxer,
             "creation time and modification time in outputs are set to 0. "
             "Should only be used for testing.");
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace {
 
@@ -483,8 +483,8 @@ int PackagerMain(int argc, char** argv) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 int main(int argc, char** argv) {
-  return edash_packager::media::PackagerMain(argc, argv);
+  return shaka::media::PackagerMain(argc, argv);
 }

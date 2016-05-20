@@ -8,7 +8,7 @@
 #include "packager/media/test/test_data_util.h"
 #include "packager/media/filters/h264_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 TEST(H264ParserTest, StreamFileParsing) {
@@ -116,4 +116,4 @@ TEST(H264ParserTest, ExtractResolutionFromSpsDataWithCropping) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

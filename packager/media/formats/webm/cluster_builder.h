@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include "packager/base/memory/scoped_ptr.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class Cluster {
@@ -79,6 +79,6 @@ class ClusterBuilder {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_CLUSTER_BUILDER_H_

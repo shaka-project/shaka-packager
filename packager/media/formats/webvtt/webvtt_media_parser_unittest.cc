@@ -12,7 +12,7 @@
 #include "packager/media/base/stream_info.h"
 #include "packager/media/formats/webvtt/webvtt_media_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 typedef testing::MockFunction<void(const std::vector<scoped_refptr<StreamInfo>>&
@@ -315,4 +315,4 @@ TEST_F(WebVttMediaParserTest, NoTimingAfterIdentifier) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

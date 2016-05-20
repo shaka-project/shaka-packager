@@ -6,7 +6,7 @@
 
 #include "packager/media/filters/h26x_bit_reader.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 TEST(H26xBitReaderTest, ReadStreamWithoutEscapeAndTrailingZeroBytes) {
@@ -113,4 +113,4 @@ TEST(H26xBitReaderTest, StopBitOccupyFullByte) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

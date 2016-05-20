@@ -17,7 +17,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/text_stream_info.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -389,4 +389,4 @@ bool WebVttMediaParser::Parse(const uint8_t* buf, int size) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

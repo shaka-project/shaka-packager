@@ -11,7 +11,7 @@
 
 #include "packager/media/formats/mp4/box_definitions.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 inline bool operator==(const SubsampleEntry& lhs, const SubsampleEntry& rhs) {
@@ -497,6 +497,6 @@ inline bool operator==(const VTTCueBox& lhs,
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_MP4_BOX_DEFINITIONS_COMPARISON_H_

@@ -16,7 +16,7 @@
 #include "packager/hls/base/master_playlist.h"
 #include "packager/hls/base/media_playlist.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace hls {
 
 /// For testing.
@@ -89,6 +89,6 @@ class SimpleHlsNotifier : public HlsNotifier {
 };
 
 }  // namespace hls
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_HLS_BASE_SIMPLE_HLS_NOTIFIER_H_

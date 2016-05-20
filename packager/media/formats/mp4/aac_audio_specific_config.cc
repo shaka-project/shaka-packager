@@ -22,7 +22,7 @@ const uint8_t kChannelConfigs[] = {0, 1, 2, 3, 4, 5, 6, 8};
 
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace mp4 {
@@ -263,4 +263,4 @@ bool AACAudioSpecificConfig::SkipGASpecificConfig(BitReader* bit_reader) const {
 }  // namespace mp4
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 enum {
@@ -22,6 +22,6 @@ extern const int kAdtsNumChannelsTable[];
 extern const size_t kAdtsNumChannelsTableSize;
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_MPEG_ADTS_CONSTANTS_H_

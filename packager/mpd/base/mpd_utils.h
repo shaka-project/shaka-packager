@@ -20,7 +20,7 @@
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_builder.h"
 
-namespace edash_packager {
+namespace shaka {
 
 class MediaInfo;
 struct ContentProtectionElement;
@@ -91,6 +91,6 @@ void AddContentProtectionElements(const MediaInfo& media_info,
 void AddContentProtectionElements(const MediaInfo& media_info,
                                   AdaptationSet* parent);
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MPD_BASE_MPD_UTILS_H_

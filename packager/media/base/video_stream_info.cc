@@ -13,7 +13,7 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/base/limits.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -99,4 +99,4 @@ std::string VideoStreamInfo::ToString() const {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -12,7 +12,7 @@
 #include "packager/media/event/muxer_listener.h"
 #include "packager/media/formats/mp4/encrypting_fragmenter.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -76,6 +76,6 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_MP4_KEY_ROTATION_FRAGMENTER_H_

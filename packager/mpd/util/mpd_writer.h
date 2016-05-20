@@ -18,7 +18,7 @@
 #include "packager/mpd/base/mpd_notifier.h"
 #include "packager/mpd/base/mpd_options.h"
 
-namespace edash_packager {
+namespace shaka {
 
 namespace media {
 class File;
@@ -87,6 +87,6 @@ class MpdWriter {
   DISALLOW_COPY_AND_ASSIGN(MpdWriter);
 };
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MPD_UTIL_MPD_WRITER_H_

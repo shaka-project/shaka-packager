@@ -3,7 +3,7 @@
 
 syntax = "proto2";
 
-package edash_packager;
+package shaka;
 
 message Range {
   optional uint64 begin = 1;

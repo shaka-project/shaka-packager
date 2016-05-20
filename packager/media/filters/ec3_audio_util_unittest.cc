@@ -9,7 +9,7 @@
 #include "packager/base/macros.h"
 #include "packager/media/filters/ec3_audio_util.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 TEST(EC3AudioUtilTest, CalculateEC3ChannelMapTest1) {
@@ -47,4 +47,4 @@ TEST(EC3AudioUtilTest, CalculateEC3ChannelMapTest3) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

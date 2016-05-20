@@ -26,7 +26,7 @@ const int64_t kint64 = -10000000000LL;
 const uint8_t kuint8Array[] = {10, 1, 100, 5, 3, 60};
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class BufferWriterTest : public testing::Test {
@@ -185,4 +185,4 @@ TEST_F(BufferWriterTest, WriteToFile) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

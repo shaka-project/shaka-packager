@@ -15,7 +15,7 @@
 #include "packager/media/base/key_fetcher.h"
 #include "packager/media/base/status.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// A KeyFetcher implementation that retrieves keys over HTTP(s).
@@ -70,6 +70,6 @@ class HttpKeyFetcher : public KeyFetcher {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_HTTP_KEY_FETCHER_H_

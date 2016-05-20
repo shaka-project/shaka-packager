@@ -18,7 +18,7 @@ using ::testing::StrictMock;
 using ::testing::Mock;
 using ::testing::_;
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace {
 
@@ -170,4 +170,4 @@ TEST_F(DecryptorSourceTest, DecryptFailedIfGetKeyFailed) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

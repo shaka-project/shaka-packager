@@ -10,7 +10,7 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/formats/webm/segmenter_test_base.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace {
 
@@ -263,5 +263,5 @@ INSTANTIATE_TEST_CASE_P(TrueIsTwoPass,
                         ::testing::Bool());
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 

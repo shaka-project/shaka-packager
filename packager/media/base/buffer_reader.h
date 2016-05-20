@@ -15,7 +15,7 @@
 #include "packager/base/compiler_specific.h"
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// A simple buffer reader implementation, which reads data of various types
@@ -80,6 +80,6 @@ class BufferReader {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_BUFFER_READER_H_

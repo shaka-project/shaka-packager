@@ -13,7 +13,7 @@
 #include "packager/media/base/status.h"
 #include "packager/media/formats/webm/mkv_writer.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 struct MuxerOptions;
@@ -53,6 +53,6 @@ class MultiSegmentSegmenter : public Segmenter {
 
 }  // namespace webm
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_MULTI_SEGMENT_SEGMENTER_H_

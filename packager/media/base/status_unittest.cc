@@ -10,7 +10,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/base/status.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 static void CheckStatus(const Status& s,
@@ -167,4 +167,4 @@ TEST(Status, EqualsDifferentMessage) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

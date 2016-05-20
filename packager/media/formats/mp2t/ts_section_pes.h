@@ -12,7 +12,7 @@
 #include "packager/media/base/byte_queue.h"
 #include "packager/media/formats/mp2t/ts_section.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -62,7 +62,7 @@ class TsSectionPes : public TsSection {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif
 

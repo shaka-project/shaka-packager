@@ -6,7 +6,7 @@
 
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // The following conversion table is extracted from ISO 14496 Part 3 -
@@ -23,4 +23,4 @@ const int kAdtsNumChannelsTable[] = {
 const size_t kAdtsNumChannelsTableSize = arraysize(kAdtsNumChannelsTable);
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

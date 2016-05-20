@@ -13,7 +13,7 @@
 #include "packager/base/macros.h"
 #include "packager/base/memory/ref_counted.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class BufferWriter;
@@ -71,6 +71,6 @@ class NalUnitToByteStreamConverter {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_FILTERS_NAL_UNIT_TO_BYTE_STREAM_CONVERTER_H_

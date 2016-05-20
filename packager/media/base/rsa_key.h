@@ -17,7 +17,7 @@
 struct rsa_st;
 typedef struct rsa_st RSA;
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Rsa private key, used for message signing and decryption.
@@ -79,6 +79,6 @@ class RsaPublicKey {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_RSA_KEY_H_

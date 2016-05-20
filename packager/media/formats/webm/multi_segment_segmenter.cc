@@ -13,7 +13,7 @@
 #include "packager/media/event/muxer_listener.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace webm {
 MultiSegmentSegmenter::MultiSegmentSegmenter(const MuxerOptions& options)
@@ -91,4 +91,4 @@ Status MultiSegmentSegmenter::NewSegment(uint64_t start_timescale) {
 
 }  // namespace webm
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

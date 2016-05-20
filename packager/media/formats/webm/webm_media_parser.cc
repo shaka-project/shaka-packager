@@ -17,7 +17,7 @@
 #include "packager/media/formats/webm/webm_info_parser.h"
 #include "packager/media/formats/webm/webm_tracks_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 WebMMediaParser::WebMMediaParser()
@@ -261,4 +261,4 @@ bool WebMMediaParser::FetchKeysIfNecessary(
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

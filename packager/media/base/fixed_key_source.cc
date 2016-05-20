@@ -9,7 +9,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 FixedKeySource::~FixedKeySource() {}
@@ -141,4 +141,4 @@ FixedKeySource::FixedKeySource(scoped_ptr<EncryptionKey> key)
     : encryption_key_(key.Pass()) {}
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

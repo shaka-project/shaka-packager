@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 enum FourCC : uint32_t {
@@ -153,6 +153,6 @@ const inline std::string FourCCToString(FourCC fourcc) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_BASE_FOURCCS_H_

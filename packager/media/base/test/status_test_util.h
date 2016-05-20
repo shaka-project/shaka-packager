@@ -11,13 +11,13 @@
 
 #include "packager/media/base/status.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 #define EXPECT_OK(val) EXPECT_EQ(Status::OK, (val))
 #define ASSERT_OK(val) ASSERT_EQ(Status::OK, (val))
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_STATUS_TEST_UTIL_H_

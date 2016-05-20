@@ -9,7 +9,7 @@
 #include "packager/base/macros.h"
 #include "packager/media/base/protection_system_specific_info.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -137,4 +137,4 @@ TEST_F(PsshTest, CreateBox_MakesV1Boxes) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

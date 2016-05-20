@@ -14,7 +14,7 @@
 
 #include "packager/media/filters/h26x_byte_to_unit_stream_converter.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Class which converts H.265 byte streams (as specified in ISO/IEC 14496-10
@@ -41,6 +41,6 @@ class H265ByteToUnitStreamConverter : public H26xByteToUnitStreamConverter {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FILTERS_H265_BYTE_TO_UNIT_STREAM_CONVERTER_H_

@@ -16,7 +16,7 @@
 
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 
 class MediaInfo;
 struct ContentProtectionElement;
@@ -113,6 +113,6 @@ class MpdNotifier {
   DISALLOW_COPY_AND_ASSIGN(MpdNotifier);
 };
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MPD_BASE_MPD_NOTIFIER_H_

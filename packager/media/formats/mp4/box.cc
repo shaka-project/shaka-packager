@@ -9,7 +9,7 @@
 #include "packager/base/logging.h"
 #include "packager/media/formats/mp4/box_buffer.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -94,4 +94,4 @@ bool FullBox::ReadWriteHeaderInternal(BoxBuffer* buffer) {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

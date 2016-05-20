@@ -15,7 +15,7 @@
 #include "packager/media/formats/webm/seek_head.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 struct MuxerOptions;
@@ -163,6 +163,6 @@ class Segmenter {
 
 }  // namespace webm
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_SEGMENTER_H_

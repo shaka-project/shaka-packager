@@ -19,7 +19,7 @@
 #include "packager/mpd/base/mpd_notifier_util.h"
 #include "packager/mpd/base/mpd_options.h"
 
-namespace edash_packager {
+namespace shaka {
 
 /// This class is an MpdNotifier which will try its best to generate a
 /// DASH IF IOPv3 compliant MPD.
@@ -111,6 +111,6 @@ class DashIopMpdNotifier : public MpdNotifier {
   std::map<uint32_t, AdaptationSet*> representation_id_to_adaptation_set_;
 };
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MPD_BASE_DASH_IOP_MPD_NOTIFIER_H_

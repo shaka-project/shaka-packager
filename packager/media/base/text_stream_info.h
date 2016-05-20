@@ -11,7 +11,7 @@
 
 #include <string>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class TextStreamInfo : public StreamInfo {
@@ -52,6 +52,6 @@ class TextStreamInfo : public StreamInfo {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_BASE_TEXT_STREAM_INFO_H_

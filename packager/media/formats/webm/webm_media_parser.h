@@ -11,7 +11,7 @@
 #include "packager/media/base/byte_queue.h"
 #include "packager/media/base/media_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class WebMClusterParser;
@@ -78,6 +78,6 @@ class WebMMediaParser : public MediaParser {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_MEDIA_PARSER_H_

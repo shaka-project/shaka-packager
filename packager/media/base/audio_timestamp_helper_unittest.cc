@@ -7,7 +7,7 @@
 #include "packager/media/base/audio_timestamp_helper.h"
 #include "packager/media/base/timestamp.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 static const uint32_t kDefaultSampleRate = 44100;
@@ -122,4 +122,4 @@ TEST_F(AudioTimestampHelperTest, GetFramesToTarget) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

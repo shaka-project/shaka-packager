@@ -12,7 +12,7 @@
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/filters/h264_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -332,4 +332,4 @@ bool NaluReader::LocateNaluByStartCode(uint64_t* nalu_size,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

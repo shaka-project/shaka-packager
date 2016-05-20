@@ -18,7 +18,7 @@
 #include "packager/media/filters/ec3_audio_util.h"
 #include "packager/mpd/base/media_info.pb.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace internal {
 
@@ -255,4 +255,4 @@ std::string CreateUUIDString(const std::vector<uint8_t>& data) {
 
 }  // namespace internal
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

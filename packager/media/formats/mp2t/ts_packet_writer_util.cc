@@ -10,7 +10,7 @@
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/formats/mp2t/continuity_counter.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -162,4 +162,4 @@ void WritePayloadToBufferWriter(const uint8_t* payload,
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

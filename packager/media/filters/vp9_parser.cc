@@ -10,7 +10,7 @@
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/base/rcheck.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace {
 
@@ -557,4 +557,4 @@ bool VP9Parser::IsKeyframe(const uint8_t* data, size_t data_size) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

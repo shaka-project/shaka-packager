@@ -5,7 +5,7 @@
 
 #include <string>
 
-namespace edash_packager {
+namespace shaka {
 
 /// Checks whether the XMLs are equivalent. An XML schema can specify strict
 /// ordering of children and MPD does. These functions are currently tuned to
@@ -19,6 +19,6 @@ bool XmlEqual(const std::string& xml1, const std::string& xml2);
 bool XmlEqual(const std::string& xml1, xmlDocPtr xml2);
 bool XmlEqual(xmlDocPtr xml1, xmlDocPtr xml2);
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MPD_TEST_XML_COMPARE_H_

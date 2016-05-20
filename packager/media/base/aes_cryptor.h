@@ -17,7 +17,7 @@
 struct aes_key_st;
 typedef struct aes_key_st AES_KEY;
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // AES cryptor interface. Inherited by various AES encryptor and decryptor
@@ -132,7 +132,7 @@ class AesCryptor {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_BASE_AES_CRYPTOR_H_
 

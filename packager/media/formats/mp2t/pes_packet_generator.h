@@ -16,7 +16,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/stream_info.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class NalUnitToByteStreamConverter;
@@ -96,6 +96,6 @@ class PesPacketGenerator {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_FORMATS_MP2T_PES_PACKET_GENERATOR_H_

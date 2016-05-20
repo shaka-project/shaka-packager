@@ -14,7 +14,7 @@
 #include "packager/base/macros.h"
 #include "packager/media/filters/decoder_configuration.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Class for parsing AVC decoder configuration.
@@ -59,6 +59,6 @@ class AVCDecoderConfiguration : public DecoderConfiguration {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FILTERS_AVC_DECODER_CONFIGURATION_H_

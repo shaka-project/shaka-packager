@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -43,4 +43,4 @@ bool SyncSampleIterator::IsSyncSample(uint32_t sample) const {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

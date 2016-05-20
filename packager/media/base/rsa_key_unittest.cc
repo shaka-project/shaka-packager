@@ -19,7 +19,7 @@ namespace {
 const bool kIsFakePrngSupported = false;
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class RsaKeyTest : public ::testing::TestWithParam<RsaTestSet> {
@@ -160,4 +160,4 @@ INSTANTIATE_TEST_CASE_P(RsaTestKeys,
                                           RsaTestData().test_set_2048_bits()));
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

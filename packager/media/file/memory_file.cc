@@ -13,7 +13,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/memory/scoped_ptr.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace {
 
@@ -136,5 +136,5 @@ void MemoryFile::Delete(const std::string& file_name) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 

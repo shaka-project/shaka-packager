@@ -9,7 +9,7 @@
 #include "packager/base/time/time.h"
 #include "packager/media/formats/webm/webm_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Parser for WebM Info element.
@@ -45,6 +45,6 @@ class WebMInfoParser : public WebMParserClient {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_INFO_PARSER_H_

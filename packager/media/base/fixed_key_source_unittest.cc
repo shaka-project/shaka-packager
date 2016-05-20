@@ -18,7 +18,7 @@
     EXPECT_EQ(decoded_, (actual));                              \
   } while (false)
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -96,4 +96,4 @@ TEST(FixedKeySourceTest, CreateFromHexStrings_Failure) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

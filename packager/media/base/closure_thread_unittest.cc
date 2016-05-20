@@ -28,7 +28,7 @@ class MockOperation {
 
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class ClosureThreadTest : public ::testing::Test {
@@ -121,4 +121,4 @@ TEST_F(ClosureThreadTest, DISABLED_NotStarted) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

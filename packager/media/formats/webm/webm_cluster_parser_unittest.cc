@@ -29,7 +29,7 @@ using ::testing::StrictMock;
 using ::testing::Mock;
 using ::testing::_;
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 typedef WebMTracksParser::TextTracks TextTracks;
@@ -1120,4 +1120,4 @@ TEST_F(WebMClusterParserTest,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

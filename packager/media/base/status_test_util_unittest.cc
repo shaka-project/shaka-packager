@@ -8,7 +8,7 @@
 
 #include "packager/media/base/test/status_test_util.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 TEST(StatusTestUtil, ExpectOkSuccess) {
@@ -30,4 +30,4 @@ TEST(StatusTestUtil, AssertOkFailure) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

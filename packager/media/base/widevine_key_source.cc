@@ -22,7 +22,7 @@
 #include "packager/media/base/request_signer.h"
 #include "packager/media/base/widevine_pssh_data.pb.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace {
 
 const bool kEnableKeyRotation = true;
@@ -616,4 +616,4 @@ bool WidevineKeySource::PushToKeyPool(
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

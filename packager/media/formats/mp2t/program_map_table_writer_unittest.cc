@@ -12,7 +12,7 @@
 #include "packager/media/formats/mp2t/continuity_counter.h"
 #include "packager/media/formats/mp2t/program_map_table_writer.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -399,4 +399,4 @@ TEST_F(ProgramMapTableWriterTest, EncryptedSegmentsAacPmt) {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

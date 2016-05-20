@@ -6,7 +6,7 @@
 
 #include "packager/base/logging.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // Default starting size for the queue.
@@ -85,4 +85,4 @@ uint8_t* ByteQueue::front() const {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

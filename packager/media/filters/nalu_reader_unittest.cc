@@ -8,7 +8,7 @@
 
 #include "packager/media/filters/nalu_reader.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 TEST(NaluReaderTest, StartCodeSearch) {
@@ -188,4 +188,4 @@ TEST(NaluReaderTest, ErrorForZeroSize) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

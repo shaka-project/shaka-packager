@@ -16,7 +16,7 @@
 #include <string>
 #include <vector>
 
-namespace edash_packager {
+namespace shaka {
 
 // This is any (XML) element.
 struct Element {
@@ -47,6 +47,6 @@ struct ContentProtectionElement {
   std::vector<Element> subelements;
 };
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MPD_BASE_CONTENT_PROTECTION_ELEMENT_H_

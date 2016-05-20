@@ -19,7 +19,7 @@
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/event/muxer_listener.h"
 
-namespace edash_packager {
+namespace shaka {
 
 class MediaInfo;
 
@@ -81,6 +81,6 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_

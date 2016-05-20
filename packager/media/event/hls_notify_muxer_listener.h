@@ -12,7 +12,7 @@
 #include "packager/base/macros.h"
 #include "packager/media/event/muxer_listener.h"
 
-namespace edash_packager {
+namespace shaka {
 
 namespace hls {
 class HlsNotifier;
@@ -65,5 +65,5 @@ class HlsNotifyMuxerListener : public MuxerListener {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 #endif  // PACKAGER_MEDIA_EVENT_HLS_NOTIFY_MUXER_LISTENER_H_

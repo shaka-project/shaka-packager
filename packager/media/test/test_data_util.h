@@ -11,7 +11,7 @@
 
 #include "packager/base/files/file_path.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // Returns a file path for a file in the media/test/data directory.
@@ -21,6 +21,6 @@ base::FilePath GetTestDataFilePath(const std::string& name);
 std::vector<uint8_t> ReadTestDataFile(const std::string& name);
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_TEST_TEST_DATA_UTIL_H_

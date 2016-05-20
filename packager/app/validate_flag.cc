@@ -12,7 +12,7 @@
 
 #include "packager/base/strings/stringprintf.h"
 
-namespace edash_packager {
+namespace shaka {
 
 bool ValidateFlag(const char* flag_name,
                   const std::string& flag_value,
@@ -37,4 +37,4 @@ void PrintError(const std::string& error_message) {
   fprintf(stderr, "ERROR: %s\n", error_message.c_str());
 }
 
-}  // namespace edash_packager
+}  // namespace shaka

@@ -15,7 +15,7 @@
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 #include "packager/mpd/util/mpd_writer.h"
 
-namespace edash_packager {
+namespace shaka {
 
 using ::testing::_;
 using ::testing::Invoke;
@@ -102,4 +102,4 @@ TEST_F(MpdWriterTest, WriteMpdToFile) {
   EXPECT_TRUE(mpd_writer_.WriteMpdToFile(mpd_file_path.value().c_str()));
 }
 
-}  // namespace edash_packager
+}  // namespace shaka

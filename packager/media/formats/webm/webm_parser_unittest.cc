@@ -17,7 +17,7 @@ using ::testing::StrEq;
 using ::testing::StrictMock;
 using ::testing::_;
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 enum { kBlockCount = 5 };
@@ -410,4 +410,4 @@ TEST_F(WebMParserTest, ZeroPaddedStrings) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

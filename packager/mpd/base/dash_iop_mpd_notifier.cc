@@ -10,7 +10,7 @@
 #include "packager/mpd/base/mpd_notifier_util.h"
 #include "packager/mpd/base/mpd_utils.h"
 
-namespace edash_packager {
+namespace shaka {
 
 namespace {
 
@@ -282,4 +282,4 @@ AdaptationSet* DashIopMpdNotifier::NewAdaptationSet(
   return new_adaptation_set;
 }
 
-}  // namespace edash_packager
+}  // namespace shaka

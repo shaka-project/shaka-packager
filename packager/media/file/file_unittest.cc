@@ -17,7 +17,7 @@ namespace {
 const int kDataSize = 1024;
 }
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class LocalFileTest : public testing::Test {
@@ -280,4 +280,4 @@ TEST_F(LocalFileTest, DISABLED_ReadSeekOutOfBounds) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

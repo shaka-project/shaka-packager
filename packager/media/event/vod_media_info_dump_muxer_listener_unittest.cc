@@ -34,7 +34,7 @@ const uint8_t kBogusIv[] = {
 const bool kInitialEncryptionInfo = true;
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -234,4 +234,4 @@ TEST_F(VodMediaInfoDumpMuxerListenerTest, CheckPixelWidthAndHeightSet) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

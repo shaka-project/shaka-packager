@@ -16,7 +16,7 @@
 #include "packager/media/formats/mp2t/es_parser_h264.h"
 #include "packager/media/test/test_data_util.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 class VideoStreamInfo;
 
@@ -297,4 +297,4 @@ TEST_F(EsParserH264Test, PixelWidthPixelHeight) {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

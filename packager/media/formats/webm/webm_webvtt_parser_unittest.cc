@@ -9,7 +9,7 @@
 
 using ::testing::InSequence;
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 typedef std::vector<uint8_t> Cue;
@@ -105,4 +105,4 @@ TEST_F(WebMWebVTTParserTest, Content) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

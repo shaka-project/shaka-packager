@@ -13,7 +13,7 @@
 #include "packager/hls/base/media_playlist.h"
 #include "packager/media/base/widevine_pssh_data.pb.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace hls {
 
 namespace {
@@ -173,4 +173,4 @@ bool SimpleHlsNotifier::Flush() {
 }
 
 }  // namespace hls
-}  // namespace edash_packager
+}  // namespace shaka

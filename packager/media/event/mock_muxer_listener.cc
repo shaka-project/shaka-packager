@@ -6,11 +6,11 @@
 
 #include "packager/media/event/mock_muxer_listener.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 MockMuxerListener::MockMuxerListener() {}
 MockMuxerListener::~MockMuxerListener() {}
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

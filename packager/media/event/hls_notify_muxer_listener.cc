@@ -13,7 +13,7 @@
 #include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/event/muxer_listener_internal.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 HlsNotifyMuxerListener::HlsNotifyMuxerListener(const std::string& playlist_name,
@@ -78,4 +78,4 @@ void HlsNotifyMuxerListener::OnNewSegment(const std::string& file_name,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

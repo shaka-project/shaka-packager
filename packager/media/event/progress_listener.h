@@ -13,7 +13,7 @@
 
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// This class listens to progress updates events.
@@ -33,6 +33,6 @@ class ProgressListener {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_EVENT_PROGRESS_LISTENER_H_

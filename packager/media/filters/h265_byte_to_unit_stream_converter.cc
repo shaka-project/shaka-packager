@@ -13,7 +13,7 @@
 #include "packager/media/base/rcheck.h"
 #include "packager/media/filters/h265_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 H265ByteToUnitStreamConverter::H265ByteToUnitStreamConverter()
@@ -121,4 +121,4 @@ bool H265ByteToUnitStreamConverter::ProcessNalu(const Nalu& nalu) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

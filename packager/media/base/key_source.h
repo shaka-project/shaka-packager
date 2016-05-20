@@ -14,7 +14,7 @@
 #include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/status.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 struct EncryptionKey {
@@ -96,6 +96,6 @@ class KeySource {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_KEY_SOURCE_H_

@@ -13,7 +13,7 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/file/file.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace hls {
 
 namespace {
@@ -337,4 +337,4 @@ bool MediaPlaylist::SetTargetDuration(uint32_t target_duration) {
 }
 
 }  // namespace hls
-}  // namespace edash_packager
+}  // namespace shaka

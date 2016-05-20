@@ -12,7 +12,7 @@
 #include "packager/media/base/rcheck.h"
 #include "packager/media/filters/h264_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 AVCDecoderConfiguration::AVCDecoderConfiguration()
@@ -104,4 +104,4 @@ std::string AVCDecoderConfiguration::GetCodecString(
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

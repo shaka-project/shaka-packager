@@ -22,7 +22,7 @@ bool InSyncSamples(uint32_t sample) {
 }
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -58,4 +58,4 @@ TEST(SyncSampleIteratorTest, SyncSample) {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -17,7 +17,7 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/base/video_stream_info.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace {
 bool ValidateFormatTag(const std::string& format_tag) {
   DCHECK(!format_tag.empty());
@@ -171,4 +171,4 @@ KeySource::TrackType GetTrackTypeForEncryption(const StreamInfo& stream_info,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

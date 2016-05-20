@@ -13,7 +13,7 @@
 #include "packager/media/base/rcheck.h"
 #include "packager/base/strings/stringprintf.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace {
 
@@ -118,4 +118,4 @@ std::string VPCodecConfiguration::GetCodecString(VideoCodec codec) const {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

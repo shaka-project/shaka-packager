@@ -9,7 +9,7 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/formats/webm/segmenter_test_base.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace {
 
@@ -245,5 +245,5 @@ TEST_F(MultiSegmentSegmenterTest, RespectsFragmentSAPAlign) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 

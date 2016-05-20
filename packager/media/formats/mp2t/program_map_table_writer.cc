@@ -15,7 +15,7 @@
 #include "packager/media/formats/mp2t/ts_packet_writer_util.h"
 #include "packager/media/formats/mp4/aac_audio_specific_config.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -409,4 +409,4 @@ bool AacProgramMapTableWriter::EncryptedSegmentPmtWithParameters(
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

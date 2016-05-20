@@ -15,7 +15,7 @@
 #include "packager/media/base/closure_thread.h"
 #include "packager/media/base/key_source.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 class KeyFetcher;
 class RequestSigner;
@@ -125,6 +125,6 @@ class WidevineKeySource : public KeySource {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_WIDEVINE_KEY_SOURCE_H_

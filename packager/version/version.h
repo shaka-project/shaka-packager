@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-namespace edash_packager {
+namespace shaka {
 
 extern const char kPackagerVersion[];
 
-}  // namespace edash_packager
+}  // namespace shaka

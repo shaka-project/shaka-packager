@@ -11,7 +11,7 @@
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/rcheck.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -157,4 +157,4 @@ std::string HEVCDecoderConfiguration::GetCodecString(VideoCodec codec) const {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

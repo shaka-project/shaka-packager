@@ -12,7 +12,7 @@
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/filters/h264_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 H264ByteToUnitStreamConverter::H264ByteToUnitStreamConverter()
@@ -77,4 +77,4 @@ bool H264ByteToUnitStreamConverter::ProcessNalu(const Nalu& nalu) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

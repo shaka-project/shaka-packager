@@ -4,7 +4,7 @@
 
 #include "packager/media/formats/webm/webm_webvtt_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 void WebMWebVTTParser::Parse(const uint8_t* payload,
@@ -76,4 +76,4 @@ void WebMWebVTTParser::ParseLine(std::string* line) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

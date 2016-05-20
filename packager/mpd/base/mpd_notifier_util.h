@@ -17,7 +17,7 @@
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_builder.h"
 
-namespace edash_packager{
+namespace shaka{
 
 enum ContentType {
   kContentTypeUnknown,
@@ -39,6 +39,6 @@ ContentType GetContentType(const MediaInfo& media_info);
 /// Converts uint8 vector into base64 encoded string.
 std::string Uint8VectorToBase64(const std::vector<uint8_t>& input);
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MPD_BASE_MPD_NOTIFIER_UTIL_H_

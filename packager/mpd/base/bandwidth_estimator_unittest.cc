@@ -11,7 +11,7 @@
 #include "packager/base/macros.h"
 #include "packager/mpd/base/bandwidth_estimator.h"
 
-namespace edash_packager {
+namespace shaka {
 
 namespace {
 const int kNumBlocksForEstimate = 5;
@@ -93,4 +93,4 @@ TEST(BandwidthEstimatorTest, FirstOneBlock) {
   EXPECT_EQ(kExptectedEstimate, be.Estimate());
 }
 
-} // namespace edash_packager
+} // namespace shaka

@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// WebM element IDs.
@@ -225,6 +225,6 @@ extern const char kWebMCodecDescriptions[];
 extern const char kWebMCodecMetadata[];
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_CONSTANTS_H_

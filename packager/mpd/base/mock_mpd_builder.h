@@ -14,7 +14,7 @@
 #include "packager/mpd/base/content_protection_element.h"
 #include "packager/mpd/base/mpd_builder.h"
 
-namespace edash_packager {
+namespace shaka {
 
 class MockMpdBuilder : public MpdBuilder {
  public:
@@ -64,6 +64,6 @@ class MockRepresentation : public Representation {
   MOCK_METHOD1(SetSampleDuration, void(uint32_t sample_duration));
 };
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MPD_BASE_MOCK_MPD_BUILDER_H_

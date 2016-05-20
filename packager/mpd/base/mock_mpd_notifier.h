@@ -14,7 +14,7 @@
 #include "packager/mpd/base/content_protection_element.h"
 #include "packager/mpd/base/media_info.pb.h"
 
-namespace edash_packager {
+namespace shaka {
 
 class MockMpdNotifier : public MpdNotifier {
  public:
@@ -43,6 +43,6 @@ class MockMpdNotifier : public MpdNotifier {
   MOCK_METHOD0(Flush, bool());
 };
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MPD_BASE_MOCK_MPD_NOTIFIER_H_

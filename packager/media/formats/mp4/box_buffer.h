@@ -14,7 +14,7 @@
 #include "packager/media/formats/mp4/box.h"
 #include "packager/media/formats/mp4/box_reader.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -208,6 +208,6 @@ class BoxBuffer {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_MP4_BOX_BUFFER_H_

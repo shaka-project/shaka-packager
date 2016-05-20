@@ -9,7 +9,7 @@
 
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class BitReader;
@@ -71,7 +71,7 @@ class TsPacket {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif
 

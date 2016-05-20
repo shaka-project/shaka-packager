@@ -11,7 +11,7 @@
 #include "packager/media/base/rcheck.h"
 #include "packager/media/formats/mp4/box_buffer.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -213,4 +213,4 @@ TEST_F(BoxReaderTest, SkippingBloc) {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

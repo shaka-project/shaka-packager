@@ -13,7 +13,7 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/filters/h26x_bit_reader.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class Nalu;
@@ -352,6 +352,6 @@ class H265Parser {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FILTERS_H265_PARSER_H_

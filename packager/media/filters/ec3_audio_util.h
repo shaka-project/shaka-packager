@@ -12,7 +12,7 @@
 #include <stdint.h>
 #include <vector>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Parse data from EC3Specific box and calculate EC3 channel map value based on
@@ -22,6 +22,6 @@ bool CalculateEC3ChannelMap(const std::vector<uint8_t>& ec3_data,
                             uint32_t* channel_map);
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FILTERS_EC3_AUDIO_UTIL_H_

@@ -24,7 +24,7 @@ int64_t GetGreatestCommonDivisor(int64_t a, int64_t b) {
 
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 WebMVideoClient::WebMVideoClient() {
@@ -170,4 +170,4 @@ bool WebMVideoClient::OnFloat(int id, double val) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

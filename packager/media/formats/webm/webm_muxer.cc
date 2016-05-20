@@ -15,7 +15,7 @@
 #include "packager/media/formats/webm/single_segment_segmenter.h"
 #include "packager/media/formats/webm/two_pass_single_segment_segmenter.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace webm {
 
@@ -123,4 +123,4 @@ void WebMMuxer::FireOnMediaEndEvent() {
 
 }  // namespace webm
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

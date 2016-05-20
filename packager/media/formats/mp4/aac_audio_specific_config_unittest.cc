@@ -6,7 +6,7 @@
 
 #include "packager/media/formats/mp4/aac_audio_specific_config.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -143,4 +143,4 @@ TEST(AACAudioSpecificConfigTest, IncorrectChannelTest) {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

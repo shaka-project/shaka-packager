@@ -15,7 +15,7 @@
 #include "packager/media/base/aes_cryptor.h"
 #include "packager/media/base/aes_encryptor.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// For AES-CTR, encryption and decryption are identical.
@@ -63,6 +63,6 @@ class AesCbcDecryptor : public AesCryptor {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_BASE_AES_DECRYPTOR_H_

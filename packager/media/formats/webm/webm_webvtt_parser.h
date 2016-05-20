@@ -11,7 +11,7 @@
 
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class WebMWebVTTParser {
@@ -48,6 +48,6 @@ class WebMWebVTTParser {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_WEBVTT_PARSER_H_

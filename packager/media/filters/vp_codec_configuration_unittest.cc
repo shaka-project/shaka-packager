@@ -8,7 +8,7 @@
 
 #include <gtest/gtest.h>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 TEST(VPCodecConfigurationTest, Parse) {
@@ -60,4 +60,4 @@ TEST(VPCodecConfigurationTest, Write) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

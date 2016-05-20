@@ -13,7 +13,7 @@
 #include "packager/media/formats/mp4/box.h"
 #include "packager/media/formats/mp4/es_descriptor.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class BufferReader;
@@ -826,6 +826,6 @@ struct VTTCueBox : Box {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_MP4_BOX_DEFINITIONS_H_

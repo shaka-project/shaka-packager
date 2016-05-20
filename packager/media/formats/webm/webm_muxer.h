@@ -9,7 +9,7 @@
 
 #include "packager/media/base/muxer.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace webm {
 
@@ -39,6 +39,6 @@ class WebMMuxer : public Muxer {
 
 }  // namespace webm
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_MUXER_H_

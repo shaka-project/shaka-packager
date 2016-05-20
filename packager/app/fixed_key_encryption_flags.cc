@@ -28,7 +28,7 @@ DEFINE_string(pssh,
               "will generate a v1 common PSSH box according to "
               "https://goo.gl/507mKp.");
 
-namespace edash_packager {
+namespace shaka {
 
 bool ValidateFixedCryptoFlags() {
   bool success = true;
@@ -70,4 +70,4 @@ bool ValidateFixedCryptoFlags() {
   return success;
 }
 
-}  // namespace edash_packager
+}  // namespace shaka

@@ -10,7 +10,7 @@
 #include <iostream>
 #include <string>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace error {
@@ -160,6 +160,6 @@ class Status {
 std::ostream& operator<<(std::ostream& os, const Status& x);
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_STATUS_H_

@@ -11,7 +11,7 @@
 
 #include "packager/media/file/file.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 #define ASSERT_FILE_EQ(file_name, array)                                \
@@ -23,7 +23,7 @@ namespace media {
   } while (false)
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FILE_FILE_TEST_UTIL_H_
 

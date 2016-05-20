@@ -14,7 +14,7 @@
 #include "packager/media/file/file_closer.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// An implementation of IMkvWriter using our File type.
@@ -70,6 +70,6 @@ class MkvWriter : public mkvmuxer::IMkvWriter {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_MKV_WRITER_H_

@@ -13,7 +13,7 @@
 
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 extern const char* kLocalFilePrefix;
@@ -148,6 +148,6 @@ class File {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_FILE_FILE_H_

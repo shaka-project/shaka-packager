@@ -7,7 +7,7 @@
 #include "packager/base/logging.h"
 #include "packager/media/base/timestamp.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 AudioTimestampHelper::AudioTimestampHelper(uint32_t timescale,
@@ -72,4 +72,4 @@ int64_t AudioTimestampHelper::ComputeTimestamp(int64_t frame_count) const {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -9,7 +9,7 @@
 #include "packager/media/base/muxer_options.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace webm {
 
@@ -87,4 +87,4 @@ bool SingleSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* start,
 
 }  // namespace webm
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

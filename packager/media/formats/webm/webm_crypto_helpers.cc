@@ -8,7 +8,7 @@
 #include "packager/base/sys_byteorder.h"
 #include "packager/media/formats/webm/webm_constants.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace {
 
@@ -62,4 +62,4 @@ bool WebMCreateDecryptConfig(const uint8_t* data,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

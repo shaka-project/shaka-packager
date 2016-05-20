@@ -22,7 +22,7 @@
 #include "packager/media/formats/webm/segmenter.h"
 #include "packager/media/formats/webm/webm_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class SegmentTestBase : public ::testing::Test {
@@ -111,6 +111,6 @@ class SegmentTestBase : public ::testing::Test {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_SEGMENTER_TEST_UTILS_H_

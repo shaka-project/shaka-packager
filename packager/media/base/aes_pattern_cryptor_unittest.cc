@@ -19,7 +19,7 @@ const uint8_t kCryptByteBlock = 2u;
 const uint8_t kSkipByteBlock = 1u;
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class MockAesCryptor : public AesCryptor {
@@ -220,4 +220,4 @@ TEST(SampleAesPatternCryptor, MoreThan16Bytes) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

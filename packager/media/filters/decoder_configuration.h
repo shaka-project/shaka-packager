@@ -13,7 +13,7 @@
 #include "packager/base/macros.h"
 #include "packager/media/filters/nalu_reader.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // Defines a base class for decoder configurations.
@@ -75,6 +75,6 @@ class DecoderConfiguration {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FILTERS_DECODER_CONFIGURATION_H_

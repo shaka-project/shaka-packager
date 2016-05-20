@@ -25,7 +25,7 @@ DEFINE_string(udp_interface_address,
               "IP address of the interface over which to receive UDP unicast"
               " or multicast streams");
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -218,4 +218,4 @@ bool UdpFile::Open() {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

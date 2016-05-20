@@ -6,7 +6,7 @@
 
 #include "packager/media/base/text_stream_info.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 TextStreamInfo::TextStreamInfo(int track_id,
@@ -36,4 +36,4 @@ bool TextStreamInfo::IsValidConfig() const {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

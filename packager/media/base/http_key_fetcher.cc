@@ -12,7 +12,7 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/synchronization/lock.h"
 
-namespace edash_packager {
+namespace shaka {
 
 namespace {
 const char kUserAgentString[] = "shaka-packager-http_fetcher/1.0";
@@ -140,4 +140,4 @@ Status HttpKeyFetcher::FetchInternal(HttpMethod method,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

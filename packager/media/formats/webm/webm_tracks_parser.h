@@ -21,7 +21,7 @@
 #include "packager/media/formats/webm/webm_parser.h"
 #include "packager/media/formats/webm/webm_video_client.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Parser for WebM Tracks element.
@@ -110,6 +110,6 @@ class WebMTracksParser : public WebMParserClient {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_TRACKS_PARSER_H_

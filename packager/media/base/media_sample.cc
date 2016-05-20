@@ -11,7 +11,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/stringprintf.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 MediaSample::MediaSample(const uint8_t* data,
@@ -96,4 +96,4 @@ std::string MediaSample::ToString() const {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

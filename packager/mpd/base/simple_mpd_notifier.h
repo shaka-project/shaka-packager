@@ -17,7 +17,7 @@
 #include "packager/mpd/base/mpd_notifier.h"
 #include "packager/mpd/base/mpd_notifier_util.h"
 
-namespace edash_packager {
+namespace shaka {
 
 class AdaptationSet;
 class MpdBuilder;
@@ -83,6 +83,6 @@ class SimpleMpdNotifier : public MpdNotifier {
   DISALLOW_COPY_AND_ASSIGN(SimpleMpdNotifier);
 };
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MPD_BASE_SIMPLE_MPD_NOTIFIER_H_

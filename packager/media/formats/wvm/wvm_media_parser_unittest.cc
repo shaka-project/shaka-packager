@@ -46,7 +46,7 @@ using ::testing::DoAll;
 using ::testing::Return;
 using ::testing::SetArgPointee;
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class MockKeySource : public FixedKeySource {
@@ -259,4 +259,4 @@ TEST_F(WvmMediaParserTest, ParseMultiConfigWvm) {
 
 }  // namespace wvm
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

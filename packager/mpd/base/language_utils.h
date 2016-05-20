@@ -11,7 +11,7 @@
 
 #include <string>
 
-namespace edash_packager {
+namespace shaka {
 
 /// Convert a language tag to its shortest form, as required by RFC 5646
 /// indicated in the MPD spec.  Assumes the input is a valid ISO-639-2 or
@@ -23,6 +23,6 @@ std::string LanguageToShortestForm(const std::string& language);
 /// language code.  Regions and variants are not supported.
 std::string LanguageToISO_639_2(const std::string& language);
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MPD_BASE_LANGUAGE_UTILS_H_

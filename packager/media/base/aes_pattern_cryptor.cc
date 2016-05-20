@@ -10,7 +10,7 @@
 #include <algorithm>
 #include "packager/base/logging.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 AesPatternCryptor::AesPatternCryptor(uint8_t crypt_byte_block,
@@ -81,4 +81,4 @@ bool AesPatternCryptor::NeedEncrypt(size_t input_size,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

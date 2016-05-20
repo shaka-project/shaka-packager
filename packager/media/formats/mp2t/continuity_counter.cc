@@ -6,7 +6,7 @@
 
 #include "packager/media/formats/mp2t/continuity_counter.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -22,4 +22,4 @@ int ContinuityCounter::GetNext() {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -84,7 +84,7 @@ void SplitLanguageTag(const std::string& tag,
 
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 
 std::string LanguageToShortestForm(const std::string& language) {
   std::string main_language;
@@ -131,4 +131,4 @@ std::string LanguageToISO_639_2(const std::string& language) {
   return "und";
 }
 
-}  // namespace edash_packager
+}  // namespace shaka

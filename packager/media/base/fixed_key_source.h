@@ -13,7 +13,7 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/key_source.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // Common SystemID defined by EME, which requires Key System implementations
@@ -70,6 +70,6 @@ class FixedKeySource : public KeySource {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_FIXED_KEY_SOURCE_H_

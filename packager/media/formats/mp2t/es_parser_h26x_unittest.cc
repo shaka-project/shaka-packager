@@ -16,7 +16,7 @@
 #include "packager/media/filters/h26x_byte_to_unit_stream_converter.h"
 #include "packager/media/formats/mp2t/es_parser_h26x.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -298,4 +298,4 @@ TEST_F(EsParserH26xTest, DISABLED_EmitsLastFrameWithNuhLayerId) {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

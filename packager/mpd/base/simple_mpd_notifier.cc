@@ -11,7 +11,7 @@
 #include "packager/mpd/base/mpd_notifier_util.h"
 #include "packager/mpd/base/mpd_utils.h"
 
-namespace edash_packager {
+namespace shaka {
 
 SimpleMpdNotifier::SimpleMpdNotifier(DashProfile dash_profile,
                                      const MpdOptions& mpd_options,
@@ -130,4 +130,4 @@ bool SimpleMpdNotifier::Flush() {
   return WriteMpdToFile(output_path_, mpd_builder_.get());
 }
 
-}  // namespace edash_packager
+}  // namespace shaka

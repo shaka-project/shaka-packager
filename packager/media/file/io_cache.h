@@ -13,7 +13,7 @@
 #include "packager/base/synchronization/lock.h"
 #include "packager/base/synchronization/waitable_event.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Declaration of class which implements a thread-safe circular buffer.
@@ -81,6 +81,6 @@ class IoCache {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_FILE_IO_CACHE_H

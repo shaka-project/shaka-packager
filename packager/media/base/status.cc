@@ -9,7 +9,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/stringprintf.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace error {
@@ -73,4 +73,4 @@ std::ostream& operator<<(std::ostream& os, const Status& x) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

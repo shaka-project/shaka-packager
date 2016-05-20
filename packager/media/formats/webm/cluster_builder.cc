@@ -7,7 +7,7 @@
 #include "packager/base/logging.h"
 #include "packager/media/formats/webm/webm_constants.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 static const uint8_t kClusterHeader[] = {
@@ -237,4 +237,4 @@ void ClusterBuilder::UpdateUInt64(int offset, int64_t value) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

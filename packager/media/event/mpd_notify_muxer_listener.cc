@@ -16,7 +16,7 @@
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_notifier.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 MpdNotifyMuxerListener::MpdNotifyMuxerListener(MpdNotifier* mpd_notifier)
@@ -162,4 +162,4 @@ void MpdNotifyMuxerListener::OnNewSegment(const std::string& file_name,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

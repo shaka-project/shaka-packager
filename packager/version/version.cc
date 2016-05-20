@@ -6,7 +6,7 @@
 
 #include "packager/version/version.h"
 
-namespace edash_packager {
+namespace shaka {
 
 #if defined(PACKAGER_VERSION)
 // PACKAGER_VERSION is generated in gyp file using script
@@ -20,4 +20,4 @@ const char kPackagerVersion[] = PACKAGER_VERSION "-debug";
 const char kPackagerVersion[] = "";
 #endif  // #if defined(PACKAGER_VERSION)
 
-}  // namespace edash_packager
+}  // namespace shaka

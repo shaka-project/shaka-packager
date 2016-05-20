@@ -18,7 +18,7 @@ const uint64_t kBlockSize = 256;
 const uint64_t kCacheSize = 16 * kBlockSize;
 }
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class IoCacheTest : public testing::Test {
@@ -269,4 +269,4 @@ TEST_F(IoCacheTest, LargeRead) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

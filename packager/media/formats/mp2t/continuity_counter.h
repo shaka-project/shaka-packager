@@ -9,7 +9,7 @@
 
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -30,6 +30,6 @@ class ContinuityCounter {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_FORMATS_MP2T_CONTINUITY_COUNTER_H_

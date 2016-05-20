@@ -5,7 +5,7 @@
 #include "packager/base/logging.h"
 #include "packager/media/filters/h26x_bit_reader.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 H26xBitReader::H26xBitReader()
@@ -166,4 +166,4 @@ size_t H26xBitReader::NumEmulationPreventionBytesRead() {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

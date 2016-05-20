@@ -19,7 +19,7 @@
 #include "packager/media/formats/mp2t/pes_packet.h"
 #include "packager/media/formats/mp2t/program_map_table_writer.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -83,6 +83,6 @@ class TsWriter {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_FORMATS_MP2T_TS_WRITER_H_

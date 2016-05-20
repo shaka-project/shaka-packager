@@ -10,7 +10,7 @@
 #include "packager/media/file/memory_file.h"
 #include "packager/media/formats/webm/webm_constants.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace {
 
@@ -197,5 +197,5 @@ bool SegmentTestBase::ClusterParser::OnString(int id, const std::string& str) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 

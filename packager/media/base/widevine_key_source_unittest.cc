@@ -25,7 +25,7 @@ using ::testing::Return;
 using ::testing::SetArgPointee;
 using ::testing::StrEq;
 
-namespace edash_packager {
+namespace shaka {
 namespace {
 const char kServerUrl[] = "http://www.foo.com/getcontentkey";
 const char kContentId[] = "ContentFoo";
@@ -519,4 +519,4 @@ INSTANTIATE_TEST_CASE_P(WidevineKeySourceInstance,
                         ::testing::Bool());
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

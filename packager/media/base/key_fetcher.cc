@@ -6,11 +6,11 @@
 
 #include "packager/media/base/key_fetcher.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 KeyFetcher::KeyFetcher() {}
 KeyFetcher::~KeyFetcher() {}
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

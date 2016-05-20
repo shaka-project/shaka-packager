@@ -13,7 +13,7 @@
 #include "packager/base/logging.h"
 #include "packager/media/base/buffer_reader.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class ProtectionSystemSpecificInfo {
@@ -69,7 +69,7 @@ class ProtectionSystemSpecificInfo {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_PSSH_H_
 

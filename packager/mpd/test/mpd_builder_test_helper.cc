@@ -16,7 +16,7 @@
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 #include "packager/mpd/test/xml_compare.h"
 
-namespace edash_packager {
+namespace shaka {
 
 base::FilePath GetTestDataFilePath(const std::string& file_name) {
   base::FilePath file_path;
@@ -113,4 +113,4 @@ void ExpectMpdToEqualExpectedOutputFile(
       << "Actual:" << std::endl << mpd_string;
 }
 
-}  // namespace edash_packager
+}  // namespace shaka

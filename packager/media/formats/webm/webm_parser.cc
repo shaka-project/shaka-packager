@@ -17,7 +17,7 @@
 #include "packager/base/numerics/safe_conversions.h"
 #include "packager/media/formats/webm/webm_constants.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 enum ElementType {
@@ -970,4 +970,4 @@ bool WebMListParser::IsSiblingOrAncestor(int id_a, int id_b) const {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

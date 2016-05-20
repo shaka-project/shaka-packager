@@ -8,7 +8,7 @@
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/rcheck.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace {
 
@@ -193,4 +193,4 @@ size_t ESDescriptor::ComputeSize() const {
 }  // namespace mp4
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

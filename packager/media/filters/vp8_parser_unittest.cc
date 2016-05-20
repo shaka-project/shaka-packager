@@ -11,7 +11,7 @@
 
 using ::testing::ElementsAre;
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace {
 MATCHER_P5(EqualVPxFrame,
@@ -102,4 +102,4 @@ TEST(VP8ParserTest, NotEnoughBytesForHeaderSize) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

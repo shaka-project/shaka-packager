@@ -16,7 +16,7 @@
 #include "packager/media/file/file.h"
 #include "packager/mpd/base/media_info.pb.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 VodMediaInfoDumpMuxerListener::VodMediaInfoDumpMuxerListener(
@@ -128,4 +128,4 @@ bool VodMediaInfoDumpMuxerListener::WriteMediaInfoToFile(
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

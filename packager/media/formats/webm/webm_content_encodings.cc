@@ -5,7 +5,7 @@
 #include "packager/base/logging.h"
 #include "packager/media/formats/webm/webm_content_encodings.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 ContentEncoding::ContentEncoding()
@@ -27,4 +27,4 @@ void ContentEncoding::SetEncryptionKeyId(const uint8_t* encryption_key_id,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

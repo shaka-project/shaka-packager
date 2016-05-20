@@ -18,7 +18,7 @@ using ::testing::Return;
 using ::testing::StrictMock;
 using ::testing::_;
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 static const double kDefaultTimecodeScaleInUs = 1000.0;  // 1 ms resolution
@@ -202,4 +202,4 @@ TEST_F(WebMTracksParserTest, HighTrackUID) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

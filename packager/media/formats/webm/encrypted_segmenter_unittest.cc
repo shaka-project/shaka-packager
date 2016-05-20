@@ -11,7 +11,7 @@
 #include "packager/media/base/fixed_key_source.h"
 #include "packager/media/formats/webm/segmenter_test_base.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace {
 
@@ -228,5 +228,5 @@ TEST_F(EncrypedSegmenterTest, BasicSupport) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 

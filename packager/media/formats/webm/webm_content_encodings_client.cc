@@ -8,7 +8,7 @@
 #include "packager/base/stl_util.h"
 #include "packager/media/formats/webm/webm_constants.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 WebMContentEncodingsClient::WebMContentEncodingsClient()
@@ -264,4 +264,4 @@ bool WebMContentEncodingsClient::OnBinary(int id,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -13,7 +13,7 @@
 #include "base/macros.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Used to write the SeekHead to the output stream.  This supports non-seekable
@@ -47,6 +47,6 @@ class SeekHead {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_SEEK_HEAD_H_

@@ -11,7 +11,7 @@
 #include "packager/base/files/file_util.h"
 #include "packager/base/logging.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 LocalFile::LocalFile(const char* file_name, const char* mode)
@@ -86,4 +86,4 @@ bool LocalFile::Delete(const char* file_name) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

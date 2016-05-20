@@ -12,7 +12,7 @@
 
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace hls {
 
 class MediaPlaylist;
@@ -63,6 +63,6 @@ class MasterPlaylist {
 };
 
 }  // namespace hls
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_HLS_BASE_MASTER_PLAYLIST_H_

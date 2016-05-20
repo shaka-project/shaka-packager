@@ -13,7 +13,7 @@
 
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Self generated test vector to verify algorithm stability.
@@ -45,6 +45,6 @@ class RsaTestData {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_RSA_TEST_DATA_H_

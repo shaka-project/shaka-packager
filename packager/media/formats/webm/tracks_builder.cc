@@ -7,7 +7,7 @@
 #include "packager/base/logging.h"
 #include "packager/media/formats/webm/webm_constants.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // Returns size of an integer, formatted using Matroska serialization.
@@ -394,4 +394,4 @@ void TracksBuilder::Track::Write(uint8_t** buf, int* buf_size) const {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

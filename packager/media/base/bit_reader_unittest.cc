@@ -6,7 +6,7 @@
 
 #include "packager/media/base/bit_reader.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 TEST(BitReaderTest, NormalOperationTest) {
@@ -89,4 +89,4 @@ TEST(BitReaderTest, SkipBitsConditionalTest) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

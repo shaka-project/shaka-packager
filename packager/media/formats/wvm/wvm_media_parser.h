@@ -17,7 +17,7 @@
 #include "packager/media/base/network_util.h"
 #include "packager/media/filters/h264_byte_to_unit_stream_converter.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class AesCbcDecryptor;
@@ -259,6 +259,6 @@ class WvmMediaParser : public MediaParser {
 
 }  // namespace wvm
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_

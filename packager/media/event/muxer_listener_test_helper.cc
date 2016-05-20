@@ -8,7 +8,7 @@
 
 #include <gtest/gtest.h>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 VideoStreamInfoParameters::VideoStreamInfoParameters() {}
@@ -126,4 +126,4 @@ bool MediaInfoEqual(const MediaInfo& expect, const MediaInfo& actual) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

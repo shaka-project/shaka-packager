@@ -10,7 +10,7 @@
 #include "packager/media/file/file.h"
 #include "packager/hls/base/media_playlist.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace hls {
 
 using ::testing::_;
@@ -303,4 +303,4 @@ TEST_F(MediaPlaylistTest, RemoveOldestSegment) {
 }
 
 }  // namespace hls
-}  // namespace edash_packager
+}  // namespace shaka

@@ -10,7 +10,7 @@
 
 #include <vector>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class BitReader;
@@ -93,6 +93,6 @@ class ESDescriptor {
 }  // namespace mp4
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_MP4_ES_DESCRIPTOR_H_

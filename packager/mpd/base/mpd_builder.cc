@@ -30,7 +30,7 @@
 #include "packager/mpd/base/mpd_utils.h"
 #include "packager/mpd/base/xml/xml_node.h"
 
-namespace edash_packager {
+namespace shaka {
 
 using base::FilePath;
 using xml::XmlNode;
@@ -1377,4 +1377,4 @@ bool Representation::GetEarliestTimestamp(double* timestamp_seconds) {
   return true;
 }
 
-}  // namespace edash_packager
+}  // namespace shaka

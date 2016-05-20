@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 BitReader::BitReader(const uint8_t* data, off_t size)
@@ -103,4 +103,4 @@ void BitReader::UpdateCurrByte() {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

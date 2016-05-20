@@ -19,7 +19,7 @@ using ::testing::InSequence;
 using ::testing::Return;
 using ::testing::_;
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -606,4 +606,4 @@ TEST_F(TsWriterTest, TsPacketPayload183Bytes) {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

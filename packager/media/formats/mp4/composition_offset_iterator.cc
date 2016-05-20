@@ -8,7 +8,7 @@
 
 #include "packager/base/logging.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -60,4 +60,4 @@ uint32_t CompositionOffsetIterator::NumSamples() const {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

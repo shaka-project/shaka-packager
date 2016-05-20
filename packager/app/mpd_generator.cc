@@ -14,7 +14,7 @@
 #include "packager/mpd/util/mpd_writer.h"
 #include "packager/version/version.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace {
 const char kUsage[] =
     "MPD generation driver program.\n"
@@ -101,8 +101,8 @@ int MpdMain(int argc, char** argv) {
 }
 
 }  // namespace
-}  // namespace edash_packager
+}  // namespace shaka
 
 int main(int argc, char** argv) {
-  return edash_packager::MpdMain(argc, argv);
+  return shaka::MpdMain(argc, argv);
 }

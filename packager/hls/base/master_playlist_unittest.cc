@@ -14,7 +14,7 @@
 #include "packager/hls/base/mock_media_playlist.h"
 #include "packager/media/file/file.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace hls {
 
 using ::testing::AtLeast;
@@ -272,4 +272,4 @@ TEST_F(MasterPlaylistTest, WriteAllPlaylists) {
 }
 
 }  // namespace hls
-}  // namespace edash_packager
+}  // namespace shaka

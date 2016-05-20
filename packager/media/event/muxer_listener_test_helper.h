@@ -17,7 +17,7 @@
 #include "packager/media/base/video_stream_info.h"
 #include "packager/mpd/base/media_info.pb.h"
 
-namespace edash_packager {
+namespace shaka {
 
 namespace media {
 
@@ -108,6 +108,6 @@ bool MediaInfoEqual(const MediaInfo& expect, const MediaInfo& actual);
 
 }  // namespace media
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_EVENT_MUXER_LISTENER_TEST_HELPER_H_

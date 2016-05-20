@@ -13,7 +13,7 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/formats/mp4/box.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -190,4 +190,4 @@ bool BoxReader::ReadHeader(bool* err) {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -25,7 +25,7 @@ DEFINE_uint64(io_block_size,
               2ULL << 20,
               "Size of the block size used for threaded I/O, in bytes.");
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 const char* kLocalFilePrefix = "file://";
@@ -267,4 +267,4 @@ int64_t File::CopyFile(File* source, File* destination, int64_t max_copy) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

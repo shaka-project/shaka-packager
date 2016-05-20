@@ -131,7 +131,7 @@ const uint8_t kInvalidIv[] = {0xf0, 0xf1, 0xf2, 0xf3, 0xf4, 0xf5, 0xf6, 0xf7,
 
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class AesCtrEncryptorTest : public testing::Test {
@@ -620,4 +620,4 @@ INSTANTIATE_TEST_CASE_P(CbcTestCases,
                         ::testing::ValuesIn(kCbcTestCases));
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -14,7 +14,7 @@
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/rcheck.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -181,6 +181,6 @@ bool BoxReader::ReadAllChildren(std::vector<T>* children) {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_MP4_BOX_READER_H_

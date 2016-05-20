@@ -14,7 +14,7 @@
 #include "packager/media/file/file_closer.h"
 #include "packager/media/file/io_cache.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Declaration of class which implements a thread-safe circular buffer.
@@ -70,6 +70,6 @@ class ThreadedIoFile : public File {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_FILE_THREADED_IO_FILE_H

@@ -12,7 +12,7 @@
 #include "packager/base/strings/string_split.h"
 #include "packager/mpd/base/language_utils.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -149,4 +149,4 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

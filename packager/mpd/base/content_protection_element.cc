@@ -6,9 +6,9 @@
 
 #include "packager/mpd/base/content_protection_element.h"
 
-namespace edash_packager {
+namespace shaka {
 Element::Element() {}
 Element::~Element() {}
 ContentProtectionElement::ContentProtectionElement() {}
 ContentProtectionElement::~ContentProtectionElement() {}
-}  // namespace edash_packager
+}  // namespace shaka

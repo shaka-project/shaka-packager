@@ -13,7 +13,7 @@
 #include "packager/media/formats/webm/webm_content_encodings.h"
 #include "packager/media/formats/webm/webm_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 typedef std::vector<ContentEncoding*> ContentEncodings;
@@ -44,6 +44,6 @@ class WebMContentEncodingsClient : public WebMParserClient {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_CONTENT_ENCODINGS_CLIENT_H_

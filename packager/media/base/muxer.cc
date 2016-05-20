@@ -10,7 +10,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/media_stream.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 Muxer::Muxer(const MuxerOptions& options)
@@ -115,4 +115,4 @@ Status Muxer::AddSample(const MediaStream* stream,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

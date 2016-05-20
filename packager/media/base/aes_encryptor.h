@@ -16,7 +16,7 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/aes_cryptor.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class AesEncryptor : public AesCryptor {
@@ -111,6 +111,6 @@ class AesCbcEncryptor : public AesEncryptor {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_AES_ENCRYPTOR_H_

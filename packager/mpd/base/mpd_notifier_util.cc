@@ -12,7 +12,7 @@
 #include "packager/media/file/file.h"
 #include "packager/mpd/base/mpd_utils.h"
 
-namespace edash_packager {
+namespace shaka {
 
 using media::File;
 using media::FileCloser;
@@ -72,4 +72,4 @@ std::string Uint8VectorToBase64(const std::vector<uint8_t>& input) {
   return output;
 }
 
-}  // namespace edash_packager
+}  // namespace shaka

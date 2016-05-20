@@ -14,7 +14,7 @@
 #include "packager/mpd/base/simple_mpd_notifier.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 
-namespace edash_packager {
+namespace shaka {
 
 using ::testing::_;
 using ::testing::Return;
@@ -408,4 +408,4 @@ INSTANTIATE_TEST_CASE_P(StaticAndDynamic,
                         ::testing::Values(MpdBuilder::kStatic,
                                           MpdBuilder::kDynamic));
 
-}  // namespace edash_packager
+}  // namespace shaka

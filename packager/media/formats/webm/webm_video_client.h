@@ -12,7 +12,7 @@
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/formats/webm/webm_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 class VideoDecoderConfig;
 
@@ -58,6 +58,6 @@ class WebMVideoClient : public WebMParserClient {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_VIDEO_CLIENT_H_

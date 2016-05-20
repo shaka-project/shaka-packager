@@ -8,7 +8,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/path_service.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 base::FilePath GetTestDataFilePath(const std::string& name) {
@@ -30,4 +30,4 @@ std::vector<uint8_t> ReadTestDataFile(const std::string& name) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

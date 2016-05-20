@@ -9,7 +9,7 @@
 
 #include "packager/media/base/stream_info.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 enum VideoCodec {
@@ -97,6 +97,6 @@ class VideoStreamInfo : public StreamInfo {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_VIDEO_STREAM_INFO_H_

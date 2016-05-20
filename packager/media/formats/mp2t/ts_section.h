@@ -5,7 +5,7 @@
 #ifndef MEDIA_FORMATS_MP2T_TS_SECTION_H_
 #define MEDIA_FORMATS_MP2T_TS_SECTION_H_
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -38,6 +38,6 @@ class TsSection {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif

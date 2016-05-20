@@ -16,7 +16,7 @@
 #include "packager/media/base/container_names.h"
 #include "packager/media/base/status.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class Decryptor;
@@ -107,6 +107,6 @@ class Demuxer {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_DEMUXER_H_

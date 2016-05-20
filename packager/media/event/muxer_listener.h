@@ -16,7 +16,7 @@
 
 #include "packager/media/base/fourccs.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 struct MuxerOptions;
@@ -126,6 +126,6 @@ class MuxerListener {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_EVENT_MUXER_LISTENER_H_

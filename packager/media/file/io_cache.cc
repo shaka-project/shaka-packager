@@ -12,7 +12,7 @@
 
 #include "packager/base/logging.h"
 
-namespace edash_packager {
+namespace shaka {
 
 using base::AutoLock;
 using base::AutoUnlock;
@@ -151,4 +151,4 @@ void IoCache::WaitUntilEmptyOrClosed() {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

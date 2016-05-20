@@ -23,7 +23,7 @@
 using ::testing::_;
 using ::testing::InSequence;
 
-namespace edash_packager {
+namespace shaka {
 
 namespace {
 
@@ -406,4 +406,4 @@ TEST_F(MpdNotifyMuxerListenerTest, LiveWithKeyRotation) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -14,7 +14,7 @@
 #include "packager/media/base/decrypt_config.h"
 #include "packager/media/base/key_source.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// DecryptorSource wraps KeySource and is responsible for decryptor management.
@@ -35,6 +35,6 @@ class DecryptorSource {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_DECRYPTOR_SOURCE_H_

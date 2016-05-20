@@ -15,7 +15,7 @@
 #include "packager/media/base/byte_queue.h"
 #include "packager/media/formats/mp2t/es_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 class AudioTimestampHelper;
 class BitReader;
@@ -74,6 +74,6 @@ class EsParserAdts : public EsParser {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif

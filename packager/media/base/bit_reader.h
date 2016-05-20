@@ -10,7 +10,7 @@
 
 #include "packager/base/logging.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// A class to read bit streams.
@@ -111,6 +111,6 @@ class BitReader {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_BIT_READER_H_

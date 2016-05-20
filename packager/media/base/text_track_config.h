@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // Specifies the varieties of text tracks.
@@ -43,6 +43,6 @@ class TextTrackConfig {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_BASE_TEXT_TRACK_H_

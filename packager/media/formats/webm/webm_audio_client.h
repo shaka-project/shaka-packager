@@ -12,7 +12,7 @@
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/formats/webm/webm_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 class AudioDecoderConfig;
 
@@ -62,6 +62,6 @@ class WebMAudioClient : public WebMParserClient {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_AUDIO_CLIENT_H_

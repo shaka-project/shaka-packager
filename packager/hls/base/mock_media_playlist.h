@@ -11,7 +11,7 @@
 
 #include "packager/hls/base/media_playlist.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace hls {
 
 class MockMediaPlaylist : public MediaPlaylist {
@@ -43,6 +43,6 @@ class MockMediaPlaylist : public MediaPlaylist {
 };
 
 }  // namespace hls
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_HLS_BASE_MOCK_MEDIA_PLAYLIST_H_

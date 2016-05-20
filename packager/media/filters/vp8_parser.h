@@ -13,7 +13,7 @@
 #include "packager/base/macros.h"
 #include "packager/media/filters/vpx_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Class to parse a vp8 bit stream. Implemented according to
@@ -50,6 +50,6 @@ class VP8Parser : public VPxParser {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FILTERS_VP8_PARSER_H_

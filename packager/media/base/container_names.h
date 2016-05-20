@@ -9,7 +9,7 @@
 
 #include <string>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Container formats supported by this utility function. New formats should be
@@ -71,6 +71,6 @@ MediaContainerName DetermineContainerFromFormatName(
 MediaContainerName DetermineContainerFromFileName(const std::string& file_name);
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_CONTAINER_NAMES_H_

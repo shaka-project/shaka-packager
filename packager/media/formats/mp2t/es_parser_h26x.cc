@@ -16,7 +16,7 @@
 #include "packager/media/filters/h265_byte_to_unit_stream_converter.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -281,4 +281,4 @@ bool EsParserH26x::EmitFrame(int64_t access_unit_pos,
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

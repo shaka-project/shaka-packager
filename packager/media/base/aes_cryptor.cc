@@ -26,7 +26,7 @@ bool IsIvSizeValid(size_t iv_size) {
 
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 AesCryptor::AesCryptor(ConstantIvFlag constant_iv_flag)
@@ -131,6 +131,6 @@ size_t AesCryptor::NumPaddingBytes(size_t size) const {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 

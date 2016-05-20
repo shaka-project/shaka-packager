@@ -15,7 +15,7 @@
 #include "packager/media/base/media_parser.h"
 #include "packager/media/base/stream_info.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class MediaSample;
@@ -94,6 +94,6 @@ class Mp2tMediaParser : public MediaParser {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif

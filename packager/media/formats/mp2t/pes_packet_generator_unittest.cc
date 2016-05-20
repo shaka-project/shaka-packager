@@ -16,7 +16,7 @@
 #include "packager/media/formats/mp2t/pes_packet_generator.h"
 #include "packager/media/formats/mp4/aac_audio_specific_config.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -724,4 +724,4 @@ TEST_F(PesPacketGeneratorTest, AacSampleEncryptionLastBytesAreEncrypted) {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -64,7 +64,7 @@ DEFINE_string(protection_scheme,
               "non-pattern-based protection schemes, i.e. 'cenc' for 'cens', "
               "'cbc1' for 'cbcs'.");
 
-namespace edash_packager {
+namespace shaka {
 
 bool ValidateWidevineCryptoFlags() {
   bool success = true;
@@ -166,4 +166,4 @@ bool ValidateWidevineCryptoFlags() {
   return success;
 }
 
-}  // namespace edash_packager
+}  // namespace shaka

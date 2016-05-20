@@ -15,7 +15,7 @@
 
 #include "packager/base/memory/scoped_ptr.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace xml {
 
 /// Deleter functor for deleting libxml2 pointers. This is used with
@@ -38,5 +38,5 @@ template <typename XmlType>
 using scoped_xml_ptr = scoped_ptr<XmlType, XmlDeleter>;
 
 }  // namespace xml
-}  // namespace edash_packager
+}  // namespace shaka
 #endif  // MPD_BASE_XML_SCOPED_XML_PTR_H_

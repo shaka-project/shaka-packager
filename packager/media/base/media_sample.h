@@ -15,7 +15,7 @@
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/memory/scoped_ptr.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Class to hold a media sample.
@@ -185,6 +185,6 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
 typedef std::deque<scoped_refptr<MediaSample> > BufferQueue;
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_MEDIA_SAMPLE_H_

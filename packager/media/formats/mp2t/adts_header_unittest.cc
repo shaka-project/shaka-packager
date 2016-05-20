@@ -35,7 +35,7 @@ const uint8_t kExpectedAudioSpecificConfig[] = {0x12, 0x10};
 
 }  // anonymous namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -91,4 +91,4 @@ TEST_F(AdtsHeaderTest, GetHeaderSizeSuccess) {
 
 }  // Namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -9,7 +9,7 @@
 
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Convenience class which initializes and terminates libcrypto threading.
@@ -23,6 +23,6 @@ class LibcryptoThreading {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // APP_LIBCRYPTO_THREADING_H_

@@ -8,7 +8,7 @@
 
 #include "packager/base/logging.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 UdpFile::UdpFile(const char* file_name) : File(file_name), socket_(0) {
@@ -58,4 +58,4 @@ bool UdpFile::Open() {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

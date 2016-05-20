@@ -4,7 +4,7 @@
 
 #include "packager/media/base/network_util.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 uint32_t ntohlFromBuffer(const unsigned char* buf) {
@@ -28,5 +28,5 @@ uint64_t ntohllFromBuffer(const unsigned char* buf) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 

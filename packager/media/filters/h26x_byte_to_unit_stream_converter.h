@@ -13,7 +13,7 @@
 
 #include "packager/media/filters/nalu_reader.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class BufferWriter;
@@ -58,7 +58,7 @@ class H26xByteToUnitStreamConverter {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FILTERS_H26x_BYTE_TO_UNIT_STREAM_CONVERTER_H_
 

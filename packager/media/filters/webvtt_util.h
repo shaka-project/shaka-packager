@@ -7,7 +7,7 @@
 
 #include <vector>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // Utility function to create side data item for decoder buffer.
@@ -27,6 +27,6 @@ void MakeSideData(T id_begin, T id_end,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_FILTERS_WEBVTT_UTIL_H_

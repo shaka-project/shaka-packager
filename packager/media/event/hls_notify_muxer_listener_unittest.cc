@@ -13,7 +13,7 @@
 #include "packager/media/event/hls_notify_muxer_listener.h"
 #include "packager/media/event/muxer_listener_test_helper.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 using ::testing::Return;
@@ -139,4 +139,4 @@ TEST_F(HlsNotifyMuxerListenerTest, OnNewSegment) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

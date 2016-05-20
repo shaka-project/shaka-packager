@@ -10,7 +10,7 @@
 #include "packager/base/callback.h"
 #include "packager/base/threading/simple_thread.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Class for creating a thread which invokes a closure.
@@ -44,6 +44,6 @@ class ClosureThread : public base::SimpleThread {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_CLOSURE_THREAD_H_

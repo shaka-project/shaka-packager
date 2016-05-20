@@ -18,7 +18,7 @@
 #include "packager/media/formats/webm/webm_parser.h"
 #include "packager/media/formats/webm/webm_tracks_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class WebMClusterParser : public WebMParserClient {
@@ -227,6 +227,6 @@ class WebMClusterParser : public WebMParserClient {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_CLUSTER_PARSER_H_

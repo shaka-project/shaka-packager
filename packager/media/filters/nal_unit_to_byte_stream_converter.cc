@@ -16,7 +16,7 @@
 #include "packager/media/filters/avc_decoder_configuration.h"
 #include "packager/media/filters/nalu_reader.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -186,4 +186,4 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStream(
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

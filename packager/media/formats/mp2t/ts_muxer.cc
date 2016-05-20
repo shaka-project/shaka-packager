@@ -6,7 +6,7 @@
 
 #include "packager/media/formats/mp2t/ts_muxer.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -60,4 +60,4 @@ void TsMuxer::FireOnMediaEndEvent() {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

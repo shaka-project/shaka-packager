@@ -12,7 +12,7 @@
 #include "packager/hls/base/simple_hls_notifier.h"
 #include "packager/media/base/widevine_pssh_data.pb.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace hls {
 
 using ::testing::Return;
@@ -369,4 +369,4 @@ TEST_F(SimpleHlsNotifierTest, Flush) {
 }
 
 }  // namespace hls
-}  // namespace edash_packager
+}  // namespace shaka

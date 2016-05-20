@@ -18,7 +18,7 @@
 #include "packager/media/filters/h265_parser.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -174,4 +174,4 @@ bool EsParserH265::UpdateVideoDecoderConfig(int pps_id) {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

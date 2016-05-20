@@ -6,7 +6,7 @@
 
 #include "packager/media/formats/mp2t/pes_packet.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -15,4 +15,4 @@ PesPacket::~PesPacket() {}
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

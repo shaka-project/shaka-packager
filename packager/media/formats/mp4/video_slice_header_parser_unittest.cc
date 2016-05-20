@@ -8,7 +8,7 @@
 
 #include "packager/media/formats/mp4/video_slice_header_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -154,4 +154,4 @@ TEST(H264VideoSliceHeaderParserTest, ErrorsForEOSWithinEntry) {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

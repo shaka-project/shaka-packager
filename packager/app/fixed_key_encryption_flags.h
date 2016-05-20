@@ -18,12 +18,12 @@ DECLARE_string(key);
 DECLARE_string(iv);
 DECLARE_string(pssh);
 
-namespace edash_packager {
+namespace shaka {
 
 /// Validate fixed encryption/decryption flags.
 /// @return true on success, false otherwise.
 bool ValidateFixedCryptoFlags();
 
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // APP_FIXED_KEY_ENCRYPTION_FLAGS_H_

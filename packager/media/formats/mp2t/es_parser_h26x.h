@@ -15,7 +15,7 @@
 #include "packager/media/filters/nalu_reader.h"
 #include "packager/media/formats/mp2t/es_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class H26xByteToUnitStreamConverter;
@@ -104,6 +104,6 @@ class EsParserH26x : public EsParser {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif

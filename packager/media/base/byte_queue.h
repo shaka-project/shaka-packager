@@ -9,7 +9,7 @@
 
 #include "packager/base/memory/scoped_ptr.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Represents a queue of bytes.
@@ -55,6 +55,6 @@ class ByteQueue {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_BYTE_QUEUE_H_

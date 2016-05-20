@@ -12,7 +12,7 @@
 
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Interface for receiving WebM parser events.
@@ -158,6 +158,6 @@ int WebMParseElementHeader(const uint8_t* buf,
                            int64_t* element_size);
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_WEBM_PARSER_H_

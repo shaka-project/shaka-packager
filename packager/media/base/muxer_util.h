@@ -15,7 +15,7 @@
 
 #include "packager/media/base/key_source.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class StreamInfo;
@@ -48,6 +48,6 @@ KeySource::TrackType GetTrackTypeForEncryption(const StreamInfo& stream_info,
                                                uint32_t max_sd_pixels);
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_MUXER_UTIL_H_

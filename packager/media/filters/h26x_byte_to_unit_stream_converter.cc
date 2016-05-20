@@ -11,7 +11,7 @@
 #include "packager/base/logging.h"
 #include "packager/media/base/buffer_writer.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -58,5 +58,5 @@ bool H26xByteToUnitStreamConverter::ConvertByteStreamToNalUnitStream(
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 

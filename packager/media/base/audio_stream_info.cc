@@ -13,7 +13,7 @@
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/base/limits.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 namespace {
@@ -141,4 +141,4 @@ std::string AudioStreamInfo::GetCodecString(AudioCodec codec,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

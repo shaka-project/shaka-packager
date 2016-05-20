@@ -20,7 +20,7 @@ const char kExpectedConfigRecord[] =
     "0003000003005d999809";
 }
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 TEST(H265ByteToUnitStreamConverter, ConversionSuccess) {
@@ -72,4 +72,4 @@ TEST(H265ByteToUnitStreamConverter, ConversionFailure) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

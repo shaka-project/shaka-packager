@@ -14,7 +14,7 @@
 #include "packager/base/compiler_specific.h"
 #include "packager/media/file/file.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Implement LocalFile which deals with local storage.
@@ -54,6 +54,6 @@ class LocalFile : public File {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_FILE_LOCAL_FILE_H_

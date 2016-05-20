@@ -14,7 +14,7 @@
 #include "packager/media/base/stream_info.h"
 #include "packager/media/event/muxer_listener.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class MockMuxerListener : public MuxerListener {
@@ -56,6 +56,6 @@ class MockMuxerListener : public MuxerListener {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_EVENT_MOCK_MUXER_LISTENER_H_

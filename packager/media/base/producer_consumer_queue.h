@@ -15,7 +15,7 @@
 #include "packager/base/timer/elapsed_timer.h"
 #include "packager/media/base/status.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 static const size_t kUnlimitedCapacity = 0u;
@@ -315,6 +315,6 @@ void ProducerConsumerQueue<T>::SlideHeadOnCenter(size_t pos) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_PRODUCER_CONSUMER_QUEUE_H_

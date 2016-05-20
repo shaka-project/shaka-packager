@@ -12,7 +12,7 @@
 #include "packager/media/base/producer_consumer_queue.h"
 #include "packager/media/base/test/status_test_util.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace {
 const size_t kCapacity = 10u;
 const int64_t kTimeout = 100;  // 0.1s.
@@ -364,4 +364,4 @@ INSTANTIATE_TEST_CASE_P(Operations,
                         ::testing::Values(kPush, kPop, kPeek));
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

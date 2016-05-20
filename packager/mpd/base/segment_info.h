@@ -7,7 +7,7 @@
 #ifndef MPD_BASE_SEGMENT_INFO_H_
 #define MPD_BASE_SEGMENT_INFO_H_
 
-namespace edash_packager {
+namespace shaka {
 /// Container for keeping track of information about a segment.
 /// Used for keeping track of all the segments used for generating MPD with
 /// dynamic  profile.
@@ -21,6 +21,6 @@ struct SegmentInfo {
   // in the DASH MPD spec.
   uint64_t repeat;
 };
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MPD_BASE_SEGMENT_INFO_H_

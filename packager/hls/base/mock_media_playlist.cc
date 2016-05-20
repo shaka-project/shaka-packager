@@ -6,7 +6,7 @@
 
 #include "packager/hls/base/mock_media_playlist.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace hls {
 
 MockMediaPlaylist::MockMediaPlaylist(MediaPlaylistType type,
@@ -17,4 +17,4 @@ MockMediaPlaylist::MockMediaPlaylist(MediaPlaylistType type,
 MockMediaPlaylist::~MockMediaPlaylist() {}
 
 }  // namespace hls
-}  // namespace edash_packager
+}  // namespace shaka

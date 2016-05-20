@@ -11,7 +11,7 @@
 
 #include "packager/media/base/fourccs.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class BufferWriter;
@@ -99,6 +99,6 @@ struct FullBox : Box {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_MP4_BOX_H_

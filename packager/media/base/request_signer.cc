@@ -12,7 +12,7 @@
 #include "packager/media/base/aes_encryptor.h"
 #include "packager/media/base/rsa_key.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 RequestSigner::RequestSigner(const std::string& signer_name)
@@ -76,4 +76,4 @@ bool RsaRequestSigner::GenerateSignature(const std::string& message,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

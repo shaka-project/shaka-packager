@@ -12,7 +12,7 @@
 #include "packager/base/macros.h"
 #include "packager/media/base/status.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class File;
@@ -75,6 +75,6 @@ class BufferWriter {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_BASE_BUFFER_WRITER_H_

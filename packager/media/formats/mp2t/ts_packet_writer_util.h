@@ -12,7 +12,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class BufferWriter;
@@ -42,6 +42,6 @@ void WritePayloadToBufferWriter(const uint8_t* payload,
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_FORMATS_MP2T_TS_WRITER_UTIL_H_

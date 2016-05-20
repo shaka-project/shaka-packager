@@ -37,7 +37,7 @@ DEFINE_string(test_version_string,
               "--override_version_string is false. Should be used for testing "
               "only.");
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 void DumpStreamInfo(const std::vector<MediaStream*>& streams) {
@@ -235,4 +235,4 @@ bool AddStreamToMuxer(const std::vector<MediaStream*>& streams,
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -15,7 +15,7 @@
 #include "packager/media/base/status.h"
 #include "packager/media/formats/webm/mkv_writer.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 struct MuxerOptions;
@@ -50,6 +50,6 @@ class TwoPassSingleSegmentSegmenter : public SingleSegmentSegmenter {
 
 }  // namespace webm
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_TWO_PASS_SINGLE_SEGMENT_SEGMENTER_H_

@@ -11,7 +11,7 @@
 #include "packager/media/formats/webm/webm_constants.h"
 #include "packager/media/formats/webm/webm_content_encodings.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 static TextKind CodecIdToTextKind(const std::string& codec_id) {
@@ -338,4 +338,4 @@ bool WebMTracksParser::OnString(int id, const std::string& str) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

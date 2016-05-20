@@ -9,7 +9,7 @@
 
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 // Generates timestamps for a sequence of audio sample frames. This class should
@@ -71,6 +71,6 @@ class AudioTimestampHelper {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif

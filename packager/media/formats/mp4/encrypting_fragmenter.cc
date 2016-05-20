@@ -18,7 +18,7 @@
 #include "packager/media/filters/vp9_parser.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -352,4 +352,4 @@ bool EncryptingFragmenter::IsSubsampleEncryptionRequired() {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

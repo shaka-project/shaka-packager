@@ -22,7 +22,7 @@
 #include "packager/media/file/file.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 namespace {
@@ -235,4 +235,4 @@ Status SingleSegmentSegmenter::DoFinalizeSegment() {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

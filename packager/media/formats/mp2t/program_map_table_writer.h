@@ -13,7 +13,7 @@
 
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class BufferWriter;
@@ -95,6 +95,6 @@ class AacProgramMapTableWriter : public ProgramMapTableWriter {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // PACKAGER_MEDIA_FORMATS_MP2T_PROGRAM_MAP_TABLE_WRITER_H_

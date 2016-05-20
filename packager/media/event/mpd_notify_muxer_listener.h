@@ -17,7 +17,7 @@
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/event/muxer_listener.h"
 
-namespace edash_packager {
+namespace shaka {
 
 class MediaInfo;
 class MpdNotifier;
@@ -86,6 +86,6 @@ class MpdNotifyMuxerListener : public MuxerListener {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_

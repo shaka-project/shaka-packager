@@ -12,7 +12,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace {
 
 std::string TextCodecString(const MediaInfo& media_info) {
@@ -347,4 +347,4 @@ void AddContentProtectionElements(const MediaInfo& media_info,
 }
 
 
-}  // namespace edash_packager
+}  // namespace shaka

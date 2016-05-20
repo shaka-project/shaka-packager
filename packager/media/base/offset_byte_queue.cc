@@ -8,7 +8,7 @@
 
 #include "packager/base/logging.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 OffsetByteQueue::OffsetByteQueue() : buf_(NULL), size_(0), head_(0) {}
@@ -63,4 +63,4 @@ void OffsetByteQueue::Sync() {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

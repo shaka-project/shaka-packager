@@ -8,7 +8,7 @@
 
 #include <gtest/gtest.h>
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 TEST(HEVCDecoderConfigurationTest, Success) {
@@ -62,4 +62,4 @@ TEST(HEVCDecoderConfigurationTest, FailOnInsufficientData) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

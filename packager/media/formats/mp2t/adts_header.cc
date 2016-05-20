@@ -10,7 +10,7 @@
 #include "packager/media/formats/mp2t/mp2t_common.h"
 #include "packager/media/formats/mpeg/adts_constants.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp2t {
 
@@ -111,4 +111,4 @@ uint8_t AdtsHeader::GetNumChannels() const {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

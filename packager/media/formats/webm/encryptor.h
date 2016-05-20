@@ -14,7 +14,7 @@
 #include "packager/media/event/muxer_listener.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class AesCtrEncryptor;
@@ -59,6 +59,6 @@ class Encryptor {
 
 }  // namespace webm
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_ENCRYPTOR_H_

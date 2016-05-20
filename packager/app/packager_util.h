@@ -17,7 +17,7 @@
 
 DECLARE_bool(dump_stream_info);
 
-namespace edash_packager {
+namespace shaka {
 
 struct MpdOptions;
 
@@ -67,6 +67,6 @@ bool AddStreamToMuxer(const std::vector<MediaStream*>& streams,
                       Muxer* muxer);
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // APP_PACKAGER_UTIL_H_

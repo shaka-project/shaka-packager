@@ -11,7 +11,7 @@
 
 #include "packager/media/base/muxer.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class AudioStreamInfo;
@@ -71,6 +71,6 @@ class MP4Muxer : public Muxer {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_MP4_MP4_MUXER_H_

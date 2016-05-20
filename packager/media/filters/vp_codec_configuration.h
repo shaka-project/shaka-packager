@@ -14,7 +14,7 @@
 #include "packager/base/macros.h"
 #include "packager/media/base/video_stream_info.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 /// Class for parsing or writing VP codec configuration data.
@@ -99,6 +99,6 @@ class VPCodecConfiguration {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FILTERS_VP_CODEC_CONFIGURATION_H_

@@ -11,7 +11,7 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/formats/mp2t/es_parser_h26x.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class H264Parser;
@@ -55,6 +55,6 @@ class EsParserH264 : public EsParserH26x {
 
 }  // namespace mp2t
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif

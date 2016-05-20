@@ -14,7 +14,7 @@
 #include "packager/media/formats/mp4/fragmenter.h"
 #include "packager/media/formats/mp4/video_slice_header_parser.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class AesCryptor;
@@ -104,6 +104,6 @@ class EncryptingFragmenter : public Fragmenter {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_MP4_ENCRYPTING_FRAGMENTER_H_

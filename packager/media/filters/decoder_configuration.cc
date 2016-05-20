@@ -6,7 +6,7 @@
 
 #include "packager/media/filters/decoder_configuration.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 DecoderConfiguration::DecoderConfiguration() : nalu_length_size_(0) {}
@@ -23,4 +23,4 @@ void DecoderConfiguration::AddNalu(const Nalu& nalu) {
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

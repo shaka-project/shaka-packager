@@ -15,7 +15,7 @@
 #include "packager/media/formats/mp4/box_definitions_comparison.h"
 #include "packager/media/formats/mp4/box_reader.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 namespace {
@@ -1301,4 +1301,4 @@ TEST_F(BoxDefinitionsTest, SampleEncryptionWithIvUnknownWhenReading) {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

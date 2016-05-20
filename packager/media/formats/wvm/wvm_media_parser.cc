@@ -84,7 +84,7 @@ enum Type {
 };
 }  // namespace
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace wvm {
 
@@ -1167,4 +1167,4 @@ void PrevSampleData::Reset() {
 
 }  // namespace wvm
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

@@ -23,7 +23,7 @@
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/key_rotation_fragmenter.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -466,4 +466,4 @@ Status Segmenter::FinalizeFragment(bool finalize_segment,
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

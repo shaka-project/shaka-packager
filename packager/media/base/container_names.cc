@@ -16,7 +16,7 @@
 #include "packager/media/base/bit_reader.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 #define TAG(a, b, c, d)                                               \
@@ -1751,4 +1751,4 @@ MediaContainerName DetermineContainerFromFileName(
 }
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

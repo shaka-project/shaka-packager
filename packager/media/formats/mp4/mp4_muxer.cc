@@ -22,7 +22,7 @@
 #include "packager/media/formats/mp4/multi_segment_segmenter.h"
 #include "packager/media/formats/mp4/single_segment_segmenter.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace mp4 {
 
@@ -409,4 +409,4 @@ uint64_t MP4Muxer::IsoTimeNow() {
 
 }  // namespace mp4
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka

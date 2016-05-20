@@ -13,7 +13,7 @@
 
 #include "packager/base/macros.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 
 class TracksBuilder {
@@ -114,6 +114,6 @@ class TracksBuilder {
 };
 
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
 
 #endif  // MEDIA_FORMATS_WEBM_TRACKS_BUILDER_H_

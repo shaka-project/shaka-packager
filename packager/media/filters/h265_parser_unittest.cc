@@ -9,7 +9,7 @@
 #include "packager/media/filters/h265_parser.h"
 #include "packager/media/filters/nalu_reader.h"
 
-namespace edash_packager {
+namespace shaka {
 namespace media {
 namespace H265 {
 
@@ -175,4 +175,4 @@ TEST(H265ParserTest, ExtractResolutionFromSpsDataWithCrop) {
 
 }  // namespace H265
 }  // namespace media
-}  // namespace edash_packager
+}  // namespace shaka
