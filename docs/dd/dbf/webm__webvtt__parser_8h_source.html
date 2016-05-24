@@ -100,12 +100,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/base/macros.h&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="../../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html">   17</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html">WebMWebVTTParser</a> {</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="../../d4/d59/classshaka_1_1media_1_1WebMWebVTTParser.html">   17</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d4/d59/classshaka_1_1media_1_1WebMWebVTTParser.html">WebMWebVTTParser</a> {</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="../../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html#a979168b11e59b863de2d3ba3fbb60815">Parse</a>(<span class="keyword">const</span> uint8_t* payload,</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code" href="../../d4/d59/classshaka_1_1media_1_1WebMWebVTTParser.html#a4e6f754e4fba24f7ea77fd0db959908b">Parse</a>(<span class="keyword">const</span> uint8_t* payload,</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                    <span class="keywordtype">int</span> payload_size,</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                    std::string* <span class="keywordtype">id</span>,</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                    std::string* settings,</div>
@@ -114,10 +114,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160; <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="comment">// The payload is the embedded WebVTT cue, stored in a WebM block.</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="comment">// The parser treats this as a UTF-8 byte stream.</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <a class="code" href="../../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html">WebMWebVTTParser</a>(<span class="keyword">const</span> uint8_t* payload, <span class="keywordtype">int</span> payload_size);</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <a class="code" href="../../d4/d59/classshaka_1_1media_1_1WebMWebVTTParser.html">WebMWebVTTParser</a>(<span class="keyword">const</span> uint8_t* payload, <span class="keywordtype">int</span> payload_size);</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="comment">// Parse the cue identifier, settings, and content from the stream.</span></div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html#a979168b11e59b863de2d3ba3fbb60815">Parse</a>(std::string* <span class="keywordtype">id</span>, std::string* settings, std::string* content);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../d4/d59/classshaka_1_1media_1_1WebMWebVTTParser.html#a4e6f754e4fba24f7ea77fd0db959908b">Parse</a>(std::string* <span class="keywordtype">id</span>, std::string* settings, std::string* content);</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="comment">// Remove a byte from the stream, advancing the stream pointer.</span></div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="comment">// Returns true if a character was returned; false means &quot;end of stream&quot;.</span></div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordtype">bool</span> GetByte(uint8_t* byte);</div>
@@ -132,19 +132,19 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keyword">const</span> uint8_t* ptr_;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="keyword">const</span> uint8_t* <span class="keyword">const</span> ptr_end_;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html">WebMWebVTTParser</a>);</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d4/d59/classshaka_1_1media_1_1WebMWebVTTParser.html">WebMWebVTTParser</a>);</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;};</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_WEBM_WEBVTT_PARSER_H_</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1WebMWebVTTParser_html"><div class="ttname"><a href="../../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html">edash_packager::media::WebMWebVTTParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbf/webm__webvtt__parser_8h_source.html#l00017">webm_webvtt_parser.h:17</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1WebMWebVTTParser_html_a979168b11e59b863de2d3ba3fbb60815"><div class="ttname"><a href="../../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html#a979168b11e59b863de2d3ba3fbb60815">edash_packager::media::WebMWebVTTParser::Parse</a></div><div class="ttdeci">static void Parse(const uint8_t *payload, int payload_size, std::string *id, std::string *settings, std::string *content)</div><div class="ttdoc">Utility function to parse the WebVTT cue from a byte stream. </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dc1/webm__webvtt__parser_8cc_source.html#l00010">webm_webvtt_parser.cc:10</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1WebMWebVTTParser_html_a4e6f754e4fba24f7ea77fd0db959908b"><div class="ttname"><a href="../../d4/d59/classshaka_1_1media_1_1WebMWebVTTParser.html#a4e6f754e4fba24f7ea77fd0db959908b">shaka::media::WebMWebVTTParser::Parse</a></div><div class="ttdeci">static void Parse(const uint8_t *payload, int payload_size, std::string *id, std::string *settings, std::string *content)</div><div class="ttdoc">Utility function to parse the WebVTT cue from a byte stream. </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dc1/webm__webvtt__parser_8cc_source.html#l00010">webm_webvtt_parser.cc:10</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1WebMWebVTTParser_html"><div class="ttname"><a href="../../d4/d59/classshaka_1_1media_1_1WebMWebVTTParser.html">shaka::media::WebMWebVTTParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbf/webm__webvtt__parser_8h_source.html#l00017">webm_webvtt_parser.h:17</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

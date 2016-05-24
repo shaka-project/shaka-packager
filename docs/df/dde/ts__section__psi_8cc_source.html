@@ -124,7 +124,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  <span class="keywordflow">return</span> (crc == 0);</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">namespace </span>mp2t {</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
@@ -167,10 +167,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="comment">// Add the data to the parser state.</span></div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  psi_byte_queue_.<a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#afa47d3dc54862cee101d4be8746de6eb">Push</a>(buf, size);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  psi_byte_queue_.<a class="code" href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#acea792e406efe5119cec2e3e522e02c2">Push</a>(buf, size);</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordtype">int</span> raw_psi_size;</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keyword">const</span> uint8_t* raw_psi;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  psi_byte_queue_.<a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#a8253df160751462f3b75290a7c525e56">Peek</a>(&amp;raw_psi, &amp;raw_psi_size);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  psi_byte_queue_.<a class="code" href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#a838fe5642e533477a5e229981e5f06e7">Peek</a>(&amp;raw_psi, &amp;raw_psi_size);</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="comment">// Check whether we have enough data to start parsing.</span></div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  <span class="keywordflow">if</span> (raw_psi_size &lt; 3)</div>
@@ -215,20 +215,20 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;<span class="keywordtype">void</span> TsSectionPsi::ResetPsiState() {</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  wait_for_pusi_ = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  psi_byte_queue_.<a class="code" href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#a452485879d303d5c8654e1b184bc1235">Reset</a>();</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  psi_byte_queue_.<a class="code" href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#ab1659ef71098c37e9fb4e55ab1664e84">Reset</a>();</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  leading_bytes_to_discard_ = 0;</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;}</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1ByteQueue_html_afa47d3dc54862cee101d4be8746de6eb"><div class="ttname"><a href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#afa47d3dc54862cee101d4be8746de6eb">edash_packager::media::ByteQueue::Push</a></div><div class="ttdeci">void Push(const uint8_t *data, int size)</div><div class="ttdoc">Append new bytes to the end of the queue. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00029">byte_queue.cc:29</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1ByteQueue_html_a452485879d303d5c8654e1b184bc1235"><div class="ttname"><a href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#a452485879d303d5c8654e1b184bc1235">edash_packager::media::ByteQueue::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset the queue to the empty state. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00024">byte_queue.cc:24</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1ByteQueue_html_a8253df160751462f3b75290a7c525e56"><div class="ttname"><a href="../../d8/d2e/classedash__packager_1_1media_1_1ByteQueue.html#a8253df160751462f3b75290a7c525e56">edash_packager::media::ByteQueue::Peek</a></div><div class="ttdeci">void Peek(const uint8_t **data, int *size) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00063">byte_queue.cc:63</a></div></div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1ByteQueue_html_acea792e406efe5119cec2e3e522e02c2"><div class="ttname"><a href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#acea792e406efe5119cec2e3e522e02c2">shaka::media::ByteQueue::Push</a></div><div class="ttdeci">void Push(const uint8_t *data, int size)</div><div class="ttdoc">Append new bytes to the end of the queue. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00029">byte_queue.cc:29</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1ByteQueue_html_ab1659ef71098c37e9fb4e55ab1664e84"><div class="ttname"><a href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#ab1659ef71098c37e9fb4e55ab1664e84">shaka::media::ByteQueue::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset the queue to the empty state. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00024">byte_queue.cc:24</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1ByteQueue_html_a838fe5642e533477a5e229981e5f06e7"><div class="ttname"><a href="../../d7/dda/classshaka_1_1media_1_1ByteQueue.html#a838fe5642e533477a5e229981e5f06e7">shaka::media::ByteQueue::Peek</a></div><div class="ttdeci">void Peek(const uint8_t **data, int *size) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/df9/byte__queue_8cc_source.html#l00063">byte_queue.cc:63</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

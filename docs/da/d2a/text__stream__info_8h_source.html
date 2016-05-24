@@ -100,12 +100,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="../../d6/dd7/classedash__packager_1_1media_1_1TextStreamInfo.html">   17</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d6/dd7/classedash__packager_1_1media_1_1TextStreamInfo.html">TextStreamInfo</a> : <span class="keyword">public</span> <a class="code" href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">StreamInfo</a> {</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html">   17</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html">TextStreamInfo</a> : <span class="keyword">public</span> <a class="code" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> {</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <a class="code" href="../../d6/dd7/classedash__packager_1_1media_1_1TextStreamInfo.html#a6e9e056a00a0c9aac053aad83f90ff3c">TextStreamInfo</a>(<span class="keywordtype">int</span> track_id,</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <a class="code" href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#a282748a909bc0f98a6c99580f9d13a46">TextStreamInfo</a>(<span class="keywordtype">int</span> track_id,</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                 uint32_t time_scale,</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                 uint64_t duration,</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                 <span class="keyword">const</span> std::string&amp; codec_string,</div>
@@ -114,13 +114,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;                 uint16_t width,</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;                 uint16_t height);</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d6/dd7/classedash__packager_1_1media_1_1TextStreamInfo.html#ac98b028b990f09f716ea79ab3f16b6c1">IsValidConfig</a>() <span class="keyword">const override</span>;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#ab40aed17c046e639efde04a2075e25a8">IsValidConfig</a>() <span class="keyword">const override</span>;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  uint16_t width()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> width_; }</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  uint16_t height()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> height_; }</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; <span class="keyword">protected</span>:</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  ~<a class="code" href="../../d6/dd7/classedash__packager_1_1media_1_1TextStreamInfo.html">TextStreamInfo</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  ~<a class="code" href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html">TextStreamInfo</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160; <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  uint16_t width_;</div>
@@ -130,17 +130,17 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;};</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;<span class="preprocessor">#endif  // PACKAGER_MEDIA_BASE_TEXT_STREAM_INFO_H_</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1TextStreamInfo_html_ac98b028b990f09f716ea79ab3f16b6c1"><div class="ttname"><a href="../../d6/dd7/classedash__packager_1_1media_1_1TextStreamInfo.html#ac98b028b990f09f716ea79ab3f16b6c1">edash_packager::media::TextStreamInfo::IsValidConfig</a></div><div class="ttdeci">bool IsValidConfig() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d16/text__stream__info_8cc_source.html#l00034">text_stream_info.cc:34</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d6/d06/classedash__packager_1_1media_1_1StreamInfo.html">edash_packager::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00026">stream_info.h:26</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1TextStreamInfo_html"><div class="ttname"><a href="../../d6/dd7/classedash__packager_1_1media_1_1TextStreamInfo.html">edash_packager::media::TextStreamInfo</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/d2a/text__stream__info_8h_source.html#l00017">text_stream_info.h:17</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1TextStreamInfo_html_a6e9e056a00a0c9aac053aad83f90ff3c"><div class="ttname"><a href="../../d6/dd7/classedash__packager_1_1media_1_1TextStreamInfo.html#a6e9e056a00a0c9aac053aad83f90ff3c">edash_packager::media::TextStreamInfo::TextStreamInfo</a></div><div class="ttdeci">TextStreamInfo(int track_id, uint32_t time_scale, uint64_t duration, const std::string &amp;codec_string, const std::string &amp;language, const std::string &amp;extra_data, uint16_t width, uint16_t height)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d16/text__stream__info_8cc_source.html#l00012">text_stream_info.cc:12</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">shaka::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00026">stream_info.h:26</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1TextStreamInfo_html_ab40aed17c046e639efde04a2075e25a8"><div class="ttname"><a href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#ab40aed17c046e639efde04a2075e25a8">shaka::media::TextStreamInfo::IsValidConfig</a></div><div class="ttdeci">bool IsValidConfig() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d16/text__stream__info_8cc_source.html#l00034">text_stream_info.cc:34</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1TextStreamInfo_html"><div class="ttname"><a href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html">shaka::media::TextStreamInfo</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/d2a/text__stream__info_8h_source.html#l00017">text_stream_info.h:17</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1TextStreamInfo_html_a282748a909bc0f98a6c99580f9d13a46"><div class="ttname"><a href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#a282748a909bc0f98a6c99580f9d13a46">shaka::media::TextStreamInfo::TextStreamInfo</a></div><div class="ttdeci">TextStreamInfo(int track_id, uint32_t time_scale, uint64_t duration, const std::string &amp;codec_string, const std::string &amp;language, const std::string &amp;extra_data, uint16_t width, uint16_t height)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d16/text__stream__info_8cc_source.html#l00012">text_stream_info.cc:12</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

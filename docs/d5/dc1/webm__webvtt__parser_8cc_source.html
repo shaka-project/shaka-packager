@@ -93,22 +93,22 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/webm/webm_webvtt_parser.h&quot;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
-<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="../../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html#a979168b11e59b863de2d3ba3fbb60815">   10</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html#a979168b11e59b863de2d3ba3fbb60815">WebMWebVTTParser::Parse</a>(<span class="keyword">const</span> uint8_t* payload,</div>
+<div class="line"><a name="l00010"></a><span class="lineno"><a class="line" href="../../d4/d59/classshaka_1_1media_1_1WebMWebVTTParser.html#a4e6f754e4fba24f7ea77fd0db959908b">   10</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d4/d59/classshaka_1_1media_1_1WebMWebVTTParser.html#a4e6f754e4fba24f7ea77fd0db959908b">WebMWebVTTParser::Parse</a>(<span class="keyword">const</span> uint8_t* payload,</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;                             <span class="keywordtype">int</span> payload_size,</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;                             std::string* <span class="keywordtype">id</span>,</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;                             std::string* settings,</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;                             std::string* content) {</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <a class="code" href="../../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html">WebMWebVTTParser</a> parser(payload, payload_size);</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  parser.<a class="code" href="../../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html#a979168b11e59b863de2d3ba3fbb60815">Parse</a>(<span class="keywordtype">id</span>, settings, content);</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  <a class="code" href="../../d4/d59/classshaka_1_1media_1_1WebMWebVTTParser.html">WebMWebVTTParser</a> parser(payload, payload_size);</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  parser.<a class="code" href="../../d4/d59/classshaka_1_1media_1_1WebMWebVTTParser.html#a4e6f754e4fba24f7ea77fd0db959908b">Parse</a>(<span class="keywordtype">id</span>, settings, content);</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;}</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;WebMWebVTTParser::WebMWebVTTParser(<span class="keyword">const</span> uint8_t* payload, <span class="keywordtype">int</span> payload_size)</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;    : ptr_(payload), ptr_end_(payload + payload_size) {}</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html#a979168b11e59b863de2d3ba3fbb60815">WebMWebVTTParser::Parse</a>(std::string* <span class="keywordtype">id</span>,</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d4/d59/classshaka_1_1media_1_1WebMWebVTTParser.html#a4e6f754e4fba24f7ea77fd0db959908b">WebMWebVTTParser::Parse</a>(std::string* <span class="keywordtype">id</span>,</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                             std::string* settings,</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                             std::string* content) {</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  ParseLine(<span class="keywordtype">id</span>);</div>
@@ -165,13 +165,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;}</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1WebMWebVTTParser_html"><div class="ttname"><a href="../../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html">edash_packager::media::WebMWebVTTParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbf/webm__webvtt__parser_8h_source.html#l00017">webm_webvtt_parser.h:17</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1WebMWebVTTParser_html_a979168b11e59b863de2d3ba3fbb60815"><div class="ttname"><a href="../../dc/dc8/classedash__packager_1_1media_1_1WebMWebVTTParser.html#a979168b11e59b863de2d3ba3fbb60815">edash_packager::media::WebMWebVTTParser::Parse</a></div><div class="ttdeci">static void Parse(const uint8_t *payload, int payload_size, std::string *id, std::string *settings, std::string *content)</div><div class="ttdoc">Utility function to parse the WebVTT cue from a byte stream. </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dc1/webm__webvtt__parser_8cc_source.html#l00010">webm_webvtt_parser.cc:10</a></div></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1WebMWebVTTParser_html_a4e6f754e4fba24f7ea77fd0db959908b"><div class="ttname"><a href="../../d4/d59/classshaka_1_1media_1_1WebMWebVTTParser.html#a4e6f754e4fba24f7ea77fd0db959908b">shaka::media::WebMWebVTTParser::Parse</a></div><div class="ttdeci">static void Parse(const uint8_t *payload, int payload_size, std::string *id, std::string *settings, std::string *content)</div><div class="ttdoc">Utility function to parse the WebVTT cue from a byte stream. </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dc1/webm__webvtt__parser_8cc_source.html#l00010">webm_webvtt_parser.cc:10</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1WebMWebVTTParser_html"><div class="ttname"><a href="../../d4/d59/classshaka_1_1media_1_1WebMWebVTTParser.html">shaka::media::WebMWebVTTParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbf/webm__webvtt__parser_8h_source.html#l00017">webm_webvtt_parser.h:17</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -109,7 +109,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/media_info.pb.h&quot;</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/mpd_builder.h&quot;</span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">class </span>MediaInfo;</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">struct </span>ContentProtectionElement;</div>
@@ -151,7 +151,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keywordtype">bool</span> AtLeastOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3);</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keywordtype">bool</span> OnlyOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3);</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a7015ba137f31c7ae734dc7abb254be64">HexToUUID</a>(<span class="keyword">const</span> std::string&amp; data, std::string* uuid_format);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6">HexToUUID</a>(<span class="keyword">const</span> std::string&amp; data, std::string* uuid_format);</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment">// Update the &lt;cenc:pssh&gt; element for |drm_uuid| ContentProtection element.</span></div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment">// If the element does not exist, this will add one.</span></div>
@@ -160,21 +160,21 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keyword">const</span> std::string&amp; pssh,</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    std::list&lt;ContentProtectionElement&gt;* content_protection_elements);</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                                  Representation* parent);</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                                  AdaptationSet* parent);</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_MPD_UTILS_H_</span></div>
-<div class="ttc" id="namespaceedash__packager_html_a6f62cefcc7cf1a95f19bbea3b310fbab"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a6f62cefcc7cf1a95f19bbea3b310fbab">edash_packager::AddContentProtectionElements</a></div><div class="ttdeci">void AddContentProtectionElements(const MediaInfo &amp;media_info, Representation *parent)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00339">mpd_utils.cc:339</a></div></div>
-<div class="ttc" id="namespaceedash__packager_html_a7015ba137f31c7ae734dc7abb254be64"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a7015ba137f31c7ae734dc7abb254be64">edash_packager::HexToUUID</a></div><div class="ttdeci">bool HexToUUID(const std::string &amp;data, std::string *uuid_format)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00174">mpd_utils.cc:174</a></div></div>
+<div class="ttc" id="namespaceshaka_html_abfd977a0dfb051a942d1694442692814"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">shaka::AddContentProtectionElements</a></div><div class="ttdeci">void AddContentProtectionElements(const MediaInfo &amp;media_info, Representation *parent)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00339">mpd_utils.cc:339</a></div></div>
+<div class="ttc" id="namespaceshaka_html_a4c2ea2c3e7055657ca68a6b8e285d4d6"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6">shaka::HexToUUID</a></div><div class="ttdeci">bool HexToUUID(const std::string &amp;data, std::string *uuid_format)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00174">mpd_utils.cc:174</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

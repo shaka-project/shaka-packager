@@ -104,15 +104,15 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/video_stream_info.h&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/decoder_configuration.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="../../d6/d5d/classedash__packager_1_1media_1_1HEVCDecoderConfiguration.html">   22</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d6/d5d/classedash__packager_1_1media_1_1HEVCDecoderConfiguration.html">HEVCDecoderConfiguration</a> : <span class="keyword">public</span> <a class="code" href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html">DecoderConfiguration</a> {</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="../../d8/d37/classshaka_1_1media_1_1HEVCDecoderConfiguration.html">   22</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d8/d37/classshaka_1_1media_1_1HEVCDecoderConfiguration.html">HEVCDecoderConfiguration</a> : <span class="keyword">public</span> <a class="code" href="../../d1/dc2/classshaka_1_1media_1_1DecoderConfiguration.html">DecoderConfiguration</a> {</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <a class="code" href="../../d6/d5d/classedash__packager_1_1media_1_1HEVCDecoderConfiguration.html">HEVCDecoderConfiguration</a>();</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  ~<a class="code" href="../../d6/d5d/classedash__packager_1_1media_1_1HEVCDecoderConfiguration.html">HEVCDecoderConfiguration</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <a class="code" href="../../d8/d37/classshaka_1_1media_1_1HEVCDecoderConfiguration.html">HEVCDecoderConfiguration</a>();</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  ~<a class="code" href="../../d8/d37/classshaka_1_1media_1_1HEVCDecoderConfiguration.html">HEVCDecoderConfiguration</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  std::string <a class="code" href="../../d6/d5d/classedash__packager_1_1media_1_1HEVCDecoderConfiguration.html#abe707416639b9382c680647d6970eda5">GetCodecString</a>(VideoCodec codec) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  std::string <a class="code" href="../../d8/d37/classshaka_1_1media_1_1HEVCDecoderConfiguration.html#a91a3138a3fd556fc988f245ca8402e23">GetCodecString</a>(VideoCodec codec) <span class="keyword">const</span>;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160; <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordtype">bool</span> ParseInternal() <span class="keyword">override</span>;</div>
@@ -125,20 +125,20 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  std::vector&lt;uint8_t&gt; general_constraint_indicator_flags_;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  uint8_t general_level_idc_;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d6/d5d/classedash__packager_1_1media_1_1HEVCDecoderConfiguration.html">HEVCDecoderConfiguration</a>);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d8/d37/classshaka_1_1media_1_1HEVCDecoderConfiguration.html">HEVCDecoderConfiguration</a>);</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;};</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="preprocessor">#endif  // MEDIA_FILTERS_HEVC_DECODER_CONFIGURATION_H_</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1HEVCDecoderConfiguration_html_abe707416639b9382c680647d6970eda5"><div class="ttname"><a href="../../d6/d5d/classedash__packager_1_1media_1_1HEVCDecoderConfiguration.html#abe707416639b9382c680647d6970eda5">edash_packager::media::HEVCDecoderConfiguration::GetCodecString</a></div><div class="ttdeci">std::string GetCodecString(VideoCodec codec) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d41/hevc__decoder__configuration_8cc_source.html#l00135">hevc_decoder_configuration.cc:135</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1HEVCDecoderConfiguration_html"><div class="ttname"><a href="../../d6/d5d/classedash__packager_1_1media_1_1HEVCDecoderConfiguration.html">edash_packager::media::HEVCDecoderConfiguration</a></div><div class="ttdoc">Class for parsing HEVC decoder configuration. </div><div class="ttdef"><b>Definition:</b> <a href="../../da/d7f/hevc__decoder__configuration_8h_source.html#l00022">hevc_decoder_configuration.h:22</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1DecoderConfiguration_html"><div class="ttname"><a href="../../d8/dfb/classedash__packager_1_1media_1_1DecoderConfiguration.html">edash_packager::media::DecoderConfiguration</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d09/decoder__configuration_8h_source.html#l00020">decoder_configuration.h:20</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1DecoderConfiguration_html"><div class="ttname"><a href="../../d1/dc2/classshaka_1_1media_1_1DecoderConfiguration.html">shaka::media::DecoderConfiguration</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d09/decoder__configuration_8h_source.html#l00020">decoder_configuration.h:20</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1HEVCDecoderConfiguration_html"><div class="ttname"><a href="../../d8/d37/classshaka_1_1media_1_1HEVCDecoderConfiguration.html">shaka::media::HEVCDecoderConfiguration</a></div><div class="ttdoc">Class for parsing HEVC decoder configuration. </div><div class="ttdef"><b>Definition:</b> <a href="../../da/d7f/hevc__decoder__configuration_8h_source.html#l00022">hevc_decoder_configuration.h:22</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1HEVCDecoderConfiguration_html_a91a3138a3fd556fc988f245ca8402e23"><div class="ttname"><a href="../../d8/d37/classshaka_1_1media_1_1HEVCDecoderConfiguration.html#a91a3138a3fd556fc988f245ca8402e23">shaka::media::HEVCDecoderConfiguration::GetCodecString</a></div><div class="ttdeci">std::string GetCodecString(VideoCodec codec) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d41/hevc__decoder__configuration_8cc_source.html#l00135">hevc_decoder_configuration.cc:135</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

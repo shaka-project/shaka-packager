@@ -102,19 +102,19 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/macros.h&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/vpx_parser.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="../../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html">   20</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html">VP9Parser</a> : <span class="keyword">public</span> <a class="code" href="../../d5/dd2/classedash__packager_1_1media_1_1VPxParser.html">VPxParser</a> {</div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="../../db/d5a/classshaka_1_1media_1_1VP9Parser.html">   20</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../db/d5a/classshaka_1_1media_1_1VP9Parser.html">VP9Parser</a> : <span class="keyword">public</span> <a class="code" href="../../db/dcb/classshaka_1_1media_1_1VPxParser.html">VPxParser</a> {</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <a class="code" href="../../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html">VP9Parser</a>();</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  ~<a class="code" href="../../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html">VP9Parser</a>() <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <a class="code" href="../../db/d5a/classshaka_1_1media_1_1VP9Parser.html">VP9Parser</a>();</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  ~<a class="code" href="../../db/d5a/classshaka_1_1media_1_1VP9Parser.html">VP9Parser</a>() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html#a8b997dee438daade536e8ea189d110ed">Parse</a>(<span class="keyword">const</span> uint8_t* data,</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../db/d5a/classshaka_1_1media_1_1VP9Parser.html#ae915c36aa472d70b55e3d65b24612e57">Parse</a>(<span class="keyword">const</span> uint8_t* data,</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;             <span class="keywordtype">size_t</span> data_size,</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;             std::vector&lt;VPxFrameInfo&gt;* vpx_frames) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="../../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html#a5d09008aa9c80c28111979479307082c">IsKeyframe</a>(<span class="keyword">const</span> uint8_t* data, <span class="keywordtype">size_t</span> data_size);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code" href="../../db/d5a/classshaka_1_1media_1_1VP9Parser.html#a52e6a17fa34c5676cd0cdc547cb355a5">IsKeyframe</a>(<span class="keyword">const</span> uint8_t* data, <span class="keywordtype">size_t</span> data_size);</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160; <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="comment">// Keep track of the current width and height. Note that they may change from</span></div>
@@ -122,21 +122,21 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  uint32_t width_;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  uint32_t height_;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html">VP9Parser</a>);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../db/d5a/classshaka_1_1media_1_1VP9Parser.html">VP9Parser</a>);</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;};</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="preprocessor">#endif  // MEDIA_FILTERS_VP9_PARSER_H_</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1VP9Parser_html"><div class="ttname"><a href="../../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html">edash_packager::media::VP9Parser</a></div><div class="ttdoc">Class to parse a vp9 bit stream. </div><div class="ttdef"><b>Definition:</b> <a href="../../df/d8a/vp9__parser_8h_source.html#l00020">vp9_parser.h:20</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1VP9Parser_html_a5d09008aa9c80c28111979479307082c"><div class="ttname"><a href="../../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html#a5d09008aa9c80c28111979479307082c">edash_packager::media::VP9Parser::IsKeyframe</a></div><div class="ttdeci">static bool IsKeyframe(const uint8_t *data, size_t data_size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d8a/vp9__parser_8cc_source.html#l00534">vp9_parser.cc:534</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1VP9Parser_html_a8b997dee438daade536e8ea189d110ed"><div class="ttname"><a href="../../da/d5f/classedash__packager_1_1media_1_1VP9Parser.html#a8b997dee438daade536e8ea189d110ed">edash_packager::media::VP9Parser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *data, size_t data_size, std::vector&lt; VPxFrameInfo &gt; *vpx_frames) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d8a/vp9__parser_8cc_source.html#l00417">vp9_parser.cc:417</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1VPxParser_html"><div class="ttname"><a href="../../d5/dd2/classedash__packager_1_1media_1_1VPxParser.html">edash_packager::media::VPxParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/d8a/vpx__parser_8h_source.html#l00027">vpx_parser.h:27</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1VP9Parser_html_a52e6a17fa34c5676cd0cdc547cb355a5"><div class="ttname"><a href="../../db/d5a/classshaka_1_1media_1_1VP9Parser.html#a52e6a17fa34c5676cd0cdc547cb355a5">shaka::media::VP9Parser::IsKeyframe</a></div><div class="ttdeci">static bool IsKeyframe(const uint8_t *data, size_t data_size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d8a/vp9__parser_8cc_source.html#l00534">vp9_parser.cc:534</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1VPxParser_html"><div class="ttname"><a href="../../db/dcb/classshaka_1_1media_1_1VPxParser.html">shaka::media::VPxParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/d8a/vpx__parser_8h_source.html#l00027">vpx_parser.h:27</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1VP9Parser_html_ae915c36aa472d70b55e3d65b24612e57"><div class="ttname"><a href="../../db/d5a/classshaka_1_1media_1_1VP9Parser.html#ae915c36aa472d70b55e3d65b24612e57">shaka::media::VP9Parser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *data, size_t data_size, std::vector&lt; VPxFrameInfo &gt; *vpx_frames) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d8a/vp9__parser_8cc_source.html#l00417">vp9_parser.cc:417</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1VP9Parser_html"><div class="ttname"><a href="../../db/d5a/classshaka_1_1media_1_1VP9Parser.html">shaka::media::VP9Parser</a></div><div class="ttdoc">Class to parse a vp9 bit stream. </div><div class="ttdef"><b>Definition:</b> <a href="../../df/d8a/vp9__parser_8h_source.html#l00020">vp9_parser.h:20</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

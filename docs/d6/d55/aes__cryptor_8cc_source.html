@@ -115,10 +115,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;}  <span class="comment">// namespace</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#afedfeff8fdfcc25f32f7381f8b7ccdcb">   32</a></span>&#160;<a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#afedfeff8fdfcc25f32f7381f8b7ccdcb">AesCryptor::AesCryptor</a>(ConstantIvFlag constant_iv_flag)</div>
+<div class="line"><a name="l00032"></a><span class="lineno"><a class="line" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a47fbdacc296fbddd899c47ec0c17e5e8">   32</a></span>&#160;<a class="code" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a47fbdacc296fbddd899c47ec0c17e5e8">AesCryptor::AesCryptor</a>(ConstantIvFlag constant_iv_flag)</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    : aes_key_(new AES_KEY),</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;      constant_iv_flag_(constant_iv_flag),</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;      num_crypt_bytes_(0) {}</div>
@@ -155,18 +155,18 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;}</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
-<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a77b4444a269aaa9a4bfd347ebf02b649">   69</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a77b4444a269aaa9a4bfd347ebf02b649">AesCryptor::SetIv</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv) {</div>
+<div class="line"><a name="l00069"></a><span class="lineno"><a class="line" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a4875146da4761bb757d6b00132ae6fea">   69</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a4875146da4761bb757d6b00132ae6fea">AesCryptor::SetIv</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; iv) {</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordflow">if</span> (!IsIvSizeValid(iv.size())) {</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Invalid IV size: &quot;</span> &lt;&lt; iv.size();</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  }</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  iv_ = <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">iv</a>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  iv_ = <a class="code" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a96dde16f12a82a563c77f6d5522571f3">iv</a>;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  num_crypt_bytes_ = 0;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  SetIvInternal();</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;}</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
-<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a4fb26ca8346208a7d2dab4e1f6327a43">   80</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a4fb26ca8346208a7d2dab4e1f6327a43">AesCryptor::UpdateIv</a>() {</div>
+<div class="line"><a name="l00080"></a><span class="lineno"><a class="line" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a812dfc641212f8eb877ab153de7fbb37">   80</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a812dfc641212f8eb877ab153de7fbb37">AesCryptor::UpdateIv</a>() {</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordflow">if</span> (constant_iv_flag_ == kUseConstantIv)</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordflow">return</span>;</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
@@ -195,7 +195,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  SetIvInternal();</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;}</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
-<div class="line"><a name="l00109"></a><span class="lineno"><a class="line" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a0fccd9fe2270f0c584ff1f6c5dd6bd91">  109</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a0fccd9fe2270f0c584ff1f6c5dd6bd91">AesCryptor::GenerateRandomIv</a>(FourCC protection_scheme,</div>
+<div class="line"><a name="l00109"></a><span class="lineno"><a class="line" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a40d9a82d274d6fbaee5346328f11dedd">  109</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a40d9a82d274d6fbaee5346328f11dedd">AesCryptor::GenerateRandomIv</a>(FourCC protection_scheme,</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;                                  std::vector&lt;uint8_t&gt;* iv) {</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="comment">// ISO/IEC 23001-7:2016 10.1 and 10.3 For &#39;cenc&#39; and &#39;cens&#39;</span></div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="comment">// default_Per_Sample_IV_Size and Per_Sample_IV_Size SHOULD be 8-bytes.</span></div>
@@ -220,18 +220,18 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;}</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;</div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;</div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_afedfeff8fdfcc25f32f7381f8b7ccdcb"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#afedfeff8fdfcc25f32f7381f8b7ccdcb">edash_packager::media::AesCryptor::AesCryptor</a></div><div class="ttdeci">AesCryptor(ConstantIvFlag constant_iv_flag)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00032">aes_cryptor.cc:32</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a0fccd9fe2270f0c584ff1f6c5dd6bd91"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a0fccd9fe2270f0c584ff1f6c5dd6bd91">edash_packager::media::AesCryptor::GenerateRandomIv</a></div><div class="ttdeci">static bool GenerateRandomIv(FourCC protection_scheme, std::vector&lt; uint8_t &gt; *iv)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00109">aes_cryptor.cc:109</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a4fb26ca8346208a7d2dab4e1f6327a43"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a4fb26ca8346208a7d2dab4e1f6327a43">edash_packager::media::AesCryptor::UpdateIv</a></div><div class="ttdeci">void UpdateIv()</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00080">aes_cryptor.cc:80</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a049b4b415e44428c4543f7e2f7b36b34"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a049b4b415e44428c4543f7e2f7b36b34">edash_packager::media::AesCryptor::iv</a></div><div class="ttdeci">const std::vector&lt; uint8_t &gt; &amp; iv() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/aes__cryptor_8h_source.html#l00081">aes_cryptor.h:81</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesCryptor_html_a77b4444a269aaa9a4bfd347ebf02b649"><div class="ttname"><a href="../../d9/d60/classedash__packager_1_1media_1_1AesCryptor.html#a77b4444a269aaa9a4bfd347ebf02b649">edash_packager::media::AesCryptor::SetIv</a></div><div class="ttdeci">bool SetIv(const std::vector&lt; uint8_t &gt; &amp;iv)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00069">aes_cryptor.cc:69</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1AesCryptor_html_a812dfc641212f8eb877ab153de7fbb37"><div class="ttname"><a href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a812dfc641212f8eb877ab153de7fbb37">shaka::media::AesCryptor::UpdateIv</a></div><div class="ttdeci">void UpdateIv()</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00080">aes_cryptor.cc:80</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1AesCryptor_html_a47fbdacc296fbddd899c47ec0c17e5e8"><div class="ttname"><a href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a47fbdacc296fbddd899c47ec0c17e5e8">shaka::media::AesCryptor::AesCryptor</a></div><div class="ttdeci">AesCryptor(ConstantIvFlag constant_iv_flag)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00032">aes_cryptor.cc:32</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1AesCryptor_html_a96dde16f12a82a563c77f6d5522571f3"><div class="ttname"><a href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a96dde16f12a82a563c77f6d5522571f3">shaka::media::AesCryptor::iv</a></div><div class="ttdeci">const std::vector&lt; uint8_t &gt; &amp; iv() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d42/aes__cryptor_8h_source.html#l00081">aes_cryptor.h:81</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1AesCryptor_html_a40d9a82d274d6fbaee5346328f11dedd"><div class="ttname"><a href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a40d9a82d274d6fbaee5346328f11dedd">shaka::media::AesCryptor::GenerateRandomIv</a></div><div class="ttdeci">static bool GenerateRandomIv(FourCC protection_scheme, std::vector&lt; uint8_t &gt; *iv)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00109">aes_cryptor.cc:109</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1AesCryptor_html_a4875146da4761bb757d6b00132ae6fea"><div class="ttname"><a href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a4875146da4761bb757d6b00132ae6fea">shaka::media::AesCryptor::SetIv</a></div><div class="ttdeci">bool SetIv(const std::vector&lt; uint8_t &gt; &amp;iv)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d55/aes__cryptor_8cc_source.html#l00069">aes_cryptor.cc:69</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

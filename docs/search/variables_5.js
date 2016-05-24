@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['output_5ffile_5fname',['output_file_name',['../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#addd401a47b287f3c18cbdc4bfa1a6963',1,'edash_packager::media::MuxerOptions']]]
+  ['output_5ffile_5fname',['output_file_name',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82',1,'shaka::media::MuxerOptions']]]
 ];

@@ -99,41 +99,41 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;packager/base/sys_byteorder.h&quot;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;BufferWriter::BufferWriter() {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">size_t</span> kDefaultReservedCapacity = 0x40000;  <span class="comment">// 256KB.</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  buf_.reserve(kDefaultReservedCapacity);</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;}</div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#abffefbaff39469927deaaa97fec636a4">   20</a></span>&#160;BufferWriter::BufferWriter(<span class="keywordtype">size_t</span> reserved_size_in_bytes) {</div>
+<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#a01d91524fd5c5491bafcc1cff16db916">   20</a></span>&#160;BufferWriter::BufferWriter(<span class="keywordtype">size_t</span> reserved_size_in_bytes) {</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  buf_.reserve(reserved_size_in_bytes);</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;}</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;BufferWriter::~BufferWriter() {}</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">   25</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">BufferWriter::AppendInt</a>(uint8_t v) {</div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#abd8854feedd8b45146eb04dacf7d5b2f">   25</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#abd8854feedd8b45146eb04dacf7d5b2f">BufferWriter::AppendInt</a>(uint8_t v) {</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  buf_.push_back(v);</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;}</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">BufferWriter::AppendInt</a>(uint16_t v) {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#abd8854feedd8b45146eb04dacf7d5b2f">BufferWriter::AppendInt</a>(uint16_t v) {</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  AppendInternal(base::HostToNet16(v));</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;}</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">BufferWriter::AppendInt</a>(uint32_t v) {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#abd8854feedd8b45146eb04dacf7d5b2f">BufferWriter::AppendInt</a>(uint32_t v) {</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  AppendInternal(base::HostToNet32(v));</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;}</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">BufferWriter::AppendInt</a>(uint64_t v) {</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#abd8854feedd8b45146eb04dacf7d5b2f">BufferWriter::AppendInt</a>(uint64_t v) {</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  AppendInternal(base::HostToNet64(v));</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">BufferWriter::AppendInt</a>(int16_t v) {</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#abd8854feedd8b45146eb04dacf7d5b2f">BufferWriter::AppendInt</a>(int16_t v) {</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  AppendInternal(base::HostToNet16(v));</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">BufferWriter::AppendInt</a>(int32_t v) {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#abd8854feedd8b45146eb04dacf7d5b2f">BufferWriter::AppendInt</a>(int32_t v) {</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  AppendInternal(base::HostToNet32(v));</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;}</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">BufferWriter::AppendInt</a>(int64_t v) {</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#abd8854feedd8b45146eb04dacf7d5b2f">BufferWriter::AppendInt</a>(int64_t v) {</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  AppendInternal(base::HostToNet64(v));</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;}</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#ac929211fc97bc8ec880109775757bb81">   47</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#ac929211fc97bc8ec880109775757bb81">BufferWriter::AppendNBytes</a>(uint64_t v, <span class="keywordtype">size_t</span> num_bytes) {</div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#ae44b09c03c9b8f0fbf58deb80355f299">   47</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#ae44b09c03c9b8f0fbf58deb80355f299">BufferWriter::AppendNBytes</a>(uint64_t v, <span class="keywordtype">size_t</span> num_bytes) {</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  DCHECK_GE(<span class="keyword">sizeof</span>(v), num_bytes);</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  v = base::HostToNet64(v);</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keyword">const</span> uint8_t* data = <span class="keyword">reinterpret_cast&lt;</span>uint8_t*<span class="keyword">&gt;</span>(&amp;v);</div>
@@ -152,16 +152,16 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  buf_.insert(buf_.end(), buffer.buf_.begin(), buffer.buf_.end());</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;}</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#aa83fe945386e5a75d3c377904fdddce2">   66</a></span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> <a class="code" href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#aa83fe945386e5a75d3c377904fdddce2">BufferWriter::WriteToFile</a>(<a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html">File</a>* file) {</div>
+<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#a868dba843fcf923dd140fdda859a3a6d">   66</a></span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#a868dba843fcf923dd140fdda859a3a6d">BufferWriter::WriteToFile</a>(<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html">File</a>* file) {</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  DCHECK(file);</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  DCHECK(!buf_.empty());</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordtype">size_t</span> remaining_size = buf_.size();</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keyword">const</span> uint8_t* buf = &amp;buf_[0];</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordflow">while</span> (remaining_size &gt; 0) {</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    int64_t size_written = file-&gt;<a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#ad82196743ff131dd81e8f806735eb818">Write</a>(buf, remaining_size);</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    int64_t size_written = file-&gt;<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#a3149670c0d085e71f0aa085ee87fdda5">Write</a>(buf, remaining_size);</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordflow">if</span> (size_written &lt;= 0) {</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::FILE_FAILURE,</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>(error::FILE_FAILURE,</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                    <span class="stringliteral">&quot;Fail to write to file in BufferWriter&quot;</span>);</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    }</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    remaining_size -= size_written;</div>
@@ -177,17 +177,17 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1BufferWriter_html_ac929211fc97bc8ec880109775757bb81"><div class="ttname"><a href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#ac929211fc97bc8ec880109775757bb81">edash_packager::media::BufferWriter::AppendNBytes</a></div><div class="ttdeci">void AppendNBytes(uint64_t v, size_t num_bytes)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd3/buffer__writer_8cc_source.html#l00047">buffer_writer.cc:47</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1File_html"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html">edash_packager::media::File</a></div><div class="ttdoc">Define an abstract file interface. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4d/file_8h_source.html#l00024">file.h:24</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1Status_html"><div class="ttname"><a href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">edash_packager::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1BufferWriter_html_aa83fe945386e5a75d3c377904fdddce2"><div class="ttname"><a href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#aa83fe945386e5a75d3c377904fdddce2">edash_packager::media::BufferWriter::WriteToFile</a></div><div class="ttdeci">Status WriteToFile(File *file)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd3/buffer__writer_8cc_source.html#l00066">buffer_writer.cc:66</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1BufferWriter_html_afd1449487750c41331a2d91ac417f115"><div class="ttname"><a href="../../df/dde/classedash__packager_1_1media_1_1BufferWriter.html#afd1449487750c41331a2d91ac417f115">edash_packager::media::BufferWriter::AppendInt</a></div><div class="ttdeci">void AppendInt(uint8_t v)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd3/buffer__writer_8cc_source.html#l00025">buffer_writer.cc:25</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1File_html_ad82196743ff131dd81e8f806735eb818"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#ad82196743ff131dd81e8f806735eb818">edash_packager::media::File::Write</a></div><div class="ttdeci">virtual int64_t Write(const void *buffer, uint64_t length)=0</div></div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1File_html_a3149670c0d085e71f0aa085ee87fdda5"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a3149670c0d085e71f0aa085ee87fdda5">shaka::media::File::Write</a></div><div class="ttdeci">virtual int64_t Write(const void *buffer, uint64_t length)=0</div></div>
+<div class="ttc" id="classshaka_1_1media_1_1File_html"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html">shaka::media::File</a></div><div class="ttdoc">Define an abstract file interface. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4d/file_8h_source.html#l00024">file.h:24</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1BufferWriter_html_abd8854feedd8b45146eb04dacf7d5b2f"><div class="ttname"><a href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#abd8854feedd8b45146eb04dacf7d5b2f">shaka::media::BufferWriter::AppendInt</a></div><div class="ttdeci">void AppendInt(uint8_t v)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd3/buffer__writer_8cc_source.html#l00025">buffer_writer.cc:25</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1BufferWriter_html_ae44b09c03c9b8f0fbf58deb80355f299"><div class="ttname"><a href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#ae44b09c03c9b8f0fbf58deb80355f299">shaka::media::BufferWriter::AppendNBytes</a></div><div class="ttdeci">void AppendNBytes(uint64_t v, size_t num_bytes)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd3/buffer__writer_8cc_source.html#l00047">buffer_writer.cc:47</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1BufferWriter_html_a868dba843fcf923dd140fdda859a3a6d"><div class="ttname"><a href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html#a868dba843fcf923dd140fdda859a3a6d">shaka::media::BufferWriter::WriteToFile</a></div><div class="ttdeci">Status WriteToFile(File *file)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd3/buffer__writer_8cc_source.html#l00066">buffer_writer.cc:66</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

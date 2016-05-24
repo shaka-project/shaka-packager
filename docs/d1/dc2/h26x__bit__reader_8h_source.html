@@ -101,17 +101,17 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/macros.h&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">// A class to provide bit-granularity reading of H.264/H.265 streams.</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">// This is not a generic bit reader class, as it takes into account</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">// H.264 stream-specific constraints, such as skipping emulation-prevention</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">// bytes and stop bits. See spec for more details.</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="../../d3/dec/classedash__packager_1_1media_1_1H26xBitReader.html">   22</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d3/dec/classedash__packager_1_1media_1_1H26xBitReader.html">H26xBitReader</a> {</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">   22</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a> {</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <a class="code" href="../../d3/dec/classedash__packager_1_1media_1_1H26xBitReader.html">H26xBitReader</a>();</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  ~<a class="code" href="../../d3/dec/classedash__packager_1_1media_1_1H26xBitReader.html">H26xBitReader</a>();</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>();</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  ~<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>();</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="comment">// Initialize the reader to start reading at |data|, |size| being size</span></div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="comment">// of |data| in bytes.</span></div>
@@ -181,18 +181,18 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="comment">// Number of emulation preventation bytes (0x000003) we met.</span></div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordtype">size_t</span> emulation_prevention_bytes_;</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d3/dec/classedash__packager_1_1media_1_1H26xBitReader.html">H26xBitReader</a>);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>);</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;};</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor">#endif  // MEDIA_FILTERS_H264_BIT_READER_H_</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1H26xBitReader_html"><div class="ttname"><a href="../../d3/dec/classedash__packager_1_1media_1_1H26xBitReader.html">edash_packager::media::H26xBitReader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc2/h26x__bit__reader_8h_source.html#l00022">h26x_bit_reader.h:22</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1H26xBitReader_html"><div class="ttname"><a href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">shaka::media::H26xBitReader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/dc2/h26x__bit__reader_8h_source.html#l00022">h26x_bit_reader.h:22</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

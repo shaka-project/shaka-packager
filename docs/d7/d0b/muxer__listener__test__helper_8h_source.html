@@ -106,7 +106,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/video_stream_info.h&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/media_info.pb.h&quot;</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
@@ -143,9 +143,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="comment">// Struct that gets passed for to CreateVideoStreamInfo() to create a</span></div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">// StreamInfo instance. Useful for generating multiple VideoStreamInfo with</span></div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="comment">// slightly different parameters.</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="../../d2/dd9/structedash__packager_1_1media_1_1VideoStreamInfoParameters.html">   57</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d2/dd9/structedash__packager_1_1media_1_1VideoStreamInfoParameters.html">VideoStreamInfoParameters</a> {</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <a class="code" href="../../d2/dd9/structedash__packager_1_1media_1_1VideoStreamInfoParameters.html">VideoStreamInfoParameters</a>();</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  ~<a class="code" href="../../d2/dd9/structedash__packager_1_1media_1_1VideoStreamInfoParameters.html">VideoStreamInfoParameters</a>();</div>
+<div class="line"><a name="l00057"></a><span class="lineno"><a class="line" href="../../d6/d26/structshaka_1_1media_1_1VideoStreamInfoParameters.html">   57</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d6/d26/structshaka_1_1media_1_1VideoStreamInfoParameters.html">VideoStreamInfoParameters</a> {</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <a class="code" href="../../d6/d26/structshaka_1_1media_1_1VideoStreamInfoParameters.html">VideoStreamInfoParameters</a>();</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  ~<a class="code" href="../../d6/d26/structshaka_1_1media_1_1VideoStreamInfoParameters.html">VideoStreamInfoParameters</a>();</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordtype">int</span> track_id;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  uint32_t time_scale;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  uint64_t duration;</div>
@@ -162,7 +162,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;};</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment">// Note that this does not have vector of StreamInfo pointer.</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="../../d3/de7/structedash__packager_1_1media_1_1OnMediaEndParameters.html">   76</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../d3/de7/structedash__packager_1_1media_1_1OnMediaEndParameters.html">OnMediaEndParameters</a> {</div>
+<div class="line"><a name="l00076"></a><span class="lineno"><a class="line" href="../../db/db8/structshaka_1_1media_1_1OnMediaEndParameters.html">   76</a></span>&#160;<span class="keyword">struct </span><a class="code" href="../../db/db8/structshaka_1_1media_1_1OnMediaEndParameters.html">OnMediaEndParameters</a> {</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keywordtype">bool</span> has_init_range;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  uint64_t init_range_start;</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  uint64_t init_range_end;</div>
@@ -175,19 +175,19 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="comment">// Creates StreamInfo instance from VideoStreamInfoParameters.</span></div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;scoped_refptr&lt;StreamInfo&gt; CreateVideoStreamInfo(</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d2/dd9/structedash__packager_1_1media_1_1VideoStreamInfoParameters.html">VideoStreamInfoParameters</a>&amp; param);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d6/d26/structshaka_1_1media_1_1VideoStreamInfoParameters.html">VideoStreamInfoParameters</a>&amp; param);</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="comment">// Returns the &quot;default&quot; VideoStreamInfoParameters for testing.</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<a class="code" href="../../d2/dd9/structedash__packager_1_1media_1_1VideoStreamInfoParameters.html">VideoStreamInfoParameters</a> GetDefaultVideoStreamInfoParams();</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<a class="code" href="../../d6/d26/structshaka_1_1media_1_1VideoStreamInfoParameters.html">VideoStreamInfoParameters</a> GetDefaultVideoStreamInfoParams();</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="comment">// Returns the &quot;default&quot; values for OnMediaEnd().</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<a class="code" href="../../d3/de7/structedash__packager_1_1media_1_1OnMediaEndParameters.html">OnMediaEndParameters</a> GetDefaultOnMediaEndParams();</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;<a class="code" href="../../db/db8/structshaka_1_1media_1_1OnMediaEndParameters.html">OnMediaEndParameters</a> GetDefaultOnMediaEndParams();</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment">// Returns the &quot;default&quot; ProtectionSystemSpecificInfo for testing.</span></div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;std::vector&lt;ProtectionSystemSpecificInfo&gt; GetDefaultKeySystemInfo();</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;<span class="comment">// Sets &quot;default&quot; values for muxer_options for testing.</span></div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="keywordtype">void</span> SetDefaultMuxerOptionsValues(<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">MuxerOptions</a>* muxer_options);</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="keywordtype">void</span> SetDefaultMuxerOptionsValues(<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">MuxerOptions</a>* muxer_options);</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;<span class="comment">// Expect that expect and actual are equal.</span></div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;<span class="keywordtype">void</span> ExpectMediaInfoEqual(<span class="keyword">const</span> MediaInfo&amp; expect, <span class="keyword">const</span> MediaInfo&amp; actual);</div>
@@ -197,16 +197,16 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;<span class="preprocessor">#endif  // MEDIA_EVENT_MUXER_LISTENER_TEST_HELPER_H_</span></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1OnMediaEndParameters_html"><div class="ttname"><a href="../../d3/de7/structedash__packager_1_1media_1_1OnMediaEndParameters.html">edash_packager::media::OnMediaEndParameters</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d0b/muxer__listener__test__helper_8h_source.html#l00076">muxer_listener_test_helper.h:76</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1VideoStreamInfoParameters_html"><div class="ttname"><a href="../../d2/dd9/structedash__packager_1_1media_1_1VideoStreamInfoParameters.html">edash_packager::media::VideoStreamInfoParameters</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d0b/muxer__listener__test__helper_8h_source.html#l00057">muxer_listener_test_helper.h:57</a></div></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html">edash_packager::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
+<div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">shaka::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
+<div class="ttc" id="structshaka_1_1media_1_1VideoStreamInfoParameters_html"><div class="ttname"><a href="../../d6/d26/structshaka_1_1media_1_1VideoStreamInfoParameters.html">shaka::media::VideoStreamInfoParameters</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d0b/muxer__listener__test__helper_8h_source.html#l00057">muxer_listener_test_helper.h:57</a></div></div>
+<div class="ttc" id="structshaka_1_1media_1_1OnMediaEndParameters_html"><div class="ttname"><a href="../../db/db8/structshaka_1_1media_1_1OnMediaEndParameters.html">shaka::media::OnMediaEndParameters</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d0b/muxer__listener__test__helper_8h_source.html#l00076">muxer_listener_test_helper.h:76</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

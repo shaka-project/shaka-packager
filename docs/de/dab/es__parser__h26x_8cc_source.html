@@ -105,7 +105,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/h265_byte_to_unit_stream_converter.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp2t/mp2t_common.h&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">namespace </span>mp2t {</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
@@ -353,7 +353,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;</div>
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;  <span class="comment">// Create the media sample, emitting always the previous sample after</span></div>
 <div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;  <span class="comment">// calculating its duration.</span></div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  scoped_refptr&lt;MediaSample&gt; media_sample = <a class="code" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html#ac65ec88fbe6d8b72c65b1ff3f68c5b02">MediaSample::CopyFrom</a>(</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;  scoped_refptr&lt;MediaSample&gt; media_sample = <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a3fac8e4cc8da3b34ef5f698411ec868b">MediaSample::CopyFrom</a>(</div>
 <div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;      converted_frame.data(), converted_frame.size(), is_key_frame);</div>
 <div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  media_sample-&gt;set_dts(current_timing_desc.dts);</div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;  media_sample-&gt;set_pts(current_timing_desc.pts);</div>
@@ -370,12 +370,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;</div>
 <div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
 <div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1MediaSample_html_ac65ec88fbe6d8b72c65b1ff3f68c5b02"><div class="ttname"><a href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html#ac65ec88fbe6d8b72c65b1ff3f68c5b02">edash_packager::media::MediaSample::CopyFrom</a></div><div class="ttdeci">static scoped_refptr&lt; MediaSample &gt; CopyFrom(const uint8_t *data, size_t size, bool is_key_frame)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00045">media_sample.cc:45</a></div></div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_a3fac8e4cc8da3b34ef5f698411ec868b"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a3fac8e4cc8da3b34ef5f698411ec868b">shaka::media::MediaSample::CopyFrom</a></div><div class="ttdeci">static scoped_refptr&lt; MediaSample &gt; CopyFrom(const uint8_t *data, size_t size, bool is_key_frame)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00045">media_sample.cc:45</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

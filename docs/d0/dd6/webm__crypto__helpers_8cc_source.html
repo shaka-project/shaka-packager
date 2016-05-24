@@ -97,7 +97,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;packager/base/sys_byteorder.h&quot;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/webm/webm_constants.h&quot;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>{</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
@@ -107,7 +107,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="comment">// kDecryptionKeySize bytes.</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;std::string GenerateWebMCounterBlock(<span class="keyword">const</span> uint8_t* iv, <span class="keywordtype">int</span> iv_size) {</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  std::string counter_block(reinterpret_cast&lt;const char*&gt;(iv), iv_size);</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  counter_block.append(<a class="code" href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a65b9e6b7a1a2308f38e6b435bf8ce5bb">DecryptConfig::kDecryptionKeySize</a> - iv_size, 0);</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  counter_block.append(<a class="code" href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html#afa140203b87d3e46d5fd94b231734f53">DecryptConfig::kDecryptionKeySize</a> - iv_size, 0);</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keywordflow">return</span> counter_block;</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;}</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
@@ -151,12 +151,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;}</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1DecryptConfig_html_a65b9e6b7a1a2308f38e6b435bf8ce5bb"><div class="ttname"><a href="../../d4/da1/classedash__packager_1_1media_1_1DecryptConfig.html#a65b9e6b7a1a2308f38e6b435bf8ce5bb">edash_packager::media::DecryptConfig::kDecryptionKeySize</a></div><div class="ttdeci">static const size_t kDecryptionKeySize</div><div class="ttdoc">Keys are always 128 bits. </div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00043">decrypt_config.h:43</a></div></div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1DecryptConfig_html_afa140203b87d3e46d5fd94b231734f53"><div class="ttname"><a href="../../de/d49/classshaka_1_1media_1_1DecryptConfig.html#afa140203b87d3e46d5fd94b231734f53">shaka::media::DecryptConfig::kDecryptionKeySize</a></div><div class="ttdeci">static const size_t kDecryptionKeySize</div><div class="ttdoc">Keys are always 128 bits. </div><div class="ttdef"><b>Definition:</b> <a href="../../df/dad/decrypt__config_8h_source.html#l00043">decrypt_config.h:43</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

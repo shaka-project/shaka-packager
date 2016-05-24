@@ -113,17 +113,17 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;}  <span class="comment">// namespace</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;WebMVideoClient::WebMVideoClient() {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <a class="code" href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#a930005c28c03cc72b0f6b8d2500964a4">Reset</a>();</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <a class="code" href="../../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#af3ad16a6046f60abf43a798747fc1edc">Reset</a>();</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;}</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;WebMVideoClient::~WebMVideoClient() {</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;}</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#a930005c28c03cc72b0f6b8d2500964a4">   37</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#a930005c28c03cc72b0f6b8d2500964a4">WebMVideoClient::Reset</a>() {</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="../../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#af3ad16a6046f60abf43a798747fc1edc">   37</a></span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#af3ad16a6046f60abf43a798747fc1edc">WebMVideoClient::Reset</a>() {</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  pixel_width_ = -1;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  pixel_height_ = -1;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  crop_bottom_ = -1;</div>
@@ -136,7 +136,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  alpha_mode_ = -1;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;}</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;</div>
-<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#ae9bd12612eca7668a8cca6c122f06065">   50</a></span>&#160;scoped_refptr&lt;VideoStreamInfo&gt; <a class="code" href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#ae9bd12612eca7668a8cca6c122f06065">WebMVideoClient::GetVideoStreamInfo</a>(</div>
+<div class="line"><a name="l00050"></a><span class="lineno"><a class="line" href="../../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#a266f4308e70a1b7c1fb2a542284f9bea">   50</a></span>&#160;scoped_refptr&lt;VideoStreamInfo&gt; <a class="code" href="../../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#a266f4308e70a1b7c1fb2a542284f9bea">WebMVideoClient::GetVideoStreamInfo</a>(</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    int64_t track_num,</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">const</span> std::string&amp; codec_id,</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; codec_private,</div>
@@ -194,7 +194,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  sar_x /= gcd;</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  sar_y /= gcd;</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="keywordflow">return</span> scoped_refptr&lt;VideoStreamInfo&gt;(<span class="keyword">new</span> <a class="code" href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a>(</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="keywordflow">return</span> scoped_refptr&lt;VideoStreamInfo&gt;(<span class="keyword">new</span> <a class="code" href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html">VideoStreamInfo</a>(</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      track_num, kWebMTimeScale, 0, video_codec, std::string(), std::string(),</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;      width_after_crop, height_after_crop, sar_x, sar_y, 0, 0, NULL, 0,</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;      is_encrypted));</div>
@@ -259,14 +259,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;}</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;</div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1WebMVideoClient_html_ae9bd12612eca7668a8cca6c122f06065"><div class="ttname"><a href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#ae9bd12612eca7668a8cca6c122f06065">edash_packager::media::WebMVideoClient::GetVideoStreamInfo</a></div><div class="ttdeci">scoped_refptr&lt; VideoStreamInfo &gt; GetVideoStreamInfo(int64_t track_num, const std::string &amp;codec_id, const std::vector&lt; uint8_t &gt; &amp;codec_private, bool is_encrypted)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d7d/webm__video__client_8cc_source.html#l00050">webm_video_client.cc:50</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1WebMVideoClient_html_a930005c28c03cc72b0f6b8d2500964a4"><div class="ttname"><a href="../../dc/d0c/classedash__packager_1_1media_1_1WebMVideoClient.html#a930005c28c03cc72b0f6b8d2500964a4">edash_packager::media::WebMVideoClient::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset this object&#39;s state so it can process a new video track element. </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d7d/webm__video__client_8cc_source.html#l00037">webm_video_client.cc:37</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1VideoStreamInfo_html"><div class="ttname"><a href="../../d7/d3a/classedash__packager_1_1media_1_1VideoStreamInfo.html">edash_packager::media::VideoStreamInfo</a></div><div class="ttdoc">Holds video stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d87/video__stream__info_8h_source.html#l00031">video_stream_info.h:31</a></div></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1WebMVideoClient_html_af3ad16a6046f60abf43a798747fc1edc"><div class="ttname"><a href="../../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#af3ad16a6046f60abf43a798747fc1edc">shaka::media::WebMVideoClient::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset this object&#39;s state so it can process a new video track element. </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d7d/webm__video__client_8cc_source.html#l00037">webm_video_client.cc:37</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1WebMVideoClient_html_a266f4308e70a1b7c1fb2a542284f9bea"><div class="ttname"><a href="../../d3/d67/classshaka_1_1media_1_1WebMVideoClient.html#a266f4308e70a1b7c1fb2a542284f9bea">shaka::media::WebMVideoClient::GetVideoStreamInfo</a></div><div class="ttdeci">scoped_refptr&lt; VideoStreamInfo &gt; GetVideoStreamInfo(int64_t track_num, const std::string &amp;codec_id, const std::vector&lt; uint8_t &gt; &amp;codec_private, bool is_encrypted)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d7d/webm__video__client_8cc_source.html#l00050">webm_video_client.cc:50</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1VideoStreamInfo_html"><div class="ttname"><a href="../../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html">shaka::media::VideoStreamInfo</a></div><div class="ttdoc">Holds video stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d87/video__stream__info_8h_source.html#l00031">video_stream_info.h:31</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -104,7 +104,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/media_info.pb.h&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/mpd_builder.h&quot;</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>edash_packager{</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>shaka{</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="keyword">enum</span> ContentType {</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  kContentTypeUnknown,</div>
@@ -113,22 +113,22 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  kContentTypeText</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;};</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../db/d09/namespaceedash__packager.html#a2ecf0fb529eaf5ab21310d309bb9f9e9">WriteMpdToFile</a>(<span class="keyword">const</span> std::string&amp; output_path, MpdBuilder* mpd_builder);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a7e940cda37fa0dbefef3b3cc9c802ab8">WriteMpdToFile</a>(<span class="keyword">const</span> std::string&amp; output_path, MpdBuilder* mpd_builder);</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;ContentType <a class="code" href="../../db/d09/namespaceedash__packager.html#a7f479c5670e5c9f721772e0bd316bff9">GetContentType</a>(<span class="keyword">const</span> MediaInfo&amp; media_info);</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;ContentType <a class="code" href="../../d8/daf/namespaceshaka.html#a5ea880937da26d677ff6a48c0219d090">GetContentType</a>(<span class="keyword">const</span> MediaInfo&amp; media_info);</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;std::string <a class="code" href="../../db/d09/namespaceedash__packager.html#ac77ba3cf9242f2a678ec0ba7c61e5d0a">Uint8VectorToBase64</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; input);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;std::string <a class="code" href="../../d8/daf/namespaceshaka.html#a4c7f8f964fec2bb9543e7ee8da9cd994">Uint8VectorToBase64</a>(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; input);</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_MPD_NOTIFIER_UTIL_H_</span></div>
-<div class="ttc" id="namespaceedash__packager_html_ac77ba3cf9242f2a678ec0ba7c61e5d0a"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#ac77ba3cf9242f2a678ec0ba7c61e5d0a">edash_packager::Uint8VectorToBase64</a></div><div class="ttdeci">std::string Uint8VectorToBase64(const std::vector&lt; uint8_t &gt; &amp;input)</div><div class="ttdoc">Converts uint8 vector into base64 encoded string. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d2e/mpd__notifier__util_8cc_source.html#l00068">mpd_notifier_util.cc:68</a></div></div>
-<div class="ttc" id="namespaceedash__packager_html_a2ecf0fb529eaf5ab21310d309bb9f9e9"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a2ecf0fb529eaf5ab21310d309bb9f9e9">edash_packager::WriteMpdToFile</a></div><div class="ttdeci">bool WriteMpdToFile(const std::string &amp;output_path, MpdBuilder *mpd_builder)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d2e/mpd__notifier__util_8cc_source.html#l00020">mpd_notifier_util.cc:20</a></div></div>
-<div class="ttc" id="namespaceedash__packager_html_a7f479c5670e5c9f721772e0bd316bff9"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a7f479c5670e5c9f721772e0bd316bff9">edash_packager::GetContentType</a></div><div class="ttdeci">ContentType GetContentType(const MediaInfo &amp;media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d2e/mpd__notifier__util_8cc_source.html#l00051">mpd_notifier_util.cc:51</a></div></div>
+<div class="ttc" id="namespaceshaka_html_a4c7f8f964fec2bb9543e7ee8da9cd994"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a4c7f8f964fec2bb9543e7ee8da9cd994">shaka::Uint8VectorToBase64</a></div><div class="ttdeci">std::string Uint8VectorToBase64(const std::vector&lt; uint8_t &gt; &amp;input)</div><div class="ttdoc">Converts uint8 vector into base64 encoded string. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d2e/mpd__notifier__util_8cc_source.html#l00068">mpd_notifier_util.cc:68</a></div></div>
+<div class="ttc" id="namespaceshaka_html_a5ea880937da26d677ff6a48c0219d090"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a5ea880937da26d677ff6a48c0219d090">shaka::GetContentType</a></div><div class="ttdeci">ContentType GetContentType(const MediaInfo &amp;media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d2e/mpd__notifier__util_8cc_source.html#l00051">mpd_notifier_util.cc:51</a></div></div>
+<div class="ttc" id="namespaceshaka_html_a7e940cda37fa0dbefef3b3cc9c802ab8"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a7e940cda37fa0dbefef3b3cc9c802ab8">shaka::WriteMpdToFile</a></div><div class="ttdeci">bool WriteMpdToFile(const std::string &amp;output_path, MpdBuilder *mpd_builder)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d2e/mpd__notifier__util_8cc_source.html#l00020">mpd_notifier_util.cc:20</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -126,7 +126,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;              <span class="stringliteral">&quot;--override_version_string is false. Should be used for testing &quot;</span></div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;              <span class="stringliteral">&quot;only.&quot;</span>);</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">void</span> DumpStreamInfo(<span class="keyword">const</span> std::vector&lt;MediaStream*&gt;&amp; streams) {</div>
@@ -139,7 +139,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  scoped_ptr&lt;RequestSigner&gt; signer;</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordflow">if</span> (!FLAGS_aes_signing_key.empty()) {</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    signer.reset(<a class="code" href="../../d8/dcc/classedash__packager_1_1media_1_1AesRequestSigner.html#a1e43c2e7e3ab4f5e07d442ed59fc1278">AesRequestSigner::CreateSigner</a>(</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    signer.reset(<a class="code" href="../../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html#a43f4cc9fad9901fa905805be81f7d58c">AesRequestSigner::CreateSigner</a>(</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        FLAGS_signer, FLAGS_aes_signing_key, FLAGS_aes_signing_iv));</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    <span class="keywordflow">if</span> (!signer) {</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot create an AES signer object from &#39;&quot;</span></div>
@@ -149,13 +149,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    }</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!FLAGS_rsa_signing_key_path.empty()) {</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    std::string rsa_private_key;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a9a4f45dcab338be2b6843e0de87ce8f1">File::ReadFileToString</a>(FLAGS_rsa_signing_key_path.c_str(),</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#a622dbc8abacebb40b816aa0174ba7c60">File::ReadFileToString</a>(FLAGS_rsa_signing_key_path.c_str(),</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                                &amp;rsa_private_key)) {</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to read from &#39;&quot;</span> &lt;&lt; FLAGS_rsa_signing_key_path</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                 &lt;&lt; <span class="stringliteral">&quot;&#39;.&quot;</span>;</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;      <span class="keywordflow">return</span> scoped_ptr&lt;RequestSigner&gt;();</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;    }</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    signer.reset(<a class="code" href="../../dd/da8/classedash__packager_1_1media_1_1RsaRequestSigner.html#a51517907c457f9f991e1a72ce4355183">RsaRequestSigner::CreateSigner</a>(FLAGS_signer, rsa_private_key));</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    signer.reset(<a class="code" href="../../d7/ddd/classshaka_1_1media_1_1RsaRequestSigner.html#af6af635a7c0a01bb638befb71b88386c">RsaRequestSigner::CreateSigner</a>(FLAGS_signer, rsa_private_key));</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;    <span class="keywordflow">if</span> (!signer) {</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot create a RSA signer object from &#39;&quot;</span></div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;                 &lt;&lt; FLAGS_rsa_signing_key_path &lt;&lt; <span class="stringliteral">&quot;&#39;.&quot;</span>;</div>
@@ -190,7 +190,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;    }</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    encryption_key_source = widevine_key_source.Pass();</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (FLAGS_enable_fixed_key_encryption) {</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    encryption_key_source = <a class="code" href="../../d0/d86/classedash__packager_1_1media_1_1FixedKeySource.html#af66ed2804b126e9e336ef97e532e1593">FixedKeySource::CreateFromHexStrings</a>(</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    encryption_key_source = <a class="code" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a091b4ea22419b73f8532db862f985f99">FixedKeySource::CreateFromHexStrings</a>(</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        FLAGS_key_id, FLAGS_key, FLAGS_pssh, FLAGS_iv);</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  }</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="keywordflow">return</span> encryption_key_source.Pass();</div>
@@ -212,7 +212,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (FLAGS_enable_fixed_key_decryption) {</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span> kNoPssh[] = <span class="stringliteral">&quot;&quot;</span>;</div>
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    <span class="keyword">const</span> <span class="keywordtype">char</span> kNoIv[] = <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    decryption_key_source = <a class="code" href="../../d0/d86/classedash__packager_1_1media_1_1FixedKeySource.html#af66ed2804b126e9e336ef97e532e1593">FixedKeySource::CreateFromHexStrings</a>(</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;    decryption_key_source = <a class="code" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a091b4ea22419b73f8532db862f985f99">FixedKeySource::CreateFromHexStrings</a>(</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;        FLAGS_key_id, FLAGS_key, kNoPssh, kNoIv);</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  }</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="keywordflow">return</span> decryption_key_source.Pass();</div>
@@ -324,15 +324,15 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;}</div>
 <div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;</div>
 <div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1File_html_a9a4f45dcab338be2b6843e0de87ce8f1"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a9a4f45dcab338be2b6843e0de87ce8f1">edash_packager::media::File::ReadFileToString</a></div><div class="ttdeci">static bool ReadFileToString(const char *file_name, std::string *contents)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00184">file.cc:184</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesRequestSigner_html_a1e43c2e7e3ab4f5e07d442ed59fc1278"><div class="ttname"><a href="../../d8/dcc/classedash__packager_1_1media_1_1AesRequestSigner.html#a1e43c2e7e3ab4f5e07d442ed59fc1278">edash_packager::media::AesRequestSigner::CreateSigner</a></div><div class="ttdeci">static AesRequestSigner * CreateSigner(const std::string &amp;signer_name, const std::string &amp;aes_key_hex, const std::string &amp;iv_hex)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/df5/request__signer_8cc_source.html#l00029">request_signer.cc:29</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1RsaRequestSigner_html_a51517907c457f9f991e1a72ce4355183"><div class="ttname"><a href="../../dd/da8/classedash__packager_1_1media_1_1RsaRequestSigner.html#a51517907c457f9f991e1a72ce4355183">edash_packager::media::RsaRequestSigner::CreateSigner</a></div><div class="ttdeci">static RsaRequestSigner * CreateSigner(const std::string &amp;signer_name, const std::string &amp;pkcs1_rsa_key)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/df5/request__signer_8cc_source.html#l00063">request_signer.cc:63</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1FixedKeySource_html_af66ed2804b126e9e336ef97e532e1593"><div class="ttname"><a href="../../d0/d86/classedash__packager_1_1media_1_1FixedKeySource.html#af66ed2804b126e9e336ef97e532e1593">edash_packager::media::FixedKeySource::CreateFromHexStrings</a></div><div class="ttdeci">static scoped_ptr&lt; FixedKeySource &gt; CreateFromHexStrings(const std::string &amp;key_id_hex, const std::string &amp;key_hex, const std::string &amp;pssh_boxes_hex, const std::string &amp;iv_hex)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d6b/fixed__key__source_8cc_source.html#l00084">fixed_key_source.cc:84</a></div></div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1RsaRequestSigner_html_af6af635a7c0a01bb638befb71b88386c"><div class="ttname"><a href="../../d7/ddd/classshaka_1_1media_1_1RsaRequestSigner.html#af6af635a7c0a01bb638befb71b88386c">shaka::media::RsaRequestSigner::CreateSigner</a></div><div class="ttdeci">static RsaRequestSigner * CreateSigner(const std::string &amp;signer_name, const std::string &amp;pkcs1_rsa_key)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/df5/request__signer_8cc_source.html#l00063">request_signer.cc:63</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1FixedKeySource_html_a091b4ea22419b73f8532db862f985f99"><div class="ttname"><a href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a091b4ea22419b73f8532db862f985f99">shaka::media::FixedKeySource::CreateFromHexStrings</a></div><div class="ttdeci">static scoped_ptr&lt; FixedKeySource &gt; CreateFromHexStrings(const std::string &amp;key_id_hex, const std::string &amp;key_hex, const std::string &amp;pssh_boxes_hex, const std::string &amp;iv_hex)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d6b/fixed__key__source_8cc_source.html#l00084">fixed_key_source.cc:84</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1AesRequestSigner_html_a43f4cc9fad9901fa905805be81f7d58c"><div class="ttname"><a href="../../d9/d8c/classshaka_1_1media_1_1AesRequestSigner.html#a43f4cc9fad9901fa905805be81f7d58c">shaka::media::AesRequestSigner::CreateSigner</a></div><div class="ttdeci">static AesRequestSigner * CreateSigner(const std::string &amp;signer_name, const std::string &amp;aes_key_hex, const std::string &amp;iv_hex)</div><div class="ttdef"><b>Definition:</b> <a href="../../d4/df5/request__signer_8cc_source.html#l00029">request_signer.cc:29</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1File_html_a622dbc8abacebb40b816aa0174ba7c60"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a622dbc8abacebb40b816aa0174ba7c60">shaka::media::File::ReadFileToString</a></div><div class="ttdeci">static bool ReadFileToString(const char *file_name, std::string *contents)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00184">file.cc:184</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

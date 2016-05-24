@@ -114,7 +114,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;            <span class="stringliteral">&quot;and does not guarantee compliance. Off by default until players &quot;</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;            <span class="stringliteral">&quot;support IOP MPDs.&quot;</span>);</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="keyword">namespace </span>{</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
@@ -161,7 +161,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keywordtype">bool</span> MpdWriter::AddFile(<span class="keyword">const</span> std::string&amp; media_info_path,</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                        <span class="keyword">const</span> std::string&amp; mpd_path) {</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  std::string file_content;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a9a4f45dcab338be2b6843e0de87ce8f1">media::File::ReadFileToString</a>(media_info_path.c_str(),</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#a622dbc8abacebb40b816aa0174ba7c60">media::File::ReadFileToString</a>(media_info_path.c_str(),</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;                                     &amp;file_content)) {</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to read &quot;</span> &lt;&lt; media_info_path &lt;&lt; <span class="stringliteral">&quot; to string.&quot;</span>;</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -174,7 +174,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  }</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <a class="code" href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a341e1050c0ae351db7cf0e4d23421a7f">MpdBuilder::MakePathsRelativeToMpd</a>(mpd_path, &amp;media_info);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <a class="code" href="../../dc/da1/classshaka_1_1MpdBuilder.html#a247a9c807274d4e707530f24e2d207f9">MpdBuilder::MakePathsRelativeToMpd</a>(mpd_path, &amp;media_info);</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  media_infos_.push_back(media_info);</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}</div>
@@ -215,13 +215,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  notifier_factory_ = factory.Pass();</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;}</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1File_html_a9a4f45dcab338be2b6843e0de87ce8f1"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a9a4f45dcab338be2b6843e0de87ce8f1">edash_packager::media::File::ReadFileToString</a></div><div class="ttdeci">static bool ReadFileToString(const char *file_name, std::string *contents)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00184">file.cc:184</a></div></div>
-<div class="ttc" id="classedash__packager_1_1MpdBuilder_html_a341e1050c0ae351db7cf0e4d23421a7f"><div class="ttname"><a href="../../d3/dfa/classedash__packager_1_1MpdBuilder.html#a341e1050c0ae351db7cf0e4d23421a7f">edash_packager::MpdBuilder::MakePathsRelativeToMpd</a></div><div class="ttdeci">static void MakePathsRelativeToMpd(const std::string &amp;mpd_path, MediaInfo *media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00641">mpd_builder.cc:641</a></div></div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1MpdBuilder_html_a247a9c807274d4e707530f24e2d207f9"><div class="ttname"><a href="../../dc/da1/classshaka_1_1MpdBuilder.html#a247a9c807274d4e707530f24e2d207f9">shaka::MpdBuilder::MakePathsRelativeToMpd</a></div><div class="ttdeci">static void MakePathsRelativeToMpd(const std::string &amp;mpd_path, MediaInfo *media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00641">mpd_builder.cc:641</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1File_html_a622dbc8abacebb40b816aa0174ba7c60"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a622dbc8abacebb40b816aa0174ba7c60">shaka::media::File::ReadFileToString</a></div><div class="ttdeci">static bool ReadFileToString(const char *file_name, std::string *contents)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00184">file.cc:184</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

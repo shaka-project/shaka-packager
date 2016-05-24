@@ -100,7 +100,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/third_party/libwebm/src/mkvmuxerutil.hpp&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/third_party/libwebm/src/webmids.hpp&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>{</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">const</span> mkvmuxer::uint64 kElementIds[] = {</div>
@@ -133,7 +133,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;SeekHead::~SeekHead() {}</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="../../df/df4/classedash__packager_1_1media_1_1SeekHead.html#a3f8fbcfde953b6316586493c3e314387">   47</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../df/df4/classedash__packager_1_1media_1_1SeekHead.html#a3f8fbcfde953b6316586493c3e314387">SeekHead::Write</a>(mkvmuxer::IMkvWriter* writer) {</div>
+<div class="line"><a name="l00047"></a><span class="lineno"><a class="line" href="../../dc/d16/classshaka_1_1media_1_1SeekHead.html#a46313134eebf68a7c34187705726b982">   47</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/d16/classshaka_1_1media_1_1SeekHead.html#a46313134eebf68a7c34187705726b982">SeekHead::Write</a>(mkvmuxer::IMkvWriter* writer) {</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  std::vector&lt;uint64_t&gt; element_sizes;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keyword">const</span> uint64_t payload_size = GetPayloadSize(&amp;element_sizes);</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
@@ -174,7 +174,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="../../df/df4/classedash__packager_1_1media_1_1SeekHead.html#a5afa61eb7ec1bf28d60f4e2a7d9a9b4a">   88</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../df/df4/classedash__packager_1_1media_1_1SeekHead.html#a5afa61eb7ec1bf28d60f4e2a7d9a9b4a">SeekHead::WriteVoid</a>(mkvmuxer::IMkvWriter* writer) {</div>
+<div class="line"><a name="l00088"></a><span class="lineno"><a class="line" href="../../dc/d16/classshaka_1_1media_1_1SeekHead.html#a1a7895c6f5548405377aabb9521111a1">   88</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../dc/d16/classshaka_1_1media_1_1SeekHead.html#a1a7895c6f5548405377aabb9521111a1">SeekHead::WriteVoid</a>(mkvmuxer::IMkvWriter* writer) {</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keyword">const</span> uint64_t payload_size = kElementIdCount * MaxSeekEntrySize();</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="keyword">const</span> uint64_t total_size =</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      EbmlMasterElementSize(mkvmuxer::kMkvSeekHead, payload_size) +</div>
@@ -210,13 +210,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;}</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1SeekHead_html_a3f8fbcfde953b6316586493c3e314387"><div class="ttname"><a href="../../df/df4/classedash__packager_1_1media_1_1SeekHead.html#a3f8fbcfde953b6316586493c3e314387">edash_packager::media::SeekHead::Write</a></div><div class="ttdeci">bool Write(mkvmuxer::IMkvWriter *writer)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbc/seek__head_8cc_source.html#l00047">seek_head.cc:47</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1SeekHead_html_a5afa61eb7ec1bf28d60f4e2a7d9a9b4a"><div class="ttname"><a href="../../df/df4/classedash__packager_1_1media_1_1SeekHead.html#a5afa61eb7ec1bf28d60f4e2a7d9a9b4a">edash_packager::media::SeekHead::WriteVoid</a></div><div class="ttdeci">bool WriteVoid(mkvmuxer::IMkvWriter *writer)</div><div class="ttdoc">Writes a void element large enough to fit the SeekHead. </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbc/seek__head_8cc_source.html#l00088">seek_head.cc:88</a></div></div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1SeekHead_html_a1a7895c6f5548405377aabb9521111a1"><div class="ttname"><a href="../../dc/d16/classshaka_1_1media_1_1SeekHead.html#a1a7895c6f5548405377aabb9521111a1">shaka::media::SeekHead::WriteVoid</a></div><div class="ttdeci">bool WriteVoid(mkvmuxer::IMkvWriter *writer)</div><div class="ttdoc">Writes a void element large enough to fit the SeekHead. </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbc/seek__head_8cc_source.html#l00088">seek_head.cc:88</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1SeekHead_html_a46313134eebf68a7c34187705726b982"><div class="ttname"><a href="../../dc/d16/classshaka_1_1media_1_1SeekHead.html#a46313134eebf68a7c34187705726b982">shaka::media::SeekHead::Write</a></div><div class="ttdeci">bool Write(mkvmuxer::IMkvWriter *writer)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbc/seek__head_8cc_source.html#l00047">seek_head.cc:47</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

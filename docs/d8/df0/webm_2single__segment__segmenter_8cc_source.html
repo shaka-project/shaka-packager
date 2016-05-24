@@ -98,7 +98,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/muxer_options.h&quot;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;packager/third_party/libwebm/src/mkvmuxer.hpp&quot;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>webm {</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
@@ -116,7 +116,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;}</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;Status SingleSegmentSegmenter::DoFinalize() {</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordflow">if</span> (!cluster()-&gt;<a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">Finalize</a>())</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordflow">if</span> (!cluster()-&gt;<a class="code" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a464a30159b8888a54254356d191947ac">Finalize</a>())</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Error finalizing cluster.&quot;</span>);</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="comment">// Write the Cues to the end of the file.</span></div>
@@ -139,7 +139,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;Status SingleSegmentSegmenter::NewSegment(uint64_t start_timescale) {</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordflow">if</span> (cluster() &amp;&amp; !cluster()-&gt;<a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">Finalize</a>())</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordflow">if</span> (cluster() &amp;&amp; !cluster()-&gt;<a class="code" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a464a30159b8888a54254356d191947ac">Finalize</a>())</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Error finalizing cluster.&quot;</span>);</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="comment">// Create a new Cue point.</span></div>
@@ -156,7 +156,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordflow">return</span> SetCluster(start_webm_timecode, position, writer_.get());</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a9d6cfa03d2c6f32cd482c3002cd3df16">   70</a></span>&#160;<span class="keywordtype">bool</span> SingleSegmentSegmenter::GetInitRangeStartAndEnd(uint64_t* start,</div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="../../d3/da1/classshaka_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#ae1395bcb6fb255b2695766c1e85b1aa3">   70</a></span>&#160;<span class="keywordtype">bool</span> SingleSegmentSegmenter::GetInitRangeStartAndEnd(uint64_t* start,</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;                                                     uint64_t* end) {</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="comment">// The init range is the header, from the start of the file to the size of</span></div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="comment">// the header.</span></div>
@@ -165,7 +165,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
-<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="../../d0/d03/classedash__packager_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a504500e68bce5e9733da158d50148352">   79</a></span>&#160;<span class="keywordtype">bool</span> SingleSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* start,</div>
+<div class="line"><a name="l00079"></a><span class="lineno"><a class="line" href="../../d3/da1/classshaka_1_1media_1_1webm_1_1SingleSegmentSegmenter.html#a1708739c73c4565d5dfda6bedffd89a8">   79</a></span>&#160;<span class="keywordtype">bool</span> SingleSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* start,</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                                                      uint64_t* end) {</div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="comment">// The index is the Cues element, which is always placed at the end of the</span></div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="comment">// file.</span></div>
@@ -176,12 +176,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}  <span class="comment">// namespace webm</span></div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_ad1136a3e7c2e796267fbd3879d108c2a"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">edash_packager::media::mp4::Segmenter::Finalize</a></div><div class="ttdeci">Status Finalize()</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00278">segmenter.cc:278</a></div></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Segmenter_html_a464a30159b8888a54254356d191947ac"><div class="ttname"><a href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a464a30159b8888a54254356d191947ac">shaka::media::mp4::Segmenter::Finalize</a></div><div class="ttdeci">Status Finalize()</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00278">segmenter.cc:278</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

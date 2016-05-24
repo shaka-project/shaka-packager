@@ -100,7 +100,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/aes_decryptor.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/aes_pattern_cryptor.h&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;DecryptorSource::DecryptorSource(KeySource* key_source)</div>
@@ -123,7 +123,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  <span class="keywordflow">if</span> (found == decryptor_map_.end()) {</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;    <span class="comment">// Create new AesDecryptor based on decryption mode.</span></div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    EncryptionKey key;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    Status status(key_source_-&gt;<a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ae1000d8809b293738dca06c1a5f916bf">GetKey</a>(decrypt_config-&gt;key_id(), &amp;key));</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    Status status(key_source_-&gt;<a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a994eb66cf09d8b08fd1c964f6afd3ab3">GetKey</a>(decrypt_config-&gt;key_id(), &amp;key));</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordflow">if</span> (!status.ok()) {</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Error retrieving decryption key: &quot;</span> &lt;&lt; status;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -141,7 +141,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;        aes_decryptor.reset(<span class="keyword">new</span> AesPatternCryptor(</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            decrypt_config-&gt;crypt_byte_block(),</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            decrypt_config-&gt;skip_byte_block(),</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <a class="code" href="../../dc/d54/classedash__packager_1_1media_1_1AesPatternCryptor.html#a1e8a70b19ee184a4769a88bd0f26b90aab8cf8251e6268da29f43c834b2ae7b7a">AesPatternCryptor::kEncryptIfCryptByteBlockRemaining</a>,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <a class="code" href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0a76b19d202e22b2b0f661f933b47b3b16">AesPatternCryptor::kEncryptIfCryptByteBlockRemaining</a>,</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;            AesCryptor::kDontUseConstantIv,</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;            scoped_ptr&lt;AesCryptor&gt;(<span class="keyword">new</span> AesCtrDecryptor())));</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        <span class="keywordflow">break</span>;</div>
@@ -149,7 +149,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;        aes_decryptor.reset(<span class="keyword">new</span> AesPatternCryptor(</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;            decrypt_config-&gt;crypt_byte_block(),</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;            decrypt_config-&gt;skip_byte_block(),</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            <a class="code" href="../../dc/d54/classedash__packager_1_1media_1_1AesPatternCryptor.html#a1e8a70b19ee184a4769a88bd0f26b90aab8cf8251e6268da29f43c834b2ae7b7a">AesPatternCryptor::kEncryptIfCryptByteBlockRemaining</a>,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;            <a class="code" href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0a76b19d202e22b2b0f661f933b47b3b16">AesPatternCryptor::kEncryptIfCryptByteBlockRemaining</a>,</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;            AesCryptor::kUseConstantIv,</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;            scoped_ptr&lt;AesCryptor&gt;(<span class="keyword">new</span> AesCbcDecryptor(kNoPadding))));</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;        <span class="keywordflow">break</span>;</div>
@@ -203,13 +203,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;}</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html_ae1000d8809b293738dca06c1a5f916bf"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html#ae1000d8809b293738dca06c1a5f916bf">edash_packager::media::KeySource::GetKey</a></div><div class="ttdeci">virtual Status GetKey(TrackType track_type, EncryptionKey *key)=0</div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AesPatternCryptor_html_a1e8a70b19ee184a4769a88bd0f26b90aab8cf8251e6268da29f43c834b2ae7b7a"><div class="ttname"><a href="../../dc/d54/classedash__packager_1_1media_1_1AesPatternCryptor.html#a1e8a70b19ee184a4769a88bd0f26b90aab8cf8251e6268da29f43c834b2ae7b7a">edash_packager::media::AesPatternCryptor::kEncryptIfCryptByteBlockRemaining</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d09/aes__pattern__cryptor_8h_source.html#l00025">aes_pattern_cryptor.h:25</a></div></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1AesPatternCryptor_html_a54fd35d7782d3b4948c7eb68387711f0a76b19d202e22b2b0f661f933b47b3b16"><div class="ttname"><a href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0a76b19d202e22b2b0f661f933b47b3b16">shaka::media::AesPatternCryptor::kEncryptIfCryptByteBlockRemaining</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/d09/aes__pattern__cryptor_8h_source.html#l00025">aes_pattern_cryptor.h:25</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a994eb66cf09d8b08fd1c964f6afd3ab3"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a994eb66cf09d8b08fd1c964f6afd3ab3">shaka::media::KeySource::GetKey</a></div><div class="ttdeci">virtual Status GetKey(TrackType track_type, EncryptionKey *key)=0</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

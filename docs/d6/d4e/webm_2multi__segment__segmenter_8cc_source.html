@@ -102,7 +102,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/event/muxer_listener.h&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/third_party/libwebm/src/mkvmuxer.hpp&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>webm {</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;MultiSegmentSegmenter::MultiSegmentSegmenter(<span class="keyword">const</span> MuxerOptions&amp; options)</div>
@@ -110,29 +110,29 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;MultiSegmentSegmenter::~MultiSegmentSegmenter() {}</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="../../df/d4e/classedash__packager_1_1media_1_1webm_1_1MultiSegmentSegmenter.html#a147076886250e8f787f52107f34ad8c3">   24</a></span>&#160;<span class="keywordtype">bool</span> MultiSegmentSegmenter::GetInitRangeStartAndEnd(uint64_t* start,</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="../../d2/dd5/classshaka_1_1media_1_1webm_1_1MultiSegmentSegmenter.html#ae88bf7cfee4a1ad12c6060310b8f464e">   24</a></span>&#160;<span class="keywordtype">bool</span> MultiSegmentSegmenter::GetInitRangeStartAndEnd(uint64_t* start,</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                                                    uint64_t* end) {</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;}</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="../../df/d4e/classedash__packager_1_1media_1_1webm_1_1MultiSegmentSegmenter.html#ad2a9d662f165b56888182e884b6a14e0">   29</a></span>&#160;<span class="keywordtype">bool</span> MultiSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* start,</div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="../../d2/dd5/classshaka_1_1media_1_1webm_1_1MultiSegmentSegmenter.html#a75b572a055a0de68bf2809f61b319526">   29</a></span>&#160;<span class="keywordtype">bool</span> MultiSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* start,</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                                                     uint64_t* end) {</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;}</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> MultiSegmentSegmenter::DoInitialize(scoped_ptr&lt;MkvWriter&gt; writer) {</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> MultiSegmentSegmenter::DoInitialize(scoped_ptr&lt;MkvWriter&gt; writer) {</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  writer_ = writer.Pass();</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keywordflow">return</span> WriteSegmentHeader(0, writer_.get());</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;}</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> MultiSegmentSegmenter::DoFinalize() {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> status = FinalizeSegment();</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  status.<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html#a1c46d74b2d15c4bbcba6d742e82fce34">Update</a>(writer_-&gt;Close());</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> MultiSegmentSegmenter::DoFinalize() {</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> status = FinalizeSegment();</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  status.<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html#a74d29f349b4673d2eef69a47f5152fe4">Update</a>(writer_-&gt;Close());</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordflow">return</span> status;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;}</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;Status MultiSegmentSegmenter::FinalizeSegment() {</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keywordflow">if</span> (!cluster()-&gt;<a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">Finalize</a>())</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keywordflow">if</span> (!cluster()-&gt;<a class="code" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a464a30159b8888a54254356d191947ac">Finalize</a>())</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Error finalizing segment.&quot;</span>);</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordflow">if</span> (muxer_listener()) {</div>
@@ -141,7 +141,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">const</span> uint64_t start_timescale = FromWebMTimecode(start_webm_timecode);</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">const</span> uint64_t length = <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        cluster_length_sec() * info()-&gt;time_scale());</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    muxer_listener()-&gt;<a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#aff0980f1631ab866ca5598fbe5f59859">OnNewSegment</a>(writer_-&gt;file()-&gt;file_name(),</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">OnNewSegment</a>(writer_-&gt;file()-&gt;file_name(),</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                                   start_timescale, length, size);</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  }</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
@@ -150,7 +150,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;Status MultiSegmentSegmenter::NewSubsegment(uint64_t start_timescale) {</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordflow">if</span> (cluster() &amp;&amp; !cluster()-&gt;<a class="code" href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">Finalize</a>())</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordflow">if</span> (cluster() &amp;&amp; !cluster()-&gt;<a class="code" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a464a30159b8888a54254356d191947ac">Finalize</a>())</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Error finalizing segment.&quot;</span>);</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  uint64_t start_webm_timecode = FromBMFFTimescale(start_timescale);</div>
@@ -180,15 +180,15 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}  <span class="comment">// namespace webm</span></div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp4_1_1Segmenter_html_ad1136a3e7c2e796267fbd3879d108c2a"><div class="ttname"><a href="../../dc/de1/classedash__packager_1_1media_1_1mp4_1_1Segmenter.html#ad1136a3e7c2e796267fbd3879d108c2a">edash_packager::media::mp4::Segmenter::Finalize</a></div><div class="ttdeci">Status Finalize()</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00278">segmenter.cc:278</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1Status_html"><div class="ttname"><a href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">edash_packager::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1Status_html_a1c46d74b2d15c4bbcba6d742e82fce34"><div class="ttname"><a href="../../d2/d90/classedash__packager_1_1media_1_1Status.html#a1c46d74b2d15c4bbcba6d742e82fce34">edash_packager::media::Status::Update</a></div><div class="ttdeci">void Update(const Status &amp;new_status)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00117">status.h:117</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html_aff0980f1631ab866ca5598fbe5f59859"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#aff0980f1631ab866ca5598fbe5f59859">edash_packager::media::MuxerListener::OnNewSegment</a></div><div class="ttdeci">virtual void OnNewSegment(const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size)=0</div></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a4cb75da6ff50d6403da18ea8dcc04265"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">shaka::media::MuxerListener::OnNewSegment</a></div><div class="ttdeci">virtual void OnNewSegment(const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size)=0</div></div>
+<div class="ttc" id="classshaka_1_1media_1_1Status_html_a74d29f349b4673d2eef69a47f5152fe4"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html#a74d29f349b4673d2eef69a47f5152fe4">shaka::media::Status::Update</a></div><div class="ttdeci">void Update(const Status &amp;new_status)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00117">status.h:117</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Segmenter_html_a464a30159b8888a54254356d191947ac"><div class="ttname"><a href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a464a30159b8888a54254356d191947ac">shaka::media::mp4::Segmenter::Finalize</a></div><div class="ttdeci">Status Finalize()</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00278">segmenter.cc:278</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

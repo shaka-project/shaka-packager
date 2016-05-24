@@ -101,7 +101,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/base/strings/string_split.h&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/language_utils.h&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">namespace </span>{</div>
@@ -194,7 +194,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;        <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;      }</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;      <span class="keywordflow">case</span> kLanguageField: {</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        std::string language = <a class="code" href="../../db/d09/namespaceedash__packager.html#a1082a6ff7615e61946ce7d6616f21dde">LanguageToISO_639_2</a>(iter-&gt;second);</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;        std::string language = <a class="code" href="../../d8/daf/namespaceshaka.html#a05a31cd741e2ee18f1399284e921e527">LanguageToISO_639_2</a>(iter-&gt;second);</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;        <span class="keywordflow">if</span> (language == <span class="stringliteral">&quot;und&quot;</span>) {</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;          LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unknown/invalid language specified: &quot;</span> &lt;&lt; iter-&gt;second;</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -238,12 +238,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;}</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;</div>
 <div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="namespaceedash__packager_html_a1082a6ff7615e61946ce7d6616f21dde"><div class="ttname"><a href="../../db/d09/namespaceedash__packager.html#a1082a6ff7615e61946ce7d6616f21dde">edash_packager::LanguageToISO_639_2</a></div><div class="ttdeci">std::string LanguageToISO_639_2(const std::string &amp;language)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d72/language__utils_8cc_source.html#l00112">language_utils.cc:112</a></div></div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="namespaceshaka_html_a05a31cd741e2ee18f1399284e921e527"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a05a31cd741e2ee18f1399284e921e527">shaka::LanguageToISO_639_2</a></div><div class="ttdeci">std::string LanguageToISO_639_2(const std::string &amp;language)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d72/language__utils_8cc_source.html#l00112">language_utils.cc:112</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

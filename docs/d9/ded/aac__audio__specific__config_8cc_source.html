@@ -111,7 +111,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;}  <span class="comment">// namespace</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">namespace </span>mp4 {</div>
@@ -127,11 +127,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;AACAudioSpecificConfig::~AACAudioSpecificConfig() {}</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="../../dc/dc6/classedash__packager_1_1media_1_1mp4_1_1AACAudioSpecificConfig.html#a90a58afc9e6b20b9a6909d54f94dafc9">   41</a></span>&#160;<span class="keywordtype">bool</span> AACAudioSpecificConfig::Parse(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; data) {</div>
+<div class="line"><a name="l00041"></a><span class="lineno"><a class="line" href="../../d2/dd0/classshaka_1_1media_1_1mp4_1_1AACAudioSpecificConfig.html#a3498d24fef66cc857a004afc015bd5c6">   41</a></span>&#160;<span class="keywordtype">bool</span> AACAudioSpecificConfig::Parse(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; data) {</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordflow">if</span> (data.empty())</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html">BitReader</a> reader(&amp;data[0], data.size());</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html">BitReader</a> reader(&amp;data[0], data.size());</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  uint8_t extension_type = 0;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  uint8_t extension_frequency_index = 0xff;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
@@ -216,7 +216,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;         channel_config_ &lt;= 7;</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;}</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;</div>
-<div class="line"><a name="l00130"></a><span class="lineno"><a class="line" href="../../dc/dc6/classedash__packager_1_1media_1_1mp4_1_1AACAudioSpecificConfig.html#a4413882e6649fc144d6ab2c1e9643a93">  130</a></span>&#160;<span class="keywordtype">bool</span> AACAudioSpecificConfig::ConvertToADTS(std::vector&lt;uint8_t&gt;* buffer)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00130"></a><span class="lineno"><a class="line" href="../../d2/dd0/classshaka_1_1media_1_1mp4_1_1AACAudioSpecificConfig.html#ab189d48a65fd522c59ec681a52840b71">  130</a></span>&#160;<span class="keywordtype">bool</span> AACAudioSpecificConfig::ConvertToADTS(std::vector&lt;uint8_t&gt;* buffer)<span class="keyword"> const </span>{</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keywordtype">size_t</span> size = buffer-&gt;size() + kADTSHeaderSize;</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  DCHECK(audio_object_type_ &gt;= 1 &amp;&amp; audio_object_type_ &lt;= 4 &amp;&amp;</div>
@@ -241,7 +241,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;}</div>
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;</div>
-<div class="line"><a name="l00155"></a><span class="lineno"><a class="line" href="../../dc/dc6/classedash__packager_1_1media_1_1mp4_1_1AACAudioSpecificConfig.html#acfe6c1dd618394a923c98c354c63fa2b">  155</a></span>&#160;uint32_t AACAudioSpecificConfig::GetOutputSamplesPerSecond(</div>
+<div class="line"><a name="l00155"></a><span class="lineno"><a class="line" href="../../d2/dd0/classshaka_1_1media_1_1mp4_1_1AACAudioSpecificConfig.html#ace49bf468b9334bc626ac5723af29892">  155</a></span>&#160;uint32_t AACAudioSpecificConfig::GetOutputSamplesPerSecond(</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    <span class="keywordtype">bool</span> sbr_in_mimetype)<span class="keyword"> const </span>{</div>
 <div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  <span class="keywordflow">if</span> (extension_frequency_ &gt; 0)</div>
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;    <span class="keywordflow">return</span> extension_frequency_;</div>
@@ -256,7 +256,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <span class="keywordflow">return</span> std::min(2 * frequency_, 48000u);</div>
 <div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;}</div>
 <div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;</div>
-<div class="line"><a name="l00170"></a><span class="lineno"><a class="line" href="../../dc/dc6/classedash__packager_1_1media_1_1mp4_1_1AACAudioSpecificConfig.html#abc1eea761852eb3d714a2f867f54db76">  170</a></span>&#160;uint8_t AACAudioSpecificConfig::GetNumChannels(<span class="keywordtype">bool</span> sbr_in_mimetype)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00170"></a><span class="lineno"><a class="line" href="../../d2/dd0/classshaka_1_1media_1_1mp4_1_1AACAudioSpecificConfig.html#aac930a5d4d4a04e93f11ac8dd83094a1">  170</a></span>&#160;uint8_t AACAudioSpecificConfig::GetNumChannels(<span class="keywordtype">bool</span> sbr_in_mimetype)<span class="keyword"> const </span>{</div>
 <div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <span class="comment">// Check for implicit signalling of HE-AAC and indicate stereo output</span></div>
 <div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <span class="comment">// if the mono channel configuration is signalled.</span></div>
 <div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;  <span class="comment">// See ISO-14496-3 Section 1.6.6.1.2 for details about this special casing.</span></div>
@@ -272,7 +272,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;</div>
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;<span class="comment">// Currently this function only support GASpecificConfig defined in</span></div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;<span class="comment">// ISO 14496 Part 3 Table 4.1 - Syntax of GASpecificConfig()</span></div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="keywordtype">bool</span> AACAudioSpecificConfig::SkipDecoderGASpecificConfig(<a class="code" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html">BitReader</a>* bit_reader)<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;<span class="keywordtype">bool</span> AACAudioSpecificConfig::SkipDecoderGASpecificConfig(<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html">BitReader</a>* bit_reader)<span class="keyword"> const </span>{</div>
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  <span class="keywordflow">switch</span> (audio_object_type_) {</div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <span class="keywordflow">case</span> 1:</div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    <span class="keywordflow">case</span> 2:</div>
@@ -352,12 +352,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;}  <span class="comment">// namespace mp4</span></div>
 <div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;</div>
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1BitReader_html"><div class="ttname"><a href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html">edash_packager::media::BitReader</a></div><div class="ttdoc">A class to read bit streams. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dd3/bit__reader_8h_source.html#l00017">bit_reader.h:17</a></div></div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1BitReader_html"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html">shaka::media::BitReader</a></div><div class="ttdoc">A class to read bit streams. </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/dd3/bit__reader_8h_source.html#l00017">bit_reader.h:17</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

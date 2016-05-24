@@ -111,7 +111,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file.h&quot;</span></div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box_definitions.h&quot;</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">namespace </span>mp4 {</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">namespace </span>{</div>
@@ -137,19 +137,19 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="keywordflow">if</span> (temp_file_)</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    temp_file_.release()-&gt;Close();</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordflow">if</span> (!temp_file_name_.empty()) {</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a7e0fcd3c439e810e8e17baf32dcc75af">File::Delete</a>(temp_file_name_.c_str()))</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keywordflow">if</span> (!<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#a92cdfd68e6384dfcc14c78b20c98368e">File::Delete</a>(temp_file_name_.c_str()))</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Unable to delete temporary file &quot;</span> &lt;&lt; temp_file_name_;</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  }</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="../../da/d75/classedash__packager_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html#aab8ffe19fcdd8688e9685264ad10fa60">   56</a></span>&#160;<span class="keywordtype">bool</span> SingleSegmentSegmenter::GetInitRange(<span class="keywordtype">size_t</span>* offset, <span class="keywordtype">size_t</span>* size) {</div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="../../d0/dab/classshaka_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html#a61e71cfc720342ecb16b830e6fca0fe4">   56</a></span>&#160;<span class="keywordtype">bool</span> SingleSegmentSegmenter::GetInitRange(<span class="keywordtype">size_t</span>* offset, <span class="keywordtype">size_t</span>* size) {</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="comment">// In Finalize, ftyp and moov gets written first so offset must be 0.</span></div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  *offset = 0;</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  *size = ftyp()-&gt;ComputeSize() + moov()-&gt;ComputeSize();</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="../../da/d75/classedash__packager_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html#a2e799317de70044cdd95e5406e1e2510">   63</a></span>&#160;<span class="keywordtype">bool</span> SingleSegmentSegmenter::GetIndexRange(<span class="keywordtype">size_t</span>* offset, <span class="keywordtype">size_t</span>* size) {</div>
+<div class="line"><a name="l00063"></a><span class="lineno"><a class="line" href="../../d0/dab/classshaka_1_1media_1_1mp4_1_1SingleSegmentSegmenter.html#a5877fd31ed73a048529385b36437364a">   63</a></span>&#160;<span class="keywordtype">bool</span> SingleSegmentSegmenter::GetIndexRange(<span class="keywordtype">size_t</span>* offset, <span class="keywordtype">size_t</span>* size) {</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="comment">// Index range is right after init range so the offset must be the size of</span></div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="comment">// ftyp and moov.</span></div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  *offset = ftyp()-&gt;ComputeSize() + moov()-&gt;ComputeSize();</div>
@@ -157,7 +157,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a> SingleSegmentSegmenter::DoInitialize() {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> SingleSegmentSegmenter::DoInitialize() {</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="comment">// Single segment segmentation involves two stages:</span></div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="comment">//   Stage 1: Create media subsegments from media samples</span></div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="comment">//   Stage 2: Update media header (moov) which involves copying of media</span></div>
@@ -170,14 +170,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    base::FilePath temp_file_path;</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordflow">if</span> (!base::CreateTemporaryFile(&amp;temp_file_path)) {</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to create temporary file.&quot;</span>;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">Status</a>(error::FILE_FAILURE, <span class="stringliteral">&quot;Unable to create temporary file.&quot;</span>);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;      <span class="keywordflow">return</span> <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>(error::FILE_FAILURE, <span class="stringliteral">&quot;Unable to create temporary file.&quot;</span>);</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    }</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    temp_file_name_ = temp_file_path.value();</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    temp_file_name_ =</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;        base::FilePath(options().temp_dir).Append(TempFileName()).value();</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  }</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  temp_file_.reset(<a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a0933ccd7df76fcf8fbcfe12c15dbf6c5">File::Open</a>(temp_file_name_.c_str(), <span class="stringliteral">&quot;w&quot;</span>));</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  temp_file_.reset(<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#aad6b77e734bb22d077ece029c9e735a4">File::Open</a>(temp_file_name_.c_str(), <span class="stringliteral">&quot;w&quot;</span>));</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordflow">return</span> temp_file_</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;             ? Status::OK</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;             : Status(error::FILE_FAILURE,</div>
@@ -197,14 +197,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  }</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  scoped_ptr&lt;File, FileCloser&gt; file(</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;      <a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a0933ccd7df76fcf8fbcfe12c15dbf6c5">File::Open</a>(options().output_file_name.c_str(), <span class="stringliteral">&quot;w&quot;</span>));</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;      <a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#aad6b77e734bb22d077ece029c9e735a4">File::Open</a>(options().output_file_name.c_str(), <span class="stringliteral">&quot;w&quot;</span>));</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keywordflow">if</span> (file == NULL) {</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE,</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;                  <span class="stringliteral">&quot;Cannot open file to write &quot;</span> + options().output_file_name);</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  }</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  LOG(INFO) &lt;&lt; <span class="stringliteral">&quot;Update media header (moov) and rewrite the file to &#39;&quot;</span></div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;            &lt;&lt; options().<a class="code" href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#addd401a47b287f3c18cbdc4bfa1a6963">output_file_name</a> &lt;&lt; <span class="stringliteral">&quot;&#39;.&quot;</span>;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;            &lt;&lt; options().<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82">output_file_name</a> &lt;&lt; <span class="stringliteral">&quot;&#39;.&quot;</span>;</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <span class="comment">// Write ftyp, moov and sidx to output file.</span></div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  scoped_ptr&lt;BufferWriter&gt; buffer(<span class="keyword">new</span> BufferWriter());</div>
@@ -217,7 +217,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  <span class="comment">// Load the temp file and write to output file.</span></div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  scoped_ptr&lt;File, FileCloser&gt; temp_file(</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      <a class="code" href="../../de/d19/classedash__packager_1_1media_1_1File.html#a0933ccd7df76fcf8fbcfe12c15dbf6c5">File::Open</a>(temp_file_name_.c_str(), <span class="stringliteral">&quot;r&quot;</span>));</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      <a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#aad6b77e734bb22d077ece029c9e735a4">File::Open</a>(temp_file_name_.c_str(), <span class="stringliteral">&quot;r&quot;</span>));</div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;  <span class="keywordflow">if</span> (temp_file == NULL) {</div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE,</div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;                  <span class="stringliteral">&quot;Cannot open file to read &quot;</span> + temp_file_name_);</div>
@@ -241,7 +241,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;      <span class="keywordflow">return</span> Status(error::FILE_FAILURE,</div>
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;                    <span class="stringliteral">&quot;Failed to write file &quot;</span> + options().output_file_name);</div>
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    }</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    <a class="code" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#af7abae8ef77450c272f6ca6ce98df361">UpdateProgress</a>(static_cast&lt;double&gt;(size) / temp_file-&gt;Size() *</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    <a class="code" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a32dc8b7461252b99fe52384b04e3bca2">UpdateProgress</a>(static_cast&lt;double&gt;(size) / temp_file-&gt;Size() *</div>
 <div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;                   re_segment_progress_target);</div>
 <div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  }</div>
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  SetComplete();</div>
@@ -312,10 +312,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  Status status = fragment_buffer()-&gt;WriteToFile(temp_file_.get());</div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  <span class="keywordflow">if</span> (!status.ok()) <span class="keywordflow">return</span> status;</div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  <a class="code" href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#af7abae8ef77450c272f6ca6ce98df361">UpdateProgress</a>(vod_ref.subsegment_duration);</div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  <a class="code" href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a32dc8b7461252b99fe52384b04e3bca2">UpdateProgress</a>(vod_ref.subsegment_duration);</div>
 <div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  <span class="keywordflow">if</span> (muxer_listener()) {</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    muxer_listener()-&gt;<a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a5626ff553138db438c561db2ca0d05f2">OnSampleDurationReady</a>(sample_duration());</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    muxer_listener()-&gt;<a class="code" href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#aff0980f1631ab866ca5598fbe5f59859">OnNewSegment</a>(options().output_file_name,</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ad54aef6c349082d996a436ebea11eff2">OnSampleDurationReady</a>(sample_duration());</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">OnNewSegment</a>(options().output_file_name,</div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;                                   vod_ref.earliest_presentation_time,</div>
 <div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;                                   vod_ref.subsegment_duration, segment_size);</div>
 <div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  }</div>
@@ -324,18 +324,18 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;</div>
 <div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;}  <span class="comment">// namespace mp4</span></div>
 <div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="structedash__packager_1_1media_1_1MuxerOptions_html_addd401a47b287f3c18cbdc4bfa1a6963"><div class="ttname"><a href="../../de/d57/structedash__packager_1_1media_1_1MuxerOptions.html#addd401a47b287f3c18cbdc4bfa1a6963">edash_packager::media::MuxerOptions::output_file_name</a></div><div class="ttdeci">std::string output_file_name</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00055">muxer_options.h:55</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1File_html_a7e0fcd3c439e810e8e17baf32dcc75af"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a7e0fcd3c439e810e8e17baf32dcc75af">edash_packager::media::File::Delete</a></div><div class="ttdeci">static bool Delete(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00162">file.cc:162</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1File_html_a0933ccd7df76fcf8fbcfe12c15dbf6c5"><div class="ttname"><a href="../../de/d19/classedash__packager_1_1media_1_1File.html#a0933ccd7df76fcf8fbcfe12c15dbf6c5">edash_packager::media::File::Open</a></div><div class="ttdeci">virtual bool Open()=0</div><div class="ttdoc">Internal open. Should not be used directly. </div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1Status_html"><div class="ttname"><a href="../../d2/d90/classedash__packager_1_1media_1_1Status.html">edash_packager::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1webm_1_1Segmenter_html_af7abae8ef77450c272f6ca6ce98df361"><div class="ttname"><a href="../../da/d14/classedash__packager_1_1media_1_1webm_1_1Segmenter.html#af7abae8ef77450c272f6ca6ce98df361">edash_packager::media::webm::Segmenter::UpdateProgress</a></div><div class="ttdeci">void UpdateProgress(uint64_t progress)</div><div class="ttdoc">Update segmentation progress using ProgressListener. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d53/webm_2segmenter_8cc_source.html#l00248">segmenter.cc:248</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html_aff0980f1631ab866ca5598fbe5f59859"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#aff0980f1631ab866ca5598fbe5f59859">edash_packager::media::MuxerListener::OnNewSegment</a></div><div class="ttdeci">virtual void OnNewSegment(const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size)=0</div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1MuxerListener_html_a5626ff553138db438c561db2ca0d05f2"><div class="ttname"><a href="../../df/de7/classedash__packager_1_1media_1_1MuxerListener.html#a5626ff553138db438c561db2ca0d05f2">edash_packager::media::MuxerListener::OnSampleDurationReady</a></div><div class="ttdeci">virtual void OnSampleDurationReady(uint32_t sample_duration)=0</div></div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a4cb75da6ff50d6403da18ea8dcc04265"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">shaka::media::MuxerListener::OnNewSegment</a></div><div class="ttdeci">virtual void OnNewSegment(const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size)=0</div></div>
+<div class="ttc" id="classshaka_1_1media_1_1File_html_aad6b77e734bb22d077ece029c9e735a4"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#aad6b77e734bb22d077ece029c9e735a4">shaka::media::File::Open</a></div><div class="ttdeci">virtual bool Open()=0</div><div class="ttdoc">Internal open. Should not be used directly. </div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_ad54aef6c349082d996a436ebea11eff2"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ad54aef6c349082d996a436ebea11eff2">shaka::media::MuxerListener::OnSampleDurationReady</a></div><div class="ttdeci">virtual void OnSampleDurationReady(uint32_t sample_duration)=0</div></div>
+<div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html_a5397ee8759a663aea68261600e528d82"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82">shaka::media::MuxerOptions::output_file_name</a></div><div class="ttdeci">std::string output_file_name</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00055">muxer_options.h:55</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1webm_1_1Segmenter_html_a32dc8b7461252b99fe52384b04e3bca2"><div class="ttname"><a href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a32dc8b7461252b99fe52384b04e3bca2">shaka::media::webm::Segmenter::UpdateProgress</a></div><div class="ttdeci">void UpdateProgress(uint64_t progress)</div><div class="ttdoc">Update segmentation progress using ProgressListener. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d53/webm_2segmenter_8cc_source.html#l00248">segmenter.cc:248</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1File_html_a92cdfd68e6384dfcc14c78b20c98368e"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a92cdfd68e6384dfcc14c78b20c98368e">shaka::media::File::Delete</a></div><div class="ttdeci">static bool Delete(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00162">file.cc:162</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

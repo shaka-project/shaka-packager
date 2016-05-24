@@ -95,10 +95,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;algorithm&gt;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
-<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html#a7cfecfaf6169a0c9286d62b24e7b934e">   12</a></span>&#160;<a class="code" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html#a7cfecfaf6169a0c9286d62b24e7b934e">BitReader::BitReader</a>(<span class="keyword">const</span> uint8_t* data, off_t size)</div>
+<div class="line"><a name="l00012"></a><span class="lineno"><a class="line" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a909f0d78f3cd87fcedd1d965eb2aea35">   12</a></span>&#160;<a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a909f0d78f3cd87fcedd1d965eb2aea35">BitReader::BitReader</a>(<span class="keyword">const</span> uint8_t* data, off_t size)</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;    : data_(data),</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;      initial_size_(size),</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;      bytes_left_(size),</div>
@@ -110,7 +110,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;BitReader::~BitReader() {}</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
-<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html#acacb97d71aaae01796b90d27e7cdca0a">   24</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html#acacb97d71aaae01796b90d27e7cdca0a">BitReader::SkipBits</a>(<span class="keywordtype">int</span> num_bits) {</div>
+<div class="line"><a name="l00024"></a><span class="lineno"><a class="line" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a5c7e9d8cedb921042076770c8f6033d7">   24</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a5c7e9d8cedb921042076770c8f6033d7">BitReader::SkipBits</a>(<span class="keywordtype">int</span> num_bits) {</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  DCHECK_GE(num_bits, 0);</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="comment">// Skip any bits in the current byte waiting to be processed, then</span></div>
@@ -142,7 +142,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordflow">return</span> ReadBitsInternal(num_bits, &amp;not_needed);</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html#a71354dfa435a6c16c598da241f71c8a1">   56</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html#a71354dfa435a6c16c598da241f71c8a1">BitReader::SkipBytes</a>(<span class="keywordtype">int</span> num_bytes) {</div>
+<div class="line"><a name="l00056"></a><span class="lineno"><a class="line" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#afe1b515788b0079fae42dbb43189121a">   56</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#afe1b515788b0079fae42dbb43189121a">BitReader::SkipBytes</a>(<span class="keywordtype">int</span> num_bytes) {</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordflow">if</span> (num_remaining_bits_in_curr_byte_ != 8)</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordflow">if</span> (num_bytes == 0)</div>
@@ -192,14 +192,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;}</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1BitReader_html_a7cfecfaf6169a0c9286d62b24e7b934e"><div class="ttname"><a href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html#a7cfecfaf6169a0c9286d62b24e7b934e">edash_packager::media::BitReader::BitReader</a></div><div class="ttdeci">BitReader(const uint8_t *data, off_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/de0/bit__reader_8cc_source.html#l00012">bit_reader.cc:12</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1BitReader_html_acacb97d71aaae01796b90d27e7cdca0a"><div class="ttname"><a href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html#acacb97d71aaae01796b90d27e7cdca0a">edash_packager::media::BitReader::SkipBits</a></div><div class="ttdeci">bool SkipBits(int num_bits)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/de0/bit__reader_8cc_source.html#l00024">bit_reader.cc:24</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1BitReader_html_a71354dfa435a6c16c598da241f71c8a1"><div class="ttname"><a href="../../df/db4/classedash__packager_1_1media_1_1BitReader.html#a71354dfa435a6c16c598da241f71c8a1">edash_packager::media::BitReader::SkipBytes</a></div><div class="ttdeci">bool SkipBytes(int num_bytes)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/de0/bit__reader_8cc_source.html#l00056">bit_reader.cc:56</a></div></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1BitReader_html_a909f0d78f3cd87fcedd1d965eb2aea35"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a909f0d78f3cd87fcedd1d965eb2aea35">shaka::media::BitReader::BitReader</a></div><div class="ttdeci">BitReader(const uint8_t *data, off_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/de0/bit__reader_8cc_source.html#l00012">bit_reader.cc:12</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1BitReader_html_afe1b515788b0079fae42dbb43189121a"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#afe1b515788b0079fae42dbb43189121a">shaka::media::BitReader::SkipBytes</a></div><div class="ttdeci">bool SkipBytes(int num_bytes)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/de0/bit__reader_8cc_source.html#l00056">bit_reader.cc:56</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1BitReader_html_a5c7e9d8cedb921042076770c8f6033d7"><div class="ttname"><a href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a5c7e9d8cedb921042076770c8f6033d7">shaka::media::BitReader::SkipBits</a></div><div class="ttdeci">bool SkipBits(int num_bits)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/de0/bit__reader_8cc_source.html#l00024">bit_reader.cc:24</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -97,12 +97,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a0375f4997e9c934783f51203c4d1434f">   14</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a0375f4997e9c934783f51203c4d1434f">BufferReader::Read1</a>(uint8_t* v) {</div>
+<div class="line"><a name="l00014"></a><span class="lineno"><a class="line" href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#a65b65ad5a5ebc9d66182c38ec9876c05">   14</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#a65b65ad5a5ebc9d66182c38ec9876c05">BufferReader::Read1</a>(uint8_t* v) {</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;  DCHECK(v != NULL);</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a61ac255662b847f0ef25a8228c4ba009">HasBytes</a>(1))</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#a208f2fda9ea3e79583284c951642c356">HasBytes</a>(1))</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;  *v = buf_[pos_++];</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
@@ -126,7 +126,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;<span class="keywordtype">bool</span> BufferReader::Read8s(int64_t* v) {</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordflow">return</span> Read(v);</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;}</div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#ac21a2b3a9ed6b2ad20247b6f653d8a02">   40</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#ac21a2b3a9ed6b2ad20247b6f653d8a02">BufferReader::ReadNBytesInto8</a>(uint64_t* v, <span class="keywordtype">size_t</span> num_bytes) {</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#ac98c6631c07300a6b78ec58bfd4ced30">   40</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#ac98c6631c07300a6b78ec58bfd4ced30">BufferReader::ReadNBytesInto8</a>(uint64_t* v, <span class="keywordtype">size_t</span> num_bytes) {</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordflow">return</span> ReadNBytes(v, num_bytes);</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;}</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">bool</span> BufferReader::ReadNBytesInto8s(int64_t* v, <span class="keywordtype">size_t</span> num_bytes) {</div>
@@ -135,7 +135,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;<span class="keywordtype">bool</span> BufferReader::ReadToVector(std::vector&lt;uint8_t&gt;* vec, <span class="keywordtype">size_t</span> count) {</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  DCHECK(vec != NULL);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a61ac255662b847f0ef25a8228c4ba009">HasBytes</a>(count))</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#a208f2fda9ea3e79583284c951642c356">HasBytes</a>(count))</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  vec-&gt;assign(buf_ + pos_, buf_ + pos_ + count);</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  pos_ += count;</div>
@@ -144,15 +144,15 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="keywordtype">bool</span> BufferReader::ReadToString(std::string* str, <span class="keywordtype">size_t</span> size) {</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  DCHECK(str);</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a61ac255662b847f0ef25a8228c4ba009">HasBytes</a>(size))</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#a208f2fda9ea3e79583284c951642c356">HasBytes</a>(size))</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  str-&gt;assign(buf_ + pos_, buf_ + pos_ + size);</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  pos_ += size;</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;}</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a2b7075e5a47a823b9f66c0ba702f26bf">   65</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a2b7075e5a47a823b9f66c0ba702f26bf">BufferReader::SkipBytes</a>(<span class="keywordtype">size_t</span> num_bytes) {</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a61ac255662b847f0ef25a8228c4ba009">HasBytes</a>(num_bytes))</div>
+<div class="line"><a name="l00065"></a><span class="lineno"><a class="line" href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#a2b15dfcd6ff891a9cb7b76f48d91d15d">   65</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#a2b15dfcd6ff891a9cb7b76f48d91d15d">BufferReader::SkipBytes</a>(<span class="keywordtype">size_t</span> num_bytes) {</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#a208f2fda9ea3e79583284c951642c356">HasBytes</a>(num_bytes))</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  pos_ += num_bytes;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
@@ -167,7 +167,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;<span class="keywordtype">bool</span> BufferReader::ReadNBytes(T* v, <span class="keywordtype">size_t</span> num_bytes) {</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  DCHECK(v != NULL);</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  DCHECK_LE(num_bytes, <span class="keyword">sizeof</span>(*v));</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a61ac255662b847f0ef25a8228c4ba009">HasBytes</a>(num_bytes))</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#a208f2fda9ea3e79583284c951642c356">HasBytes</a>(num_bytes))</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">// Sign extension is required only if</span></div>
@@ -188,15 +188,15 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;}</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1BufferReader_html_a0375f4997e9c934783f51203c4d1434f"><div class="ttname"><a href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a0375f4997e9c934783f51203c4d1434f">edash_packager::media::BufferReader::Read1</a></div><div class="ttdeci">bool Read1(uint8_t *v) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbc/buffer__reader_8cc_source.html#l00014">buffer_reader.cc:14</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1BufferReader_html_a2b7075e5a47a823b9f66c0ba702f26bf"><div class="ttname"><a href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a2b7075e5a47a823b9f66c0ba702f26bf">edash_packager::media::BufferReader::SkipBytes</a></div><div class="ttdeci">bool SkipBytes(size_t num_bytes) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbc/buffer__reader_8cc_source.html#l00065">buffer_reader.cc:65</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1BufferReader_html_ac21a2b3a9ed6b2ad20247b6f653d8a02"><div class="ttname"><a href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#ac21a2b3a9ed6b2ad20247b6f653d8a02">edash_packager::media::BufferReader::ReadNBytesInto8</a></div><div class="ttdeci">bool ReadNBytesInto8(uint64_t *v, size_t num_bytes) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbc/buffer__reader_8cc_source.html#l00040">buffer_reader.cc:40</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1BufferReader_html_a61ac255662b847f0ef25a8228c4ba009"><div class="ttname"><a href="../../d9/d46/classedash__packager_1_1media_1_1BufferReader.html#a61ac255662b847f0ef25a8228c4ba009">edash_packager::media::BufferReader::HasBytes</a></div><div class="ttdeci">bool HasBytes(size_t count)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d3e/buffer__reader_8h_source.html#l00032">buffer_reader.h:32</a></div></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1BufferReader_html_ac98c6631c07300a6b78ec58bfd4ced30"><div class="ttname"><a href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#ac98c6631c07300a6b78ec58bfd4ced30">shaka::media::BufferReader::ReadNBytesInto8</a></div><div class="ttdeci">bool ReadNBytesInto8(uint64_t *v, size_t num_bytes) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbc/buffer__reader_8cc_source.html#l00040">buffer_reader.cc:40</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1BufferReader_html_a208f2fda9ea3e79583284c951642c356"><div class="ttname"><a href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#a208f2fda9ea3e79583284c951642c356">shaka::media::BufferReader::HasBytes</a></div><div class="ttdeci">bool HasBytes(size_t count)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d3e/buffer__reader_8h_source.html#l00032">buffer_reader.h:32</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1BufferReader_html_a65b65ad5a5ebc9d66182c38ec9876c05"><div class="ttname"><a href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#a65b65ad5a5ebc9d66182c38ec9876c05">shaka::media::BufferReader::Read1</a></div><div class="ttdeci">bool Read1(uint8_t *v) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbc/buffer__reader_8cc_source.html#l00014">buffer_reader.cc:14</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1BufferReader_html_a2b15dfcd6ff891a9cb7b76f48d91d15d"><div class="ttname"><a href="../../d9/d13/classshaka_1_1media_1_1BufferReader.html#a2b15dfcd6ff891a9cb7b76f48d91d15d">shaka::media::BufferReader::SkipBytes</a></div><div class="ttdeci">bool SkipBytes(size_t num_bytes) WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dbc/buffer__reader_8cc_source.html#l00065">buffer_reader.cc:65</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

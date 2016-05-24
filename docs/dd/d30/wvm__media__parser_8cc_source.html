@@ -173,7 +173,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;};</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}  <span class="comment">// namespace</span></div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="keyword">namespace </span>wvm {</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
@@ -203,9 +203,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;WvmMediaParser::~WvmMediaParser() {}</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;</div>
-<div class="line"><a name="l00117"></a><span class="lineno"><a class="line" href="../../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html#aef36e6f7cc6bdb2c6b287ae07ef9a55a">  117</a></span>&#160;<span class="keywordtype">void</span> WvmMediaParser::Init(<span class="keyword">const</span> InitCB&amp; init_cb,</div>
+<div class="line"><a name="l00117"></a><span class="lineno"><a class="line" href="../../dc/d18/classshaka_1_1media_1_1wvm_1_1WvmMediaParser.html#a6f931f1702724a9b19c3078a7832bc77">  117</a></span>&#160;<span class="keywordtype">void</span> WvmMediaParser::Init(<span class="keyword">const</span> InitCB&amp; init_cb,</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;                          <span class="keyword">const</span> NewSampleCB&amp; new_sample_cb,</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;                          <a class="code" href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">KeySource</a>* decryption_key_source) {</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;                          <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>* decryption_key_source) {</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  DCHECK(!is_initialized_);</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  DCHECK(!init_cb.is_null());</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  DCHECK(!new_sample_cb.is_null());</div>
@@ -214,7 +214,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  new_sample_cb_ = new_sample_cb;</div>
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;}</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
-<div class="line"><a name="l00128"></a><span class="lineno"><a class="line" href="../../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html#afb93a59f1ed5a174b4c4ef09072667a5">  128</a></span>&#160;<span class="keywordtype">bool</span> WvmMediaParser::Parse(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">int</span> size) {</div>
+<div class="line"><a name="l00128"></a><span class="lineno"><a class="line" href="../../dc/d18/classshaka_1_1media_1_1wvm_1_1WvmMediaParser.html#a246702aa75891cbe396ca7cc11e13eeb">  128</a></span>&#160;<span class="keywordtype">bool</span> WvmMediaParser::Parse(<span class="keyword">const</span> uint8_t* buf, <span class="keywordtype">int</span> size) {</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  uint32_t num_bytes, prev_size;</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  num_bytes = prev_size = 0;</div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  <span class="keyword">const</span> uint8_t* read_ptr = buf;</div>
@@ -605,7 +605,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;}</div>
 <div class="line"><a name="l00518"></a><span class="lineno">  518</span>&#160;</div>
-<div class="line"><a name="l00519"></a><span class="lineno"><a class="line" href="../../d8/da0/classedash__packager_1_1media_1_1wvm_1_1WvmMediaParser.html#ada8310858959deec97adfa001658edf0">  519</a></span>&#160;<span class="keywordtype">bool</span> WvmMediaParser::Flush() {</div>
+<div class="line"><a name="l00519"></a><span class="lineno"><a class="line" href="../../dc/d18/classshaka_1_1media_1_1wvm_1_1WvmMediaParser.html#ac5680e3bd6cdb07fd65af3f39fce999a">  519</a></span>&#160;<span class="keywordtype">bool</span> WvmMediaParser::Flush() {</div>
 <div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;  <span class="comment">// Flush the last audio and video sample for current program.</span></div>
 <div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;  <span class="comment">// Reset the streamID when successfully emitted.</span></div>
 <div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;  <span class="keywordflow">if</span> (prev_media_sample_data_.audio_sample != NULL) {</div>
@@ -891,7 +891,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00802"></a><span class="lineno">  802</span>&#160;</div>
 <div class="line"><a name="l00803"></a><span class="lineno">  803</span>&#160;<span class="keywordtype">void</span> WvmMediaParser::StartMediaSampleDemux() {</div>
 <div class="line"><a name="l00804"></a><span class="lineno">  804</span>&#160;  <span class="keywordtype">bool</span> is_key_frame = ((pes_flags_1_ &amp; kPesOptAlign) != 0);</div>
-<div class="line"><a name="l00805"></a><span class="lineno">  805</span>&#160;  media_sample_ = <a class="code" href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html#ac30e98c643959047439a3b71baa399ca">MediaSample::CreateEmptyMediaSample</a>();</div>
+<div class="line"><a name="l00805"></a><span class="lineno">  805</span>&#160;  media_sample_ = <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a59e7bbd2ee8cfa1697093d14d16a6c4d">MediaSample::CreateEmptyMediaSample</a>();</div>
 <div class="line"><a name="l00806"></a><span class="lineno">  806</span>&#160;  media_sample_-&gt;set_dts(dts_);</div>
 <div class="line"><a name="l00807"></a><span class="lineno">  807</span>&#160;  media_sample_-&gt;set_pts(pts_);</div>
 <div class="line"><a name="l00808"></a><span class="lineno">  808</span>&#160;  media_sample_-&gt;set_is_key_frame(is_key_frame);</div>
@@ -983,7 +983,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00894"></a><span class="lineno">  894</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> ((prev_pes_stream_id_ &amp; kPesStreamIdAudioMask) ==</div>
 <div class="line"><a name="l00895"></a><span class="lineno">  895</span>&#160;        kPesStreamIdAudio) {</div>
 <div class="line"><a name="l00896"></a><span class="lineno">  896</span>&#160;      <span class="comment">// Set data on the audio stream.</span></div>
-<div class="line"><a name="l00897"></a><span class="lineno">  897</span>&#160;      <span class="keywordtype">int</span> frame_size = <a class="code" href="../../db/d69/classedash__packager_1_1media_1_1mp2t_1_1AdtsHeader.html#aacce540b215432703697c6a1172c3011">media::mp2t::AdtsHeader::GetAdtsFrameSize</a>(</div>
+<div class="line"><a name="l00897"></a><span class="lineno">  897</span>&#160;      <span class="keywordtype">int</span> frame_size = <a class="code" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a149fb9c7fa2718d719008af2dce8157f">media::mp2t::AdtsHeader::GetAdtsFrameSize</a>(</div>
 <div class="line"><a name="l00898"></a><span class="lineno">  898</span>&#160;          sample_data_.data(), kAdtsHeaderMinSize);</div>
 <div class="line"><a name="l00899"></a><span class="lineno">  899</span>&#160;      media::mp2t::AdtsHeader adts_header;</div>
 <div class="line"><a name="l00900"></a><span class="lineno">  900</span>&#160;      <span class="keyword">const</span> uint8_t* frame_ptr = sample_data_.data();</div>
@@ -1013,7 +1013,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00924"></a><span class="lineno">  924</span>&#160;              }</div>
 <div class="line"><a name="l00925"></a><span class="lineno">  925</span>&#160;              audio_stream_info-&gt;set_extra_data(audio_specific_config);</div>
 <div class="line"><a name="l00926"></a><span class="lineno">  926</span>&#160;              audio_stream_info-&gt;set_codec_string(</div>
-<div class="line"><a name="l00927"></a><span class="lineno">  927</span>&#160;                  <a class="code" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#aa62e486f463c867b8e2f41ebb4ecea34">AudioStreamInfo::GetCodecString</a>(</div>
+<div class="line"><a name="l00927"></a><span class="lineno">  927</span>&#160;                  <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a2a09eeb3559dd38c333c071d78be1e8c">AudioStreamInfo::GetCodecString</a>(</div>
 <div class="line"><a name="l00928"></a><span class="lineno">  928</span>&#160;                      kCodecAAC, adts_header.GetObjectType()));</div>
 <div class="line"><a name="l00929"></a><span class="lineno">  929</span>&#160;            } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00930"></a><span class="lineno">  930</span>&#160;              <span class="comment">// Set AudioStreamInfo fields using information from the</span></div>
@@ -1025,7 +1025,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00936"></a><span class="lineno">  936</span>&#160;              }</div>
 <div class="line"><a name="l00937"></a><span class="lineno">  937</span>&#160;              audio_stream_info-&gt;set_sampling_frequency(aac_config.frequency());</div>
 <div class="line"><a name="l00938"></a><span class="lineno">  938</span>&#160;              audio_stream_info-&gt;set_codec_string(</div>
-<div class="line"><a name="l00939"></a><span class="lineno">  939</span>&#160;                  <a class="code" href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#aa62e486f463c867b8e2f41ebb4ecea34">AudioStreamInfo::GetCodecString</a>(</div>
+<div class="line"><a name="l00939"></a><span class="lineno">  939</span>&#160;                  <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a2a09eeb3559dd38c333c071d78be1e8c">AudioStreamInfo::GetCodecString</a>(</div>
 <div class="line"><a name="l00940"></a><span class="lineno">  940</span>&#160;                      kCodecAAC, aac_config.audio_object_type()));</div>
 <div class="line"><a name="l00941"></a><span class="lineno">  941</span>&#160;            }</div>
 <div class="line"><a name="l00942"></a><span class="lineno">  942</span>&#160;          }</div>
@@ -1256,15 +1256,15 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01167"></a><span class="lineno"> 1167</span>&#160;</div>
 <div class="line"><a name="l01168"></a><span class="lineno"> 1168</span>&#160;}  <span class="comment">// namespace wvm</span></div>
 <div class="line"><a name="l01169"></a><span class="lineno"> 1169</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l01170"></a><span class="lineno"> 1170</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1mp2t_1_1AdtsHeader_html_aacce540b215432703697c6a1172c3011"><div class="ttname"><a href="../../db/d69/classedash__packager_1_1media_1_1mp2t_1_1AdtsHeader.html#aacce540b215432703697c6a1172c3011">edash_packager::media::mp2t::AdtsHeader::GetAdtsFrameSize</a></div><div class="ttdeci">static size_t GetAdtsFrameSize(const uint8_t *data, size_t num_bytes)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d5b/adts__header_8cc_source.html#l00023">adts_header.cc:23</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d9/d8b/classedash__packager_1_1media_1_1KeySource.html">edash_packager::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00031">key_source.h:31</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1MediaSample_html_ac30e98c643959047439a3b71baa399ca"><div class="ttname"><a href="../../d8/d6c/classedash__packager_1_1media_1_1MediaSample.html#ac30e98c643959047439a3b71baa399ca">edash_packager::media::MediaSample::CreateEmptyMediaSample</a></div><div class="ttdeci">static scoped_refptr&lt; MediaSample &gt; CreateEmptyMediaSample()</div><div class="ttdoc">Create a MediaSample object with default members. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00074">media_sample.cc:74</a></div></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1AudioStreamInfo_html_aa62e486f463c867b8e2f41ebb4ecea34"><div class="ttname"><a href="../../da/d27/classedash__packager_1_1media_1_1AudioStreamInfo.html#aa62e486f463c867b8e2f41ebb4ecea34">edash_packager::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(AudioCodec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00112">audio_stream_info.cc:112</a></div></div>
+<div class="line"><a name="l01170"></a><span class="lineno"> 1170</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_a2a09eeb3559dd38c333c071d78be1e8c"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a2a09eeb3559dd38c333c071d78be1e8c">shaka::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(AudioCodec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00112">audio_stream_info.cc:112</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1mp2t_1_1AdtsHeader_html_a149fb9c7fa2718d719008af2dce8157f"><div class="ttname"><a href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a149fb9c7fa2718d719008af2dce8157f">shaka::media::mp2t::AdtsHeader::GetAdtsFrameSize</a></div><div class="ttdeci">static size_t GetAdtsFrameSize(const uint8_t *data, size_t num_bytes)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d5b/adts__header_8cc_source.html#l00023">adts_header.cc:23</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00031">key_source.h:31</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_a59e7bbd2ee8cfa1697093d14d16a6c4d"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a59e7bbd2ee8cfa1697093d14d16a6c4d">shaka::media::MediaSample::CreateEmptyMediaSample</a></div><div class="ttdeci">static scoped_refptr&lt; MediaSample &gt; CreateEmptyMediaSample()</div><div class="ttdoc">Create a MediaSample object with default members. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00074">media_sample.cc:74</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

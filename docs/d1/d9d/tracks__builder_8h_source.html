@@ -102,17 +102,17 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/base/macros.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>edash_packager {</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="../../d0/de6/classedash__packager_1_1media_1_1TracksBuilder.html">   19</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d0/de6/classedash__packager_1_1media_1_1TracksBuilder.html">TracksBuilder</a> {</div>
+<div class="line"><a name="l00019"></a><span class="lineno"><a class="line" href="../../d8/d74/classshaka_1_1media_1_1TracksBuilder.html">   19</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d8/d74/classshaka_1_1media_1_1TracksBuilder.html">TracksBuilder</a> {</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160; <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="comment">// If |allow_invalid_values| is false, some AddTrack() parameters will be</span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="comment">// basically checked and will assert if out of valid range. |codec_id|,</span></div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  <span class="comment">// |name|, |language| and any device-specific constraints are not checked.</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="../../d0/de6/classedash__packager_1_1media_1_1TracksBuilder.html">TracksBuilder</a>(<span class="keywordtype">bool</span> allow_invalid_values);</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <a class="code" href="../../d0/de6/classedash__packager_1_1media_1_1TracksBuilder.html">TracksBuilder</a>();  <span class="comment">// Sets |allow_invalid_values| to false.</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  ~<a class="code" href="../../d0/de6/classedash__packager_1_1media_1_1TracksBuilder.html">TracksBuilder</a>();</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="../../d8/d74/classshaka_1_1media_1_1TracksBuilder.html">TracksBuilder</a>(<span class="keywordtype">bool</span> allow_invalid_values);</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  <a class="code" href="../../d8/d74/classshaka_1_1media_1_1TracksBuilder.html">TracksBuilder</a>();  <span class="comment">// Sets |allow_invalid_values| to false.</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  ~<a class="code" href="../../d8/d74/classshaka_1_1media_1_1TracksBuilder.html">TracksBuilder</a>();</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <span class="comment">// Only a non-negative |default_duration| will result in a serialized</span></div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  <span class="comment">// kWebMIdDefaultDuration element. Note, 0 is allowed here for testing only</span></div>
@@ -199,18 +199,18 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  TrackList tracks_;</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  <span class="keywordtype">bool</span> allow_invalid_values_;</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d0/de6/classedash__packager_1_1media_1_1TracksBuilder.html">TracksBuilder</a>);</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d8/d74/classshaka_1_1media_1_1TracksBuilder.html">TracksBuilder</a>);</div>
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;};</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;}  <span class="comment">// namespace edash_packager</span></div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_TRACKS_BUILDER_H_</span></div>
-<div class="ttc" id="classedash__packager_1_1media_1_1TracksBuilder_html"><div class="ttname"><a href="../../d0/de6/classedash__packager_1_1media_1_1TracksBuilder.html">edash_packager::media::TracksBuilder</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d9d/tracks__builder_8h_source.html#l00019">tracks_builder.h:19</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1TracksBuilder_html"><div class="ttname"><a href="../../d8/d74/classshaka_1_1media_1_1TracksBuilder.html">shaka::media::TracksBuilder</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d9d/tracks__builder_8h_source.html#l00019">tracks_builder.h:19</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue May 24 2016 21:58:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue May 24 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
