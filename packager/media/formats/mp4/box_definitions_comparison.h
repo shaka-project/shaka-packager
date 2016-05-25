@@ -241,9 +241,9 @@ inline bool operator==(const Metadata& lhs, const Metadata& rhs) {
   return lhs.handler == rhs.handler && lhs.id3v2 == rhs.id3v2;
 }
 
-inline bool operator==(const CodecConfigurationRecord& lhs,
-                       const CodecConfigurationRecord& rhs) {
-  return lhs.data == rhs.data;
+inline bool operator==(const CodecConfiguration& lhs,
+                       const CodecConfiguration& rhs) {
+  return lhs.box_type == rhs.box_type && lhs.data == rhs.data;
 }
 
 inline bool operator==(const PixelAspectRatio& lhs,
@@ -257,7 +257,7 @@ inline bool operator==(const VideoSampleEntry& lhs,
          lhs.data_reference_index == rhs.data_reference_index &&
          lhs.width == rhs.width && lhs.height == rhs.height &&
          lhs.pixel_aspect == rhs.pixel_aspect && lhs.sinf == rhs.sinf &&
-         lhs.codec_config_record == rhs.codec_config_record;
+         lhs.codec_configuration == rhs.codec_configuration;
 }
 
 inline bool operator==(const ESDescriptor& lhs, const ESDescriptor& rhs) {

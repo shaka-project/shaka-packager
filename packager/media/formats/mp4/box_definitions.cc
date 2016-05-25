@@ -1416,16 +1416,27 @@ uint32_t Metadata::ComputeSizeInternal() {
                          : HeaderSize() + handler.ComputeSize() + id3v2_size;
 }
 
-CodecConfigurationRecord::CodecConfigurationRecord() : box_type(FOURCC_NULL) {}
-CodecConfigurationRecord::~CodecConfigurationRecord() {}
-FourCC CodecConfigurationRecord::BoxType() const {
-  // CodecConfigurationRecord should be parsed according to format recovered in
+CodecConfiguration::CodecConfiguration() : box_type(FOURCC_NULL) {}
+CodecConfiguration::~CodecConfiguration() {}
+
+FourCC CodecConfiguration::BoxType() const {
+  // CodecConfiguration box should be parsed according to format recovered in
   // VideoSampleEntry. |box_type| is determined dynamically there.
   return box_type;
 }
 
-bool CodecConfigurationRecord::ReadWriteInternal(BoxBuffer* buffer) {
+bool CodecConfiguration::ReadWriteInternal(BoxBuffer* buffer) {
+  DCHECK_NE(box_type, FOURCC_NULL);
   RCHECK(ReadWriteHeaderInternal(buffer));
+
+  // VPCodecConfiguration box inherits from FullBox instead of Box. The extra 4
+  // bytes are handled here.
+  if (box_type == FOURCC_vpcC) {
+    uint32_t version_flags = 0;
+    RCHECK(buffer->ReadWriteUInt32(&version_flags));
+    RCHECK(version_flags == 0);
+  }
+
   if (buffer->Reading()) {
     RCHECK(buffer->ReadWriteVector(&data, buffer->BytesLeft()));
   } else {
@@ -1434,10 +1445,11 @@ bool CodecConfigurationRecord::ReadWriteInternal(BoxBuffer* buffer) {
   return true;
 }
 
-uint32_t CodecConfigurationRecord::ComputeSizeInternal() {
+uint32_t CodecConfiguration::ComputeSizeInternal() {
   if (data.empty())
     return 0;
-  return HeaderSize() + data.size();
+  DCHECK_NE(box_type, FOURCC_NULL);
+  return HeaderSize() + (box_type == FOURCC_vpcC ? 4 : 0) + data.size();
 }
 
 PixelAspectRatio::PixelAspectRatio() : h_spacing(0), v_spacing(0) {}
@@ -1530,35 +1542,48 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
     RCHECK(buffer->ReadWriteChild(&sinf));
 
   const FourCC actual_format = GetActualFormat();
-  switch (actual_format) {
-    case FOURCC_avc1:
-      codec_config_record.box_type = FOURCC_avcC;
-      break;
-    case FOURCC_hev1:
-    case FOURCC_hvc1:
-      codec_config_record.box_type = FOURCC_hvcC;
-      break;
-    case FOURCC_vp08:
-    case FOURCC_vp09:
-    case FOURCC_vp10:
-      codec_config_record.box_type = FOURCC_vpcC;
-      break;
-    default:
-      LOG(ERROR) << FourCCToString(actual_format) << " is not supported.";
-      return false;
+  if (buffer->Reading()) {
+    codec_configuration.box_type = GetCodecConfigurationBoxType(actual_format);
+  } else {
+    DCHECK_EQ(codec_configuration.box_type,
+              GetCodecConfigurationBoxType(actual_format));
   }
-  RCHECK(buffer->ReadWriteChild(&codec_config_record));
+  DCHECK_NE(codec_configuration.box_type, FOURCC_NULL);
+
+  RCHECK(buffer->ReadWriteChild(&codec_configuration));
   RCHECK(buffer->TryReadWriteChild(&pixel_aspect));
   return true;
 }
 
 uint32_t VideoSampleEntry::ComputeSizeInternal() {
+  const FourCC actual_format = GetActualFormat();
+  if (actual_format == FOURCC_NULL)
+    return 0;
+  codec_configuration.box_type = GetCodecConfigurationBoxType(actual_format);
+  DCHECK_NE(codec_configuration.box_type, FOURCC_NULL);
   return HeaderSize() + sizeof(data_reference_index) + sizeof(width) +
          sizeof(height) + sizeof(kVideoResolution) * 2 +
          sizeof(kVideoFrameCount) + sizeof(kVideoDepth) +
          pixel_aspect.ComputeSize() + sinf.ComputeSize() +
-         codec_config_record.ComputeSize() + kCompressorNameSize + 6 + 4 + 16 +
+         codec_configuration.ComputeSize() + kCompressorNameSize + 6 + 4 + 16 +
          2;  // 6 + 4 bytes reserved, 16 + 2 bytes predefined.
+}
+
+FourCC VideoSampleEntry::GetCodecConfigurationBoxType(FourCC format) const {
+  switch (format) {
+    case FOURCC_avc1:
+      return FOURCC_avcC;
+    case FOURCC_hev1:
+    case FOURCC_hvc1:
+      return FOURCC_hvcC;
+    case FOURCC_vp08:
+    case FOURCC_vp09:
+    case FOURCC_vp10:
+      return FOURCC_vpcC;
+    default:
+      LOG(ERROR) << FourCCToString(format) << " is not supported.";
+      return FOURCC_NULL;
+  }
 }
 
 ElementaryStreamDescriptor::ElementaryStreamDescriptor() {}
@@ -1764,6 +1789,8 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
 }
 
 uint32_t AudioSampleEntry::ComputeSizeInternal() {
+  if (GetActualFormat() == FOURCC_NULL)
+    return 0;
   return HeaderSize() + sizeof(data_reference_index) + sizeof(channelcount) +
          sizeof(samplesize) + sizeof(samplerate) + sinf.ComputeSize() +
          esds.ComputeSize() + ddts.ComputeSize() + dac3.ComputeSize() +

@@ -229,7 +229,7 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   video.format = VideoCodecToFourCC(video_info->codec());
   video.width = video_info->width();
   video.height = video_info->height();
-  video.codec_config_record.data = video_info->extra_data();
+  video.codec_configuration.data = video_info->extra_data();
   if (pixel_width != 1 || pixel_height != 1) {
     video.pixel_aspect.h_spacing = pixel_width;
     video.pixel_aspect.v_spacing = pixel_height;
