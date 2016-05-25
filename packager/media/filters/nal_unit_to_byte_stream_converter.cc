@@ -13,7 +13,7 @@
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/macros.h"
-#include "packager/media/filters/avc_decoder_configuration.h"
+#include "packager/media/filters/avc_decoder_configuration_record.h"
 #include "packager/media/filters/nalu_reader.h"
 
 namespace shaka {
@@ -99,7 +99,7 @@ bool NalUnitToByteStreamConverter::Initialize(
     return false;
   }
 
-  AVCDecoderConfiguration decoder_config;
+  AVCDecoderConfigurationRecord decoder_config;
   if (!decoder_config.Parse(std::vector<uint8_t>(
           decoder_configuration_data,
           decoder_configuration_data + decoder_configuration_data_size))) {

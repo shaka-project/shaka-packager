@@ -456,7 +456,8 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
           return false;
         }
 
-        const VPCodecConfiguration* codec_config = &vpx_parser->codec_config();
+        const VPCodecConfigurationRecord* codec_config =
+            &vpx_parser->codec_config();
         video_stream_info_->set_codec_string(
             codec_config->GetCodecString(video_stream_info_->codec()));
         std::vector<uint8_t> extra_data;

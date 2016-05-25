@@ -13,7 +13,7 @@
 #include "packager/media/base/offset_byte_queue.h"
 #include "packager/media/base/timestamp.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/filters/hevc_decoder_configuration.h"
+#include "packager/media/filters/hevc_decoder_configuration_record.h"
 #include "packager/media/filters/h265_byte_to_unit_stream_converter.h"
 #include "packager/media/filters/h265_parser.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
@@ -117,7 +117,7 @@ bool EsParserH265::UpdateVideoDecoderConfig(int pps_id) {
   }
 
   std::vector<uint8_t> decoder_config_record;
-  HEVCDecoderConfiguration decoder_config;
+  HEVCDecoderConfigurationRecord decoder_config;
   if (!stream_converter()->GetDecoderConfigurationRecord(
           &decoder_config_record) ||
       !decoder_config.Parse(decoder_config_record)) {

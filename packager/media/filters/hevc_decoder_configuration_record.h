@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_FILTERS_HEVC_DECODER_CONFIGURATION_H_
-#define MEDIA_FILTERS_HEVC_DECODER_CONFIGURATION_H_
+#ifndef MEDIA_FILTERS_HEVC_DECODER_CONFIGURATION_RECORD_H_
+#define MEDIA_FILTERS_HEVC_DECODER_CONFIGURATION_RECORD_H_
 
 #include <stdint.h>
 #include <string>
@@ -13,16 +13,16 @@
 
 #include "packager/base/macros.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/filters/decoder_configuration.h"
+#include "packager/media/filters/decoder_configuration_record.h"
 
 namespace shaka {
 namespace media {
 
-/// Class for parsing HEVC decoder configuration.
-class HEVCDecoderConfiguration : public DecoderConfiguration {
+/// Class for parsing HEVC decoder configuration record.
+class HEVCDecoderConfigurationRecord : public DecoderConfigurationRecord {
  public:
-  HEVCDecoderConfiguration();
-  ~HEVCDecoderConfiguration() override;
+  HEVCDecoderConfigurationRecord();
+  ~HEVCDecoderConfigurationRecord() override;
 
   /// @return The codec string.
   std::string GetCodecString(VideoCodec codec) const;
@@ -38,10 +38,10 @@ class HEVCDecoderConfiguration : public DecoderConfiguration {
   std::vector<uint8_t> general_constraint_indicator_flags_;
   uint8_t general_level_idc_;
 
-  DISALLOW_COPY_AND_ASSIGN(HEVCDecoderConfiguration);
+  DISALLOW_COPY_AND_ASSIGN(HEVCDecoderConfigurationRecord);
 };
 
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_FILTERS_HEVC_DECODER_CONFIGURATION_H_
+#endif  // MEDIA_FILTERS_HEVC_DECODER_CONFIGURATION_RECORD_H_

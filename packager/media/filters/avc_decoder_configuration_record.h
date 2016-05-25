@@ -4,24 +4,24 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_FILTERS_AVC_DECODER_CONFIGURATION_H_
-#define MEDIA_FILTERS_AVC_DECODER_CONFIGURATION_H_
+#ifndef MEDIA_FILTERS_AVC_DECODER_CONFIGURATION_RECORD_H_
+#define MEDIA_FILTERS_AVC_DECODER_CONFIGURATION_RECORD_H_
 
 #include <stdint.h>
 #include <string>
 #include <vector>
 
 #include "packager/base/macros.h"
-#include "packager/media/filters/decoder_configuration.h"
+#include "packager/media/filters/decoder_configuration_record.h"
 
 namespace shaka {
 namespace media {
 
-/// Class for parsing AVC decoder configuration.
-class AVCDecoderConfiguration : public DecoderConfiguration {
+/// Class for parsing AVC decoder configuration record.
+class AVCDecoderConfigurationRecord : public DecoderConfigurationRecord {
  public:
-  AVCDecoderConfiguration();
-  ~AVCDecoderConfiguration() override;
+  AVCDecoderConfigurationRecord();
+  ~AVCDecoderConfigurationRecord() override;
 
   /// @return The codec string.
   std::string GetCodecString() const;
@@ -55,10 +55,10 @@ class AVCDecoderConfiguration : public DecoderConfiguration {
   uint32_t pixel_width_;
   uint32_t pixel_height_;
 
-  DISALLOW_COPY_AND_ASSIGN(AVCDecoderConfiguration);
+  DISALLOW_COPY_AND_ASSIGN(AVCDecoderConfigurationRecord);
 };
 
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_FILTERS_AVC_DECODER_CONFIGURATION_H_
+#endif  // MEDIA_FILTERS_AVC_DECODER_CONFIGURATION_RECORD_H_

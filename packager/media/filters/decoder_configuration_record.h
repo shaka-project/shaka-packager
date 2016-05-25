@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_FILTERS_DECODER_CONFIGURATION_H_
-#define MEDIA_FILTERS_DECODER_CONFIGURATION_H_
+#ifndef MEDIA_FILTERS_DECODER_CONFIGURATION_RECORD_H_
+#define MEDIA_FILTERS_DECODER_CONFIGURATION_RECORD_H_
 
 #include <vector>
 
@@ -16,19 +16,19 @@
 namespace shaka {
 namespace media {
 
-// Defines a base class for decoder configurations.
-class DecoderConfiguration {
+// Defines a base class for decoder configuration record.
+class DecoderConfigurationRecord {
  public:
-  virtual ~DecoderConfiguration();
+  virtual ~DecoderConfigurationRecord();
 
-  /// Parses input to extract decoder configuration data.  This will make and
+  /// Parses input to extract decoder configuration record.  This will make and
   /// store a copy of the data for Nalu access.
   /// @return false if there are parsing errors.
   bool Parse(const std::vector<uint8_t>& data) {
     return Parse(data.data(), data.size());
   }
 
-  /// Parses input to extract decoder configuration data.  This will make and
+  /// Parses input to extract decoder configuration record.  This will make and
   /// store a copy of the data for Nalu access.
   /// @return false if there are parsing errors.
   bool Parse(const uint8_t* data, size_t data_size);
@@ -44,7 +44,7 @@ class DecoderConfiguration {
   const Nalu& nalu(size_t i) const { return nalu_[i]; }
 
  protected:
-  DecoderConfiguration();
+  DecoderConfigurationRecord();
 
   /// Adds the given Nalu to the configuration.
   void AddNalu(const Nalu& nalu);
@@ -71,10 +71,10 @@ class DecoderConfiguration {
   std::vector<Nalu> nalu_;
   uint8_t nalu_length_size_;
 
-  DISALLOW_COPY_AND_ASSIGN(DecoderConfiguration);
+  DISALLOW_COPY_AND_ASSIGN(DecoderConfigurationRecord);
 };
 
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_FILTERS_DECODER_CONFIGURATION_H_
+#endif  // MEDIA_FILTERS_DECODER_CONFIGURATION_RECORD_H_

@@ -4,8 +4,8 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#ifndef MEDIA_FILTERS_VP_CODEC_CONFIGURATION_H_
-#define MEDIA_FILTERS_VP_CODEC_CONFIGURATION_H_
+#ifndef MEDIA_FILTERS_VP_CODEC_CONFIGURATION_RECORD_H_
+#define MEDIA_FILTERS_VP_CODEC_CONFIGURATION_RECORD_H_
 
 #include <stdint.h>
 #include <string>
@@ -17,8 +17,8 @@
 namespace shaka {
 namespace media {
 
-/// Class for parsing or writing VP codec configuration data.
-class VPCodecConfiguration {
+/// Class for parsing or writing VP codec configuration record.
+class VPCodecConfigurationRecord {
  public:
   enum ColorSpace {
     COLOR_SPACE_UNSPECIFIED = 0,
@@ -39,23 +39,24 @@ class VPCodecConfiguration {
     CHROMA_440 = 4,
   };
 
-  VPCodecConfiguration();
-  VPCodecConfiguration(uint8_t profile,
-                       uint8_t level,
-                       uint8_t bit_depth,
-                       uint8_t color_space,
-                       uint8_t chroma_subsampling,
-                       uint8_t transfer_function,
-                       bool video_full_range_flag,
-                       const std::vector<uint8_t>& codec_initialization_data);
-  ~VPCodecConfiguration();
+  VPCodecConfigurationRecord();
+  VPCodecConfigurationRecord(
+      uint8_t profile,
+      uint8_t level,
+      uint8_t bit_depth,
+      uint8_t color_space,
+      uint8_t chroma_subsampling,
+      uint8_t transfer_function,
+      bool video_full_range_flag,
+      const std::vector<uint8_t>& codec_initialization_data);
+  ~VPCodecConfigurationRecord();
 
-  /// Parses input to extract VP codec configuration data.
+  /// Parses input to extract VP codec configuration record.
   /// @return false if there is parsing errors.
   bool Parse(const std::vector<uint8_t>& data);
 
   /// @param data should not be null.
-  /// Writes VP codec configuration data to buffer.
+  /// Writes VP codec configuration record to buffer.
   void Write(std::vector<uint8_t>* data) const;
 
   /// @return The codec string.
@@ -101,4 +102,4 @@ class VPCodecConfiguration {
 }  // namespace media
 }  // namespace shaka
 
-#endif  // MEDIA_FILTERS_VP_CODEC_CONFIGURATION_H_
+#endif  // MEDIA_FILTERS_VP_CODEC_CONFIGURATION_RECORD_H_

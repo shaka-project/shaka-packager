@@ -140,7 +140,7 @@ bool ParseIfSuperframeIndex(const uint8_t* data,
   return true;
 }
 
-bool ReadProfile(BitReader* reader, VPCodecConfiguration* codec_config) {
+bool ReadProfile(BitReader* reader, VPCodecConfigurationRecord* codec_config) {
   uint8_t bit[2];
   RCHECK(reader->ReadBits(1, &bit[0]));
   RCHECK(reader->ReadBits(1, &bit[1]));
@@ -160,54 +160,55 @@ bool ReadSyncCode(BitReader* reader) {
   return sync_code == VP9_SYNC_CODE;
 }
 
-VPCodecConfiguration::ColorSpace GetColorSpace(uint8_t color_space) {
+VPCodecConfigurationRecord::ColorSpace GetColorSpace(uint8_t color_space) {
   switch (color_space) {
     case VPX_COLOR_SPACE_UNKNOWN:
-      return VPCodecConfiguration::COLOR_SPACE_UNSPECIFIED;
+      return VPCodecConfigurationRecord::COLOR_SPACE_UNSPECIFIED;
     case VPX_COLOR_SPACE_BT_601:
-      return VPCodecConfiguration::COLOR_SPACE_BT_601;
+      return VPCodecConfigurationRecord::COLOR_SPACE_BT_601;
     case VPX_COLOR_SPACE_BT_709:
-      return VPCodecConfiguration::COLOR_SPACE_BT_709;
+      return VPCodecConfigurationRecord::COLOR_SPACE_BT_709;
     case VPX_COLOR_SPACE_SMPTE_170:
-      return VPCodecConfiguration::COLOR_SPACE_SMPTE_170;
+      return VPCodecConfigurationRecord::COLOR_SPACE_SMPTE_170;
     case VPX_COLOR_SPACE_SMPTE_240:
-      return VPCodecConfiguration::COLOR_SPACE_SMPTE_240;
+      return VPCodecConfigurationRecord::COLOR_SPACE_SMPTE_240;
     case VPX_COLOR_SPACE_BT_2020:
       // VP9 does not specify if it is in the form of “constant luminance” or
       // “non-constant luminance”. As such, application should rely on the
       // signaling outside of VP9 bitstream. If there is no such signaling,
       // application may assume non-constant luminance for BT.2020.
-      return VPCodecConfiguration::COLOR_SPACE_BT_2020_NON_CONSTANT_LUMINANCE;
+      return VPCodecConfigurationRecord::
+          COLOR_SPACE_BT_2020_NON_CONSTANT_LUMINANCE;
     case VPX_COLOR_SPACE_SRGB:
-      return VPCodecConfiguration::COLOR_SPACE_SRGB;
+      return VPCodecConfigurationRecord::COLOR_SPACE_SRGB;
     default:
       LOG(WARNING) << "Unknown color space: " << static_cast<int>(color_space);
-      return VPCodecConfiguration::COLOR_SPACE_UNSPECIFIED;
+      return VPCodecConfigurationRecord::COLOR_SPACE_UNSPECIFIED;
   }
 }
 
-VPCodecConfiguration::ChromaSubsampling GetChromaSubsampling(
+VPCodecConfigurationRecord::ChromaSubsampling GetChromaSubsampling(
     uint8_t subsampling) {
   switch (subsampling) {
     case 0:
-      return VPCodecConfiguration::CHROMA_444;
+      return VPCodecConfigurationRecord::CHROMA_444;
     case 1:
-      return VPCodecConfiguration::CHROMA_440;
+      return VPCodecConfigurationRecord::CHROMA_440;
     case 2:
-      return VPCodecConfiguration::CHROMA_422;
+      return VPCodecConfigurationRecord::CHROMA_422;
     case 3:
       // VP9 assumes that chrome samples are collocated with luma samples if
       // there is no explicit signaling outside of VP9 bitstream.
-      return VPCodecConfiguration::CHROMA_420_COLLOCATED_WITH_LUMA;
+      return VPCodecConfigurationRecord::CHROMA_420_COLLOCATED_WITH_LUMA;
     default:
       LOG(WARNING) << "Unexpected chroma subsampling value: "
                    << static_cast<int>(subsampling);
-      return VPCodecConfiguration::CHROMA_420_COLLOCATED_WITH_LUMA;
+      return VPCodecConfigurationRecord::CHROMA_420_COLLOCATED_WITH_LUMA;
   }
 }
 
 bool ReadBitDepthAndColorSpace(BitReader* reader,
-                               VPCodecConfiguration* codec_config) {
+                               VPCodecConfigurationRecord* codec_config) {
   uint8_t bit_depth = 8;
   if (codec_config->profile() >= 2) {
     bool use_vpx_bits_12;
@@ -221,7 +222,7 @@ bool ReadBitDepthAndColorSpace(BitReader* reader,
   codec_config->set_color_space(GetColorSpace(color_space));
 
   bool yuv_full_range = false;
-  auto chroma_subsampling = VPCodecConfiguration::CHROMA_444;
+  auto chroma_subsampling = VPCodecConfigurationRecord::CHROMA_444;
   if (color_space != VPX_COLOR_SPACE_SRGB) {
     RCHECK(reader->ReadBits(1, &yuv_full_range));
 
@@ -230,7 +231,7 @@ bool ReadBitDepthAndColorSpace(BitReader* reader,
       RCHECK(reader->ReadBits(2, &subsampling));
       chroma_subsampling = GetChromaSubsampling(subsampling);
       if (chroma_subsampling ==
-          VPCodecConfiguration::CHROMA_420_COLLOCATED_WITH_LUMA) {
+          VPCodecConfigurationRecord::CHROMA_420_COLLOCATED_WITH_LUMA) {
         LOG(ERROR) << "4:2:0 color not supported in profile "
                    << codec_config->profile();
         return false;
@@ -241,11 +242,11 @@ bool ReadBitDepthAndColorSpace(BitReader* reader,
       RCHECK(!reserved);
     } else {
       chroma_subsampling =
-          VPCodecConfiguration::CHROMA_420_COLLOCATED_WITH_LUMA;
+          VPCodecConfigurationRecord::CHROMA_420_COLLOCATED_WITH_LUMA;
     }
   } else {
     // Assume 4:4:4 for colorspace SRGB.
-    chroma_subsampling = VPCodecConfiguration::CHROMA_444;
+    chroma_subsampling = VPCodecConfigurationRecord::CHROMA_444;
     if (codec_config->profile() & 1) {
       bool reserved;
       RCHECK(reader->ReadBits(1, &reserved));
@@ -474,7 +475,7 @@ bool VP9Parser::Parse(const uint8_t* data,
           // profile 0. VP9 specifies that the default color format should be
           // YUV 4:2:0 in this case (normative).
           writable_codec_config()->set_chroma_subsampling(
-              VPCodecConfiguration::CHROMA_420_COLLOCATED_WITH_LUMA);
+              VPCodecConfigurationRecord::CHROMA_420_COLLOCATED_WITH_LUMA);
           writable_codec_config()->set_bit_depth(8);
         }
 
@@ -537,7 +538,7 @@ bool VP9Parser::IsKeyframe(const uint8_t* data, size_t data_size) {
   RCHECK(reader.ReadBits(2, &frame_marker));
   RCHECK(frame_marker == VP9_FRAME_MARKER);
 
-  VPCodecConfiguration codec_config;
+  VPCodecConfigurationRecord codec_config;
   RCHECK(ReadProfile(&reader, &codec_config));
 
   bool show_existing_frame;

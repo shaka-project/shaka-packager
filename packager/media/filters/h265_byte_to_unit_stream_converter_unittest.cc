@@ -9,7 +9,7 @@
 
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/media/filters/h265_byte_to_unit_stream_converter.h"
-#include "packager/media/filters/hevc_decoder_configuration.h"
+#include "packager/media/filters/hevc_decoder_configuration_record.h"
 #include "packager/media/test/test_data_util.h"
 
 namespace {
@@ -47,13 +47,13 @@ TEST(H265ByteToUnitStreamConverter, ConversionSuccess) {
   EXPECT_EQ(expected_decoder_config, decoder_config);
 
   // Double-check that it can be parsed.
-  HEVCDecoderConfiguration conf;
-  ASSERT_TRUE(conf.Parse(decoder_config));
+  HEVCDecoderConfigurationRecord config;
+  ASSERT_TRUE(config.Parse(decoder_config));
   // The order is SPS, PPS, VPS.
-  ASSERT_EQ(3u, conf.nalu_count());
-  EXPECT_EQ(Nalu::H265_SPS, conf.nalu(0).type());
-  EXPECT_EQ(Nalu::H265_PPS, conf.nalu(1).type());
-  EXPECT_EQ(Nalu::H265_VPS, conf.nalu(2).type());
+  ASSERT_EQ(3u, config.nalu_count());
+  EXPECT_EQ(Nalu::H265_SPS, config.nalu(0).type());
+  EXPECT_EQ(Nalu::H265_PPS, config.nalu(1).type());
+  EXPECT_EQ(Nalu::H265_VPS, config.nalu(2).type());
 }
 
 TEST(H265ByteToUnitStreamConverter, ConversionFailure) {

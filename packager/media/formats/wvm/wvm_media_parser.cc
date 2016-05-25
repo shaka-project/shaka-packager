@@ -15,7 +15,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/status.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/filters/avc_decoder_configuration.h"
+#include "packager/media/filters/avc_decoder_configuration_record.h"
 #include "packager/media/formats/mp2t/adts_header.h"
 #include "packager/media/formats/mp4/aac_audio_specific_config.h"
 #include "packager/media/formats/mp4/es_descriptor.h"
@@ -725,7 +725,7 @@ bool WvmMediaParser::ParseIndexEntry() {
         case Audio_AC3SpecificData:
           LOG(ERROR) << "Audio type not supported.";
           return false;
-        case AVCDecoderConfigurationRecord:
+        case Video_AVCDecoderConfigurationRecord:
           video_codec_config = binary_data;
           break;
         default:
@@ -831,7 +831,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
         byte_to_unit_stream_converter_.GetDecoderConfigurationRecord(
             &decoder_config_record);
         for (uint32_t i = 0; i < stream_infos_.size(); i++) {
-          if (stream_infos_[i]->stream_type() == media::kStreamVideo &&
+          if (stream_infos_[i]->stream_type() == kStreamVideo &&
               stream_infos_[i]->codec_string().empty()) {
             const std::vector<uint8_t>* stream_config;
             if (stream_infos_[i]->extra_data().empty()) {
@@ -847,7 +847,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
 
             VideoStreamInfo* video_stream_info =
                 reinterpret_cast<VideoStreamInfo*>(stream_infos_[i].get());
-            AVCDecoderConfiguration avc_config;
+            AVCDecoderConfigurationRecord avc_config;
             if (!avc_config.Parse(*stream_config)) {
               LOG(WARNING) << "Failed to parse AVCDecoderConfigurationRecord. "
                               "Using computed configuration record instead.";
@@ -894,9 +894,9 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
     } else if ((prev_pes_stream_id_ & kPesStreamIdAudioMask) ==
         kPesStreamIdAudio) {
       // Set data on the audio stream.
-      int frame_size = media::mp2t::AdtsHeader::GetAdtsFrameSize(
-          sample_data_.data(), kAdtsHeaderMinSize);
-      media::mp2t::AdtsHeader adts_header;
+      int frame_size = mp2t::AdtsHeader::GetAdtsFrameSize(sample_data_.data(),
+                                                          kAdtsHeaderMinSize);
+      mp2t::AdtsHeader adts_header;
       const uint8_t* frame_ptr = sample_data_.data();
       if (!adts_header.Parse(frame_ptr, frame_size)) {
         LOG(ERROR) << "Could not parse ADTS header";
@@ -908,7 +908,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
                               frame_size - header_size);
       if (!is_initialized_) {
         for (uint32_t i = 0; i < stream_infos_.size(); i++) {
-          if (stream_infos_[i]->stream_type() == media::kStreamAudio &&
+          if (stream_infos_[i]->stream_type() == kStreamAudio &&
               stream_infos_[i]->codec_string().empty()) {
             AudioStreamInfo* audio_stream_info =
                 reinterpret_cast<AudioStreamInfo*>(stream_infos_[i].get());

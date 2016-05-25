@@ -10,7 +10,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/timestamp.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/filters/avc_decoder_configuration.h"
+#include "packager/media/filters/avc_decoder_configuration_record.h"
 #include "packager/media/filters/h264_byte_to_unit_stream_converter.h"
 #include "packager/media/filters/h264_parser.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
@@ -143,25 +143,14 @@ bool EsParserH264::UpdateVideoDecoderConfig(int pps_id) {
     return false;
   }
 
-  last_video_decoder_config_ = scoped_refptr<StreamInfo>(
-      new VideoStreamInfo(
-          pid(),
-          kMpeg2Timescale,
-          kInfiniteDuration,
-          kCodecH264,
-          AVCDecoderConfiguration::GetCodecString(decoder_config_record[1],
-                                                  decoder_config_record[2],
-                                                  decoder_config_record[3]),
-          std::string(),
-          coded_width,
-          coded_height,
-          pixel_width,
-          pixel_height,
-          0,
-          H264ByteToUnitStreamConverter::kUnitStreamNaluLengthSize,
-          decoder_config_record.data(),
-          decoder_config_record.size(),
-          false));
+  last_video_decoder_config_ = scoped_refptr<StreamInfo>(new VideoStreamInfo(
+      pid(), kMpeg2Timescale, kInfiniteDuration, kCodecH264,
+      AVCDecoderConfigurationRecord::GetCodecString(decoder_config_record[1],
+                                                    decoder_config_record[2],
+                                                    decoder_config_record[3]),
+      std::string(), coded_width, coded_height, pixel_width, pixel_height, 0,
+      H264ByteToUnitStreamConverter::kUnitStreamNaluLengthSize,
+      decoder_config_record.data(), decoder_config_record.size(), false));
   DVLOG(1) << "Profile IDC: " << sps->profile_idc;
   DVLOG(1) << "Level IDC: " << sps->level_idc;
   DVLOG(1) << "log2_max_frame_num_minus4: " << sps->log2_max_frame_num_minus4;

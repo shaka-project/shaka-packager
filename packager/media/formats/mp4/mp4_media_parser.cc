@@ -21,9 +21,9 @@
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
-#include "packager/media/filters/avc_decoder_configuration.h"
-#include "packager/media/filters/hevc_decoder_configuration.h"
-#include "packager/media/filters/vp_codec_configuration.h"
+#include "packager/media/filters/avc_decoder_configuration_record.h"
+#include "packager/media/filters/hevc_decoder_configuration_record.h"
+#include "packager/media/filters/vp_codec_configuration_record.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/box_reader.h"
 #include "packager/media/formats/mp4/es_descriptor.h"
@@ -511,7 +511,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       const VideoCodec video_codec = FourCCToVideoCodec(actual_format);
       switch (actual_format) {
         case FOURCC_avc1: {
-          AVCDecoderConfiguration avc_config;
+          AVCDecoderConfigurationRecord avc_config;
           if (!avc_config.Parse(entry.codec_configuration.data)) {
             LOG(ERROR) << "Failed to parse avcc.";
             return false;
@@ -548,7 +548,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         }
         case FOURCC_hev1:
         case FOURCC_hvc1: {
-          HEVCDecoderConfiguration hevc_config;
+          HEVCDecoderConfigurationRecord hevc_config;
           if (!hevc_config.Parse(entry.codec_configuration.data)) {
             LOG(ERROR) << "Failed to parse hevc.";
             return false;
@@ -560,7 +560,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         case FOURCC_vp08:
         case FOURCC_vp09:
         case FOURCC_vp10: {
-          VPCodecConfiguration vp_config;
+          VPCodecConfigurationRecord vp_config;
           if (!vp_config.Parse(entry.codec_configuration.data)) {
             LOG(ERROR) << "Failed to parse vpcc.";
             return false;

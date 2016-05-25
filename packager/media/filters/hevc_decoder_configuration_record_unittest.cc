@@ -4,14 +4,14 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/filters/hevc_decoder_configuration.h"
+#include "packager/media/filters/hevc_decoder_configuration_record.h"
 
 #include <gtest/gtest.h>
 
 namespace shaka {
 namespace media {
 
-TEST(HEVCDecoderConfigurationTest, Success) {
+TEST(HEVCDecoderConfigurationRecordTest, Success) {
   const uint8_t kHevcDecoderConfigurationData[] = {
       0x01,  // Version
       0x02,  // profile_indication
@@ -39,7 +39,7 @@ TEST(HEVCDecoderConfigurationTest, Success) {
           0x00, 0x00, 0x03, 0x00, 0x00,
   };
 
-  HEVCDecoderConfiguration hevc_config;
+  HEVCDecoderConfigurationRecord hevc_config;
   ASSERT_TRUE(hevc_config.Parse(kHevcDecoderConfigurationData,
                                 arraysize(kHevcDecoderConfigurationData)));
 
@@ -53,10 +53,10 @@ TEST(HEVCDecoderConfigurationTest, Success) {
   EXPECT_EQ(0x40, hevc_config.nalu(0).data()[0]);
 }
 
-TEST(HEVCDecoderConfigurationTest, FailOnInsufficientData) {
+TEST(HEVCDecoderConfigurationRecordTest, FailOnInsufficientData) {
   const uint8_t kHevcDecoderConfigurationData[] = {0x01, 0x02, 0x20, 0x00};
 
-  HEVCDecoderConfiguration hevc_config;
+  HEVCDecoderConfigurationRecord hevc_config;
   ASSERT_FALSE(hevc_config.Parse(kHevcDecoderConfigurationData,
                                  arraysize(kHevcDecoderConfigurationData)));
 }

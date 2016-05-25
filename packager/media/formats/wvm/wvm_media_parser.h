@@ -103,7 +103,7 @@ class WvmMediaParser : public MediaParser {
     SparseDownloadMap = 36,
     AudioSampleSize = 37,
     Audio_EsDescriptor = 38,
-    AVCDecoderConfigurationRecord = 39,
+    Video_AVCDecoderConfigurationRecord = 39,
     Audio_EC3SpecificData = 40,
     AudioIdentifier = 41,
     VideoStreamId = 42,

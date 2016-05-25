@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/filters/avc_decoder_configuration.h"
+#include "packager/media/filters/avc_decoder_configuration_record.h"
 
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
@@ -15,15 +15,15 @@
 namespace shaka {
 namespace media {
 
-AVCDecoderConfiguration::AVCDecoderConfiguration()
+AVCDecoderConfigurationRecord::AVCDecoderConfigurationRecord()
     : version_(0),
       profile_indication_(0),
       profile_compatibility_(0),
       avc_level_(0) {}
 
-AVCDecoderConfiguration::~AVCDecoderConfiguration() {}
+AVCDecoderConfigurationRecord::~AVCDecoderConfigurationRecord() {}
 
-bool AVCDecoderConfiguration::ParseInternal() {
+bool AVCDecoderConfigurationRecord::ParseInternal() {
   // See ISO 14496-15 sec 5.3.3.1.2
   BufferReader reader(data(), data_size());
 
@@ -88,12 +88,12 @@ bool AVCDecoderConfiguration::ParseInternal() {
   return true;
 }
 
-std::string AVCDecoderConfiguration::GetCodecString() const {
+std::string AVCDecoderConfigurationRecord::GetCodecString() const {
   return GetCodecString(profile_indication_, profile_compatibility_,
                         avc_level_);
 }
 
-std::string AVCDecoderConfiguration::GetCodecString(
+std::string AVCDecoderConfigurationRecord::GetCodecString(
     uint8_t profile_indication,
     uint8_t profile_compatibility,
     uint8_t avc_level) {

@@ -7,8 +7,8 @@
 #include "packager/media/formats/mp4/video_slice_header_parser.h"
 
 #include "packager/media/base/rcheck.h"
-#include "packager/media/filters/avc_decoder_configuration.h"
-#include "packager/media/filters/hevc_decoder_configuration.h"
+#include "packager/media/filters/avc_decoder_configuration_record.h"
+#include "packager/media/filters/hevc_decoder_configuration_record.h"
 
 namespace shaka {
 namespace media {
@@ -29,7 +29,7 @@ H264VideoSliceHeaderParser::~H264VideoSliceHeaderParser() {}
 
 bool H264VideoSliceHeaderParser::Initialize(
     const std::vector<uint8_t>& decoder_configuration) {
-  AVCDecoderConfiguration config;
+  AVCDecoderConfigurationRecord config;
   RCHECK(config.Parse(decoder_configuration));
 
   for (size_t i = 0; i < config.nalu_count(); i++) {
@@ -61,7 +61,7 @@ H265VideoSliceHeaderParser::~H265VideoSliceHeaderParser() {}
 bool H265VideoSliceHeaderParser::Initialize(
     const std::vector<uint8_t>& decoder_configuration) {
   int id;
-  HEVCDecoderConfiguration hevc_config;
+  HEVCDecoderConfigurationRecord hevc_config;
   RCHECK(hevc_config.Parse(decoder_configuration));
 
   for (size_t i = 0; i < hevc_config.nalu_count(); i++) {

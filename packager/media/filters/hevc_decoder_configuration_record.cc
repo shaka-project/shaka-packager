@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/filters/hevc_decoder_configuration.h"
+#include "packager/media/filters/hevc_decoder_configuration_record.h"
 
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
@@ -73,7 +73,7 @@ std::string CodecAsString(VideoCodec codec) {
 
 }  // namespace
 
-HEVCDecoderConfiguration::HEVCDecoderConfiguration()
+HEVCDecoderConfigurationRecord::HEVCDecoderConfigurationRecord()
     : version_(0),
       general_profile_space_(0),
       general_tier_flag_(false),
@@ -81,9 +81,9 @@ HEVCDecoderConfiguration::HEVCDecoderConfiguration()
       general_profile_compatibility_flags_(0),
       general_level_idc_(0) {}
 
-HEVCDecoderConfiguration::~HEVCDecoderConfiguration() {}
+HEVCDecoderConfigurationRecord::~HEVCDecoderConfigurationRecord() {}
 
-bool HEVCDecoderConfiguration::ParseInternal() {
+bool HEVCDecoderConfigurationRecord::ParseInternal() {
   BufferReader reader(data(), data_size());
 
   uint8_t profile_indication = 0;
@@ -132,7 +132,8 @@ bool HEVCDecoderConfiguration::ParseInternal() {
   return true;
 }
 
-std::string HEVCDecoderConfiguration::GetCodecString(VideoCodec codec) const {
+std::string HEVCDecoderConfigurationRecord::GetCodecString(
+    VideoCodec codec) const {
   // ISO/IEC 14496-15:2014 Annex E.
   std::vector<std::string> fields;
   fields.push_back(CodecAsString(codec));

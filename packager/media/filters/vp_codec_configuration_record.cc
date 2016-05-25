@@ -4,7 +4,7 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/filters/vp_codec_configuration.h"
+#include "packager/media/filters/vp_codec_configuration_record.h"
 
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
@@ -33,7 +33,7 @@ std::string VPCodecAsString(VideoCodec codec) {
 
 }  // namespace
 
-VPCodecConfiguration::VPCodecConfiguration()
+VPCodecConfigurationRecord::VPCodecConfigurationRecord()
     : profile_(0),
       level_(0),
       bit_depth_(0),
@@ -42,7 +42,7 @@ VPCodecConfiguration::VPCodecConfiguration()
       transfer_function_(0),
       video_full_range_flag_(false) {}
 
-VPCodecConfiguration::VPCodecConfiguration(
+VPCodecConfigurationRecord::VPCodecConfigurationRecord(
     uint8_t profile,
     uint8_t level,
     uint8_t bit_depth,
@@ -60,9 +60,9 @@ VPCodecConfiguration::VPCodecConfiguration(
       video_full_range_flag_(video_full_range_flag),
       codec_initialization_data_(codec_initialization_data) {}
 
-VPCodecConfiguration::~VPCodecConfiguration(){};
+VPCodecConfigurationRecord::~VPCodecConfigurationRecord(){};
 
-bool VPCodecConfiguration::Parse(const std::vector<uint8_t>& data) {
+bool VPCodecConfigurationRecord::Parse(const std::vector<uint8_t>& data) {
   BitReader reader(data.data(), data.size());
   RCHECK(reader.ReadBits(8, &profile_));
   RCHECK(reader.ReadBits(8, &level_));
@@ -81,7 +81,7 @@ bool VPCodecConfiguration::Parse(const std::vector<uint8_t>& data) {
   return true;
 }
 
-void VPCodecConfiguration::Write(std::vector<uint8_t>* data) const {
+void VPCodecConfigurationRecord::Write(std::vector<uint8_t>* data) const {
   BufferWriter writer;
   writer.AppendInt(profile_);
   writer.AppendInt(level_);
@@ -96,7 +96,7 @@ void VPCodecConfiguration::Write(std::vector<uint8_t>* data) const {
   writer.SwapBuffer(data);
 }
 
-std::string VPCodecConfiguration::GetCodecString(VideoCodec codec) const {
+std::string VPCodecConfigurationRecord::GetCodecString(VideoCodec codec) const {
   const std::string fields[] = {
       base::IntToString(profile_),
       base::IntToString(level_),

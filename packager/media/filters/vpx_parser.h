@@ -11,7 +11,7 @@
 #include <stdlib.h>
 
 #include "packager/base/macros.h"
-#include "packager/media/filters/vp_codec_configuration.h"
+#include "packager/media/filters/vp_codec_configuration_record.h"
 
 namespace shaka {
 namespace media {
@@ -41,13 +41,15 @@ class VPxParser {
 
   /// @return VPx codec configuration extracted. Note that it is only valid
   ///         after parsing a keyframe or intra frame successfully.
-  const VPCodecConfiguration& codec_config() const { return codec_config_; }
+  const VPCodecConfigurationRecord& codec_config() const {
+    return codec_config_;
+  }
 
  protected:
-  VPCodecConfiguration* writable_codec_config() { return &codec_config_; }
+  VPCodecConfigurationRecord* writable_codec_config() { return &codec_config_; }
 
  private:
-  VPCodecConfiguration codec_config_;
+  VPCodecConfigurationRecord codec_config_;
 
   DISALLOW_COPY_AND_ASSIGN(VPxParser);
 };

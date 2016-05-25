@@ -4,19 +4,19 @@
 // license that can be found in the LICENSE file or at
 // https://developers.google.com/open-source/licenses/bsd
 
-#include "packager/media/filters/vp_codec_configuration.h"
+#include "packager/media/filters/vp_codec_configuration_record.h"
 
 #include <gtest/gtest.h>
 
 namespace shaka {
 namespace media {
 
-TEST(VPCodecConfigurationTest, Parse) {
+TEST(VPCodecConfigurationRecordTest, Parse) {
   const uint8_t kVpCodecConfigurationData[] = {
       0x01, 0x00, 0xA2, 0x14, 0x00, 0x01, 0x00,
   };
 
-  VPCodecConfiguration vp_config;
+  VPCodecConfigurationRecord vp_config;
   ASSERT_TRUE(vp_config.Parse(std::vector<uint8_t>(
       kVpCodecConfigurationData,
       kVpCodecConfigurationData + arraysize(kVpCodecConfigurationData))));
@@ -32,23 +32,23 @@ TEST(VPCodecConfigurationTest, Parse) {
   EXPECT_EQ("vp09.01.00.10.02.01.02.00", vp_config.GetCodecString(kCodecVP9));
 }
 
-TEST(VPCodecConfigurationTest, ParseWithInsufficientData) {
+TEST(VPCodecConfigurationRecordTest, ParseWithInsufficientData) {
   const uint8_t kVpCodecConfigurationData[] = {
       0x01, 0x00, 0xA2, 0x14,
   };
 
-  VPCodecConfiguration vp_config;
+  VPCodecConfigurationRecord vp_config;
   ASSERT_FALSE(vp_config.Parse(std::vector<uint8_t>(
       kVpCodecConfigurationData,
       kVpCodecConfigurationData + arraysize(kVpCodecConfigurationData))));
 }
 
-TEST(VPCodecConfigurationTest, Write) {
+TEST(VPCodecConfigurationRecordTest, Write) {
   const uint8_t kExpectedVpCodecConfigurationData[] = {
       0x02, 0x01, 0x80, 0x21, 0x00, 0x00,
   };
-  VPCodecConfiguration vp_config(0x02, 0x01, 0x08, 0x00, 0x02, 0x00, true,
-                                 std::vector<uint8_t>());
+  VPCodecConfigurationRecord vp_config(0x02, 0x01, 0x08, 0x00, 0x02, 0x00, true,
+                                       std::vector<uint8_t>());
   std::vector<uint8_t> data;
   vp_config.Write(&data);
 
