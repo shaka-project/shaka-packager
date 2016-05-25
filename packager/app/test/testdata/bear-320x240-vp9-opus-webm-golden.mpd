@@ -12,10 +12,10 @@
       </Representation>
     </AdaptationSet>
     <AdaptationSet id="1" contentType="video" width="320" height="240" frameRate="1000000/34000" par="16:9">
-      <Representation id="1" bandwidth="203313" codecs="vp9" mimeType="video/webm" sar="427:320">
+      <Representation id="1" bandwidth="203348" codecs="vp9" mimeType="video/webm" sar="427:320">
         <BaseURL>output_video.webm</BaseURL>
-        <SegmentBase indexRange="69485-69532" timescale="1000000">
-          <Initialization range="0-286"/>
+        <SegmentBase indexRange="69497-69544" timescale="1000000">
+          <Initialization range="0-298"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>

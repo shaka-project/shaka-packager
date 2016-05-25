@@ -456,12 +456,15 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
           return false;
         }
 
-        const VPCodecConfigurationRecord* codec_config =
-            &vpx_parser->codec_config();
+        VPCodecConfigurationRecord codec_config;
+        if (!video_stream_info_->extra_data().empty())
+          codec_config.ParseMP4(video_stream_info_->extra_data());
+        codec_config.MergeFrom(vpx_parser->codec_config());
+
         video_stream_info_->set_codec_string(
-            codec_config->GetCodecString(video_stream_info_->codec()));
+            codec_config.GetCodecString(video_stream_info_->codec()));
         std::vector<uint8_t> extra_data;
-        codec_config->Write(&extra_data);
+        codec_config.WriteMP4(&extra_data);
         video_stream_info_->set_extra_data(extra_data);
         streams.push_back(video_stream_info_);
         init_cb_.Run(streams);

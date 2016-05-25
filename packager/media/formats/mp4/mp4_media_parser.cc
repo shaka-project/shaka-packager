@@ -562,7 +562,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         case FOURCC_vp09:
         case FOURCC_vp10: {
           VPCodecConfigurationRecord vp_config;
-          if (!vp_config.Parse(entry.codec_configuration.data)) {
+          if (!vp_config.ParseMP4(entry.codec_configuration.data)) {
             LOG(ERROR) << "Failed to parse vpcc.";
             return false;
           }

@@ -51,26 +51,52 @@ class VPCodecConfigurationRecord {
       const std::vector<uint8_t>& codec_initialization_data);
   ~VPCodecConfigurationRecord();
 
-  /// Parses input to extract VP codec configuration record.
+  /// Parses input (in MP4 format) to extract VP codec configuration record.
   /// @return false if there is parsing errors.
-  bool Parse(const std::vector<uint8_t>& data);
+  bool ParseMP4(const std::vector<uint8_t>& data);
+
+  /// Parses input (in WebM format) to extract VP codec configuration record.
+  /// @return false if there is parsing errors.
+  bool ParseWebM(const std::vector<uint8_t>& data);
 
   /// @param data should not be null.
-  /// Writes VP codec configuration record to buffer.
-  void Write(std::vector<uint8_t>* data) const;
+  /// Writes VP codec configuration record to buffer using MP4 format.
+  void WriteMP4(std::vector<uint8_t>* data) const;
+
+  /// @param data should not be null.
+  /// Writes VP codec configuration record to buffer using WebM format.
+  void WriteWebM(std::vector<uint8_t>* data) const;
 
   /// @return The codec string.
   std::string GetCodecString(VideoCodec codec) const;
 
-  void set_profile(uint8_t profile) { profile_ = profile; }
-  void set_level(uint8_t level) { level_ = level; }
-  void set_bit_depth(uint8_t bit_depth) { bit_depth_ = bit_depth; }
-  void set_color_space(uint8_t color_space) { color_space_ = color_space; }
+  // Merges the values from the given configuration.  If there are values in
+  // both |*this| and |other|, the values in |other| take precedence.
+  void MergeFrom(const VPCodecConfigurationRecord& other);
+
+  void set_profile(uint8_t profile) {
+    profile_ = profile;
+    profile_is_set_ = true;
+  }
+  void set_level(uint8_t level) {
+    level_ = level;
+    level_is_set_ = true;
+  }
+  void set_bit_depth(uint8_t bit_depth) {
+    bit_depth_ = bit_depth;
+    bit_depth_is_set_ = true;
+  }
+  void set_color_space(uint8_t color_space) {
+    color_space_ = color_space;
+    color_space_is_set_ = true;
+  }
   void set_chroma_subsampling(uint8_t chroma_subsampling) {
     chroma_subsampling_ = chroma_subsampling;
+    chroma_subsampling_is_set_ = true;
   }
   void set_transfer_function(uint8_t transfer_function) {
     transfer_function_ = transfer_function;
+    transfer_function_is_set_ = true;
   }
   void set_video_full_range_flag(bool video_full_range_flag) {
     video_full_range_flag_ = video_full_range_flag;
@@ -85,13 +111,20 @@ class VPCodecConfigurationRecord {
   bool video_full_range_flag() const { return video_full_range_flag_; }
 
  private:
-  uint8_t profile_;
-  uint8_t level_;
-  uint8_t bit_depth_;
-  uint8_t color_space_;
-  uint8_t chroma_subsampling_;
-  uint8_t transfer_function_;
-  bool video_full_range_flag_;
+  uint8_t profile_ = 0;
+  uint8_t level_ = 0;
+  uint8_t bit_depth_ = 0;
+  uint8_t color_space_ = 0;
+  uint8_t chroma_subsampling_ = 0;
+  uint8_t transfer_function_ = 0;
+  bool video_full_range_flag_ = false;
+  bool profile_is_set_ = false;
+  bool level_is_set_ = false;
+  bool bit_depth_is_set_ = false;
+  bool color_space_is_set_ = false;
+  bool chroma_subsampling_is_set_ = false;
+  bool transfer_function_is_set_ = false;
+  bool video_full_range_flag_is_set_ = false;
   std::vector<uint8_t> codec_initialization_data_;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler

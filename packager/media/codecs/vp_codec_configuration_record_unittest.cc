@@ -17,7 +17,7 @@ TEST(VPCodecConfigurationRecordTest, Parse) {
   };
 
   VPCodecConfigurationRecord vp_config;
-  ASSERT_TRUE(vp_config.Parse(std::vector<uint8_t>(
+  ASSERT_TRUE(vp_config.ParseMP4(std::vector<uint8_t>(
       kVpCodecConfigurationData,
       kVpCodecConfigurationData + arraysize(kVpCodecConfigurationData))));
 
@@ -38,19 +38,38 @@ TEST(VPCodecConfigurationRecordTest, ParseWithInsufficientData) {
   };
 
   VPCodecConfigurationRecord vp_config;
-  ASSERT_FALSE(vp_config.Parse(std::vector<uint8_t>(
+  ASSERT_FALSE(vp_config.ParseMP4(std::vector<uint8_t>(
       kVpCodecConfigurationData,
       kVpCodecConfigurationData + arraysize(kVpCodecConfigurationData))));
 }
 
-TEST(VPCodecConfigurationRecordTest, Write) {
+TEST(VPCodecConfigurationRecordTest, WriteMP4) {
   const uint8_t kExpectedVpCodecConfigurationData[] = {
       0x02, 0x01, 0x80, 0x21, 0x00, 0x00,
   };
   VPCodecConfigurationRecord vp_config(0x02, 0x01, 0x08, 0x00, 0x02, 0x00, true,
                                        std::vector<uint8_t>());
   std::vector<uint8_t> data;
-  vp_config.Write(&data);
+  vp_config.WriteMP4(&data);
+
+  EXPECT_EQ(
+      std::vector<uint8_t>(kExpectedVpCodecConfigurationData,
+                           kExpectedVpCodecConfigurationData +
+                               arraysize(kExpectedVpCodecConfigurationData)),
+      data);
+}
+
+TEST(VPCodecConfigurationRecordTest, WriteWebM) {
+  const uint8_t kExpectedVpCodecConfigurationData[] = {
+      0x01, 0x01, 0x02,
+      0x02, 0x01, 0x01,
+      0x03, 0x01, 0x08,
+      0x04, 0x01, 0x03
+  };
+  VPCodecConfigurationRecord vp_config(0x02, 0x01, 0x08, 0x00, 0x03, 0x00, true,
+                                 std::vector<uint8_t>());
+  std::vector<uint8_t> data;
+  vp_config.WriteWebM(&data);
 
   EXPECT_EQ(
       std::vector<uint8_t>(kExpectedVpCodecConfigurationData,

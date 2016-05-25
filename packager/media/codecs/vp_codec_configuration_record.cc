@@ -9,6 +9,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/media/base/bit_reader.h"
+#include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/base/strings/stringprintf.h"
@@ -16,6 +17,12 @@
 namespace shaka {
 namespace media {
 namespace {
+enum VP9CodecFeatures {
+  kFeatureProfile = 1,
+  kFeatureLevel = 2,
+  kFeatureBitDepth = 3,
+  kFeatureChromaSubsampling = 4,
+};
 
 std::string VPCodecAsString(VideoCodec codec) {
   switch (codec) {
@@ -33,14 +40,7 @@ std::string VPCodecAsString(VideoCodec codec) {
 
 }  // namespace
 
-VPCodecConfigurationRecord::VPCodecConfigurationRecord()
-    : profile_(0),
-      level_(0),
-      bit_depth_(0),
-      color_space_(0),
-      chroma_subsampling_(0),
-      transfer_function_(0),
-      video_full_range_flag_(false) {}
+VPCodecConfigurationRecord::VPCodecConfigurationRecord() {}
 
 VPCodecConfigurationRecord::VPCodecConfigurationRecord(
     uint8_t profile,
@@ -58,12 +58,26 @@ VPCodecConfigurationRecord::VPCodecConfigurationRecord(
       chroma_subsampling_(chroma_subsampling),
       transfer_function_(transfer_function),
       video_full_range_flag_(video_full_range_flag),
+      profile_is_set_(true),
+      level_is_set_(true),
+      bit_depth_is_set_(true),
+      color_space_is_set_(true),
+      chroma_subsampling_is_set_(true),
+      transfer_function_is_set_(true),
+      video_full_range_flag_is_set_(true),
       codec_initialization_data_(codec_initialization_data) {}
 
 VPCodecConfigurationRecord::~VPCodecConfigurationRecord(){};
 
-bool VPCodecConfigurationRecord::Parse(const std::vector<uint8_t>& data) {
+bool VPCodecConfigurationRecord::ParseMP4(const std::vector<uint8_t>& data) {
   BitReader reader(data.data(), data.size());
+  profile_is_set_ = true;
+  level_is_set_ = true;
+  bit_depth_is_set_ = true;
+  color_space_is_set_ = true;
+  chroma_subsampling_is_set_ = true;
+  transfer_function_is_set_ = true;
+  video_full_range_flag_is_set_ = true;
   RCHECK(reader.ReadBits(8, &profile_));
   RCHECK(reader.ReadBits(8, &level_));
   RCHECK(reader.ReadBits(4, &bit_depth_));
@@ -81,7 +95,47 @@ bool VPCodecConfigurationRecord::Parse(const std::vector<uint8_t>& data) {
   return true;
 }
 
-void VPCodecConfigurationRecord::Write(std::vector<uint8_t>* data) const {
+bool VPCodecConfigurationRecord::ParseWebM(const std::vector<uint8_t>& data) {
+  BufferReader reader(data.data(), data.size());
+
+  while (reader.HasBytes(1)) {
+    uint8_t id;
+    uint8_t size;
+    RCHECK(reader.Read1(&id));
+    RCHECK(reader.Read1(&size));
+
+    switch (id) {
+      case kFeatureProfile:
+        RCHECK(size == 1);
+        RCHECK(reader.Read1(&profile_));
+        profile_is_set_ = true;
+        break;
+      case kFeatureLevel:
+        RCHECK(size == 1);
+        RCHECK(reader.Read1(&level_));
+        level_is_set_ = true;
+        break;
+      case kFeatureBitDepth:
+        RCHECK(size == 1);
+        RCHECK(reader.Read1(&bit_depth_));
+        bit_depth_is_set_ = true;
+        break;
+      case kFeatureChromaSubsampling:
+        RCHECK(size == 1);
+        RCHECK(reader.Read1(&chroma_subsampling_));
+        chroma_subsampling_is_set_ = true;
+        break;
+      default: {
+        LOG(WARNING) << "Skipping unknown VP9 codec feature " << id;
+        RCHECK(reader.SkipBytes(size));
+      }
+    }
+  }
+
+  return true;
+}
+
+void VPCodecConfigurationRecord::WriteMP4(std::vector<uint8_t>* data) const {
   BufferWriter writer;
   writer.AppendInt(profile_);
   writer.AppendInt(level_);
@@ -93,6 +147,36 @@ void VPCodecConfigurationRecord::Write(std::vector<uint8_t>* data) const {
   uint16_t codec_initialization_data_size = codec_initialization_data_.size();
   writer.AppendInt(codec_initialization_data_size);
   writer.AppendVector(codec_initialization_data_);
+  writer.SwapBuffer(data);
+}
+
+void VPCodecConfigurationRecord::WriteWebM(std::vector<uint8_t>* data) const {
+  BufferWriter writer;
+
+  writer.AppendInt(static_cast<uint8_t>(kFeatureProfile));  // ID = 1
+  writer.AppendInt(static_cast<uint8_t>(1));  // Length = 1
+  writer.AppendInt(static_cast<uint8_t>(profile_));
+
+  if (level_ != 0) {
+    writer.AppendInt(static_cast<uint8_t>(kFeatureLevel));  // ID = 2
+    writer.AppendInt(static_cast<uint8_t>(1));  // Length = 1
+    writer.AppendInt(static_cast<uint8_t>(level_));
+  }
+
+  writer.AppendInt(static_cast<uint8_t>(kFeatureBitDepth));  // ID = 3
+  writer.AppendInt(static_cast<uint8_t>(1));  // Length = 1
+  writer.AppendInt(static_cast<uint8_t>(bit_depth_));
+
+  // WebM doesn't differentiate whether it is vertical or collocated with luma
+  // for 4:2:0.
+  const uint8_t subsampling =
+      chroma_subsampling_ == CHROMA_420_COLLOCATED_WITH_LUMA
+          ? CHROMA_420_VERTICAL
+          : chroma_subsampling_;
+  writer.AppendInt(static_cast<uint8_t>(kFeatureChromaSubsampling));  // ID = 4
+  writer.AppendInt(static_cast<uint8_t>(1));  // Length = 1
+  writer.AppendInt(subsampling);
+
   writer.SwapBuffer(data);
 }
 
@@ -115,6 +199,76 @@ std::string VPCodecConfigurationRecord::GetCodecString(VideoCodec codec) const {
   }
   base::ReplaceChars(codec_string, " ", "0", &codec_string);
   return codec_string;
+}
+
+void VPCodecConfigurationRecord::MergeFrom(
+    const VPCodecConfigurationRecord& other) {
+  if (!profile_is_set_ || other.profile_is_set_) {
+    profile_ = other.profile();
+    profile_is_set_ = true;
+  }
+  if (!level_is_set_ || other.level_is_set_) {
+    if (level_is_set_ && other.level() != level_) {
+      LOG(WARNING) << "VPx level is inconsistent, " << level_ << " vs "
+                   << other.level();
+    }
+    level_ = other.level();
+    level_is_set_ = true;
+  }
+  if (!bit_depth_is_set_ || other.bit_depth_is_set_) {
+    if (bit_depth_is_set_ && bit_depth_ != other.bit_depth()) {
+      LOG(WARNING) << "VPx bit depth is inconsistent, " << bit_depth_ << " vs "
+                   << other.bit_depth();
+    }
+    bit_depth_ = other.bit_depth();
+    bit_depth_is_set_ = true;
+  }
+  if (!color_space_is_set_ || other.color_space_is_set_) {
+    if (color_space_is_set_ && color_space_ != other.color_space()) {
+      LOG(WARNING) << "VPx color space is inconsistent, " << color_space_
+                   << " vs " << other.color_space();
+    }
+    color_space_ = other.color_space();
+    color_space_is_set_ = true;
+  }
+  if (!chroma_subsampling_is_set_ || other.chroma_subsampling_is_set_) {
+    if (chroma_subsampling_is_set_ &&
+        chroma_subsampling_ != other.chroma_subsampling_) {
+      LOG(WARNING) << "VPx chroma subsampling is inconsistent, "
+                   << chroma_subsampling_ << " vs "
+                   << other.chroma_subsampling();
+    }
+    chroma_subsampling_ = other.chroma_subsampling();
+    chroma_subsampling_is_set_ = true;
+  }
+  if (!transfer_function_is_set_ || other.transfer_function_is_set_) {
+    if (transfer_function_is_set_ &&
+        transfer_function_ != other.transfer_function_) {
+      LOG(WARNING) << "VPx transfer function is inconsistent, "
+                   << transfer_function_ << " vs "
+                   << other.transfer_function();
+    }
+    transfer_function_ = other.transfer_function();
+    transfer_function_is_set_ = true;
+  }
+  if (!video_full_range_flag_is_set_ || other.video_full_range_flag_is_set_) {
+    if (video_full_range_flag_is_set_ &&
+        video_full_range_flag_ != other.video_full_range_flag_) {
+      LOG(WARNING) << "VPx video full-range flag is inconsistent, "
+                   << video_full_range_flag_<< " vs "
+                   << other.video_full_range_flag();
+    }
+    video_full_range_flag_ = other.video_full_range_flag();
+    video_full_range_flag_is_set_ = true;
+  }
+  if (codec_initialization_data_.empty() ||
+      !other.codec_initialization_data_.empty()) {
+    if (!codec_initialization_data_.empty() &&
+        codec_initialization_data_ != other.codec_initialization_data_) {
+      LOG(WARNING) << "VPx codec initialization data is inconsistent";
+    }
+    codec_initialization_data_ = other.codec_initialization_data_;
+  }
 }
 
 }  // namespace media

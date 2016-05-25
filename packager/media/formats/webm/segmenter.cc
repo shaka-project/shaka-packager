@@ -14,6 +14,7 @@
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/codecs/vp_codec_configuration_record.h"
 #include "packager/media/event/muxer_listener.h"
 #include "packager/media/event/progress_listener.h"
 #include "packager/third_party/libwebm/src/mkvmuxerutil.hpp"
@@ -271,8 +272,23 @@ Status Segmenter::CreateVideoTrack(VideoStreamInfo* info) {
     track->set_codec_id(mkvmuxer::Tracks::kVp8CodecId);
   } else if (info->codec() == kCodecVP9) {
     track->set_codec_id(mkvmuxer::Tracks::kVp9CodecId);
+
+    // The |StreamInfo::extra_data| field is stored using the MP4 format; we
+    // need to convert it to the WebM format.
+    VPCodecConfigurationRecord vp_config;
+    if (!vp_config.ParseMP4(info->extra_data())) {
+      return Status(error::INTERNAL_ERROR,
+                    "Unable to parse VP9 codec configuration");
+    }
+
+    std::vector<uint8_t> extra_data;
+    vp_config.WriteWebM(&extra_data);
+    if (!track->SetCodecPrivate(extra_data.data(), extra_data.size())) {
+      return Status(error::INTERNAL_ERROR,
+                    "Private codec data required for VP9 streams");
+    }
   } else {
-    LOG(ERROR) << "Only VP8 and VP9 video codec is supported.";
+    LOG(ERROR) << "Only VP8 and VP9 video codecs are supported.";
     return Status(error::UNIMPLEMENTED,
                   "Only VP8 and VP9 video codecs are supported.");
   }
