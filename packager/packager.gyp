@@ -35,9 +35,9 @@
       ],
       'dependencies': [
         'hls/hls.gyp:hls_builder',
+        'media/codecs/codecs.gyp:codecs',
         'media/event/media_event.gyp:media_event',
         'media/file/file.gyp:file',
-        'media/filters/filters.gyp:filters',
         'media/formats/mp2t/mp2t.gyp:mp2t',
         'media/formats/mp4/mp4.gyp:mp4',
         'media/formats/mpeg/mpeg.gyp:mpeg',
@@ -78,8 +78,8 @@
         'media/test/packager_test.cc',
       ],
       'dependencies': [
+        'media/codecs/codecs.gyp:codecs',
         'media/file/file.gyp:file',
-        'media/filters/filters.gyp:filters',
         'media/formats/mp2t/mp2t.gyp:mp2t',
         'media/formats/mp4/mp4.gyp:mp4',
         'media/formats/mpeg/mpeg.gyp:mpeg',
@@ -109,9 +109,9 @@
       'dependencies': [
         'hls/hls.gyp:hls_unittest',
         'media/base/media_base.gyp:media_base_unittest',
+        'media/codecs/codecs.gyp:codecs_unittest',
         'media/event/media_event.gyp:media_event_unittest',
         'media/file/file.gyp:file_unittest',
-        'media/filters/filters.gyp:filters_unittest',
         'media/formats/mp2t/mp2t.gyp:mp2t_unittest',
         'media/formats/mp4/mp4.gyp:mp4_unittest',
         'media/formats/webm/webm.gyp:webm_unittest',

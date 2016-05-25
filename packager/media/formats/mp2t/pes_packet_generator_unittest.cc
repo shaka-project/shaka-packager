@@ -11,10 +11,10 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/text_stream_info.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/filters/nal_unit_to_byte_stream_converter.h"
+#include "packager/media/codecs/aac_audio_specific_config.h"
+#include "packager/media/codecs/nal_unit_to_byte_stream_converter.h"
 #include "packager/media/formats/mp2t/pes_packet.h"
 #include "packager/media/formats/mp2t/pes_packet_generator.h"
-#include "packager/media/formats/mp4/aac_audio_specific_config.h"
 
 namespace shaka {
 namespace media {
@@ -96,7 +96,7 @@ class MockNalUnitToByteStreamConverter : public NalUnitToByteStreamConverter {
                     std::vector<uint8_t>* output));
 };
 
-class MockAACAudioSpecificConfig : public mp4::AACAudioSpecificConfig {
+class MockAACAudioSpecificConfig : public AACAudioSpecificConfig {
  public:
   MOCK_METHOD1(Parse, bool(const std::vector<uint8_t>& data));
   MOCK_CONST_METHOD1(ConvertToADTS, bool(std::vector<uint8_t>* buffer));

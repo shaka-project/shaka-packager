@@ -28,8 +28,8 @@
         # Depends on full protobuf to read/write with TextFormat.
         '../../third_party/protobuf/protobuf.gyp:protobuf_full_do_not_use',
         '../base/media_base.gyp:media_base',
+        '../codecs/codecs.gyp:codecs',
         '../file/file.gyp:file',
-        '../filters/filters.gyp:filters',
       ],
     },
     {

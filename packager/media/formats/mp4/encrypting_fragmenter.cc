@@ -13,9 +13,9 @@
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
-#include "packager/media/filters/nalu_reader.h"
-#include "packager/media/filters/vp8_parser.h"
-#include "packager/media/filters/vp9_parser.h"
+#include "packager/media/codecs/nalu_reader.h"
+#include "packager/media/codecs/vp8_parser.h"
+#include "packager/media/codecs/vp9_parser.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 
 namespace shaka {

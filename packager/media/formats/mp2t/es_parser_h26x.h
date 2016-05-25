@@ -12,7 +12,7 @@
 #include "packager/base/callback.h"
 #include "packager/base/compiler_specific.h"
 #include "packager/base/memory/scoped_ptr.h"
-#include "packager/media/filters/nalu_reader.h"
+#include "packager/media/codecs/nalu_reader.h"
 #include "packager/media/formats/mp2t/es_parser.h"
 
 namespace shaka {

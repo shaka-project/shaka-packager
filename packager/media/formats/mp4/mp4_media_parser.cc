@@ -19,14 +19,14 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/media/base/video_stream_info.h"
+#include "packager/media/codecs/avc_decoder_configuration_record.h"
+#include "packager/media/codecs/es_descriptor.h"
+#include "packager/media/codecs/hevc_decoder_configuration_record.h"
+#include "packager/media/codecs/vp_codec_configuration_record.h"
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
-#include "packager/media/filters/avc_decoder_configuration_record.h"
-#include "packager/media/filters/hevc_decoder_configuration_record.h"
-#include "packager/media/filters/vp_codec_configuration_record.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/box_reader.h"
-#include "packager/media/formats/mp4/es_descriptor.h"
 #include "packager/media/formats/mp4/track_run_iterator.h"
 
 namespace shaka {

@@ -15,7 +15,7 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/media_parser.h"
 #include "packager/media/base/network_util.h"
-#include "packager/media/filters/h264_byte_to_unit_stream_converter.h"
+#include "packager/media/codecs/h264_byte_to_unit_stream_converter.h"
 
 namespace shaka {
 namespace media {

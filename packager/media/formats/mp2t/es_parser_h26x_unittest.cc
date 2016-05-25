@@ -13,7 +13,7 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/timestamp.h"
-#include "packager/media/filters/h26x_byte_to_unit_stream_converter.h"
+#include "packager/media/codecs/h26x_byte_to_unit_stream_converter.h"
 #include "packager/media/formats/mp2t/es_parser_h26x.h"
 
 namespace shaka {

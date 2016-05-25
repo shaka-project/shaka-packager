@@ -11,9 +11,9 @@
 #include "packager/base/logging.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/fourccs.h"
+#include "packager/media/codecs/aac_audio_specific_config.h"
 #include "packager/media/formats/mp2t/continuity_counter.h"
 #include "packager/media/formats/mp2t/ts_packet_writer_util.h"
-#include "packager/media/formats/mp4/aac_audio_specific_config.h"
 
 namespace shaka {
 namespace media {
@@ -199,7 +199,7 @@ void WritePrivateDataIndicatorDescriptor(FourCC fourcc, BufferWriter* output) {
 bool WriteAacAudioSetupInformation(const uint8_t* aac_audio_specific_config,
                                    size_t aac_audio_specific_config_size,
                                    BufferWriter* audio_setup_information) {
-  mp4::AACAudioSpecificConfig config;
+  AACAudioSpecificConfig config;
   const bool result = config.Parse(std::vector<uint8_t>(
       aac_audio_specific_config,
       aac_audio_specific_config + aac_audio_specific_config_size));

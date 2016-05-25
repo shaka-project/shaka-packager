@@ -19,12 +19,9 @@
 namespace shaka {
 namespace media {
 
+class AACAudioSpecificConfig;
 class NalUnitToByteStreamConverter;
 class StreamInfo;
-
-namespace mp4 {
-class AACAudioSpecificConfig;
-}  // namespace mp4
 
 namespace mp2t {
 
@@ -79,7 +76,7 @@ class PesPacketGenerator {
   double timescale_scale_ = 0.0;
 
   scoped_ptr<NalUnitToByteStreamConverter> converter_;
-  scoped_ptr<mp4::AACAudioSpecificConfig> adts_converter_;
+  scoped_ptr<AACAudioSpecificConfig> adts_converter_;
 
   // This is the PES packet that this object is currently working on.
   // This can be used to create a PES from multiple audio samples.

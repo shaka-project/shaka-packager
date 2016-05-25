@@ -18,9 +18,8 @@
       ],
       'dependencies': [
         '../../base/media_base.gyp:media_base',
-        '../../filters/filters.gyp:filters',
+        '../../codecs/codecs.gyp:codecs',
         '../../formats/mp2t/mp2t.gyp:mp2t',
-        '../../formats/mp4/mp4.gyp:mp4',
         '../mpeg/mpeg.gyp:mpeg',
       ],
     },

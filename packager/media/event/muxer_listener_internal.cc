@@ -15,7 +15,7 @@
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/filters/ec3_audio_util.h"
+#include "packager/media/codecs/ec3_audio_util.h"
 #include "packager/mpd/base/media_info.pb.h"
 
 namespace shaka {

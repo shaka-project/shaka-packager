@@ -9,9 +9,9 @@
 
 #include "packager/media/base/decrypt_config.h"
 #include "packager/media/base/fourccs.h"
-#include "packager/media/formats/mp4/aac_audio_specific_config.h"
+#include "packager/media/codecs/aac_audio_specific_config.h"
+#include "packager/media/codecs/es_descriptor.h"
 #include "packager/media/formats/mp4/box.h"
-#include "packager/media/formats/mp4/es_descriptor.h"
 
 namespace shaka {
 namespace media {

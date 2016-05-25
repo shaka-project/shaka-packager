@@ -12,8 +12,8 @@
 #include "packager/media/base/offset_byte_queue.h"
 #include "packager/media/base/timestamp.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/filters/h264_byte_to_unit_stream_converter.h"
-#include "packager/media/filters/h265_byte_to_unit_stream_converter.h"
+#include "packager/media/codecs/h264_byte_to_unit_stream_converter.h"
+#include "packager/media/codecs/h265_byte_to_unit_stream_converter.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 
 namespace shaka {

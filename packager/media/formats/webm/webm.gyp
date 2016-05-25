@@ -58,7 +58,7 @@
         '../../../third_party/boringssl/boringssl.gyp:boringssl',
         '../../../third_party/libwebm/libwebm.gyp:mkvmuxer',
         '../../base/media_base.gyp:media_base',
-        '../../filters/filters.gyp:filters'
+        '../../codecs/codecs.gyp:codecs'
       ],
     },
     {

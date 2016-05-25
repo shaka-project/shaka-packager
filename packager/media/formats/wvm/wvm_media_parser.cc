@@ -15,10 +15,10 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/status.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/filters/avc_decoder_configuration_record.h"
+#include "packager/media/codecs/aac_audio_specific_config.h"
+#include "packager/media/codecs/avc_decoder_configuration_record.h"
+#include "packager/media/codecs/es_descriptor.h"
 #include "packager/media/formats/mp2t/adts_header.h"
-#include "packager/media/formats/mp4/aac_audio_specific_config.h"
-#include "packager/media/formats/mp4/es_descriptor.h"
 
 #define HAS_HEADER_EXTENSION(x) ((x != 0xBC) && (x != 0xBE) && (x != 0xBF) \
          && (x != 0xF0) && (x != 0xF2) && (x != 0xF8) \
@@ -711,7 +711,7 @@ bool WvmMediaParser::ParseIndexEntry() {
           pixel_height = static_cast<uint32_t>(value);
           break;
         case Audio_EsDescriptor: {
-          mp4::ESDescriptor descriptor;
+          ESDescriptor descriptor;
           if (!descriptor.Parse(binary_data)) {
             LOG(ERROR) <<
                 "Could not extract AudioSpecificConfig from ES_Descriptor";
@@ -929,7 +929,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
             } else {
               // Set AudioStreamInfo fields using information from the
               // AACAudioSpecificConfig record.
-              mp4::AACAudioSpecificConfig aac_config;
+              AACAudioSpecificConfig aac_config;
               if (!aac_config.Parse(stream_infos_[i]->extra_data())) {
                 LOG(ERROR) << "Could not parse AACAudioSpecificconfig";
                 return false;

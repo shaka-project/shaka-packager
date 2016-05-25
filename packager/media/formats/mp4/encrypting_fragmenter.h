@@ -10,9 +10,9 @@
 #include "packager/base/memory/ref_counted.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/fourccs.h"
-#include "packager/media/filters/vpx_parser.h"
+#include "packager/media/codecs/video_slice_header_parser.h"
+#include "packager/media/codecs/vpx_parser.h"
 #include "packager/media/formats/mp4/fragmenter.h"
-#include "packager/media/formats/mp4/video_slice_header_parser.h"
 
 namespace shaka {
 namespace media {

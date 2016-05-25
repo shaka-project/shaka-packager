@@ -10,9 +10,9 @@
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/timestamp.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/filters/avc_decoder_configuration_record.h"
-#include "packager/media/filters/h264_byte_to_unit_stream_converter.h"
-#include "packager/media/filters/h264_parser.h"
+#include "packager/media/codecs/avc_decoder_configuration_record.h"
+#include "packager/media/codecs/h264_byte_to_unit_stream_converter.h"
+#include "packager/media/codecs/h264_parser.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 
 namespace shaka {

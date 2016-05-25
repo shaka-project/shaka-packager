@@ -15,10 +15,10 @@
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/video_stream_info.h"
-#include "packager/media/filters/nal_unit_to_byte_stream_converter.h"
-#include "packager/media/filters/nalu_reader.h"
+#include "packager/media/codecs/aac_audio_specific_config.h"
+#include "packager/media/codecs/nal_unit_to_byte_stream_converter.h"
+#include "packager/media/codecs/nalu_reader.h"
 #include "packager/media/formats/mp2t/pes_packet.h"
-#include "packager/media/formats/mp4/aac_audio_specific_config.h"
 
 namespace shaka {
 namespace media {
@@ -116,7 +116,7 @@ bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
       return false;
     }
     timescale_scale_ = kTsTimescale / audio_stream_info.time_scale();
-    adts_converter_.reset(new mp4::AACAudioSpecificConfig());
+    adts_converter_.reset(new AACAudioSpecificConfig());
     return adts_converter_->Parse(audio_stream_info.extra_data());
   }
 

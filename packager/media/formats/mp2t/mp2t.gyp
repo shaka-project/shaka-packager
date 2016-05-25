@@ -55,10 +55,7 @@
       ],
       'dependencies': [
         '../../base/media_base.gyp:media_base',
-        '../../filters/filters.gyp:filters',
-        # TODO(rkuroiwa): AACAudioSpecificConfig is used to create ADTS.
-        # Break this dependency on mp4 by moving it to media/filters.
-        '../../formats/mp4/mp4.gyp:mp4',
+        '../../codecs/codecs.gyp:codecs',
       ],
     },
     {
@@ -77,8 +74,8 @@
       'dependencies': [
         '../../../testing/gtest.gyp:gtest',
         '../../../testing/gmock.gyp:gmock',
+        '../../codecs/codecs.gyp:codecs',
         '../../event/media_event.gyp:mock_muxer_listener',
-        '../../filters/filters.gyp:filters',
         '../../test/media_test.gyp:media_test_support',
         '../mpeg/mpeg.gyp:mpeg',
         'mp2t',
