@@ -471,7 +471,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       switch (actual_format) {
         case FOURCC_AVC1: {
           AVCDecoderConfiguration avc_config;
-          if (!avc_config.Parse(entry.codec_config_record.data)) {
+          if (!avc_config.Parse(entry.codec_configuration.data)) {
             LOG(ERROR) << "Failed to parse avcc.";
             return false;
           }
@@ -508,7 +508,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         case FOURCC_HEV1:
         case FOURCC_HVC1: {
           HEVCDecoderConfiguration hevc_config;
-          if (!hevc_config.Parse(entry.codec_config_record.data)) {
+          if (!hevc_config.Parse(entry.codec_configuration.data)) {
             LOG(ERROR) << "Failed to parse hevc.";
             return false;
           }
@@ -520,7 +520,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         case FOURCC_VP09:
         case FOURCC_VP10: {
           VPCodecConfiguration vp_config;
-          if (!vp_config.Parse(entry.codec_config_record.data)) {
+          if (!vp_config.Parse(entry.codec_configuration.data)) {
             LOG(ERROR) << "Failed to parse vpcc.";
             return false;
           }
@@ -540,8 +540,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           codec_string, track->media.header.language.code, coded_width,
           coded_height, pixel_width, pixel_height,
           0,  // trick_play_rate
-          nalu_length_size, entry.codec_config_record.data.data(),
-          entry.codec_config_record.data.size(), is_encrypted));
+          nalu_length_size, entry.codec_configuration.data.data(),
+          entry.codec_configuration.data.size(), is_encrypted));
     }
   }
 

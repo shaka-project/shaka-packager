@@ -328,24 +328,26 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Modify(PixelAspectRatio* pasp) { pasp->v_spacing *= 8; }
 
-  void Fill(CodecConfigurationRecord* codec_config_record) {
-    const uint8_t kAvccData[] = {
+  void Fill(CodecConfiguration* codec_configuration) {
+    const uint8_t kCodecConfigurationData[] = {
         0x01, 0x64, 0x00, 0x1f, 0xff, 0xe1, 0x00, 0x18, 0x67, 0x64, 0x00,
         0x1f, 0xac, 0xd9, 0x40, 0x50, 0x05, 0xbb, 0x01, 0x10, 0x00, 0x00,
         0x3e, 0x90, 0x00, 0x0e, 0xa6, 0x00, 0xf1, 0x83, 0x19, 0x60, 0x01,
         0x00, 0x06, 0x68, 0xeb, 0xe3, 0xcb, 0x22, 0xc0};
-    codec_config_record->data.assign(kAvccData,
-                                     kAvccData + arraysize(kAvccData));
+    codec_configuration->data.assign(
+        kCodecConfigurationData,
+        kCodecConfigurationData + arraysize(kCodecConfigurationData));
   }
 
-  void Modify(CodecConfigurationRecord* codec_config_record) {
-    const uint8_t kAvccData[] = {
+  void Modify(CodecConfiguration* codec_configuration) {
+    const uint8_t kCodecConfigurationData[] = {
         0x01, 0x64, 0x00, 0x1e, 0xff, 0xe1, 0x00, 0x19, 0x67, 0x64, 0x00,
         0x1e, 0xac, 0xd9, 0x40, 0xa0, 0x2f, 0xf9, 0x70, 0x11, 0x00, 0x00,
         0x03, 0x03, 0xe9, 0x00, 0x00, 0xea, 0x60, 0x0f, 0x16, 0x2d, 0x96,
         0x01, 0x00, 0x05, 0x68, 0xeb, 0xec, 0xb2, 0x2c};
-    codec_config_record->data.assign(kAvccData,
-                                     kAvccData + arraysize(kAvccData));
+    codec_configuration->data.assign(
+        kCodecConfigurationData,
+        kCodecConfigurationData + arraysize(kCodecConfigurationData));
   }
 
   void Fill(VideoSampleEntry* encv) {
@@ -355,12 +357,12 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     encv->height = 600;
     Fill(&encv->pixel_aspect);
     Fill(&encv->sinf);
-    Fill(&encv->codec_config_record);
+    Fill(&encv->codec_configuration);
   }
 
   void Modify(VideoSampleEntry* encv) {
     encv->height += 600;
-    Modify(&encv->codec_config_record);
+    Modify(&encv->codec_configuration);
   }
 
   void Fill(ElementaryStreamDescriptor* esds) {
@@ -913,11 +915,13 @@ class BoxDefinitionsTestGeneral : public testing::Test {
   bool IsOptional(const ProtectionSchemeInfo* box) { return true; }
   bool IsOptional(const EditList* box) { return true; }
   bool IsOptional(const Edit* box) { return true; }
-  bool IsOptional(const CodecConfigurationRecord* box) { return true; }
+  bool IsOptional(const CodecConfiguration* box) { return true; }
   bool IsOptional(const PixelAspectRatio* box) { return true; }
+  bool IsOptional(const VideoSampleEntry* box) { return true; }
   bool IsOptional(const ElementaryStreamDescriptor* box) { return true; }
   bool IsOptional(const AC3Specific* box) { return true; }
   bool IsOptional(const EC3Specific* box) { return true; }
+  bool IsOptional(const AudioSampleEntry* box) { return true; }
   // Recommended, but optional.
   bool IsOptional(const ProtectionSystemSpecificHeader* box) { return true; }
   bool IsOptional(const WebVTTSourceLabelBox* box) { return true; }
@@ -956,7 +960,6 @@ typedef testing::Types<FileType,
                        HandlerReference,
                        ID3v2,
                        Metadata,
-                       CodecConfigurationRecord,
                        PixelAspectRatio,
                        VideoSampleEntry,
                        ElementaryStreamDescriptor,
@@ -1092,6 +1095,38 @@ TEST_F(BoxDefinitionsTest, MediaHandlerType) {
   Media media_readback;
   ASSERT_TRUE(ReadBack(&media_readback));
   ASSERT_EQ(FOURCC_VIDE, media_readback.handler.handler_type);
+}
+
+TEST_F(BoxDefinitionsTest, AvcCodecConfiguration) {
+  CodecConfiguration codec_configuration;
+  Fill(&codec_configuration);
+  codec_configuration.box_type = FOURCC_AVCC;
+  codec_configuration.Write(this->buffer_.get());
+  // Should inherit from Box.
+  EXPECT_EQ(
+      8u, codec_configuration.ComputeSize() - codec_configuration.data.size());
+
+  CodecConfiguration codec_configuration_readback;
+  // BoxType should be provided before parsing the box.
+  codec_configuration_readback.box_type = FOURCC_AVCC;
+  ASSERT_TRUE(ReadBack(&codec_configuration_readback));
+  EXPECT_EQ(codec_configuration, codec_configuration_readback);
+}
+
+TEST_F(BoxDefinitionsTest, VPCodecConfiguration) {
+  CodecConfiguration codec_configuration;
+  Fill(&codec_configuration);
+  codec_configuration.box_type = FOURCC_VPCC;
+  codec_configuration.Write(this->buffer_.get());
+  // Should inherit from FullBox.
+  EXPECT_EQ(
+      12u, codec_configuration.ComputeSize() - codec_configuration.data.size());
+
+  CodecConfiguration codec_configuration_readback;
+  // BoxType should be provided before parsing the box.
+  codec_configuration_readback.box_type = FOURCC_VPCC;
+  ASSERT_TRUE(ReadBack(&codec_configuration_readback));
+  EXPECT_EQ(codec_configuration, codec_configuration_readback);
 }
 
 TEST_F(BoxDefinitionsTest, DTSSampleEntry) {

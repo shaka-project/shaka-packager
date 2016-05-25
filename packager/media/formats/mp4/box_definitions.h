@@ -257,8 +257,14 @@ struct Metadata : FullBox {
   ID3v2 id3v2;
 };
 
-struct CodecConfigurationRecord : Box {
-  DECLARE_BOX_METHODS(CodecConfigurationRecord);
+// This defines a common structure for various CodecConfiguration boxes:
+// AVCConfiguration, HEVCConfiguration and VPCodecConfiguration.
+// Note that unlike the other two CodecConfiguration boxes, VPCodecConfiguration
+// box inherits from FullBox instead of Box, according to VP Codec ISO Media
+// File Format Binding specification. It will be handled properly in the
+// implementation.
+struct CodecConfiguration: Box {
+  DECLARE_BOX_METHODS(CodecConfiguration);
 
   FourCC box_type;
   // Contains full codec configuration record, including possible extension
@@ -279,6 +285,8 @@ struct VideoSampleEntry : Box {
   FourCC GetActualFormat() const {
     return format == FOURCC_ENCV ? sinf.format.format : format;
   }
+  // Returns the box type of codec configuration box from video format.
+  FourCC GetCodecConfigurationBoxType(FourCC format) const;
 
   FourCC format;
   uint16_t data_reference_index;
@@ -287,7 +295,7 @@ struct VideoSampleEntry : Box {
 
   PixelAspectRatio pixel_aspect;
   ProtectionSchemeInfo sinf;
-  CodecConfigurationRecord codec_config_record;
+  CodecConfiguration codec_configuration;
 };
 
 struct ElementaryStreamDescriptor : FullBox {
