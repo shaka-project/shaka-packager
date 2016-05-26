@@ -9,7 +9,7 @@ var searchData=
   ['cluster',['Cluster',['../d1/dd5/classshaka_1_1media_1_1Cluster.html',1,'shaka::media']]],
   ['clusterbuilder',['ClusterBuilder',['../db/d94/classshaka_1_1media_1_1ClusterBuilder.html',1,'shaka::media']]],
   ['clusterparser',['ClusterParser',['../d2/df8/classshaka_1_1media_1_1SegmentTestBase_1_1ClusterParser.html',1,'shaka::media::SegmentTestBase']]],
-  ['codecconfigurationrecord',['CodecConfigurationRecord',['../d5/d13/structshaka_1_1media_1_1mp4_1_1CodecConfigurationRecord.html',1,'shaka::media::mp4']]],
+  ['codecconfiguration',['CodecConfiguration',['../db/d11/structshaka_1_1media_1_1mp4_1_1CodecConfiguration.html',1,'shaka::media::mp4']]],
   ['compactsamplesize',['CompactSampleSize',['../da/d59/structshaka_1_1media_1_1mp4_1_1CompactSampleSize.html',1,'shaka::media::mp4']]],
   ['compositionoffset',['CompositionOffset',['../d5/d8c/structshaka_1_1media_1_1mp4_1_1CompositionOffset.html',1,'shaka::media::mp4']]],
   ['compositionoffsetiterator',['CompositionOffsetIterator',['../db/d4e/classshaka_1_1media_1_1mp4_1_1CompositionOffsetIterator.html',1,'shaka::media::mp4']]],
