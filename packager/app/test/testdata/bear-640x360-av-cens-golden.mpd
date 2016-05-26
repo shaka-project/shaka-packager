@@ -17,7 +17,7 @@
     <AdaptationSet id="1" contentType="audio" subsegmentAlignment="true">
       <Representation id="1" bandwidth="129127" codecs="mp4a.40.2" mimeType="audio/mp4" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
-        <ContentProtection value="cenc" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
+        <ContentProtection value="cens" schemeIdUri="urn:mpeg:dash:mp4protection:2011" cenc:default_KID="31323334-3536-3738-3930-313233343536"/>
         <ContentProtection schemeIdUri="urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed">
           <cenc:pssh>AAAAMHBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAABAxMjM0NTY3ODkwMTIzNDU2</cenc:pssh>
         </ContentProtection>

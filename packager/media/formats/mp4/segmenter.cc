@@ -28,10 +28,6 @@ namespace media {
 namespace mp4 {
 
 namespace {
-// For pattern-based encryption.
-const uint8_t kCryptByteBlock = 1u;
-const uint8_t kSkipByteBlock = 9u;
-
 const size_t kCencKeyIdSize = 16u;
 
 // The version of cenc implemented here. CENC 4.
@@ -43,6 +39,12 @@ const uint8_t kKeyRotationDefaultKeyId[] = {
   0, 0, 0, 0, 0, 0, 0, 0
 };
 
+// Defines protection pattern for pattern-based encryption.
+struct ProtectionPattern {
+  uint8_t crypt_byte_block;
+  uint8_t skip_byte_block;
+};
+
 COMPILE_ASSERT(arraysize(kKeyRotationDefaultKeyId) == kCencKeyIdSize,
                cenc_key_id_must_be_size_16);
 
@@ -52,21 +54,37 @@ uint64_t Rescale(uint64_t time_in_old_scale,
   return static_cast<double>(time_in_old_scale) / old_scale * new_scale;
 }
 
-uint8_t GetCryptByteBlock(FourCC protection_scheme) {
-  return (protection_scheme == FOURCC_cbcs || protection_scheme == FOURCC_cens)
-             ? kCryptByteBlock
-             : 0;
-}
-
-uint8_t GetSkipByteBlock(FourCC protection_scheme) {
-  return (protection_scheme == FOURCC_cbcs || protection_scheme == FOURCC_cens)
-             ? kSkipByteBlock
-             : 0;
+ProtectionPattern GetProtectionPattern(FourCC protection_scheme,
+                                       TrackType track_type) {
+  ProtectionPattern pattern;
+  if (protection_scheme != FOURCC_cbcs && protection_scheme != FOURCC_cens) {
+    // Not using pattern encryption.
+    pattern.crypt_byte_block = 0u;
+    pattern.skip_byte_block = 0u;
+  } else if (track_type != kVideo) {
+    // Tracks other than video are protected using whole-block full-sample
+    // encryption, which is essentially a pattern of 1:0. Note that this may not
+    // be the same as the non-pattern based encryption counterparts, e.g. in
+    // 'cens' for full sample encryption, the whole sample is encrypted up to
+    // the last 16-byte boundary, see 23001-7:2016(E) 9.7; while in 'cenc' for
+    // full sample encryption, the last partial 16-byte block is also encrypted,
+    // see 23001-7:2016(E) 9.4.2. Another difference is the use of constant iv.
+    pattern.crypt_byte_block = 1u;
+    pattern.skip_byte_block = 0u;
+  } else {
+    // Use 1:9 pattern for video.
+    const uint8_t kCryptByteBlock = 1u;
+    const uint8_t kSkipByteBlock = 9u;
+    pattern.crypt_byte_block = kCryptByteBlock;
+    pattern.skip_byte_block = kSkipByteBlock;
+  }
+  return pattern;
 }
 
 void GenerateSinf(const EncryptionKey& encryption_key,
                   FourCC old_type,
                   FourCC protection_scheme,
+                  ProtectionPattern pattern,
                   ProtectionSchemeInfo* sinf) {
   sinf->format.format = old_type;
 
@@ -85,16 +103,15 @@ void GenerateSinf(const EncryptionKey& encryption_key,
   } else {
     track_encryption.default_per_sample_iv_size = encryption_key.iv.size();
   }
-  track_encryption.default_crypt_byte_block =
-      GetCryptByteBlock(protection_scheme);
-  track_encryption.default_skip_byte_block =
-      GetSkipByteBlock(protection_scheme);
+  track_encryption.default_crypt_byte_block = pattern.crypt_byte_block;
+  track_encryption.default_skip_byte_block = pattern.skip_byte_block;
   track_encryption.default_kid = encryption_key.key_id;
 }
 
 void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
                                   double clear_lead_in_seconds,
                                   FourCC protection_scheme,
+                                  ProtectionPattern pattern,
                                   SampleDescription* description) {
   DCHECK(description);
   if (description->type == kVideo) {
@@ -106,7 +123,8 @@ void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
 
     // Convert the first entry to an encrypted entry.
     VideoSampleEntry& entry = description->video_entries[0];
-    GenerateSinf(encryption_key, entry.format, protection_scheme, &entry.sinf);
+    GenerateSinf(encryption_key, entry.format, protection_scheme, pattern,
+                 &entry.sinf);
     entry.format = FOURCC_encv;
   } else {
     DCHECK_EQ(kAudio, description->type);
@@ -118,7 +136,8 @@ void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
 
     // Convert the first entry to an encrypted entry.
     AudioSampleEntry& entry = description->audio_entries[0];
-    GenerateSinf(encryption_key, entry.format, protection_scheme, &entry.sinf);
+    GenerateSinf(encryption_key, entry.format, protection_scheme, pattern,
+                 &entry.sinf);
     entry.format = FOURCC_enca;
   }
 }
@@ -174,20 +193,12 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
       continue;
     }
 
-    FourCC local_protection_scheme = protection_scheme;
-    if (streams[i]->info()->stream_type() != kStreamVideo) {
-      // Pattern encryption should only be used with video. Replaces with the
-      // corresponding non-pattern encryption scheme.
-      if (protection_scheme == FOURCC_cbcs)
-        local_protection_scheme = FOURCC_cbc1;
-      else if (protection_scheme == FOURCC_cens)
-        local_protection_scheme = FOURCC_cenc;
-    }
-
     KeySource::TrackType track_type =
         GetTrackTypeForEncryption(*streams[i]->info(), max_sd_pixels);
     SampleDescription& description =
         moov_->tracks[i].media.information.sample_table.description;
+    ProtectionPattern pattern =
+        GetProtectionPattern(protection_scheme, description.type);
 
     if (key_rotation_enabled) {
       // Fill encrypted sample entry with default key.
@@ -195,17 +206,16 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
       encryption_key.key_id.assign(
           kKeyRotationDefaultKeyId,
           kKeyRotationDefaultKeyId + arraysize(kKeyRotationDefaultKeyId));
-      if (!AesCryptor::GenerateRandomIv(local_protection_scheme,
+      if (!AesCryptor::GenerateRandomIv(protection_scheme,
                                         &encryption_key.iv)) {
         return Status(error::INTERNAL_ERROR, "Failed to generate random iv.");
       }
       GenerateEncryptedSampleEntry(encryption_key, clear_lead_in_seconds,
-                                   local_protection_scheme, &description);
+                                   protection_scheme, pattern, &description);
       if (muxer_listener_) {
         muxer_listener_->OnEncryptionInfoReady(
-            kInitialEncryptionInfo, local_protection_scheme,
-            encryption_key.key_id, encryption_key.iv,
-            encryption_key.key_system_info);
+            kInitialEncryptionInfo, protection_scheme, encryption_key.key_id,
+            encryption_key.iv, encryption_key.key_system_info);
       }
 
       fragmenters_[i] = new KeyRotationFragmenter(
@@ -213,8 +223,8 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
           encryption_key_source, track_type,
           crypto_period_duration_in_seconds * streams[i]->info()->time_scale(),
           clear_lead_in_seconds * streams[i]->info()->time_scale(),
-          local_protection_scheme, GetCryptByteBlock(local_protection_scheme),
-          GetSkipByteBlock(local_protection_scheme), muxer_listener_);
+          protection_scheme, pattern.crypt_byte_block, pattern.skip_byte_block,
+          muxer_listener_);
       continue;
     }
 
@@ -224,14 +234,14 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
     if (!status.ok())
       return status;
     if (encryption_key->iv.empty()) {
-      if (!AesCryptor::GenerateRandomIv(local_protection_scheme,
+      if (!AesCryptor::GenerateRandomIv(protection_scheme,
                                         &encryption_key->iv)) {
         return Status(error::INTERNAL_ERROR, "Failed to generate random iv.");
       }
     }
 
     GenerateEncryptedSampleEntry(*encryption_key, clear_lead_in_seconds,
-                                 local_protection_scheme, &description);
+                                 protection_scheme, pattern, &description);
 
     if (moov_->pssh.empty()) {
       moov_->pssh.resize(encryption_key->key_system_info.size());
@@ -241,17 +251,15 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
 
       if (muxer_listener_) {
         muxer_listener_->OnEncryptionInfoReady(
-            kInitialEncryptionInfo, local_protection_scheme,
-            encryption_key->key_id, encryption_key->iv,
-            encryption_key->key_system_info);
+            kInitialEncryptionInfo, protection_scheme, encryption_key->key_id,
+            encryption_key->iv, encryption_key->key_system_info);
       }
     }
 
     fragmenters_[i] = new EncryptingFragmenter(
         streams[i]->info(), &moof_->tracks[i], encryption_key.Pass(),
         clear_lead_in_seconds * streams[i]->info()->time_scale(),
-        local_protection_scheme, GetCryptByteBlock(local_protection_scheme),
-        GetSkipByteBlock(local_protection_scheme));
+        protection_scheme, pattern.crypt_byte_block, pattern.skip_byte_block);
   }
 
   // Choose the first stream if there is no VIDEO.

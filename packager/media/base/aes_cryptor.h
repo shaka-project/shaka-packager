@@ -80,6 +80,9 @@ class AesCryptor {
   /// @return The current iv.
   const std::vector<uint8_t>& iv() const { return iv_; }
 
+  /// @return true if constant iv is used, false otherwise.
+  bool use_constant_iv() const { return constant_iv_flag_ == kUseConstantIv; }
+
   /// @param protection_scheme specifies the protection scheme: 'cenc', 'cens',
   ///        'cbc1', 'cbcs', which is useful to determine the random iv size.
   /// @param iv points to generated initialization vector.

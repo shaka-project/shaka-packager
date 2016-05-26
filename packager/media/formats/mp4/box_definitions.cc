@@ -126,6 +126,11 @@ FourCC TrackTypeToFourCC(TrackType track_type) {
   }
 }
 
+bool IsProtectionSchemeSupported(FourCC scheme) {
+  return scheme == FOURCC_cenc || scheme == FOURCC_cens ||
+         scheme == FOURCC_cbc1 || scheme == FOURCC_cbcs;
+}
+
 }  // namespace
 
 FileType::FileType() : major_brand(FOURCC_NULL), minor_version(0) {}
@@ -483,9 +488,12 @@ bool ProtectionSchemeInfo::ReadWriteInternal(BoxBuffer* buffer) {
          buffer->PrepareChildren() &&
          buffer->ReadWriteChild(&format) &&
          buffer->ReadWriteChild(&type));
-  RCHECK(type.type == FOURCC_cenc || type.type == FOURCC_cbc1 ||
-         type.type == FOURCC_cens || type.type == FOURCC_cbcs);
-  RCHECK(buffer->ReadWriteChild(&info));
+  if (IsProtectionSchemeSupported(type.type)) {
+    RCHECK(buffer->ReadWriteChild(&info));
+  } else {
+    DLOG(WARNING) << "Ignore unsupported protection scheme: "
+                  << FourCCToString(type.type);
+  }
   // Other protection schemes are silently ignored. Since the protection scheme
   // type can't be determined until this box is opened, we return 'true' for
   // non-CENC protection scheme types. It is the parent box's responsibility to
@@ -1001,8 +1009,8 @@ bool SampleGroupDescription::ReadWriteInternal(BoxBuffer* buffer) {
       return ReadWriteEntries(buffer, &audio_roll_recovery_entries);
     default:
       DCHECK(buffer->Reading());
-      DLOG(WARNING) << "Sample group '" << grouping_type
-                    << "' is not supported.";
+      DLOG(WARNING) << "Ignore unsupported sample group: "
+                    << FourCCToString(static_cast<FourCC>(grouping_type));
       return true;
   }
 }
@@ -1077,9 +1085,8 @@ bool SampleToGroup::ReadWriteInternal(BoxBuffer* buffer) {
 
   if (grouping_type != FOURCC_seig && grouping_type != FOURCC_roll) {
     DCHECK(buffer->Reading());
-    DLOG(WARNING) << "Sample group "
-                  << FourCCToString(static_cast<FourCC>(grouping_type))
-                  << " is not supported.";
+    DLOG(WARNING) << "Ignore unsupported sample group: "
+                  << FourCCToString(static_cast<FourCC>(grouping_type));
     return true;
   }
 
@@ -1538,8 +1545,17 @@ bool VideoSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
 
   RCHECK(buffer->PrepareChildren());
 
-  if (format == FOURCC_encv)
-    RCHECK(buffer->ReadWriteChild(&sinf));
+  if (format == FOURCC_encv) {
+    if (buffer->Reading()) {
+      // Continue scanning until a supported protection scheme is found, or
+      // until we run out of protection schemes.
+      while (!IsProtectionSchemeSupported(sinf.type.type))
+        RCHECK(buffer->ReadWriteChild(&sinf));
+    } else {
+      DCHECK(IsProtectionSchemeSupported(sinf.type.type));
+      RCHECK(buffer->ReadWriteChild(&sinf));
+    }
+  }
 
   const FourCC actual_format = GetActualFormat();
   if (buffer->Reading()) {
@@ -1777,8 +1793,17 @@ bool AudioSampleEntry::ReadWriteInternal(BoxBuffer* buffer) {
   samplerate >>= 16;
 
   RCHECK(buffer->PrepareChildren());
-  if (format == FOURCC_enca)
-    RCHECK(buffer->ReadWriteChild(&sinf));
+  if (format == FOURCC_enca) {
+    if (buffer->Reading()) {
+      // Continue scanning until a supported protection scheme is found, or
+      // until we run out of protection schemes.
+      while (!IsProtectionSchemeSupported(sinf.type.type))
+        RCHECK(buffer->ReadWriteChild(&sinf));
+    } else {
+      DCHECK(IsProtectionSchemeSupported(sinf.type.type));
+      RCHECK(buffer->ReadWriteChild(&sinf));
+    }
+  }
 
   RCHECK(buffer->TryReadWriteChild(&esds));
   RCHECK(buffer->TryReadWriteChild(&ddts));

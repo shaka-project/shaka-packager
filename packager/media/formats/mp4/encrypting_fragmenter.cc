@@ -186,9 +186,18 @@ void EncryptingFragmenter::FinalizeFragmentForEncryption() {
     DCHECK(!IsSubsampleEncryptionRequired());
     saiz.default_sample_info_size = per_sample_iv_size;
   }
-  // It should only happen with full sample encryption + constant iv, which is
-  // not a legal combination.
-  CHECK(!saiz.sample_info_sizes.empty() || saiz.default_sample_info_size != 0);
+
+  // It should only happen with full sample encryption + constant iv, i.e.
+  // 'cbcs' applying to audio.
+  if (saiz.default_sample_info_size == 0 && saiz.sample_info_sizes.empty()) {
+    DCHECK_EQ(protection_scheme_, FOURCC_cbcs);
+    DCHECK(!IsSubsampleEncryptionRequired());
+    // ISO/IEC 23001-7:2016(E) The sample auxiliary information would then be
+    // empty and should be emitted. Clear saiz and saio boxes so they are not
+    // written.
+    saiz.sample_count = 0;
+    traf()->auxiliary_offset.offsets.clear();
+  }
 }
 
 Status EncryptingFragmenter::CreateEncryptor() {
@@ -337,6 +346,8 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
     traf()->auxiliary_size.sample_info_sizes.push_back(
         sample_encryption_entry.ComputeSize());
   } else {
+    DCHECK_LE(crypt_byte_block(), 1u);
+    DCHECK_EQ(skip_byte_block(), 0u);
     EncryptBytes(data, sample->data_size());
   }
 

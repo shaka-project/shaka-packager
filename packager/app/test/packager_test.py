@@ -171,7 +171,7 @@ class PackagerAppTest(unittest.TestCase):
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True,
                        protection_scheme='cens'))
-    self._DiffGold(self.output[0], 'bear-640x360-a-cenc-golden.mp4')
+    self._DiffGold(self.output[0], 'bear-640x360-a-cens-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-cens-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-av-cens-golden.mpd')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
@@ -182,7 +182,7 @@ class PackagerAppTest(unittest.TestCase):
         self._GetStreams(['audio', 'video']),
         self._GetFlags(encryption=True,
                        protection_scheme='cbcs'))
-    self._DiffGold(self.output[0], 'bear-640x360-a-cbc1-golden.mp4')
+    self._DiffGold(self.output[0], 'bear-640x360-a-cbcs-golden.mp4')
     self._DiffGold(self.output[1], 'bear-640x360-v-cbcs-golden.mp4')
     self._DiffGold(self.mpd_output, 'bear-640x360-av-cbcs-golden.mpd')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')

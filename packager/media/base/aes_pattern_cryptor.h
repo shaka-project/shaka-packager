@@ -47,7 +47,8 @@ class AesPatternCryptor : public AesCryptor {
   ///        internally inside Crypt call, i.e. iv will be updated across Crypt
   ///        calls.
   /// @param cryptor points to an AesCryptor instance which performs the actual
-  ///        encryption/decryption.
+  ///        encryption/decryption. Note that @a cryptor shall not use constant
+  ///        iv.
   AesPatternCryptor(uint8_t crypt_byte_block,
                     uint8_t skip_byte_block,
                     PatternEncryptionMode encryption_mode,
