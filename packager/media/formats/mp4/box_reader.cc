@@ -92,6 +92,7 @@ bool BoxReader::IsValidTopLevelBox(const FourCC& type) {
     case FOURCC_sidx:
     case FOURCC_ssix:
     case FOURCC_prft:
+    case FOURCC_uuid:
       return true;
     default:
       // Hex is used to show nonprintable characters and aid in debugging

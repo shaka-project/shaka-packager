@@ -963,6 +963,7 @@ static bool CheckMov(const uint8_t* buffer, int buffer_size) {
     switch (atomtype) {
       case TAG('f','t','y','p'):
       case TAG('p','d','i','n'):
+      case TAG('b','l','o','c'):
       case TAG('m','o','o','v'):
       case TAG('m','o','o','f'):
       case TAG('m','f','r','a'):
@@ -975,7 +976,7 @@ static bool CheckMov(const uint8_t* buffer, int buffer_size) {
       case TAG('s','i','d','x'):
       case TAG('s','s','i','x'):
       case TAG('p','r','f','t'):
-      case TAG('b','l','o','c'):
+      case TAG('u','u','i','d'):
         break;
       default:
         return false;
