@@ -16,7 +16,7 @@ var searchData=
   ['fragment_5fsap_5faligned',['fragment_sap_aligned',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#acb335182d4bd226c1f044cc83705f4fc',1,'shaka::media::MuxerOptions']]],
   ['fragmenter',['Fragmenter',['../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html',1,'shaka::media::mp4']]],
   ['fragmenter',['Fragmenter',['../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a675d1d98629a3d10f9ef191b9e950a69',1,'shaka::media::mp4::Fragmenter']]],
-  ['frequency',['frequency',['../d2/dd0/classshaka_1_1media_1_1mp4_1_1AACAudioSpecificConfig.html#ab062cfbc82cfe56d9c5cab635d3f5169',1,'shaka::media::mp4::AACAudioSpecificConfig']]],
+  ['frequency',['frequency',['../d0/da2/classshaka_1_1media_1_1AACAudioSpecificConfig.html#a10f2acc7fcf3ec9de2fe3598c255786d',1,'shaka::media::AACAudioSpecificConfig']]],
   ['frombmfftimescale',['FromBMFFTimescale',['../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a66c49dfab5316bea5b7b318871aef129',1,'shaka::media::webm::Segmenter']]],
   ['frommetadata',['FromMetadata',['../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a1d23b68125525a019bde262e4c5a46f0',1,'shaka::media::MediaSample']]],
   ['fromwebmtimecode',['FromWebMTimecode',['../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a8de27c5b6480f968cbef9eafec3731d7',1,'shaka::media::webm::Segmenter']]],

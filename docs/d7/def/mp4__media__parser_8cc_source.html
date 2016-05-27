@@ -108,14 +108,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_sample.h&quot;</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/rcheck.h&quot;</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/video_stream_info.h&quot;</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file.h&quot;</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file_closer.h&quot;</span></div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/avc_decoder_configuration.h&quot;</span></div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/hevc_decoder_configuration.h&quot;</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/vp_codec_configuration.h&quot;</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box_definitions.h&quot;</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box_reader.h&quot;</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/es_descriptor.h&quot;</span></div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/avc_decoder_configuration_record.h&quot;</span></div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/es_descriptor.h&quot;</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/hevc_decoder_configuration_record.h&quot;</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/vp_codec_configuration_record.h&quot;</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file.h&quot;</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file_closer.h&quot;</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box_definitions.h&quot;</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box_reader.h&quot;</span></div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/track_run_iterator.h&quot;</span></div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="keyword">namespace </span>shaka {</div>
@@ -600,7 +600,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00511"></a><span class="lineno">  511</span>&#160;      <span class="keyword">const</span> VideoCodec video_codec = FourCCToVideoCodec(actual_format);</div>
 <div class="line"><a name="l00512"></a><span class="lineno">  512</span>&#160;      <span class="keywordflow">switch</span> (actual_format) {</div>
 <div class="line"><a name="l00513"></a><span class="lineno">  513</span>&#160;        <span class="keywordflow">case</span> FOURCC_avc1: {</div>
-<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;          AVCDecoderConfiguration avc_config;</div>
+<div class="line"><a name="l00514"></a><span class="lineno">  514</span>&#160;          AVCDecoderConfigurationRecord avc_config;</div>
 <div class="line"><a name="l00515"></a><span class="lineno">  515</span>&#160;          <span class="keywordflow">if</span> (!avc_config.Parse(entry.codec_configuration.data)) {</div>
 <div class="line"><a name="l00516"></a><span class="lineno">  516</span>&#160;            LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to parse avcc.&quot;</span>;</div>
 <div class="line"><a name="l00517"></a><span class="lineno">  517</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -637,7 +637,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00548"></a><span class="lineno">  548</span>&#160;        }</div>
 <div class="line"><a name="l00549"></a><span class="lineno">  549</span>&#160;        <span class="keywordflow">case</span> FOURCC_hev1:</div>
 <div class="line"><a name="l00550"></a><span class="lineno">  550</span>&#160;        <span class="keywordflow">case</span> FOURCC_hvc1: {</div>
-<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;          HEVCDecoderConfiguration hevc_config;</div>
+<div class="line"><a name="l00551"></a><span class="lineno">  551</span>&#160;          HEVCDecoderConfigurationRecord hevc_config;</div>
 <div class="line"><a name="l00552"></a><span class="lineno">  552</span>&#160;          <span class="keywordflow">if</span> (!hevc_config.Parse(entry.codec_configuration.data)) {</div>
 <div class="line"><a name="l00553"></a><span class="lineno">  553</span>&#160;            LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to parse hevc.&quot;</span>;</div>
 <div class="line"><a name="l00554"></a><span class="lineno">  554</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -649,7 +649,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00560"></a><span class="lineno">  560</span>&#160;        <span class="keywordflow">case</span> FOURCC_vp08:</div>
 <div class="line"><a name="l00561"></a><span class="lineno">  561</span>&#160;        <span class="keywordflow">case</span> FOURCC_vp09:</div>
 <div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;        <span class="keywordflow">case</span> FOURCC_vp10: {</div>
-<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;          VPCodecConfiguration vp_config;</div>
+<div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;          VPCodecConfigurationRecord vp_config;</div>
 <div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;          <span class="keywordflow">if</span> (!vp_config.Parse(entry.codec_configuration.data)) {</div>
 <div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;            LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to parse vpcc.&quot;</span>;</div>
 <div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -871,7 +871,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu May 26 2016 00:03:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri May 27 2016 23:48:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

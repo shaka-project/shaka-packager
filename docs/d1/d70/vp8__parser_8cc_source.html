@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/filters/vp8_parser.cc Source File</title>
+<title>DASH Media Packaging SDK: media/codecs/vp8_parser.cc Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_5eb2e460866db0ed29e32d64402e5c22.html">filters</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_0494b8c96e3190a776d2b97ade9c8ddf.html">codecs</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -93,7 +93,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// license that can be found in the LICENSE file or at</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// https://developers.google.com/open-source/licenses/bsd</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/vp8_parser.h&quot;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/vp8_parser.h&quot;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/bit_reader.h&quot;</span></div>
@@ -242,11 +242,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  <span class="comment">// http://tools.ietf.org/html/rfc6386 Section 2.</span></div>
 <div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  writable_codec_config()-&gt;set_bit_depth(8);</div>
 <div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  writable_codec_config()-&gt;set_chroma_subsampling(</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      VPCodecConfiguration::CHROMA_420_COLLOCATED_WITH_LUMA);</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      VPCodecConfigurationRecord::CHROMA_420_COLLOCATED_WITH_LUMA);</div>
 <div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  <span class="comment">// VP8 uses YCrCb color space defined in ITU-R_BT.601.</span></div>
 <div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  <span class="comment">// http://tools.ietf.org/html/rfc6386 Section 9.2.</span></div>
 <div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  writable_codec_config()-&gt;set_color_space(</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;      VPCodecConfiguration::COLOR_SPACE_BT_601);</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;      VPCodecConfigurationRecord::COLOR_SPACE_BT_601);</div>
 <div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;</div>
 <div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  <a class="code" href="../../d0/d11/structshaka_1_1media_1_1VPxFrameInfo.html">VPxFrameInfo</a> vpx_frame;</div>
 <div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  vpx_frame.frame_size = data_size;</div>
@@ -293,7 +293,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu May 26 2016 00:03:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri May 27 2016 23:48:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

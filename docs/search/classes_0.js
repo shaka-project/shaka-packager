@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['aacaudiospecificconfig',['AACAudioSpecificConfig',['../d2/dd0/classshaka_1_1media_1_1mp4_1_1AACAudioSpecificConfig.html',1,'shaka::media::mp4']]],
+  ['aacaudiospecificconfig',['AACAudioSpecificConfig',['../d0/da2/classshaka_1_1media_1_1AACAudioSpecificConfig.html',1,'shaka::media']]],
   ['aacprogrammaptablewriter',['AacProgramMapTableWriter',['../d4/dc8/classshaka_1_1media_1_1mp2t_1_1AacProgramMapTableWriter.html',1,'shaka::media::mp2t']]],
   ['ac3specific',['AC3Specific',['../d4/dfa/structshaka_1_1media_1_1mp4_1_1AC3Specific.html',1,'shaka::media::mp4']]],
   ['adaptationset',['AdaptationSet',['../d8/d8e/classshaka_1_1AdaptationSet.html',1,'shaka']]],
@@ -17,5 +17,5 @@ var searchData=
   ['audiosampleentry',['AudioSampleEntry',['../d8/d5b/structshaka_1_1media_1_1mp4_1_1AudioSampleEntry.html',1,'shaka::media::mp4']]],
   ['audiostreaminfo',['AudioStreamInfo',['../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html',1,'shaka::media']]],
   ['audiotimestamphelper',['AudioTimestampHelper',['../d0/d4d/classshaka_1_1media_1_1AudioTimestampHelper.html',1,'shaka::media']]],
-  ['avcdecoderconfiguration',['AVCDecoderConfiguration',['../da/db1/classshaka_1_1media_1_1AVCDecoderConfiguration.html',1,'shaka::media']]]
+  ['avcdecoderconfigurationrecord',['AVCDecoderConfigurationRecord',['../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html',1,'shaka::media']]]
 ];

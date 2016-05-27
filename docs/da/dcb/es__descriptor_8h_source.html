@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/formats/mp4/es_descriptor.h Source File</title>
+<title>DASH Media Packaging SDK: media/codecs/es_descriptor.h Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_65f7acfa8cf3a5f1edc11faa2428b914.html">formats</a></li><li class="navelem"><a class="el" href="../../dir_3e9291fd7a18fdecc763294cb2628910.html">mp4</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_0494b8c96e3190a776d2b97ade9c8ddf.html">codecs</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -91,8 +91,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00002"></a><span class="lineno">    2</span>&#160;<span class="comment">// Use of this source code is governed by a BSD-style license that can be</span></div>
 <div class="line"><a name="l00003"></a><span class="lineno">    3</span>&#160;<span class="comment">// found in the LICENSE file.</span></div>
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;</div>
-<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#ifndef MEDIA_FORMATS_MP4_ES_DESCRIPTOR_H_</span></div>
-<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MEDIA_FORMATS_MP4_ES_DESCRIPTOR_H_</span></div>
+<div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#ifndef MEDIA_CODECS_ES_DESCRIPTOR_H_</span></div>
+<div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MEDIA_CODECS_ES_DESCRIPTOR_H_</span></div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;stddef.h&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
@@ -105,89 +105,85 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">class </span>BitReader;</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">class </span>BufferWriter;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>mp4 {</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="comment">// The following values are extracted from ISO 14496 Part 1 Table 5 -</span></div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="comment">// objectTypeIndication Values. Only values currently in use are included.</span></div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="keyword">enum</span> ObjectType {</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  kForbidden = 0,</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  kISO_14496_3 = 0x40,         <span class="comment">// MPEG4 AAC</span></div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  kISO_13818_7_AAC_LC = 0x67,  <span class="comment">// MPEG2 AAC-LC</span></div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  kDTSC = 0xA9,                <span class="comment">// DTS Coherent Acoustics audio</span></div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  kDTSE = 0xAC,                <span class="comment">// DTS Express low bit rate audio</span></div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  kDTSH = 0xAA,                <span class="comment">// DTS-HD High Resolution Audio</span></div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  kDTSL = 0xAB,                <span class="comment">// DTS-HD Master Audio</span></div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;};</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="../../d9/d67/classshaka_1_1media_1_1mp4_1_1ESDescriptor.html">   36</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d9/d67/classshaka_1_1media_1_1mp4_1_1ESDescriptor.html">ESDescriptor</a> {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160; <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <a class="code" href="../../d9/d67/classshaka_1_1media_1_1mp4_1_1ESDescriptor.html">ESDescriptor</a>();</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  ~<a class="code" href="../../d9/d67/classshaka_1_1media_1_1mp4_1_1ESDescriptor.html">ESDescriptor</a>();</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordtype">bool</span> Parse(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; data);</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="keywordtype">void</span> Write(<a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a>* writer) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordtype">size_t</span> ComputeSize() <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  uint16_t esid()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> esid_; }</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keywordtype">void</span> set_esid(uint16_t esid) { esid_ = esid; }</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  uint32_t max_bitrate()<span class="keyword"> const </span>{<span class="keywordflow">return</span> max_bitrate_; }</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordtype">void</span> set_max_bitrate(uint32_t max_bitrate) { max_bitrate_ = max_bitrate; }</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  uint32_t avg_bitrate()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> avg_bitrate_; }</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordtype">void</span> set_avg_bitrate(uint32_t avg_bitrate) { avg_bitrate_ = avg_bitrate; }</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  ObjectType object_type()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> object_type_; }</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keywordtype">void</span> set_object_type(ObjectType object_type) { object_type_ = object_type; }</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; decoder_specific_info()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordflow">return</span> decoder_specific_info_;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  }</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordtype">void</span> set_decoder_specific_info(</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;      <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; decoder_specific_info) {</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    decoder_specific_info_ = decoder_specific_info;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  }</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00066"></a><span class="lineno"><a class="line" href="../../d9/d67/classshaka_1_1media_1_1mp4_1_1ESDescriptor.html#a17fd83bc231d4f93a676651e354a58bc">   66</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d9/d67/classshaka_1_1media_1_1mp4_1_1ESDescriptor.html#a17fd83bc231d4f93a676651e354a58bc">IsAAC</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    <span class="keywordflow">return</span> object_type_ == kISO_14496_3 || object_type_ == kISO_13818_7_AAC_LC;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  }</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordtype">bool</span> IsDTS()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">return</span> object_type_ == kDTSC || object_type_ == kDTSE ||</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;           object_type_ == kDTSH || object_type_ == kDTSL;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  }</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keyword">enum</span> Tag {</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    kESDescrTag = 0x03,</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    kDecoderConfigDescrTag = 0x04,</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    kDecoderSpecificInfoTag = 0x05,</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    kSLConfigTag = 0x06,</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  };</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordtype">bool</span> ParseDecoderConfigDescriptor(BitReader* reader);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordtype">bool</span> ParseDecoderSpecificInfo(BitReader* reader);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  uint16_t esid_;  <span class="comment">// Elementary Stream ID.</span></div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  ObjectType object_type_;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  uint32_t max_bitrate_;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  uint32_t avg_bitrate_;</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  std::vector&lt;uint8_t&gt; decoder_specific_info_;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;};</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}  <span class="comment">// namespace mp4</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
-<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_MP4_ES_DESCRIPTOR_H_</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1ESDescriptor_html_a17fd83bc231d4f93a676651e354a58bc"><div class="ttname"><a href="../../d9/d67/classshaka_1_1media_1_1mp4_1_1ESDescriptor.html#a17fd83bc231d4f93a676651e354a58bc">shaka::media::mp4::ESDescriptor::IsAAC</a></div><div class="ttdeci">bool IsAAC() const </div><div class="ttdef"><b>Definition:</b> <a href="../../da/dcb/es__descriptor_8h_source.html#l00066">es_descriptor.h:66</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1ESDescriptor_html"><div class="ttname"><a href="../../d9/d67/classshaka_1_1media_1_1mp4_1_1ESDescriptor.html">shaka::media::mp4::ESDescriptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/dcb/es__descriptor_8h_source.html#l00036">es_descriptor.h:36</a></div></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">// The following values are extracted from ISO 14496 Part 1 Table 5 -</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="comment">// objectTypeIndication Values. Only values currently in use are included.</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="keyword">enum</span> ObjectType {</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  kForbidden = 0,</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;  kISO_14496_3 = 0x40,         <span class="comment">// MPEG4 AAC</span></div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;  kISO_13818_7_AAC_LC = 0x67,  <span class="comment">// MPEG2 AAC-LC</span></div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  kDTSC = 0xA9,                <span class="comment">// DTS Coherent Acoustics audio</span></div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  kDTSE = 0xAC,                <span class="comment">// DTS Express low bit rate audio</span></div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  kDTSH = 0xAA,                <span class="comment">// DTS-HD High Resolution Audio</span></div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  kDTSL = 0xAB,                <span class="comment">// DTS-HD Master Audio</span></div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;};</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;</div>
+<div class="line"><a name="l00034"></a><span class="lineno"><a class="line" href="../../d5/d13/classshaka_1_1media_1_1ESDescriptor.html">   34</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../d5/d13/classshaka_1_1media_1_1ESDescriptor.html">ESDescriptor</a> {</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <a class="code" href="../../d5/d13/classshaka_1_1media_1_1ESDescriptor.html">ESDescriptor</a>();</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  ~<a class="code" href="../../d5/d13/classshaka_1_1media_1_1ESDescriptor.html">ESDescriptor</a>();</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordtype">bool</span> Parse(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; data);</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordtype">void</span> Write(<a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a>* writer) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordtype">size_t</span> ComputeSize() <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  uint16_t esid()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> esid_; }</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordtype">void</span> set_esid(uint16_t esid) { esid_ = esid; }</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  uint32_t max_bitrate()<span class="keyword"> const </span>{<span class="keywordflow">return</span> max_bitrate_; }</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keywordtype">void</span> set_max_bitrate(uint32_t max_bitrate) { max_bitrate_ = max_bitrate; }</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  uint32_t avg_bitrate()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> avg_bitrate_; }</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordtype">void</span> set_avg_bitrate(uint32_t avg_bitrate) { avg_bitrate_ = avg_bitrate; }</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  ObjectType object_type()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> object_type_; }</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordtype">void</span> set_object_type(ObjectType object_type) { object_type_ = object_type; }</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; decoder_specific_info()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <span class="keywordflow">return</span> decoder_specific_info_;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordtype">void</span> set_decoder_specific_info(</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;      <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; decoder_specific_info) {</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    decoder_specific_info_ = decoder_specific_info;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  }</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="../../d5/d13/classshaka_1_1media_1_1ESDescriptor.html#a47592ec424dc9dd2beb5cc0f505e6681">   64</a></span>&#160;  <span class="keywordtype">bool</span> <a class="code" href="../../d5/d13/classshaka_1_1media_1_1ESDescriptor.html#a47592ec424dc9dd2beb5cc0f505e6681">IsAAC</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordflow">return</span> object_type_ == kISO_14496_3 || object_type_ == kISO_13818_7_AAC_LC;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  }</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keywordtype">bool</span> IsDTS()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keywordflow">return</span> object_type_ == kDTSC || object_type_ == kDTSE ||</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;           object_type_ == kDTSH || object_type_ == kDTSL;</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  }</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160; <span class="keyword">private</span>:</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keyword">enum</span> Tag {</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    kESDescrTag = 0x03,</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    kDecoderConfigDescrTag = 0x04,</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    kDecoderSpecificInfoTag = 0x05,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    kSLConfigTag = 0x06,</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  };</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordtype">bool</span> ParseDecoderConfigDescriptor(BitReader* reader);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  <span class="keywordtype">bool</span> ParseDecoderSpecificInfo(BitReader* reader);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  uint16_t esid_;  <span class="comment">// Elementary Stream ID.</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  ObjectType object_type_;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  uint32_t max_bitrate_;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  uint32_t avg_bitrate_;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  std::vector&lt;uint8_t&gt; decoder_specific_info_;</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;};</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;<span class="preprocessor">#endif  // MEDIA_CODECS_ES_DESCRIPTOR_H_</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1BufferWriter_html"><div class="ttname"><a href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">shaka::media::BufferWriter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd2/buffer__writer_8h_source.html#l00022">buffer_writer.h:22</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1ESDescriptor_html_a47592ec424dc9dd2beb5cc0f505e6681"><div class="ttname"><a href="../../d5/d13/classshaka_1_1media_1_1ESDescriptor.html#a47592ec424dc9dd2beb5cc0f505e6681">shaka::media::ESDescriptor::IsAAC</a></div><div class="ttdeci">bool IsAAC() const </div><div class="ttdef"><b>Definition:</b> <a href="../../da/dcb/es__descriptor_8h_source.html#l00064">es_descriptor.h:64</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1ESDescriptor_html"><div class="ttname"><a href="../../d5/d13/classshaka_1_1media_1_1ESDescriptor.html">shaka::media::ESDescriptor</a></div><div class="ttdef"><b>Definition:</b> <a href="../../da/dcb/es__descriptor_8h_source.html#l00034">es_descriptor.h:34</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu May 26 2016 00:03:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri May 27 2016 23:48:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

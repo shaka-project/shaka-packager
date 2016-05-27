@@ -1,8 +1,8 @@
 var searchData=
 [
   ['dash_5fprofile',['dash_profile',['../d3/dd0/classshaka_1_1MpdNotifier.html#a3eb0f05b01d475eff0a75bab71f21149',1,'shaka::MpdNotifier']]],
-  ['data',['data',['../d1/dc2/classshaka_1_1media_1_1DecoderConfiguration.html#a3f60385e6d110c99f7ab2cd9deb4c405',1,'shaka::media::DecoderConfiguration::data()'],['../d6/dff/classshaka_1_1media_1_1Nalu.html#a3175755a2a847c3bfc8292434d4ea3b6',1,'shaka::media::Nalu::data()']]],
-  ['data_5fsize',['data_size',['../d1/dc2/classshaka_1_1media_1_1DecoderConfiguration.html#a77abdcb6303cdad9bf7556cbfbf59439',1,'shaka::media::DecoderConfiguration']]],
+  ['data',['data',['../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#a20e0a9cb8002c943814853bd6ce488df',1,'shaka::media::DecoderConfigurationRecord::data()'],['../d6/dff/classshaka_1_1media_1_1Nalu.html#a3175755a2a847c3bfc8292434d4ea3b6',1,'shaka::media::Nalu::data()']]],
+  ['data_5fsize',['data_size',['../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#ab016f1def77f35b4256e7e8ca990ed57',1,'shaka::media::DecoderConfigurationRecord']]],
   ['decodingtimeiterator',['DecodingTimeIterator',['../d1/d20/classshaka_1_1media_1_1mp4_1_1DecodingTimeIterator.html#aa2b6f0a9697cfd606bfe95b5377c953e',1,'shaka::media::mp4::DecodingTimeIterator']]],
   ['decrypt',['Decrypt',['../d0/dce/classshaka_1_1media_1_1RsaPrivateKey.html#a89a475ffe2d96bfab09536b864038ca4',1,'shaka::media::RsaPrivateKey']]],
   ['decryptconfig',['DecryptConfig',['../de/d49/classshaka_1_1media_1_1DecryptConfig.html#a24035bb6edcb3aaaa9923bf385376ae5',1,'shaka::media::DecryptConfig::DecryptConfig(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; SubsampleEntry &gt; &amp;subsamples)'],['../de/d49/classshaka_1_1media_1_1DecryptConfig.html#ab2dfe0a2ee285539843ac55b5f1ac7c7',1,'shaka::media::DecryptConfig::DecryptConfig(const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; SubsampleEntry &gt; &amp;subsamples, FourCC protection_scheme, uint8_t crypt_byte_block, uint8_t skip_byte_block)']]],

@@ -4,7 +4,7 @@ var searchData=
   ['dataentryurl',['DataEntryUrl',['../df/d8a/structshaka_1_1media_1_1mp4_1_1DataEntryUrl.html',1,'shaka::media::mp4']]],
   ['datainformation',['DataInformation',['../d8/d6d/structshaka_1_1media_1_1mp4_1_1DataInformation.html',1,'shaka::media::mp4']]],
   ['datareference',['DataReference',['../d4/de3/structshaka_1_1media_1_1mp4_1_1DataReference.html',1,'shaka::media::mp4']]],
-  ['decoderconfiguration',['DecoderConfiguration',['../d1/dc2/classshaka_1_1media_1_1DecoderConfiguration.html',1,'shaka::media']]],
+  ['decoderconfigurationrecord',['DecoderConfigurationRecord',['../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html',1,'shaka::media']]],
   ['decodingtime',['DecodingTime',['../d8/d12/structshaka_1_1media_1_1mp4_1_1DecodingTime.html',1,'shaka::media::mp4']]],
   ['decodingtimeiterator',['DecodingTimeIterator',['../d1/d20/classshaka_1_1media_1_1mp4_1_1DecodingTimeIterator.html',1,'shaka::media::mp4']]],
   ['decodingtimetosample',['DecodingTimeToSample',['../de/def/structshaka_1_1media_1_1mp4_1_1DecodingTimeToSample.html',1,'shaka::media::mp4']]],

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/filters/nal_unit_to_byte_stream_converter.h Source File</title>
+<title>DASH Media Packaging SDK: media/codecs/nal_unit_to_byte_stream_converter.h Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_5eb2e460866db0ed29e32d64402e5c22.html">filters</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_0494b8c96e3190a776d2b97ade9c8ddf.html">codecs</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -93,8 +93,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// license that can be found in the LICENSE file or at</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// https://developers.google.com/open-source/licenses/bsd</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#ifndef PACKAGER_MEDIA_FILTERS_NAL_UNIT_TO_BYTE_STREAM_CONVERTER_H_</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define PACKAGER_MEDIA_FILTERS_NAL_UNIT_TO_BYTE_STREAM_CONVERTER_H_</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#ifndef PACKAGER_MEDIA_CODECS_NAL_UNIT_TO_BYTE_STREAM_CONVERTER_H_</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define PACKAGER_MEDIA_CODECS_NAL_UNIT_TO_BYTE_STREAM_CONVERTER_H_</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;stdint.h&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
@@ -140,14 +140,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#endif  // PACKAGER_MEDIA_FILTERS_NAL_UNIT_TO_BYTE_STREAM_CONVERTER_H_</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#endif  // PACKAGER_MEDIA_CODECS_NAL_UNIT_TO_BYTE_STREAM_CONVERTER_H_</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1NalUnitToByteStreamConverter_html_acde0ff823ed23fd3d8b8704cf243f3d5"><div class="ttname"><a href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#acde0ff823ed23fd3d8b8704cf243f3d5">shaka::media::NalUnitToByteStreamConverter::ConvertUnitToByteStream</a></div><div class="ttdeci">virtual bool ConvertUnitToByteStream(const uint8_t *sample, size_t sample_size, bool is_key_frame, std::vector&lt; uint8_t &gt; *output)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00142">nal_unit_to_byte_stream_converter.cc:142</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1NalUnitToByteStreamConverter_html_aa84e36b83b1caa2b1f726c4d3cff3d6d"><div class="ttname"><a href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#aa84e36b83b1caa2b1f726c4d3cff3d6d">shaka::media::NalUnitToByteStreamConverter::Initialize</a></div><div class="ttdeci">virtual bool Initialize(const uint8_t *decoder_configuration_data, size_t decoder_configuration_data_size, bool escape_data)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00092">nal_unit_to_byte_stream_converter.cc:92</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1NalUnitToByteStreamConverter_html"><div class="ttname"><a href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html">shaka::media::NalUnitToByteStreamConverter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d8/dfa/nal__unit__to__byte__stream__converter_8h_source.html#l00034">nal_unit_to_byte_stream_converter.h:34</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu May 26 2016 00:03:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri May 27 2016 23:48:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -104,10 +104,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_sample.h&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/status.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/video_stream_info.h&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/avc_decoder_configuration.h&quot;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp2t/adts_header.h&quot;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/aac_audio_specific_config.h&quot;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/es_descriptor.h&quot;</span></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/aac_audio_specific_config.h&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/avc_decoder_configuration_record.h&quot;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/es_descriptor.h&quot;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp2t/adts_header.h&quot;</span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#define HAS_HEADER_EXTENSION(x) ((x != 0xBC) &amp;&amp; (x != 0xBE) &amp;&amp; (x != 0xBF) \</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">         &amp;&amp; (x != 0xF0) &amp;&amp; (x != 0xF2) &amp;&amp; (x != 0xF8) \</span></div>
@@ -800,7 +800,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00711"></a><span class="lineno">  711</span>&#160;          pixel_height = <span class="keyword">static_cast&lt;</span>uint32_t<span class="keyword">&gt;</span>(value);</div>
 <div class="line"><a name="l00712"></a><span class="lineno">  712</span>&#160;          <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00713"></a><span class="lineno">  713</span>&#160;        <span class="keywordflow">case</span> Audio_EsDescriptor: {</div>
-<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;          mp4::ESDescriptor descriptor;</div>
+<div class="line"><a name="l00714"></a><span class="lineno">  714</span>&#160;          ESDescriptor descriptor;</div>
 <div class="line"><a name="l00715"></a><span class="lineno">  715</span>&#160;          <span class="keywordflow">if</span> (!descriptor.Parse(binary_data)) {</div>
 <div class="line"><a name="l00716"></a><span class="lineno">  716</span>&#160;            LOG(ERROR) &lt;&lt;</div>
 <div class="line"><a name="l00717"></a><span class="lineno">  717</span>&#160;                <span class="stringliteral">&quot;Could not extract AudioSpecificConfig from ES_Descriptor&quot;</span>;</div>
@@ -814,7 +814,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00725"></a><span class="lineno">  725</span>&#160;        <span class="keywordflow">case</span> Audio_AC3SpecificData:</div>
 <div class="line"><a name="l00726"></a><span class="lineno">  726</span>&#160;          LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Audio type not supported.&quot;</span>;</div>
 <div class="line"><a name="l00727"></a><span class="lineno">  727</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;        <span class="keywordflow">case</span> AVCDecoderConfigurationRecord:</div>
+<div class="line"><a name="l00728"></a><span class="lineno">  728</span>&#160;        <span class="keywordflow">case</span> Video_AVCDecoderConfigurationRecord:</div>
 <div class="line"><a name="l00729"></a><span class="lineno">  729</span>&#160;          video_codec_config = binary_data;</div>
 <div class="line"><a name="l00730"></a><span class="lineno">  730</span>&#160;          <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00731"></a><span class="lineno">  731</span>&#160;        <span class="keywordflow">default</span>:</div>
@@ -920,7 +920,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00831"></a><span class="lineno">  831</span>&#160;        byte_to_unit_stream_converter_.GetDecoderConfigurationRecord(</div>
 <div class="line"><a name="l00832"></a><span class="lineno">  832</span>&#160;            &amp;decoder_config_record);</div>
 <div class="line"><a name="l00833"></a><span class="lineno">  833</span>&#160;        <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; stream_infos_.size(); i++) {</div>
-<div class="line"><a name="l00834"></a><span class="lineno">  834</span>&#160;          <span class="keywordflow">if</span> (stream_infos_[i]-&gt;stream_type() == media::kStreamVideo &amp;&amp;</div>
+<div class="line"><a name="l00834"></a><span class="lineno">  834</span>&#160;          <span class="keywordflow">if</span> (stream_infos_[i]-&gt;stream_type() == kStreamVideo &amp;&amp;</div>
 <div class="line"><a name="l00835"></a><span class="lineno">  835</span>&#160;              stream_infos_[i]-&gt;codec_string().empty()) {</div>
 <div class="line"><a name="l00836"></a><span class="lineno">  836</span>&#160;            <span class="keyword">const</span> std::vector&lt;uint8_t&gt;* stream_config;</div>
 <div class="line"><a name="l00837"></a><span class="lineno">  837</span>&#160;            <span class="keywordflow">if</span> (stream_infos_[i]-&gt;extra_data().empty()) {</div>
@@ -936,7 +936,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00847"></a><span class="lineno">  847</span>&#160;</div>
 <div class="line"><a name="l00848"></a><span class="lineno">  848</span>&#160;            VideoStreamInfo* video_stream_info =</div>
 <div class="line"><a name="l00849"></a><span class="lineno">  849</span>&#160;                <span class="keyword">reinterpret_cast&lt;</span>VideoStreamInfo*<span class="keyword">&gt;</span>(stream_infos_[i].get());</div>
-<div class="line"><a name="l00850"></a><span class="lineno">  850</span>&#160;            AVCDecoderConfiguration avc_config;</div>
+<div class="line"><a name="l00850"></a><span class="lineno">  850</span>&#160;            AVCDecoderConfigurationRecord avc_config;</div>
 <div class="line"><a name="l00851"></a><span class="lineno">  851</span>&#160;            <span class="keywordflow">if</span> (!avc_config.Parse(*stream_config)) {</div>
 <div class="line"><a name="l00852"></a><span class="lineno">  852</span>&#160;              LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Failed to parse AVCDecoderConfigurationRecord. &quot;</span></div>
 <div class="line"><a name="l00853"></a><span class="lineno">  853</span>&#160;                              <span class="stringliteral">&quot;Using computed configuration record instead.&quot;</span>;</div>
@@ -983,9 +983,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00894"></a><span class="lineno">  894</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> ((prev_pes_stream_id_ &amp; kPesStreamIdAudioMask) ==</div>
 <div class="line"><a name="l00895"></a><span class="lineno">  895</span>&#160;        kPesStreamIdAudio) {</div>
 <div class="line"><a name="l00896"></a><span class="lineno">  896</span>&#160;      <span class="comment">// Set data on the audio stream.</span></div>
-<div class="line"><a name="l00897"></a><span class="lineno">  897</span>&#160;      <span class="keywordtype">int</span> frame_size = <a class="code" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a149fb9c7fa2718d719008af2dce8157f">media::mp2t::AdtsHeader::GetAdtsFrameSize</a>(</div>
-<div class="line"><a name="l00898"></a><span class="lineno">  898</span>&#160;          sample_data_.data(), kAdtsHeaderMinSize);</div>
-<div class="line"><a name="l00899"></a><span class="lineno">  899</span>&#160;      media::mp2t::AdtsHeader adts_header;</div>
+<div class="line"><a name="l00897"></a><span class="lineno">  897</span>&#160;      <span class="keywordtype">int</span> frame_size = <a class="code" href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a149fb9c7fa2718d719008af2dce8157f">mp2t::AdtsHeader::GetAdtsFrameSize</a>(sample_data_.data(),</div>
+<div class="line"><a name="l00898"></a><span class="lineno">  898</span>&#160;                                                          kAdtsHeaderMinSize);</div>
+<div class="line"><a name="l00899"></a><span class="lineno">  899</span>&#160;      mp2t::AdtsHeader adts_header;</div>
 <div class="line"><a name="l00900"></a><span class="lineno">  900</span>&#160;      <span class="keyword">const</span> uint8_t* frame_ptr = sample_data_.data();</div>
 <div class="line"><a name="l00901"></a><span class="lineno">  901</span>&#160;      <span class="keywordflow">if</span> (!adts_header.Parse(frame_ptr, frame_size)) {</div>
 <div class="line"><a name="l00902"></a><span class="lineno">  902</span>&#160;        LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Could not parse ADTS header&quot;</span>;</div>
@@ -997,7 +997,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00908"></a><span class="lineno">  908</span>&#160;                              frame_size - header_size);</div>
 <div class="line"><a name="l00909"></a><span class="lineno">  909</span>&#160;      <span class="keywordflow">if</span> (!is_initialized_) {</div>
 <div class="line"><a name="l00910"></a><span class="lineno">  910</span>&#160;        <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; stream_infos_.size(); i++) {</div>
-<div class="line"><a name="l00911"></a><span class="lineno">  911</span>&#160;          <span class="keywordflow">if</span> (stream_infos_[i]-&gt;stream_type() == media::kStreamAudio &amp;&amp;</div>
+<div class="line"><a name="l00911"></a><span class="lineno">  911</span>&#160;          <span class="keywordflow">if</span> (stream_infos_[i]-&gt;stream_type() == kStreamAudio &amp;&amp;</div>
 <div class="line"><a name="l00912"></a><span class="lineno">  912</span>&#160;              stream_infos_[i]-&gt;codec_string().empty()) {</div>
 <div class="line"><a name="l00913"></a><span class="lineno">  913</span>&#160;            AudioStreamInfo* audio_stream_info =</div>
 <div class="line"><a name="l00914"></a><span class="lineno">  914</span>&#160;                <span class="keyword">reinterpret_cast&lt;</span>AudioStreamInfo*<span class="keyword">&gt;</span>(stream_infos_[i].get());</div>
@@ -1018,7 +1018,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00929"></a><span class="lineno">  929</span>&#160;            } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00930"></a><span class="lineno">  930</span>&#160;              <span class="comment">// Set AudioStreamInfo fields using information from the</span></div>
 <div class="line"><a name="l00931"></a><span class="lineno">  931</span>&#160;              <span class="comment">// AACAudioSpecificConfig record.</span></div>
-<div class="line"><a name="l00932"></a><span class="lineno">  932</span>&#160;              mp4::AACAudioSpecificConfig aac_config;</div>
+<div class="line"><a name="l00932"></a><span class="lineno">  932</span>&#160;              AACAudioSpecificConfig aac_config;</div>
 <div class="line"><a name="l00933"></a><span class="lineno">  933</span>&#160;              <span class="keywordflow">if</span> (!aac_config.Parse(stream_infos_[i]-&gt;extra_data())) {</div>
 <div class="line"><a name="l00934"></a><span class="lineno">  934</span>&#160;                LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Could not parse AACAudioSpecificconfig&quot;</span>;</div>
 <div class="line"><a name="l00935"></a><span class="lineno">  935</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -1264,7 +1264,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu May 26 2016 00:03:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri May 27 2016 23:48:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

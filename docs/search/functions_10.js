@@ -12,7 +12,7 @@ var searchData=
   ['set_5fclock',['set_clock',['../df/d46/classshaka_1_1media_1_1Muxer.html#a3cc7feaee9a2c3a7d0569cb9c67c8c68',1,'shaka::media::Muxer']]],
   ['set_5fdts',['set_dts',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html#a9917d625989f0eaac93fec12fec8dca0',1,'shaka::media::mp2t::PesPacket']]],
   ['set_5fkey_5ffetcher',['set_key_fetcher',['../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#afc5154b2994b5fe1f8f0c494bbd2bcdd',1,'shaka::media::WidevineKeySource']]],
-  ['set_5fnalu_5flength_5fsize',['set_nalu_length_size',['../d1/dc2/classshaka_1_1media_1_1DecoderConfiguration.html#a0d6d390999983c7d335c22ecbe6bff9b',1,'shaka::media::DecoderConfiguration']]],
+  ['set_5fnalu_5flength_5fsize',['set_nalu_length_size',['../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#ab0c889c2382b6f41ad1993c136b03d07',1,'shaka::media::DecoderConfigurationRecord']]],
   ['set_5fpts',['set_pts',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html#a02ffa1c0ad370f047e6f09b6bbc8b3b8',1,'shaka::media::mp2t::PesPacket']]],
   ['set_5fsigner',['set_signer',['../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#abdff0d3cc5f59b744c68b11b0c1f6272',1,'shaka::media::WidevineKeySource']]],
   ['set_5fstream_5fid',['set_stream_id',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html#ad4be259c146b57f61f41638970839fc4',1,'shaka::media::mp2t::PesPacket']]],

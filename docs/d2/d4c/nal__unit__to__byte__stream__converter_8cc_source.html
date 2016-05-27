@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.6"/>
-<title>DASH Media Packaging SDK: media/filters/nal_unit_to_byte_stream_converter.cc Source File</title>
+<title>DASH Media Packaging SDK: media/codecs/nal_unit_to_byte_stream_converter.cc Source File</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -79,7 +79,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_5eb2e460866db0ed29e32d64402e5c22.html">filters</a></li>  </ul>
+<li class="navelem"><a class="el" href="../../dir_39dc0668bd5a501998f94e8b4e546c71.html">media</a></li><li class="navelem"><a class="el" href="../../dir_0494b8c96e3190a776d2b97ade9c8ddf.html">codecs</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
@@ -93,7 +93,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;<span class="comment">// license that can be found in the LICENSE file or at</span></div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="comment">// https://developers.google.com/open-source/licenses/bsd</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/nal_unit_to_byte_stream_converter.h&quot;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/nal_unit_to_byte_stream_converter.h&quot;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;list&gt;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
@@ -102,8 +102,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/buffer_reader.h&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/buffer_writer.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/macros.h&quot;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/avc_decoder_configuration.h&quot;</span></div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/filters/nalu_reader.h&quot;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/avc_decoder_configuration_record.h&quot;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/nalu_reader.h&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">namespace </span>media {</div>
@@ -188,25 +188,25 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  }</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <a class="code" href="../../da/db1/classshaka_1_1media_1_1AVCDecoderConfiguration.html">AVCDecoderConfiguration</a> decoder_config;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keywordflow">if</span> (!decoder_config.<a class="code" href="../../d1/dc2/classshaka_1_1media_1_1DecoderConfiguration.html#a2d4f7d479e1aeaaec9b06b77649bf79f">Parse</a>(std::vector&lt;uint8_t&gt;(</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <a class="code" href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html">AVCDecoderConfigurationRecord</a> decoder_config;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="keywordflow">if</span> (!decoder_config.<a class="code" href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#ab05a1971c60e510b7bc0b5b578dfb04b">Parse</a>(std::vector&lt;uint8_t&gt;(</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;          decoder_configuration_data,</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;          decoder_configuration_data + decoder_configuration_data_size))) {</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  }</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordflow">if</span> (decoder_config.<a class="code" href="../../d1/dc2/classshaka_1_1media_1_1DecoderConfiguration.html#a9dc63eb017f63951a678e5ea3bd56450">nalu_count</a>() &lt; 2) {</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordflow">if</span> (decoder_config.<a class="code" href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#aaedb464ac806615154dcecafe8314439">nalu_count</a>() &lt; 2) {</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot find SPS or PPS.&quot;</span>;</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  }</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  nalu_length_size_ = decoder_config.<a class="code" href="../../d1/dc2/classshaka_1_1media_1_1DecoderConfiguration.html#a3922486da206ad27f3a1086f833fc6a3">nalu_length_size</a>();</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  nalu_length_size_ = decoder_config.<a class="code" href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#aa3cae17e24d155caa3004ffa52d09d6b">nalu_length_size</a>();</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a> buffer_writer(decoder_configuration_data_size);</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="keywordtype">bool</span> found_sps = <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  <span class="keywordtype">bool</span> found_pps = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; decoder_config.<a class="code" href="../../d1/dc2/classshaka_1_1media_1_1DecoderConfiguration.html#a9dc63eb017f63951a678e5ea3bd56450">nalu_count</a>(); ++i) {</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu = decoder_config.<a class="code" href="../../d1/dc2/classshaka_1_1media_1_1DecoderConfiguration.html#a887454519c30f1e4f744282497fd89ba">nalu</a>(i);</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; decoder_config.<a class="code" href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#aaedb464ac806615154dcecafe8314439">nalu_count</a>(); ++i) {</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu = decoder_config.<a class="code" href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#a099efd795f849667ceb69636b1b50820">nalu</a>(i);</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;    <span class="keywordflow">if</span> (nalu.<a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a86143bb8a31825f06668e97bff66ce2c">type</a>() == Nalu::H264NaluType::H264_SPS) {</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;      buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;      AppendNalu(nalu, nalu_length_size_, escape_data, &amp;buffer_writer);</div>
@@ -276,22 +276,22 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;</div>
 <div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1DecoderConfiguration_html_a2d4f7d479e1aeaaec9b06b77649bf79f"><div class="ttname"><a href="../../d1/dc2/classshaka_1_1media_1_1DecoderConfiguration.html#a2d4f7d479e1aeaaec9b06b77649bf79f">shaka::media::DecoderConfiguration::Parse</a></div><div class="ttdeci">bool Parse(const std::vector&lt; uint8_t &gt; &amp;data)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d09/decoder__configuration_8h_source.html#l00027">decoder_configuration.h:27</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1NaluReader_html"><div class="ttname"><a href="../../db/d86/classshaka_1_1media_1_1NaluReader.html">shaka::media::NaluReader</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00143">nalu_reader.h:143</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1NalUnitToByteStreamConverter_html_acde0ff823ed23fd3d8b8704cf243f3d5"><div class="ttname"><a href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#acde0ff823ed23fd3d8b8704cf243f3d5">shaka::media::NalUnitToByteStreamConverter::ConvertUnitToByteStream</a></div><div class="ttdeci">virtual bool ConvertUnitToByteStream(const uint8_t *sample, size_t sample_size, bool is_key_frame, std::vector&lt; uint8_t &gt; *output)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00142">nal_unit_to_byte_stream_converter.cc:142</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1NalUnitToByteStreamConverter_html_aa84e36b83b1caa2b1f726c4d3cff3d6d"><div class="ttname"><a href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html#aa84e36b83b1caa2b1f726c4d3cff3d6d">shaka::media::NalUnitToByteStreamConverter::Initialize</a></div><div class="ttdeci">virtual bool Initialize(const uint8_t *decoder_configuration_data, size_t decoder_configuration_data_size, bool escape_data)</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4c/nal__unit__to__byte__stream__converter_8cc_source.html#l00092">nal_unit_to_byte_stream_converter.cc:92</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Nalu_html_a86143bb8a31825f06668e97bff66ce2c"><div class="ttname"><a href="../../d6/dff/classshaka_1_1media_1_1Nalu.html#a86143bb8a31825f06668e97bff66ce2c">shaka::media::Nalu::type</a></div><div class="ttdeci">int type() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00112">nalu_reader.h:112</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1BufferWriter_html"><div class="ttname"><a href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">shaka::media::BufferWriter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/dd2/buffer__writer_8h_source.html#l00022">buffer_writer.h:22</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1DecoderConfiguration_html_a3922486da206ad27f3a1086f833fc6a3"><div class="ttname"><a href="../../d1/dc2/classshaka_1_1media_1_1DecoderConfiguration.html#a3922486da206ad27f3a1086f833fc6a3">shaka::media::DecoderConfiguration::nalu_length_size</a></div><div class="ttdeci">uint8_t nalu_length_size() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d09/decoder__configuration_8h_source.html#l00037">decoder_configuration.h:37</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1DecoderConfigurationRecord_html_aa3cae17e24d155caa3004ffa52d09d6b"><div class="ttname"><a href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#aa3cae17e24d155caa3004ffa52d09d6b">shaka::media::DecoderConfigurationRecord::nalu_length_size</a></div><div class="ttdeci">uint8_t nalu_length_size() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/db2/decoder__configuration__record_8h_source.html#l00037">decoder_configuration_record.h:37</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1DecoderConfigurationRecord_html_ab05a1971c60e510b7bc0b5b578dfb04b"><div class="ttname"><a href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#ab05a1971c60e510b7bc0b5b578dfb04b">shaka::media::DecoderConfigurationRecord::Parse</a></div><div class="ttdeci">bool Parse(const std::vector&lt; uint8_t &gt; &amp;data)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/db2/decoder__configuration__record_8h_source.html#l00027">decoder_configuration_record.h:27</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1NaluReader_html_ae051f1f92d84acfcd4cc159d972d647a"><div class="ttname"><a href="../../db/d86/classshaka_1_1media_1_1NaluReader.html#ae051f1f92d84acfcd4cc159d972d647a">shaka::media::NaluReader::Advance</a></div><div class="ttdeci">Result Advance(Nalu *nalu)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/df5/nalu__reader_8cc_source.html#l00181">nalu_reader.cc:181</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Nalu_html"><div class="ttname"><a href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">shaka::media::Nalu</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00026">nalu_reader.h:26</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1DecoderConfiguration_html_a9dc63eb017f63951a678e5ea3bd56450"><div class="ttname"><a href="../../d1/dc2/classshaka_1_1media_1_1DecoderConfiguration.html#a9dc63eb017f63951a678e5ea3bd56450">shaka::media::DecoderConfiguration::nalu_count</a></div><div class="ttdeci">size_t nalu_count() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d09/decoder__configuration_8h_source.html#l00040">decoder_configuration.h:40</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1DecoderConfiguration_html_a887454519c30f1e4f744282497fd89ba"><div class="ttname"><a href="../../d1/dc2/classshaka_1_1media_1_1DecoderConfiguration.html#a887454519c30f1e4f744282497fd89ba">shaka::media::DecoderConfiguration::nalu</a></div><div class="ttdeci">const Nalu &amp; nalu(size_t i) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d09/decoder__configuration_8h_source.html#l00044">decoder_configuration.h:44</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1AVCDecoderConfiguration_html"><div class="ttname"><a href="../../da/db1/classshaka_1_1media_1_1AVCDecoderConfiguration.html">shaka::media::AVCDecoderConfiguration</a></div><div class="ttdoc">Class for parsing AVC decoder configuration. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d98/avc__decoder__configuration_8h_source.html#l00021">avc_decoder_configuration.h:21</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1AVCDecoderConfigurationRecord_html"><div class="ttname"><a href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html">shaka::media::AVCDecoderConfigurationRecord</a></div><div class="ttdoc">Class for parsing AVC decoder configuration record. </div><div class="ttdef"><b>Definition:</b> <a href="../../df/dc7/avc__decoder__configuration__record_8h_source.html#l00021">avc_decoder_configuration_record.h:21</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1DecoderConfigurationRecord_html_a099efd795f849667ceb69636b1b50820"><div class="ttname"><a href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#a099efd795f849667ceb69636b1b50820">shaka::media::DecoderConfigurationRecord::nalu</a></div><div class="ttdeci">const Nalu &amp; nalu(size_t i) const </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/db2/decoder__configuration__record_8h_source.html#l00044">decoder_configuration_record.h:44</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1DecoderConfigurationRecord_html_aaedb464ac806615154dcecafe8314439"><div class="ttname"><a href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#aaedb464ac806615154dcecafe8314439">shaka::media::DecoderConfigurationRecord::nalu_count</a></div><div class="ttdeci">size_t nalu_count() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/db2/decoder__configuration__record_8h_source.html#l00040">decoder_configuration_record.h:40</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu May 26 2016 00:03:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri May 27 2016 23:48:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

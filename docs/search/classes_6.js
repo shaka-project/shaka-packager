@@ -10,7 +10,7 @@ var searchData=
   ['h264seirecoverypoint',['H264SEIRecoveryPoint',['../df/de2/structshaka_1_1media_1_1H264SEIRecoveryPoint.html',1,'shaka::media']]],
   ['h264sliceheader',['H264SliceHeader',['../d2/d59/structshaka_1_1media_1_1H264SliceHeader.html',1,'shaka::media']]],
   ['h264sps',['H264Sps',['../d1/d0a/structshaka_1_1media_1_1H264Sps.html',1,'shaka::media']]],
-  ['h264videosliceheaderparser',['H264VideoSliceHeaderParser',['../d3/d9d/classshaka_1_1media_1_1mp4_1_1H264VideoSliceHeaderParser.html',1,'shaka::media::mp4']]],
+  ['h264videosliceheaderparser',['H264VideoSliceHeaderParser',['../da/df0/classshaka_1_1media_1_1H264VideoSliceHeaderParser.html',1,'shaka::media']]],
   ['h264weightingfactors',['H264WeightingFactors',['../d4/d4c/structshaka_1_1media_1_1H264WeightingFactors.html',1,'shaka::media']]],
   ['h265bytetounitstreamconverter',['H265ByteToUnitStreamConverter',['../db/df8/classshaka_1_1media_1_1H265ByteToUnitStreamConverter.html',1,'shaka::media']]],
   ['h265parser',['H265Parser',['../de/dc2/classshaka_1_1media_1_1H265Parser.html',1,'shaka::media']]],
@@ -19,12 +19,12 @@ var searchData=
   ['h265referencepictureset',['H265ReferencePictureSet',['../d5/dad/structshaka_1_1media_1_1H265ReferencePictureSet.html',1,'shaka::media']]],
   ['h265sliceheader',['H265SliceHeader',['../db/d05/structshaka_1_1media_1_1H265SliceHeader.html',1,'shaka::media']]],
   ['h265sps',['H265Sps',['../d4/dfd/structshaka_1_1media_1_1H265Sps.html',1,'shaka::media']]],
-  ['h265videosliceheaderparser',['H265VideoSliceHeaderParser',['../db/dbf/classshaka_1_1media_1_1mp4_1_1H265VideoSliceHeaderParser.html',1,'shaka::media::mp4']]],
+  ['h265videosliceheaderparser',['H265VideoSliceHeaderParser',['../d1/d79/classshaka_1_1media_1_1H265VideoSliceHeaderParser.html',1,'shaka::media']]],
   ['h265vuiparameters',['H265VuiParameters',['../d9/d67/structshaka_1_1media_1_1H265VuiParameters.html',1,'shaka::media']]],
   ['h26xbitreader',['H26xBitReader',['../de/db4/classshaka_1_1media_1_1H26xBitReader.html',1,'shaka::media']]],
   ['h26xbytetounitstreamconverter',['H26xByteToUnitStreamConverter',['../de/dea/classshaka_1_1media_1_1H26xByteToUnitStreamConverter.html',1,'shaka::media']]],
   ['handlerreference',['HandlerReference',['../da/dbb/structshaka_1_1media_1_1mp4_1_1HandlerReference.html',1,'shaka::media::mp4']]],
-  ['hevcdecoderconfiguration',['HEVCDecoderConfiguration',['../d8/d37/classshaka_1_1media_1_1HEVCDecoderConfiguration.html',1,'shaka::media']]],
+  ['hevcdecoderconfigurationrecord',['HEVCDecoderConfigurationRecord',['../d4/d8a/classshaka_1_1media_1_1HEVCDecoderConfigurationRecord.html',1,'shaka::media']]],
   ['hlsnotifymuxerlistener',['HlsNotifyMuxerListener',['../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html',1,'shaka::media']]],
   ['httpkeyfetcher',['HttpKeyFetcher',['../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html',1,'shaka::media']]]
 ];
