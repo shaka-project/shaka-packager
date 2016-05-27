@@ -35,9 +35,9 @@ class BoxReader : public BufferReader {
   ///         function may return NULL if an intact, complete box is not
   ///         available in the buffer. For MDAT box only, a BoxReader object is
   ///         returned as long as the box header is available.
-  static BoxReader* ReadTopLevelBox(const uint8_t* buf,
-                                    const size_t buf_size,
-                                    bool* err);
+  static BoxReader* ReadBox(const uint8_t* buf,
+                            const size_t buf_size,
+                            bool* err);
 
   /// Read the box header from the current buffer.
   /// @param buf is not retained.
@@ -48,17 +48,11 @@ class BoxReader : public BufferReader {
   ///             reading the box.
   /// @return true if there is enough data to read the header and the header is
   ///         sane, which does not imply that the entire box is in the buffer.
-  static bool StartTopLevelBox(const uint8_t* buf,
-                               const size_t buf_size,
-                               FourCC* type,
-                               uint64_t* box_size,
-                               bool* err) WARN_UNUSED_RESULT;
-
-  /// @return true if @a type is recognized to be the fourcc of a top-level box,
-  ///         false otherwise. This returns true for some boxes which we do not
-  ///         parse.
-  /// This method is helpful for debugging misaligned appends.
-  static bool IsValidTopLevelBox(const FourCC& type);
+  static bool StartBox(const uint8_t* buf,
+                       const size_t buf_size,
+                       FourCC* type,
+                       uint64_t* box_size,
+                       bool* err) WARN_UNUSED_RESULT;
 
   /// Scan through all boxes within the current box, starting at the current
   /// buffer position. Must be called before any of the @b *Child functions

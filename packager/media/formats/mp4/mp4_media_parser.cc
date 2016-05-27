@@ -192,10 +192,9 @@ bool MP4MediaParser::LoadMoov(const std::string& file_path) {
     uint64_t box_size;
     FourCC box_type;
     bool err;
-    if (!BoxReader::StartTopLevelBox(&buffer[0], kBoxHeaderReadSize, &box_type,
-                                     &box_size, &err)) {
-      LOG(ERROR) << "Could not start top level box from file '" << file_path
-                 << "'";
+    if (!BoxReader::StartBox(&buffer[0], kBoxHeaderReadSize, &box_type,
+                             &box_size, &err)) {
+      LOG(ERROR) << "Could not start box from file '" << file_path << "'";
       return false;
     }
     if (box_type == FOURCC_mdat) {
@@ -245,7 +244,7 @@ bool MP4MediaParser::ParseBox(bool* err) {
   if (!size)
     return false;
 
-  scoped_ptr<BoxReader> reader(BoxReader::ReadTopLevelBox(buf, size, err));
+  scoped_ptr<BoxReader> reader(BoxReader::ReadBox(buf, size, err));
   if (reader.get() == NULL)
     return false;
 
@@ -749,7 +748,7 @@ bool MP4MediaParser::ReadAndDiscardMDATsUntil(const int64_t offset) {
 
     FourCC type;
     uint64_t box_sz;
-    if (!BoxReader::StartTopLevelBox(buf, size, &type, &box_sz, &err))
+    if (!BoxReader::StartBox(buf, size, &type, &box_sz, &err))
       break;
 
     mdat_tail_ += box_sz;

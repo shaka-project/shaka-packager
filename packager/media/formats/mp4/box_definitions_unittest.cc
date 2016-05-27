@@ -49,7 +49,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
     buffer_->AppendInt(static_cast<uint32_t>(FOURCC_skip));
     buffer_->AppendBuffer(buffer);
     bool err = false;
-    return BoxReader::ReadTopLevelBox(buffer_->Buffer(), buffer_->Size(), &err);
+    return BoxReader::ReadBox(buffer_->Buffer(), buffer_->Size(), &err);
   }
 
   bool ReadBack(Box* box) {
