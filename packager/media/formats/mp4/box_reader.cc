@@ -34,9 +34,9 @@ BoxReader::~BoxReader() {
 }
 
 // static
-BoxReader* BoxReader::ReadTopLevelBox(const uint8_t* buf,
-                                      const size_t buf_size,
-                                      bool* err) {
+BoxReader* BoxReader::ReadBox(const uint8_t* buf,
+                              const size_t buf_size,
+                              bool* err) {
   scoped_ptr<BoxReader> reader(new BoxReader(buf, buf_size));
   if (!reader->ReadHeader(err))
     return NULL;
@@ -45,11 +45,6 @@ BoxReader* BoxReader::ReadTopLevelBox(const uint8_t* buf,
   if (reader->type() == FOURCC_MDAT)
     return reader.release();
 
-  if (!IsValidTopLevelBox(reader->type())) {
-    *err = true;
-    return NULL;
-  }
-
   if (reader->size() <= buf_size)
     return reader.release();
 
@@ -57,47 +52,17 @@ BoxReader* BoxReader::ReadTopLevelBox(const uint8_t* buf,
 }
 
 // static
-bool BoxReader::StartTopLevelBox(const uint8_t* buf,
-                                 const size_t buf_size,
-                                 FourCC* type,
-                                 uint64_t* box_size,
-                                 bool* err) {
+bool BoxReader::StartBox(const uint8_t* buf,
+                         const size_t buf_size,
+                         FourCC* type,
+                         uint64_t* box_size,
+                         bool* err) {
   BoxReader reader(buf, buf_size);
   if (!reader.ReadHeader(err))
     return false;
-  if (!IsValidTopLevelBox(reader.type())) {
-    *err = true;
-    return false;
-  }
   *type = reader.type();
   *box_size = reader.size();
   return true;
-}
-
-// static
-bool BoxReader::IsValidTopLevelBox(const FourCC& type) {
-  switch (type) {
-    case FOURCC_FTYP:
-    case FOURCC_PDIN:
-    case FOURCC_BLOC:
-    case FOURCC_MOOV:
-    case FOURCC_MOOF:
-    case FOURCC_MFRA:
-    case FOURCC_MDAT:
-    case FOURCC_FREE:
-    case FOURCC_SKIP:
-    case FOURCC_META:
-    case FOURCC_MECO:
-    case FOURCC_STYP:
-    case FOURCC_SIDX:
-    case FOURCC_SSIX:
-    case FOURCC_PRFT:
-      return true;
-    default:
-      // Hex is used to show nonprintable characters and aid in debugging
-      LOG(ERROR) << "Unrecognized top-level box type 0x" << std::hex << type;
-      return false;
-  }
 }
 
 bool BoxReader::ScanChildren() {
