@@ -103,11 +103,10 @@ class PackagerAppTest(unittest.TestCase):
   def testPackageAvcTs(self):
     # Currently we only support live packaging for ts.
     self.packager.Package(
-        self._GetStreams(
-            ['audio', 'video'],
-            output_format='ts',
-            live=True,
-            test_files=['bear-640x360.ts']),
+        self._GetStreams(['audio', 'video'],
+                         output_format='ts',
+                         live=True,
+                         test_files=['bear-640x360.ts']),
         self._GetFlags(live=True))
     self._DiffLiveGold(self.output[0],
                        'bear-640x360-a-golden',
@@ -129,10 +128,9 @@ class PackagerAppTest(unittest.TestCase):
 
   def testPackageVp9Webm(self):
     self.packager.Package(
-        self._GetStreams(
-            ['audio', 'video'],
-            output_format='webm',
-            test_files=['bear-320x240-vp9-opus.webm']),
+        self._GetStreams(['audio', 'video'],
+                         output_format='webm',
+                         test_files=['bear-320x240-vp9-opus.webm']),
         self._GetFlags())
     self._DiffGold(self.output[0], 'bear-320x240-opus-golden.webm')
     self._DiffGold(self.output[1], 'bear-320x240-vp9-golden.webm')
@@ -219,15 +217,17 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffGold(self.mpd_output, 'bear-640x360-vp8-cenc-golden.mpd')
     self._VerifyDecryption(self.output[0], 'bear-640x360-vp8-golden.mp4')
 
-  def testPackageVp9Mp4WithEncryption(self):
+  def testPackageOpusVp9Mp4WithEncryption(self):
     self.packager.Package(
-        self._GetStreams(['video'],
+        self._GetStreams(['audio', 'video'],
                          output_format='mp4',
                          test_files=['bear-320x240-vp9-opus.webm']),
         self._GetFlags(encryption=True))
-    self._DiffGold(self.output[0], 'bear-320x240-vp9-cenc-golden.mp4')
-    self._DiffGold(self.mpd_output, 'bear-320x240-vp9-cenc-golden.mpd')
-    self._VerifyDecryption(self.output[0], 'bear-320x240-vp9-golden.mp4')
+    self._DiffGold(self.output[0], 'bear-320x240-opus-cenc-golden.mp4')
+    self._DiffGold(self.output[1], 'bear-320x240-vp9-cenc-golden.mp4')
+    self._DiffGold(self.mpd_output, 'bear-320x240-opus-vp9-cenc-golden.mpd')
+    self._VerifyDecryption(self.output[0], 'bear-320x240-opus-golden.mp4')
+    self._VerifyDecryption(self.output[1], 'bear-320x240-vp9-golden.mp4')
 
   def testPackageWithEncryptionAndRandomIv(self):
     self.packager.Package(
@@ -280,8 +280,7 @@ class PackagerAppTest(unittest.TestCase):
 
   def testPackageWithLiveProfile(self):
     self.packager.Package(
-        self._GetStreams(
-            ['audio', 'video'], live=True),
+        self._GetStreams(['audio', 'video'], live=True),
         self._GetFlags(live=True))
     self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-golden')
     self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-golden')
@@ -289,8 +288,7 @@ class PackagerAppTest(unittest.TestCase):
 
   def testPackageWithLiveProfileAndEncryption(self):
     self.packager.Package(
-        self._GetStreams(
-            ['audio', 'video'], live=True),
+        self._GetStreams(['audio', 'video'], live=True),
         self._GetFlags(encryption=True, live=True))
     self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-cenc-golden')
     self._DiffLiveGold(self.output[1], 'bear-640x360-v-live-cenc-golden')
@@ -299,8 +297,7 @@ class PackagerAppTest(unittest.TestCase):
 
   def testPackageWithLiveProfileAndEncryptionAndDashIfIop(self):
     self.packager.Package(
-        self._GetStreams(
-            ['audio', 'video'], live=True),
+        self._GetStreams(['audio', 'video'], live=True),
         self._GetFlags(encryption=True,
                        live=True, dash_if_iop=True))
     self._DiffLiveGold(self.output[0], 'bear-640x360-a-live-cenc-golden')
@@ -310,11 +307,10 @@ class PackagerAppTest(unittest.TestCase):
 
   def testPackageWithLiveProfileAndEncryptionAndDashIfIopWithMultFiles(self):
     self.packager.Package(
-        self._GetStreams(
-            ['audio', 'video'],
-            live=True,
-            test_files=['bear-1280x720.mp4', 'bear-640x360.mp4',
-                        'bear-320x180.mp4']),
+        self._GetStreams(['audio', 'video'],
+                         live=True,
+                         test_files=['bear-1280x720.mp4', 'bear-640x360.mp4',
+                                     'bear-320x180.mp4']),
         self._GetFlags(encryption=True,
                        live=True, dash_if_iop=True))
     self._DiffLiveGold(self.output[2], 'bear-640x360-a-live-cenc-golden')
@@ -325,8 +321,7 @@ class PackagerAppTest(unittest.TestCase):
 
   def testPackageWithLiveProfileAndKeyRotation(self):
     self.packager.Package(
-        self._GetStreams(
-            ['audio', 'video'], live=True),
+        self._GetStreams(['audio', 'video'], live=True),
         self._GetFlags(encryption=True,
                        key_rotation=True,
                        live=True))
@@ -339,8 +334,7 @@ class PackagerAppTest(unittest.TestCase):
 
   def testPackageWithLiveProfileAndKeyRotationAndDashIfIop(self):
     self.packager.Package(
-        self._GetStreams(
-            ['audio', 'video'], live=True),
+        self._GetStreams(['audio', 'video'], live=True),
         self._GetFlags(encryption=True,
                        key_rotation=True,
                        live=True,
@@ -492,11 +486,11 @@ class PackagerAppTest(unittest.TestCase):
     else:
       match = filecmp.cmp(test_output, golden_file)
       if not match:
-        p = subprocess.Popen(
-            ['git', '--no-pager', 'diff', '--color=auto', '--no-ext-diff',
-             '--no-index', golden_file, test_output],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
+        p = subprocess.Popen(['git', '--no-pager', 'diff', '--color=auto',
+                              '--no-ext-diff', '--no-index', golden_file,
+                              test_output],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
         output, error = p.communicate()
         self.fail(output + error)
 

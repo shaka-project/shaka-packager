@@ -99,11 +99,11 @@ std::string AudioStreamInfo::ToString() const {
       StreamInfo::ToString().c_str(), AudioCodecToString(codec_).c_str(),
       sample_bits_, num_channels_, sampling_frequency_, language().c_str());
   if (seek_preroll_ns_ != 0) {
-    base::StringAppendF(&str, " seek_preroll_ns: %" PRIu64 "d\n",
+    base::StringAppendF(&str, " seek_preroll_ns: %" PRIu64 "\n",
                         seek_preroll_ns_);
   }
   if (codec_delay_ns_ != 0) {
-    base::StringAppendF(&str, " codec_delay_ns: %" PRIu64 "d\n",
+    base::StringAppendF(&str, " codec_delay_ns: %" PRIu64 "\n",
                         codec_delay_ns_);
   }
   return str;

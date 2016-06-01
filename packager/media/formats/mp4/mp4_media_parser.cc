@@ -61,6 +61,8 @@ VideoCodec FourCCToVideoCodec(FourCC fourcc) {
 
 AudioCodec FourCCToAudioCodec(FourCC fourcc) {
   switch(fourcc) {
+    case FOURCC_Opus:
+      return kCodecOpus;
     case FOURCC_dtsc:
       return kCodecDTSC;
     case FOURCC_dtsh:
