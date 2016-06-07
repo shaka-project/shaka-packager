@@ -22,6 +22,7 @@ namespace mp2t {
 namespace {
 
 // Values for version. Only 0 and 1 are necessary for the implementation.
+const int kVersion0 = 0;
 const int kVersion1 = 1;
 
 // Values for current_next_indicator.
@@ -328,6 +329,7 @@ H264ProgramMapTableWriter::H264ProgramMapTableWriter(
 H264ProgramMapTableWriter::~H264ProgramMapTableWriter() {}
 
 bool H264ProgramMapTableWriter::ClearLeadSegmentPmt(BufferWriter* writer) {
+  has_clear_lead_ = true;
   WritePmtToBuffer(kPmtH264, arraysize(kPmtH264), continuity_counter_, writer);
   WritePmtWithParameters(
       kStreamTypeEncryptedH264, kVersion1, kNext,
@@ -339,8 +341,8 @@ bool H264ProgramMapTableWriter::ClearLeadSegmentPmt(BufferWriter* writer) {
 
 bool H264ProgramMapTableWriter::EncryptedSegmentPmt(BufferWriter* writer) {
   WritePmtWithParameters(
-      kStreamTypeEncryptedH264, kVersion1, kCurrent,
-      kPrivateDataIndicatorDescriptorEncryptedH264,
+      kStreamTypeEncryptedH264, has_clear_lead_ ? kVersion1 : kVersion0,
+      kCurrent, kPrivateDataIndicatorDescriptorEncryptedH264,
       arraysize(kPrivateDataIndicatorDescriptorEncryptedH264),
       continuity_counter_, writer);
   return true;
@@ -365,6 +367,7 @@ AacProgramMapTableWriter::~AacProgramMapTableWriter() {}
 // TODO(rkuroiwa): Cache the PMT for encrypted segments, it doesn't need to
 // be recalculated.
 bool AacProgramMapTableWriter::ClearLeadSegmentPmt(BufferWriter* writer) {
+  has_clear_lead_ = true;
   WritePmtToBuffer(kPmtAac, arraysize(kPmtAac), continuity_counter_, writer);
   // Version 1 and next.
   return EncryptedSegmentPmtWithParameters(kVersion1, kNext, writer);
@@ -372,7 +375,8 @@ bool AacProgramMapTableWriter::ClearLeadSegmentPmt(BufferWriter* writer) {
 
 bool AacProgramMapTableWriter::EncryptedSegmentPmt(BufferWriter* writer) {
   // Version 1 and current.
-  return EncryptedSegmentPmtWithParameters(kVersion1, kCurrent, writer);
+  return EncryptedSegmentPmtWithParameters(
+      has_clear_lead_ ? kVersion1 : kVersion0, kCurrent, writer);
 }
 
 bool AacProgramMapTableWriter::ClearSegmentPmt(BufferWriter* writer) {

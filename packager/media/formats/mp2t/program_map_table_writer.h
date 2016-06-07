@@ -63,6 +63,9 @@ class H264ProgramMapTableWriter : public ProgramMapTableWriter {
 
  private:
   ContinuityCounter* const continuity_counter_;
+  // Set to true if ClearLeadSegmentPmt() has been called. This determines the
+  // version number set in EncryptedSegmentPmt().
+  bool has_clear_lead_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(H264ProgramMapTableWriter);
 };
@@ -89,6 +92,9 @@ class AacProgramMapTableWriter : public ProgramMapTableWriter {
 
   const std::vector<uint8_t> aac_audio_specific_config_;
   ContinuityCounter* const continuity_counter_;
+  // Set to true if ClearLeadSegmentPmt() has been called. This determines the
+  // version number set in EncryptedSegmentPmt().
+  bool has_clear_lead_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(AacProgramMapTableWriter);
 };
