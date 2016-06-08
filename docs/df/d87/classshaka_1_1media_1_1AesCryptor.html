@@ -129,6 +129,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a812dfc641212f8eb877ab153de7fbb37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a96dde16f12a82a563c77f6d5522571f3"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a96dde16f12a82a563c77f6d5522571f3">iv</a> () const </td></tr>
 <tr class="separator:a96dde16f12a82a563c77f6d5522571f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a731765982d899509626b4979322db926"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a731765982d899509626b4979322db926">use_constant_iv</a> () const </td></tr>
+<tr class="separator:a731765982d899509626b4979322db926"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Various forms of crypt (Encrypt/Decrypt) calls.</div></td></tr>
 <tr><td colspan="2"><div class="groupText"><p>It is an Encrypt function for encryptor and a Decrypt function for decryptor. The text and crypt_text pointers can be the same address for in place encryption/decryption. </p>
 </div></td></tr>
@@ -389,6 +391,32 @@ AES_KEY *&#160;</td><td class="memItemRight" valign="bottom"><b>mutable_aes_key<
 
 </div>
 </div>
+<a class="anchor" id="a731765982d899509626b4979322db926"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool shaka::media::AesCryptor::use_constant_iv </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<dl class="section return"><dt>Returns</dt><dd>true if constant iv is used, false otherwise. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../d0/d42/aes__cryptor_8h_source.html#l00084">84</a> of file <a class="el" href="../../d0/d42/aes__cryptor_8h_source.html">aes_cryptor.h</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
 <li>media/base/<a class="el" href="../../d0/d42/aes__cryptor_8h_source.html">aes_cryptor.h</a></li>
 <li>media/base/<a class="el" href="../../d6/d55/aes__cryptor_8cc_source.html">aes_cryptor.cc</a></li>
@@ -396,7 +424,7 @@ AES_KEY *&#160;</td><td class="memItemRight" valign="bottom"><b>mutable_aes_key<
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jun 8 2016 17:08:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 8 2016 19:27:59 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
