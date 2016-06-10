@@ -956,6 +956,7 @@ static bool CheckMov(const uint8_t* buffer, int buffer_size) {
   RCHECK(buffer_size > 8);
 
   int offset = 0;
+  int boxes_seen = 0;
   while (offset + 8 < buffer_size) {
     int atomsize = Read32(buffer + offset);
     uint32_t atomtype = Read32(buffer + offset + 4);
@@ -975,10 +976,17 @@ static bool CheckMov(const uint8_t* buffer, int buffer_size) {
       case TAG('s','i','d','x'):
       case TAG('s','s','i','x'):
       case TAG('p','r','f','t'):
-      case TAG('b','l','o','c'):
+      case TAG('u','u','i','d'):
+        // Assumes that it is an iso-bmff file after seeing two known boxes.
+        // Note that it is correct only for our use cases as we support only
+        // a limited number of containers, and there is no other container
+        // has this behavior.
+        if (++boxes_seen >= 2)
+          return true;
         break;
       default:
-        return false;
+        // Ignore unrecognized box.
+        break;
     }
     if (atomsize == 1) {
       // Indicates that the length is the next 64bits.
@@ -992,7 +1000,7 @@ static bool CheckMov(const uint8_t* buffer, int buffer_size) {
       break;  // Indicates the last atom or length too big.
     offset += atomsize;
   }
-  return true;
+  return false;
 }
 
 enum MPEGVersion {
