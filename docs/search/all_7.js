@@ -33,8 +33,6 @@ var searchData=
   ['headpos',['HeadPos',['../d5/d33/classshaka_1_1media_1_1ProducerConsumerQueue.html#a0c5d10a81c6b9e6db8b8d6b61baf1902',1,'shaka::media::ProducerConsumerQueue']]],
   ['hevcdecoderconfigurationrecord',['HEVCDecoderConfigurationRecord',['../d4/d8a/classshaka_1_1media_1_1HEVCDecoderConfigurationRecord.html',1,'shaka::media']]],
   ['hextouuid',['HexToUUID',['../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6',1,'shaka']]],
-  ['hls_5fgroup_5fid',['hls_group_id',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a61784958b3dd961a78b6c1975fc0953d',1,'shaka::media::MuxerOptions']]],
-  ['hls_5fname',['hls_name',['../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#ada18d7bcc5c1bbfa0dfd9b64e5e83b32',1,'shaka::media::MuxerOptions']]],
   ['hlsnotifymuxerlistener',['HlsNotifyMuxerListener',['../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a7a7e0180802884f39e45bc083af1409e',1,'shaka::media::HlsNotifyMuxerListener']]],
   ['hlsnotifymuxerlistener',['HlsNotifyMuxerListener',['../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html',1,'shaka::media']]],
   ['httpkeyfetcher',['HttpKeyFetcher',['../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a02561dcbbaf66152dce3ebd466810f15',1,'shaka::media::HttpKeyFetcher::HttpKeyFetcher()'],['../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a11829a5c6e3507998c4d93c83c3069a4',1,'shaka::media::HttpKeyFetcher::HttpKeyFetcher(uint32_t timeout_in_seconds)']]],
