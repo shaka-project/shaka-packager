@@ -10,11 +10,11 @@ Current supported codecs:
 
 |      Codecs       |   ISO-BMFF   |     WebM     |   MPEG2-TS   |     WVM     |
 |:-----------------:|:------------:|:------------:|:------------:|:-----------:|
-|    H264 (AVC)     |    I / O     |      -       |       I      |      I      |
+|    H264 (AVC)     |    I / O     |      -       |     I / O    |      I      |
 |    H265 (HEVC)    |    I / O     |      -       |       I      |      -      |
 |       VP8         |    I / O     |    I / O     |       -      |      -      |
 |       VP9         |    I / O     |    I / O     |       -      |      -      |
-|       AAC         |    I / O     |      -       |       I      |      I      |
+|       AAC         |    I / O     |      -       |     I / O    |      I      |
 |  Dolby AC3/EAC3   |    I / O     |      -       |       -      |      -      |
 |       DTS         |    I / O     |      -       |       -      |      -      |
 |       Opus        |      -       |    I / O     |       -      |      -      |
@@ -263,4 +263,33 @@ packager \
 mpd_generator \
 --input "sintel_video.mp4.media_info,sintel_audio.mp4.media_info" \
 --output "sintel.mpd"
+```
+
+Output MPEG2-TS video.
+```Shell
+packager \
+ 'input=bear-1280x720.mp4,stream=video,segment_template=bear$Number$.ts,output_format=ts'
+```
+
+Output HLS playlists with MPEG2-TS video. The following outputs a Master
+Playlist as `master.m3u8`. And the Media Playlist for the video as
+`playlist.m3u8`. `--hls_base_url` specifies the prefix for the
+generated TS segments.
+```Shell
+packager \
+  'input=bear-1280x720.mp4,stream=video,segment_template=bear$Number$.ts,output_format=ts,playlist_name=playlist.m3u8' \
+  --single_segment=false \
+  --hls_master_playlist_output="master.m3u8" \
+  --hls_base_url="http://localhost:10000/"
+```
+
+For audio Media Playlists, the name and group for EXT-X-MEDIA tag must be
+specified.
+```Shell
+packager \
+  'input=input.mp4,stream=video,output_format=ts,segment_template=output$Number$.ts,playlist_name=video_playlist.m3u8' \
+  'input=input.mp4,stream=audio,output_format=ts,segment_template=output_audio$Number$.ts,playlist_name=audio_playlist.m3u8,hls_group_id=audio,hls_name=ENGLISH' \
+  --single_segment=false \
+  --hls_master_playlist_output="master_playlist.m3u8" \
+  --hls_base_url="http://localhost:10000/"
 ```
