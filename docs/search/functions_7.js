@@ -8,6 +8,6 @@ var searchData=
   ['headersize',['HeaderSize',['../d1/d2d/structshaka_1_1media_1_1mp4_1_1Box.html#a8dea1032b6875b763ec06a133933160a',1,'shaka::media::mp4::Box::HeaderSize()'],['../dd/dc1/structshaka_1_1media_1_1mp4_1_1FullBox.html#a21cc4d085f650dc18a20a4dd05cb6750',1,'shaka::media::mp4::FullBox::HeaderSize()']]],
   ['headpos',['HeadPos',['../d5/d33/classshaka_1_1media_1_1ProducerConsumerQueue.html#a0c5d10a81c6b9e6db8b8d6b61baf1902',1,'shaka::media::ProducerConsumerQueue']]],
   ['hextouuid',['HexToUUID',['../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6',1,'shaka']]],
-  ['hlsnotifymuxerlistener',['HlsNotifyMuxerListener',['../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#ae0d08dbb3824f4199c07ff27784b4bae',1,'shaka::media::HlsNotifyMuxerListener']]],
+  ['hlsnotifymuxerlistener',['HlsNotifyMuxerListener',['../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a7a7e0180802884f39e45bc083af1409e',1,'shaka::media::HlsNotifyMuxerListener']]],
   ['httpkeyfetcher',['HttpKeyFetcher',['../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a02561dcbbaf66152dce3ebd466810f15',1,'shaka::media::HttpKeyFetcher::HttpKeyFetcher()'],['../d7/de0/classshaka_1_1media_1_1HttpKeyFetcher.html#a11829a5c6e3507998c4d93c83c3069a4',1,'shaka::media::HttpKeyFetcher::HttpKeyFetcher(uint32_t timeout_in_seconds)']]]
 ];
