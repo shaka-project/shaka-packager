@@ -285,6 +285,16 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
           EncryptBytes(data + subsample.clear_bytes, subsample.cipher_bytes);
         data += frame.frame_size;
       }
+      // Add subsample for the superframe index if exists.
+      if (is_superframe) {
+        size_t index_size = sample->data() + sample->data_size() - data;
+        DCHECK_LE(index_size, 2 + vpx_frames.size() * 4);
+        DCHECK_GE(index_size, 2 + vpx_frames.size() * 1);
+        SubsampleEntry subsample;
+        subsample.clear_bytes = index_size;
+        subsample.cipher_bytes = 0;
+        sample_encryption_entry.subsamples.push_back(subsample);
+      }
     } else {
       const Nalu::CodecType nalu_type =
           (video_codec_ == kCodecHVC1 || video_codec_ == kCodecHEV1)
@@ -341,6 +351,8 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
       AddSubsamples(accumulated_clear_bytes, 0,
                     &sample_encryption_entry.subsamples);
     }
+    DCHECK_EQ(sample_encryption_entry.GetTotalSizeOfSubsamples(),
+              sample->data_size());
 
     // The length of per-sample auxiliary datum, defined in CENC ch. 7.
     traf()->auxiliary_size.sample_info_sizes.push_back(
