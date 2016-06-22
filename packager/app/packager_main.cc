@@ -255,6 +255,11 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
         return false;
       }
       stream_muxer_options.segment_template = stream_iter->segment_template;
+      if (stream_muxer_options.single_segment) {
+        LOG(WARNING) << "Segment template and single segment are incompatible, "
+                        "setting single segment to false.";
+        stream_muxer_options.single_segment = false;
+      }
     }
     stream_muxer_options.bandwidth = stream_iter->bandwidth;
 
