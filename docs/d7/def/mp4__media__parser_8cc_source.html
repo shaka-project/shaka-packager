@@ -651,7 +651,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00562"></a><span class="lineno">  562</span>&#160;        <span class="keywordflow">case</span> FOURCC_vp09:</div>
 <div class="line"><a name="l00563"></a><span class="lineno">  563</span>&#160;        <span class="keywordflow">case</span> FOURCC_vp10: {</div>
 <div class="line"><a name="l00564"></a><span class="lineno">  564</span>&#160;          VPCodecConfigurationRecord vp_config;</div>
-<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;          <span class="keywordflow">if</span> (!vp_config.Parse(entry.codec_configuration.data)) {</div>
+<div class="line"><a name="l00565"></a><span class="lineno">  565</span>&#160;          <span class="keywordflow">if</span> (!vp_config.ParseMP4(entry.codec_configuration.data)) {</div>
 <div class="line"><a name="l00566"></a><span class="lineno">  566</span>&#160;            LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to parse vpcc.&quot;</span>;</div>
 <div class="line"><a name="l00567"></a><span class="lineno">  567</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00568"></a><span class="lineno">  568</span>&#160;          }</div>
@@ -872,7 +872,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 21 2016 17:23:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 22 2016 16:48:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

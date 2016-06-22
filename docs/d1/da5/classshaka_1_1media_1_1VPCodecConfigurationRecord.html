@@ -131,12 +131,19 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae2a6523562b6c8b71b577c18e2a72611"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae2a6523562b6c8b71b577c18e2a72611"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>VPCodecConfigurationRecord</b> (uint8_t profile, uint8_t level, uint8_t bit_depth, uint8_t color_space, uint8_t chroma_subsampling, uint8_t transfer_function, bool video_full_range_flag, const std::vector&lt; uint8_t &gt; &amp;codec_initialization_data)</td></tr>
 <tr class="separator:ae2a6523562b6c8b71b577c18e2a72611"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d92681119d3b8ee2a8efbbc546009de"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#a1d92681119d3b8ee2a8efbbc546009de">Parse</a> (const std::vector&lt; uint8_t &gt; &amp;data)</td></tr>
-<tr class="separator:a1d92681119d3b8ee2a8efbbc546009de"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac86b6257a548fd15d304197a6d62bacb"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#ac86b6257a548fd15d304197a6d62bacb">Write</a> (std::vector&lt; uint8_t &gt; *data) const </td></tr>
-<tr class="separator:ac86b6257a548fd15d304197a6d62bacb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac5eac6e0a62201dcb68fd3f084bb281"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#aac5eac6e0a62201dcb68fd3f084bb281">ParseMP4</a> (const std::vector&lt; uint8_t &gt; &amp;data)</td></tr>
+<tr class="separator:aac5eac6e0a62201dcb68fd3f084bb281"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c432f4e5a256ed5fb18112ead37df10"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#a3c432f4e5a256ed5fb18112ead37df10">ParseWebM</a> (const std::vector&lt; uint8_t &gt; &amp;data)</td></tr>
+<tr class="separator:a3c432f4e5a256ed5fb18112ead37df10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a790c2bbfed9caa79aefb5c597c892e00"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#a790c2bbfed9caa79aefb5c597c892e00">WriteMP4</a> (std::vector&lt; uint8_t &gt; *data) const </td></tr>
+<tr class="separator:a790c2bbfed9caa79aefb5c597c892e00"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5186aead4b73cc3cd33587f25f166ce"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#ab5186aead4b73cc3cd33587f25f166ce">WriteWebM</a> (std::vector&lt; uint8_t &gt; *data) const </td></tr>
+<tr class="separator:ab5186aead4b73cc3cd33587f25f166ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a44bfb58b5c35974fd617cba85fc81be6"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html#a44bfb58b5c35974fd617cba85fc81be6">GetCodecString</a> (VideoCodec codec) const </td></tr>
 <tr class="separator:a44bfb58b5c35974fd617cba85fc81be6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36dddd88a09f038adfbf87063786178c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a36dddd88a09f038adfbf87063786178c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>MergeFrom</b> (const <a class="el" href="../../d1/da5/classshaka_1_1media_1_1VPCodecConfigurationRecord.html">VPCodecConfigurationRecord</a> &amp;other)</td></tr>
+<tr class="separator:a36dddd88a09f038adfbf87063786178c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5d834c63e4d8f982ccae15c7762c40f0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5d834c63e4d8f982ccae15c7762c40f0"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_profile</b> (uint8_t profile)</td></tr>
 <tr class="separator:a5d834c63e4d8f982ccae15c7762c40f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -200,16 +207,16 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>video_full_range_flag
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The codec string. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00099">99</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00183">183</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a1d92681119d3b8ee2a8efbbc546009de"></a>
+<a class="anchor" id="aac5eac6e0a62201dcb68fd3f084bb281"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">bool shaka::media::VPCodecConfigurationRecord::Parse </td>
+          <td class="memname">bool shaka::media::VPCodecConfigurationRecord::ParseMP4 </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
           <td class="paramname"><em>data</em></td><td>)</td>
@@ -217,19 +224,39 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>video_full_range_flag
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Parses input to extract VP codec configuration record. </p>
+<p>Parses input (in MP4 format) to extract VP codec configuration record. </p>
 <dl class="section return"><dt>Returns</dt><dd>false if there is parsing errors. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00065">65</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00072">72</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ac86b6257a548fd15d304197a6d62bacb"></a>
+<a class="anchor" id="a3c432f4e5a256ed5fb18112ead37df10"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void shaka::media::VPCodecConfigurationRecord::Write </td>
+          <td class="memname">bool shaka::media::VPCodecConfigurationRecord::ParseWebM </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; uint8_t &gt; &amp;&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Parses input (in WebM format) to extract VP codec configuration record. </p>
+<dl class="section return"><dt>Returns</dt><dd>false if there is parsing errors. </dd></dl>
+
+<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00098">98</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a790c2bbfed9caa79aefb5c597c892e00"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void shaka::media::VPCodecConfigurationRecord::WriteMP4 </td>
           <td>(</td>
           <td class="paramtype">std::vector&lt; uint8_t &gt; *&#160;</td>
           <td class="paramname"><em>data</em></td><td>)</td>
@@ -239,12 +266,36 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>video_full_range_flag
 </div><div class="memdoc">
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">data</td><td>should not be null. Writes VP codec configuration record to buffer. </td></tr>
+    <tr><td class="paramname">data</td><td>should not be null. Writes VP codec configuration record to buffer using MP4 format. </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00084">84</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00138">138</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ab5186aead4b73cc3cd33587f25f166ce"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void shaka::media::VPCodecConfigurationRecord::WriteWebM </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; uint8_t &gt; *&#160;</td>
+          <td class="paramname"><em>data</em></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>should not be null. Writes VP codec configuration record to buffer using WebM format. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+<p>Definition at line <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html#l00153">153</a> of file <a class="el" href="../../df/d05/vp__codec__configuration__record_8cc_source.html">vp_codec_configuration_record.cc</a>.</p>
 
 </div>
 </div>
@@ -255,7 +306,7 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><b>video_full_range_flag
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jun 21 2016 17:23:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Jun 22 2016 16:48:13 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
