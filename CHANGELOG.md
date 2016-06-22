@@ -1,3 +1,13 @@
+## [1.4.1] - 2016-06-23
+### Fixed
+- [VP9] VPCodecConfiguration box should inherit from FullBox instead of Box.
+- [VP9] Fixed 'senc' box generation when encrypting mp4:vp9 with superframe.
+- [WebM] Close file before trying to get file size, so the file size can be
+  correctly calculated.
+
+### Changed
+- [MP4] Ignore unrecognized mp4 boxes instead of error out.
+
 ## [1.4.0] - 2016-04-08
 ### Added
 - Added support for MacOSX (#65). Thanks to @nevil.
