@@ -51,22 +51,16 @@ void WebMVideoClient::Reset() {
 scoped_refptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
     int64_t track_num,
     const std::string& codec_id,
-    const std::vector<uint8_t>& codec_private_in,
+    const std::vector<uint8_t>& codec_private,
     bool is_encrypted) {
-  std::vector<uint8_t> codec_private = codec_private_in;
   VideoCodec video_codec = kUnknownVideoCodec;
   if (codec_id == "V_VP8") {
     video_codec = kCodecVP8;
   } else if (codec_id == "V_VP9") {
     video_codec = kCodecVP9;
-
-    // Need to parse and convert the codec private data to MP4 format.
-    VPCodecConfigurationRecord vp_config;
-    if (!vp_config.ParseWebM(codec_private)) {
-      LOG(ERROR) << "Unable to parse VP9 codec configuration";
-      return scoped_refptr<VideoStreamInfo>();
-    }
-    vp_config.WriteMP4(&codec_private);
+    // The codec private data is in WebM format, but needs to be converted to
+    // MP4 format.  Don't do it yet, it will be handled in
+    // webm_cluster_parser.cc
   } else if (codec_id == "V_VP10") {
     video_codec = kCodecVP10;
   } else {

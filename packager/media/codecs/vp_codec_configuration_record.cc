@@ -38,6 +38,23 @@ std::string VPCodecAsString(VideoCodec codec) {
   }
 }
 
+template <typename T>
+void MergeField(const std::string& name,
+                T source_value,
+                bool source_is_set,
+                T* dest_value,
+                bool* dest_is_set) {
+  if (!*dest_is_set || source_is_set) {
+    if (*dest_is_set && source_value != *dest_value) {
+      LOG(WARNING) << "VPx " << name << " is inconsistent, "
+                   << static_cast<uint32_t>(*dest_value) << " vs "
+                   << static_cast<uint32_t>(source_value);
+    }
+    *dest_value = source_value;
+    *dest_is_set = true;
+  }
+}
+
 }  // namespace
 
 VPCodecConfigurationRecord::VPCodecConfigurationRecord() {}
@@ -153,29 +170,36 @@ void VPCodecConfigurationRecord::WriteMP4(std::vector<uint8_t>* data) const {
 void VPCodecConfigurationRecord::WriteWebM(std::vector<uint8_t>* data) const {
   BufferWriter writer;
 
-  writer.AppendInt(static_cast<uint8_t>(kFeatureProfile));  // ID = 1
-  writer.AppendInt(static_cast<uint8_t>(1));  // Length = 1
-  writer.AppendInt(static_cast<uint8_t>(profile_));
+  if (profile_is_set_) {
+    writer.AppendInt(static_cast<uint8_t>(kFeatureProfile));  // ID = 1
+    writer.AppendInt(static_cast<uint8_t>(1));                // Length = 1
+    writer.AppendInt(static_cast<uint8_t>(profile_));
+  }
 
-  if (level_ != 0) {
+  if (level_is_set_ && level_ != 0) {
     writer.AppendInt(static_cast<uint8_t>(kFeatureLevel));  // ID = 2
     writer.AppendInt(static_cast<uint8_t>(1));  // Length = 1
     writer.AppendInt(static_cast<uint8_t>(level_));
   }
 
-  writer.AppendInt(static_cast<uint8_t>(kFeatureBitDepth));  // ID = 3
-  writer.AppendInt(static_cast<uint8_t>(1));  // Length = 1
-  writer.AppendInt(static_cast<uint8_t>(bit_depth_));
+  if (bit_depth_is_set_) {
+    writer.AppendInt(static_cast<uint8_t>(kFeatureBitDepth));  // ID = 3
+    writer.AppendInt(static_cast<uint8_t>(1));  // Length = 1
+    writer.AppendInt(static_cast<uint8_t>(bit_depth_));
+  }
 
-  // WebM doesn't differentiate whether it is vertical or collocated with luma
-  // for 4:2:0.
-  const uint8_t subsampling =
-      chroma_subsampling_ == CHROMA_420_COLLOCATED_WITH_LUMA
-          ? CHROMA_420_VERTICAL
-          : chroma_subsampling_;
-  writer.AppendInt(static_cast<uint8_t>(kFeatureChromaSubsampling));  // ID = 4
-  writer.AppendInt(static_cast<uint8_t>(1));  // Length = 1
-  writer.AppendInt(subsampling);
+  if (chroma_subsampling_is_set_) {
+    // WebM doesn't differentiate whether it is vertical or collocated with luma
+    // for 4:2:0.
+    const uint8_t subsampling =
+        chroma_subsampling_ == CHROMA_420_COLLOCATED_WITH_LUMA
+            ? CHROMA_420_VERTICAL
+            : chroma_subsampling_;
+    // ID = 4, Length = 1
+    writer.AppendInt(static_cast<uint8_t>(kFeatureChromaSubsampling));
+    writer.AppendInt(static_cast<uint8_t>(1));
+    writer.AppendInt(subsampling);
+  }
 
   writer.SwapBuffer(data);
 }
@@ -203,64 +227,24 @@ std::string VPCodecConfigurationRecord::GetCodecString(VideoCodec codec) const {
 
 void VPCodecConfigurationRecord::MergeFrom(
     const VPCodecConfigurationRecord& other) {
-  if (!profile_is_set_ || other.profile_is_set_) {
-    profile_ = other.profile();
-    profile_is_set_ = true;
-  }
-  if (!level_is_set_ || other.level_is_set_) {
-    if (level_is_set_ && other.level() != level_) {
-      LOG(WARNING) << "VPx level is inconsistent, " << level_ << " vs "
-                   << other.level();
-    }
-    level_ = other.level();
-    level_is_set_ = true;
-  }
-  if (!bit_depth_is_set_ || other.bit_depth_is_set_) {
-    if (bit_depth_is_set_ && bit_depth_ != other.bit_depth()) {
-      LOG(WARNING) << "VPx bit depth is inconsistent, " << bit_depth_ << " vs "
-                   << other.bit_depth();
-    }
-    bit_depth_ = other.bit_depth();
-    bit_depth_is_set_ = true;
-  }
-  if (!color_space_is_set_ || other.color_space_is_set_) {
-    if (color_space_is_set_ && color_space_ != other.color_space()) {
-      LOG(WARNING) << "VPx color space is inconsistent, " << color_space_
-                   << " vs " << other.color_space();
-    }
-    color_space_ = other.color_space();
-    color_space_is_set_ = true;
-  }
-  if (!chroma_subsampling_is_set_ || other.chroma_subsampling_is_set_) {
-    if (chroma_subsampling_is_set_ &&
-        chroma_subsampling_ != other.chroma_subsampling_) {
-      LOG(WARNING) << "VPx chroma subsampling is inconsistent, "
-                   << chroma_subsampling_ << " vs "
-                   << other.chroma_subsampling();
-    }
-    chroma_subsampling_ = other.chroma_subsampling();
-    chroma_subsampling_is_set_ = true;
-  }
-  if (!transfer_function_is_set_ || other.transfer_function_is_set_) {
-    if (transfer_function_is_set_ &&
-        transfer_function_ != other.transfer_function_) {
-      LOG(WARNING) << "VPx transfer function is inconsistent, "
-                   << transfer_function_ << " vs "
-                   << other.transfer_function();
-    }
-    transfer_function_ = other.transfer_function();
-    transfer_function_is_set_ = true;
-  }
-  if (!video_full_range_flag_is_set_ || other.video_full_range_flag_is_set_) {
-    if (video_full_range_flag_is_set_ &&
-        video_full_range_flag_ != other.video_full_range_flag_) {
-      LOG(WARNING) << "VPx video full-range flag is inconsistent, "
-                   << video_full_range_flag_<< " vs "
-                   << other.video_full_range_flag();
-    }
-    video_full_range_flag_ = other.video_full_range_flag();
-    video_full_range_flag_is_set_ = true;
-  }
+  MergeField("profile", other.profile_, other.profile_is_set_, &profile_,
+             &profile_is_set_);
+  MergeField("level", other.level_, other.level_is_set_, &level_,
+             &level_is_set_);
+  MergeField("bit depth", other.bit_depth_, other.bit_depth_is_set_,
+             &bit_depth_, &bit_depth_is_set_);
+  MergeField("color space", other.color_space_, other.color_space_is_set_,
+             &color_space_, &color_space_is_set_);
+  MergeField("chroma subsampling", other.chroma_subsampling_,
+             other.chroma_subsampling_is_set_, &chroma_subsampling_,
+             &chroma_subsampling_is_set_);
+  MergeField("transfer function", other.transfer_function_,
+             other.transfer_function_is_set_, &transfer_function_,
+             &transfer_function_is_set_);
+  MergeField("video full range flag", other.video_full_range_flag_,
+             other.video_full_range_flag_is_set_, &video_full_range_flag_,
+             &video_full_range_flag_is_set_);
+
   if (codec_initialization_data_.empty() ||
       !other.codec_initialization_data_.empty()) {
     if (!codec_initialization_data_.empty() &&

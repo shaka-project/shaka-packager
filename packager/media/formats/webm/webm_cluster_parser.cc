@@ -458,7 +458,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
 
         VPCodecConfigurationRecord codec_config;
         if (!video_stream_info_->codec_config().empty())
-          codec_config.ParseMP4(video_stream_info_->codec_config());
+          codec_config.ParseWebM(video_stream_info_->codec_config());
         codec_config.MergeFrom(vpx_parser->codec_config());
 
         video_stream_info_->set_codec_string(
