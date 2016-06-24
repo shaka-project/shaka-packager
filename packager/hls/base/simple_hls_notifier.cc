@@ -8,22 +8,28 @@
 
 #include "packager/base/base64.h"
 #include "packager/base/files/file_path.h"
+#include "packager/base/json/json_writer.h"
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/hls/base/media_playlist.h"
+#include "packager/media/base/fixed_key_source.h"
+#include "packager/media/base/widevine_key_source.h"
 #include "packager/media/base/widevine_pssh_data.pb.h"
 
 namespace shaka {
 namespace hls {
 
 namespace {
-const uint8_t kSystemIdWidevine[] = {0xed, 0xef, 0x8b, 0xa9, 0x79, 0xd6,
-                                     0x4a, 0xce, 0xa3, 0xc8, 0x27, 0xdc,
-                                     0xd5, 0x1d, 0x21, 0xed};
 bool IsWidevineSystemId(const std::vector<uint8_t>& system_id) {
-  return system_id.size() == arraysize(kSystemIdWidevine) &&
-         std::equal(system_id.begin(), system_id.end(), kSystemIdWidevine);
+  return system_id.size() == arraysize(media::kWidevineSystemId) &&
+         std::equal(system_id.begin(), system_id.end(),
+                    media::kWidevineSystemId);
+}
+
+bool IsCommonSystemId(const std::vector<uint8_t>& system_id) {
+  return system_id.size() == arraysize(media::kCommonSystemId) &&
+         std::equal(system_id.begin(), system_id.end(), media::kCommonSystemId);
 }
 
 // TODO(rkuroiwa): Dedup these with the functions in MpdBuilder.
@@ -62,6 +68,48 @@ void MakePathsRelativeToOutputDirectory(const std::string& output_dir,
         media_info->segment_template(), directory_with_separator));
   }
 }
+
+bool WidevinePsshToJson(const std::vector<uint8_t>& pssh_data,
+                        const std::vector<uint8_t>& key_id,
+                        std::string* pssh_json) {
+  media::WidevinePsshData pssh_proto;
+  if (!pssh_proto.ParseFromArray(pssh_data.data(), pssh_data.size())) {
+    LOG(ERROR) << "Failed to parse protection_system_specific_data.";
+    return false;
+  }
+  if (!pssh_proto.has_provider() ||
+      (!pssh_proto.has_content_id() && pssh_proto.key_id_size() == 0)) {
+    LOG(ERROR) << "Missing fields to generate URI.";
+    return false;
+  }
+
+  base::DictionaryValue pssh_dict;
+  pssh_dict.SetString("provider", pssh_proto.provider());
+  if (pssh_proto.has_content_id()) {
+    std::string content_id_base64;
+    base::Base64Encode(base::StringPiece(pssh_proto.content_id().data(),
+                                         pssh_proto.content_id().size()),
+                       &content_id_base64);
+    pssh_dict.SetString("content_id", content_id_base64);
+  }
+  base::ListValue* key_ids = new base::ListValue();
+  key_ids->AppendString(base::HexEncode(key_id.data(), key_id.size()));
+  for (const std::string& id : pssh_proto.key_id()) {
+    if (key_id.size() == id.size() &&
+        memcmp(key_id.data(), id.data(), id.size()) == 0) {
+      continue;
+    }
+    key_ids->AppendString(base::HexEncode(id.data(), id.size()));
+  }
+  pssh_dict.Set("key_ids", key_ids);
+
+  if (!base::JSONWriter::Write(pssh_dict, pssh_json)) {
+    LOG(ERROR) << "Failed to write to JSON.";
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 MediaPlaylistFactory::~MediaPlaylistFactory() {}
@@ -149,7 +197,6 @@ bool SimpleHlsNotifier::NotifyNewSegment(uint32_t stream_id,
   return true;
 }
 
-// TODO(rkuroiwa): Add static key support. for common system id.
 bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     uint32_t stream_id,
     const std::vector<uint8_t>& key_id,
@@ -162,55 +209,37 @@ bool SimpleHlsNotifier::NotifyEncryptionUpdate(
     LOG(ERROR) << "Cannot find stream with ID: " << stream_id;
     return false;
   }
-  if (!IsWidevineSystemId(system_id)) {
+
+  std::string key_format;
+  std::string key_uri_data;
+  if (IsWidevineSystemId(system_id)) {
+    key_format = "com.widevine";
+    if (!WidevinePsshToJson(protection_system_specific_data, key_id,
+                            &key_uri_data)) {
+      return false;
+    }
+  } else if (IsCommonSystemId(system_id)) {
+    key_format = "identity";
+    // Use key_id as the key_uri. The player needs to have custom logic to
+    // convert it to the actual key url.
+    key_uri_data.assign(key_id.begin(), key_id.end());
+  } else {
     LOG(ERROR) << "Unknown system ID: "
                << base::HexEncode(system_id.data(), system_id.size());
     return false;
   }
-
-  media::WidevinePsshData pssh_data;
-  if (!pssh_data.ParseFromArray(protection_system_specific_data.data(),
-                                protection_system_specific_data.size())) {
-    LOG(ERROR) << "Failed ot parse protection_system_specific_data.";
-    return false;
-  }
-  if (!pssh_data.has_provider() || !pssh_data.has_content_id() ||
-      pssh_data.key_id_size() == 0) {
-    LOG(ERROR) << "Missing fields to generate URI.";
-    return false;
-  }
-
-  std::string content_id_base64;
-  base::Base64Encode(base::StringPiece(pssh_data.content_id().data(),
-                                       pssh_data.content_id().size()),
-                     &content_id_base64);
-  std::string json_format = base::StringPrintf(
-      "{"
-      "\"provider\":\"%s\","
-      "\"content_id\":\"%s\","
-      "\"key_ids\":[",
-      pssh_data.provider().c_str(), content_id_base64.c_str());
-  json_format += "\"" + base::HexEncode(key_id.data(), key_id.size()) + "\",";
-  for (const std::string& id: pssh_data.key_id()) {
-    if (key_id.size() == id.size() &&
-        memcmp(key_id.data(), id.data(), id.size()) == 0) {
-      continue;
-    }
-    json_format += "\"" + base::HexEncode(id.data(), id.size()) + "\",";
-  }
-  json_format += "]}";
-  std::string json_format_base64;
-  base::Base64Encode(json_format, &json_format_base64);
 
   auto& media_playlist = result->second;
   std::string iv_string;
   if (!iv.empty()) {
     iv_string = "0x" + base::HexEncode(iv.data(), iv.size());
   }
+  std::string key_uri_data_base64;
+  base::Base64Encode(key_uri_data, &key_uri_data_base64);
   media_playlist->AddEncryptionInfo(
       MediaPlaylist::EncryptionMethod::kSampleAes,
-      "data:text/plain;base64," + json_format_base64, iv_string,
-      "com.widevine", "");
+      "data:text/plain;base64," + key_uri_data_base64, iv_string, key_format,
+      "" /* key_format_versions */);
   return true;
 }
 
