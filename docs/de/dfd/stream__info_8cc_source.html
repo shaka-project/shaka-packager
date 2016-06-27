@@ -109,8 +109,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                       uint64_t duration,</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                       <span class="keyword">const</span> std::string&amp; codec_string,</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                       <span class="keyword">const</span> std::string&amp; language,</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                       <span class="keyword">const</span> uint8_t* extra_data,</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                       <span class="keywordtype">size_t</span> extra_data_size,</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                       <span class="keyword">const</span> uint8_t* codec_config,</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                       <span class="keywordtype">size_t</span> codec_config_size,</div>
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                       <span class="keywordtype">bool</span> is_encrypted)</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    : stream_type_(stream_type),</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;      track_id_(track_id),</div>
@@ -119,8 +119,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;      codec_string_(codec_string),</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;      language_(language),</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;      is_encrypted_(is_encrypted) {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordflow">if</span> (extra_data_size &gt; 0) {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    extra_data_.assign(extra_data, extra_data + extra_data_size);</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordflow">if</span> (codec_config_size &gt; 0) {</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    codec_config_.assign(codec_config, codec_config + codec_config_size);</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  }</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
@@ -143,7 +143,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 24 2016 01:33:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 27 2016 23:03:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -215,14 +215,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  }</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;  <span class="keywordflow">if</span> (last_video_decoder_config_) {</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <span class="keywordflow">if</span> (last_video_decoder_config_-&gt;extra_data() != decoder_config_record) {</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;    <span class="keywordflow">if</span> (last_video_decoder_config_-&gt;codec_config() != decoder_config_record) {</div>
 <div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;      <span class="comment">// Video configuration has changed. Issue warning.</span></div>
 <div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;      <span class="comment">// TODO(tinskip): Check the nature of the configuration change. Only</span></div>
 <div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;      <span class="comment">// minor configuration changes (such as frame ordering) can be handled</span></div>
 <div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;      <span class="comment">// gracefully by decoders without notification. Major changes (such as</span></div>
 <div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;      <span class="comment">// video resolution changes) should be treated as errors.</span></div>
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;      LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;H.265 decoder configuration has changed.&quot;</span>;</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;      last_video_decoder_config_-&gt;set_extra_data(decoder_config_record);</div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;      last_video_decoder_config_-&gt;set_codec_config(decoder_config_record);</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;    }</div>
 <div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  }</div>
@@ -267,7 +267,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 24 2016 01:33:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 27 2016 23:03:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

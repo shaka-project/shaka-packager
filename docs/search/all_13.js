@@ -8,7 +8,7 @@ var searchData=
   ['videomediaheader',['VideoMediaHeader',['../d1/db0/structshaka_1_1media_1_1mp4_1_1VideoMediaHeader.html',1,'shaka::media::mp4']]],
   ['videosampleentry',['VideoSampleEntry',['../d0/d73/structshaka_1_1media_1_1mp4_1_1VideoSampleEntry.html',1,'shaka::media::mp4']]],
   ['videosliceheaderparser',['VideoSliceHeaderParser',['../dd/de4/classshaka_1_1media_1_1VideoSliceHeaderParser.html',1,'shaka::media']]],
-  ['videostreaminfo',['VideoStreamInfo',['../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#aeecc0799af22f9bf16d36e3097562c4e',1,'shaka::media::VideoStreamInfo']]],
+  ['videostreaminfo',['VideoStreamInfo',['../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html#a3f4380f77c0846fc07e07df40d5eb618',1,'shaka::media::VideoStreamInfo']]],
   ['videostreaminfo',['VideoStreamInfo',['../d6/db1/classshaka_1_1media_1_1VideoStreamInfo.html',1,'shaka::media']]],
   ['videostreaminfoparameters',['VideoStreamInfoParameters',['../d6/d26/structshaka_1_1media_1_1VideoStreamInfoParameters.html',1,'shaka::media']]],
   ['vodmediainfodumpmuxerlistener',['VodMediaInfoDumpMuxerListener',['../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html',1,'shaka::media']]],

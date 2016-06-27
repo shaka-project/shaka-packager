@@ -49,7 +49,7 @@ var searchData=
   ['audiorollrecoveryentry',['AudioRollRecoveryEntry',['../da/d6e/structshaka_1_1media_1_1mp4_1_1AudioRollRecoveryEntry.html',1,'shaka::media::mp4']]],
   ['audiosampleentry',['AudioSampleEntry',['../d8/d5b/structshaka_1_1media_1_1mp4_1_1AudioSampleEntry.html',1,'shaka::media::mp4']]],
   ['audiostreaminfo',['AudioStreamInfo',['../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html',1,'shaka::media']]],
-  ['audiostreaminfo',['AudioStreamInfo',['../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#ac0b841dedacaf1a546d0a74f6013eead',1,'shaka::media::AudioStreamInfo']]],
+  ['audiostreaminfo',['AudioStreamInfo',['../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a90bac4407cc8f295781b4819c60da771',1,'shaka::media::AudioStreamInfo']]],
   ['audiotimestamphelper',['AudioTimestampHelper',['../d0/d4d/classshaka_1_1media_1_1AudioTimestampHelper.html',1,'shaka::media']]],
   ['auxinfoneedstobecached',['AuxInfoNeedsToBeCached',['../de/df6/classshaka_1_1media_1_1mp4_1_1TrackRunIterator.html#a8d4fb433e66fec693035cac796ca6851',1,'shaka::media::mp4::TrackRunIterator']]],
   ['avcdecoderconfigurationrecord',['AVCDecoderConfigurationRecord',['../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html',1,'shaka::media']]]

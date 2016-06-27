@@ -119,8 +119,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;             uint64_t duration,</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;             <span class="keyword">const</span> std::string&amp; codec_string,</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;             <span class="keyword">const</span> std::string&amp; language,</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;             <span class="keyword">const</span> uint8_t* extra_data,</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;             <span class="keywordtype">size_t</span> extra_data_size,</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;             <span class="keyword">const</span> uint8_t* codec_config,</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;             <span class="keywordtype">size_t</span> codec_config_size,</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;             <span class="keywordtype">bool</span> is_encrypted);</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html#a6e5c5ade77b7bcf0b7822de568695dc8">IsValidConfig</a>() <span class="keyword">const</span> = 0;</div>
@@ -136,11 +136,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordtype">bool</span> is_encrypted()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> is_encrypted_; }</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; extra_data()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> extra_data_; }</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; codec_config()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> codec_config_; }</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordtype">void</span> set_duration(<span class="keywordtype">int</span> duration) { duration_ = duration; }</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordtype">void</span> set_extra_data(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; data) { extra_data_ = data; }</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="keywordtype">void</span> set_codec_config(<span class="keyword">const</span> std::vector&lt;uint8_t&gt;&amp; data) { codec_config_ = data; }</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordtype">void</span> set_codec_string(<span class="keyword">const</span> std::string&amp; codec_string) {</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    codec_string_ = codec_string;</div>
@@ -168,7 +168,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordtype">bool</span> is_encrypted_;</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="comment">// Optional byte data required for some audio/video decoders such as Vorbis</span></div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="comment">// codebooks.</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  std::vector&lt;uint8_t&gt; extra_data_;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  std::vector&lt;uint8_t&gt; codec_config_;</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="comment">// Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler</span></div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="comment">// generated copy constructor and assignment operator. Since the extra data is</span></div>
@@ -185,7 +185,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 24 2016 01:33:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 27 2016 23:03:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

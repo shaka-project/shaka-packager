@@ -439,7 +439,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;      uint8_t audio_object_type = 0;</div>
 <div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;      uint32_t max_bitrate = 0;</div>
 <div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;      uint32_t avg_bitrate = 0;</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;      std::vector&lt;uint8_t&gt; extra_data;</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;      std::vector&lt;uint8_t&gt; codec_config;</div>
 <div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;</div>
 <div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;      <span class="keywordflow">switch</span> (actual_format) {</div>
 <div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;        <span class="keywordflow">case</span> FOURCC_mp4a:</div>
@@ -452,7 +452,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;            num_channels = aac_audio_specific_config.num_channels();</div>
 <div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;            sampling_frequency = aac_audio_specific_config.frequency();</div>
 <div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;            audio_object_type = aac_audio_specific_config.audio_object_type();</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;            extra_data = entry.esds.es_descriptor.decoder_specific_info();</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;            codec_config = entry.esds.es_descriptor.decoder_specific_info();</div>
 <div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;            <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;          } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (entry.esds.es_descriptor.IsDTS()) {</div>
 <div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;            ObjectType audio_type = entry.esds.es_descriptor.object_type();</div>
@@ -500,24 +500,24 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;        <span class="keywordflow">case</span> FOURCC_dtse:</div>
 <div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;          FALLTHROUGH_INTENDED;</div>
 <div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;        <span class="keywordflow">case</span> FOURCC_dtsm:</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;          extra_data = entry.ddts.extra_data;</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;          codec_config = entry.ddts.extra_data;</div>
 <div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;          max_bitrate = entry.ddts.max_bitrate;</div>
 <div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;          avg_bitrate = entry.ddts.avg_bitrate;</div>
 <div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;          num_channels = entry.channelcount;</div>
 <div class="line"><a name="l00418"></a><span class="lineno">  418</span>&#160;          sampling_frequency = entry.samplerate;</div>
 <div class="line"><a name="l00419"></a><span class="lineno">  419</span>&#160;          <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00420"></a><span class="lineno">  420</span>&#160;        <span class="keywordflow">case</span> FOURCC_ac_3:</div>
-<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;          extra_data = entry.dac3.data;</div>
+<div class="line"><a name="l00421"></a><span class="lineno">  421</span>&#160;          codec_config = entry.dac3.data;</div>
 <div class="line"><a name="l00422"></a><span class="lineno">  422</span>&#160;          num_channels = entry.channelcount;</div>
 <div class="line"><a name="l00423"></a><span class="lineno">  423</span>&#160;          sampling_frequency = entry.samplerate;</div>
 <div class="line"><a name="l00424"></a><span class="lineno">  424</span>&#160;          <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00425"></a><span class="lineno">  425</span>&#160;        <span class="keywordflow">case</span> FOURCC_ec_3:</div>
-<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;          extra_data = entry.dec3.data;</div>
+<div class="line"><a name="l00426"></a><span class="lineno">  426</span>&#160;          codec_config = entry.dec3.data;</div>
 <div class="line"><a name="l00427"></a><span class="lineno">  427</span>&#160;          num_channels = entry.channelcount;</div>
 <div class="line"><a name="l00428"></a><span class="lineno">  428</span>&#160;          sampling_frequency = entry.samplerate;</div>
 <div class="line"><a name="l00429"></a><span class="lineno">  429</span>&#160;          <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00430"></a><span class="lineno">  430</span>&#160;        <span class="keywordflow">case</span> FOURCC_Opus:</div>
-<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;          extra_data = entry.dops.opus_identification_header;</div>
+<div class="line"><a name="l00431"></a><span class="lineno">  431</span>&#160;          codec_config = entry.dops.opus_identification_header;</div>
 <div class="line"><a name="l00432"></a><span class="lineno">  432</span>&#160;          num_channels = entry.channelcount;</div>
 <div class="line"><a name="l00433"></a><span class="lineno">  433</span>&#160;          sampling_frequency = entry.samplerate;</div>
 <div class="line"><a name="l00434"></a><span class="lineno">  434</span>&#160;          RCHECK(sampling_frequency != 0);</div>
@@ -575,8 +575,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00486"></a><span class="lineno">  486</span>&#160;          codec_delay_ns,</div>
 <div class="line"><a name="l00487"></a><span class="lineno">  487</span>&#160;          max_bitrate,</div>
 <div class="line"><a name="l00488"></a><span class="lineno">  488</span>&#160;          avg_bitrate,</div>
-<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;          extra_data.data(),</div>
-<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;          extra_data.size(),</div>
+<div class="line"><a name="l00489"></a><span class="lineno">  489</span>&#160;          codec_config.data(),</div>
+<div class="line"><a name="l00490"></a><span class="lineno">  490</span>&#160;          codec_config.size(),</div>
 <div class="line"><a name="l00491"></a><span class="lineno">  491</span>&#160;          is_encrypted));</div>
 <div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;    }</div>
 <div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;</div>
@@ -872,7 +872,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 24 2016 01:33:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 27 2016 23:03:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

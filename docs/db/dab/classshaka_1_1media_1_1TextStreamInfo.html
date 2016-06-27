@@ -105,8 +105,8 @@ Inheritance diagram for shaka::media::TextStreamInfo:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a282748a909bc0f98a6c99580f9d13a46"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#a282748a909bc0f98a6c99580f9d13a46">TextStreamInfo</a> (int track_id, uint32_t time_scale, uint64_t duration, const std::string &amp;codec_string, const std::string &amp;language, const std::string &amp;extra_data, uint16_t width, uint16_t height)</td></tr>
-<tr class="separator:a282748a909bc0f98a6c99580f9d13a46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a643174313de01f895f8e494c15010fdc"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#a643174313de01f895f8e494c15010fdc">TextStreamInfo</a> (int track_id, uint32_t time_scale, uint64_t duration, const std::string &amp;codec_string, const std::string &amp;language, const std::string &amp;codec_config, uint16_t width, uint16_t height)</td></tr>
+<tr class="separator:a643174313de01f895f8e494c15010fdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab40aed17c046e639efde04a2075e25a8"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html#ab40aed17c046e639efde04a2075e25a8">IsValidConfig</a> () const override</td></tr>
 <tr class="separator:ab40aed17c046e639efde04a2075e25a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a218aa26b26f8a6784acff7817d825606"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a218aa26b26f8a6784acff7817d825606"></a>
@@ -116,9 +116,9 @@ uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>width</b> () cons
 uint16_t&#160;</td><td class="memItemRight" valign="bottom"><b>height</b> () const </td></tr>
 <tr class="separator:a2b34578679e74d60d515d324d7af110d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classshaka_1_1media_1_1StreamInfo"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classshaka_1_1media_1_1StreamInfo')"><img src="../../closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">shaka::media::StreamInfo</a></td></tr>
-<tr class="memitem:acd032b7f40128a49c5b59aa4eb13b725 inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acd032b7f40128a49c5b59aa4eb13b725"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>StreamInfo</b> (StreamType stream_type, int track_id, uint32_t time_scale, uint64_t duration, const std::string &amp;codec_string, const std::string &amp;language, const uint8_t *extra_data, size_t extra_data_size, bool is_encrypted)</td></tr>
-<tr class="separator:acd032b7f40128a49c5b59aa4eb13b725 inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b591b3066ff8c130db7d298a1588669 inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2b591b3066ff8c130db7d298a1588669"></a>
+&#160;</td><td class="memItemRight" valign="bottom"><b>StreamInfo</b> (StreamType stream_type, int track_id, uint32_t time_scale, uint64_t duration, const std::string &amp;codec_string, const std::string &amp;language, const uint8_t *codec_config, size_t codec_config_size, bool is_encrypted)</td></tr>
+<tr class="separator:a2b591b3066ff8c130db7d298a1588669 inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa11d2fe5509ebfdc038aa3f2cdbbe00d inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html#aa11d2fe5509ebfdc038aa3f2cdbbe00d">ToString</a> () const </td></tr>
 <tr class="separator:aa11d2fe5509ebfdc038aa3f2cdbbe00d inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a28665578e17162b3d3cd9ef44ed05ef3 inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a28665578e17162b3d3cd9ef44ed05ef3"></a>
@@ -142,15 +142,15 @@ const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>la
 <tr class="memitem:a95aa5740795c72c1e41afc54a4e3dcc8 inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a95aa5740795c72c1e41afc54a4e3dcc8"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_encrypted</b> () const </td></tr>
 <tr class="separator:a95aa5740795c72c1e41afc54a4e3dcc8 inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a507758b0cfe56b217671812fef2f619c inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a507758b0cfe56b217671812fef2f619c"></a>
-const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>extra_data</b> () const </td></tr>
-<tr class="separator:a507758b0cfe56b217671812fef2f619c inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a50772fb5c00a449a084b29b70dcf5135 inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a50772fb5c00a449a084b29b70dcf5135"></a>
+const std::vector&lt; uint8_t &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>codec_config</b> () const </td></tr>
+<tr class="separator:a50772fb5c00a449a084b29b70dcf5135 inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad3b5158ebe44f59b8e43b02ce71df46a inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad3b5158ebe44f59b8e43b02ce71df46a"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_duration</b> (int duration)</td></tr>
 <tr class="separator:ad3b5158ebe44f59b8e43b02ce71df46a inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeb7bb4fcd8d9128d3c182a71424d6ec2 inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeb7bb4fcd8d9128d3c182a71424d6ec2"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_extra_data</b> (const std::vector&lt; uint8_t &gt; &amp;data)</td></tr>
-<tr class="separator:aeb7bb4fcd8d9128d3c182a71424d6ec2 inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa54bb3e89db461517aec46d994bf972f inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa54bb3e89db461517aec46d994bf972f"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_codec_config</b> (const std::vector&lt; uint8_t &gt; &amp;data)</td></tr>
+<tr class="separator:aa54bb3e89db461517aec46d994bf972f inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a253c9f1d0cd2d58cd041a2b5fcd2eb93 inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a253c9f1d0cd2d58cd041a2b5fcd2eb93"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><b>set_codec_string</b> (const std::string &amp;codec_string)</td></tr>
 <tr class="separator:a253c9f1d0cd2d58cd041a2b5fcd2eb93 inherit pub_methods_classshaka_1_1media_1_1StreamInfo"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -162,7 +162,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_language</b> (con
 <div class="textblock">
 <p>Definition at line <a class="el" href="../../da/d2a/text__stream__info_8h_source.html#l00017">17</a> of file <a class="el" href="../../da/d2a/text__stream__info_8h_source.html">text_stream_info.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a282748a909bc0f98a6c99580f9d13a46"></a>
+<a class="anchor" id="a643174313de01f895f8e494c15010fdc"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -200,7 +200,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_language</b> (con
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>extra_data</em>, </td>
+          <td class="paramname"><em>codec_config</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -229,7 +229,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_language</b> (con
     <tr><td class="paramname">duration</td><td>is the duration of this stream. </td></tr>
     <tr><td class="paramname">codec_string</td><td>is the codec. </td></tr>
     <tr><td class="paramname">language</td><td>is the language of this stream. This may be empty. </td></tr>
-    <tr><td class="paramname">extra_data</td><td>is extra data for this text stream. This could be the metadata that applies to all the samples of this stream. This may be empty. </td></tr>
+    <tr><td class="paramname">codec_config</td><td>is configuration for this text stream. This could be the metadata that applies to all the samples of this stream. This may be empty. </td></tr>
     <tr><td class="paramname">width</td><td>of the text. This may be 0. </td></tr>
     <tr><td class="paramname">height</td><td>of the text. This may be 0. </td></tr>
   </table>
@@ -276,7 +276,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_language</b> (con
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 24 2016 01:33:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 27 2016 23:03:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

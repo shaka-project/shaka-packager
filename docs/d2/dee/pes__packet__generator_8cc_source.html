@@ -193,8 +193,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;    }</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;    timescale_scale_ = kTsTimescale / video_stream_info.time_scale();</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    converter_.reset(<span class="keyword">new</span> <a class="code" href="../../d5/d66/classshaka_1_1media_1_1NalUnitToByteStreamConverter.html">NalUnitToByteStreamConverter</a>());</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordflow">return</span> converter_-&gt;Initialize(video_stream_info.extra_data().data(),</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                                  video_stream_info.extra_data().size(),</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;    <span class="keywordflow">return</span> converter_-&gt;Initialize(video_stream_info.codec_config().data(),</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;                                  video_stream_info.codec_config().size(),</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;                                  !kEscapeData);</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (stream_type_ == kStreamAudio) {</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html">AudioStreamInfo</a>&amp; audio_stream_info =</div>
@@ -206,7 +206,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;    }</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;    timescale_scale_ = kTsTimescale / audio_stream_info.time_scale();</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;    adts_converter_.reset(<span class="keyword">new</span> <a class="code" href="../../d0/da2/classshaka_1_1media_1_1AACAudioSpecificConfig.html">AACAudioSpecificConfig</a>());</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keywordflow">return</span> adts_converter_-&gt;Parse(audio_stream_info.extra_data());</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;    <span class="keywordflow">return</span> adts_converter_-&gt;Parse(audio_stream_info.codec_config());</div>
 <div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  }</div>
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  NOTIMPLEMENTED() &lt;&lt; <span class="stringliteral">&quot;Stream type: &quot;</span> &lt;&lt; stream_type_ &lt;&lt; <span class="stringliteral">&quot; not implemented.&quot;</span>;</div>
@@ -328,7 +328,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 24 2016 01:33:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 27 2016 23:03:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

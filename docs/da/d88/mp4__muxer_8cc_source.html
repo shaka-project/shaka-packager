@@ -318,7 +318,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  video.format = VideoCodecToFourCC(video_info-&gt;codec());</div>
 <div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  video.width = video_info-&gt;width();</div>
 <div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  video.height = video_info-&gt;height();</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  video.codec_configuration.data = video_info-&gt;extra_data();</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  video.codec_configuration.data = video_info-&gt;codec_config();</div>
 <div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  <span class="keywordflow">if</span> (pixel_width != 1 || pixel_height != 1) {</div>
 <div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    video.pixel_aspect.h_spacing = pixel_width;</div>
 <div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    video.pixel_aspect.v_spacing = pixel_height;</div>
@@ -344,7 +344,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;      audio.esds.es_descriptor.set_object_type(kISO_14496_3);  <span class="comment">// MPEG4 AAC.</span></div>
 <div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;      audio.esds.es_descriptor.set_esid(track_id);</div>
 <div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;      audio.esds.es_descriptor.set_decoder_specific_info(</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;          audio_info-&gt;extra_data());</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;          audio_info-&gt;codec_config());</div>
 <div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;      audio.esds.es_descriptor.set_max_bitrate(audio_info-&gt;max_bitrate());</div>
 <div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;      audio.esds.es_descriptor.set_avg_bitrate(audio_info-&gt;avg_bitrate());</div>
 <div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;      <span class="keywordflow">break</span>;</div>
@@ -353,20 +353,20 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;    <span class="keywordflow">case</span> kCodecDTSL:</div>
 <div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;    <span class="keywordflow">case</span> kCodecDTSE:</div>
 <div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    <span class="keywordflow">case</span> kCodecDTSM:</div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;      audio.ddts.extra_data = audio_info-&gt;extra_data();</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;      audio.ddts.extra_data = audio_info-&gt;codec_config();</div>
 <div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;      audio.ddts.max_bitrate = audio_info-&gt;max_bitrate();</div>
 <div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;      audio.ddts.avg_bitrate = audio_info-&gt;avg_bitrate();</div>
 <div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;      audio.ddts.sampling_frequency = audio_info-&gt;sampling_frequency();</div>
 <div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;      audio.ddts.pcm_sample_depth = audio_info-&gt;sample_bits();</div>
 <div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;      <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;    <span class="keywordflow">case</span> kCodecAC3:</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;      audio.dac3.data = audio_info-&gt;extra_data();</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;      audio.dac3.data = audio_info-&gt;codec_config();</div>
 <div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;      <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    <span class="keywordflow">case</span> kCodecEAC3:</div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;      audio.dec3.data = audio_info-&gt;extra_data();</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;      audio.dec3.data = audio_info-&gt;codec_config();</div>
 <div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;      <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;    <span class="keywordflow">case</span> kCodecOpus:</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;      audio.dops.opus_identification_header = audio_info-&gt;extra_data();</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;      audio.dops.opus_identification_header = audio_info-&gt;codec_config();</div>
 <div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;      <span class="keywordflow">break</span>;</div>
 <div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;    <span class="keywordflow">default</span>:</div>
 <div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;      NOTIMPLEMENTED();</div>
@@ -510,7 +510,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 24 2016 01:33:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 27 2016 23:03:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -923,14 +923,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00834"></a><span class="lineno">  834</span>&#160;          <span class="keywordflow">if</span> (stream_infos_[i]-&gt;stream_type() == kStreamVideo &amp;&amp;</div>
 <div class="line"><a name="l00835"></a><span class="lineno">  835</span>&#160;              stream_infos_[i]-&gt;codec_string().empty()) {</div>
 <div class="line"><a name="l00836"></a><span class="lineno">  836</span>&#160;            <span class="keyword">const</span> std::vector&lt;uint8_t&gt;* stream_config;</div>
-<div class="line"><a name="l00837"></a><span class="lineno">  837</span>&#160;            <span class="keywordflow">if</span> (stream_infos_[i]-&gt;extra_data().empty()) {</div>
+<div class="line"><a name="l00837"></a><span class="lineno">  837</span>&#160;            <span class="keywordflow">if</span> (stream_infos_[i]-&gt;codec_config().empty()) {</div>
 <div class="line"><a name="l00838"></a><span class="lineno">  838</span>&#160;              <span class="comment">// Decoder config record not available for stream. Use the one</span></div>
 <div class="line"><a name="l00839"></a><span class="lineno">  839</span>&#160;              <span class="comment">// computed from the first video stream.</span></div>
-<div class="line"><a name="l00840"></a><span class="lineno">  840</span>&#160;              stream_infos_[i]-&gt;set_extra_data(decoder_config_record);</div>
+<div class="line"><a name="l00840"></a><span class="lineno">  840</span>&#160;              stream_infos_[i]-&gt;set_codec_config(decoder_config_record);</div>
 <div class="line"><a name="l00841"></a><span class="lineno">  841</span>&#160;              stream_config = &amp;decoder_config_record;</div>
 <div class="line"><a name="l00842"></a><span class="lineno">  842</span>&#160;            } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00843"></a><span class="lineno">  843</span>&#160;              <span class="comment">// Use stream-specific config record.</span></div>
-<div class="line"><a name="l00844"></a><span class="lineno">  844</span>&#160;              stream_config = &amp;stream_infos_[i]-&gt;extra_data();</div>
+<div class="line"><a name="l00844"></a><span class="lineno">  844</span>&#160;              stream_config = &amp;stream_infos_[i]-&gt;codec_config();</div>
 <div class="line"><a name="l00845"></a><span class="lineno">  845</span>&#160;            }</div>
 <div class="line"><a name="l00846"></a><span class="lineno">  846</span>&#160;            DCHECK(stream_config);</div>
 <div class="line"><a name="l00847"></a><span class="lineno">  847</span>&#160;</div>
@@ -940,7 +940,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00851"></a><span class="lineno">  851</span>&#160;            <span class="keywordflow">if</span> (!avc_config.Parse(*stream_config)) {</div>
 <div class="line"><a name="l00852"></a><span class="lineno">  852</span>&#160;              LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Failed to parse AVCDecoderConfigurationRecord. &quot;</span></div>
 <div class="line"><a name="l00853"></a><span class="lineno">  853</span>&#160;                              <span class="stringliteral">&quot;Using computed configuration record instead.&quot;</span>;</div>
-<div class="line"><a name="l00854"></a><span class="lineno">  854</span>&#160;              video_stream_info-&gt;set_extra_data(decoder_config_record);</div>
+<div class="line"><a name="l00854"></a><span class="lineno">  854</span>&#160;              video_stream_info-&gt;set_codec_config(decoder_config_record);</div>
 <div class="line"><a name="l00855"></a><span class="lineno">  855</span>&#160;              <span class="keywordflow">if</span> (!avc_config.Parse(decoder_config_record)) {</div>
 <div class="line"><a name="l00856"></a><span class="lineno">  856</span>&#160;                LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to parse AVCDecoderConfigurationRecord.&quot;</span>;</div>
 <div class="line"><a name="l00857"></a><span class="lineno">  857</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -1001,7 +1001,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00912"></a><span class="lineno">  912</span>&#160;              stream_infos_[i]-&gt;codec_string().empty()) {</div>
 <div class="line"><a name="l00913"></a><span class="lineno">  913</span>&#160;            AudioStreamInfo* audio_stream_info =</div>
 <div class="line"><a name="l00914"></a><span class="lineno">  914</span>&#160;                <span class="keyword">reinterpret_cast&lt;</span>AudioStreamInfo*<span class="keyword">&gt;</span>(stream_infos_[i].get());</div>
-<div class="line"><a name="l00915"></a><span class="lineno">  915</span>&#160;            <span class="keywordflow">if</span> (audio_stream_info-&gt;extra_data().empty()) {</div>
+<div class="line"><a name="l00915"></a><span class="lineno">  915</span>&#160;            <span class="keywordflow">if</span> (audio_stream_info-&gt;codec_config().empty()) {</div>
 <div class="line"><a name="l00916"></a><span class="lineno">  916</span>&#160;              <span class="comment">// Set AudioStreamInfo fields using information from the ADTS</span></div>
 <div class="line"><a name="l00917"></a><span class="lineno">  917</span>&#160;              <span class="comment">// header.</span></div>
 <div class="line"><a name="l00918"></a><span class="lineno">  918</span>&#160;              audio_stream_info-&gt;set_sampling_frequency(</div>
@@ -1011,7 +1011,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00922"></a><span class="lineno">  922</span>&#160;                LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Could not compute AACaudiospecificconfig&quot;</span>;</div>
 <div class="line"><a name="l00923"></a><span class="lineno">  923</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00924"></a><span class="lineno">  924</span>&#160;              }</div>
-<div class="line"><a name="l00925"></a><span class="lineno">  925</span>&#160;              audio_stream_info-&gt;set_extra_data(audio_specific_config);</div>
+<div class="line"><a name="l00925"></a><span class="lineno">  925</span>&#160;              audio_stream_info-&gt;set_codec_config(audio_specific_config);</div>
 <div class="line"><a name="l00926"></a><span class="lineno">  926</span>&#160;              audio_stream_info-&gt;set_codec_string(</div>
 <div class="line"><a name="l00927"></a><span class="lineno">  927</span>&#160;                  <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a2a09eeb3559dd38c333c071d78be1e8c">AudioStreamInfo::GetCodecString</a>(</div>
 <div class="line"><a name="l00928"></a><span class="lineno">  928</span>&#160;                      kCodecAAC, adts_header.GetObjectType()));</div>
@@ -1019,7 +1019,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00930"></a><span class="lineno">  930</span>&#160;              <span class="comment">// Set AudioStreamInfo fields using information from the</span></div>
 <div class="line"><a name="l00931"></a><span class="lineno">  931</span>&#160;              <span class="comment">// AACAudioSpecificConfig record.</span></div>
 <div class="line"><a name="l00932"></a><span class="lineno">  932</span>&#160;              AACAudioSpecificConfig aac_config;</div>
-<div class="line"><a name="l00933"></a><span class="lineno">  933</span>&#160;              <span class="keywordflow">if</span> (!aac_config.Parse(stream_infos_[i]-&gt;extra_data())) {</div>
+<div class="line"><a name="l00933"></a><span class="lineno">  933</span>&#160;              <span class="keywordflow">if</span> (!aac_config.Parse(stream_infos_[i]-&gt;codec_config())) {</div>
 <div class="line"><a name="l00934"></a><span class="lineno">  934</span>&#160;                LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Could not parse AACAudioSpecificconfig&quot;</span>;</div>
 <div class="line"><a name="l00935"></a><span class="lineno">  935</span>&#160;                <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00936"></a><span class="lineno">  936</span>&#160;              }</div>
@@ -1036,7 +1036,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00947"></a><span class="lineno">  947</span>&#160;</div>
 <div class="line"><a name="l00948"></a><span class="lineno">  948</span>&#160;  <span class="keywordflow">if</span> (!is_initialized_) {</div>
 <div class="line"><a name="l00949"></a><span class="lineno">  949</span>&#160;    <span class="keywordtype">bool</span> all_streams_have_config = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00950"></a><span class="lineno">  950</span>&#160;    <span class="comment">// Check if all collected stream infos have extra_data set.</span></div>
+<div class="line"><a name="l00950"></a><span class="lineno">  950</span>&#160;    <span class="comment">// Check if all collected stream infos have codec_config set.</span></div>
 <div class="line"><a name="l00951"></a><span class="lineno">  951</span>&#160;    <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; stream_infos_.size(); i++) {</div>
 <div class="line"><a name="l00952"></a><span class="lineno">  952</span>&#160;      <span class="keywordflow">if</span> (stream_infos_[i]-&gt;codec_string().empty()) {</div>
 <div class="line"><a name="l00953"></a><span class="lineno">  953</span>&#160;        all_streams_have_config = <span class="keyword">false</span>;</div>
@@ -1264,7 +1264,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 24 2016 01:33:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 27 2016 23:03:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -149,11 +149,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    sampling_frequency = 48000;</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  }</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keyword">const</span> uint8_t* extra_data = NULL;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordtype">size_t</span> extra_data_size = 0;</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keyword">const</span> uint8_t* codec_config = NULL;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordtype">size_t</span> codec_config_size = 0;</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">if</span> (codec_private.size() &gt; 0) {</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    extra_data = &amp;codec_private[0];</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    extra_data_size = codec_private.size();</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    codec_config = &amp;codec_private[0];</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    codec_config_size = codec_private.size();</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  }</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keyword">const</span> uint8_t kSampleSizeInBits = 16u;</div>
@@ -162,7 +162,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a2a09eeb3559dd38c333c071d78be1e8c">AudioStreamInfo::GetCodecString</a>(audio_codec, 0), language,</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      kSampleSizeInBits, channels_, sampling_frequency,</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      seek_preroll &lt; 0 ? 0 : seek_preroll, codec_delay &lt; 0 ? 0 : codec_delay, 0,</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      0, extra_data, extra_data_size, is_encrypted));</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      0, codec_config, codec_config_size, is_encrypted));</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="keywordtype">bool</span> WebMAudioClient::OnUInt(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, int64_t val) {</div>
@@ -214,7 +214,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Jun 24 2016 01:33:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jun 27 2016 23:03:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
