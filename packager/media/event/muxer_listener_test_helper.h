@@ -68,7 +68,7 @@ struct VideoStreamInfoParameters {
   uint32_t pixel_width;
   uint32_t pixel_height;
   uint8_t nalu_length_size;
-  std::vector<uint8_t> extra_data;
+  std::vector<uint8_t> codec_config;
   bool is_encrypted;
 };
 

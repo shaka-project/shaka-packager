@@ -122,7 +122,7 @@ Status EncryptingFragmenter::InitializeFragment(int64_t first_sample_dts) {
   if (!status.ok())
     return status;
 
-  if (header_parser_ && !header_parser_->Initialize(info_->extra_data()))
+  if (header_parser_ && !header_parser_->Initialize(info_->codec_config()))
     return Status(error::MUXER_FAILURE, "Fail to read SPS and PPS data.");
 
   traf()->auxiliary_size.sample_info_sizes.clear();

@@ -20,8 +20,8 @@ StreamInfo::StreamInfo(StreamType stream_type,
                        uint64_t duration,
                        const std::string& codec_string,
                        const std::string& language,
-                       const uint8_t* extra_data,
-                       size_t extra_data_size,
+                       const uint8_t* codec_config,
+                       size_t codec_config_size,
                        bool is_encrypted)
     : stream_type_(stream_type),
       track_id_(track_id),
@@ -30,8 +30,8 @@ StreamInfo::StreamInfo(StreamType stream_type,
       codec_string_(codec_string),
       language_(language),
       is_encrypted_(is_encrypted) {
-  if (extra_data_size > 0) {
-    extra_data_.assign(extra_data, extra_data + extra_data_size);
+  if (codec_config_size > 0) {
+    codec_config_.assign(codec_config, codec_config + codec_config_size);
   }
 }
 

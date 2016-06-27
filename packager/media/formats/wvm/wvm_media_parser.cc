@@ -834,14 +834,14 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
           if (stream_infos_[i]->stream_type() == kStreamVideo &&
               stream_infos_[i]->codec_string().empty()) {
             const std::vector<uint8_t>* stream_config;
-            if (stream_infos_[i]->extra_data().empty()) {
+            if (stream_infos_[i]->codec_config().empty()) {
               // Decoder config record not available for stream. Use the one
               // computed from the first video stream.
-              stream_infos_[i]->set_extra_data(decoder_config_record);
+              stream_infos_[i]->set_codec_config(decoder_config_record);
               stream_config = &decoder_config_record;
             } else {
               // Use stream-specific config record.
-              stream_config = &stream_infos_[i]->extra_data();
+              stream_config = &stream_infos_[i]->codec_config();
             }
             DCHECK(stream_config);
 
@@ -851,7 +851,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
             if (!avc_config.Parse(*stream_config)) {
               LOG(WARNING) << "Failed to parse AVCDecoderConfigurationRecord. "
                               "Using computed configuration record instead.";
-              video_stream_info->set_extra_data(decoder_config_record);
+              video_stream_info->set_codec_config(decoder_config_record);
               if (!avc_config.Parse(decoder_config_record)) {
                 LOG(ERROR) << "Failed to parse AVCDecoderConfigurationRecord.";
                 return false;
@@ -912,7 +912,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
               stream_infos_[i]->codec_string().empty()) {
             AudioStreamInfo* audio_stream_info =
                 reinterpret_cast<AudioStreamInfo*>(stream_infos_[i].get());
-            if (audio_stream_info->extra_data().empty()) {
+            if (audio_stream_info->codec_config().empty()) {
               // Set AudioStreamInfo fields using information from the ADTS
               // header.
               audio_stream_info->set_sampling_frequency(
@@ -922,7 +922,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
                 LOG(ERROR) << "Could not compute AACaudiospecificconfig";
                 return false;
               }
-              audio_stream_info->set_extra_data(audio_specific_config);
+              audio_stream_info->set_codec_config(audio_specific_config);
               audio_stream_info->set_codec_string(
                   AudioStreamInfo::GetCodecString(
                       kCodecAAC, adts_header.GetObjectType()));
@@ -930,7 +930,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
               // Set AudioStreamInfo fields using information from the
               // AACAudioSpecificConfig record.
               AACAudioSpecificConfig aac_config;
-              if (!aac_config.Parse(stream_infos_[i]->extra_data())) {
+              if (!aac_config.Parse(stream_infos_[i]->codec_config())) {
                 LOG(ERROR) << "Could not parse AACAudioSpecificconfig";
                 return false;
               }
@@ -947,7 +947,7 @@ bool WvmMediaParser::Output(bool output_encrypted_sample) {
 
   if (!is_initialized_) {
     bool all_streams_have_config = true;
-    // Check if all collected stream infos have extra_data set.
+    // Check if all collected stream infos have codec_config set.
     for (uint32_t i = 0; i < stream_infos_.size(); i++) {
       if (stream_infos_[i]->codec_string().empty()) {
         all_streams_have_config = false;

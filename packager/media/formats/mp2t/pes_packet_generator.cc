@@ -104,8 +104,8 @@ bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
     }
     timescale_scale_ = kTsTimescale / video_stream_info.time_scale();
     converter_.reset(new NalUnitToByteStreamConverter());
-    return converter_->Initialize(video_stream_info.extra_data().data(),
-                                  video_stream_info.extra_data().size(),
+    return converter_->Initialize(video_stream_info.codec_config().data(),
+                                  video_stream_info.codec_config().size(),
                                   !kEscapeData);
   } else if (stream_type_ == kStreamAudio) {
     const AudioStreamInfo& audio_stream_info =
@@ -117,7 +117,7 @@ bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
     }
     timescale_scale_ = kTsTimescale / audio_stream_info.time_scale();
     adts_converter_.reset(new AACAudioSpecificConfig());
-    return adts_converter_->Parse(audio_stream_info.extra_data());
+    return adts_converter_->Parse(audio_stream_info.codec_config());
   }
 
   NOTIMPLEMENTED() << "Stream type: " << stream_type_ << " not implemented.";

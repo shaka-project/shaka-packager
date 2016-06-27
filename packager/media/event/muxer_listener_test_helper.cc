@@ -29,8 +29,8 @@ scoped_refptr<StreamInfo> CreateVideoStreamInfo(
                           param.pixel_height,
                           0,  // trick_play_rate
                           param.nalu_length_size,
-                          param.extra_data.data(),
-                          param.extra_data.size(),
+                          param.codec_config.data(),
+                          param.codec_config.size(),
                           param.is_encrypted));
 }
 
@@ -60,7 +60,7 @@ VideoStreamInfoParameters GetDefaultVideoStreamInfoParams() {
   params.pixel_width = kPixelWidth;
   params.pixel_height = kPixelHeight;
   params.nalu_length_size = kNaluLengthSize;
-  params.extra_data = kExtraData;
+  params.codec_config = kExtraData;
   params.is_encrypted = kEncryptedFlag;
   return params;
 }

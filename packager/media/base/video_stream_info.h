@@ -45,8 +45,8 @@ class VideoStreamInfo : public StreamInfo {
                   uint32_t pixel_height,
                   int16_t trick_play_rate,
                   uint8_t nalu_length_size,
-                  const uint8_t* extra_data,
-                  size_t extra_data_size,
+                  const uint8_t* codec_config,
+                  size_t codec_config_size,
                   bool is_encrypted);
 
   /// @name StreamInfo implementation overrides.

@@ -48,8 +48,8 @@ class AudioStreamInfo : public StreamInfo {
                   uint64_t codec_delay_ns,
                   uint32_t max_bitrate,
                   uint32_t avg_bitrate,
-                  const uint8_t* extra_data,
-                  size_t extra_data_size,
+                  const uint8_t* codec_config,
+                  size_t codec_config_size,
                   bool is_encrypted);
 
   /// @name StreamInfo implementation overrides.

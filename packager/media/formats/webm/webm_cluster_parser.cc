@@ -457,15 +457,15 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
         }
 
         VPCodecConfigurationRecord codec_config;
-        if (!video_stream_info_->extra_data().empty())
-          codec_config.ParseMP4(video_stream_info_->extra_data());
+        if (!video_stream_info_->codec_config().empty())
+          codec_config.ParseMP4(video_stream_info_->codec_config());
         codec_config.MergeFrom(vpx_parser->codec_config());
 
         video_stream_info_->set_codec_string(
             codec_config.GetCodecString(video_stream_info_->codec()));
-        std::vector<uint8_t> extra_data;
-        codec_config.WriteMP4(&extra_data);
-        video_stream_info_->set_extra_data(extra_data);
+        std::vector<uint8_t> config_serialized;
+        codec_config.WriteMP4(&config_serialized);
+        video_stream_info_->set_codec_config(config_serialized);
         streams.push_back(video_stream_info_);
         init_cb_.Run(streams);
         initialized_ = true;

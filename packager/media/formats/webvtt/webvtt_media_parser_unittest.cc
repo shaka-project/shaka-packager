@@ -273,8 +273,8 @@ TEST_F(WebVttMediaParserTest, BadComment) {
 }
 
 MATCHER_P(HeaderMatches, header, "") {
-  const std::vector<uint8_t>& extra_data = arg.at(0)->extra_data();
-  return extra_data == header;
+  const std::vector<uint8_t>& codec_config = arg.at(0)->codec_config();
+  return codec_config == header;
 }
 
 // Verify that the metadata header and the WEBVTT magic string is there.

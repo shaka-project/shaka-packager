@@ -126,14 +126,14 @@ bool EsParserH265::UpdateVideoDecoderConfig(int pps_id) {
   }
 
   if (last_video_decoder_config_) {
-    if (last_video_decoder_config_->extra_data() != decoder_config_record) {
+    if (last_video_decoder_config_->codec_config() != decoder_config_record) {
       // Video configuration has changed. Issue warning.
       // TODO(tinskip): Check the nature of the configuration change. Only
       // minor configuration changes (such as frame ordering) can be handled
       // gracefully by decoders without notification. Major changes (such as
       // video resolution changes) should be treated as errors.
       LOG(WARNING) << "H.265 decoder configuration has changed.";
-      last_video_decoder_config_->set_extra_data(decoder_config_record);
+      last_video_decoder_config_->set_codec_config(decoder_config_record);
     }
     return true;
   }

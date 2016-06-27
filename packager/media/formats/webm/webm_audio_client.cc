@@ -60,11 +60,11 @@ scoped_refptr<AudioStreamInfo> WebMAudioClient::GetAudioStreamInfo(
     sampling_frequency = 48000;
   }
 
-  const uint8_t* extra_data = NULL;
-  size_t extra_data_size = 0;
+  const uint8_t* codec_config = NULL;
+  size_t codec_config_size = 0;
   if (codec_private.size() > 0) {
-    extra_data = &codec_private[0];
-    extra_data_size = codec_private.size();
+    codec_config = &codec_private[0];
+    codec_config_size = codec_private.size();
   }
 
   const uint8_t kSampleSizeInBits = 16u;
@@ -73,7 +73,7 @@ scoped_refptr<AudioStreamInfo> WebMAudioClient::GetAudioStreamInfo(
       AudioStreamInfo::GetCodecString(audio_codec, 0), language,
       kSampleSizeInBits, channels_, sampling_frequency,
       seek_preroll < 0 ? 0 : seek_preroll, codec_delay < 0 ? 0 : codec_delay, 0,
-      0, extra_data, extra_data_size, is_encrypted));
+      0, codec_config, codec_config_size, is_encrypted));
 }
 
 bool WebMAudioClient::OnUInt(int id, int64_t val) {

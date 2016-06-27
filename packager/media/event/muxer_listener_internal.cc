@@ -96,9 +96,9 @@ void AddVideoInfo(const VideoStreamInfo* video_stream_info,
   if (video_stream_info->pixel_height() > 0)
     video_info->set_pixel_height(video_stream_info->pixel_height());
 
-  const std::vector<uint8_t>& extra_data = video_stream_info->extra_data();
-  if (!extra_data.empty()) {
-    video_info->set_decoder_config(&extra_data[0], extra_data.size());
+  const std::vector<uint8_t>& codec_config = video_stream_info->codec_config();
+  if (!codec_config.empty()) {
+    video_info->set_decoder_config(&codec_config[0], codec_config.size());
   }
 }
 
@@ -118,14 +118,14 @@ void AddAudioInfo(const AudioStreamInfo* audio_stream_info,
     audio_info->set_language(language);
   }
 
-  const std::vector<uint8_t>& extra_data = audio_stream_info->extra_data();
-  if (!extra_data.empty()) {
-    audio_info->set_decoder_config(&extra_data[0], extra_data.size());
+  const std::vector<uint8_t>& codec_config = audio_stream_info->codec_config();
+  if (!codec_config.empty()) {
+    audio_info->set_decoder_config(&codec_config[0], codec_config.size());
   }
 
   if (audio_stream_info->codec_string() == "ec-3") {
     uint32_t ec3_channel_map;
-    if (!CalculateEC3ChannelMap(extra_data, &ec3_channel_map)) {
+    if (!CalculateEC3ChannelMap(codec_config, &ec3_channel_map)) {
       LOG(ERROR) << "Failed to calculate EC3 channel map.";
       return;
     }

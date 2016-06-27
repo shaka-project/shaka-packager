@@ -22,9 +22,9 @@ class TextStreamInfo : public StreamInfo {
   /// @param duration is the duration of this stream.
   /// @param codec_string is the codec.
   /// @param language is the language of this stream. This may be empty.
-  /// @param extra_data is extra data for this text stream. This could be the
-  ///        metadata that applies to all the samples of this stream. This may
-  ///        be empty.
+  /// @param codec_config is configuration for this text stream. This could be
+  ///        the metadata that applies to all the samples of this stream. This
+  ///        may be empty.
   /// @param width of the text. This may be 0.
   /// @param height of the text. This may be 0.
   TextStreamInfo(int track_id,
@@ -32,7 +32,7 @@ class TextStreamInfo : public StreamInfo {
                  uint64_t duration,
                  const std::string& codec_string,
                  const std::string& language,
-                 const std::string& extra_data,
+                 const std::string& codec_config,
                  uint16_t width,
                  uint16_t height);
 

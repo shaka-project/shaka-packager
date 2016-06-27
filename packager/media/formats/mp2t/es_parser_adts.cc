@@ -205,7 +205,7 @@ bool EsParserAdts::UpdateAudioConfiguration(const uint8_t* adts_frame,
 
   if (last_audio_decoder_config_) {
     // Verify that the audio decoder config has not changed.
-    if (last_audio_decoder_config_->extra_data() == audio_specific_config) {
+    if (last_audio_decoder_config_->codec_config() == audio_specific_config) {
       // Audio configuration has not changed.
       return true;
     }

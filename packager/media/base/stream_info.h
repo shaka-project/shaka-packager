@@ -31,8 +31,8 @@ class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
              uint64_t duration,
              const std::string& codec_string,
              const std::string& language,
-             const uint8_t* extra_data,
-             size_t extra_data_size,
+             const uint8_t* codec_config,
+             size_t codec_config_size,
              bool is_encrypted);
 
   /// @return true if this object has appropriate configuration values, false
@@ -51,11 +51,11 @@ class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
 
   bool is_encrypted() const { return is_encrypted_; }
 
-  const std::vector<uint8_t>& extra_data() const { return extra_data_; }
+  const std::vector<uint8_t>& codec_config() const { return codec_config_; }
 
   void set_duration(int duration) { duration_ = duration; }
 
-  void set_extra_data(const std::vector<uint8_t>& data) { extra_data_ = data; }
+  void set_codec_config(const std::vector<uint8_t>& data) { codec_config_ = data; }
 
   void set_codec_string(const std::string& codec_string) {
     codec_string_ = codec_string;
@@ -83,7 +83,7 @@ class StreamInfo : public base::RefCountedThreadSafe<StreamInfo> {
   bool is_encrypted_;
   // Optional byte data required for some audio/video decoders such as Vorbis
   // codebooks.
-  std::vector<uint8_t> extra_data_;
+  std::vector<uint8_t> codec_config_;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the extra data is

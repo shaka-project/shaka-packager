@@ -350,7 +350,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       uint8_t audio_object_type = 0;
       uint32_t max_bitrate = 0;
       uint32_t avg_bitrate = 0;
-      std::vector<uint8_t> extra_data;
+      std::vector<uint8_t> codec_config;
 
       switch (actual_format) {
         case FOURCC_mp4a:
@@ -363,7 +363,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
             num_channels = aac_audio_specific_config.num_channels();
             sampling_frequency = aac_audio_specific_config.frequency();
             audio_object_type = aac_audio_specific_config.audio_object_type();
-            extra_data = entry.esds.es_descriptor.decoder_specific_info();
+            codec_config = entry.esds.es_descriptor.decoder_specific_info();
             break;
           } else if (entry.esds.es_descriptor.IsDTS()) {
             ObjectType audio_type = entry.esds.es_descriptor.object_type();
@@ -411,24 +411,24 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
         case FOURCC_dtse:
           FALLTHROUGH_INTENDED;
         case FOURCC_dtsm:
-          extra_data = entry.ddts.extra_data;
+          codec_config = entry.ddts.extra_data;
           max_bitrate = entry.ddts.max_bitrate;
           avg_bitrate = entry.ddts.avg_bitrate;
           num_channels = entry.channelcount;
           sampling_frequency = entry.samplerate;
           break;
         case FOURCC_ac_3:
-          extra_data = entry.dac3.data;
+          codec_config = entry.dac3.data;
           num_channels = entry.channelcount;
           sampling_frequency = entry.samplerate;
           break;
         case FOURCC_ec_3:
-          extra_data = entry.dec3.data;
+          codec_config = entry.dec3.data;
           num_channels = entry.channelcount;
           sampling_frequency = entry.samplerate;
           break;
         case FOURCC_Opus:
-          extra_data = entry.dops.opus_identification_header;
+          codec_config = entry.dops.opus_identification_header;
           num_channels = entry.channelcount;
           sampling_frequency = entry.samplerate;
           RCHECK(sampling_frequency != 0);
@@ -486,8 +486,8 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           codec_delay_ns,
           max_bitrate,
           avg_bitrate,
-          extra_data.data(),
-          extra_data.size(),
+          codec_config.data(),
+          codec_config.size(),
           is_encrypted));
     }
 

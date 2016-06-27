@@ -191,7 +191,7 @@ bool TsWriter::Initialize(const StreamInfo& stream_info,
       return false;
     }
     pmt_writer_.reset(new AacProgramMapTableWriter(
-        audio_stream_info.extra_data(), &pmt_continuity_counter_));
+        audio_stream_info.codec_config(), &pmt_continuity_counter_));
   }
 
   will_be_encrypted_ = will_be_encrypted;

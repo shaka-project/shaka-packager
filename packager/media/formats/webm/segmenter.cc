@@ -273,17 +273,17 @@ Status Segmenter::CreateVideoTrack(VideoStreamInfo* info) {
   } else if (info->codec() == kCodecVP9) {
     track->set_codec_id(mkvmuxer::Tracks::kVp9CodecId);
 
-    // The |StreamInfo::extra_data| field is stored using the MP4 format; we
+    // The |StreamInfo::codec_config| field is stored using the MP4 format; we
     // need to convert it to the WebM format.
     VPCodecConfigurationRecord vp_config;
-    if (!vp_config.ParseMP4(info->extra_data())) {
+    if (!vp_config.ParseMP4(info->codec_config())) {
       return Status(error::INTERNAL_ERROR,
                     "Unable to parse VP9 codec configuration");
     }
 
-    std::vector<uint8_t> extra_data;
-    vp_config.WriteWebM(&extra_data);
-    if (!track->SetCodecPrivate(extra_data.data(), extra_data.size())) {
+    std::vector<uint8_t> codec_config;
+    vp_config.WriteWebM(&codec_config);
+    if (!track->SetCodecPrivate(codec_config.data(), codec_config.size())) {
       return Status(error::INTERNAL_ERROR,
                     "Private codec data required for VP9 streams");
     }
@@ -327,8 +327,8 @@ Status Segmenter::CreateAudioTrack(AudioStreamInfo* info) {
     return Status(error::UNIMPLEMENTED,
                   "Only Vorbis and Opus audio codecs are supported.");
   }
-  if (!track->SetCodecPrivate(info->extra_data().data(),
-                              info->extra_data().size())) {
+  if (!track->SetCodecPrivate(info->codec_config().data(),
+                              info->codec_config().size())) {
     return Status(error::INTERNAL_ERROR,
                   "Private codec data required for audio streams");
   }

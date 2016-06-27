@@ -229,7 +229,7 @@ void MP4Muxer::GenerateVideoTrak(const VideoStreamInfo* video_info,
   video.format = VideoCodecToFourCC(video_info->codec());
   video.width = video_info->width();
   video.height = video_info->height();
-  video.codec_configuration.data = video_info->extra_data();
+  video.codec_configuration.data = video_info->codec_config();
   if (pixel_width != 1 || pixel_height != 1) {
     video.pixel_aspect.h_spacing = pixel_width;
     video.pixel_aspect.v_spacing = pixel_height;
@@ -255,7 +255,7 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
       audio.esds.es_descriptor.set_object_type(kISO_14496_3);  // MPEG4 AAC.
       audio.esds.es_descriptor.set_esid(track_id);
       audio.esds.es_descriptor.set_decoder_specific_info(
-          audio_info->extra_data());
+          audio_info->codec_config());
       audio.esds.es_descriptor.set_max_bitrate(audio_info->max_bitrate());
       audio.esds.es_descriptor.set_avg_bitrate(audio_info->avg_bitrate());
       break;
@@ -264,20 +264,20 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
     case kCodecDTSL:
     case kCodecDTSE:
     case kCodecDTSM:
-      audio.ddts.extra_data = audio_info->extra_data();
+      audio.ddts.extra_data = audio_info->codec_config();
       audio.ddts.max_bitrate = audio_info->max_bitrate();
       audio.ddts.avg_bitrate = audio_info->avg_bitrate();
       audio.ddts.sampling_frequency = audio_info->sampling_frequency();
       audio.ddts.pcm_sample_depth = audio_info->sample_bits();
       break;
     case kCodecAC3:
-      audio.dac3.data = audio_info->extra_data();
+      audio.dac3.data = audio_info->codec_config();
       break;
     case kCodecEAC3:
-      audio.dec3.data = audio_info->extra_data();
+      audio.dec3.data = audio_info->codec_config();
       break;
     case kCodecOpus:
-      audio.dops.opus_identification_header = audio_info->extra_data();
+      audio.dops.opus_identification_header = audio_info->codec_config();
       break;
     default:
       NOTIMPLEMENTED();
