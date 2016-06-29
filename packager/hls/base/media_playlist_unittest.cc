@@ -276,6 +276,40 @@ TEST_F(MediaPlaylistTest, WriteToFileWithEncryptionInfoEmptyIv) {
   EXPECT_TRUE(media_playlist_.WriteToFile(&file));
 }
 
+// Verify that EXT-X-DISCONTINUITY is inserted before EXT-X-KEY.
+TEST_F(MediaPlaylistTest, WriteToFileWithClearLead) {
+  valid_video_media_info_.set_reference_time_scale(90000);
+  ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));
+
+  media_playlist_.AddSegment("file1.ts", 900000, 1000000);
+
+  media_playlist_.AddEncryptionInfo(MediaPlaylist::EncryptionMethod::kSampleAes,
+                                    "http://example.com", "0x12345678",
+                                    "com.widevine", "1/2/4");
+  media_playlist_.AddSegment("file2.ts", 2700000, 5000000);
+  const std::string kExpectedOutput =
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:5\n"
+      "#EXT-X-TARGETDURATION:30\n"
+      "#EXT-X-PLAYLIST-TYPE:VOD\n"
+      "#EXTINF:10.000,\n"
+      "file1.ts\n"
+      "#EXT-X-DISCONTINUITY\n"
+      "#EXT-X-KEY:METHOD=SAMPLE-AES,"
+      "URI=\"http://example.com\",IV=0x12345678,KEYFORMATVERSIONS=\"1/2/4\","
+      "KEYFORMAT=\"com.widevine\"\n"
+      "#EXTINF:30.000,\n"
+      "file2.ts\n"
+      "#EXT-X-ENDLIST\n";
+
+  MockFile file;
+  EXPECT_CALL(file,
+              Write(MatchesString(kExpectedOutput), kExpectedOutput.size()))
+      .WillOnce(ReturnArg<1>());
+  EXPECT_TRUE(media_playlist_.WriteToFile(&file));
+}
+
+
 TEST_F(MediaPlaylistTest, RemoveOldestSegment) {
   valid_video_media_info_.set_reference_time_scale(90000);
   ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));

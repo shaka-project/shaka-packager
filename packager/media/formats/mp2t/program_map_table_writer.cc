@@ -328,17 +328,6 @@ H264ProgramMapTableWriter::H264ProgramMapTableWriter(
 
 H264ProgramMapTableWriter::~H264ProgramMapTableWriter() {}
 
-bool H264ProgramMapTableWriter::ClearLeadSegmentPmt(BufferWriter* writer) {
-  has_clear_lead_ = true;
-  WritePmtToBuffer(kPmtH264, arraysize(kPmtH264), continuity_counter_, writer);
-  WritePmtWithParameters(
-      kStreamTypeEncryptedH264, kVersion1, kNext,
-      kPrivateDataIndicatorDescriptorEncryptedH264,
-      arraysize(kPrivateDataIndicatorDescriptorEncryptedH264),
-      continuity_counter_, writer);
-  return true;
-}
-
 bool H264ProgramMapTableWriter::EncryptedSegmentPmt(BufferWriter* writer) {
   WritePmtWithParameters(
       kStreamTypeEncryptedH264, has_clear_lead_ ? kVersion1 : kVersion0,
@@ -349,7 +338,11 @@ bool H264ProgramMapTableWriter::EncryptedSegmentPmt(BufferWriter* writer) {
 }
 
 bool H264ProgramMapTableWriter::ClearSegmentPmt(BufferWriter* writer) {
+  has_clear_lead_ = true;
   WritePmtToBuffer(kPmtH264, arraysize(kPmtH264), continuity_counter_, writer);
+  // Cannot insert PMT for following encrypted segments because
+  // some players consider encrypted segments as "zavc" codec which is different
+  // from "avc1" codec, which causes problems.
   return true;
 }
 
@@ -366,13 +359,6 @@ AacProgramMapTableWriter::~AacProgramMapTableWriter() {}
 
 // TODO(rkuroiwa): Cache the PMT for encrypted segments, it doesn't need to
 // be recalculated.
-bool AacProgramMapTableWriter::ClearLeadSegmentPmt(BufferWriter* writer) {
-  has_clear_lead_ = true;
-  WritePmtToBuffer(kPmtAac, arraysize(kPmtAac), continuity_counter_, writer);
-  // Version 1 and next.
-  return EncryptedSegmentPmtWithParameters(kVersion1, kNext, writer);
-}
-
 bool AacProgramMapTableWriter::EncryptedSegmentPmt(BufferWriter* writer) {
   // Version 1 and current.
   return EncryptedSegmentPmtWithParameters(
@@ -380,6 +366,7 @@ bool AacProgramMapTableWriter::EncryptedSegmentPmt(BufferWriter* writer) {
 }
 
 bool AacProgramMapTableWriter::ClearSegmentPmt(BufferWriter* writer) {
+  has_clear_lead_ = true;
   WritePmtToBuffer(kPmtAac, arraysize(kPmtAac), continuity_counter_, writer);
   return true;
 }

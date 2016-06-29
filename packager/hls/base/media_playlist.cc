@@ -280,9 +280,20 @@ bool MediaPlaylist::WriteToFile(media::File* file) {
   if (type_ == MediaPlaylistType::kVod) {
     header += "#EXT-X-PLAYLIST-TYPE:VOD\n";
   }
+
   std::string body;
-  for (const auto& entry : entries_) {
-    body.append(entry->ToString());
+  if (!entries_.empty()) {
+    const bool first_is_ext_key =
+        entries_.front()->type() == HlsEntry::EntryType::kExtKey;
+    bool inserted_discontinuity_tag = false;
+    for (const auto& entry : entries_) {
+      if (!first_is_ext_key && !inserted_discontinuity_tag &&
+          entry->type() == HlsEntry::EntryType::kExtKey) {
+        body.append("#EXT-X-DISCONTINUITY\n");
+        inserted_discontinuity_tag = true;
+      }
+      body.append(entry->ToString());
+    }
   }
 
   std::string content = header + body;

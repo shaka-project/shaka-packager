@@ -162,8 +162,7 @@ bool WritePesToFile(const PesPacket& pes,
 TsWriter::TsWriter() {}
 TsWriter::~TsWriter() {}
 
-bool TsWriter::Initialize(const StreamInfo& stream_info,
-                          bool will_be_encrypted) {
+bool TsWriter::Initialize(const StreamInfo& stream_info) {
   const StreamType stream_type = stream_info.stream_type();
   if (stream_type != StreamType::kStreamVideo &&
       stream_type != StreamType::kStreamAudio) {
@@ -194,7 +193,6 @@ bool TsWriter::Initialize(const StreamInfo& stream_info,
         audio_stream_info.codec_config(), &pmt_continuity_counter_));
   }
 
-  will_be_encrypted_ = will_be_encrypted;
   return true;
 }
 
@@ -211,11 +209,7 @@ bool TsWriter::NewSegment(const std::string& file_name) {
 
   BufferWriter psi;
   WritePatToBuffer(kPat, arraysize(kPat), &pat_continuity_counter_, &psi);
-  if (will_be_encrypted_ && !encrypted_) {
-    if (!pmt_writer_->ClearLeadSegmentPmt(&psi)) {
-      return false;
-    }
-  } else if (encrypted_) {
+  if (encrypted_) {
     if (!pmt_writer_->EncryptedSegmentPmt(&psi)) {
       return false;
     }

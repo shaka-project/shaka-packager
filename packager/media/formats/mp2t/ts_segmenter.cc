@@ -37,7 +37,7 @@ Status TsSegmenter::Initialize(const StreamInfo& stream_info,
                                double clear_lead_in_seconds) {
   if (muxer_options_.segment_template.empty())
     return Status(error::MUXER_FAILURE, "Segment template not specified.");
-  if (!ts_writer_->Initialize(stream_info, false))
+  if (!ts_writer_->Initialize(stream_info))
     return Status(error::MUXER_FAILURE, "Failed to initialize TsWriter.");
   if (!pes_packet_generator_->Initialize(stream_info)) {
     return Status(error::MUXER_FAILURE,

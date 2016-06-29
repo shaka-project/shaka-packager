@@ -29,17 +29,10 @@ class ProgramMapTableWriter {
   ProgramMapTableWriter();
   virtual ~ProgramMapTableWriter();
 
-  /// Writes TS packets with PMT for clear lead followed by another PMT for
-  /// encrypted segments.
-  virtual bool ClearLeadSegmentPmt(BufferWriter* writer) = 0;
-
-  /// Writes TS packets with PMT for encrypted segments, the version number will
-  /// be 1.
+  /// Writes TS packets with PMT for encrypted segments.
   virtual bool EncryptedSegmentPmt(BufferWriter* writer) = 0;
 
-  /// This is the same as ClearLeadSegmentPmt() but does not append the extra PMT
-  /// for encrypted segments that the clear segments. IOW use this if the entire
-  /// stream is in the clear.
+  /// Writes TS packets with PMT for clear segments.
   virtual bool ClearSegmentPmt(BufferWriter* writer) = 0;
 
   // The pid can be 13 bits long but 8 bits is sufficient for this library.
@@ -57,7 +50,6 @@ class H264ProgramMapTableWriter : public ProgramMapTableWriter {
   explicit H264ProgramMapTableWriter(ContinuityCounter* continuity_counter);
   ~H264ProgramMapTableWriter() override;
 
-  bool ClearLeadSegmentPmt(BufferWriter* writer) override;
   bool EncryptedSegmentPmt(BufferWriter* writer) override;
   bool ClearSegmentPmt(BufferWriter* writer) override;
 
@@ -81,7 +73,6 @@ class AacProgramMapTableWriter : public ProgramMapTableWriter {
       ContinuityCounter* continuity_counter);
   ~AacProgramMapTableWriter() override;
 
-  bool ClearLeadSegmentPmt(BufferWriter* writer) override;
   bool EncryptedSegmentPmt(BufferWriter* writer) override;
   bool ClearSegmentPmt(BufferWriter* writer) override;
 

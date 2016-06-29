@@ -56,14 +56,11 @@ const uint8_t kExtraData[] = {0x01, 0x02};
 
 const uint8_t kAacBasicProfileExtraData[] = {0x12, 0x10};
 
-const bool kWillBeEncrypted = true;
-
 class MockProgramMapTableWriter : public ProgramMapTableWriter {
  public:
   MockProgramMapTableWriter() {}
   ~MockProgramMapTableWriter() override {}
 
-  MOCK_METHOD1(ClearLeadSegmentPmt, bool(BufferWriter* writer));
   MOCK_METHOD1(EncryptedSegmentPmt, bool(BufferWriter* writer));
   MOCK_METHOD1(ClearSegmentPmt, bool(BufferWriter* writer));
 };
@@ -163,7 +160,7 @@ TEST_F(TsWriterTest, InitializeVideoH264) {
       kTrackId, kTimeScale, kDuration, kH264VideoCodec, kCodecString, kLanguage,
       kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
       kNaluLengthSize, kExtraData, arraysize(kExtraData), kIsEncrypted));
-  EXPECT_TRUE(ts_writer_.Initialize(*stream_info, !kWillBeEncrypted));
+  EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 }
 
 TEST_F(TsWriterTest, InitializeVideoNonH264) {
@@ -171,7 +168,7 @@ TEST_F(TsWriterTest, InitializeVideoNonH264) {
       kTrackId, kTimeScale, kDuration, VideoCodec::kCodecVP9, kCodecString,
       kLanguage, kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
       kNaluLengthSize, kExtraData, arraysize(kExtraData), kIsEncrypted));
-  EXPECT_FALSE(ts_writer_.Initialize(*stream_info, !kWillBeEncrypted));
+  EXPECT_FALSE(ts_writer_.Initialize(*stream_info));
 }
 
 TEST_F(TsWriterTest, InitializeAudioAac) {
@@ -180,7 +177,7 @@ TEST_F(TsWriterTest, InitializeAudioAac) {
       kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll, kCodecDelay,
       kMaxBitrate, kAverageBitrate, kExtraData, arraysize(kExtraData),
       kIsEncrypted));
-  EXPECT_TRUE(ts_writer_.Initialize(*stream_info, !kWillBeEncrypted));
+  EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 }
 
 TEST_F(TsWriterTest, InitializeAudioNonAac) {
@@ -189,7 +186,7 @@ TEST_F(TsWriterTest, InitializeAudioNonAac) {
       kLanguage, kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll,
       kCodecDelay, kMaxBitrate, kAverageBitrate, kExtraData,
       arraysize(kExtraData), kIsEncrypted));
-  EXPECT_FALSE(ts_writer_.Initialize(*stream_info, !kWillBeEncrypted));
+  EXPECT_FALSE(ts_writer_.Initialize(*stream_info));
 }
 
 // Verify that PAT and PMT are correct for clear segment.
@@ -204,7 +201,7 @@ TEST_F(TsWriterTest, ClearH264Psi) {
       kTrackId, kTimeScale, kDuration, kH264VideoCodec, kCodecString, kLanguage,
       kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
       kNaluLengthSize, kExtraData, arraysize(kExtraData), kIsEncrypted));
-  EXPECT_TRUE(ts_writer_.Initialize(*stream_info, !kWillBeEncrypted));
+  EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 
   ts_writer_.SetProgramMapTableWriterForTesting(mock_pmt_writer.Pass());
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
@@ -259,7 +256,7 @@ TEST_F(TsWriterTest, ClearAacPmt) {
       kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll, kCodecDelay,
       kMaxBitrate, kAverageBitrate, kAacBasicProfileExtraData,
       arraysize(kAacBasicProfileExtraData), kIsEncrypted));
-  EXPECT_TRUE(ts_writer_.Initialize(*stream_info, !kWillBeEncrypted));
+  EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 
   ts_writer_.SetProgramMapTableWriterForTesting(mock_pmt_writer.Pass());
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
@@ -279,14 +276,14 @@ TEST_F(TsWriterTest, ClearAacPmt) {
 TEST_F(TsWriterTest, ClearLeadH264Pmt) {
   scoped_ptr<MockProgramMapTableWriter> mock_pmt_writer(
       new MockProgramMapTableWriter());
-  EXPECT_CALL(*mock_pmt_writer, ClearLeadSegmentPmt(_))
+  EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_))
       .WillOnce(WriteTwoPmts());
 
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264VideoCodec, kCodecString, kLanguage,
       kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
       kNaluLengthSize, kExtraData, arraysize(kExtraData), kIsEncrypted));
-  EXPECT_TRUE(ts_writer_.Initialize(*stream_info, kWillBeEncrypted));
+  EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 
   ts_writer_.SetProgramMapTableWriterForTesting(mock_pmt_writer.Pass());
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
@@ -308,14 +305,14 @@ TEST_F(TsWriterTest, EncryptedSegmentsH264Pmt) {
   scoped_ptr<MockProgramMapTableWriter> mock_pmt_writer(
       new MockProgramMapTableWriter());
   InSequence s;
-  EXPECT_CALL(*mock_pmt_writer, ClearLeadSegmentPmt(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pmt_writer, EncryptedSegmentPmt(_)).WillOnce(WriteOnePmt());
 
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
       kTrackId, kTimeScale, kDuration, kH264VideoCodec, kCodecString, kLanguage,
       kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
       kNaluLengthSize, kExtraData, arraysize(kExtraData), kIsEncrypted));
-  EXPECT_TRUE(ts_writer_.Initialize(*stream_info, kWillBeEncrypted));
+  EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 
   ts_writer_.SetProgramMapTableWriterForTesting(mock_pmt_writer.Pass());
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
@@ -339,7 +336,7 @@ TEST_F(TsWriterTest, EncryptedSegmentsH264Pmt) {
 TEST_F(TsWriterTest, ClearLeadAacPmt) {
   scoped_ptr<MockProgramMapTableWriter> mock_pmt_writer(
       new MockProgramMapTableWriter());
-  EXPECT_CALL(*mock_pmt_writer, ClearLeadSegmentPmt(_))
+  EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_))
       .WillOnce(WriteTwoPmts());
 
   scoped_refptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
@@ -347,7 +344,7 @@ TEST_F(TsWriterTest, ClearLeadAacPmt) {
       kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll, kCodecDelay,
       kMaxBitrate, kAverageBitrate, kAacBasicProfileExtraData,
       arraysize(kAacBasicProfileExtraData), kIsEncrypted));
-  EXPECT_TRUE(ts_writer_.Initialize(*stream_info, kWillBeEncrypted));
+  EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 
   ts_writer_.SetProgramMapTableWriterForTesting(mock_pmt_writer.Pass());
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
@@ -369,7 +366,7 @@ TEST_F(TsWriterTest, EncryptedSegmentsAacPmt) {
   scoped_ptr<MockProgramMapTableWriter> mock_pmt_writer(
       new MockProgramMapTableWriter());
   InSequence s;
-  EXPECT_CALL(*mock_pmt_writer, ClearLeadSegmentPmt(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(Return(true));
   EXPECT_CALL(*mock_pmt_writer, EncryptedSegmentPmt(_)).WillOnce(WriteOnePmt());
 
   scoped_refptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
@@ -377,7 +374,7 @@ TEST_F(TsWriterTest, EncryptedSegmentsAacPmt) {
       kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll, kCodecDelay,
       kMaxBitrate, kAverageBitrate, kAacBasicProfileExtraData,
       arraysize(kAacBasicProfileExtraData), kIsEncrypted));
-  EXPECT_TRUE(ts_writer_.Initialize(*stream_info, kWillBeEncrypted));
+  EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 
   ts_writer_.SetProgramMapTableWriterForTesting(mock_pmt_writer.Pass());
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
@@ -403,7 +400,7 @@ TEST_F(TsWriterTest, AddPesPacket) {
       kTrackId, kTimeScale, kDuration, kH264VideoCodec, kCodecString, kLanguage,
       kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
       kNaluLengthSize, kExtraData, arraysize(kExtraData), kIsEncrypted));
-  EXPECT_TRUE(ts_writer_.Initialize(*stream_info, !kWillBeEncrypted));
+  EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
 
   scoped_ptr<PesPacket> pes(new PesPacket());
@@ -468,7 +465,7 @@ TEST_F(TsWriterTest, BigPesPacket) {
       kTrackId, kTimeScale, kDuration, kH264VideoCodec, kCodecString, kLanguage,
       kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
       kNaluLengthSize, kExtraData, arraysize(kExtraData), kIsEncrypted));
-  EXPECT_TRUE(ts_writer_.Initialize(*stream_info, !kWillBeEncrypted));
+  EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
 
   scoped_ptr<PesPacket> pes(new PesPacket());
@@ -504,7 +501,7 @@ TEST_F(TsWriterTest, PesPtsZeroNoDts) {
       kTrackId, kTimeScale, kDuration, kH264VideoCodec, kCodecString, kLanguage,
       kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
       kNaluLengthSize, kExtraData, arraysize(kExtraData), kIsEncrypted));
-  EXPECT_TRUE(ts_writer_.Initialize(*stream_info, !kWillBeEncrypted));
+  EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
 
   scoped_ptr<PesPacket> pes(new PesPacket());
@@ -564,7 +561,7 @@ TEST_F(TsWriterTest, TsPacketPayload183Bytes) {
       kTrackId, kTimeScale, kDuration, kH264VideoCodec, kCodecString, kLanguage,
       kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
       kNaluLengthSize, kExtraData, arraysize(kExtraData), kIsEncrypted));
-  EXPECT_TRUE(ts_writer_.Initialize(*stream_info, !kWillBeEncrypted));
+  EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
 
   scoped_ptr<PesPacket> pes(new PesPacket());
