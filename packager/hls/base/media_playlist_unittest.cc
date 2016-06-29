@@ -116,7 +116,7 @@ TEST_F(MediaPlaylistTest, WriteToFile) {
   ASSERT_TRUE(media_playlist_.SetMediaInfo(valid_video_media_info_));
   const std::string kExpectedOutput =
       "#EXTM3U\n"
-      "#EXT-X-VERSION:4\n"
+      "#EXT-X-VERSION:5\n"
       "#EXT-X-TARGETDURATION:0\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-ENDLIST\n";
@@ -171,7 +171,7 @@ TEST_F(MediaPlaylistTest, SetTargetDuration) {
   EXPECT_TRUE(media_playlist_.SetTargetDuration(20));
   const std::string kExpectedOutput =
       "#EXTM3U\n"
-      "#EXT-X-VERSION:4\n"
+      "#EXT-X-VERSION:5\n"
       "#EXT-X-TARGETDURATION:20\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-ENDLIST\n";
@@ -197,7 +197,7 @@ TEST_F(MediaPlaylistTest, WriteToFileWithSegments) {
   media_playlist_.AddSegment("file2.ts", 2700000, 5000000);
   const std::string kExpectedOutput =
       "#EXTM3U\n"
-      "#EXT-X-VERSION:4\n"
+      "#EXT-X-VERSION:5\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXTINF:10.000,\n"
@@ -226,7 +226,7 @@ TEST_F(MediaPlaylistTest, WriteToFileWithEncryptionInfo) {
   media_playlist_.AddSegment("file2.ts", 2700000, 5000000);
   const std::string kExpectedOutput =
       "#EXTM3U\n"
-      "#EXT-X-VERSION:4\n"
+      "#EXT-X-VERSION:5\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-KEY:METHOD=SAMPLE-AES,"
@@ -258,7 +258,7 @@ TEST_F(MediaPlaylistTest, WriteToFileWithEncryptionInfoEmptyIv) {
   media_playlist_.AddSegment("file2.ts", 2700000, 5000000);
   const std::string kExpectedOutput =
       "#EXTM3U\n"
-      "#EXT-X-VERSION:4\n"
+      "#EXT-X-VERSION:5\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-KEY:METHOD=SAMPLE-AES,"
@@ -288,7 +288,7 @@ TEST_F(MediaPlaylistTest, RemoveOldestSegment) {
 
   const std::string kExpectedOutput =
       "#EXTM3U\n"
-      "#EXT-X-VERSION:4\n"
+      "#EXT-X-VERSION:5\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXTINF:30.000,\n"

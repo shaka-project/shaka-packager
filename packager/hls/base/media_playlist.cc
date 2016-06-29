@@ -273,9 +273,9 @@ bool MediaPlaylist::WriteToFile(media::File* file) {
     SetTargetDuration(ceil(GetLongestSegmentDuration()));
   }
 
-  // EXTINF with floating point duration requires version 4.
+  // KEYFORMAT and KEYFORMATVERSIONS on EXT-X-KEY requires 5 or above.
   std::string header = base::StringPrintf("#EXTM3U\n"
-                                          "#EXT-X-VERSION:4\n"
+                                          "#EXT-X-VERSION:5\n"
                                           "#EXT-X-TARGETDURATION:%d\n",
                                           target_duration_);
   if (type_ == MediaPlaylistType::kVod) {
