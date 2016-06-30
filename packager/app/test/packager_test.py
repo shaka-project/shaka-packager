@@ -30,6 +30,7 @@ class PackagerAppTest(unittest.TestCase):
                                         'test', 'testdata')
     self.output_prefix = os.path.join(self.tmp_dir, 'output')
     self.mpd_output = self.output_prefix + '.mpd'
+    self.hls_master_playlist_output = self.output_prefix + '.m3u8'
     self.output = None
 
   def tearDown(self):
@@ -107,15 +108,19 @@ class PackagerAppTest(unittest.TestCase):
                          output_format='ts',
                          live=True,
                          test_files=['bear-640x360.ts']),
-        self._GetFlags(live=True))
+        self._GetFlags(live=True, output_hls=True))
     self._DiffLiveGold(self.output[0],
                        'bear-640x360-a-golden',
-                       has_init_segment=False,
-                       segment_extension='ts')
+                       output_format='ts')
     self._DiffLiveGold(self.output[1],
                        'bear-640x360-v-golden',
-                       has_init_segment=False,
-                       segment_extension='ts')
+                       output_format='ts')
+    self._DiffGold(self.hls_master_playlist_output,
+                   'bear-640x360-av-master-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'audio.m3u8'), 'bear-640x360-a-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'video.m3u8'), 'bear-640x360-v-golden.m3u8')
 
   def testPackageVp8Webm(self):
     self.packager.Package(
@@ -187,6 +192,30 @@ class PackagerAppTest(unittest.TestCase):
     self._DiffGold(self.mpd_output, 'bear-640x360-av-cbcs-golden.mpd')
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
+
+  def testPackageAvcTsWithEncryption(self):
+    # Currently we only support live packaging for ts.
+    self.packager.Package(
+        self._GetStreams(['audio', 'video'],
+                         output_format='ts',
+                         live=True,
+                         test_files=['bear-640x360.ts']),
+        self._GetFlags(encryption=True,
+                       live=True, output_hls=True))
+    self._DiffLiveGold(self.output[0],
+                       'bear-640x360-a-enc-golden',
+                       output_format='ts')
+    self._DiffLiveGold(self.output[1],
+                       'bear-640x360-v-enc-golden',
+                       output_format='ts')
+    self._DiffGold(self.hls_master_playlist_output,
+                   'bear-640x360-av-enc-master-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'audio.m3u8'),
+        'bear-640x360-a-enc-golden.m3u8')
+    self._DiffGold(
+        os.path.join(self.tmp_dir, 'video.m3u8'),
+        'bear-640x360-v-enc-golden.m3u8')
 
   def testPackageWebmWithEncryption(self):
     self.packager.Package(
@@ -392,10 +421,18 @@ class PackagerAppTest(unittest.TestCase):
           output_prefix = '%s_%d_%s' % (self.output_prefix, test_file_index,
                                         stream_descriptor)
         if live:
-          stream = ('input=%s,stream=%s,format=%s,init_segment=%s-init.mp4,'
-                    'segment_template=%s-$Number$.m4s')
-          streams.append(stream % (test_file, stream_descriptor, output_format,
-                                   output_prefix, output_prefix))
+          if output_format == 'ts':
+            stream = ('input=%s,stream=%s,format=%s,'
+                      'segment_template=%s-$Number$.ts,playlist_name=%s.m3u8')
+            streams.append(stream % (test_file, stream_descriptor,
+                                     output_format, output_prefix,
+                                     stream_descriptor))
+          else:
+            stream = ('input=%s,stream=%s,format=%s,init_segment=%s-init.mp4,'
+                      'segment_template=%s-$Number$.m4s')
+            streams.append(stream % (test_file, stream_descriptor,
+                                     output_format, output_prefix,
+                                     output_prefix))
           self.output.append(output_prefix)
         else:
           output = '%s.%s' % (
@@ -423,6 +460,7 @@ class PackagerAppTest(unittest.TestCase):
                 live=False,
                 dash_if_iop=False,
                 output_media_info=False,
+                output_hls=False,
                 use_fake_clock=True):
     flags = []
     if widevine_encryption:
@@ -432,14 +470,16 @@ class PackagerAppTest(unittest.TestCase):
                 '--key_server_url=' + widevine_server_url,
                 '--content_id=3031323334353637', '--signer=widevine_test']
     elif encryption:
-      pssh_box = ('000000307073736800000000'  # PSSH header
-                  'edef8ba979d64acea3c827dcd51d21ed'  # Widevine system ID
-                  '00000010'  # Data size
-                  '31323334353637383930313233343536')  # Data
       flags += ['--enable_fixed_key_encryption',
                 '--key_id=31323334353637383930313233343536',
-                '--key=32333435363738393021323334353637', '--pssh=' + pssh_box,
-                '--clear_lead=1']
+                '--key=32333435363738393021323334353637', '--clear_lead=1']
+      if not output_hls:
+        pssh_box = ('000000307073736800000000'  # PSSH header
+                    'edef8ba979d64acea3c827dcd51d21ed'  # Widevine system ID
+                    '00000010'  # Data size
+                    '31323334353637383930313233343536')  # Data
+        flags.append('--pssh=' + pssh_box)
+
       if not random_iv:
         flags.append('--iv=3334353637383930')
     if protection_scheme:
@@ -459,6 +499,8 @@ class PackagerAppTest(unittest.TestCase):
       flags.append('--generate_dash_if_iop_compliant_mpd')
     if output_media_info:
       flags.append('--output_media_info')
+    elif output_hls:
+      flags += ['--hls_master_playlist_output', self.hls_master_playlist_output]
     else:
       flags += ['--mpd_output', self.mpd_output]
 
@@ -508,15 +550,18 @@ class PackagerAppTest(unittest.TestCase):
   def _DiffLiveGold(self,
                     test_output_prefix,
                     golden_file_name_prefix,
-                    has_init_segment=True,
-                    segment_extension='m4s'):
+                    output_format='mp4'):
     # Compare init and the first three segments.
-    if has_init_segment:
+    if output_format == 'ts':
+      for i in range(1, 4):
+        self._DiffGold('%s-%d.ts' % (test_output_prefix, i),
+                       '%s-%d.ts' % (golden_file_name_prefix, i))
+    else:
       self._DiffGold(test_output_prefix + '-init.mp4',
                      golden_file_name_prefix + '-init.mp4')
-    for i in range(1, 4):
-      self._DiffGold('%s-%d.m4s' % (test_output_prefix, i), '%s-%d.%s' %
-                     (golden_file_name_prefix, i, segment_extension))
+      for i in range(1, 4):
+        self._DiffGold('%s-%d.m4s' % (test_output_prefix, i),
+                       '%s-%d.m4s' % (golden_file_name_prefix, i))
 
   # Live mpd contains current availabilityStartTime and publishTime, which
   # needs to be replaced for comparison.

@@ -238,13 +238,12 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
   DCHECK(!(mpd_notifier && hls_notifier));
   DCHECK(remux_jobs);
 
-  // This is the counter for audio that doesn't have a name set.
-  int hls_audio_name_counter = 0;
   std::string previous_input;
-  for (StreamDescriptorList::const_iterator stream_iter =
-           stream_descriptors.begin();
+  int stream_number = 0;
+  for (StreamDescriptorList::const_iterator
+           stream_iter = stream_descriptors.begin();
        stream_iter != stream_descriptors.end();
-       ++stream_iter) {
+       ++stream_iter, ++stream_number) {
     // Process stream descriptor.
     MuxerOptions stream_muxer_options(muxer_options);
     stream_muxer_options.output_file_name = stream_iter->output;
@@ -317,20 +316,8 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     }
     DCHECK(!remux_jobs->empty());
 
-    MediaContainerName output_format = stream_iter->output_format;
-    if (output_format == CONTAINER_UNKNOWN) {
-      output_format =
-          DetermineContainerFromFileName(stream_muxer_options.output_file_name);
-
-      if (output_format == CONTAINER_UNKNOWN) {
-        LOG(ERROR) << "Unable to determine output format for file "
-                   << stream_muxer_options.output_file_name;
-        return false;
-      }
-    }
-
     scoped_ptr<Muxer> muxer(
-        CreateOutputMuxer(stream_muxer_options, output_format));
+        CreateOutputMuxer(stream_muxer_options, stream_iter->output_format));
     if (FLAGS_use_fake_clock_for_muxer) muxer->set_clock(fake_clock);
 
     if (key_source) {
@@ -359,17 +346,19 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
 
     if (hls_notifier) {
       // TODO(rkuroiwa): Do some smart stuff to group the audios, e.g. detect
-      // languages. Also detect whether it is audio so that the counter for
-      // audio%d is continuous.
+      // languages.
       std::string group_id = stream_iter->hls_group_id;
       std::string name = stream_iter->hls_name;
+      std::string hls_playlist_name = stream_iter->hls_playlist_name;
       if (group_id.empty())
         group_id = "audio";
       if (name.empty())
-        name = base::StringPrintf("audio%d", hls_audio_name_counter++);
+        name = base::StringPrintf("stream_%d", stream_number);
+      if (hls_playlist_name.empty())
+        hls_playlist_name = base::StringPrintf("stream_%d.m3u8", stream_number);
 
-      muxer_listener.reset(new HlsNotifyMuxerListener(
-          stream_iter->hls_playlist_name, name, group_id, hls_notifier));
+      muxer_listener.reset(new HlsNotifyMuxerListener(hls_playlist_name, name,
+                                                      group_id, hls_notifier));
     }
 
     if (muxer_listener)

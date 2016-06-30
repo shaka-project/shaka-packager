@@ -10,6 +10,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_split.h"
+#include "packager/media/base/container_names.h"
 #include "packager/mpd/base/language_utils.h"
 
 namespace shaka {
@@ -159,13 +160,39 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
     return false;
   }
 
-  // Note that MPEG2 TS doesn't need a separate initialization segment, so
-  // output field is ignored.
-  const bool is_mpeg2ts_with_segment_template =
-      descriptor.output_format == MediaContainerName::CONTAINER_MPEG2TS &&
-      !descriptor.segment_template.empty();
-  if (!FLAGS_dump_stream_info && descriptor.output.empty() &&
-      !is_mpeg2ts_with_segment_template) {
+  if (descriptor.output_format == CONTAINER_UNKNOWN) {
+    const std::string& output_name = descriptor.output.empty()
+                                         ? descriptor.segment_template
+                                         : descriptor.output;
+    if (!output_name.empty()) {
+      descriptor.output_format = DetermineContainerFromFileName(output_name);
+      if (descriptor.output_format == CONTAINER_UNKNOWN) {
+        LOG(ERROR) << "Unable to determine output format for file "
+                   << output_name;
+        return false;
+      }
+    }
+  }
+
+  if (descriptor.output_format == MediaContainerName::CONTAINER_MPEG2TS) {
+    if (descriptor.segment_template.empty()) {
+      LOG(ERROR) << "Please specify segment_template. Single file TS output is "
+                    "not supported.";
+      return false;
+    }
+    // Note that MPEG2 TS doesn't need a separate initialization segment, so
+    // output field is not needed.
+    if (!descriptor.output.empty()) {
+      LOG(WARNING) << "TS output '" << descriptor.output
+                   << "' ignored. TS muxer does not support initialization "
+                      "segment generation.";
+    }
+    // For convenience, set descriptor.output to descriptor.segment_template. It
+    // is only used for flag checking in variuos places.
+    descriptor.output = descriptor.segment_template;
+  }
+
+  if (!FLAGS_dump_stream_info && descriptor.output.empty()) {
     LOG(ERROR) << "Stream output not specified.";
     return false;
   }
