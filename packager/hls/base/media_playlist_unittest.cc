@@ -148,8 +148,8 @@ TEST_F(MediaPlaylistTest, GetBitrateFromSegments) {
   // 20 seconds, 5MB.
   media_playlist_.AddSegment("file2.ts", 1800000, 5000000);
 
-  // 200KB per second which is 1600K bits / sec.
-  EXPECT_EQ(1600000u, media_playlist_.Bitrate());
+  // Max bitrate is 2000Kb/s.
+  EXPECT_EQ(2000000u, media_playlist_.Bitrate());
 }
 
 TEST_F(MediaPlaylistTest, GetLongestSegmentDuration) {

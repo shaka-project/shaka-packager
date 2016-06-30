@@ -132,8 +132,7 @@ class MediaPlaylist {
   virtual bool WriteToFile(media::File* file);
 
   /// If bitrate is specified in MediaInfo then it will use that value.
-  /// Otherwise, it is calculated from the duration and the size of the
-  /// segments added to this object.
+  /// Otherwise, returns the max bitrate.
   /// @return the bitrate (in bits per second) of this MediaPlaylist.
   virtual uint64_t Bitrate() const;
 
@@ -165,10 +164,8 @@ class MediaPlaylist {
   double longest_segment_duration_ = 0.0;
   uint32_t time_scale_ = 0;
 
-  // The sum of the size of the segments listed in this playlist (in bytes).
-  uint64_t total_segments_size_ = 0;
+  uint64_t max_bitrate_ = 0;
   double total_duration_in_seconds_ = 0.0;
-  int total_num_segments_;
 
   // See SetTargetDuration() comments.
   bool target_duration_set_ = false;

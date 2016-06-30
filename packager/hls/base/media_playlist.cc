@@ -182,10 +182,9 @@ void MediaPlaylist::AddSegment(const std::string& file_name,
   if (segment_duration_seconds > longest_segment_duration_)
     longest_segment_duration_ = segment_duration_seconds;
 
-  total_duration_in_seconds_ += segment_duration_seconds;
-  total_segments_size_ += size;
-  ++total_num_segments_;
-
+  const int kBitsInByte = 8;
+  const uint64_t bitrate = kBitsInByte * size / segment_duration_seconds;
+  max_bitrate_ = std::max(max_bitrate_, bitrate);
   entries_.push_back(new SegmentInfoEntry(file_name, segment_duration_seconds));
 }
 
@@ -313,12 +312,7 @@ bool MediaPlaylist::WriteToFile(media::File* file) {
 uint64_t MediaPlaylist::Bitrate() const {
   if (media_info_.has_bandwidth())
     return media_info_.bandwidth();
-  if (total_duration_in_seconds_ == 0.0)
-    return 0;
-  if (total_segments_size_ == 0)
-    return 0;
-  const int kBytesToBits = 8;
-  return total_segments_size_ * kBytesToBits / total_duration_in_seconds_;
+  return max_bitrate_;
 }
 
 double MediaPlaylist::GetLongestSegmentDuration() const {
