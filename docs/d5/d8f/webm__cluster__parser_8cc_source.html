@@ -547,7 +547,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00458"></a><span class="lineno">  458</span>&#160;</div>
 <div class="line"><a name="l00459"></a><span class="lineno">  459</span>&#160;        VPCodecConfigurationRecord codec_config;</div>
 <div class="line"><a name="l00460"></a><span class="lineno">  460</span>&#160;        <span class="keywordflow">if</span> (!video_stream_info_-&gt;codec_config().empty())</div>
-<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;          codec_config.ParseMP4(video_stream_info_-&gt;codec_config());</div>
+<div class="line"><a name="l00461"></a><span class="lineno">  461</span>&#160;          codec_config.ParseWebM(video_stream_info_-&gt;codec_config());</div>
 <div class="line"><a name="l00462"></a><span class="lineno">  462</span>&#160;        codec_config.MergeFrom(vpx_parser-&gt;codec_config());</div>
 <div class="line"><a name="l00463"></a><span class="lineno">  463</span>&#160;</div>
 <div class="line"><a name="l00464"></a><span class="lineno">  464</span>&#160;        video_stream_info_-&gt;set_codec_string(</div>
@@ -744,7 +744,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jun 29 2016 17:58:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Jun 30 2016 19:53:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
