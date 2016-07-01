@@ -110,11 +110,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ab03b9d7963af7aaea648672f58fe69a9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab03b9d7963af7aaea648672f58fe69a9"></a>
 &#160;</td><td class="memItemRight" valign="bottom"><b>AacProgramMapTableWriter</b> (const std::vector&lt; uint8_t &gt; &amp;aac_audio_specific_config, <a class="el" href="../../d8/dd6/classshaka_1_1media_1_1mp2t_1_1ContinuityCounter.html">ContinuityCounter</a> *continuity_counter)</td></tr>
 <tr class="separator:ab03b9d7963af7aaea648672f58fe69a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9ddc323fe70097a7fcc85a72e0e157fa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dc8/classshaka_1_1media_1_1mp2t_1_1AacProgramMapTableWriter.html#a9ddc323fe70097a7fcc85a72e0e157fa">ClearLeadSegmentPmt</a> (<a class="el" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a> *writer) override</td></tr>
-<tr class="separator:a9ddc323fe70097a7fcc85a72e0e157fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a37616e314cb20775644b9c5e3417f8e5"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dc8/classshaka_1_1media_1_1mp2t_1_1AacProgramMapTableWriter.html#a37616e314cb20775644b9c5e3417f8e5">EncryptedSegmentPmt</a> (<a class="el" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a> *writer) override</td></tr>
+<tr class="memitem:a37616e314cb20775644b9c5e3417f8e5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a37616e314cb20775644b9c5e3417f8e5"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dc8/classshaka_1_1media_1_1mp2t_1_1AacProgramMapTableWriter.html#a37616e314cb20775644b9c5e3417f8e5">EncryptedSegmentPmt</a> (<a class="el" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a> *writer) override</td></tr>
+<tr class="memdesc:a37616e314cb20775644b9c5e3417f8e5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes TS packets with PMT for encrypted segments. <br/></td></tr>
 <tr class="separator:a37616e314cb20775644b9c5e3417f8e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa6d50f3f1249bbf7c1d27608bfb9334f"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dc8/classshaka_1_1media_1_1mp2t_1_1AacProgramMapTableWriter.html#aa6d50f3f1249bbf7c1d27608bfb9334f">ClearSegmentPmt</a> (<a class="el" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a> *writer) override</td></tr>
+<tr class="memitem:aa6d50f3f1249bbf7c1d27608bfb9334f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa6d50f3f1249bbf7c1d27608bfb9334f"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dc8/classshaka_1_1media_1_1mp2t_1_1AacProgramMapTableWriter.html#aa6d50f3f1249bbf7c1d27608bfb9334f">ClearSegmentPmt</a> (<a class="el" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a> *writer) override</td></tr>
+<tr class="memdesc:aa6d50f3f1249bbf7c1d27608bfb9334f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Writes TS packets with PMT for clear segments. <br/></td></tr>
 <tr class="separator:aa6d50f3f1249bbf7c1d27608bfb9334f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
@@ -130,103 +132,15 @@ static const uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>kElem
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><em>This is not a general purpose PMT writer. This is intended to be used by <a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html">TsWriter</a>.</em> </p>
 
-<p>Definition at line <a class="el" href="../../d2/dcd/program__map__table__writer_8h_source.html#l00077">77</a> of file <a class="el" href="../../d2/dcd/program__map__table__writer_8h_source.html">program_map_table_writer.h</a>.</p>
-</div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a9ddc323fe70097a7fcc85a72e0e157fa"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool shaka::media::mp2t::AacProgramMapTableWriter::ClearLeadSegmentPmt </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a> *&#160;</td>
-          <td class="paramname"><em>writer</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Writes TS packets with PMT for clear lead followed by another PMT for encrypted segments. </p>
-
-<p>Implements <a class="el" href="../../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html#aac9520d19a34f674e2ff36ba06fe5bd7">shaka::media::mp2t::ProgramMapTableWriter</a>.</p>
-
-<p>Definition at line <a class="el" href="../../d2/d45/program__map__table__writer_8cc_source.html#l00369">369</a> of file <a class="el" href="../../d2/d45/program__map__table__writer_8cc_source.html">program_map_table_writer.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="aa6d50f3f1249bbf7c1d27608bfb9334f"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool shaka::media::mp2t::AacProgramMapTableWriter::ClearSegmentPmt </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a> *&#160;</td>
-          <td class="paramname"><em>writer</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>This is the same as <a class="el" href="../../d4/dc8/classshaka_1_1media_1_1mp2t_1_1AacProgramMapTableWriter.html#a9ddc323fe70097a7fcc85a72e0e157fa">ClearLeadSegmentPmt()</a> but does not append the extra PMT for encrypted segments that the clear segments. IOW use this if the entire stream is in the clear. </p>
-
-<p>Implements <a class="el" href="../../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html#abaf3df0bbb1b6ff5655d04b828d2889b">shaka::media::mp2t::ProgramMapTableWriter</a>.</p>
-
-<p>Definition at line <a class="el" href="../../d2/d45/program__map__table__writer_8cc_source.html#l00382">382</a> of file <a class="el" href="../../d2/d45/program__map__table__writer_8cc_source.html">program_map_table_writer.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="a37616e314cb20775644b9c5e3417f8e5"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool shaka::media::mp2t::AacProgramMapTableWriter::EncryptedSegmentPmt </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a> *&#160;</td>
-          <td class="paramname"><em>writer</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Writes TS packets with PMT for encrypted segments, the version number will be 1. </p>
-
-<p>Implements <a class="el" href="../../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html#a7f40bf474758b80e57fede27c2610756">shaka::media::mp2t::ProgramMapTableWriter</a>.</p>
-
-<p>Definition at line <a class="el" href="../../d2/d45/program__map__table__writer_8cc_source.html#l00376">376</a> of file <a class="el" href="../../d2/d45/program__map__table__writer_8cc_source.html">program_map_table_writer.cc</a>.</p>
-
-</div>
-</div>
-<hr/>The documentation for this class was generated from the following files:<ul>
+<p>Definition at line <a class="el" href="../../d2/dcd/program__map__table__writer_8h_source.html#l00069">69</a> of file <a class="el" href="../../d2/dcd/program__map__table__writer_8h_source.html">program_map_table_writer.h</a>.</p>
+</div><hr/>The documentation for this class was generated from the following files:<ul>
 <li>media/formats/mp2t/<a class="el" href="../../d2/dcd/program__map__table__writer_8h_source.html">program_map_table_writer.h</a></li>
 <li>media/formats/mp2t/<a class="el" href="../../d2/d45/program__map__table__writer_8cc_source.html">program_map_table_writer.cc</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 30 2016 22:03:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 1 2016 18:53:14 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

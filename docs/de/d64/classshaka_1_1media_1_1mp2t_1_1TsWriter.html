@@ -98,11 +98,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a26d1d163cf15b65099cbc7f9e1d84174"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#a26d1d163cf15b65099cbc7f9e1d84174">Initialize</a> (const <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream_info, bool will_be_encrypted)</td></tr>
-<tr class="separator:a26d1d163cf15b65099cbc7f9e1d84174"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6bee605be771538f78633e2ecfc979c6"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#a6bee605be771538f78633e2ecfc979c6">Initialize</a> (const <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream_info)</td></tr>
+<tr class="separator:a6bee605be771538f78633e2ecfc979c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9ba30b9cc1e4ae2992735709ae987c64"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#a9ba30b9cc1e4ae2992735709ae987c64">NewSegment</a> (const std::string &amp;file_name)</td></tr>
 <tr class="separator:a9ba30b9cc1e4ae2992735709ae987c64"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb5ff316b39723add8d1b982a291ec62"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#afb5ff316b39723add8d1b982a291ec62">SignalEncypted</a> ()</td></tr>
+<tr class="memitem:afb5ff316b39723add8d1b982a291ec62"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afb5ff316b39723add8d1b982a291ec62"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#afb5ff316b39723add8d1b982a291ec62">SignalEncypted</a> ()</td></tr>
+<tr class="memdesc:afb5ff316b39723add8d1b982a291ec62"><td class="mdescLeft">&#160;</td><td class="mdescRight">Signals the writer that the rest of the segments are encrypted. <br/></td></tr>
 <tr class="separator:afb5ff316b39723add8d1b982a291ec62"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9979f940d7a07127709576aa1f766a1"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#ae9979f940d7a07127709576aa1f766a1">FinalizeSegment</a> ()</td></tr>
 <tr class="separator:ae9979f940d7a07127709576aa1f766a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -148,7 +150,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00244">244</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00238">238</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
 
 </div>
 </div>
@@ -175,11 +177,11 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <p>Flush all the pending PesPackets that have not been written to file and close the file. </p>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00240">240</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00234">234</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a26d1d163cf15b65099cbc7f9e1d84174"></a>
+<a class="anchor" id="a6bee605be771538f78633e2ecfc979c6"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -190,18 +192,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
           <td class="memname">bool shaka::media::mp2t::TsWriter::Initialize </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;&#160;</td>
-          <td class="paramname"><em>stream_info</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramname"><em>stream_info</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>will_be_encrypted</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -214,7 +206,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">stream_info</td><td>is the information about this stream. </td></tr>
-    <tr><td class="paramname">will_be_encrypted</td><td>must be true if some segment would be encrypted. It is ok if the entire stream is not encrypted but have this true e.g. if the clear lead is very long. </td></tr>
   </table>
   </dd>
 </dl>
@@ -255,33 +246,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00201">201</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
-
-</div>
-</div>
-<a class="anchor" id="afb5ff316b39723add8d1b982a291ec62"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void shaka::media::mp2t::TsWriter::SignalEncypted </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Signals the writer that the rest of the segments are encrypted. |will_be_encrypted| passed to <a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#a26d1d163cf15b65099cbc7f9e1d84174">Initialize()</a> should be true. </p>
-
-<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00236">236</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../de/d13/ts__writer_8cc_source.html#l00199">199</a> of file <a class="el" href="../../de/d13/ts__writer_8cc_source.html">ts_writer.cc</a>.</p>
 
 </div>
 </div>
@@ -292,7 +257,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Jun 30 2016 22:03:11 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 1 2016 18:53:14 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
