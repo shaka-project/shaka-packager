@@ -227,7 +227,7 @@ bool TsWriter::NewSegment(const std::string& file_name) {
   return true;
 }
 
-void TsWriter::SignalEncypted() {
+void TsWriter::SignalEncrypted() {
   encrypted_ = true;
 }
 

@@ -189,7 +189,7 @@ Status TsSegmenter::NotifyEncrypted() {
 
     if (!pes_packet_generator_->SetEncryptionKey(encryption_key_.Pass()))
       return Status(error::INTERNAL_ERROR, "Failed to set encryption key.");
-    ts_writer_->SignalEncypted();
+    ts_writer_->SignalEncrypted();
   }
   return Status::OK;
 }

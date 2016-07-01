@@ -75,7 +75,7 @@ class MockTsWriter : public TsWriter {
  public:
   MOCK_METHOD1(Initialize, bool(const StreamInfo& stream_info));
   MOCK_METHOD1(NewSegment, bool(const std::string& file_name));
-  MOCK_METHOD0(SignalEncypted, void());
+  MOCK_METHOD0(SignalEncrypted, void());
   MOCK_METHOD0(FinalizeSegment, bool());
 
   // Similar to the hack above but takes a scoped_ptr.
@@ -457,7 +457,7 @@ TEST_F(TsSegmenterTest, WithEncryptionNoClearLead) {
   TsSegmenter segmenter(options, &mock_listener);
 
   EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
-  EXPECT_CALL(*mock_ts_writer_, SignalEncypted());
+  EXPECT_CALL(*mock_ts_writer_, SignalEncrypted());
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
       .WillOnce(Return(true));
 
@@ -495,7 +495,7 @@ TEST_F(TsSegmenterTest, WithEncryptionNoClearLeadNoMuxerListener) {
   TsSegmenter segmenter(options, nullptr);
 
   EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
-  EXPECT_CALL(*mock_ts_writer_, SignalEncypted());
+  EXPECT_CALL(*mock_ts_writer_, SignalEncrypted());
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
       .WillOnce(Return(true));
 
@@ -616,7 +616,7 @@ TEST_F(TsSegmenterTest, WithEncryptionWithClearLead) {
   EXPECT_CALL(mock_listener, OnEncryptionStart());
   EXPECT_CALL(*mock_pes_packet_generator_raw, SetEncryptionKeyMock(_))
       .WillOnce(Return(true));
-  EXPECT_CALL(*mock_ts_writer_raw, SignalEncypted());
+  EXPECT_CALL(*mock_ts_writer_raw, SignalEncrypted());
   EXPECT_OK(segmenter.AddSample(sample2));
 }
 

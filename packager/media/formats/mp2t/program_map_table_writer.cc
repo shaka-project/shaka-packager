@@ -193,8 +193,8 @@ void WritePmtToBuffer(const uint8_t* pmt,
 void WritePrivateDataIndicatorDescriptor(FourCC fourcc, BufferWriter* output) {
   const uint8_t kPrivateDataIndicatorDescriptor = 15;
   output->AppendInt(kPrivateDataIndicatorDescriptor);
-  output->AppendInt(static_cast<uint8_t>(sizeof(FOURCC_aacd)));
-  output->AppendInt(FOURCC_aacd);
+  output->AppendInt(static_cast<uint8_t>(sizeof(fourcc)));
+  output->AppendInt(fourcc);
 }
 
 bool WriteAacAudioSetupInformation(const uint8_t* aac_audio_specific_config,
@@ -376,7 +376,7 @@ bool AacProgramMapTableWriter::EncryptedSegmentPmtWithParameters(
     int current_next_indicator,
     BufferWriter* writer) {
   // -12 because there are 12 bytes between 'descriptor_length' in
-  // registartion_descriptor and 'setup_data_length' in audio_setup_information.
+  // registration_descriptor and 'setup_data_length' in audio_setup_information.
   if (aac_audio_specific_config_.size() >
       std::numeric_limits<uint8_t>::max() - 12) {
     LOG(ERROR) << "AACAudioSpecificConfig of size: "

@@ -42,7 +42,7 @@ class TsWriter {
   virtual bool NewSegment(const std::string& file_name);
 
   /// Signals the writer that the rest of the segments are encrypted.
-  virtual void SignalEncypted();
+  virtual void SignalEncrypted();
 
   /// Flush all the pending PesPackets that have not been written to file and
   /// close the file.

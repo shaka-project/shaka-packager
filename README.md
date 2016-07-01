@@ -1,10 +1,10 @@
-![Shaka Packager](docs/shaka-packager.png)
+# ![Shaka Packager](docs/shaka-packager.png)
 
 [![Build Status](https://travis-ci.org/google/shaka-packager.svg?branch=master)](https://travis-ci.org/google/shaka-packager)
 
-Media packaging SDK intended for C++ programmers writing DASH packager applications with common encryption support, Widevine DRM support, Live, and Video-On-Demand.
+Media packaging SDK intended for C++ programmers writing DASH/HLS packager applications with common encryption support, Widevine DRM support, Live, and Video-On-Demand.
 
-This document provides the information needed to create a DASH packager that is able to remux and encrypt a video into fragmented ISO BMFF format with common encryption (CENC) support. The DASH packaging API is also designed in such a way for easy extension to more source and destination formats.
+This document provides the information needed to create a DASH/HLS packager that is able to remux and encrypt a video into fragmented ISO BMFF format with common encryption (CENC) support. The DASH/HLS packaging API is also designed in such a way for easy extension to more source and destination formats.
 
 Current supported codecs:
 
@@ -12,15 +12,15 @@ Current supported codecs:
 |:-----------------:|:------------:|:------------:|:------------:|:-----------:|
 |    H264 (AVC)     |    I / O     |      -       |     I / O    |      I      |
 |    H265 (HEVC)    |    I / O     |      -       |       I      |      -      |
-|       VP8         |    I / O     |    I / O     |       -      |      -      |
-|       VP9         |    I / O     |    I / O     |       -      |      -      |
+|       VP8         |   *I / O*    |    I / O     |       -      |      -      |
+|       VP9         |   *I / O*    |    I / O     |       -      |      -      |
 |       AAC         |    I / O     |      -       |     I / O    |      I      |
 |  Dolby AC3/EAC3   |    I / O     |      -       |       -      |      -      |
 |       DTS         |    I / O     |      -       |       -      |      -      |
-|       Opus        |      -       |    I / O     |       -      |      -      |
+|       Opus        |   *I / O*    |    I / O     |       -      |      -      |
 |      Vorbis       |      -       |    I / O     |       -      |      -      |
 ** I for input and O for output.
-** We will update this table once new formats are supported.
+** VP8/VP9/Opus support in ISO-BMFF is experimental.
 
 Right now this project is supported directly on Linux and MacOSX platforms only. One option to run shaka-packager on other platforms is using [docker] (#Using docker for testing /development).
 
@@ -268,16 +268,16 @@ mpd_generator \
 Output MPEG2-TS video.
 ```Shell
 packager \
- 'input=bear-1280x720.mp4,stream=video,segment_template=bear$Number$.ts,output_format=ts'
+ 'input=bear-1280x720.mp4,stream=video,segment_template=bear$Number$.ts'
 ```
 
 Output HLS playlists with MPEG2-TS video. The following outputs a Master
 Playlist as `master.m3u8`. And the Media Playlist for the video as
-`playlist.m3u8`. `--hls_base_url` specifies the prefix for the
+`playlist.m3u8`. The optional `--hls_base_url` specifies the prefix for the
 generated TS segments.
 ```Shell
 packager \
-  'input=bear-1280x720.mp4,stream=video,segment_template=bear$Number$.ts,output_format=ts,playlist_name=playlist.m3u8' \
+  'input=bear-1280x720.mp4,stream=video,segment_template=bear$Number$.ts,playlist_name=playlist.m3u8' \
   --single_segment=false \
   --hls_master_playlist_output="master.m3u8" \
   --hls_base_url="http://localhost:10000/"
@@ -287,8 +287,8 @@ For audio Media Playlists, the name and group for EXT-X-MEDIA tag must be
 specified.
 ```Shell
 packager \
-  'input=input.mp4,stream=video,output_format=ts,segment_template=output$Number$.ts,playlist_name=video_playlist.m3u8' \
-  'input=input.mp4,stream=audio,output_format=ts,segment_template=output_audio$Number$.ts,playlist_name=audio_playlist.m3u8,hls_group_id=audio,hls_name=ENGLISH' \
+  'input=input.mp4,stream=video,segment_template=output$Number$.ts,playlist_name=video_playlist.m3u8' \
+  'input=input.mp4,stream=audio,segment_template=output_audio$Number$.ts,playlist_name=audio_playlist.m3u8,hls_group_id=audio,hls_name=ENGLISH' \
   --single_segment=false \
   --hls_master_playlist_output="master_playlist.m3u8" \
   --hls_base_url="http://localhost:10000/"

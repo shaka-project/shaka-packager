@@ -319,7 +319,7 @@ TEST_F(TsWriterTest, EncryptedSegmentsH264Pmt) {
   EXPECT_TRUE(ts_writer_.FinalizeSegment());
 
   // Overwrite the file but as encrypted segment.
-  ts_writer_.SignalEncypted();
+  ts_writer_.SignalEncrypted();
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
   EXPECT_TRUE(ts_writer_.FinalizeSegment());
 
@@ -381,7 +381,7 @@ TEST_F(TsWriterTest, EncryptedSegmentsAacPmt) {
   EXPECT_TRUE(ts_writer_.FinalizeSegment());
 
   // Overwrite the file but as encrypted segment.
-  ts_writer_.SignalEncypted();
+  ts_writer_.SignalEncrypted();
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
   EXPECT_TRUE(ts_writer_.FinalizeSegment());
 

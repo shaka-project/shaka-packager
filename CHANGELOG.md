@@ -1,3 +1,15 @@
+## [1.5.0] - 2016-07-12
+### Added
+- Added TS (output) and HLS (output) with SAMPLE-AES encryption support.
+  Note that only H.264 and AAC are supported right now.
+- Added support for CENCv3, i.e. 'cbcs', 'cbc1', 'cens' protection schemes.
+- Added H.265 support in TS (input) and iso-bmff (input / output).
+- Added experimental Opus in iso-bmff support.
+
+### Changed
+- Change project name from edash-packager to shaka-packager. Also replaces
+  various references of edash in the code accordingly.
+
 ## [1.4.1] - 2016-06-23
 ### Fixed
 - [VP9] VPCodecConfiguration box should inherit from FullBox instead of Box.
@@ -161,6 +173,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[1.5.0]: https://github.com/google/shaka-packager/compare/v1.4.0...v1.5.0
 [1.4.1]: https://github.com/google/shaka-packager/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/google/shaka-packager/compare/v1.3.1...v1.4.0
 [1.3.1]: https://github.com/google/shaka-packager/compare/v1.3.0...v1.3.1
