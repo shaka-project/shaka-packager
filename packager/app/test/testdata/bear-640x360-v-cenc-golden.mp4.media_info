@@ -1,4 +1,4 @@
-bandwidth: 885555
+bandwidth: 885567
 video_info {
   codec: "avc1.64001e"
   width: 640
@@ -11,11 +11,11 @@ video_info {
 }
 init_range {
   begin: 0
-  end: 1078
+  end: 1082
 }
 index_range {
-  begin: 1079
-  end: 1146
+  begin: 1083
+  end: 1150
 }
 media_file_name: "place_holder"
 media_duration_seconds: 2.7360666
@@ -24,8 +24,8 @@ container_type: CONTAINER_MP4
 protected_content {
   default_key_id: "1234567890123456"
   content_protection_entry {
-    uuid: "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"
-    pssh: "\000\000\0000pssh\000\000\000\000\355\357\213\251y\326J\316\243\310\'\334\325\035!\355\000\000\000\0201234567890123456"
+    uuid: "1077efec-c0b2-4d02-ace3-3c1e52e2fb4b"
+    pssh: "\000\000\0004pssh\001\000\000\000\020w\357\354\300\262M\002\254\343<\036R\342\373K\000\000\000\0011234567890123456\000\000\000\000"
   }
   protection_scheme: "cenc"
 }

@@ -72,10 +72,12 @@ Status FixedKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
 
   for (size_t i = 0; i < key->key_system_info.size(); i++) {
     std::vector<uint8_t> pssh_data = key->key_system_info[i].pssh_data();
-    std::rotate(pssh_data.begin(),
-                pssh_data.begin() + (crypto_period_index % pssh_data.size()),
-                pssh_data.end());
-    key->key_system_info[i].set_pssh_data(pssh_data);
+    if (!pssh_data.empty()) {
+      std::rotate(pssh_data.begin(),
+                  pssh_data.begin() + (crypto_period_index % pssh_data.size()),
+                  pssh_data.end());
+      key->key_system_info[i].set_pssh_data(pssh_data);
+    }
   }
 
   return Status::OK;

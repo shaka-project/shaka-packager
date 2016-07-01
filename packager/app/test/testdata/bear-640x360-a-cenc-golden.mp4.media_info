@@ -1,4 +1,4 @@
-bandwidth: 129127
+bandwidth: 129139
 audio_info {
   codec: "mp4a.40.2"
   sampling_frequency: 44100
@@ -8,11 +8,11 @@ audio_info {
 }
 init_range {
   begin: 0
-  end: 954
+  end: 958
 }
 index_range {
-  begin: 955
-  end: 1022
+  begin: 959
+  end: 1026
 }
 media_file_name: "place_holder"
 media_duration_seconds: 2.7631745
@@ -21,8 +21,8 @@ container_type: CONTAINER_MP4
 protected_content {
   default_key_id: "1234567890123456"
   content_protection_entry {
-    uuid: "edef8ba9-79d6-4ace-a3c8-27dcd51d21ed"
-    pssh: "\000\000\0000pssh\000\000\000\000\355\357\213\251y\326J\316\243\310\'\334\325\035!\355\000\000\000\0201234567890123456"
+    uuid: "1077efec-c0b2-4d02-ace3-3c1e52e2fb4b"
+    pssh: "\000\000\0004pssh\001\000\000\000\020w\357\354\300\262M\002\254\343<\036R\342\373K\000\000\000\0011234567890123456\000\000\000\000"
   }
   protection_scheme: "cenc"
 }

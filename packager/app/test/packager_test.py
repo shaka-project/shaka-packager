@@ -473,12 +473,6 @@ class PackagerAppTest(unittest.TestCase):
       flags += ['--enable_fixed_key_encryption',
                 '--key_id=31323334353637383930313233343536',
                 '--key=32333435363738393021323334353637', '--clear_lead=1']
-      if not output_hls:
-        pssh_box = ('000000307073736800000000'  # PSSH header
-                    'edef8ba979d64acea3c827dcd51d21ed'  # Widevine system ID
-                    '00000010'  # Data size
-                    '31323334353637383930313233343536')  # Data
-        flags.append('--pssh=' + pssh_box)
 
       if not random_iv:
         flags.append('--iv=3334353637383930')

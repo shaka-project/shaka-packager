@@ -4,8 +4,8 @@
   <Period id="0">
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="1000000/33000" par="16:9">
       <Representation id="0" bandwidth="337062" codecs="vp8" mimeType="video/webm" sar="1:1">
-        <ContentProtection schemeIdUri="urn:uuid:edef8ba9-79d6-4ace-a3c8-27dcd51d21ed" cenc:default_KID="31323334-3536-3738-3930-313233343536">
-          <cenc:pssh>AAAAMHBzc2gAAAAA7e+LqXnWSs6jyCfc1R0h7QAAABAxMjM0NTY3ODkwMTIzNDU2</cenc:pssh>
+        <ContentProtection schemeIdUri="urn:uuid:1077efec-c0b2-4d02-ace3-3c1e52e2fb4b" cenc:default_KID="31323334-3536-3738-3930-313233343536">
+          <cenc:pssh>AAAANHBzc2gBAAAAEHfv7MCyTQKs4zweUuL7SwAAAAExMjM0NTY3ODkwMTIzNDU2AAAAAA==</cenc:pssh>
         </ContentProtection>
         <BaseURL>output_video.webm</BaseURL>
         <SegmentBase indexRange="115225-115274" timescale="1000000">
