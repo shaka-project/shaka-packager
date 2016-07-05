@@ -66,7 +66,8 @@ EncryptingFragmenter::EncryptingFragmenter(
     int64_t clear_time,
     FourCC protection_scheme,
     uint8_t crypt_byte_block,
-    uint8_t skip_byte_block)
+    uint8_t skip_byte_block,
+    MuxerListener* listener)
     : Fragmenter(info, traf),
       info_(info),
       encryption_key_(encryption_key.Pass()),
@@ -75,7 +76,8 @@ EncryptingFragmenter::EncryptingFragmenter(
       clear_time_(clear_time),
       protection_scheme_(protection_scheme),
       crypt_byte_block_(crypt_byte_block),
-      skip_byte_block_(skip_byte_block) {
+      skip_byte_block_(skip_byte_block),
+      listener_(listener) {
   DCHECK(encryption_key_);
   switch (video_codec_) {
     case kCodecVP8:
@@ -143,6 +145,9 @@ Status EncryptingFragmenter::InitializeFragment(int64_t first_sample_dts) {
     traf()->header.flags |=
         TrackFragmentHeader::kSampleDescriptionIndexPresentMask;
     traf()->header.sample_description_index = kClearSampleDescriptionIndex;
+  } else {
+    if (listener_)
+      listener_->OnEncryptionStart();
   }
   return PrepareFragmentForEncryption(enable_encryption);
 }

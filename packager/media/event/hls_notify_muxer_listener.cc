@@ -36,11 +36,39 @@ void HlsNotifyMuxerListener::OnEncryptionInfoReady(
     const std::vector<uint8_t>& key_id,
     const std::vector<uint8_t>& iv,
     const std::vector<ProtectionSystemSpecificInfo>& key_system_infos) {
+  if (!media_started_) {
+    next_key_id_ = key_id;
+    next_iv_ = iv;
+    next_key_system_infos_ = key_system_infos;
+    return;
+  }
   for (const ProtectionSystemSpecificInfo& info : key_system_infos) {
     const bool result = hls_notifier_->NotifyEncryptionUpdate(
         stream_id_, key_id, info.system_id(), iv, info.pssh_data());
     LOG_IF(WARNING, !result) << "Failed to add encryption info.";
   }
+}
+
+void HlsNotifyMuxerListener::OnEncryptionStart() {
+  if (!media_started_) {
+    DLOG(WARNING) << "Media not started, cannot notify encryption start.";
+    return;
+  }
+  if (next_key_id_.empty()) {
+    DCHECK(next_iv_.empty());
+    DCHECK(next_key_system_infos_.empty());
+    return;
+  }
+
+  for (const ProtectionSystemSpecificInfo& info : next_key_system_infos_) {
+    const bool result = hls_notifier_->NotifyEncryptionUpdate(
+        stream_id_, next_key_id_, info.system_id(), next_iv_,
+        info.pssh_data());
+    LOG_IF(WARNING, !result) << "Failed to add encryption info";
+  }
+  next_key_id_.clear();
+  next_iv_.clear();
+  next_key_system_infos_.clear();
 }
 
 void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
@@ -56,7 +84,12 @@ void HlsNotifyMuxerListener::OnMediaStart(const MuxerOptions& muxer_options,
   const bool result = hls_notifier_->NotifyNewStream(
       media_info, playlist_name_, ext_x_media_name_, ext_x_media_group_id_,
       &stream_id_);
-  LOG_IF(WARNING, !result) << "Failed to notify new stream.";
+  if (!result) {
+    LOG(WARNING) << "Failed to notify new stream.";
+    return;
+  }
+
+  media_started_ = true;
 }
 
 void HlsNotifyMuxerListener::OnSampleDurationReady(uint32_t sample_duration) {}

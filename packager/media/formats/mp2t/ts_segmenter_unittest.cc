@@ -481,6 +481,44 @@ TEST_F(TsSegmenterTest, WithEncryptionNoClearLead) {
                                  kClearLeadSeconds));
 }
 
+// Verify that the muxer listener pointer is not used without checking that it's
+// not null.
+TEST_F(TsSegmenterTest, WithEncryptionNoClearLeadNoMuxerListener) {
+  scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
+      kTrackId, kTimeScale, kDuration, kH264VideoCodec, kCodecString, kLanguage,
+      kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
+      kNaluLengthSize, kExtraData, arraysize(kExtraData), kIsEncrypted));
+  MuxerOptions options;
+  options.segment_duration = 10.0;
+  options.segment_template = "file$Number$.ts";
+
+  TsSegmenter segmenter(options, nullptr);
+
+  EXPECT_CALL(*mock_ts_writer_, Initialize(_)).WillOnce(Return(true));
+  EXPECT_CALL(*mock_ts_writer_, SignalEncypted());
+  EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
+      .WillOnce(Return(true));
+
+  EXPECT_CALL(*mock_pes_packet_generator_, SetEncryptionKeyMock(_))
+      .WillOnce(Return(true));
+
+  segmenter.InjectTsWriterForTesting(mock_ts_writer_.Pass());
+  segmenter.InjectPesPacketGeneratorForTesting(
+      mock_pes_packet_generator_.Pass());
+
+  MockKeySource mock_key_source;
+  EXPECT_CALL(mock_key_source, GetKey(KeySource::TRACK_TYPE_HD, _))
+      .WillOnce(Return(Status::OK));
+
+  const uint32_t k480pPixels = 640 * 480;
+  // Set this to 0 so that Finalize will call
+  // PesPacketGenerator::SetEncryptionKey().
+  // Even tho no samples have been added.
+  const double kClearLeadSeconds = 0;
+  EXPECT_OK(segmenter.Initialize(*stream_info, &mock_key_source, k480pPixels,
+                                 kClearLeadSeconds));
+}
+
 // Verify that encryption notification is sent to objects after clear lead.
 TEST_F(TsSegmenterTest, WithEncryptionWithClearLead) {
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
@@ -568,13 +606,14 @@ TEST_F(TsSegmenterTest, WithEncryptionWithClearLead) {
   EXPECT_CALL(mock_key_source, GetKey(KeySource::TRACK_TYPE_HD, _))
       .WillOnce(Return(Status::OK));
 
+  EXPECT_CALL(mock_listener, OnEncryptionInfoReady(_, _, _, _, _));
   EXPECT_OK(segmenter.Initialize(*stream_info, &mock_key_source, 0,
                                  kClearLeadSeconds));
   EXPECT_OK(segmenter.AddSample(sample1));
 
   // These should be called AFTER the first AddSample(), before the second
   // segment.
-  EXPECT_CALL(mock_listener, OnEncryptionInfoReady(_, _, _, _, _));
+  EXPECT_CALL(mock_listener, OnEncryptionStart());
   EXPECT_CALL(*mock_pes_packet_generator_raw, SetEncryptionKeyMock(_))
       .WillOnce(Return(true));
   EXPECT_CALL(*mock_ts_writer_raw, SignalEncypted());

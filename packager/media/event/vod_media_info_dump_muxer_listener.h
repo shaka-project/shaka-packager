@@ -38,6 +38,7 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
                              const std::vector<uint8_t>& iv,
                              const std::vector<ProtectionSystemSpecificInfo>&
                                  key_system_info) override;
+  void OnEncryptionStart() override;
   void OnMediaStart(const MuxerOptions& muxer_options,
                     const StreamInfo& stream_info,
                     uint32_t time_scale,

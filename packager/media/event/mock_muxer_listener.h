@@ -30,6 +30,8 @@ class MockMuxerListener : public MuxerListener {
            const std::vector<uint8_t>& iv,
            const std::vector<ProtectionSystemSpecificInfo>& key_system_info));
 
+  MOCK_METHOD0(OnEncryptionStart, void());
+
   MOCK_METHOD4(OnMediaStart,
                void(const MuxerOptions& muxer_options,
                     const StreamInfo& stream_info,

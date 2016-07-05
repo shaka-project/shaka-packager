@@ -64,6 +64,12 @@ class MuxerListener {
       const std::vector<uint8_t>& iv,
       const std::vector<ProtectionSystemSpecificInfo>& key_system_info) = 0;
 
+  /// Called when the muxer starts encrypting the segments.
+  /// Further segments notified via OnNewSegment() are encrypted.
+  /// This may be called more than once e.g. per segment, but the semantics does
+  /// not change.
+  virtual void OnEncryptionStart() = 0;
+
   /// Called when muxing starts.
   /// For MPEG DASH Live profile, the initialization segment information is
   /// available from StreamInfo.

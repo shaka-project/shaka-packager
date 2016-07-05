@@ -57,8 +57,18 @@ Status TsSegmenter::Initialize(const StreamInfo& stream_info,
     }
     if (!status.ok())
       return status;
+
     encryption_key_ = encryption_key.Pass();
     clear_lead_in_seconds_ = clear_lead_in_seconds;
+
+    if (listener_) {
+      // For now this only happens once, so send true.
+      const bool kIsInitialEncryptionInfo = true;
+      listener_->OnEncryptionInfoReady(
+          kIsInitialEncryptionInfo, FOURCC_cbcs, encryption_key_->key_id,
+          encryption_key_->iv, encryption_key_->key_system_info);
+    }
+
     status = NotifyEncrypted();
     if (!status.ok())
       return status;
@@ -174,13 +184,8 @@ Status TsSegmenter::Flush() {
 
 Status TsSegmenter::NotifyEncrypted() {
   if (encryption_key_ && total_duration_in_seconds_ >= clear_lead_in_seconds_) {
-    if (listener_) {
-      // For now this only happens once, so send true.
-      const bool kIsInitialEncryptionInfo = true;
-      listener_->OnEncryptionInfoReady(
-          kIsInitialEncryptionInfo, FOURCC_cbcs, encryption_key_->key_id,
-          encryption_key_->iv, encryption_key_->key_system_info);
-    }
+    if (listener_)
+      listener_->OnEncryptionStart();
 
     if (!pes_packet_generator_->SetEncryptionKey(encryption_key_.Pass()))
       return Status(error::INTERNAL_ERROR, "Failed to set encryption key.");

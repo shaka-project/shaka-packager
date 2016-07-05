@@ -146,7 +146,6 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
                                         const std::string& group_id,
                                         uint32_t* stream_id) {
   DCHECK(stream_id);
-  *stream_id = sequence_number_.GetNext();
 
   MediaPlaylist::MediaPlaylistType type;
   switch (profile()) {
@@ -171,6 +170,7 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
     return false;
   }
 
+  *stream_id = sequence_number_.GetNext();
   base::AutoLock auto_lock(lock_);
   master_playlist_->AddMediaPlaylist(media_playlist.get());
   media_playlist_map_.insert(

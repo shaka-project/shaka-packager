@@ -45,6 +45,7 @@ class HlsNotifyMuxerListener : public MuxerListener {
                              const std::vector<uint8_t>& iv,
                              const std::vector<ProtectionSystemSpecificInfo>&
                                  key_system_info) override;
+  void OnEncryptionStart() override;
   void OnMediaStart(const MuxerOptions& muxer_options,
                     const StreamInfo& stream_info,
                     uint32_t time_scale,
@@ -70,6 +71,12 @@ class HlsNotifyMuxerListener : public MuxerListener {
   const std::string ext_x_media_group_id_;
   hls::HlsNotifier* const hls_notifier_;
   uint32_t stream_id_ = 0;
+
+  bool media_started_ = false;
+  // Cached encryption info before OnMediaStart() is called.
+  std::vector<uint8_t> next_key_id_;
+  std::vector<uint8_t> next_iv_;
+  std::vector<ProtectionSystemSpecificInfo> next_key_system_infos_;
 
   DISALLOW_COPY_AND_ASSIGN(HlsNotifyMuxerListener);
 };

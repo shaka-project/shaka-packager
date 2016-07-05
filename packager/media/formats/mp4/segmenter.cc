@@ -259,7 +259,8 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
     fragmenters_[i] = new EncryptingFragmenter(
         streams[i]->info(), &moof_->tracks[i], encryption_key.Pass(),
         clear_lead_in_seconds * streams[i]->info()->time_scale(),
-        protection_scheme, pattern.crypt_byte_block, pattern.skip_byte_block);
+        protection_scheme, pattern.crypt_byte_block, pattern.skip_byte_block,
+        muxer_listener_);
   }
 
   // Choose the first stream if there is no VIDEO.

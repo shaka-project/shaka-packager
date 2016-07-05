@@ -12,6 +12,7 @@
 #include "packager/media/base/fourccs.h"
 #include "packager/media/codecs/video_slice_header_parser.h"
 #include "packager/media/codecs/vpx_parser.h"
+#include "packager/media/event/muxer_listener.h"
 #include "packager/media/formats/mp4/fragmenter.h"
 
 namespace shaka {
@@ -43,7 +44,8 @@ class EncryptingFragmenter : public Fragmenter {
                        int64_t clear_time,
                        FourCC protection_scheme,
                        uint8_t crypt_byte_block,
-                       uint8_t skip_byte_block);
+                       uint8_t skip_byte_block,
+                       MuxerListener* listener);
 
   ~EncryptingFragmenter() override;
 
@@ -95,6 +97,7 @@ class EncryptingFragmenter : public Fragmenter {
   const FourCC protection_scheme_;
   const uint8_t crypt_byte_block_;
   const uint8_t skip_byte_block_;
+  MuxerListener* listener_;
 
   scoped_ptr<VPxParser> vpx_parser_;
   scoped_ptr<VideoSliceHeaderParser> header_parser_;

@@ -62,6 +62,8 @@ void VodMediaInfoDumpMuxerListener::OnMediaStart(
   }
 }
 
+void VodMediaInfoDumpMuxerListener::OnEncryptionStart() {}
+
 void VodMediaInfoDumpMuxerListener::OnSampleDurationReady(
     uint32_t sample_duration) {
   // Assume one VideoInfo.

@@ -54,6 +54,8 @@ void MpdNotifyMuxerListener::OnEncryptionInfoReady(
   }
 }
 
+void MpdNotifyMuxerListener::OnEncryptionStart() {}
+
 void MpdNotifyMuxerListener::OnMediaStart(
     const MuxerOptions& muxer_options,
     const StreamInfo& stream_info,

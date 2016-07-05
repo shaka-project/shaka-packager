@@ -166,6 +166,8 @@ Status Segmenter::AddSample(scoped_refptr<MediaSample> sample) {
       LOG(ERROR) << "Error encrypting frame.";
       return status;
     }
+    if (encrypt_frame && muxer_listener_)
+      muxer_listener_->OnEncryptionStart();
   }
 
 

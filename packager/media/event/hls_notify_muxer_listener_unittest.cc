@@ -83,7 +83,126 @@ class HlsNotifyMuxerListenerTest : public ::testing::Test {
   HlsNotifyMuxerListener listener_;
 };
 
+// Verify that NotifyEncryptionUpdate() is not called before OnMediaStart() is
+// called.
+TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReadyBeforeMediaStart) {
+  ProtectionSystemSpecificInfo info;
+  std::vector<uint8_t> system_id(kAnySystemId,
+                                 kAnySystemId + arraysize(kAnySystemId));
+  info.set_system_id(system_id.data(), system_id.size());
+  std::vector<uint8_t> pssh_data(kAnyData, kAnyData + arraysize(kAnyData));
+  info.set_pssh_data(pssh_data);
+
+  std::vector<uint8_t> key_id(16, 0x05);
+  std::vector<ProtectionSystemSpecificInfo> key_system_infos;
+  key_system_infos.push_back(info);
+
+  std::vector<uint8_t> iv(16, 0x54);
+
+  EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, _, _, _, _)).Times(0);
+  listener_.OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbcs, key_id,
+                                  iv, key_system_infos);
+}
+
+TEST_F(HlsNotifyMuxerListenerTest, OnMediaStart) {
+  VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
+  scoped_refptr<StreamInfo> video_stream_info =
+      CreateVideoStreamInfo(video_params);
+
+  EXPECT_CALL(mock_notifier_,
+              NotifyNewStream(_, StrEq(kDefaultPlaylistName),
+                              StrEq("DEFAULTNAME"), StrEq("DEFAULTGROUPID"), _))
+      .WillOnce(Return(true));
+
+  MuxerOptions muxer_options;
+  listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,
+                         MuxerListener::kContainerMpeg2ts);
+}
+
+// OnEncryptionStart() should NotifyEncryptionUpdate() after
+// OnEncryptionInfoReady() and OnMediaStart().
+TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionStart) {
+  ProtectionSystemSpecificInfo info;
+  std::vector<uint8_t> system_id(kAnySystemId,
+                                 kAnySystemId + arraysize(kAnySystemId));
+  info.set_system_id(system_id.data(), system_id.size());
+  std::vector<uint8_t> pssh_data(kAnyData, kAnyData + arraysize(kAnyData));
+  info.set_pssh_data(pssh_data);
+
+  std::vector<uint8_t> key_id(16, 0x05);
+  std::vector<ProtectionSystemSpecificInfo> key_system_infos;
+  key_system_infos.push_back(info);
+
+  std::vector<uint8_t> iv(16, 0x54);
+
+  EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, _, _, _, _)).Times(0);
+  listener_.OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbcs, key_id,
+                                  iv, key_system_infos);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_notifier_);
+
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+      .WillByDefault(Return(true));
+  VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
+  scoped_refptr<StreamInfo> video_stream_info =
+      CreateVideoStreamInfo(video_params);
+  MuxerOptions muxer_options;
+
+  EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, _, _, _, _)).Times(0);
+  listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,
+                         MuxerListener::kContainerMpeg2ts);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_notifier_);
+
+  EXPECT_CALL(mock_notifier_,
+              NotifyEncryptionUpdate(_, key_id, system_id, iv, pssh_data))
+      .WillOnce(Return(true));
+  listener_.OnEncryptionStart();
+}
+
+// NotifyEncryptionUpdate() should not be called if NotifyNewStream() fails in
+// OnMediaStart().
+TEST_F(HlsNotifyMuxerListenerTest, NoEncryptionUpdateIfNotifyNewStreamFails) {
+  ProtectionSystemSpecificInfo info;
+  std::vector<uint8_t> system_id(kAnySystemId,
+                                 kAnySystemId + arraysize(kAnySystemId));
+  info.set_system_id(system_id.data(), system_id.size());
+  std::vector<uint8_t> pssh_data(kAnyData, kAnyData + arraysize(kAnyData));
+  info.set_pssh_data(pssh_data);
+
+  std::vector<uint8_t> key_id(16, 0x05);
+  std::vector<ProtectionSystemSpecificInfo> key_system_infos;
+  key_system_infos.push_back(info);
+
+  std::vector<uint8_t> iv(16, 0x54);
+
+  EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, _, _, _, _)).Times(0);
+  listener_.OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbcs, key_id,
+                                  iv, key_system_infos);
+  ::testing::Mock::VerifyAndClearExpectations(&mock_notifier_);
+
+  EXPECT_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+      .WillOnce(Return(false));
+  VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
+  scoped_refptr<StreamInfo> video_stream_info =
+      CreateVideoStreamInfo(video_params);
+  MuxerOptions muxer_options;
+
+  EXPECT_CALL(mock_notifier_, NotifyEncryptionUpdate(_, _, _, _, _)).Times(0);
+  listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,
+                         MuxerListener::kContainerMpeg2ts);
+}
+
+// Verify that after OnMediaStart(), OnEncryptionInfoReady() calls
+// NotifyEncryptionUpdate().
 TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReady) {
+  ON_CALL(mock_notifier_, NotifyNewStream(_, _, _, _, _))
+      .WillByDefault(Return(true));
+  VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
+  scoped_refptr<StreamInfo> video_stream_info =
+      CreateVideoStreamInfo(video_params);
+  MuxerOptions muxer_options;
+  listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,
+                         MuxerListener::kContainerMpeg2ts);
+
   ProtectionSystemSpecificInfo info;
   std::vector<uint8_t> system_id(kAnySystemId,
                                  kAnySystemId + arraysize(kAnySystemId));
@@ -102,21 +221,6 @@ TEST_F(HlsNotifyMuxerListenerTest, OnEncryptionInfoReady) {
       .WillOnce(Return(true));
   listener_.OnEncryptionInfoReady(kInitialEncryptionInfo, FOURCC_cbcs, key_id,
                                   iv, key_system_infos);
-}
-
-TEST_F(HlsNotifyMuxerListenerTest, OnMediaStart) {
-  VideoStreamInfoParameters video_params = GetDefaultVideoStreamInfoParams();
-  scoped_refptr<StreamInfo> video_stream_info =
-      CreateVideoStreamInfo(video_params);
-
-  EXPECT_CALL(mock_notifier_,
-              NotifyNewStream(_, StrEq(kDefaultPlaylistName),
-                              StrEq("DEFAULTNAME"), StrEq("DEFAULTGROUPID"), _))
-      .WillOnce(Return(true));
-
-  MuxerOptions muxer_options;
-  listener_.OnMediaStart(muxer_options, *video_stream_info, 90000,
-                         MuxerListener::kContainerMpeg2ts);
 }
 
 // Make sure it doesn't crash.
