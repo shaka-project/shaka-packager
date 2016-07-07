@@ -761,16 +761,6 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Modify(Movie* moov) { moov->tracks.resize(1); }
 
-  void Fill(TrackFragmentDecodeTime* tfdt) {
-    tfdt->decode_time = 234029673820ULL;
-    tfdt->version = 1;
-  }
-
-  void Modify(TrackFragmentDecodeTime* tfdt) {
-    tfdt->decode_time = 4567;
-    tfdt->version = 0;
-  }
-
   void Fill(MovieFragmentHeader* mfhd) { mfhd->sequence_number = 23235; }
 
   void Modify(MovieFragmentHeader* mfhd) { mfhd->sequence_number = 67890; }
