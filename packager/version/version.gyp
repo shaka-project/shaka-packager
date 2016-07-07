@@ -19,6 +19,9 @@
         'version.cc',
         'version.h',
       ],
+      'dependencies': [
+        '../base/base.gyp:base',
+      ],
     },
   ],
 }

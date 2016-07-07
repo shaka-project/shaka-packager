@@ -9,6 +9,7 @@
 #include "packager/media/base/muxer_util.h"
 #include "packager/media/file/memory_file.h"
 #include "packager/media/formats/webm/webm_constants.h"
+#include "packager/version/version.h"
 
 namespace shaka {
 namespace media {
@@ -39,6 +40,8 @@ const uint8_t kNaluLengthSize = 0;
 SegmentTestBase::SegmentTestBase() {}
 
 void SegmentTestBase::SetUp() {
+  SetPackagerVersionForTesting("test");
+
   output_file_name_ = std::string(kMemoryFilePrefix) + "output-file.webm";
   segment_template_ =
       std::string(kMemoryFilePrefix) + "output-template-$Number$.webm";
@@ -78,7 +81,6 @@ MuxerOptions SegmentTestBase::CreateMuxerOptions() const {
   ret.single_segment = single_segment_;
   ret.output_file_name = output_file_name_;
   ret.segment_template = segment_template_;
-  ret.packager_version_string = "test";
   ret.segment_duration = 30;  // seconds
   ret.fragment_duration = 30;  // seconds
   ret.segment_sap_aligned = false;

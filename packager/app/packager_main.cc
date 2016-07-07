@@ -51,6 +51,15 @@ DEFINE_bool(use_fake_clock_for_muxer,
             "Set to true to use a fake clock for muxer. With this flag set, "
             "creation time and modification time in outputs are set to 0. "
             "Should only be used for testing.");
+DEFINE_bool(override_version,
+            false,
+            "Override packager version in the generated outputs with "
+            "--test_version if it is set to true. Should be used for "
+            "testing only.");
+DEFINE_string(test_version,
+              "",
+              "Packager version for testing. Ignored if --override_version is "
+              "false. Should be used for testing only.");
 
 namespace shaka {
 namespace media {
@@ -517,14 +526,17 @@ int PackagerMain(int argc, char** argv) {
   google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
   google::ParseCommandLineFlags(&argc, &argv, true);
   if (argc < 2) {
-    std::string version_string =
-        base::StringPrintf("shaka-packager version %s", kPackagerVersion);
+    const std::string version_string = base::StringPrintf(
+        "shaka-packager version %s", GetPackagerVersion().c_str());
     google::ShowUsageWithFlags(version_string.c_str());
     return kSuccess;
   }
 
   if (!ValidateWidevineCryptoFlags() || !ValidateFixedCryptoFlags())
     return kArgumentValidationFailed;
+
+  if (FLAGS_override_version)
+    SetPackagerVersionForTesting(FLAGS_test_version);
 
   LibcryptoThreading libcrypto_threading;
   // TODO(tinskip): Make InsertStreamDescriptor a member of

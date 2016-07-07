@@ -29,6 +29,7 @@
 #include "packager/mpd/base/language_utils.h"
 #include "packager/mpd/base/mpd_utils.h"
 #include "packager/mpd/base/xml/xml_node.h"
+#include "packager/version/version.h"
 
 namespace shaka {
 
@@ -505,13 +506,18 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
   }
 
   DCHECK(doc);
-  std::string version_string =
-      "Generated with https://github.com/google/shaka-packager version " +
-      mpd_options_.packager_version_string;
-  xml::scoped_xml_ptr<xmlNode> comment(
-      xmlNewDocComment(doc.get(), BAD_CAST version_string.c_str()));
-  xmlDocSetRootElement(doc.get(), comment.get());
-  xmlAddSibling(comment.release(), mpd.Release());
+  const std::string version = GetPackagerVersion();
+  if (!version.empty()) {
+    std::string version_string =
+        base::StringPrintf("Generated with %s version %s",
+                           GetPackagerProjectUrl().c_str(), version.c_str());
+    xml::scoped_xml_ptr<xmlNode> comment(
+        xmlNewDocComment(doc.get(), BAD_CAST version_string.c_str()));
+    xmlDocSetRootElement(doc.get(), comment.get());
+    xmlAddSibling(comment.release(), mpd.Release());
+  } else {
+    xmlDocSetRootElement(doc.get(), mpd.Release());
+  }
   return doc.release();
 }
 

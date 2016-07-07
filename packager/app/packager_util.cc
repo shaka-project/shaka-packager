@@ -26,16 +26,6 @@
 #include "packager/mpd/base/mpd_builder.h"
 
 DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
-DEFINE_bool(override_version_string,
-            false,
-            "Override packager version string in the generated outputs with "
-            "--test_version_string if it is set to true. Should be used for "
-            "testing only.");
-DEFINE_string(test_version_string,
-              "",
-              "Packager version string for testing. Ignored if "
-              "--override_version_string is false. Should be used for testing "
-              "only.");
 
 namespace shaka {
 namespace media {
@@ -159,8 +149,6 @@ bool GetMuxerOptions(MuxerOptions* muxer_options) {
   muxer_options->fragment_sap_aligned = FLAGS_fragment_sap_aligned;
   muxer_options->num_subsegments_per_sidx = FLAGS_num_subsegments_per_sidx;
   muxer_options->temp_dir = FLAGS_temp_dir;
-  if (FLAGS_override_version_string)
-    muxer_options->packager_version_string = FLAGS_test_version_string;
   return true;
 }
 
@@ -173,8 +161,6 @@ bool GetMpdOptions(MpdOptions* mpd_options) {
   mpd_options->time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
   mpd_options->suggested_presentation_delay =
       FLAGS_suggested_presentation_delay;
-  if (FLAGS_override_version_string)
-    mpd_options->packager_version_string = FLAGS_test_version_string;
   return true;
 }
 

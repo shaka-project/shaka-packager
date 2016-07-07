@@ -9,6 +9,7 @@
 
 #include "packager/media/file/file.h"
 #include "packager/hls/base/media_playlist.h"
+#include "packager/version/version.h"
 
 namespace shaka {
 namespace hls {
@@ -56,6 +57,8 @@ class MediaPlaylistTest : public ::testing::Test {
                         default_group_id_) {}
 
   void SetUp() override {
+    SetPackagerVersionForTesting("test");
+
     MediaInfo::VideoInfo* video_info =
         valid_video_media_info_.mutable_video_info();
     video_info->set_codec("avc1");
@@ -117,6 +120,8 @@ TEST_F(MediaPlaylistTest, WriteToFile) {
   const std::string kExpectedOutput =
       "#EXTM3U\n"
       "#EXT-X-VERSION:5\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
       "#EXT-X-TARGETDURATION:0\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-ENDLIST\n";
@@ -172,6 +177,8 @@ TEST_F(MediaPlaylistTest, SetTargetDuration) {
   const std::string kExpectedOutput =
       "#EXTM3U\n"
       "#EXT-X-VERSION:5\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
       "#EXT-X-TARGETDURATION:20\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-ENDLIST\n";
@@ -198,6 +205,8 @@ TEST_F(MediaPlaylistTest, WriteToFileWithSegments) {
   const std::string kExpectedOutput =
       "#EXTM3U\n"
       "#EXT-X-VERSION:5\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXTINF:10.000,\n"
@@ -227,6 +236,8 @@ TEST_F(MediaPlaylistTest, WriteToFileWithEncryptionInfo) {
   const std::string kExpectedOutput =
       "#EXTM3U\n"
       "#EXT-X-VERSION:5\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-KEY:METHOD=SAMPLE-AES,"
@@ -259,6 +270,8 @@ TEST_F(MediaPlaylistTest, WriteToFileWithEncryptionInfoEmptyIv) {
   const std::string kExpectedOutput =
       "#EXTM3U\n"
       "#EXT-X-VERSION:5\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXT-X-KEY:METHOD=SAMPLE-AES,"
@@ -290,6 +303,7 @@ TEST_F(MediaPlaylistTest, WriteToFileWithClearLead) {
   const std::string kExpectedOutput =
       "#EXTM3U\n"
       "#EXT-X-VERSION:5\n"
+      "## Generated with https://github.com/google/shaka-packager version test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXTINF:10.000,\n"
@@ -323,6 +337,8 @@ TEST_F(MediaPlaylistTest, RemoveOldestSegment) {
   const std::string kExpectedOutput =
       "#EXTM3U\n"
       "#EXT-X-VERSION:5\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
       "#EXT-X-TARGETDURATION:30\n"
       "#EXT-X-PLAYLIST-TYPE:VOD\n"
       "#EXTINF:30.000,\n"

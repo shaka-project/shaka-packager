@@ -20,6 +20,7 @@
 #include "packager/mpd/base/mpd_utils.h"
 #include "packager/mpd/test/mpd_builder_test_helper.h"
 #include "packager/mpd/test/xml_compare.h"
+#include "packager/version/version.h"
 
 namespace shaka {
 
@@ -184,9 +185,8 @@ class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
   // Anchors availabilityStartTime so that the test result doesn't depend on the
   // current time.
   void SetUp() override {
+    SetPackagerVersionForTesting("<tag>-<hash>-<test>");
     mpd_.availability_start_time_ = "2011-12-25T12:30:00";
-    // Override packager version string for testing.
-    mpd_.mpd_options_.packager_version_string = "<tag>-<hash>-<test>";
     InjectTestClock();
   }
 

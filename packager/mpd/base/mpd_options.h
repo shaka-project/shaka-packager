@@ -9,8 +9,6 @@
 
 #include <string>
 
-#include "packager/version/version.h"
-
 namespace shaka {
 
 /// Defines Mpd Options.
@@ -21,8 +19,7 @@ struct MpdOptions {
         // TODO(tinskip): Set min_buffer_time in unit tests rather than here.
         min_buffer_time(2.0),
         time_shift_buffer_depth(0),
-        suggested_presentation_delay(0),
-        packager_version_string(kPackagerVersion) {}
+        suggested_presentation_delay(0) {}
 
   ~MpdOptions() {};
 
@@ -31,7 +28,6 @@ struct MpdOptions {
   double min_buffer_time;
   double time_shift_buffer_depth;
   double suggested_presentation_delay;
-  std::string packager_version_string;
 };
 
 }  // namespace shaka

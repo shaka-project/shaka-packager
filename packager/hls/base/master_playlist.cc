@@ -18,6 +18,7 @@
 #include "packager/hls/base/media_playlist.h"
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
+#include "packager/version/version.h"
 
 namespace shaka {
 namespace hls {
@@ -147,7 +148,16 @@ bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
     }
   }
 
-  std::string content = "#EXTM3U\n" + audio_output + video_output;
+  const std::string version = GetPackagerVersion();
+  std::string version_line;
+  if (!version.empty()) {
+    version_line =
+        base::StringPrintf("## Generated with %s version %s\n",
+                           GetPackagerProjectUrl().c_str(), version.c_str());
+  }
+
+  std::string content =
+      "#EXTM3U\n" + version_line + audio_output + video_output;
   int64_t bytes_written = file->Write(content.data(), content.size());
   if (bytes_written < 0) {
     LOG(ERROR) << "Error while writing master playlist " << file_path;

@@ -19,6 +19,7 @@
 #include "packager/media/event/progress_listener.h"
 #include "packager/third_party/libwebm/src/mkvmuxerutil.hpp"
 #include "packager/third_party/libwebm/src/webmids.hpp"
+#include "packager/version/version.h"
 
 namespace shaka {
 namespace media {
@@ -60,13 +61,15 @@ Status Segmenter::Initialize(scoped_ptr<MkvWriter> writer,
   progress_target_ = info_->duration();
   progress_listener_ = progress_listener;
 
-  const std::string version_string =
-      "https://github.com/google/shaka-packager version " +
-      options().packager_version_string;
-
   segment_info_.Init();
   segment_info_.set_timecode_scale(kTimecodeScale);
-  segment_info_.set_writing_app(version_string.c_str());
+
+  const std::string version = GetPackagerVersion();
+  if (!version.empty()) {
+    segment_info_.set_writing_app(
+        (GetPackagerProjectUrl() + " version " + version).c_str());
+  }
+
   if (options().single_segment) {
     // Set an initial duration so the duration element is written; will be
     // overwritten at the end.  This works because this is a float and floats

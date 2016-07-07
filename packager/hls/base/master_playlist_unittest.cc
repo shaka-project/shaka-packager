@@ -13,6 +13,7 @@
 #include "packager/hls/base/media_playlist.h"
 #include "packager/hls/base/mock_media_playlist.h"
 #include "packager/media/file/file.h"
+#include "packager/version/version.h"
 
 namespace shaka {
 namespace hls {
@@ -33,6 +34,7 @@ class MasterPlaylistTest : public ::testing::Test {
   MasterPlaylistTest() : master_playlist_(kDefaultMasterPlaylistName) {}
 
   void SetUp() override {
+    SetPackagerVersionForTesting("test");
     GetOutputDir(&test_output_dir_path_, &test_output_dir_);
   }
 
@@ -86,6 +88,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
 
   const std::string expected =
       "#EXTM3U\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
       "#EXT-X-STREAM-INF:CODECS=\"avc1\",BANDWIDTH=435889\n"
       "http://myplaylistdomain.com/media1.m3u8\n";
 
@@ -155,6 +159,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
 
   const std::string expected =
       "#EXTM3U\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audiogroup\",NAME=\"english\","
       "URI=\"http://playlists.org/eng.m3u8\"\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audiogroup\",NAME=\"espanol\","
@@ -220,6 +226,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
 
   const std::string expected =
       "#EXTM3U\n"
+      "## Generated with https://github.com/google/shaka-packager version "
+      "test\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audio_hi\",NAME=\"english_hi\","
       "URI=\"http://anydomain.com/eng_hi.m3u8\"\n"
       "#EXT-X-MEDIA:TYPE=AUDIO,GROUP-ID=\"audio_lo\",NAME=\"english_lo\","

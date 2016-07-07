@@ -91,8 +91,8 @@ int MpdMain(int argc, char** argv) {
 
   ExitStatus status = CheckRequiredFlags();
   if (status != kSuccess) {
-    std::string version_string =
-        base::StringPrintf("mpd_generator version %s", kPackagerVersion);
+    const std::string version_string = base::StringPrintf(
+        "mpd_generator version %s", GetPackagerVersion().c_str());
     google::ShowUsageWithFlags(version_string.c_str());
     return status;
   }

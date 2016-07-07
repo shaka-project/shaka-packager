@@ -22,6 +22,7 @@
 #include "packager/media/event/progress_listener.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/key_rotation_fragmenter.h"
+#include "packager/version/version.h"
 
 namespace shaka {
 namespace media {
@@ -276,11 +277,13 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
   moof_->header.sequence_number = 1;
 
   // Fill in version information.
-  moov_->metadata.handler.handler_type = FOURCC_ID32;
-  moov_->metadata.id3v2.language.code = "eng";
-  moov_->metadata.id3v2.private_frame.owner =
-      "https://github.com/google/shaka-packager";
-  moov_->metadata.id3v2.private_frame.value = options_.packager_version_string;
+  const std::string version = GetPackagerVersion();
+  if (!version.empty()) {
+    moov_->metadata.handler.handler_type = FOURCC_ID32;
+    moov_->metadata.id3v2.language.code = "eng";
+    moov_->metadata.id3v2.private_frame.owner = GetPackagerProjectUrl();
+    moov_->metadata.id3v2.private_frame.value = version;
+  }
   return DoInitialize();
 }
 

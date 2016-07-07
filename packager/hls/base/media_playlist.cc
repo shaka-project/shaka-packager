@@ -12,6 +12,7 @@
 #include "packager/base/logging.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/file/file.h"
+#include "packager/version/version.h"
 
 namespace shaka {
 namespace hls {
@@ -272,11 +273,21 @@ bool MediaPlaylist::WriteToFile(media::File* file) {
     SetTargetDuration(ceil(GetLongestSegmentDuration()));
   }
 
+  const std::string version = GetPackagerVersion();
+  std::string version_line;
+  if (!version.empty()) {
+    version_line =
+        base::StringPrintf("## Generated with %s version %s\n",
+                           GetPackagerProjectUrl().c_str(), version.c_str());
+  }
+
   // KEYFORMAT and KEYFORMATVERSIONS on EXT-X-KEY requires 5 or above.
-  std::string header = base::StringPrintf("#EXTM3U\n"
-                                          "#EXT-X-VERSION:5\n"
-                                          "#EXT-X-TARGETDURATION:%d\n",
-                                          target_duration_);
+  std::string header = base::StringPrintf(
+      "#EXTM3U\n"
+      "#EXT-X-VERSION:5\n"
+      "%s"
+      "#EXT-X-TARGETDURATION:%d\n",
+      version_line.c_str(), target_duration_);
   if (type_ == MediaPlaylistType::kVod) {
     header += "#EXT-X-PLAYLIST-TYPE:VOD\n";
   }

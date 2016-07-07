@@ -504,8 +504,7 @@ class PackagerAppTest(unittest.TestCase):
       flags.append('--use_fake_clock_for_muxer')
 
     # Override packager version string for testing.
-    flags += ['--override_version_string', '--test_version_string',
-              '<tag>-<hash>-<test>']
+    flags += ['--override_version', '--test_version', '<tag>-<hash>-<test>']
     return flags
 
   def _CompareWithGold(self, test_output, golden_file_name):
