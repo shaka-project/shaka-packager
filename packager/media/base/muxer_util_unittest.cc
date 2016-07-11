@@ -16,6 +16,7 @@ TEST(MuxerUtilTest, ValidateSegmentTemplate) {
 
   EXPECT_TRUE(ValidateSegmentTemplate("$Number$"));
   EXPECT_TRUE(ValidateSegmentTemplate("$Time$"));
+  EXPECT_TRUE(ValidateSegmentTemplate("$DecodeTime$"));
   EXPECT_TRUE(ValidateSegmentTemplate("$Time$$Time$"));
   EXPECT_TRUE(ValidateSegmentTemplate("foo$Time$goo"));
   EXPECT_TRUE(ValidateSegmentTemplate("$Number$_$Number$"));
@@ -30,7 +31,7 @@ TEST(MuxerUtilTest, ValidateSegmentTemplate) {
   EXPECT_TRUE(ValidateSegmentTemplate("foo$Time$$$"));
   EXPECT_TRUE(ValidateSegmentTemplate("$$$Time$$$"));
 
-  // Missing $Number$ / $Time$.
+  // Missing $Number$ / $Time$ / $DecodeTime$.
   EXPECT_FALSE(ValidateSegmentTemplate("$$"));
   EXPECT_FALSE(ValidateSegmentTemplate("foo$$goo"));
 
@@ -62,15 +63,18 @@ TEST(MuxerUtilTest, ValidateSegmentTemplateWithFormatTag) {
 
 TEST(MuxerUtilTest, GetSegmentName) {
   const uint64_t kSegmentStartTime = 180180;
+  const uint64_t kSegmentStartDecodeTime = 180173;
   const uint32_t kSegmentIndex = 11;
   const uint32_t kBandwidth = 1234;
   EXPECT_EQ("12", GetSegmentName("$Number$",
+                                 kSegmentStartTime,
                                  kSegmentStartTime,
                                  kSegmentIndex,
                                  kBandwidth));
   EXPECT_EQ("012",
             GetSegmentName("$Number%03d$",
                            kSegmentStartTime,
+                           kSegmentStartDecodeTime,
                            kSegmentIndex,
                            kBandwidth));
   EXPECT_EQ(
@@ -78,17 +82,26 @@ TEST(MuxerUtilTest, GetSegmentName) {
       GetSegmentName(
           "$Number%01d$$$foo$$$Number%05d$",
           kSegmentStartTime,
+          kSegmentStartDecodeTime,
           kSegmentIndex,
           kBandwidth));
 
   EXPECT_EQ("180180",
             GetSegmentName("$Time$",
                            kSegmentStartTime,
+                           kSegmentStartDecodeTime,
+                           kSegmentIndex,
+                           kBandwidth));
+  EXPECT_EQ("180173",
+            GetSegmentName("$DecodeTime$",
+                           kSegmentStartTime,
+                           kSegmentStartDecodeTime,
                            kSegmentIndex,
                            kBandwidth));
   EXPECT_EQ("foo$_$18018000180180.m4s",
             GetSegmentName("foo$$_$$$Time%01d$$Time%08d$.m4s",
                            kSegmentStartTime,
+                           kSegmentStartDecodeTime,
                            kSegmentIndex,
                            kBandwidth));
 
@@ -96,11 +109,13 @@ TEST(MuxerUtilTest, GetSegmentName) {
   EXPECT_EQ("12-1234",
             GetSegmentName("$Number$-$Bandwidth$",
                            kSegmentStartTime,
+                           kSegmentStartDecodeTime,
                            kSegmentIndex,
                            kBandwidth));
   EXPECT_EQ("012-001234",
             GetSegmentName("$Number%03d$-$Bandwidth%06d$",
                            kSegmentStartTime,
+                           kSegmentStartDecodeTime,
                            kSegmentIndex,
                            kBandwidth));
 
@@ -108,47 +123,56 @@ TEST(MuxerUtilTest, GetSegmentName) {
   EXPECT_EQ("12",
             GetSegmentName("$Number%00d$",
                            kSegmentStartTime,
+                           kSegmentStartDecodeTime,
                            kSegmentIndex,
                            kBandwidth));
   EXPECT_EQ("00012",
             GetSegmentName("$Number%005d$",
                            kSegmentStartTime,
+                           kSegmentStartDecodeTime,
                            kSegmentIndex,
                            kBandwidth));
 }
 
 TEST(MuxerUtilTest, GetSegmentNameWithIndexZero) {
   const uint64_t kSegmentStartTime = 0;
+  const uint64_t kSegmentStartDecodeTime = 0;
   const uint32_t kSegmentIndex = 0;
   const uint32_t kBandwidth = 0;
   EXPECT_EQ("1", GetSegmentName("$Number$",
                                 kSegmentStartTime,
+                                kSegmentStartDecodeTime,
                                 kSegmentIndex,
                                 kBandwidth));
   EXPECT_EQ("001",
             GetSegmentName("$Number%03d$",
                            kSegmentStartTime,
+                           kSegmentStartDecodeTime,
                            kSegmentIndex,
                            kBandwidth));
 
   EXPECT_EQ("0", GetSegmentName("$Time$",
                                 kSegmentStartTime,
+                                kSegmentStartDecodeTime,
                                 kSegmentIndex,
                                 kBandwidth));
   EXPECT_EQ("00000000.m4s",
             GetSegmentName("$Time%08d$.m4s",
                            kSegmentStartTime,
+                           kSegmentStartDecodeTime,
                            kSegmentIndex,
                            kBandwidth));
 }
 
 TEST(MuxerUtilTest, GetSegmentNameLargeTime) {
   const uint64_t kSegmentStartTime = 1601599839840ULL;
+  const uint64_t kSegmentStartDecodeTime = 1337;
   const uint32_t kSegmentIndex = 8888888;
   const uint32_t kBandwidth = 444444;
   EXPECT_EQ("1601599839840",
             GetSegmentName("$Time$",
                            kSegmentStartTime,
+                           kSegmentStartDecodeTime,
                            kSegmentIndex,
                            kBandwidth));
 }

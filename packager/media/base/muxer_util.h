@@ -36,6 +36,7 @@ bool ValidateSegmentTemplate(const std::string& segment_template);
 /// @return The segment name with identifier substituted.
 std::string GetSegmentName(const std::string& segment_template,
                            uint64_t segment_start_time,
+                           uint64_t segment_start_decode_time,
                            uint32_t segment_index,
                            uint32_t bandwidth);
 
