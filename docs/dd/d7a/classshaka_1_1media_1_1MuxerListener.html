@@ -122,6 +122,8 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:ab521acca727bbe01aa15c751325c0001"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ab521acca727bbe01aa15c751325c0001">OnEncryptionInfoReady</a> (bool is_initial_encryption_info, FourCC protection_scheme, const std::vector&lt; uint8_t &gt; &amp;key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; <a class="el" href="../../d0/dd4/classshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;key_system_info)=0</td></tr>
 <tr class="separator:ab521acca727bbe01aa15c751325c0001"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a897463091f0effa647a8e2822f48b2ee"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a897463091f0effa647a8e2822f48b2ee">OnEncryptionStart</a> ()=0</td></tr>
+<tr class="separator:a897463091f0effa647a8e2822f48b2ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a31536ec385a7ec22f323a42b872b499a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a31536ec385a7ec22f323a42b872b499a">OnMediaStart</a> (const <a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;muxer_options, const <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream_info, uint32_t time_scale, ContainerType container_type)=0</td></tr>
 <tr class="separator:a31536ec385a7ec22f323a42b872b499a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad54aef6c349082d996a436ebea11eff2"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ad54aef6c349082d996a436ebea11eff2">OnSampleDurationReady</a> (uint32_t sample_duration)=0</td></tr>
@@ -197,6 +199,32 @@ Public Member Functions</h2></td></tr>
 </dl>
 
 <p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a8be7a524212bdd401150aa6bcb374792">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a10071445982f736bb1e6e04133dd60cb">shaka::media::MpdNotifyMuxerListener</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a683882564ac762e2e94795964f8be4b8">shaka::media::VodMediaInfoDumpMuxerListener</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="a897463091f0effa647a8e2822f48b2ee"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void shaka::media::MuxerListener::OnEncryptionStart </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Called when the muxer starts encrypting the segments. Further segments notified via <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">OnNewSegment()</a> are encrypted. This may be called more than once e.g. per segment, but the semantics does not change. </p>
+
+<p>Implemented in <a class="el" href="../../d5/dfa/classshaka_1_1media_1_1HlsNotifyMuxerListener.html#a49b4187f39abe517768364f7ecb280f9">shaka::media::HlsNotifyMuxerListener</a>, <a class="el" href="../../d9/da5/classshaka_1_1media_1_1MpdNotifyMuxerListener.html#a56ccf04196458894f31d0db102153334">shaka::media::MpdNotifyMuxerListener</a>, and <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#ae8f6f65fbab9f301be5bb35f5b8d1cbc">shaka::media::VodMediaInfoDumpMuxerListener</a>.</p>
 
 </div>
 </div>
@@ -441,7 +469,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jul 11 2016 20:13:14 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jul 11 2016 20:48:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

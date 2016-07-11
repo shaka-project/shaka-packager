@@ -112,6 +112,8 @@ Public Member Functions</h2></td></tr>
 <tr><td colspan="2"><div class="groupHeader">MuxerListener implementation overrides.</div></td></tr>
 <tr class="memitem:a683882564ac762e2e94795964f8be4b8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a683882564ac762e2e94795964f8be4b8">OnEncryptionInfoReady</a> (bool is_initial_encryption_info, FourCC protection_scheme, const std::vector&lt; uint8_t &gt; &amp;default_key_id, const std::vector&lt; uint8_t &gt; &amp;iv, const std::vector&lt; <a class="el" href="../../d0/dd4/classshaka_1_1media_1_1ProtectionSystemSpecificInfo.html">ProtectionSystemSpecificInfo</a> &gt; &amp;key_system_info) override</td></tr>
 <tr class="separator:a683882564ac762e2e94795964f8be4b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae8f6f65fbab9f301be5bb35f5b8d1cbc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#ae8f6f65fbab9f301be5bb35f5b8d1cbc">OnEncryptionStart</a> () override</td></tr>
+<tr class="separator:ae8f6f65fbab9f301be5bb35f5b8d1cbc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4811b4ce8292f0f449a35a837aeab74f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a4811b4ce8292f0f449a35a837aeab74f">OnMediaStart</a> (const <a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">MuxerOptions</a> &amp;muxer_options, const <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &amp;stream_info, uint32_t time_scale, ContainerType container_type) override</td></tr>
 <tr class="separator:a4811b4ce8292f0f449a35a837aeab74f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25fc470ed18733954876a4d4256aacf9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a25fc470ed18733954876a4d4256aacf9">OnSampleDurationReady</a> (uint32_t sample_duration) override</td></tr>
@@ -206,6 +208,34 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="ae8f6f65fbab9f301be5bb35f5b8d1cbc"></a>
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void shaka::media::VodMediaInfoDumpMuxerListener::OnEncryptionStart </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">override</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Called when the muxer starts encrypting the segments. Further segments notified via <a class="el" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a36e979fe7b3cfa69dc257e5e439dca08">OnNewSegment()</a> are encrypted. This may be called more than once e.g. per segment, but the semantics does not change. </p>
+
+<p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a897463091f0effa647a8e2822f48b2ee">shaka::media::MuxerListener</a>.</p>
+
+<p>Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00065">65</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="adabba5568154b8f22b02a9b0572db32e"></a>
 <div class="memitem">
 <div class="memproto">
@@ -290,7 +320,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ac89a028372db9abbccf569819d9b2b35">shaka::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00073">73</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00075">75</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -410,7 +440,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">shaka::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00097">97</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00099">99</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -445,7 +475,7 @@ Additional Inherited Members</h2></td></tr>
 
 <p>Implements <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ad54aef6c349082d996a436ebea11eff2">shaka::media::MuxerListener</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00065">65</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00067">67</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -490,7 +520,7 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true on success, false otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00103">103</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00105">105</a> of file <a class="el" href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html">vod_media_info_dump_muxer_listener.cc</a>.</p>
 
 </div>
 </div>
@@ -501,7 +531,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jul 11 2016 20:13:14 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Jul 11 2016 20:48:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
