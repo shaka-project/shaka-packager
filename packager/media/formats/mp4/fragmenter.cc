@@ -6,12 +6,20 @@
 
 #include "packager/media/formats/mp4/fragmenter.h"
 
+#include <gflags/gflags.h>
 #include <limits>
 
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/formats/mp4/box_definitions.h"
+
+DEFINE_bool(mp4_use_decoding_timestamp_in_timeline,
+            false,
+            "If set, decoding timestamp instead of presentation timestamp will "
+            "be used when generating media timeline, e.g. timestamps in sidx "
+            "and mpd. This is to workaround a Chromium bug that decoding "
+            "timestamp is used in buffered range, https://crbug.com/398130.");
 
 namespace shaka {
 namespace media {
@@ -21,7 +29,8 @@ namespace {
 const int64_t kInvalidTime = std::numeric_limits<int64_t>::max();
 
 uint64_t GetSeekPreroll(const StreamInfo& stream_info) {
-  if (stream_info.stream_type() != kStreamAudio) return 0;
+  if (stream_info.stream_type() != kStreamAudio)
+    return 0;
   const AudioStreamInfo& audio_stream_info =
       static_cast<const AudioStreamInfo&>(stream_info);
   return audio_stream_info.seek_preroll_ns();
@@ -64,15 +73,18 @@ Status Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   data_->AppendArray(sample->data(), sample->data_size());
   fragment_duration_ += sample->duration();
 
-  int64_t pts = sample->pts();
+  const int64_t pts = sample->pts();
+  const int64_t dts = sample->dts();
 
-  // Set |earliest_presentation_time_| to |pts| if |pts| is smaller or if it is
-  // not yet initialized (kInvalidTime > pts is always true).
-  if (earliest_presentation_time_ > pts)
-    earliest_presentation_time_ = pts;
+  const int64_t timestamp =
+      FLAGS_mp4_use_decoding_timestamp_in_timeline ? dts : pts;
+  // Set |earliest_presentation_time_| to |timestamp| if |timestamp| is smaller
+  // or if it is not yet initialized (kInvalidTime > timestamp is always true).
+  if (earliest_presentation_time_ > timestamp)
+    earliest_presentation_time_ = timestamp;
 
-  traf_->runs[0].sample_composition_time_offsets.push_back(pts - sample->dts());
-  if (pts != sample->dts())
+  traf_->runs[0].sample_composition_time_offsets.push_back(pts - dts);
+  if (pts != dts)
     traf_->runs[0].flags |= TrackFragmentRun::kSampleCompTimeOffsetsPresentMask;
 
   if (sample->is_key_frame()) {
@@ -141,7 +153,8 @@ void Fragmenter::FinalizeFragment() {
     sample_to_group_entry.group_description_index =
         SampleToGroupEntry::kTrackGroupDescriptionIndexBase + 1;
   }
-  for (const auto& sample_group_description : traf_->sample_group_descriptions) {
+  for (const auto& sample_group_description :
+       traf_->sample_group_descriptions) {
     traf_->sample_to_groups.resize(traf_->sample_to_groups.size() + 1);
     SampleToGroup& sample_to_group = traf_->sample_to_groups.back();
     sample_to_group.grouping_type = sample_group_description.grouping_type;
