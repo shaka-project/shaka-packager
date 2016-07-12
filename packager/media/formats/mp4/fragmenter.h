@@ -62,6 +62,15 @@ class Fragmenter {
   bool fragment_finalized() const { return fragment_finalized_; }
   BufferWriter* data() { return data_.get(); }
 
+  /// Set the flag use_decoding_timestamp_in_timeline, which if set to true, use
+  /// decoding timestamp instead of presentation timestamp in media timeline,
+  /// which is needed to workaround a Chromium bug that decoding timestamp is
+  /// used in buffered range, https://crbug.com/398130.
+  void set_use_decoding_timestamp_in_timeline(
+      bool use_decoding_timestamp_in_timeline) {
+    use_decoding_timestamp_in_timeline_ = use_decoding_timestamp_in_timeline;
+  }
+
  protected:
   TrackFragment* traf() { return traf_; }
 
@@ -75,6 +84,7 @@ class Fragmenter {
   // Check if the current fragment starts with SAP.
   bool StartsWithSAP();
 
+  bool use_decoding_timestamp_in_timeline_;
   TrackFragment* traf_;
   uint64_t seek_preroll_;
   bool fragment_initialized_;

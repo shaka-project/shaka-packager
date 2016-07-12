@@ -49,6 +49,13 @@ struct MuxerOptions {
   /// segment_duration/N/fragment_duration fragments per subsegment.
   int num_subsegments_per_sidx;
 
+  /// For ISO BMFF only.
+  /// Set the flag use_decoding_timestamp_in_timeline, which if set to true, use
+  /// decoding timestamp instead of presentation timestamp in media timeline,
+  /// which is needed to workaround a Chromium bug that decoding timestamp is
+  /// used in buffered range, https://crbug.com/398130.
+  bool mp4_use_decoding_timestamp_in_timeline;
+
   /// Output file name. If segment_template is not specified, the Muxer
   /// generates this single output file with all segments concatenated;
   /// Otherwise, it specifies the init segment name.

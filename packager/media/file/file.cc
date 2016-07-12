@@ -6,9 +6,9 @@
 
 #include "packager/media/file/file.h"
 
+#include <gflags/gflags.h>
 #include <algorithm>
 
-#include <gflags/gflags.h>
 #include "packager/base/logging.h"
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/file/local_file.h"

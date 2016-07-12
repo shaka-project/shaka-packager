@@ -25,6 +25,12 @@
 #include "packager/media/file/file.h"
 #include "packager/mpd/base/mpd_builder.h"
 
+DEFINE_bool(mp4_use_decoding_timestamp_in_timeline,
+            false,
+            "If set, decoding timestamp instead of presentation timestamp will "
+            "be used when generating media timeline, e.g. timestamps in sidx "
+            "and mpd. This is to workaround a Chromium bug that decoding "
+            "timestamp is used in buffered range, https://crbug.com/398130.");
 DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
 
 namespace shaka {
@@ -148,6 +154,16 @@ bool GetMuxerOptions(MuxerOptions* muxer_options) {
   muxer_options->segment_sap_aligned = FLAGS_segment_sap_aligned;
   muxer_options->fragment_sap_aligned = FLAGS_fragment_sap_aligned;
   muxer_options->num_subsegments_per_sidx = FLAGS_num_subsegments_per_sidx;
+
+  if (FLAGS_mp4_use_decoding_timestamp_in_timeline) {
+    LOG(WARNING) << "Flag --mp4_use_decoding_timestamp_in_timeline is set. "
+                    "Note that it is a temporary hack to workaround Chromium "
+                    "bug https://crbug.com/398130. The flag may be removed "
+                    "when the Chromium bug is fixed.";
+  }
+  muxer_options->mp4_use_decoding_timestamp_in_timeline =
+      FLAGS_mp4_use_decoding_timestamp_in_timeline;
+
   muxer_options->temp_dir = FLAGS_temp_dir;
   return true;
 }

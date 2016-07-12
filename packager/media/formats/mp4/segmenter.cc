@@ -264,6 +264,11 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
         muxer_listener_);
   }
 
+  if (options_.mp4_use_decoding_timestamp_in_timeline) {
+    for (uint32_t i = 0; i < streams.size(); ++i)
+      fragmenters_[i]->set_use_decoding_timestamp_in_timeline(true);
+  }
+
   // Choose the first stream if there is no VIDEO.
   if (sidx_->reference_id == 0)
     sidx_->reference_id = 1;
