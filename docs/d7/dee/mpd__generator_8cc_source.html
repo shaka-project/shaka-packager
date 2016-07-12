@@ -180,8 +180,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  ExitStatus status = CheckRequiredFlags();</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordflow">if</span> (status != kSuccess) {</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    std::string version_string =</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        base::StringPrintf(<span class="stringliteral">&quot;mpd_generator version %s&quot;</span>, kPackagerVersion);</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keyword">const</span> std::string version_string = base::StringPrintf(</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;        <span class="stringliteral">&quot;mpd_generator version %s&quot;</span>, GetPackagerVersion().c_str());</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    google::ShowUsageWithFlags(version_string.c_str());</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    <span class="keywordflow">return</span> status;</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  }</div>
@@ -198,7 +198,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jul 11 2016 20:48:00 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jul 12 2016 19:13:00 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
