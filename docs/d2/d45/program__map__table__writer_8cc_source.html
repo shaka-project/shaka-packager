@@ -282,8 +282,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;<span class="keywordtype">void</span> WritePrivateDataIndicatorDescriptor(FourCC fourcc, BufferWriter* output) {</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  <span class="keyword">const</span> uint8_t kPrivateDataIndicatorDescriptor = 15;</div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  output-&gt;AppendInt(kPrivateDataIndicatorDescriptor);</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  output-&gt;AppendInt(static_cast&lt;uint8_t&gt;(<span class="keyword">sizeof</span>(FOURCC_aacd)));</div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  output-&gt;AppendInt(FOURCC_aacd);</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  output-&gt;AppendInt(static_cast&lt;uint8_t&gt;(<span class="keyword">sizeof</span>(fourcc)));</div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  output-&gt;AppendInt(fourcc);</div>
 <div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;}</div>
 <div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;</div>
 <div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;<span class="keywordtype">bool</span> WriteAacAudioSetupInformation(<span class="keyword">const</span> uint8_t* aac_audio_specific_config,</div>
@@ -465,7 +465,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;    <span class="keywordtype">int</span> current_next_indicator,</div>
 <div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;    <a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a>* writer) {</div>
 <div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;  <span class="comment">// -12 because there are 12 bytes between &#39;descriptor_length&#39; in</span></div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;  <span class="comment">// registartion_descriptor and &#39;setup_data_length&#39; in audio_setup_information.</span></div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;  <span class="comment">// registration_descriptor and &#39;setup_data_length&#39; in audio_setup_information.</span></div>
 <div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;  <span class="keywordflow">if</span> (aac_audio_specific_config_.size() &gt;</div>
 <div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;      std::numeric_limits&lt;uint8_t&gt;::max() - 12) {</div>
 <div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;AACAudioSpecificConfig of size: &quot;</span></div>
@@ -500,7 +500,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Jul 12 2016 19:13:00 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jul 12 2016 21:03:10 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
