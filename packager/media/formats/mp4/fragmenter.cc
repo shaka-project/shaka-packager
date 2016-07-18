@@ -46,7 +46,10 @@ Fragmenter::~Fragmenter() {}
 
 Status Fragmenter::AddSample(scoped_refptr<MediaSample> sample) {
   DCHECK(sample);
-  CHECK_GT(sample->duration(), 0);
+  if (sample->duration() == 0) {
+    LOG(WARNING) << "Unexpected sample with zero duration @ dts "
+                 << sample->dts();
+  }
 
   if (!fragment_initialized_) {
     Status status = InitializeFragment(sample->dts());
