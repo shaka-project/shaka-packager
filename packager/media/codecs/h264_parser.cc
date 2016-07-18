@@ -675,9 +675,6 @@ H264Parser::Result H264Parser::ParseSps(const Nalu& nalu, int* sps_id) {
   READ_UE_OR_RETURN(&sps->max_num_ref_frames);
   READ_BOOL_OR_RETURN(&sps->gaps_in_frame_num_value_allowed_flag);
 
-  if (sps->gaps_in_frame_num_value_allowed_flag)
-    return kUnsupportedStream;
-
   READ_UE_OR_RETURN(&sps->pic_width_in_mbs_minus1);
   READ_UE_OR_RETURN(&sps->pic_height_in_map_units_minus1);
 
