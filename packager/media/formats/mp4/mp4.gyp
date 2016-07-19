@@ -49,6 +49,7 @@
       ],
       'dependencies': [
         '../../../third_party/boringssl/boringssl.gyp:boringssl',
+        '../../../third_party/gflags/gflags.gyp:gflags',
         '../../base/media_base.gyp:media_base',
         '../../codecs/codecs.gyp:codecs',
         '../../event/media_event.gyp:media_event',
