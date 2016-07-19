@@ -113,6 +113,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:acb335182d4bd226c1f044cc83705f4fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2db773300dadf681c40bef0b3eca3ece"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a2db773300dadf681c40bef0b3eca3ece">num_subsegments_per_sidx</a></td></tr>
 <tr class="separator:a2db773300dadf681c40bef0b3eca3ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d3d8c1923a2e0f684c2591cd7f4a890"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a4d3d8c1923a2e0f684c2591cd7f4a890">mp4_use_decoding_timestamp_in_timeline</a></td></tr>
+<tr class="separator:a4d3d8c1923a2e0f684c2591cd7f4a890"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5397ee8759a663aea68261600e528d82"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82">output_file_name</a></td></tr>
 <tr class="separator:a5397ee8759a663aea68261600e528d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab98cfd28046fc5c52ab2a45dba1a339a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#ab98cfd28046fc5c52ab2a45dba1a339a">segment_template</a></td></tr>
@@ -140,7 +142,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>User-specified bit rate for the media stream. If zero, the muxer will attempt to estimate. </p>
 
-<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00068">68</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00075">75</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
 
 </div>
 </div>
@@ -174,6 +176,21 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 
 </div>
 </div>
+<a class="anchor" id="a4d3d8c1923a2e0f684c2591cd7f4a890"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool shaka::media::MuxerOptions::mp4_use_decoding_timestamp_in_timeline</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>For ISO BMFF only. Set the flag use_decoding_timestamp_in_timeline, which if set to true, use decoding timestamp instead of presentation timestamp in media timeline, which is needed to workaround a Chromium bug that decoding timestamp is used in buffered range, <a href="https://crbug.com/398130">https://crbug.com/398130</a>. </p>
+
+<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00057">57</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
+
+</div>
+</div>
 <a class="anchor" id="a2db773300dadf681c40bef0b3eca3ece"></a>
 <div class="memitem">
 <div class="memproto">
@@ -200,7 +217,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Output file name. If segment_template is not specified, the <a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html">Muxer</a> generates this single output file with all segments concatenated; Otherwise, it specifies the init segment name. </p>
 
-<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00055">55</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00062">62</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
 
 </div>
 </div>
@@ -245,7 +262,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><div class="memdoc">
 <p>Specify output segment name pattern for generated segments. It can furthermore be configured by using a subset of the SegmentTemplate identifiers: $RepresentationID$, $Number$, $Bandwidth$ and $Time. Optional. </p>
 
-<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00061">61</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d0/d0e/muxer__options_8h_source.html#l00068">68</a> of file <a class="el" href="../../d0/d0e/muxer__options_8h_source.html">muxer_options.h</a>.</p>
 
 </div>
 </div>
@@ -271,7 +288,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Jul 18 2016 20:28:14 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Jul 19 2016 18:58:15 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
