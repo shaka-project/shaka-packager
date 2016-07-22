@@ -1844,16 +1844,26 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01755"></a><span class="lineno"> 1755</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (base::EndsWith(file_name, <span class="stringliteral">&quot;.ts&quot;</span>,</div>
 <div class="line"><a name="l01756"></a><span class="lineno"> 1756</span>&#160;                            base::CompareCase::INSENSITIVE_ASCII)) {</div>
 <div class="line"><a name="l01757"></a><span class="lineno"> 1757</span>&#160;    <span class="keywordflow">return</span> CONTAINER_MPEG2TS;</div>
-<div class="line"><a name="l01758"></a><span class="lineno"> 1758</span>&#160;  }</div>
-<div class="line"><a name="l01759"></a><span class="lineno"> 1759</span>&#160;  <span class="keywordflow">return</span> CONTAINER_UNKNOWN;</div>
-<div class="line"><a name="l01760"></a><span class="lineno"> 1760</span>&#160;}</div>
-<div class="line"><a name="l01761"></a><span class="lineno"> 1761</span>&#160;</div>
-<div class="line"><a name="l01762"></a><span class="lineno"> 1762</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l01763"></a><span class="lineno"> 1763</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l01758"></a><span class="lineno"> 1758</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (base::EndsWith(file_name, <span class="stringliteral">&quot;.vtt&quot;</span>,</div>
+<div class="line"><a name="l01759"></a><span class="lineno"> 1759</span>&#160;                            base::CompareCase::INSENSITIVE_ASCII)) {</div>
+<div class="line"><a name="l01760"></a><span class="lineno"> 1760</span>&#160;    <span class="keywordflow">return</span> CONTAINER_WEBVTT;</div>
+<div class="line"><a name="l01761"></a><span class="lineno"> 1761</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (base::EndsWith(file_name, <span class="stringliteral">&quot;.ttml&quot;</span>,</div>
+<div class="line"><a name="l01762"></a><span class="lineno"> 1762</span>&#160;                            base::CompareCase::INSENSITIVE_ASCII)) {</div>
+<div class="line"><a name="l01763"></a><span class="lineno"> 1763</span>&#160;    <span class="keywordflow">return</span> CONTAINER_TTML;</div>
+<div class="line"><a name="l01764"></a><span class="lineno"> 1764</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (base::EndsWith(file_name, <span class="stringliteral">&quot;.xml&quot;</span>,</div>
+<div class="line"><a name="l01765"></a><span class="lineno"> 1765</span>&#160;                            base::CompareCase::INSENSITIVE_ASCII)) {</div>
+<div class="line"><a name="l01766"></a><span class="lineno"> 1766</span>&#160;    <span class="comment">// In our supported containers, only ttml is in xml format.</span></div>
+<div class="line"><a name="l01767"></a><span class="lineno"> 1767</span>&#160;    <span class="keywordflow">return</span> CONTAINER_TTML;</div>
+<div class="line"><a name="l01768"></a><span class="lineno"> 1768</span>&#160;  }</div>
+<div class="line"><a name="l01769"></a><span class="lineno"> 1769</span>&#160;  <span class="keywordflow">return</span> CONTAINER_UNKNOWN;</div>
+<div class="line"><a name="l01770"></a><span class="lineno"> 1770</span>&#160;}</div>
+<div class="line"><a name="l01771"></a><span class="lineno"> 1771</span>&#160;</div>
+<div class="line"><a name="l01772"></a><span class="lineno"> 1772</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l01773"></a><span class="lineno"> 1773</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Jul 20 2016 22:28:02 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Jul 22 2016 20:53:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
