@@ -1,3 +1,17 @@
+## [1.5.1] - 2016-07-25
+### Added
+- Added a runtime flag to use dts in timeline for mp4:
+  --mp4_use_decoding_timestamp_in_timeline
+
+### Changed
+- Remove restriction that sps:gaps_in_frame_num_value_allowed_flag should be
+  0 in h264. Packager should not care about this flag (#126).
+- Remove restriction that sample duration cannot be zero. A warning message
+  is printed instead (#127).
+
+### Fixed
+- Fix text formats (webvtt, ttml) not recognized problem (#130).
+
 ## [1.5.0] - 2016-07-12
 ### Added
 - Added TS (output) and HLS (output) with SAMPLE-AES encryption support.
@@ -173,6 +187,7 @@ First public release.
 - Added mpd_generator driver program to generate mpd file from packager generated
   intermediate files.
 
+[1.5.1]: https://github.com/google/shaka-packager/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/google/shaka-packager/compare/v1.4.0...v1.5.0
 [1.4.1]: https://github.com/google/shaka-packager/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/google/shaka-packager/compare/v1.3.1...v1.4.0
