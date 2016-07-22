@@ -403,7 +403,7 @@ class PackagerAppTest(unittest.TestCase):
 
   def _GetStreams(self,
                   stream_descriptors,
-                  output_format='mp4',
+                  output_format=None,
                   live=False,
                   test_files=None):
     if test_files is None:
@@ -422,25 +422,28 @@ class PackagerAppTest(unittest.TestCase):
                                         stream_descriptor)
         if live:
           if output_format == 'ts':
-            stream = ('input=%s,stream=%s,format=%s,'
-                      'segment_template=%s-$Number$.ts,playlist_name=%s.m3u8')
-            streams.append(stream % (test_file, stream_descriptor,
-                                     output_format, output_prefix,
-                                     stream_descriptor))
+            stream = ('input=%s,stream=%s,segment_template=%s-$Number$.ts,'
+                      'playlist_name=%s.m3u8' % (test_file, stream_descriptor,
+                                                 output_prefix,
+                                                 stream_descriptor))
           else:
-            stream = ('input=%s,stream=%s,format=%s,init_segment=%s-init.mp4,'
-                      'segment_template=%s-$Number$.m4s')
-            streams.append(stream % (test_file, stream_descriptor,
-                                     output_format, output_prefix,
-                                     output_prefix))
+            stream = (
+                'input=%s,stream=%s,init_segment=%s-init.mp4,'
+                'segment_template=%s-$Number$.m4s' %
+                (test_file, stream_descriptor, output_prefix, output_prefix))
+          if output_format:
+            stream += ',format=%s' % output_format
+          streams.append(stream)
           self.output.append(output_prefix)
         else:
           output = '%s.%s' % (
               output_prefix,
               self._GetExtension(stream_descriptor, output_format))
-          stream = 'input=%s,stream=%s,format=%s,output=%s'
-          streams.append(stream %
-                         (test_file, stream_descriptor, output_format, output))
+          stream = ('input=%s,stream=%s,output=%s' %
+                    (test_file, stream_descriptor, output))
+          if output_format:
+            stream += ',format=%s' % output_format
+          streams.append(stream)
           self.output.append(output)
     return streams
 
@@ -448,7 +451,10 @@ class PackagerAppTest(unittest.TestCase):
     # TODO(rkuroiwa): Support ttml.
     if stream_descriptor == 'text':
       return 'vtt'
-    return output_format
+    if output_format:
+      return output_format
+    # Default to mp4.
+    return 'mp4'
 
   def _GetFlags(self,
                 encryption=False,

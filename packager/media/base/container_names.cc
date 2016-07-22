@@ -1755,6 +1755,16 @@ MediaContainerName DetermineContainerFromFileName(
   } else if (base::EndsWith(file_name, ".ts",
                             base::CompareCase::INSENSITIVE_ASCII)) {
     return CONTAINER_MPEG2TS;
+  } else if (base::EndsWith(file_name, ".vtt",
+                            base::CompareCase::INSENSITIVE_ASCII)) {
+    return CONTAINER_WEBVTT;
+  } else if (base::EndsWith(file_name, ".ttml",
+                            base::CompareCase::INSENSITIVE_ASCII)) {
+    return CONTAINER_TTML;
+  } else if (base::EndsWith(file_name, ".xml",
+                            base::CompareCase::INSENSITIVE_ASCII)) {
+    // In our supported containers, only ttml is in xml format.
+    return CONTAINER_TTML;
   }
   return CONTAINER_UNKNOWN;
 }
