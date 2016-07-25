@@ -266,11 +266,15 @@ def _parse_boxes(data):
 
 def _create_argument_parser():
   """Creates an argument parser."""
+
   def hex_16_bytes(string):
     if not string or len(string) != 32:
       raise argparse.ArgumentTypeError(
           'Must be a 32-character hex string, %d given' % len(string))
-    return base64.b16decode(string)
+    return base64.b16decode(string.upper())
+
+  def hex_bytes(string):
+    return base64.b16decode(string.upper())
 
   parser = argparse.ArgumentParser(
       formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -317,7 +321,7 @@ generate a v0 PSSH box for compatibility reasons.""")
   inputs.add_argument('--from-hex',
                       metavar='<hex-string>',
                       dest='input',
-                      type=base64.b16decode,
+                      type=hex_bytes,
                       help='Parse the given hexadecimal encoded PSSH box')
 
   system_ids = parser.add_mutually_exclusive_group()
@@ -349,7 +353,7 @@ generate a v0 PSSH box for compatibility reasons.""")
                      help='Sets the extra data')
   extra.add_argument('--content-id',
                      metavar='<hex-string>',
-                     type=base64.b16decode,
+                     type=hex_bytes,
                      help='Sets the content ID of the Widevine PSSH data')
   extra.add_argument('--provider',
                      metavar='<string>',
