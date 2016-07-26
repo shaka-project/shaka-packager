@@ -18,7 +18,7 @@ namespace media {
 
 // Common SystemID defined by EME, which requires Key System implementations
 // supporting ISO Common Encryption to support this SystemID and format.
-// http://goo.gl/PHZDAF
+// https://goo.gl/kUv2Xd
 const uint8_t kCommonSystemId[] = {0x10, 0x77, 0xef, 0xec, 0xc0, 0xb2,
                                    0x4d, 0x02, 0xac, 0xe3, 0x3c, 0x1e,
                                    0x52, 0xe2, 0xfb, 0x4b};
