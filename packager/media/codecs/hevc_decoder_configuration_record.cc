@@ -59,7 +59,7 @@ std::string ReverseBitsAndHexEncode(uint32_t x) {
   return TrimLeadingZeros(base::HexEncode(bytes, arraysize(bytes)));
 }
 
-std::string CodecAsString(VideoCodec codec) {
+std::string CodecAsString(Codec codec) {
   switch (codec) {
     case kCodecHEV1:
       return "hev1";
@@ -132,8 +132,7 @@ bool HEVCDecoderConfigurationRecord::ParseInternal() {
   return true;
 }
 
-std::string HEVCDecoderConfigurationRecord::GetCodecString(
-    VideoCodec codec) const {
+std::string HEVCDecoderConfigurationRecord::GetCodecString(Codec codec) const {
   // ISO/IEC 14496-15:2014 Annex E.
   std::vector<std::string> fields;
   fields.push_back(CodecAsString(codec));

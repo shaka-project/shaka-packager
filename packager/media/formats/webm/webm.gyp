@@ -56,6 +56,7 @@
       ],
       'dependencies': [
         '../../../third_party/boringssl/boringssl.gyp:boringssl',
+        '../../../third_party/gflags/gflags.gyp:gflags',
         '../../../third_party/libwebm/libwebm.gyp:mkvmuxer',
         '../../base/media_base.gyp:media_base',
         '../../codecs/codecs.gyp:codecs'

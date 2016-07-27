@@ -92,7 +92,7 @@ class EncryptingFragmenter : public Fragmenter {
   // and type of NAL units remain unencrypted. This function returns the size of
   // the size field in bytes. Can be 1, 2 or 4 bytes.
   const uint8_t nalu_length_size_;
-  const VideoCodec video_codec_;
+  const Codec video_codec_;
   int64_t clear_time_;
   const FourCC protection_scheme_;
   const uint8_t crypt_byte_block_;

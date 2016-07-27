@@ -27,10 +27,7 @@ const int64_t kMicrosecondsPerMillisecond = 1000;
 // block is a keyframe.
 // |data| contains the bytes in the block.
 // |size| indicates the number of bytes in |data|.
-bool IsKeyframe(bool is_video,
-                VideoCodec codec,
-                const uint8_t* data,
-                int size) {
+bool IsKeyframe(bool is_video, Codec codec, const uint8_t* data, int size) {
   // For now, assume that all blocks are keyframes for datatypes other than
   // video. This is a valid assumption for Vorbis, WebVTT, & Opus.
   if (!is_video)
@@ -370,7 +367,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
             ? (flags & 0x80) != 0
             : IsKeyframe(stream_type == kStreamVideo,
                          video_stream_info_ ? video_stream_info_->codec()
-                                            : kUnknownVideoCodec,
+                                            : kUnknownCodec,
                          data, size);
 
     // Every encrypted Block has a signal byte and IV prepended to it. Current
@@ -390,8 +387,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     buffer = MediaSample::CopyFrom(data + data_offset, size - data_offset,
                                    additional, additional_size, is_keyframe);
 
-    // An empty iv indicates that this sample is not encrypted.
-    if (decrypt_config && !decrypt_config->iv().empty()) {
+    if (decrypt_config) {
       if (!decryptor_source_) {
         LOG(ERROR) << "Encrypted media sample encountered, but decryption is "
                       "not enabled";

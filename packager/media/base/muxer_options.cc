@@ -17,7 +17,8 @@ MuxerOptions::MuxerOptions()
       fragment_sap_aligned(false),
       num_subsegments_per_sidx(0),
       mp4_use_decoding_timestamp_in_timeline(false),
-      bandwidth(0) {}
+      bandwidth(0),
+      webm_subsample_encryption(true) {}
 MuxerOptions::~MuxerOptions() {}
 
 }  // namespace media

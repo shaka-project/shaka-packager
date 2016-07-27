@@ -14,19 +14,16 @@
 namespace shaka {
 namespace media {
 
-StreamInfo::StreamInfo(StreamType stream_type,
-                       int track_id,
-                       uint32_t time_scale,
-                       uint64_t duration,
+StreamInfo::StreamInfo(StreamType stream_type, int track_id,
+                       uint32_t time_scale, uint64_t duration, Codec codec,
                        const std::string& codec_string,
-                       const std::string& language,
-                       const uint8_t* codec_config,
-                       size_t codec_config_size,
-                       bool is_encrypted)
+                       const uint8_t* codec_config, size_t codec_config_size,
+                       const std::string& language, bool is_encrypted)
     : stream_type_(stream_type),
       track_id_(track_id),
       time_scale_(time_scale),
       duration_(duration),
+      codec_(codec),
       codec_string_(codec_string),
       language_(language),
       is_encrypted_(is_encrypted) {

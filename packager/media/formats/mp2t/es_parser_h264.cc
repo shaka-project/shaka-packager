@@ -148,9 +148,10 @@ bool EsParserH264::UpdateVideoDecoderConfig(int pps_id) {
       AVCDecoderConfigurationRecord::GetCodecString(decoder_config_record[1],
                                                     decoder_config_record[2],
                                                     decoder_config_record[3]),
-      std::string(), coded_width, coded_height, pixel_width, pixel_height, 0,
-      H264ByteToUnitStreamConverter::kUnitStreamNaluLengthSize,
-      decoder_config_record.data(), decoder_config_record.size(), false));
+      decoder_config_record.data(), decoder_config_record.size(), coded_width,
+      coded_height, pixel_width, pixel_height, 0,
+      H264ByteToUnitStreamConverter::kUnitStreamNaluLengthSize, std::string(),
+      false));
   DVLOG(1) << "Profile IDC: " << sps->profile_idc;
   DVLOG(1) << "Level IDC: " << sps->level_idc;
   DVLOG(1) << "log2_max_frame_num_minus4: " << sps->log2_max_frame_num_minus4;

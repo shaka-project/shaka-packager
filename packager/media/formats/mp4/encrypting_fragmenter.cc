@@ -41,9 +41,8 @@ void AddSubsamples(uint64_t clear_bytes,
     subsamples->push_back(SubsampleEntry(clear_bytes, cipher_bytes));
 }
 
-VideoCodec GetVideoCodec(const StreamInfo& stream_info) {
-  if (stream_info.stream_type() != kStreamVideo)
-    return kUnknownVideoCodec;
+Codec GetCodec(const StreamInfo& stream_info) {
+  if (stream_info.stream_type() != kStreamVideo) return kUnknownCodec;
   const VideoStreamInfo& video_stream_info =
       static_cast<const VideoStreamInfo&>(stream_info);
   return video_stream_info.codec();
@@ -60,19 +59,15 @@ uint8_t GetNaluLengthSize(const StreamInfo& stream_info) {
 }  // namespace
 
 EncryptingFragmenter::EncryptingFragmenter(
-    scoped_refptr<StreamInfo> info,
-    TrackFragment* traf,
-    scoped_ptr<EncryptionKey> encryption_key,
-    int64_t clear_time,
-    FourCC protection_scheme,
-    uint8_t crypt_byte_block,
-    uint8_t skip_byte_block,
+    scoped_refptr<StreamInfo> info, TrackFragment* traf,
+    scoped_ptr<EncryptionKey> encryption_key, int64_t clear_time,
+    FourCC protection_scheme, uint8_t crypt_byte_block, uint8_t skip_byte_block,
     MuxerListener* listener)
     : Fragmenter(info, traf),
       info_(info),
       encryption_key_(encryption_key.Pass()),
       nalu_length_size_(GetNaluLengthSize(*info)),
-      video_codec_(GetVideoCodec(*info)),
+      video_codec_(GetCodec(*info)),
       clear_time_(clear_time),
       protection_scheme_(protection_scheme),
       crypt_byte_block_(crypt_byte_block),

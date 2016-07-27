@@ -294,15 +294,12 @@ bool WebVttMediaParser::Parse(const uint8_t* buf, int size) {
           // There is no one metadata to determine what the language is. Parts
           // of the text may be annotated as some specific language.
           const char kLanguage[] = "";
-          streams.push_back(new TextStreamInfo(
-              kTrackId,
-              kTimescale,
-              kDuration,
-              "wvtt",
-              kLanguage,
-              base::JoinString(header_, "\n"),
-              0,         // Not necessary.
-              0));       // Not necessary.
+          streams.push_back(new TextStreamInfo(kTrackId, kTimescale, kDuration,
+                                               "wvtt",
+                                               base::JoinString(header_, "\n"),
+                                               0,  // Not necessary.
+                                               0,
+                                               kLanguage));  // Not necessary.
 
           init_cb_.Run(streams);
           state_ = kCueIdentifierOrTimingOrComment;

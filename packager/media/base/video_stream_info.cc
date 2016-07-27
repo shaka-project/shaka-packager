@@ -17,8 +17,8 @@ namespace shaka {
 namespace media {
 
 namespace {
-std::string VideoCodecToString(VideoCodec video_codec) {
-  switch (video_codec) {
+std::string VideoCodecToString(Codec codec) {
+  switch (codec) {
     case kCodecH264:
       return "H264";
     case kCodecHEV1:
@@ -40,52 +40,35 @@ std::string VideoCodecToString(VideoCodec video_codec) {
     case kCodecVP10:
       return "VP10";
     default:
-      NOTIMPLEMENTED() << "Unknown Video Codec: " << video_codec;
-      return "UnknownVideoCodec";
+      NOTIMPLEMENTED() << "Unknown Video Codec: " << codec;
+      return "UnknownCodec";
   }
 }
 
 }  // namespace
 
-VideoStreamInfo::VideoStreamInfo(int track_id,
-                                 uint32_t time_scale,
-                                 uint64_t duration,
-                                 VideoCodec codec,
-                                 const std::string& codec_string,
-                                 const std::string& language,
-                                 uint16_t width,
-                                 uint16_t height,
-                                 uint32_t pixel_width,
-                                 uint32_t pixel_height,
-                                 int16_t trick_play_rate,
-                                 uint8_t nalu_length_size,
-                                 const uint8_t* codec_config,
-                                 size_t codec_config_size,
-                                 bool is_encrypted)
-    : StreamInfo(kStreamVideo,
-                 track_id,
-                 time_scale,
-                 duration,
-                 codec_string,
-                 language,
-                 codec_config,
-                 codec_config_size,
+VideoStreamInfo::VideoStreamInfo(
+    int track_id, uint32_t time_scale, uint64_t duration, Codec codec,
+    const std::string& codec_string, const uint8_t* codec_config,
+    size_t codec_config_size, uint16_t width, uint16_t height,
+    uint32_t pixel_width, uint32_t pixel_height, int16_t trick_play_rate,
+    uint8_t nalu_length_size, const std::string& language, bool is_encrypted)
+    : StreamInfo(kStreamVideo, track_id, time_scale, duration, codec,
+                 codec_string, codec_config, codec_config_size, language,
                  is_encrypted),
-      codec_(codec),
       width_(width),
       height_(height),
       pixel_width_(pixel_width),
       pixel_height_(pixel_height),
       trick_play_rate_(trick_play_rate),
-      nalu_length_size_(nalu_length_size) {
-}
+      nalu_length_size_(nalu_length_size) {}
 
 VideoStreamInfo::~VideoStreamInfo() {}
 
 bool VideoStreamInfo::IsValidConfig() const {
-  return codec_ != kUnknownVideoCodec &&
-         width_ > 0 && width_ <= limits::kMaxDimension &&
-         height_ > 0 && height_ <= limits::kMaxDimension &&
+  return codec() != kUnknownCodec && width_ > 0 &&
+         width_ <= limits::kMaxDimension && height_ > 0 &&
+         height_ <= limits::kMaxDimension &&
          (nalu_length_size_ <= 2 || nalu_length_size_ == 4);
 }
 
@@ -93,7 +76,7 @@ std::string VideoStreamInfo::ToString() const {
   return base::StringPrintf(
       "%s codec: %s\n width: %d\n height: %d\n pixel_aspect_ratio: %d:%d\n "
       "trick_play_rate: %d\n nalu_length_size: %d\n",
-      StreamInfo::ToString().c_str(), VideoCodecToString(codec_).c_str(),
+      StreamInfo::ToString().c_str(), VideoCodecToString(codec()).c_str(),
       width_, height_, pixel_width_, pixel_height_, trick_play_rate_,
       nalu_length_size_);
 }

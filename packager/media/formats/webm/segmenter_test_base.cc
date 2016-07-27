@@ -25,7 +25,7 @@ const uint8_t kTestMediaSampleSideData[] = {
 const int kTrackId = 1;
 const uint32_t kTimeScale = 1000;
 const uint64_t kDuration = 8000;
-const VideoCodec kVideoCodec = kCodecVP8;
+const Codec kCodec = kCodecVP8;
 const std::string kCodecString = "vp8";
 const std::string kLanguage = "en";
 const uint16_t kWidth = 100;
@@ -92,10 +92,10 @@ MuxerOptions SegmentTestBase::CreateMuxerOptions() const {
 }
 
 VideoStreamInfo* SegmentTestBase::CreateVideoStreamInfo() const {
-  return new VideoStreamInfo(kTrackId, kTimeScale, kDuration, kVideoCodec,
-                             kCodecString, kLanguage, kWidth, kHeight,
+  return new VideoStreamInfo(kTrackId, kTimeScale, kDuration, kCodec,
+                             kCodecString, NULL, 0, kWidth, kHeight,
                              kPixelWidth, kPixelHeight, kTrickPlayRate,
-                             kNaluLengthSize, NULL, 0, false);
+                             kNaluLengthSize, kLanguage, false);
 }
 
 std::string SegmentTestBase::OutputFileName() const {
@@ -200,4 +200,3 @@ bool SegmentTestBase::ClusterParser::OnString(int id, const std::string& str) {
 
 }  // namespace media
 }  // namespace shaka
-

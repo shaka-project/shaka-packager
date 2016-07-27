@@ -16,29 +16,19 @@ VideoStreamInfoParameters::~VideoStreamInfoParameters() {}
 
 scoped_refptr<StreamInfo> CreateVideoStreamInfo(
     const VideoStreamInfoParameters& param) {
-  return scoped_refptr<StreamInfo>(
-      new VideoStreamInfo(param.track_id,
-                          param.time_scale,
-                          param.duration,
-                          param.codec,
-                          param.codec_string,
-                          param.language,
-                          param.width,
-                          param.height,
-                          param.pixel_width,
-                          param.pixel_height,
-                          0,  // trick_play_rate
-                          param.nalu_length_size,
-                          param.codec_config.data(),
-                          param.codec_config.size(),
-                          param.is_encrypted));
+  return scoped_refptr<StreamInfo>(new VideoStreamInfo(
+      param.track_id, param.time_scale, param.duration, param.codec,
+      param.codec_string, param.codec_config.data(), param.codec_config.size(),
+      param.width, param.height, param.pixel_width, param.pixel_height,
+      0,  // trick_play_rate
+      param.nalu_length_size, param.language, param.is_encrypted));
 }
 
 VideoStreamInfoParameters GetDefaultVideoStreamInfoParams() {
   const int kTrackId = 0;
   const uint32_t kTimeScale = 10;
   const uint64_t kVideoStreamDuration = 200;
-  const VideoCodec kH264Codec = kCodecH264;
+  const Codec kH264Codec = kCodecH264;
   const char* kCodecString = "avc1.010101";
   const char* kLanuageUndefined = "und";
   const uint16_t kWidth = 720;

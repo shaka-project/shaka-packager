@@ -79,7 +79,8 @@ Status Segmenter::Initialize(scoped_ptr<MkvWriter> writer,
 
   Status status;
   if (encryption_key_source) {
-    status = InitializeEncryptor(encryption_key_source, max_sd_pixels);
+    status = InitializeEncryptor(encryption_key_source,
+                                 max_sd_pixels);
     if (!status.ok())
       return status;
   }
@@ -362,7 +363,8 @@ Status Segmenter::InitializeEncryptor(KeySource* key_source,
       GetTrackTypeForEncryption(*info_, max_sd_pixels);
   if (track_type == KeySource::TrackType::TRACK_TYPE_UNKNOWN)
     return Status::OK;
-  return encryptor_->Initialize(muxer_listener_, track_type, key_source);
+  return encryptor_->Initialize(muxer_listener_, track_type, info_->codec(),
+                                key_source, options_.webm_subsample_encryption);
 }
 
 Status Segmenter::WriteFrame(bool write_duration) {

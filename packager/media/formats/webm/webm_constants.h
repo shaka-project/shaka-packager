@@ -5,6 +5,7 @@
 #ifndef MEDIA_FORMATS_WEBM_WEBM_CONSTANTS_H_
 #define MEDIA_FORMATS_WEBM_WEBM_CONSTANTS_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 namespace shaka {
@@ -207,9 +208,13 @@ const uint8_t kWebMFlagKeyframe = 0x80;
 
 /// Current encrypted WebM request for comments specification is here
 /// http://wiki.webmproject.org/encryption/webm-encryption-rfc
-const uint8_t kWebMFlagEncryptedFrame = 0x1;
-const int kWebMIvSize = 8;
-const int kWebMSignalByteSize = 1;
+const size_t kWebMIvSize = 8;
+const size_t kWebMSignalByteSize = 1;
+const uint8_t kWebMEncryptedSignal = 0x01;
+const uint8_t kWebMPartitionedSignal = 0x02;
+const size_t kWebMNumPartitionsSize = 1;
+const size_t kWebMPartitionOffsetSize = sizeof(uint32_t);
+const uint8_t kWebMMaxSubsamples = 127;
 
 /// Current specification for WebVTT embedded in WebM
 /// http://wiki.webmproject.org/webm-metadata/temporal-metadata/webvtt-in-webm

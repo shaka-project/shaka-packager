@@ -21,20 +21,16 @@ class TextStreamInfo : public StreamInfo {
   /// @param time_scale is the time scale of this stream.
   /// @param duration is the duration of this stream.
   /// @param codec_string is the codec.
-  /// @param language is the language of this stream. This may be empty.
   /// @param codec_config is configuration for this text stream. This could be
   ///        the metadata that applies to all the samples of this stream. This
   ///        may be empty.
   /// @param width of the text. This may be 0.
   /// @param height of the text. This may be 0.
-  TextStreamInfo(int track_id,
-                 uint32_t time_scale,
-                 uint64_t duration,
+  /// @param language is the language of this stream. This may be empty.
+  TextStreamInfo(int track_id, uint32_t time_scale, uint64_t duration,
                  const std::string& codec_string,
-                 const std::string& language,
-                 const std::string& codec_config,
-                 uint16_t width,
-                 uint16_t height);
+                 const std::string& codec_config, uint16_t width,
+                 uint16_t height, const std::string& language);
 
   bool IsValidConfig() const override;
 

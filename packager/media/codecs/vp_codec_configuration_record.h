@@ -68,7 +68,7 @@ class VPCodecConfigurationRecord {
   void WriteWebM(std::vector<uint8_t>* data) const;
 
   /// @return The codec string.
-  std::string GetCodecString(VideoCodec codec) const;
+  std::string GetCodecString(Codec codec) const;
 
   // Merges the values from the given configuration.  If there are values in
   // both |*this| and |other|, the values in |other| take precedence.

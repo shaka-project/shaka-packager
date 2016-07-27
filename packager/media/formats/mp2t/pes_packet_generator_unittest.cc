@@ -34,10 +34,10 @@ const uint8_t kAnyData[] = {
 
 const bool kIsKeyFrame = true;
 
-// Only {Audio,Video}Codec and extra data matter for this test. Other values are
+// Only Codec and extra data matter for this test. Other values are
 // bogus.
-const VideoCodec kH264VideoCodec = VideoCodec::kCodecH264;
-const AudioCodec kAacAudioCodec = AudioCodec::kCodecAAC;
+const Codec kH264Codec = Codec::kCodecH264;
+const Codec kAacCodec = Codec::kCodecAAC;
 
 // TODO(rkuroiwa): It might make sense to inject factory functions to create
 // NalUnitToByteStreamConverter and AACAudioSpecificConfig so that these
@@ -102,20 +102,19 @@ class MockAACAudioSpecificConfig : public AACAudioSpecificConfig {
   MOCK_CONST_METHOD1(ConvertToADTS, bool(std::vector<uint8_t>* buffer));
 };
 
-scoped_refptr<VideoStreamInfo> CreateVideoStreamInfo(VideoCodec codec) {
+scoped_refptr<VideoStreamInfo> CreateVideoStreamInfo(Codec codec) {
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTimeScale, kDuration, codec, kCodecString, kLanguage,
-      kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
-      kNaluLengthSize, kVideoExtraData, arraysize(kVideoExtraData),
-      kIsEncrypted));
+      kTrackId, kTimeScale, kDuration, codec, kCodecString, kVideoExtraData,
+      arraysize(kVideoExtraData), kWidth, kHeight, kPixelWidth, kPixelHeight,
+      kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   return stream_info;
 }
 
-scoped_refptr<AudioStreamInfo> CreateAudioStreamInfo(AudioCodec codec) {
+scoped_refptr<AudioStreamInfo> CreateAudioStreamInfo(Codec codec) {
   scoped_refptr<AudioStreamInfo> stream_info(new AudioStreamInfo(
-      kTrackId, kTimeScale, kDuration, codec, kCodecString, kLanguage,
-      kSampleBits, kNumChannels, kSamplingFrequency, kSeekPreroll, kCodecDelay,
-      kMaxBitrate, kAverageBitrate, kAudioExtraData, arraysize(kAudioExtraData),
+      kTrackId, kTimeScale, kDuration, codec, kCodecString, kAudioExtraData,
+      arraysize(kAudioExtraData), kSampleBits, kNumChannels, kSamplingFrequency,
+      kSeekPreroll, kCodecDelay, kMaxBitrate, kAverageBitrate, kLanguage,
       kIsEncrypted));
   return stream_info;
 }
@@ -140,7 +139,7 @@ class PesPacketGeneratorTest : public ::testing::Test {
                           const uint8_t* expected_output,
                           size_t expected_output_size) {
     scoped_refptr<VideoStreamInfo> stream_info(
-        CreateVideoStreamInfo(kH264VideoCodec));
+        CreateVideoStreamInfo(kH264Codec));
     EXPECT_TRUE(generator_.Initialize(*stream_info));
     EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
@@ -189,7 +188,7 @@ class PesPacketGeneratorTest : public ::testing::Test {
                          const uint8_t* expected_output,
                          size_t expected_output_size) {
     scoped_refptr<AudioStreamInfo> stream_info(
-        CreateAudioStreamInfo(kAacAudioCodec));
+        CreateAudioStreamInfo(kAacCodec));
     EXPECT_TRUE(generator_.Initialize(*stream_info));
     EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
@@ -224,26 +223,24 @@ class PesPacketGeneratorTest : public ::testing::Test {
 };
 
 TEST_F(PesPacketGeneratorTest, InitializeVideo) {
-  scoped_refptr<VideoStreamInfo> stream_info(
-      CreateVideoStreamInfo(kH264VideoCodec));
+  scoped_refptr<VideoStreamInfo> stream_info(CreateVideoStreamInfo(kH264Codec));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
 }
 
 TEST_F(PesPacketGeneratorTest, InitializeVideoNonH264) {
   scoped_refptr<VideoStreamInfo> stream_info(
-      CreateVideoStreamInfo(VideoCodec::kCodecVP9));
+      CreateVideoStreamInfo(Codec::kCodecVP9));
   EXPECT_FALSE(generator_.Initialize(*stream_info));
 }
 
 TEST_F(PesPacketGeneratorTest, InitializeAudio) {
-  scoped_refptr<AudioStreamInfo> stream_info(
-      CreateAudioStreamInfo(kAacAudioCodec));
+  scoped_refptr<AudioStreamInfo> stream_info(CreateAudioStreamInfo(kAacCodec));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
 }
 
 TEST_F(PesPacketGeneratorTest, InitializeAudioNonAac) {
   scoped_refptr<AudioStreamInfo> stream_info(
-      CreateAudioStreamInfo(AudioCodec::kCodecOpus));
+      CreateAudioStreamInfo(Codec::kCodecOpus));
   EXPECT_FALSE(generator_.Initialize(*stream_info));
 }
 
@@ -251,13 +248,12 @@ TEST_F(PesPacketGeneratorTest, InitializeAudioNonAac) {
 TEST_F(PesPacketGeneratorTest, InitializeTextInfo) {
   scoped_refptr<TextStreamInfo> stream_info(
       new TextStreamInfo(kTrackId, kTimeScale, kDuration, kCodecString,
-                         kLanguage, std::string(), kWidth, kHeight));
+                         std::string(), kWidth, kHeight, kLanguage));
   EXPECT_FALSE(generator_.Initialize(*stream_info));
 }
 
 TEST_F(PesPacketGeneratorTest, AddVideoSample) {
-  scoped_refptr<VideoStreamInfo> stream_info(
-      CreateVideoStreamInfo(kH264VideoCodec));
+  scoped_refptr<VideoStreamInfo> stream_info(CreateVideoStreamInfo(kH264Codec));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
@@ -293,8 +289,7 @@ TEST_F(PesPacketGeneratorTest, AddVideoSample) {
 }
 
 TEST_F(PesPacketGeneratorTest, AddVideoSampleFailedToConvert) {
-  scoped_refptr<VideoStreamInfo> stream_info(
-      CreateVideoStreamInfo(kH264VideoCodec));
+  scoped_refptr<VideoStreamInfo> stream_info(CreateVideoStreamInfo(kH264Codec));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
@@ -316,8 +311,7 @@ TEST_F(PesPacketGeneratorTest, AddVideoSampleFailedToConvert) {
 }
 
 TEST_F(PesPacketGeneratorTest, AddAudioSample) {
-  scoped_refptr<AudioStreamInfo> stream_info(
-      CreateAudioStreamInfo(kAacAudioCodec));
+  scoped_refptr<AudioStreamInfo> stream_info(CreateAudioStreamInfo(kAacCodec));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
@@ -345,8 +339,7 @@ TEST_F(PesPacketGeneratorTest, AddAudioSample) {
 }
 
 TEST_F(PesPacketGeneratorTest, AddAudioSampleFailedToConvert) {
-  scoped_refptr<AudioStreamInfo> stream_info(
-      CreateAudioStreamInfo(kAacAudioCodec));
+  scoped_refptr<AudioStreamInfo> stream_info(CreateAudioStreamInfo(kAacCodec));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
@@ -368,10 +361,9 @@ TEST_F(PesPacketGeneratorTest, AddAudioSampleFailedToConvert) {
 TEST_F(PesPacketGeneratorTest, TimeStampScaling) {
   const uint32_t kTestTimescale = 1000;
   scoped_refptr<VideoStreamInfo> stream_info(new VideoStreamInfo(
-      kTrackId, kTestTimescale, kDuration, kH264VideoCodec, kCodecString,
-      kLanguage, kWidth, kHeight, kPixelWidth, kPixelHeight, kTrickPlayRate,
-      kNaluLengthSize, kVideoExtraData, arraysize(kVideoExtraData),
-      kIsEncrypted));
+      kTrackId, kTestTimescale, kDuration, kH264Codec, kCodecString,
+      kVideoExtraData, arraysize(kVideoExtraData), kWidth, kHeight, kPixelWidth,
+      kPixelHeight, kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(generator_.Initialize(*stream_info));
 
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());

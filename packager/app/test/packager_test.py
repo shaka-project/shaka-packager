@@ -195,6 +195,16 @@ class PackagerAppTest(unittest.TestCase):
     self._VerifyDecryption(self.output[0], 'bear-640x360-a-golden.mp4')
     self._VerifyDecryption(self.output[1], 'bear-640x360-v-golden.mp4')
 
+  def testPackageWithWebmSubsampleEncryption(self):
+    self.packager.Package(
+        self._GetStreams(['video'],
+                         output_format='webm',
+                         test_files=['bear-640x360-vp9-altref.webm']),
+        self._GetFlags(encryption=True))
+    self._DiffGold(self.output[0], 'bear-640x360-vp9-altref-enc-golden.webm')
+    self._VerifyDecryption(self.output[0],
+                           'bear-640x360-vp9-altref-dec-golden.webm')
+
   def testPackageAvcTsWithEncryption(self):
     # Currently we only support live packaging for ts.
     self.packager.Package(

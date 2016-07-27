@@ -9,23 +9,15 @@
 namespace shaka {
 namespace media {
 
-TextStreamInfo::TextStreamInfo(int track_id,
-                               uint32_t time_scale,
+TextStreamInfo::TextStreamInfo(int track_id, uint32_t time_scale,
                                uint64_t duration,
                                const std::string& codec_string,
-                               const std::string& language,
-                               const std::string& codec_config,
-                               uint16_t width,
-                               uint16_t height)
-    : StreamInfo(kStreamText,
-                 track_id,
-                 time_scale,
-                 duration,
+                               const std::string& codec_config, uint16_t width,
+                               uint16_t height, const std::string& language)
+    : StreamInfo(kStreamText, track_id, time_scale, duration, kCodecText,
                  codec_string,
-                 language,
                  reinterpret_cast<const uint8_t*>(codec_config.data()),
-                 codec_config.size(),
-                 false),
+                 codec_config.size(), language, false),
       width_(width),
       height_(height) {}
 

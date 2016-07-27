@@ -40,7 +40,7 @@ uint64_t Rescale(uint64_t time_in_old_scale,
   return (static_cast<double>(time_in_old_scale) / old_scale) * new_scale;
 }
 
-VideoCodec FourCCToVideoCodec(FourCC fourcc) {
+Codec FourCCToCodec(FourCC fourcc) {
   switch (fourcc) {
     case FOURCC_avc1:
       return kCodecH264;
@@ -54,13 +54,6 @@ VideoCodec FourCCToVideoCodec(FourCC fourcc) {
       return kCodecVP9;
     case FOURCC_vp10:
       return kCodecVP10;
-    default:
-      return kUnknownVideoCodec;
-  }
-}
-
-AudioCodec FourCCToAudioCodec(FourCC fourcc) {
-  switch(fourcc) {
     case FOURCC_Opus:
       return kCodecOpus;
     case FOURCC_dtsc:
@@ -80,7 +73,7 @@ AudioCodec FourCCToAudioCodec(FourCC fourcc) {
     case FOURCC_ec_3:
       return kCodecEAC3;
     default:
-      return kUnknownAudioCodec;
+      return kUnknownCodec;
   }
 }
 
@@ -343,7 +336,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
 
       const AudioSampleEntry& entry = samp_descr.audio_entries[desc_idx];
       const FourCC actual_format = entry.GetActualFormat();
-      AudioCodec codec = FourCCToAudioCodec(actual_format);
+      Codec codec = FourCCToCodec(actual_format);
       uint8_t num_channels = 0;
       uint32_t sampling_frequency = 0;
       uint64_t codec_delay_ns = 0;
@@ -473,21 +466,11 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
           entry.sinf.info.track_encryption.default_is_protected == 1;
       DVLOG(1) << "is_audio_track_encrypted_: " << is_encrypted;
       streams.push_back(new AudioStreamInfo(
-          track->header.track_id,
-          timescale,
-          duration,
-          codec,
+          track->header.track_id, timescale, duration, codec,
           AudioStreamInfo::GetCodecString(codec, audio_object_type),
-          track->media.header.language.code,
-          entry.samplesize,
-          num_channels,
-          sampling_frequency,
-          seek_preroll_ns,
-          codec_delay_ns,
-          max_bitrate,
-          avg_bitrate,
-          codec_config.data(),
-          codec_config.size(),
+          codec_config.data(), codec_config.size(), entry.samplesize,
+          num_channels, sampling_frequency, seek_preroll_ns, codec_delay_ns,
+          max_bitrate, avg_bitrate, track->media.header.language.code,
           is_encrypted));
     }
 
@@ -509,7 +492,7 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       uint8_t nalu_length_size = 0;
 
       const FourCC actual_format = entry.GetActualFormat();
-      const VideoCodec video_codec = FourCCToVideoCodec(actual_format);
+      const Codec video_codec = FourCCToCodec(actual_format);
       switch (actual_format) {
         case FOURCC_avc1: {
           AVCDecoderConfigurationRecord avc_config;
@@ -580,11 +563,11 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       DVLOG(1) << "is_video_track_encrypted_: " << is_encrypted;
       streams.push_back(new VideoStreamInfo(
           track->header.track_id, timescale, duration, video_codec,
-          codec_string, track->media.header.language.code, coded_width,
-          coded_height, pixel_width, pixel_height,
+          codec_string, entry.codec_configuration.data.data(),
+          entry.codec_configuration.data.size(), coded_width, coded_height,
+          pixel_width, pixel_height,
           0,  // trick_play_rate
-          nalu_length_size, entry.codec_configuration.data.data(),
-          entry.codec_configuration.data.size(), is_encrypted));
+          nalu_length_size, track->media.header.language.code, is_encrypted));
     }
   }
 

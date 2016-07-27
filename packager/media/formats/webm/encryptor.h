@@ -11,6 +11,8 @@
 #include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/status.h"
+#include "packager/media/base/stream_info.h"
+#include "packager/media/codecs/vpx_parser.h"
 #include "packager/media/event/muxer_listener.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 
@@ -33,7 +35,9 @@ class Encryptor {
   /// @return OK on success, an error status otherwise.
   Status Initialize(MuxerListener* muxer_listener,
                     KeySource::TrackType track_type,
-                    KeySource* key_source);
+                    Codec codec,
+                    KeySource* key_source,
+                    bool webm_subsample_encryption);
 
   /// Adds the encryption info to the given track.  Initialize must be called
   /// first.
@@ -50,11 +54,14 @@ class Encryptor {
   // Create the encryptor for the internal encryption key.
   Status CreateEncryptor(MuxerListener* muxer_listener,
                          KeySource::TrackType track_type,
-                         KeySource* key_source);
+                         Codec codec,
+                         KeySource* key_source,
+                         bool webm_subsample_encryption);
 
  private:
   scoped_ptr<EncryptionKey> key_;
   scoped_ptr<AesCtrEncryptor> encryptor_;
+  scoped_ptr<VPxParser> vpx_parser_;
 };
 
 }  // namespace webm

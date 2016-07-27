@@ -97,7 +97,7 @@ bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
   if (stream_type_ == kStreamVideo) {
     const VideoStreamInfo& video_stream_info =
         static_cast<const VideoStreamInfo&>(stream_info);
-    if (video_stream_info.codec() != VideoCodec::kCodecH264) {
+    if (video_stream_info.codec() != Codec::kCodecH264) {
       NOTIMPLEMENTED() << "Video codec " << video_stream_info.codec()
                        << " is not supported.";
       return false;
@@ -110,7 +110,7 @@ bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
   } else if (stream_type_ == kStreamAudio) {
     const AudioStreamInfo& audio_stream_info =
         static_cast<const AudioStreamInfo&>(stream_info);
-    if (audio_stream_info.codec() != AudioCodec::kCodecAAC) {
+    if (audio_stream_info.codec() != Codec::kCodecAAC) {
       NOTIMPLEMENTED() << "Audio codec " << audio_stream_info.codec()
                        << " is not supported yet.";
       return false;

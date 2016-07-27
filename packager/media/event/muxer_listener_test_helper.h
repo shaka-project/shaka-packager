@@ -60,7 +60,7 @@ struct VideoStreamInfoParameters {
   int track_id;
   uint32_t time_scale;
   uint64_t duration;
-  VideoCodec codec;
+  Codec codec;
   std::string codec_string;
   std::string language;
   uint16_t width;

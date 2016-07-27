@@ -20,5 +20,6 @@ DECLARE_double(fragment_duration);
 DECLARE_bool(fragment_sap_aligned);
 DECLARE_int32(num_subsegments_per_sidx);
 DECLARE_string(temp_dir);
+DECLARE_bool(webm_subsample_encryption);
 
 #endif  // APP_MUXER_FLAGS_H_

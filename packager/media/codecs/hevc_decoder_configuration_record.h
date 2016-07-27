@@ -25,7 +25,7 @@ class HEVCDecoderConfigurationRecord : public DecoderConfigurationRecord {
   ~HEVCDecoderConfigurationRecord() override;
 
   /// @return The codec string.
-  std::string GetCodecString(VideoCodec codec) const;
+  std::string GetCodecString(Codec codec) const;
 
  private:
   bool ParseInternal() override;

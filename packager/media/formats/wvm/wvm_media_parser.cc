@@ -739,31 +739,33 @@ bool WvmMediaParser::ParseIndexEntry() {
     index_size = read_ptr - index_data_.data();
 
     if (has_video) {
-      VideoCodec video_codec = kCodecH264;
+      Codec video_codec = kCodecH264;
       stream_infos_.push_back(new VideoStreamInfo(
           stream_id_count_, time_scale, track_duration, video_codec,
-          std::string(), std::string(), video_width, video_height, pixel_width,
-          pixel_height, trick_play_rate, nalu_length_size,
-          video_codec_config.data(), video_codec_config.size(), true));
+          std::string(), video_codec_config.data(), video_codec_config.size(),
+          video_width, video_height, pixel_width, pixel_height, trick_play_rate,
+          nalu_length_size, std::string(), true));
       program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
-                                base::UintToString(video_pes_stream_id ?
-                                                   video_pes_stream_id :
-                                                   kDefaultVideoStreamId)] =
+                                base::UintToString(
+                                    video_pes_stream_id
+                                        ? video_pes_stream_id
+                                        : kDefaultVideoStreamId)] =
           stream_id_count_++;
     }
     if (has_audio) {
-      const AudioCodec audio_codec = kCodecAAC;
+      const Codec audio_codec = kCodecAAC;
       // TODO(beil): Pass in max and average bitrate in wvm container.
       stream_infos_.push_back(new AudioStreamInfo(
           stream_id_count_, time_scale, track_duration, audio_codec,
-          std::string(), std::string(), kAacSampleSizeBits, num_channels,
-          sampling_frequency, 0 /* seek preroll */, 0 /* codec delay */,
-          0 /* max bitrate */, 0 /* avg bitrate */, audio_codec_config.data(),
-          audio_codec_config.size(), true));
+          std::string(), audio_codec_config.data(), audio_codec_config.size(),
+          kAacSampleSizeBits, num_channels, sampling_frequency,
+          0 /* seek preroll */, 0 /* codec delay */, 0 /* max bitrate */,
+          0 /* avg bitrate */, std::string(), true));
       program_demux_stream_map_[base::UintToString(index_program_id_) + ":" +
-                                base::UintToString(audio_pes_stream_id ?
-                                                   audio_pes_stream_id :
-                                                   kDefaultAudioStreamId)] =
+                                base::UintToString(
+                                    audio_pes_stream_id
+                                        ? audio_pes_stream_id
+                                        : kDefaultAudioStreamId)] =
           stream_id_count_++;
     }
   }

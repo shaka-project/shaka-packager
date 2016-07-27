@@ -84,6 +84,7 @@ const uint8_t kNumChannels = 2u;
 const uint32_t kSamplingFrequency = 48000u;
 const uint64_t kSeekPreroll = 0u;
 const uint64_t kCodecDelay = 0u;
+const uint8_t* kExtraData = nullptr;
 const size_t kExtraDataSize = 0u;
 const bool kEncrypted = true;
 const uint16_t kWidth = 320u;
@@ -316,37 +317,16 @@ bool VerifyTextBuffers(const BlockInfo* block_info_ptr,
 class WebMClusterParserTest : public testing::Test {
  public:
   WebMClusterParserTest()
-      : audio_stream_info_(new AudioStreamInfo(kAudioTrackNum,
-                                               kTimeScale,
-                                               kDuration,
-                                               kUnknownAudioCodec,
-                                               kCodecString,
-                                               kLanguage,
-                                               kBitsPerSample,
-                                               kNumChannels,
-                                               kSamplingFrequency,
-                                               kSeekPreroll,
-                                               kCodecDelay,
-                                               0,
-                                               0,
-                                               NULL,
-                                               kExtraDataSize,
-                                               !kEncrypted)),
-        video_stream_info_(new VideoStreamInfo(kVideoTrackNum,
-                                               kTimeScale,
-                                               kDuration,
-                                               kCodecVP8,
-                                               kCodecString,
-                                               kLanguage,
-                                               kWidth,
-                                               kHeight,
-                                               kPixelWidth,
-                                               kPixelHeight,
-                                               kTrickPlayRate,
-                                               kNaluLengthSize,
-                                               NULL,
-                                               kExtraDataSize,
-                                               !kEncrypted)),
+      : audio_stream_info_(new AudioStreamInfo(
+            kAudioTrackNum, kTimeScale, kDuration, kUnknownCodec, kCodecString,
+            kExtraData, kExtraDataSize, kBitsPerSample, kNumChannels,
+            kSamplingFrequency, kSeekPreroll, kCodecDelay, 0, 0, kLanguage,
+            !kEncrypted)),
+        video_stream_info_(new VideoStreamInfo(
+            kVideoTrackNum, kTimeScale, kDuration, kCodecVP8, kCodecString,
+            kExtraData, kExtraDataSize, kWidth, kHeight, kPixelWidth,
+            kPixelHeight, kTrickPlayRate, kNaluLengthSize, kLanguage,
+            !kEncrypted)),
         parser_(CreateDefaultParser()) {}
 
  protected:
@@ -390,15 +370,12 @@ class WebMClusterParserTest : public testing::Test {
 
   // Helper that hard-codes some non-varying constructor parameters.
   WebMClusterParser* CreateParserHelper(
-      int64_t audio_default_duration,
-      int64_t video_default_duration,
+      int64_t audio_default_duration, int64_t video_default_duration,
       const WebMTracksParser::TextTracks& text_tracks,
       const std::set<int64_t>& ignored_tracks,
       const std::string& audio_encryption_key_id,
-      const std::string& video_encryption_key_id,
-      const AudioCodec audio_codec,
-      const VideoCodec video_codec,
-      const MediaParser::InitCB& init_cb) {
+      const std::string& video_encryption_key_id, const Codec audio_codec,
+      const Codec video_codec, const MediaParser::InitCB& init_cb) {
     audio_stream_info_->set_codec(audio_codec);
     video_stream_info_->set_codec(video_codec);
     return new WebMClusterParser(
@@ -414,8 +391,7 @@ class WebMClusterParserTest : public testing::Test {
   WebMClusterParser* CreateDefaultParser() {
     return CreateParserHelper(kNoTimestamp, kNoTimestamp, TextTracks(),
                               std::set<int64_t>(), std::string(), std::string(),
-                              kUnknownAudioCodec, kCodecVP8,
-                              MediaParser::InitCB());
+                              kUnknownCodec, kCodecVP8, MediaParser::InitCB());
   }
 
   // Create a parser for test with custom audio and video default durations, and
@@ -426,23 +402,22 @@ class WebMClusterParserTest : public testing::Test {
       const WebMTracksParser::TextTracks& text_tracks = TextTracks()) {
     return CreateParserHelper(audio_default_duration, video_default_duration,
                               text_tracks, std::set<int64_t>(), std::string(),
-                              std::string(), kUnknownAudioCodec, kCodecVP8,
+                              std::string(), kUnknownCodec, kCodecVP8,
                               MediaParser::InitCB());
   }
 
   // Create a parser for test with custom ignored tracks.
   WebMClusterParser* CreateParserWithIgnoredTracks(
       std::set<int64_t>& ignored_tracks) {
-    return CreateParserHelper(
-        kNoTimestamp, kNoTimestamp, TextTracks(), ignored_tracks, std::string(),
-        std::string(), kUnknownAudioCodec, kCodecVP8, MediaParser::InitCB());
+    return CreateParserHelper(kNoTimestamp, kNoTimestamp, TextTracks(),
+                              ignored_tracks, std::string(), std::string(),
+                              kUnknownCodec, kCodecVP8, MediaParser::InitCB());
   }
 
   // Create a parser for test with custom encryption key ids and audio codec.
-  WebMClusterParser* CreateParserWithKeyIdsAndAudioCodec(
+  WebMClusterParser* CreateParserWithKeyIdsAndCodec(
       const std::string& audio_encryption_key_id,
-      const std::string& video_encryption_key_id,
-      const AudioCodec audio_codec) {
+      const std::string& video_encryption_key_id, const Codec audio_codec) {
     return CreateParserHelper(kNoTimestamp, kNoTimestamp, TextTracks(),
                               std::set<int64_t>(), audio_encryption_key_id,
                               video_encryption_key_id, audio_codec, kCodecVP8,
@@ -451,10 +426,10 @@ class WebMClusterParserTest : public testing::Test {
 
   // Create a parser for test with custom video codec, also check for init
   // events.
-  WebMClusterParser* CreateParserWithVideoCodec(const VideoCodec video_codec) {
+  WebMClusterParser* CreateParserWithCodec(const Codec video_codec) {
     return CreateParserHelper(
         kNoTimestamp, kNoTimestamp, TextTracks(), std::set<int64_t>(),
-        std::string(), std::string(), kUnknownAudioCodec, video_codec,
+        std::string(), std::string(), kUnknownCodec, video_codec,
         base::Bind(&WebMClusterParserTest::InitEvent, base::Unretained(this)));
   }
 
@@ -807,7 +782,7 @@ TEST_F(WebMClusterParserTest, ParseMultipleTextTracks) {
 
 TEST_F(WebMClusterParserTest, ParseVP8) {
   scoped_ptr<Cluster> cluster(CreateCluster(kVP8Frame, arraysize(kVP8Frame)));
-  parser_.reset(CreateParserWithVideoCodec(kCodecVP8));
+  parser_.reset(CreateParserWithCodec(kCodecVP8));
 
   EXPECT_EQ(cluster->size(), parser_->Parse(cluster->data(), cluster->size()));
 
@@ -820,7 +795,7 @@ TEST_F(WebMClusterParserTest, ParseVP8) {
 
 TEST_F(WebMClusterParserTest, ParseVP9) {
   scoped_ptr<Cluster> cluster(CreateCluster(kVP9Frame, arraysize(kVP9Frame)));
-  parser_.reset(CreateParserWithVideoCodec(kCodecVP9));
+  parser_.reset(CreateParserWithCodec(kCodecVP9));
 
   EXPECT_EQ(cluster->size(), parser_->Parse(cluster->data(), cluster->size()));
 
@@ -844,8 +819,8 @@ TEST_F(WebMClusterParserTest, ParseEncryptedBlock) {
   scoped_ptr<Cluster> cluster(
       CreateCluster(kEncryptedFrame, arraysize(kEncryptedFrame)));
 
-  parser_.reset(CreateParserWithKeyIdsAndAudioCodec(std::string(), video_key_id,
-                                                    kUnknownAudioCodec));
+  parser_.reset(CreateParserWithKeyIdsAndCodec(std::string(), video_key_id,
+                                               kUnknownCodec));
 
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);
@@ -865,8 +840,8 @@ TEST_F(WebMClusterParserTest, ParseEncryptedBlockGetKeyFailed) {
   scoped_ptr<Cluster> cluster(
       CreateCluster(kEncryptedFrame, arraysize(kEncryptedFrame)));
 
-  parser_.reset(CreateParserWithKeyIdsAndAudioCodec(
-      std::string(), "video_key_id", kUnknownAudioCodec));
+  parser_.reset(CreateParserWithKeyIdsAndCodec(std::string(), "video_key_id",
+                                               kUnknownCodec));
 
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(-1, result);
@@ -876,8 +851,8 @@ TEST_F(WebMClusterParserTest, ParseBadEncryptedBlock) {
   scoped_ptr<Cluster> cluster(
       CreateCluster(kEncryptedFrame, arraysize(kEncryptedFrame) - 2));
 
-  parser_.reset(CreateParserWithKeyIdsAndAudioCodec(
-      std::string(), "video_key_id", kUnknownAudioCodec));
+  parser_.reset(CreateParserWithKeyIdsAndCodec(std::string(), "video_key_id",
+                                               kUnknownCodec));
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(-1, result);
 }
@@ -886,8 +861,8 @@ TEST_F(WebMClusterParserTest, ParseClearFrameInEncryptedTrack) {
   scoped_ptr<Cluster> cluster(CreateCluster(
       kClearFrameInEncryptedTrack, arraysize(kClearFrameInEncryptedTrack)));
 
-  parser_.reset(CreateParserWithKeyIdsAndAudioCodec(
-      std::string(), "video_key_id", kUnknownAudioCodec));
+  parser_.reset(CreateParserWithKeyIdsAndCodec(std::string(), "video_key_id",
+                                               kUnknownCodec));
 
   int result = parser_->Parse(cluster->data(), cluster->size());
   EXPECT_EQ(cluster->size(), result);

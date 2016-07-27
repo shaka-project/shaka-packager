@@ -17,8 +17,8 @@ namespace shaka {
 namespace media {
 
 namespace {
-std::string AudioCodecToString(AudioCodec audio_codec) {
-  switch (audio_codec) {
+std::string AudioCodecToString(Codec codec) {
+  switch (codec) {
     case kCodecAAC:
       return "AAC";
     case kCodecAC3:
@@ -42,38 +42,22 @@ std::string AudioCodecToString(AudioCodec audio_codec) {
     case kCodecVorbis:
       return "Vorbis";
     default:
-      NOTIMPLEMENTED() << "Unknown Audio Codec: " << audio_codec;
-      return "UnknownAudioCodec";
+      NOTIMPLEMENTED() << "Unknown Audio Codec: " << codec;
+      return "UnknownCodec";
   }
 }
 }  // namespace
 
-AudioStreamInfo::AudioStreamInfo(int track_id,
-                                 uint32_t time_scale,
-                                 uint64_t duration,
-                                 AudioCodec codec,
-                                 const std::string& codec_string,
-                                 const std::string& language,
-                                 uint8_t sample_bits,
-                                 uint8_t num_channels,
-                                 uint32_t sampling_frequency,
-                                 uint64_t seek_preroll_ns,
-                                 uint64_t codec_delay_ns,
-                                 uint32_t max_bitrate,
-                                 uint32_t avg_bitrate,
-                                 const uint8_t* codec_config,
-                                 size_t codec_config_size,
-                                 bool is_encrypted)
-    : StreamInfo(kStreamAudio,
-                 track_id,
-                 time_scale,
-                 duration,
-                 codec_string,
-                 language,
-                 codec_config,
-                 codec_config_size,
+AudioStreamInfo::AudioStreamInfo(
+    int track_id, uint32_t time_scale, uint64_t duration, Codec codec,
+    const std::string& codec_string, const uint8_t* codec_config,
+    size_t codec_config_size, uint8_t sample_bits, uint8_t num_channels,
+    uint32_t sampling_frequency, uint64_t seek_preroll_ns,
+    uint64_t codec_delay_ns, uint32_t max_bitrate, uint32_t avg_bitrate,
+    const std::string& language, bool is_encrypted)
+    : StreamInfo(kStreamAudio, track_id, time_scale, duration, codec,
+                 codec_string, codec_config, codec_config_size, language,
                  is_encrypted),
-      codec_(codec),
       sample_bits_(sample_bits),
       num_channels_(num_channels),
       sampling_frequency_(sampling_frequency),
@@ -85,10 +69,9 @@ AudioStreamInfo::AudioStreamInfo(int track_id,
 AudioStreamInfo::~AudioStreamInfo() {}
 
 bool AudioStreamInfo::IsValidConfig() const {
-  return codec_ != kUnknownAudioCodec && num_channels_ != 0 &&
+  return codec() != kUnknownCodec && num_channels_ != 0 &&
          num_channels_ <= limits::kMaxChannels && sample_bits_ > 0 &&
-         sample_bits_ <= limits::kMaxBitsPerSample &&
-         sampling_frequency_ > 0 &&
+         sample_bits_ <= limits::kMaxBitsPerSample && sampling_frequency_ > 0 &&
          sampling_frequency_ <= limits::kMaxSampleRate;
 }
 
@@ -96,7 +79,7 @@ std::string AudioStreamInfo::ToString() const {
   std::string str = base::StringPrintf(
       "%s codec: %s\n sample_bits: %d\n num_channels: %d\n "
       "sampling_frequency: %d\n language: %s\n",
-      StreamInfo::ToString().c_str(), AudioCodecToString(codec_).c_str(),
+      StreamInfo::ToString().c_str(), AudioCodecToString(codec()).c_str(),
       sample_bits_, num_channels_, sampling_frequency_, language().c_str());
   if (seek_preroll_ns_ != 0) {
     base::StringAppendF(&str, " seek_preroll_ns: %" PRIu64 "\n",
@@ -109,7 +92,7 @@ std::string AudioStreamInfo::ToString() const {
   return str;
 }
 
-std::string AudioStreamInfo::GetCodecString(AudioCodec codec,
+std::string AudioStreamInfo::GetCodecString(Codec codec,
                                             uint8_t audio_object_type) {
   switch (codec) {
     case kCodecVorbis:

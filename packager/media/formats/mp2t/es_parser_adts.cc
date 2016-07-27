@@ -221,25 +221,13 @@ bool EsParserAdts::UpdateAudioConfiguration(const uint8_t* adts_frame,
       ? std::min(2 * samples_per_second, 48000)
       : samples_per_second;
 
-  last_audio_decoder_config_ = scoped_refptr<StreamInfo>(
-      new AudioStreamInfo(
-          pid(),
-          kMpeg2Timescale,
-          kInfiniteDuration,
-          kCodecAAC,
-          AudioStreamInfo::GetCodecString(kCodecAAC,
-                                          adts_header.GetObjectType()),
-          std::string(),
-          kAacSampleSizeBits,
-          adts_header.GetNumChannels(),
-          extended_samples_per_second,
-          0 /* seek preroll */,
-          0 /* codec delay */,
-          0 /* max bitrate */,
-          0 /* avg bitrate */,
-          audio_specific_config.data(),
-          audio_specific_config.size(),
-          false));
+  last_audio_decoder_config_ = scoped_refptr<StreamInfo>(new AudioStreamInfo(
+      pid(), kMpeg2Timescale, kInfiniteDuration, kCodecAAC,
+      AudioStreamInfo::GetCodecString(kCodecAAC, adts_header.GetObjectType()),
+      audio_specific_config.data(), audio_specific_config.size(),
+      kAacSampleSizeBits, adts_header.GetNumChannels(),
+      extended_samples_per_second, 0 /* seek preroll */, 0 /* codec delay */,
+      0 /* max bitrate */, 0 /* avg bitrate */, std::string(), false));
 
   DVLOG(1) << "Sampling frequency: " << samples_per_second;
   DVLOG(1) << "Extended sampling frequency: " << extended_samples_per_second;

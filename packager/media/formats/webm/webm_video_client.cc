@@ -53,7 +53,7 @@ scoped_refptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
     const std::string& codec_id,
     const std::vector<uint8_t>& codec_private,
     bool is_encrypted) {
-  VideoCodec video_codec = kUnknownVideoCodec;
+  Codec video_codec = kUnknownCodec;
   if (codec_id == "V_VP8") {
     video_codec = kCodecVP8;
   } else if (codec_id == "V_VP9") {
@@ -110,9 +110,9 @@ scoped_refptr<VideoStreamInfo> WebMVideoClient::GetVideoStreamInfo(
   sar_y /= gcd;
 
   return scoped_refptr<VideoStreamInfo>(new VideoStreamInfo(
-      track_num, kWebMTimeScale, 0, video_codec, std::string(), std::string(),
-      width_after_crop, height_after_crop, sar_x, sar_y, 0, 0,
-      codec_private.data(), codec_private.size(), is_encrypted));
+      track_num, kWebMTimeScale, 0, video_codec, std::string(),
+      codec_private.data(), codec_private.size(), width_after_crop,
+      height_after_crop, sar_x, sar_y, 0, 0, std::string(), is_encrypted));
 }
 
 bool WebMVideoClient::OnUInt(int id, int64_t val) {

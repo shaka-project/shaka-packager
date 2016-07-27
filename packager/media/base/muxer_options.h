@@ -73,6 +73,9 @@ struct MuxerOptions {
   /// User-specified bit rate for the media stream. If zero, the muxer will
   /// attempt to estimate.
   uint32_t bandwidth;
+
+  // Enable/disable subsample encryption for WebM containers.
+  bool webm_subsample_encryption;
 };
 
 }  // namespace media

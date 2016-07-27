@@ -154,7 +154,7 @@ bool GetMuxerOptions(MuxerOptions* muxer_options) {
   muxer_options->segment_sap_aligned = FLAGS_segment_sap_aligned;
   muxer_options->fragment_sap_aligned = FLAGS_fragment_sap_aligned;
   muxer_options->num_subsegments_per_sidx = FLAGS_num_subsegments_per_sidx;
-
+  muxer_options->webm_subsample_encryption = FLAGS_webm_subsample_encryption;
   if (FLAGS_mp4_use_decoding_timestamp_in_timeline) {
     LOG(WARNING) << "Flag --mp4_use_decoding_timestamp_in_timeline is set. "
                     "Note that it is a temporary hack to workaround Chromium "

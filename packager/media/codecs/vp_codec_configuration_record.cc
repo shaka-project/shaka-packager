@@ -24,7 +24,7 @@ enum VP9CodecFeatures {
   kFeatureChromaSubsampling = 4,
 };
 
-std::string VPCodecAsString(VideoCodec codec) {
+std::string VPCodecAsString(Codec codec) {
   switch (codec) {
     case kCodecVP8:
       return "vp08";
@@ -205,7 +205,7 @@ void VPCodecConfigurationRecord::WriteWebM(std::vector<uint8_t>* data) const {
   writer.SwapBuffer(data);
 }
 
-std::string VPCodecConfigurationRecord::GetCodecString(VideoCodec codec) const {
+std::string VPCodecConfigurationRecord::GetCodecString(Codec codec) const {
   const std::string fields[] = {
       base::IntToString(profile_),
       base::IntToString(level_),

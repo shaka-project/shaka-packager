@@ -148,23 +148,12 @@ bool EsParserH265::UpdateVideoDecoderConfig(int pps_id) {
     return false;
   }
 
-  last_video_decoder_config_ = scoped_refptr<StreamInfo>(
-      new VideoStreamInfo(
-          pid(),
-          kMpeg2Timescale,
-          kInfiniteDuration,
-          kCodecHVC1,
-          decoder_config.GetCodecString(kCodecHVC1),
-          std::string(),
-          coded_width,
-          coded_height,
-          pixel_width,
-          pixel_height,
-          0,
-          H26xByteToUnitStreamConverter::kUnitStreamNaluLengthSize,
-          decoder_config_record.data(),
-          decoder_config_record.size(),
-          false));
+  last_video_decoder_config_ = scoped_refptr<StreamInfo>(new VideoStreamInfo(
+      pid(), kMpeg2Timescale, kInfiniteDuration, kCodecHVC1,
+      decoder_config.GetCodecString(kCodecHVC1), decoder_config_record.data(),
+      decoder_config_record.size(), coded_width, coded_height, pixel_width,
+      pixel_height, 0, H26xByteToUnitStreamConverter::kUnitStreamNaluLengthSize,
+      std::string(), false));
 
   // Video config notification.
   new_stream_info_cb_.Run(last_video_decoder_config_);
