@@ -41,11 +41,13 @@ class ClusterBuilder {
                      int64_t timecode,
                      int duration,
                      int flags,
+                     bool is_key_frame,
                      const uint8_t* data,
                      int size);
   void AddBlockGroupWithoutBlockDuration(int track_num,
                                          int64_t timecode,
                                          int flags,
+                                         bool is_key_frame,
                                          const uint8_t* data,
                                          int size);
 
@@ -58,6 +60,7 @@ class ClusterBuilder {
                              bool include_block_duration,
                              int duration,
                              int flags,
+                             bool is_key_frame,
                              const uint8_t* data,
                              int size);
   void Reset();

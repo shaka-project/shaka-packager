@@ -163,17 +163,18 @@ class WebMClusterParser : public WebMParserClient {
                   const uint8_t* additional,
                   int additional_size,
                   int duration,
-                  int64_t discard_padding);
+                  int64_t discard_padding,
+                  bool reference_block_set);
   bool OnBlock(bool is_simple_block,
                int track_num,
                int timecode,
                int duration,
-               int flags,
                const uint8_t* data,
                int size,
                const uint8_t* additional,
                int additional_size,
-               int64_t discard_padding);
+               int64_t discard_padding,
+               bool is_key_frame);
 
   // Resets the Track objects associated with each text track.
   void ResetTextTracks();
@@ -214,6 +215,8 @@ class WebMClusterParser : public WebMParserClient {
 
   int64_t discard_padding_ = -1;
   bool discard_padding_set_ = false;
+
+  bool reference_block_set_ = false;
 
   int64_t cluster_timecode_ = -1;
   int64_t cluster_start_time_;
