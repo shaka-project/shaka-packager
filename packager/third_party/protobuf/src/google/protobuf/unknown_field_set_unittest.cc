@@ -1,6 +1,6 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// http://code.google.com/p/protobuf/
+// https://developers.google.com/protocol-buffers/
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -43,7 +43,10 @@
 #include <google/protobuf/unittest.pb.h>
 #include <google/protobuf/test_util.h>
 
+#include <google/protobuf/stubs/callback.h>
 #include <google/protobuf/stubs/common.h>
+#include <google/protobuf/stubs/logging.h>
+#include <google/protobuf/stubs/mutex.h>
 #include <google/protobuf/testing/googletest.h>
 #include <gtest/gtest.h>
 #include <google/protobuf/stubs/stl_util.h>
@@ -118,7 +121,12 @@ TEST_F(UnknownFieldSetTest, AllFieldsPresent) {
     const FieldDescriptor* field = descriptor_->FindFieldByNumber(i);
     if (field != NULL) {
       ASSERT_LT(pos, unknown_fields_->field_count());
-      EXPECT_EQ(i, unknown_fields_->field(pos++).number());
+      // Do not check oneof field if it is not set.
+      if (field->containing_oneof() == NULL) {
+        EXPECT_EQ(i, unknown_fields_->field(pos++).number());
+      } else if (i == unknown_fields_->field(pos).number()) {
+        pos++;
+      }
       if (field->is_repeated()) {
         // Should have a second instance.
         ASSERT_LT(pos, unknown_fields_->field_count());
@@ -475,6 +483,13 @@ TEST_F(UnknownFieldSetTest, UnknownEnumValue) {
     ASSERT_EQ(UnknownField::TYPE_VARINT, unknown_fields.field(2).type());
     EXPECT_EQ(6, unknown_fields.field(2).varint());
   }
+}
+
+TEST_F(UnknownFieldSetTest, SpaceUsedExcludingSelf) {
+  UnknownFieldSet empty;
+  empty.AddVarint(1, 0);
+  EXPECT_EQ(sizeof(vector<UnknownField>) + sizeof(UnknownField),
+            empty.SpaceUsedExcludingSelf());
 }
 
 TEST_F(UnknownFieldSetTest, SpaceUsed) {

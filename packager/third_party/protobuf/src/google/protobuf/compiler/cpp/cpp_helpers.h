@@ -1,6 +1,6 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// http://code.google.com/p/protobuf/
+// https://developers.google.com/protocol-buffers/
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -37,8 +37,9 @@
 
 #include <map>
 #include <string>
-#include <google/protobuf/descriptor.h>
+#include <google/protobuf/compiler/cpp/cpp_options.h>
 #include <google/protobuf/descriptor.pb.h>
+#include <google/protobuf/descriptor.h>
 
 namespace google {
 namespace protobuf {
@@ -66,13 +67,27 @@ extern const char kThinSeparator[];
 string ClassName(const Descriptor* descriptor, bool qualified);
 string ClassName(const EnumDescriptor* enum_descriptor, bool qualified);
 
-string SuperClassName(const Descriptor* descriptor);
+// Name of the CRTP class template (for use with proto_h).
+// This is a class name, like "ProtoName_InternalBase".
+string DependentBaseClassTemplateName(const Descriptor* descriptor);
+
+// Name of the base class: either the dependent base class (for use with
+// proto_h) or google::protobuf::Message.
+string SuperClassName(const Descriptor* descriptor, const Options& options);
+
+// Returns a string that down-casts from the dependent base class to the
+// derived class.
+string DependentBaseDownCast();
+string DependentBaseConstDownCast();
 
 // Get the (unqualified) name that should be used for this field in C++ code.
 // The name is coerced to lower-case to emulate proto1 behavior.  People
 // should be using lowercase-with-underscores style for proto field names
 // anyway, so normally this just returns field->name().
 string FieldName(const FieldDescriptor* field);
+
+// Get the sanitized name that should be used for the given enum in C++ code.
+string EnumValueName(const EnumValueDescriptor* enum_value);
 
 // Get the unqualified name that should be used for a field's field
 // number constant.
@@ -85,12 +100,26 @@ inline const Descriptor* FieldScope(const FieldDescriptor* field) {
     field->extension_scope() : field->containing_type();
 }
 
+// Returns true if the given 'field_descriptor' has a message type that is
+// a dependency of the file where the field is defined (i.e., the field
+// type is defined in a different file than the message holding the field).
+//
+// This only applies to Message-typed fields. Enum-typed fields may refer
+// to an enum in a dependency; however, enums are specified and
+// forward-declared with an enum-base, so the definition is not required to
+// manipulate the field value.
+bool IsFieldDependent(const FieldDescriptor* field_descriptor);
+
+// Returns the name that should be used for forcing dependent lookup from a
+// dependent base class.
+string DependentTypeName(const FieldDescriptor* field);
+
 // Returns the fully-qualified type name field->message_type().  Usually this
 // is just ClassName(field->message_type(), true);
 string FieldMessageTypeName(const FieldDescriptor* field);
 
 // Strips ".proto" or ".protodevel" from the end of a filename.
-string StripProto(const string& filename);
+LIBPROTOC_EXPORT string StripProto(const string& filename);
 
 // Get the C++ type name for a primitive type (e.g. "double", "::google::protobuf::int32", etc.).
 // Note:  non-built-in type names will be qualified, meaning they will start
@@ -102,6 +131,12 @@ const char* PrimitiveTypeName(FieldDescriptor::CppType type);
 // Get the declared type name in CamelCase format, as is used e.g. for the
 // methods of WireFormat.  For example, TYPE_INT32 becomes "Int32".
 const char* DeclaredTypeMethodName(FieldDescriptor::Type type);
+
+// Return the code that evaluates to the number when compiled.
+string Int32ToString(int number);
+
+// Return the code that evaluates to the number when compiled.
+string Int64ToString(int64 number);
 
 // Get code that evaluates to the field's default value.
 string DefaultValue(const FieldDescriptor* field);
@@ -115,68 +150,153 @@ string GlobalAddDescriptorsName(const string& filename);
 // Return the name of the AssignDescriptors() function for a given file.
 string GlobalAssignDescriptorsName(const string& filename);
 
+// Return the qualified C++ name for a file level symbol.
+string QualifiedFileLevelSymbol(const string& package, const string& name);
+
 // Return the name of the ShutdownFile() function for a given file.
 string GlobalShutdownFileName(const string& filename);
 
 // Escape C++ trigraphs by escaping question marks to \?
 string EscapeTrigraphs(const string& to_escape);
 
-// Do message classes in this file keep track of unknown fields?
-inline bool HasUnknownFields(const FileDescriptor* file) {
-  return file->options().optimize_for() != FileOptions::LITE_RUNTIME ||
-         file->options().retain_unknown_fields();
+// Escaped function name to eliminate naming conflict.
+string SafeFunctionName(const Descriptor* descriptor,
+                        const FieldDescriptor* field,
+                        const string& prefix);
+
+// Returns true if unknown fields are preseved after parsing.
+inline bool PreserveUnknownFields(const Descriptor* message) {
+  return message->file()->syntax() != FileDescriptor::SYNTAX_PROTO3;
 }
+
+// Returns the optimize mode for <file>, respecting <options.enforce_lite>.
+::google::protobuf::FileOptions_OptimizeMode GetOptimizeFor(
+    const FileDescriptor* file, const Options& options);
+
+// If PreserveUnknownFields() is true, determines whether unknown
+// fields will be stored in an UnknownFieldSet or a string.
+// If PreserveUnknownFields() is false, this method will not be
+// used.
+inline bool UseUnknownFieldSet(const FileDescriptor* file,
+                               const Options& options) {
+  return GetOptimizeFor(file, options) != FileOptions::LITE_RUNTIME;
+}
+
+
+// Does the file have any map fields, necessitating the file to include
+// map_field_inl.h and map.h.
+bool HasMapFields(const FileDescriptor* file);
 
 // Does this file have any enum type definitions?
 bool HasEnumDefinitions(const FileDescriptor* file);
 
 // Does this file have generated parsing, serialization, and other
 // standard methods for which reflection-based fallback implementations exist?
-inline bool HasGeneratedMethods(const FileDescriptor* file) {
-  return file->options().optimize_for() != FileOptions::CODE_SIZE;
+inline bool HasGeneratedMethods(const FileDescriptor* file,
+                                const Options& options) {
+  return GetOptimizeFor(file, options) != FileOptions::CODE_SIZE;
 }
 
-// Do message classes in this file have descriptor and refelction methods?
-inline bool HasDescriptorMethods(const FileDescriptor* file) {
-  return file->options().optimize_for() != FileOptions::LITE_RUNTIME;
+// Do message classes in this file have descriptor and reflection methods?
+inline bool HasDescriptorMethods(const FileDescriptor* file,
+                                 const Options& options) {
+  return GetOptimizeFor(file, options) != FileOptions::LITE_RUNTIME;
 }
 
 // Should we generate generic services for this file?
-inline bool HasGenericServices(const FileDescriptor* file) {
+inline bool HasGenericServices(const FileDescriptor* file,
+                               const Options& options) {
   return file->service_count() > 0 &&
-         file->options().optimize_for() != FileOptions::LITE_RUNTIME &&
+         GetOptimizeFor(file, options) != FileOptions::LITE_RUNTIME &&
          file->options().cc_generic_services();
-}
-
-// Should string fields in this file verify that their contents are UTF-8?
-inline bool HasUtf8Verification(const FileDescriptor* file) {
-  return file->options().optimize_for() != FileOptions::LITE_RUNTIME;
 }
 
 // Should we generate a separate, super-optimized code path for serializing to
 // flat arrays?  We don't do this in Lite mode because we'd rather reduce code
 // size.
-inline bool HasFastArraySerialization(const FileDescriptor* file) {
-  return file->options().optimize_for() == FileOptions::SPEED;
+inline bool HasFastArraySerialization(const FileDescriptor* file,
+                                      const Options& options) {
+  return GetOptimizeFor(file, options) == FileOptions::SPEED;
 }
 
 // Returns whether we have to generate code with static initializers.
-bool StaticInitializersForced(const FileDescriptor* file);
+bool StaticInitializersForced(const FileDescriptor* file,
+                              const Options& options);
 
 // Prints 'with_static_init' if static initializers have to be used for the
 // provided file. Otherwise emits both 'with_static_init' and
 // 'without_static_init' using #ifdef.
 void PrintHandlingOptionalStaticInitializers(
-    const FileDescriptor* file, io::Printer* printer,
+    const FileDescriptor* file, const Options& options, io::Printer* printer,
     const char* with_static_init, const char* without_static_init,
-    const char* var1 = NULL, const string& val1 = "",
-    const char* var2 = NULL, const string& val2 = "");
+    const char* var1 = NULL, const string& val1 = "", const char* var2 = NULL,
+    const string& val2 = "");
 
-void PrintHandlingOptionalStaticInitializers(
-    const map<string, string>& vars, const FileDescriptor* file,
-    io::Printer* printer, const char* with_static_init,
-    const char* without_static_init);
+void PrintHandlingOptionalStaticInitializers(const map<string, string>& vars,
+                                             const FileDescriptor* file,
+                                             const Options& options,
+                                             io::Printer* printer,
+                                             const char* with_static_init,
+                                             const char* without_static_init);
 
+
+inline bool IsMapEntryMessage(const Descriptor* descriptor) {
+  return descriptor->options().map_entry();
+}
+
+// Returns true if the field's CPPTYPE is string or message.
+bool IsStringOrMessage(const FieldDescriptor* field);
+
+// For a string field, returns the effective ctype.  If the actual ctype is
+// not supported, returns the default of STRING.
+FieldOptions::CType EffectiveStringCType(const FieldDescriptor* field);
+
+string UnderscoresToCamelCase(const string& input, bool cap_next_letter);
+
+inline bool HasFieldPresence(const FileDescriptor* file) {
+  return file->syntax() != FileDescriptor::SYNTAX_PROTO3;
+}
+
+// Returns true if 'enum' semantics are such that unknown values are preserved
+// in the enum field itself, rather than going to the UnknownFieldSet.
+inline bool HasPreservingUnknownEnumSemantics(const FileDescriptor* file) {
+  return file->syntax() == FileDescriptor::SYNTAX_PROTO3;
+}
+
+inline bool SupportsArenas(const FileDescriptor* file) {
+  return file->options().cc_enable_arenas();
+}
+
+inline bool SupportsArenas(const Descriptor* desc) {
+  return SupportsArenas(desc->file());
+}
+
+inline bool SupportsArenas(const FieldDescriptor* field) {
+  return SupportsArenas(field->file());
+}
+
+bool IsAnyMessage(const FileDescriptor* descriptor);
+bool IsAnyMessage(const Descriptor* descriptor);
+
+bool IsWellKnownMessage(const FileDescriptor* descriptor);
+
+void GenerateUtf8CheckCodeForString(const FieldDescriptor* field,
+                                    const Options& options, bool for_parse,
+                                    const map<string, string>& variables,
+                                    const char* parameters,
+                                    io::Printer* printer);
+
+void GenerateUtf8CheckCodeForCord(const FieldDescriptor* field,
+                                  const Options& options, bool for_parse,
+                                  const map<string, string>& variables,
+                                  const char* parameters, io::Printer* printer);
+
+inline ::google::protobuf::FileOptions_OptimizeMode GetOptimizeFor(
+    const FileDescriptor* file, const Options& options) {
+  return options.enforce_lite
+      ? FileOptions::LITE_RUNTIME
+      : file->options().optimize_for();
+}
 
 }  // namespace cpp
 }  // namespace compiler

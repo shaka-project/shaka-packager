@@ -1,8 +1,8 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 #
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
-# http://code.google.com/p/protobuf/
+# https://developers.google.com/protocol-buffers/
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -35,21 +35,27 @@
 # indirect testing of the protocol compiler output.
 
 """Unittest that directly tests the output of the pure-Python protocol
-compiler.  See //google/protobuf/reflection_test.py for a test which
+compiler.  See //google/protobuf/internal/reflection_test.py for a test which
 further ensures that we can use Python protocol message objects as we expect.
 """
 
 __author__ = 'robinson@google.com (Will Robinson)'
 
-import unittest
+try:
+  import unittest2 as unittest  #PY26
+except ImportError:
+  import unittest
+
 from google.protobuf.internal import test_bad_identifiers_pb2
 from google.protobuf import unittest_custom_options_pb2
 from google.protobuf import unittest_import_pb2
 from google.protobuf import unittest_import_public_pb2
 from google.protobuf import unittest_mset_pb2
-from google.protobuf import unittest_pb2
+from google.protobuf import unittest_mset_wire_format_pb2
 from google.protobuf import unittest_no_generic_services_pb2
+from google.protobuf import unittest_pb2
 from google.protobuf import service
+from google.protobuf import symbol_database
 
 MAX_EXTENSION = 536870912
 
@@ -141,18 +147,18 @@ class GeneratorTest(unittest.TestCase):
     self.assertTrue(not non_extension_descriptor.is_extension)
 
   def testOptions(self):
-    proto = unittest_mset_pb2.TestMessageSet()
+    proto = unittest_mset_wire_format_pb2.TestMessageSet()
     self.assertTrue(proto.DESCRIPTOR.GetOptions().message_set_wire_format)
 
   def testMessageWithCustomOptions(self):
     proto = unittest_custom_options_pb2.TestMessageWithCustomOptions()
     enum_options = proto.DESCRIPTOR.enum_types_by_name['AnEnum'].GetOptions()
     self.assertTrue(enum_options is not None)
-    # TODO(gps): We really should test for the presense of the enum_opt1
+    # TODO(gps): We really should test for the presence of the enum_opt1
     # extension and for its value to be set to -789.
 
   def testNestedTypes(self):
-    self.assertEquals(
+    self.assertEqual(
         set(unittest_pb2.TestAllTypes.DESCRIPTOR.nested_types),
         set([
             unittest_pb2.TestAllTypes.NestedMessage.DESCRIPTOR,
@@ -217,6 +223,10 @@ class GeneratorTest(unittest.TestCase):
                      'google/protobuf/unittest.proto')
     self.assertEqual(unittest_pb2.DESCRIPTOR.package, 'protobuf_unittest')
     self.assertFalse(unittest_pb2.DESCRIPTOR.serialized_pb is None)
+    self.assertEqual(unittest_pb2.DESCRIPTOR.dependencies,
+                     [unittest_import_pb2.DESCRIPTOR])
+    self.assertEqual(unittest_import_pb2.DESCRIPTOR.dependencies,
+                     [unittest_import_public_pb2.DESCRIPTOR])
 
   def testNoGenericServices(self):
     self.assertTrue(hasattr(unittest_no_generic_services_pb2, "TestMessage"))
@@ -241,6 +251,18 @@ class GeneratorTest(unittest.TestCase):
         unittest_pb2._TESTALLTYPES_NESTEDMESSAGE.name in
         file_type.message_types_by_name)
 
+  def testEnumTypesByName(self):
+    file_type = unittest_pb2.DESCRIPTOR
+    self.assertEqual(
+        unittest_pb2._FOREIGNENUM,
+        file_type.enum_types_by_name[unittest_pb2._FOREIGNENUM.name])
+
+  def testExtensionsByName(self):
+    file_type = unittest_pb2.DESCRIPTOR
+    self.assertEqual(
+        unittest_pb2.my_extension_string,
+        file_type.extensions_by_name[unittest_pb2.my_extension_string.name])
+
   def testPublicImports(self):
     # Test public imports as embedded message.
     all_type_proto = unittest_pb2.TestAllTypes()
@@ -264,6 +286,63 @@ class GeneratorTest(unittest.TestCase):
                      "baz")
     self.assertEqual(message.Extensions[test_bad_identifiers_pb2.service],
                      "qux")
+
+  def testOneof(self):
+    desc = unittest_pb2.TestAllTypes.DESCRIPTOR
+    self.assertEqual(1, len(desc.oneofs))
+    self.assertEqual('oneof_field', desc.oneofs[0].name)
+    self.assertEqual(0, desc.oneofs[0].index)
+    self.assertIs(desc, desc.oneofs[0].containing_type)
+    self.assertIs(desc.oneofs[0], desc.oneofs_by_name['oneof_field'])
+    nested_names = set(['oneof_uint32', 'oneof_nested_message',
+                        'oneof_string', 'oneof_bytes'])
+    self.assertEqual(
+        nested_names,
+        set([field.name for field in desc.oneofs[0].fields]))
+    for field_name, field_desc in desc.fields_by_name.items():
+      if field_name in nested_names:
+        self.assertIs(desc.oneofs[0], field_desc.containing_oneof)
+      else:
+        self.assertIsNone(field_desc.containing_oneof)
+
+
+class SymbolDatabaseRegistrationTest(unittest.TestCase):
+  """Checks that messages, enums and files are correctly registered."""
+
+  def testGetSymbol(self):
+    self.assertEqual(
+        unittest_pb2.TestAllTypes, symbol_database.Default().GetSymbol(
+            'protobuf_unittest.TestAllTypes'))
+    self.assertEqual(
+        unittest_pb2.TestAllTypes.NestedMessage,
+        symbol_database.Default().GetSymbol(
+            'protobuf_unittest.TestAllTypes.NestedMessage'))
+    with self.assertRaises(KeyError):
+      symbol_database.Default().GetSymbol('protobuf_unittest.NestedMessage')
+    self.assertEqual(
+        unittest_pb2.TestAllTypes.OptionalGroup,
+        symbol_database.Default().GetSymbol(
+            'protobuf_unittest.TestAllTypes.OptionalGroup'))
+    self.assertEqual(
+        unittest_pb2.TestAllTypes.RepeatedGroup,
+        symbol_database.Default().GetSymbol(
+            'protobuf_unittest.TestAllTypes.RepeatedGroup'))
+
+  def testEnums(self):
+    self.assertEqual(
+        'protobuf_unittest.ForeignEnum',
+        symbol_database.Default().pool.FindEnumTypeByName(
+            'protobuf_unittest.ForeignEnum').full_name)
+    self.assertEqual(
+        'protobuf_unittest.TestAllTypes.NestedEnum',
+        symbol_database.Default().pool.FindEnumTypeByName(
+            'protobuf_unittest.TestAllTypes.NestedEnum').full_name)
+
+  def testFindFileByName(self):
+    self.assertEqual(
+        'google/protobuf/unittest.proto',
+        symbol_database.Default().pool.FindFileByName(
+            'google/protobuf/unittest.proto').name)
 
 if __name__ == '__main__':
   unittest.main()

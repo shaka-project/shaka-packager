@@ -1,6 +1,6 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// http://code.google.com/p/protobuf/
+// https://developers.google.com/protocol-buffers/
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -93,16 +93,16 @@ void SetPrimitiveVariables(const FieldDescriptor* descriptor,
   (*variables)["wire_format_field_type"] =
       "::google::protobuf::internal::WireFormatLite::" + FieldDescriptorProto_Type_Name(
           static_cast<FieldDescriptorProto_Type>(descriptor->type()));
+  (*variables)["full_name"] = descriptor->full_name();
 }
 
 }  // namespace
 
 // ===================================================================
 
-PrimitiveFieldGenerator::
-PrimitiveFieldGenerator(const FieldDescriptor* descriptor,
-                        const Options& options)
-  : descriptor_(descriptor) {
+PrimitiveFieldGenerator::PrimitiveFieldGenerator(
+    const FieldDescriptor* descriptor, const Options& options)
+    : FieldGenerator(options), descriptor_(descriptor) {
   SetPrimitiveVariables(descriptor, &variables_, options);
 }
 
@@ -116,19 +116,23 @@ GeneratePrivateMembers(io::Printer* printer) const {
 void PrimitiveFieldGenerator::
 GenerateAccessorDeclarations(io::Printer* printer) const {
   printer->Print(variables_,
-    "inline $type$ $name$() const$deprecation$;\n"
-    "inline void set_$name$($type$ value)$deprecation$;\n");
+    "$deprecated_attr$$type$ $name$() const;\n"
+    "$deprecated_attr$void set_$name$($type$ value);\n");
 }
 
 void PrimitiveFieldGenerator::
-GenerateInlineAccessorDefinitions(io::Printer* printer) const {
-  printer->Print(variables_,
-    "inline $type$ $classname$::$name$() const {\n"
+GenerateInlineAccessorDefinitions(io::Printer* printer, bool is_inline) const {
+  map<string, string> variables(variables_);
+  variables["inline"] = is_inline ? "inline" : "";
+  printer->Print(variables,
+    "$inline$ $type$ $classname$::$name$() const {\n"
+    "  // @@protoc_insertion_point(field_get:$full_name$)\n"
     "  return $name$_;\n"
     "}\n"
-    "inline void $classname$::set_$name$($type$ value) {\n"
-    "  set_has_$name$();\n"
+    "$inline$ void $classname$::set_$name$($type$ value) {\n"
+    "  $set_hasbit$\n"
     "  $name$_ = value;\n"
+    "  // @@protoc_insertion_point(field_set:$full_name$)\n"
     "}\n");
 }
 
@@ -158,7 +162,7 @@ GenerateMergeFromCodedStream(io::Printer* printer) const {
     "DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<\n"
     "         $type$, $wire_format_field_type$>(\n"
     "       input, &$name$_)));\n"
-    "set_has_$name$();\n");
+    "$set_hasbit$\n");
 }
 
 void PrimitiveFieldGenerator::
@@ -191,13 +195,72 @@ GenerateByteSize(io::Printer* printer) const {
 
 // ===================================================================
 
-RepeatedPrimitiveFieldGenerator::
-RepeatedPrimitiveFieldGenerator(const FieldDescriptor* descriptor,
-                                const Options& options)
-  : descriptor_(descriptor) {
+PrimitiveOneofFieldGenerator::
+PrimitiveOneofFieldGenerator(const FieldDescriptor* descriptor,
+                             const Options& options)
+  : PrimitiveFieldGenerator(descriptor, options) {
+  SetCommonOneofFieldVariables(descriptor, &variables_);
+}
+
+PrimitiveOneofFieldGenerator::~PrimitiveOneofFieldGenerator() {}
+
+void PrimitiveOneofFieldGenerator::
+GenerateInlineAccessorDefinitions(io::Printer* printer, bool is_inline) const {
+  map<string, string> variables(variables_);
+  variables["inline"] = is_inline ? "inline" : "";
+  printer->Print(variables,
+    "$inline$ $type$ $classname$::$name$() const {\n"
+    "  // @@protoc_insertion_point(field_get:$full_name$)\n"
+    "  if (has_$name$()) {\n"
+    "    return $oneof_prefix$$name$_;\n"
+    "  }\n"
+    "  return $default$;\n"
+    "}\n"
+    "$inline$ void $classname$::set_$name$($type$ value) {\n"
+    "  if (!has_$name$()) {\n"
+    "    clear_$oneof_name$();\n"
+    "    set_has_$name$();\n"
+    "  }\n"
+    "  $oneof_prefix$$name$_ = value;\n"
+    "  // @@protoc_insertion_point(field_set:$full_name$)\n"
+    "}\n");
+}
+
+void PrimitiveOneofFieldGenerator::
+GenerateClearingCode(io::Printer* printer) const {
+  printer->Print(variables_, "$oneof_prefix$$name$_ = $default$;\n");
+}
+
+void PrimitiveOneofFieldGenerator::
+GenerateSwappingCode(io::Printer* printer) const {
+  // Don't print any swapping code. Swapping the union will swap this field.
+}
+
+void PrimitiveOneofFieldGenerator::
+GenerateConstructorCode(io::Printer* printer) const {
+  printer->Print(
+      variables_,
+      "  $classname$_default_oneof_instance_->$name$_ = $default$;\n");
+}
+
+void PrimitiveOneofFieldGenerator::
+GenerateMergeFromCodedStream(io::Printer* printer) const {
+  printer->Print(variables_,
+    "clear_$oneof_name$();\n"
+    "DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<\n"
+    "         $type$, $wire_format_field_type$>(\n"
+    "       input, &$oneof_prefix$$name$_)));\n"
+    "set_has_$name$();\n");
+}
+
+// ===================================================================
+
+RepeatedPrimitiveFieldGenerator::RepeatedPrimitiveFieldGenerator(
+    const FieldDescriptor* descriptor, const Options& options)
+    : FieldGenerator(options), descriptor_(descriptor) {
   SetPrimitiveVariables(descriptor, &variables_, options);
 
-  if (descriptor->options().packed()) {
+  if (descriptor->is_packed()) {
     variables_["packed_reader"] = "ReadPackedPrimitive";
     variables_["repeated_reader"] = "ReadRepeatedPrimitiveNoInline";
   } else {
@@ -212,7 +275,8 @@ void RepeatedPrimitiveFieldGenerator::
 GeneratePrivateMembers(io::Printer* printer) const {
   printer->Print(variables_,
     "::google::protobuf::RepeatedField< $type$ > $name$_;\n");
-  if (descriptor_->options().packed() && HasGeneratedMethods(descriptor_->file())) {
+  if (descriptor_->is_packed() &&
+      HasGeneratedMethods(descriptor_->file(), options_)) {
     printer->Print(variables_,
       "mutable int _$name$_cached_byte_size_;\n");
   }
@@ -221,35 +285,42 @@ GeneratePrivateMembers(io::Printer* printer) const {
 void RepeatedPrimitiveFieldGenerator::
 GenerateAccessorDeclarations(io::Printer* printer) const {
   printer->Print(variables_,
-    "inline $type$ $name$(int index) const$deprecation$;\n"
-    "inline void set_$name$(int index, $type$ value)$deprecation$;\n"
-    "inline void add_$name$($type$ value)$deprecation$;\n");
+    "$deprecated_attr$$type$ $name$(int index) const;\n"
+    "$deprecated_attr$void set_$name$(int index, $type$ value);\n"
+    "$deprecated_attr$void add_$name$($type$ value);\n");
   printer->Print(variables_,
-    "inline const ::google::protobuf::RepeatedField< $type$ >&\n"
-    "    $name$() const$deprecation$;\n"
-    "inline ::google::protobuf::RepeatedField< $type$ >*\n"
-    "    mutable_$name$()$deprecation$;\n");
+    "$deprecated_attr$const ::google::protobuf::RepeatedField< $type$ >&\n"
+    "    $name$() const;\n"
+    "$deprecated_attr$::google::protobuf::RepeatedField< $type$ >*\n"
+    "    mutable_$name$();\n");
 }
 
 void RepeatedPrimitiveFieldGenerator::
-GenerateInlineAccessorDefinitions(io::Printer* printer) const {
-  printer->Print(variables_,
-    "inline $type$ $classname$::$name$(int index) const {\n"
+GenerateInlineAccessorDefinitions(io::Printer* printer, bool is_inline) const {
+  map<string, string> variables(variables_);
+  variables["inline"] = is_inline ? "inline" : "";
+  printer->Print(variables,
+    "$inline$ $type$ $classname$::$name$(int index) const {\n"
+    "  // @@protoc_insertion_point(field_get:$full_name$)\n"
     "  return $name$_.Get(index);\n"
     "}\n"
-    "inline void $classname$::set_$name$(int index, $type$ value) {\n"
+    "$inline$ void $classname$::set_$name$(int index, $type$ value) {\n"
     "  $name$_.Set(index, value);\n"
+    "  // @@protoc_insertion_point(field_set:$full_name$)\n"
     "}\n"
-    "inline void $classname$::add_$name$($type$ value) {\n"
+    "$inline$ void $classname$::add_$name$($type$ value) {\n"
     "  $name$_.Add(value);\n"
+    "  // @@protoc_insertion_point(field_add:$full_name$)\n"
     "}\n");
-  printer->Print(variables_,
-    "inline const ::google::protobuf::RepeatedField< $type$ >&\n"
+  printer->Print(variables,
+    "$inline$ const ::google::protobuf::RepeatedField< $type$ >&\n"
     "$classname$::$name$() const {\n"
+    "  // @@protoc_insertion_point(field_list:$full_name$)\n"
     "  return $name$_;\n"
     "}\n"
-    "inline ::google::protobuf::RepeatedField< $type$ >*\n"
+    "$inline$ ::google::protobuf::RepeatedField< $type$ >*\n"
     "$classname$::mutable_$name$() {\n"
+    "  // @@protoc_insertion_point(field_mutable_list:$full_name$)\n"
     "  return &$name$_;\n"
     "}\n");
 }
@@ -266,7 +337,7 @@ GenerateMergingCode(io::Printer* printer) const {
 
 void RepeatedPrimitiveFieldGenerator::
 GenerateSwappingCode(io::Printer* printer) const {
-  printer->Print(variables_, "$name$_.Swap(&other->$name$_);\n");
+  printer->Print(variables_, "$name$_.UnsafeArenaSwap(&other->$name$_);\n");
 }
 
 void RepeatedPrimitiveFieldGenerator::
@@ -292,7 +363,7 @@ GenerateMergeFromCodedStreamWithPacking(io::Printer* printer) const {
 
 void RepeatedPrimitiveFieldGenerator::
 GenerateSerializeWithCachedSizes(io::Printer* printer) const {
-  if (descriptor_->options().packed()) {
+  if (descriptor_->is_packed()) {
     // Write the tag and the size.
     printer->Print(variables_,
       "if (this->$name$_size() > 0) {\n"
@@ -305,7 +376,7 @@ GenerateSerializeWithCachedSizes(io::Printer* printer) const {
   }
   printer->Print(variables_,
       "for (int i = 0; i < this->$name$_size(); i++) {\n");
-  if (descriptor_->options().packed()) {
+  if (descriptor_->is_packed()) {
     printer->Print(variables_,
       "  ::google::protobuf::internal::WireFormatLite::Write$declared_type$NoTag(\n"
       "    this->$name$(i), output);\n");
@@ -319,7 +390,7 @@ GenerateSerializeWithCachedSizes(io::Printer* printer) const {
 
 void RepeatedPrimitiveFieldGenerator::
 GenerateSerializeWithCachedSizesToArray(io::Printer* printer) const {
-  if (descriptor_->options().packed()) {
+  if (descriptor_->is_packed()) {
     // Write the tag and the size.
     printer->Print(variables_,
       "if (this->$name$_size() > 0) {\n"
@@ -333,7 +404,7 @@ GenerateSerializeWithCachedSizesToArray(io::Printer* printer) const {
   }
   printer->Print(variables_,
       "for (int i = 0; i < this->$name$_size(); i++) {\n");
-  if (descriptor_->options().packed()) {
+  if (descriptor_->is_packed()) {
     printer->Print(variables_,
       "  target = ::google::protobuf::internal::WireFormatLite::\n"
       "    Write$declared_type$NoTagToArray(this->$name$(i), target);\n");
@@ -363,7 +434,7 @@ GenerateByteSize(io::Printer* printer) const {
       "data_size = $fixed_size$ * this->$name$_size();\n");
   }
 
-  if (descriptor_->options().packed()) {
+  if (descriptor_->is_packed()) {
     printer->Print(variables_,
       "if (data_size > 0) {\n"
       "  total_size += $tag_size$ +\n"

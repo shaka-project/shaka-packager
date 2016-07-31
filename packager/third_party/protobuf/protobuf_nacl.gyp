@@ -11,26 +11,15 @@
       'target_name': 'protobuf_lite_nacl',
       'type': 'none',
       'variables': {
+        'nacl_untrusted_build': 1,
         'nlib_target': 'libprotobuf_lite_nacl.a',
         'build_glibc': 0,
         'build_newlib': 0,
         'build_pnacl_newlib': 1,
-        'config_h_dir': '.',
       },
-      'dependencies': [
-        '../../native_client/tools.gyp:prep_toolchain',
-      ],
-      'pnacl_compile_flags': [
-        # This disables #warning in hash_map/hash_set headers which are
-        # deprecated but still used in protobuf.
-        #
-        # TODO(sergeyu): Migrate protobuf to unordered_man and unordered_set
-        # and remove this flag.
-        '-Wno-#warnings',
-      ],
       'includes': [
         'protobuf_lite.gypi',
       ],
-    },  # end of target 'protobuf_lite_nacl'
+    },
   ]
 }

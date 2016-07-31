@@ -1,6 +1,6 @@
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
-# http://code.google.com/p/protobuf/
+# https://developers.google.com/protocol-buffers/
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -45,6 +45,12 @@ TYPE_TO_DESERIALIZE_METHOD: A dictionary with field types and deserialization
 
 __author__ = 'robinson@google.com (Will Robinson)'
 
+import six
+
+if six.PY3:
+  long = int
+
+from google.protobuf.internal import api_implementation
 from google.protobuf.internal import decoder
 from google.protobuf.internal import encoder
 from google.protobuf.internal import wire_format
@@ -52,22 +58,29 @@ from google.protobuf import descriptor
 
 _FieldDescriptor = descriptor.FieldDescriptor
 
+def SupportsOpenEnums(field_descriptor):
+  return field_descriptor.containing_type.syntax == "proto3"
 
-def GetTypeChecker(cpp_type, field_type):
+def GetTypeChecker(field):
   """Returns a type checker for a message field of the specified types.
 
   Args:
-    cpp_type: C++ type of the field (see descriptor.py).
-    field_type: Protocol message field type (see descriptor.py).
+    field: FieldDescriptor object for this field.
 
   Returns:
     An instance of TypeChecker which can be used to verify the types
     of values assigned to a field of the specified type.
   """
-  if (cpp_type == _FieldDescriptor.CPPTYPE_STRING and
-      field_type == _FieldDescriptor.TYPE_STRING):
+  if (field.cpp_type == _FieldDescriptor.CPPTYPE_STRING and
+      field.type == _FieldDescriptor.TYPE_STRING):
     return UnicodeValueChecker()
-  return _VALUE_CHECKERS[cpp_type]
+  if field.cpp_type == _FieldDescriptor.CPPTYPE_ENUM:
+    if SupportsOpenEnums(field):
+      # When open enums are supported, any int32 can be assigned.
+      return _VALUE_CHECKERS[_FieldDescriptor.CPPTYPE_INT32]
+    else:
+      return EnumValueChecker(field.enum_type)
+  return _VALUE_CHECKERS[field.cpp_type]
 
 
 # None of the typecheckers below make any attempt to guard against people
@@ -85,10 +98,25 @@ class TypeChecker(object):
     self._acceptable_types = acceptable_types
 
   def CheckValue(self, proposed_value):
+    """Type check the provided value and return it.
+
+    The returned value might have been normalized to another type.
+    """
     if not isinstance(proposed_value, self._acceptable_types):
       message = ('%.1024r has type %s, but expected one of: %s' %
                  (proposed_value, type(proposed_value), self._acceptable_types))
       raise TypeError(message)
+    return proposed_value
+
+
+class TypeCheckerWithDefault(TypeChecker):
+
+  def __init__(self, default_value, *acceptable_types):
+    TypeChecker.__init__(self, acceptable_types)
+    self._default_value = default_value
+
+  def DefaultValue(self):
+    return self._default_value
 
 
 # IntValueChecker and its subclasses perform integer type-checks
@@ -98,34 +126,68 @@ class IntValueChecker(object):
   """Checker used for integer fields.  Performs type-check and range check."""
 
   def CheckValue(self, proposed_value):
-    if not isinstance(proposed_value, (int, long)):
+    if not isinstance(proposed_value, six.integer_types):
       message = ('%.1024r has type %s, but expected one of: %s' %
-                 (proposed_value, type(proposed_value), (int, long)))
+                 (proposed_value, type(proposed_value), six.integer_types))
       raise TypeError(message)
     if not self._MIN <= proposed_value <= self._MAX:
       raise ValueError('Value out of range: %d' % proposed_value)
+    # We force 32-bit values to int and 64-bit values to long to make
+    # alternate implementations where the distinction is more significant
+    # (e.g. the C++ implementation) simpler.
+    proposed_value = self._TYPE(proposed_value)
+    return proposed_value
+
+  def DefaultValue(self):
+    return 0
+
+
+class EnumValueChecker(object):
+
+  """Checker used for enum fields.  Performs type-check and range check."""
+
+  def __init__(self, enum_type):
+    self._enum_type = enum_type
+
+  def CheckValue(self, proposed_value):
+    if not isinstance(proposed_value, six.integer_types):
+      message = ('%.1024r has type %s, but expected one of: %s' %
+                 (proposed_value, type(proposed_value), six.integer_types))
+      raise TypeError(message)
+    if proposed_value not in self._enum_type.values_by_number:
+      raise ValueError('Unknown enum value: %d' % proposed_value)
+    return proposed_value
+
+  def DefaultValue(self):
+    return self._enum_type.values[0].number
 
 
 class UnicodeValueChecker(object):
 
-  """Checker used for string fields."""
+  """Checker used for string fields.
+
+  Always returns a unicode value, even if the input is of type str.
+  """
 
   def CheckValue(self, proposed_value):
-    if not isinstance(proposed_value, (str, unicode)):
+    if not isinstance(proposed_value, (bytes, six.text_type)):
       message = ('%.1024r has type %s, but expected one of: %s' %
-                 (proposed_value, type(proposed_value), (str, unicode)))
+                 (proposed_value, type(proposed_value), (bytes, six.text_type)))
       raise TypeError(message)
 
-    # If the value is of type 'str' make sure that it is in 7-bit ASCII
-    # encoding.
-    if isinstance(proposed_value, str):
+    # If the value is of type 'bytes' make sure that it is valid UTF-8 data.
+    if isinstance(proposed_value, bytes):
       try:
-        unicode(proposed_value, 'ascii')
+        proposed_value = proposed_value.decode('utf-8')
       except UnicodeDecodeError:
-        raise ValueError('%.1024r has type str, but isn\'t in 7-bit ASCII '
-                         'encoding. Non-ASCII strings must be converted to '
+        raise ValueError('%.1024r has type bytes, but isn\'t valid UTF-8 '
+                         'encoding. Non-UTF-8 strings must be converted to '
                          'unicode objects before being added.' %
                          (proposed_value))
+    return proposed_value
+
+  def DefaultValue(self):
+    return u""
 
 
 class Int32ValueChecker(IntValueChecker):
@@ -133,21 +195,25 @@ class Int32ValueChecker(IntValueChecker):
   # efficient.
   _MIN = -2147483648
   _MAX = 2147483647
+  _TYPE = int
 
 
 class Uint32ValueChecker(IntValueChecker):
   _MIN = 0
   _MAX = (1 << 32) - 1
+  _TYPE = int
 
 
 class Int64ValueChecker(IntValueChecker):
   _MIN = -(1 << 63)
   _MAX = (1 << 63) - 1
+  _TYPE = long
 
 
 class Uint64ValueChecker(IntValueChecker):
   _MIN = 0
   _MAX = (1 << 64) - 1
+  _TYPE = long
 
 
 # Type-checkers for all scalar CPPTYPEs.
@@ -156,13 +222,13 @@ _VALUE_CHECKERS = {
     _FieldDescriptor.CPPTYPE_INT64: Int64ValueChecker(),
     _FieldDescriptor.CPPTYPE_UINT32: Uint32ValueChecker(),
     _FieldDescriptor.CPPTYPE_UINT64: Uint64ValueChecker(),
-    _FieldDescriptor.CPPTYPE_DOUBLE: TypeChecker(
-        float, int, long),
-    _FieldDescriptor.CPPTYPE_FLOAT: TypeChecker(
-        float, int, long),
-    _FieldDescriptor.CPPTYPE_BOOL: TypeChecker(bool, int),
-    _FieldDescriptor.CPPTYPE_ENUM: Int32ValueChecker(),
-    _FieldDescriptor.CPPTYPE_STRING: TypeChecker(str),
+    _FieldDescriptor.CPPTYPE_DOUBLE: TypeCheckerWithDefault(
+        0.0, float, int, long),
+    _FieldDescriptor.CPPTYPE_FLOAT: TypeCheckerWithDefault(
+        0.0, float, int, long),
+    _FieldDescriptor.CPPTYPE_BOOL: TypeCheckerWithDefault(
+        False, bool, int),
+    _FieldDescriptor.CPPTYPE_STRING: TypeCheckerWithDefault(b'', bytes),
     }
 
 

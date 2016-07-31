@@ -1,6 +1,6 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// http://code.google.com/p/protobuf/
+// https://developers.google.com/protocol-buffers/
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -35,10 +35,11 @@
 #ifndef GOOGLE_PROTOBUF_COMPILER_CPP_ENUM_H__
 #define GOOGLE_PROTOBUF_COMPILER_CPP_ENUM_H__
 
+#include <map>
+#include <set>
 #include <string>
 #include <google/protobuf/compiler/cpp/cpp_options.h>
 #include <google/protobuf/descriptor.h>
-
 
 namespace google {
 namespace protobuf {
@@ -54,11 +55,18 @@ namespace cpp {
 class EnumGenerator {
  public:
   // See generator.cc for the meaning of dllexport_decl.
-  explicit EnumGenerator(const EnumDescriptor* descriptor,
-                         const Options& options);
+  EnumGenerator(const EnumDescriptor* descriptor, const Options& options);
   ~EnumGenerator();
 
   // Header stuff.
+
+  // Fills the name to use when declaring the enum. This is for use when
+  // generating other .proto.h files. This code should be placed within the
+  // enum's package namespace, but NOT within any class, even for nested
+  // enums. A given key in enum_names will map from an enum class name to the
+  // EnumDescriptor that was responsible for its inclusion in the map. This can
+  // be used to associate the descriptor with the code generated for it.
+  void FillForwardDeclaration(map<string, const EnumDescriptor*>* enum_names);
 
   // Generate header code defining the enum.  This code should be placed
   // within the enum's package namespace, but NOT within any class, even for
@@ -87,8 +95,10 @@ class EnumGenerator {
 
  private:
   const EnumDescriptor* descriptor_;
-  string classname_;
-  Options options_;
+  const string classname_;
+  const Options& options_;
+  // whether to generate the *_ARRAYSIZE constant.
+  const bool generate_array_size_;
 
   GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(EnumGenerator);
 };

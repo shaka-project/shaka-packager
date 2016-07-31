@@ -1,6 +1,6 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// http://code.google.com/p/protobuf/
+// https://developers.google.com/protocol-buffers/
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -46,6 +46,7 @@
 
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/stubs/common.h>
+#include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/stubs/stl_util.h>
 
 
@@ -413,7 +414,9 @@ int64 ConcatenatingInputStream::ByteCount() const {
 
 LimitingInputStream::LimitingInputStream(ZeroCopyInputStream* input,
                                          int64 limit)
-  : input_(input), limit_(limit) {}
+  : input_(input), limit_(limit) {
+  prior_bytes_read_ = input_->ByteCount();
+}
 
 LimitingInputStream::~LimitingInputStream() {
   // If we overshot the limit, back up.
@@ -457,9 +460,9 @@ bool LimitingInputStream::Skip(int count) {
 
 int64 LimitingInputStream::ByteCount() const {
   if (limit_ < 0) {
-    return input_->ByteCount() + limit_;
+    return input_->ByteCount() + limit_ - prior_bytes_read_;
   } else {
-    return input_->ByteCount();
+    return input_->ByteCount() - prior_bytes_read_;
   }
 }
 

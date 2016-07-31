@@ -1,6 +1,6 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// http://code.google.com/p/protobuf/
+// https://developers.google.com/protocol-buffers/
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -79,6 +79,7 @@
 #define GOOGLE_PROTOBUF_STUBS_ONCE_H__
 
 #include <google/protobuf/stubs/atomicops.h>
+#include <google/protobuf/stubs/callback.h>
 #include <google/protobuf/stubs/common.h>
 
 namespace google {
@@ -121,12 +122,8 @@ typedef internal::AtomicWord ProtobufOnceType;
 LIBPROTOBUF_EXPORT
 void GoogleOnceInitImpl(ProtobufOnceType* once, Closure* closure);
 
-inline void GoogleOnceInit(ProtobufOnceType* once, void (*init_func)()) {
-  if (internal::Acquire_Load(once) != ONCE_STATE_DONE) {
-    internal::FunctionClosure0 func(init_func, false);
-    GoogleOnceInitImpl(once, &func);
-  }
-}
+LIBPROTOBUF_EXPORT
+void GoogleOnceInit(ProtobufOnceType* once, void (*init_func)());
 
 template <typename Arg>
 inline void GoogleOnceInit(ProtobufOnceType* once, void (*init_func)(Arg*),
@@ -138,6 +135,24 @@ inline void GoogleOnceInit(ProtobufOnceType* once, void (*init_func)(Arg*),
 }
 
 #endif  // GOOGLE_PROTOBUF_NO_THREAD_SAFETY
+
+class GoogleOnceDynamic {
+ public:
+  GoogleOnceDynamic() : state_(GOOGLE_PROTOBUF_ONCE_INIT) { }
+
+  // If this->Init() has not been called before by any thread,
+  // execute (*func_with_arg)(arg) then return.
+  // Otherwise, wait until that prior invocation has finished
+  // executing its function, then return.
+  template<typename T>
+  void Init(void (*func_with_arg)(T*), T* arg) {
+    GoogleOnceInit<T>(&this->state_,
+                      func_with_arg,
+                      arg);
+  }
+ private:
+  ProtobufOnceType state_;
+};
 
 #define GOOGLE_PROTOBUF_DECLARE_ONCE(NAME) \
   ::google::protobuf::ProtobufOnceType NAME = GOOGLE_PROTOBUF_ONCE_INIT

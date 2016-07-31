@@ -1,8 +1,8 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 #
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
-# http://code.google.com/p/protobuf/
+# https://developers.google.com/protocol-buffers/
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -34,7 +34,11 @@
 
 __author__ = 'matthewtoia@google.com (Matt Toia)'
 
-import unittest
+try:
+  import unittest2 as unittest  #PY26
+except ImportError:
+  import unittest
+
 from google.protobuf import descriptor_pb2
 from google.protobuf.internal import factory_test2_pb2
 from google.protobuf import descriptor_database
@@ -48,16 +52,18 @@ class DescriptorDatabaseTest(unittest.TestCase):
         factory_test2_pb2.DESCRIPTOR.serialized_pb)
     db.Add(file_desc_proto)
 
-    self.assertEquals(file_desc_proto, db.FindFileByName(
-        'net/proto2/python/internal/factory_test2.proto'))
-    self.assertEquals(file_desc_proto, db.FindFileContainingSymbol(
-        'net.proto2.python.internal.Factory2Message'))
-    self.assertEquals(file_desc_proto, db.FindFileContainingSymbol(
-        'net.proto2.python.internal.Factory2Message.NestedFactory2Message'))
-    self.assertEquals(file_desc_proto, db.FindFileContainingSymbol(
-        'net.proto2.python.internal.Factory2Enum'))
-    self.assertEquals(file_desc_proto, db.FindFileContainingSymbol(
-        'net.proto2.python.internal.Factory2Message.NestedFactory2Enum'))
+    self.assertEqual(file_desc_proto, db.FindFileByName(
+        'google/protobuf/internal/factory_test2.proto'))
+    self.assertEqual(file_desc_proto, db.FindFileContainingSymbol(
+        'google.protobuf.python.internal.Factory2Message'))
+    self.assertEqual(file_desc_proto, db.FindFileContainingSymbol(
+        'google.protobuf.python.internal.Factory2Message.NestedFactory2Message'))
+    self.assertEqual(file_desc_proto, db.FindFileContainingSymbol(
+        'google.protobuf.python.internal.Factory2Enum'))
+    self.assertEqual(file_desc_proto, db.FindFileContainingSymbol(
+        'google.protobuf.python.internal.Factory2Message.NestedFactory2Enum'))
+    self.assertEqual(file_desc_proto, db.FindFileContainingSymbol(
+        'google.protobuf.python.internal.MessageWithNestedEnumOnly.NestedEnum'))
 
 if __name__ == '__main__':
   unittest.main()

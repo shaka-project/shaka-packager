@@ -1,6 +1,6 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// http://code.google.com/p/protobuf/
+// https://developers.google.com/protocol-buffers/
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -61,6 +61,13 @@ void SchedYield() {
 }
 
 }  // namespace
+
+void GoogleOnceInit(ProtobufOnceType* once, void (*init_func)()) {
+  if (internal::Acquire_Load(once) != ONCE_STATE_DONE) {
+    internal::FunctionClosure0 func(init_func, false);
+    GoogleOnceInitImpl(once, &func);
+  }
+}
 
 void GoogleOnceInitImpl(ProtobufOnceType* once, Closure* closure) {
   internal::AtomicWord state = internal::Acquire_Load(once);

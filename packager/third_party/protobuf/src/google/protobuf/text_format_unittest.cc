@@ -1,6 +1,6 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// http://code.google.com/p/protobuf/
+// https://developers.google.com/protocol-buffers/
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -32,34 +32,39 @@
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
+#include <google/protobuf/text_format.h>
+
 #include <math.h>
 #include <stdlib.h>
 #include <limits>
+#include <memory>
+#ifndef _SHARED_PTR_H
+#include <google/protobuf/stubs/shared_ptr.h>
+#endif
 
-#include <google/protobuf/text_format.h>
-#include <google/protobuf/io/zero_copy_stream_impl.h>
-#include <google/protobuf/io/tokenizer.h>
+#include <google/protobuf/stubs/logging.h>
+#include <google/protobuf/stubs/common.h>
+#include <google/protobuf/stubs/logging.h>
+#include <google/protobuf/testing/file.h>
+#include <google/protobuf/testing/file.h>
+#include <google/protobuf/test_util.h>
 #include <google/protobuf/unittest.pb.h>
 #include <google/protobuf/unittest_mset.pb.h>
-#include <google/protobuf/test_util.h>
-
-#include <google/protobuf/stubs/common.h>
-#include <google/protobuf/testing/file.h>
-#include <google/protobuf/testing/googletest.h>
-#include <gtest/gtest.h>
+#include <google/protobuf/unittest_mset_wire_format.pb.h>
+#include <google/protobuf/io/tokenizer.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/substitute.h>
+#include <google/protobuf/testing/googletest.h>
+#include <gtest/gtest.h>
+#include <google/protobuf/stubs/mathlimits.h>
+
 
 namespace google {
 namespace protobuf {
 
 // Can't use an anonymous namespace here due to brokenness of Tru64 compiler.
 namespace text_format_unittest {
-
-inline bool IsNaN(double value) {
-  // NaN is never equal to anything, even itself.
-  return value != value;
-}
 
 // A basic string with different escapable characters for testing.
 const string kEscapeTestString =
@@ -74,10 +79,11 @@ const string kEscapeTestStringEscaped =
 class TextFormatTest : public testing::Test {
  public:
   static void SetUpTestCase() {
-    File::ReadFileToStringOrDie(
-        TestSourceDir()
-        + "/google/protobuf/testdata/text_format_unittest_data.txt",
-        &static_proto_debug_string_);
+    GOOGLE_CHECK_OK(File::GetContents(
+        TestSourceDir() +
+            "/google/protobuf/"
+            "testdata/text_format_unittest_data_oneof_implemented.txt",
+        &static_proto_debug_string_, true));
   }
 
   TextFormatTest() : proto_debug_string_(static_proto_debug_string_) {}
@@ -95,11 +101,10 @@ string TextFormatTest::static_proto_debug_string_;
 class TextFormatExtensionsTest : public testing::Test {
  public:
   static void SetUpTestCase() {
-    File::ReadFileToStringOrDie(
-        TestSourceDir()
-        + "/google/protobuf/testdata/"
-          "text_format_unittest_extensions_data.txt",
-        &static_proto_debug_string_);
+    GOOGLE_CHECK_OK(File::GetContents(TestSourceDir() +
+                                   "/google/protobuf/testdata/"
+                                   "text_format_unittest_extensions_data.txt",
+                               &static_proto_debug_string_, true));
   }
 
   TextFormatExtensionsTest()
@@ -205,16 +210,25 @@ TEST_F(TextFormatTest, StringEscape) {
 TEST_F(TextFormatTest, Utf8DebugString) {
   // Set the string value to test.
   proto_.set_optional_string("\350\260\267\346\255\214");
+  proto_.set_optional_bytes("\350\260\267\346\255\214");
 
   // Get the DebugString from the proto.
   string debug_string = proto_.DebugString();
   string utf8_debug_string = proto_.Utf8DebugString();
 
   // Hardcode a correct value to test against.
-  string correct_utf8_string = "optional_string: "
+  string correct_utf8_string =
+      "optional_string: "
       "\"\350\260\267\346\255\214\""
+      "\n"
+      "optional_bytes: "
+      "\"\\350\\260\\267\\346\\255\\214\""
       "\n";
-  string correct_string = "optional_string: "
+  string correct_string =
+      "optional_string: "
+      "\"\\350\\260\\267\\346\\255\\214\""
+      "\n"
+      "optional_bytes: "
       "\"\\350\\260\\267\\346\\255\\214\""
       "\n";
 
@@ -251,6 +265,31 @@ TEST_F(TextFormatTest, PrintUnknownFields) {
     "8: 2\n"
     "8: 3\n",
     message.DebugString());
+}
+
+TEST_F(TextFormatTest, PrintUnknownFieldsHidden) {
+  // Test printing of unknown fields in a message when suppressed.
+
+  unittest::OneString message;
+  message.set_data("data");
+  UnknownFieldSet* unknown_fields = message.mutable_unknown_fields();
+
+  unknown_fields->AddVarint(5, 1);
+  unknown_fields->AddFixed32(5, 2);
+  unknown_fields->AddFixed64(5, 3);
+  unknown_fields->AddLengthDelimited(5, "4");
+  unknown_fields->AddGroup(5)->AddVarint(10, 5);
+
+  unknown_fields->AddVarint(8, 1);
+  unknown_fields->AddVarint(8, 2);
+  unknown_fields->AddVarint(8, 3);
+
+  TextFormat::Printer printer;
+  printer.SetHideUnknownFields(true);
+  string output;
+  printer.PrintToString(message, &output);
+
+  EXPECT_EQ("data: \"data\"\n", output);
 }
 
 TEST_F(TextFormatTest, PrintUnknownMessage) {
@@ -354,6 +393,146 @@ TEST_F(TextFormatTest, PrintBufferTooSmall) {
   EXPECT_EQ(output_stream.ByteCount(), 1);
 }
 
+// A printer that appends 'u' to all unsigned int32.
+class CustomUInt32FieldValuePrinter : public TextFormat::FieldValuePrinter {
+ public:
+  virtual string PrintUInt32(uint32 val) const {
+    return StrCat(FieldValuePrinter::PrintUInt32(val), "u");
+  }
+};
+
+TEST_F(TextFormatTest, DefaultCustomFieldPrinter) {
+  protobuf_unittest::TestAllTypes message;
+
+  message.set_optional_uint32(42);
+  message.add_repeated_uint32(1);
+  message.add_repeated_uint32(2);
+  message.add_repeated_uint32(3);
+
+  TextFormat::Printer printer;
+  printer.SetDefaultFieldValuePrinter(new CustomUInt32FieldValuePrinter());
+  // Let's see if that works well together with the repeated primitives:
+  printer.SetUseShortRepeatedPrimitives(true);
+  string text;
+  printer.PrintToString(message, &text);
+  EXPECT_EQ("optional_uint32: 42u\nrepeated_uint32: [1u, 2u, 3u]\n", text);
+}
+
+class CustomInt32FieldValuePrinter : public TextFormat::FieldValuePrinter {
+ public:
+  virtual string PrintInt32(int32 val) const {
+    return StrCat("value-is(", FieldValuePrinter::PrintInt32(val), ")");
+  }
+};
+
+TEST_F(TextFormatTest, FieldSpecificCustomPrinter) {
+  protobuf_unittest::TestAllTypes message;
+
+  message.set_optional_int32(42);  // This will be handled by our Printer.
+  message.add_repeated_int32(42);  // This will be printed as number.
+
+  TextFormat::Printer printer;
+  EXPECT_TRUE(printer.RegisterFieldValuePrinter(
+      message.GetDescriptor()->FindFieldByName("optional_int32"),
+      new CustomInt32FieldValuePrinter()));
+  string text;
+  printer.PrintToString(message, &text);
+  EXPECT_EQ("optional_int32: value-is(42)\nrepeated_int32: 42\n", text);
+}
+
+TEST_F(TextFormatTest, ErrorCasesRegisteringFieldValuePrinterShouldFail) {
+  protobuf_unittest::TestAllTypes message;
+  TextFormat::Printer printer;
+  // NULL printer.
+  EXPECT_FALSE(printer.RegisterFieldValuePrinter(
+      message.GetDescriptor()->FindFieldByName("optional_int32"),
+      NULL));
+  // Because registration fails, the ownership of this printer is never taken.
+  TextFormat::FieldValuePrinter my_field_printer;
+  // NULL field
+  EXPECT_FALSE(printer.RegisterFieldValuePrinter(NULL, &my_field_printer));
+}
+
+class CustomMessageFieldValuePrinter : public TextFormat::FieldValuePrinter {
+ public:
+  virtual string PrintInt32(int32 v) const {
+    return StrCat(FieldValuePrinter::PrintInt32(v), "  # x", strings::Hex(v));
+  }
+
+  virtual string PrintMessageStart(const Message& message,
+                                   int field_index,
+                                   int field_count,
+                                   bool single_line_mode) const {
+    if (single_line_mode) {
+      return " { ";
+    }
+    return StrCat(
+        " {  # ", message.GetDescriptor()->name(), ": ", field_index, "\n");
+  }
+};
+
+TEST_F(TextFormatTest, CustomPrinterForComments) {
+  protobuf_unittest::TestAllTypes message;
+  message.mutable_optional_nested_message();
+  message.mutable_optional_import_message()->set_d(42);
+  message.add_repeated_nested_message();
+  message.add_repeated_nested_message();
+  message.add_repeated_import_message()->set_d(43);
+  message.add_repeated_import_message()->set_d(44);
+  TextFormat::Printer printer;
+  CustomMessageFieldValuePrinter my_field_printer;
+  printer.SetDefaultFieldValuePrinter(new CustomMessageFieldValuePrinter());
+  string text;
+  printer.PrintToString(message, &text);
+  EXPECT_EQ(
+      "optional_nested_message {  # NestedMessage: -1\n"
+      "}\n"
+      "optional_import_message {  # ImportMessage: -1\n"
+      "  d: 42  # x2a\n"
+      "}\n"
+      "repeated_nested_message {  # NestedMessage: 0\n"
+      "}\n"
+      "repeated_nested_message {  # NestedMessage: 1\n"
+      "}\n"
+      "repeated_import_message {  # ImportMessage: 0\n"
+      "  d: 43  # x2b\n"
+      "}\n"
+      "repeated_import_message {  # ImportMessage: 1\n"
+      "  d: 44  # x2c\n"
+      "}\n",
+      text);
+}
+
+class CustomMultilineCommentPrinter : public TextFormat::FieldValuePrinter {
+ public:
+  virtual string PrintMessageStart(const Message& message,
+                                   int field_index,
+                                   int field_count,
+                                   bool single_line_comment) const {
+    return StrCat(" {  # 1\n", "  # 2\n");
+  }
+};
+
+TEST_F(TextFormatTest, CustomPrinterForMultilineComments) {
+  protobuf_unittest::TestAllTypes message;
+  message.mutable_optional_nested_message();
+  message.mutable_optional_import_message()->set_d(42);
+  TextFormat::Printer printer;
+  CustomMessageFieldValuePrinter my_field_printer;
+  printer.SetDefaultFieldValuePrinter(new CustomMultilineCommentPrinter());
+  string text;
+  printer.PrintToString(message, &text);
+  EXPECT_EQ(
+      "optional_nested_message {  # 1\n"
+      "  # 2\n"
+      "}\n"
+      "optional_import_message {  # 1\n"
+      "  # 2\n"
+      "  d: 42\n"
+      "}\n",
+      text);
+}
+
 TEST_F(TextFormatTest, ParseBasic) {
   io::ArrayInputStream input_stream(proto_debug_string_.data(),
                                     proto_debug_string_.size());
@@ -412,7 +591,7 @@ TEST_F(TextFormatTest, ParseConcatenatedString) {
   // Compare.
   EXPECT_EQ("foobar", proto_.optional_string());
 
-  // Create a parse string with multiple parts on seperate lines.
+  // Create a parse string with multiple parts on separate lines.
   parse_string = "optional_string: \"foo\"\n"
                  "\"bar\"\n";
 
@@ -449,7 +628,11 @@ TEST_F(TextFormatTest, ParseShortRepeatedForm) {
       "                         3]\n"
       // Note that while the printer won't print repeated strings in short-form,
       // the parser will accept them.
-      "repeated_string: [ \"foo\", 'bar' ]\n";
+      "repeated_string: [ \"foo\", 'bar' ]\n"
+      // Repeated message
+      "repeated_nested_message: [ { bb: 1 }, { bb : 2 }]\n"
+      // Repeated group
+      "RepeatedGroup [{ a: 3 },{ a: 4 }]\n";
 
   ASSERT_TRUE(TextFormat::ParseFromString(parse_string, &proto_));
 
@@ -466,7 +649,16 @@ TEST_F(TextFormatTest, ParseShortRepeatedForm) {
   ASSERT_EQ(2, proto_.repeated_string_size());
   EXPECT_EQ("foo", proto_.repeated_string(0));
   EXPECT_EQ("bar", proto_.repeated_string(1));
+
+  ASSERT_EQ(2, proto_.repeated_nested_message_size());
+  EXPECT_EQ(1, proto_.repeated_nested_message(0).bb());
+  EXPECT_EQ(2, proto_.repeated_nested_message(1).bb());
+
+  ASSERT_EQ(2, proto_.repeatedgroup_size());
+  EXPECT_EQ(3, proto_.repeatedgroup(0).a());
+  EXPECT_EQ(4, proto_.repeatedgroup(1).a());
 }
+
 
 TEST_F(TextFormatTest, Comments) {
   // Test that comments are ignored.
@@ -710,8 +902,8 @@ TEST_F(TextFormatTest, ParseExotic) {
   EXPECT_EQ(message.repeated_double(8), numeric_limits<double>::infinity());
   EXPECT_EQ(message.repeated_double(9), -numeric_limits<double>::infinity());
   EXPECT_EQ(message.repeated_double(10), -numeric_limits<double>::infinity());
-  EXPECT_TRUE(IsNaN(message.repeated_double(11)));
-  EXPECT_TRUE(IsNaN(message.repeated_double(12)));
+  EXPECT_TRUE(MathLimits<double>::IsNaN(message.repeated_double(11)));
+  EXPECT_TRUE(MathLimits<double>::IsNaN(message.repeated_double(12)));
 
   // Note:  Since these string literals have \0's in them, we must explicitly
   //   pass their sizes to string's constructor.
@@ -720,11 +912,32 @@ TEST_F(TextFormatTest, ParseExotic) {
             message.repeated_string(0));
 }
 
+TEST_F(TextFormatTest, PrintFieldsInIndexOrder) {
+  protobuf_unittest::TestFieldOrderings message;
+  // Fields are listed in index order instead of field number.
+  message.set_my_string("Test String");   // Field number 11
+  message.set_my_int(12345);              // Field number 1
+  message.set_my_float(0.999);            // Field number 101
+  TextFormat::Printer printer;
+  string text;
+
+  // By default, print in field number order.
+  printer.PrintToString(message, &text);
+  EXPECT_EQ("my_int: 12345\nmy_string: \"Test String\"\nmy_float: 0.999\n",
+            text);
+
+  // Print in index order.
+  printer.SetPrintMessageFieldsInIndexOrder(true);
+  printer.PrintToString(message, &text);
+  EXPECT_EQ("my_string: \"Test String\"\nmy_int: 12345\nmy_float: 0.999\n",
+            text);
+}
+
 class TextFormatParserTest : public testing::Test {
  protected:
   void ExpectFailure(const string& input, const string& message, int line,
                      int col) {
-    scoped_ptr<unittest::TestAllTypes> proto(new unittest::TestAllTypes);
+    google::protobuf::scoped_ptr<unittest::TestAllTypes> proto(new unittest::TestAllTypes);
     ExpectFailure(input, message, line, col, proto.get());
   }
 
@@ -738,7 +951,8 @@ class TextFormatParserTest : public testing::Test {
     TextFormat::Parser parser;
     MockErrorCollector error_collector;
     parser.RecordErrorsTo(&error_collector);
-    EXPECT_EQ(parser.ParseFromString(input, proto), expected_result);
+    EXPECT_EQ(expected_result, parser.ParseFromString(input, proto))
+        << input << " -> " << proto->DebugString();
     EXPECT_EQ(SimpleItoa(line) + ":" + SimpleItoa(col) + ": " + message + "\n",
               error_collector.text_);
   }
@@ -784,7 +998,7 @@ class TextFormatParserTest : public testing::Test {
 };
 
 TEST_F(TextFormatParserTest, ParseInfoTreeBuilding) {
-  scoped_ptr<unittest::TestAllTypes> message(new unittest::TestAllTypes);
+  google::protobuf::scoped_ptr<unittest::TestAllTypes> message(new unittest::TestAllTypes);
   const Descriptor* d = message->GetDescriptor();
 
   string stringData =
@@ -849,7 +1063,7 @@ TEST_F(TextFormatParserTest, ParseInfoTreeBuilding) {
 }
 
 TEST_F(TextFormatParserTest, ParseFieldValueFromString) {
-  scoped_ptr<unittest::TestAllTypes> message(new unittest::TestAllTypes);
+  google::protobuf::scoped_ptr<unittest::TestAllTypes> message(new unittest::TestAllTypes);
   const Descriptor* d = message->GetDescriptor();
 
 #define EXPECT_FIELD(name, value, valuestring) \
@@ -927,11 +1141,14 @@ TEST_F(TextFormatParserTest, ParseFieldValueFromString) {
   EXPECT_BOOL_FIELD(bool, true, "t");
   EXPECT_BOOL_FIELD(bool, false, "0");
   EXPECT_BOOL_FIELD(bool, false, "f");
+  EXPECT_FIELD(bool, true, "True");
+  EXPECT_FIELD(bool, false, "False");
+  EXPECT_INVALID(bool, "tRue");
+  EXPECT_INVALID(bool, "faLse");
   EXPECT_INVALID(bool, "2");
   EXPECT_INVALID(bool, "-0");
   EXPECT_INVALID(bool, "on");
   EXPECT_INVALID(bool, "a");
-  EXPECT_INVALID(bool, "True");
 
   // float
   EXPECT_FIELD(float, 1, "1");
@@ -948,6 +1165,9 @@ TEST_F(TextFormatParserTest, ParseFieldValueFromString) {
   EXPECT_DOUBLE_FIELD(double, 3e5, "3e5");
   EXPECT_INVALID(double, "a");
   EXPECT_INVALID(double, "1,2");
+  // Rejects hex and oct numbers for a double field.
+  EXPECT_INVALID(double, "0xf");
+  EXPECT_INVALID(double, "012");
 
   // string
   EXPECT_FIELD(string, "hello", "\"hello\"");
@@ -1008,6 +1228,22 @@ TEST_F(TextFormatParserTest, InvalidCapitalization) {
       "Message type \"protobuf_unittest.TestAllTypes\" has no field named "
       "\"Optional_Double\".",
       1, 16);
+}
+
+TEST_F(TextFormatParserTest, AllowIgnoreCapitalizationError) {
+  TextFormat::Parser parser;
+  protobuf_unittest::TestAllTypes proto;
+
+  // These fields have a mismatching case.
+  EXPECT_FALSE(parser.ParseFromString("Optional_Double: 10.0", &proto));
+  EXPECT_FALSE(parser.ParseFromString("oPtIoNaLgRoUp { a: 15 }", &proto));
+
+  // ... but are parsed correctly if we match case insensitive.
+  parser.AllowCaseInsensitiveField(true);
+  EXPECT_TRUE(parser.ParseFromString("Optional_Double: 10.0", &proto));
+  EXPECT_EQ(10.0, proto.optional_double());
+  EXPECT_TRUE(parser.ParseFromString("oPtIoNaLgRoUp { a: 15 }", &proto));
+  EXPECT_EQ(15, proto.optionalgroup().a());
 }
 
 TEST_F(TextFormatParserTest, InvalidFieldValues) {
@@ -1093,12 +1329,12 @@ TEST_F(TextFormatParserTest, InvalidFieldValues) {
       "Expected \":\", found \"{\".", 1, 22);
 }
 
-TEST_F(TextFormatParserTest, MessageDelimeters) {
-  // Non-matching delimeters.
+TEST_F(TextFormatParserTest, MessageDelimiters) {
+  // Non-matching delimiters.
   ExpectFailure("OptionalGroup <\n \n}\n", "Expected \">\", found \"}\".",
                 3, 1);
 
-  // Invalid delimeters.
+  // Invalid delimiters.
   ExpectFailure("OptionalGroup [\n \n]\n", "Expected \"{\", found \"[\".",
                 1, 15);
 
@@ -1109,7 +1345,7 @@ TEST_F(TextFormatParserTest, MessageDelimeters) {
 }
 
 TEST_F(TextFormatParserTest, UnknownExtension) {
-  // Non-matching delimeters.
+  // Non-matching delimiters.
   ExpectFailure("[blahblah]: 123",
                 "Extension \"blahblah\" is not defined or is not an "
                 "extension of \"protobuf_unittest.TestAllTypes\".",

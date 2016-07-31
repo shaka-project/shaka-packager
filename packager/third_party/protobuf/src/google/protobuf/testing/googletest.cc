@@ -1,6 +1,6 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// http://code.google.com/p/protobuf/
+// https://developers.google.com/protocol-buffers/
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -65,7 +65,15 @@ namespace protobuf {
 #endif
 
 string TestSourceDir() {
-#ifdef _MSC_VER
+#ifndef GOOGLE_THIRD_PARTY_PROTOBUF
+#ifndef _MSC_VER
+  // automake sets the "srcdir" environment variable.
+  char* result = getenv("srcdir");
+  if (result != NULL) {
+    return result;
+  }
+#endif  // _MSC_VER
+
   // Look for the "src" directory.
   string prefix = ".";
 
@@ -79,20 +87,20 @@ string TestSourceDir() {
   }
   return prefix + "/src";
 #else
-  // automake sets the "srcdir" environment variable.
-  char* result = getenv("srcdir");
-  if (result == NULL) {
-    // Otherwise, the test must be run from the source directory.
-    return ".";
-  } else {
-    return result;
-  }
-#endif
+  return "third_party/protobuf/src";
+#endif  // GOOGLE_THIRD_PARTY_PROTOBUF
 }
 
 namespace {
 
 string GetTemporaryDirectoryName() {
+  // Tests run under Bazel "should not" use /tmp. Bazel sets this environment
+  // variable for tests to use instead.
+  char *from_environment = getenv("TEST_TMPDIR");
+  if (from_environment != NULL && from_environment[0] != '\0') {
+    return string(from_environment) + "/protobuf_tmpdir";
+  }
+
   // tmpnam() is generally not considered safe but we're only using it for
   // testing.  We cannot use tmpfile() or mkstemp() since we're creating a
   // directory.
@@ -104,6 +112,10 @@ string GetTemporaryDirectoryName() {
   if (HasPrefixString(result, "\\")) {
     result.erase(0, 1);
   }
+  // The Win32 API accepts forward slashes as a path delimiter even though
+  // backslashes are standard.  Let's avoid confusion and use only forward
+  // slashes.
+  result = StringReplace(result, "\\", "/", true);
 #endif  // _WIN32
   return result;
 }

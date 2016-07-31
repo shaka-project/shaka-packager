@@ -1,8 +1,8 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 #
 # Protocol Buffers - Google's data interchange format
 # Copyright 2008 Google Inc.  All rights reserved.
-# http://code.google.com/p/protobuf/
+# https://developers.google.com/protocol-buffers/
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are
@@ -34,7 +34,11 @@
 
 __author__ = 'robinson@google.com (Will Robinson)'
 
-import unittest
+try:
+  import unittest2 as unittest  #PY26
+except ImportError:
+  import unittest
+
 from google.protobuf import message
 from google.protobuf.internal import wire_format
 
@@ -195,7 +199,7 @@ class WireFormatTest(unittest.TestCase):
     # Test UTF-8 string byte size calculation.
     # 1 byte for tag, 1 byte for length, 8 bytes for content.
     self.assertEqual(10, wire_format.StringByteSize(
-        5, unicode('\xd0\xa2\xd0\xb5\xd1\x81\xd1\x82', 'utf-8')))
+        5, b'\xd0\xa2\xd0\xb5\xd1\x81\xd1\x82'.decode('utf-8')))
 
     class MockMessage(object):
       def __init__(self, byte_size):

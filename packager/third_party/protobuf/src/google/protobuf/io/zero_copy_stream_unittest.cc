@@ -1,6 +1,6 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// http://code.google.com/p/protobuf/
+// https://developers.google.com/protocol-buffers/
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -46,7 +46,6 @@
 //   "parametized tests" so that one set of tests can be used on all the
 //   implementations.
 
-#include "config.h"
 
 #ifdef _MSC_VER
 #include <io.h>
@@ -58,16 +57,22 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <memory>
+#ifndef _SHARED_PTR_H
+#include <google/protobuf/stubs/shared_ptr.h>
+#endif
 #include <sstream>
 
-#include <google/protobuf/io/zero_copy_stream_impl.h>
+#include <google/protobuf/testing/file.h>
 #include <google/protobuf/io/coded_stream.h>
+#include <google/protobuf/io/zero_copy_stream_impl.h>
 
 #if HAVE_ZLIB
 #include <google/protobuf/io/gzip_stream.h>
 #endif
 
 #include <google/protobuf/stubs/common.h>
+#include <google/protobuf/stubs/logging.h>
 #include <google/protobuf/testing/googletest.h>
 #include <google/protobuf/testing/file.h>
 #include <gtest/gtest.h>
@@ -196,7 +201,7 @@ void IoTest::WriteString(ZeroCopyOutputStream* output, const string& str) {
 }
 
 void IoTest::ReadString(ZeroCopyInputStream* input, const string& str) {
-  scoped_array<char> buffer(new char[str.size() + 1]);
+  google::protobuf::scoped_array<char> buffer(new char[str.size() + 1]);
   buffer[str.size()] = '\0';
   EXPECT_EQ(ReadFromInput(input, buffer.get(), str.size()), str.size());
   EXPECT_STREQ(str.c_str(), buffer.get());
@@ -560,9 +565,10 @@ TEST_F(IoTest, CompressionOptions) {
   // Some ad-hoc testing of compression options.
 
   string golden;
-  File::ReadFileToStringOrDie(
-    TestSourceDir() + "/google/protobuf/testdata/golden_message",
-    &golden);
+  GOOGLE_CHECK_OK(File::GetContents(
+      TestSourceDir() +
+          "/google/protobuf/testdata/golden_message",
+      &golden, true));
 
   GzipOutputStream::Options options;
   string gzip_compressed = Compress(golden, options);
@@ -654,6 +660,43 @@ TEST_F(IoTest, TwoSessionWriteGzip) {
 
   delete [] temp_buffer;
   delete [] buffer;
+}
+
+TEST_F(IoTest, GzipInputByteCountAfterClosed) {
+  string golden = "abcdefghijklmnopqrstuvwxyz";
+  string compressed = Compress(golden, GzipOutputStream::Options());
+
+  for (int i = 0; i < kBlockSizeCount; i++) {
+    ArrayInputStream arr_input(compressed.data(), compressed.size(),
+                               kBlockSizes[i]);
+    GzipInputStream gz_input(&arr_input);
+    const void* buffer;
+    int size;
+    while (gz_input.Next(&buffer, &size)) {
+      EXPECT_LE(gz_input.ByteCount(), golden.size());
+    }
+    EXPECT_EQ(golden.size(), gz_input.ByteCount());
+  }
+}
+
+TEST_F(IoTest, GzipInputByteCountAfterClosedConcatenatedStreams) {
+  string golden1 = "abcdefghijklmnopqrstuvwxyz";
+  string golden2 = "the quick brown fox jumps over the lazy dog";
+  const size_t total_size = golden1.size() + golden2.size();
+  string compressed = Compress(golden1, GzipOutputStream::Options()) +
+                      Compress(golden2, GzipOutputStream::Options());
+
+  for (int i = 0; i < kBlockSizeCount; i++) {
+    ArrayInputStream arr_input(compressed.data(), compressed.size(),
+                               kBlockSizes[i]);
+    GzipInputStream gz_input(&arr_input);
+    const void* buffer;
+    int size;
+    while (gz_input.Next(&buffer, &size)) {
+      EXPECT_LE(gz_input.ByteCount(), total_size);
+    }
+    EXPECT_EQ(total_size, gz_input.ByteCount());
+  }
 }
 #endif
 
@@ -921,6 +964,26 @@ TEST_F(IoTest, LimitingInputStream) {
   LimitingInputStream input(&array_input, output.ByteCount());
 
   ReadStuff(&input);
+}
+
+// Checks that ByteCount works correctly for LimitingInputStreams where the
+// underlying stream has already been read.
+TEST_F(IoTest, LimitingInputStreamByteCount) {
+  const int kHalfBufferSize = 128;
+  const int kBufferSize = kHalfBufferSize * 2;
+  uint8 buffer[kBufferSize];
+
+  // Set up input. Only allow half to be read at once.
+  ArrayInputStream array_input(buffer, kBufferSize, kHalfBufferSize);
+  const void* data;
+  int size;
+  EXPECT_TRUE(array_input.Next(&data, &size));
+  EXPECT_EQ(kHalfBufferSize, array_input.ByteCount());
+  // kHalfBufferSize - 1 to test limiting logic as well.
+  LimitingInputStream input(&array_input, kHalfBufferSize - 1);
+  EXPECT_EQ(0, input.ByteCount());
+  EXPECT_TRUE(input.Next(&data, &size));
+  EXPECT_EQ(kHalfBufferSize - 1 , input.ByteCount());
 }
 
 // Check that a zero-size array doesn't confuse the code.

@@ -1,6 +1,6 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// http://code.google.com/p/protobuf/
+// https://developers.google.com/protocol-buffers/
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -34,7 +34,11 @@
 #include <google/protobuf/compiler/cpp/cpp_generator.h>
 #include <google/protobuf/compiler/python/python_generator.h>
 #include <google/protobuf/compiler/java/java_generator.h>
-
+#include <google/protobuf/compiler/javanano/javanano_generator.h>
+#include <google/protobuf/compiler/ruby/ruby_generator.h>
+#include <google/protobuf/compiler/csharp/csharp_generator.h>
+#include <google/protobuf/compiler/objectivec/objectivec_generator.h>
+#include <google/protobuf/compiler/js/js_generator.h>
 
 int main(int argc, char* argv[]) {
 
@@ -56,6 +60,31 @@ int main(int argc, char* argv[]) {
   google::protobuf::compiler::python::Generator py_generator;
   cli.RegisterGenerator("--python_out", &py_generator,
                         "Generate Python source file.");
+
+  // Java Nano
+  google::protobuf::compiler::javanano::JavaNanoGenerator javanano_generator;
+  cli.RegisterGenerator("--javanano_out", &javanano_generator,
+                        "Generate Java Nano source file.");
+
+  // Ruby
+  google::protobuf::compiler::ruby::Generator rb_generator;
+  cli.RegisterGenerator("--ruby_out", &rb_generator,
+                        "Generate Ruby source file.");
+
+  // CSharp
+  google::protobuf::compiler::csharp::Generator csharp_generator;
+  cli.RegisterGenerator("--csharp_out", "--csharp_opt", &csharp_generator,
+                        "Generate C# source file.");
+
+  // Objective C
+  google::protobuf::compiler::objectivec::ObjectiveCGenerator objc_generator;
+  cli.RegisterGenerator("--objc_out", "--objc_opt", &objc_generator,
+                        "Generate Objective C header and source.");
+
+  // JavaScript
+  google::protobuf::compiler::js::Generator js_generator;
+  cli.RegisterGenerator("--js_out", &js_generator,
+                        "Generate JavaScript source.");
 
   return cli.Run(argc, argv);
 }

@@ -1,6 +1,6 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// http://code.google.com/p/protobuf/
+// https://developers.google.com/protocol-buffers/
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -36,6 +36,7 @@
 
 #include <limits>
 
+
 namespace google {
 namespace protobuf {
 namespace internal {
@@ -48,11 +49,35 @@ double NaN() {
 }
 
 const ::std::string* empty_string_;
-ProtobufOnceType empty_string_once_init_;
+GOOGLE_PROTOBUF_DECLARE_ONCE(empty_string_once_init_);
+
+void DeleteEmptyString() {
+  delete empty_string_;
+}
 
 void InitEmptyString() {
-  empty_string_ = new std::string();
+  empty_string_ = new string;
+  OnShutdown(&DeleteEmptyString);
 }
+
+const ::std::string& GetEmptyString() {
+  ::google::protobuf::GoogleOnceInit(&empty_string_once_init_, &InitEmptyString);
+  return GetEmptyStringAlreadyInited();
+}
+
+
+int StringSpaceUsedExcludingSelf(const string& str) {
+  const void* start = &str;
+  const void* end = &str + 1;
+  if (start <= str.data() && str.data() < end) {
+    // The string's data is stored inside the string object itself.
+    return 0;
+  } else {
+    return str.capacity();
+  }
+}
+
+
 
 }  // namespace internal
 }  // namespace protobuf

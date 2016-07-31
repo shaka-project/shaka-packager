@@ -1,6 +1,6 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// http://code.google.com/p/protobuf/
+// https://developers.google.com/protocol-buffers/
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -41,12 +41,21 @@ namespace protobuf {
 namespace compiler {
 namespace cpp {
 
-// Generator options:
+// Generator options (see generator.cc for a description of each):
 struct Options {
-  Options() : safe_boundary_check(false) {
-  }
+  Options()
+      : safe_boundary_check(false),
+        proto_h(false),
+        annotate_headers(false),
+        enforce_lite(false) {}
+
   string dllexport_decl;
   bool safe_boundary_check;
+  bool proto_h;
+  bool annotate_headers;
+  bool enforce_lite;
+  string annotation_pragma_name;
+  string annotation_guard_name;
 };
 
 }  // namespace cpp

@@ -1,6 +1,6 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// http://code.google.com/p/protobuf/
+// https://developers.google.com/protocol-buffers/
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -39,6 +39,7 @@
 #define GOOGLE_PROTOBUF_COMPILER_COMMAND_LINE_INTERFACE_H__
 
 #include <google/protobuf/stubs/common.h>
+#include <google/protobuf/stubs/hash.h>
 #include <string>
 #include <vector>
 #include <map>
@@ -48,8 +49,9 @@
 namespace google {
 namespace protobuf {
 
-class FileDescriptor;        // descriptor.h
+class Descriptor;            // descriptor.h
 class DescriptorPool;        // descriptor.h
+class FileDescriptor;        // descriptor.h
 class FileDescriptorProto;   // descriptor.pb.h
 template<typename T> class RepeatedPtrField;  // repeated_field.h
 
@@ -189,6 +191,7 @@ class LIBPROTOC_EXPORT CommandLineInterface {
   class ErrorPrinter;
   class GeneratorContextImpl;
   class MemoryOutputStream;
+  typedef hash_map<string, GeneratorContextImpl*> GeneratorContextMap;
 
   // Clear state from previous Run().
   void Clear();
@@ -209,11 +212,12 @@ class LIBPROTOC_EXPORT CommandLineInterface {
   // Parse all command-line arguments.
   ParseArgumentStatus ParseArguments(int argc, const char* const argv[]);
 
+
   // Parses a command-line argument into a name/value pair.  Returns
   // true if the next argument in the argv should be used as the value,
   // false otherwise.
   //
-  // Exmaples:
+  // Examples:
   //   "-Isrc/protos" ->
   //     name = "-I", value = "src/protos"
   //   "--cpp_out=src/foo.pb2.cc" ->
@@ -246,6 +250,12 @@ class LIBPROTOC_EXPORT CommandLineInterface {
   // Implements the --descriptor_set_out option.
   bool WriteDescriptorSet(const vector<const FileDescriptor*> parsed_files);
 
+  // Implements the --dependency_out option
+  bool GenerateDependencyManifestFile(
+      const vector<const FileDescriptor*>& parsed_files,
+      const GeneratorContextMap& output_directories,
+      DiskSourceTree* source_tree);
+
   // Get all transitive dependencies of the given file (including the file
   // itself), adding them to the given list of FileDescriptorProtos.  The
   // protos will be ordered such that every file is listed before any file that
@@ -253,11 +263,30 @@ class LIBPROTOC_EXPORT CommandLineInterface {
   // in order.  Any files in *already_seen will not be added, and each file
   // added will be inserted into *already_seen.  If include_source_code_info is
   // true then include the source code information in the FileDescriptorProtos.
+  // If include_json_name is true, populate the json_name field of
+  // FieldDescriptorProto for all fields.
   static void GetTransitiveDependencies(
       const FileDescriptor* file,
+      bool include_json_name,
       bool include_source_code_info,
       set<const FileDescriptor*>* already_seen,
       RepeatedPtrField<FileDescriptorProto>* output);
+
+  // Implements the --print_free_field_numbers. This function prints free field
+  // numbers into stdout for the message and it's nested message types in
+  // post-order, i.e. nested types first. Printed range are left-right
+  // inclusive, i.e. [a, b].
+  //
+  // Groups:
+  // For historical reasons, groups are considered to share the same
+  // field number space with the parent message, thus it will not print free
+  // field numbers for groups. The field numbers used in the groups are
+  // excluded in the free field numbers of the parent message.
+  //
+  // Extension Ranges:
+  // Extension ranges are considered ocuppied field numbers and they will not be
+  // listed as free numbers in the output.
+  void PrintFreeFieldNumbers(const Descriptor* descriptor);
 
   // -----------------------------------------------------------------
 
@@ -295,10 +324,18 @@ class LIBPROTOC_EXPORT CommandLineInterface {
   enum Mode {
     MODE_COMPILE,  // Normal mode:  parse .proto files and compile them.
     MODE_ENCODE,   // --encode:  read text from stdin, write binary to stdout.
-    MODE_DECODE    // --decode:  read binary from stdin, write text to stdout.
+    MODE_DECODE,   // --decode:  read binary from stdin, write text to stdout.
+    MODE_PRINT,    // Print mode: print info of the given .proto files and exit.
   };
 
   Mode mode_;
+
+  enum PrintMode {
+    PRINT_NONE,               // Not in MODE_PRINT
+    PRINT_FREE_FIELDS,        // --print_free_fields
+  };
+
+  PrintMode print_mode_;
 
   enum ErrorFormat {
     ERROR_FORMAT_GCC,   // GCC error output format (default).
@@ -327,6 +364,10 @@ class LIBPROTOC_EXPORT CommandLineInterface {
   // If --descriptor_set_out was given, this is the filename to which the
   // FileDescriptorSet should be written.  Otherwise, empty.
   string descriptor_set_name_;
+
+  // If --dependency_out was given, this is the path to the file where the
+  // dependency file will be written. Otherwise, empty.
+  string dependency_out_name_;
 
   // True if --include_imports was given, meaning that we should
   // write all transitive dependencies to the DescriptorSet.  Otherwise, only

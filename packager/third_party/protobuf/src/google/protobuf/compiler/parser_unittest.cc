@@ -1,6 +1,6 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// http://code.google.com/p/protobuf/
+// https://developers.google.com/protocol-buffers/
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
@@ -32,6 +32,10 @@
 //  Based on original Protocol Buffers design by
 //  Sanjay Ghemawat, Jeff Dean, and others.
 
+#include <memory>
+#ifndef _SHARED_PTR_H
+#include <google/protobuf/stubs/shared_ptr.h>
+#endif
 #include <vector>
 #include <algorithm>
 #include <map>
@@ -47,7 +51,7 @@
 #include <google/protobuf/unittest_custom_options.pb.h>
 #include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/substitute.h>
-#include <google/protobuf/stubs/map-util.h>
+#include <google/protobuf/stubs/map_util.h>
 
 #include <google/protobuf/testing/googletest.h>
 #include <gtest/gtest.h>
@@ -174,9 +178,9 @@ class ParserTest : public testing::Test {
   MockErrorCollector error_collector_;
   DescriptorPool pool_;
 
-  scoped_ptr<io::ZeroCopyInputStream> raw_input_;
-  scoped_ptr<io::Tokenizer> input_;
-  scoped_ptr<Parser> parser_;
+  google::protobuf::scoped_ptr<io::ZeroCopyInputStream> raw_input_;
+  google::protobuf::scoped_ptr<io::Tokenizer> input_;
+  google::protobuf::scoped_ptr<Parser> parser_;
   bool require_syntax_identifier_;
 };
 
@@ -212,9 +216,44 @@ TEST_F(ParserTest, StopAfterSyntaxIdentifierWithErrors) {
   EXPECT_EQ("1:9: Expected syntax identifier.\n", error_collector_.text_);
 }
 
+TEST_F(ParserTest, WarnIfSyntaxIdentifierOmmitted) {
+  SetupParser("message A {}");
+  FileDescriptorProto file;
+  CaptureTestStderr();
+  EXPECT_TRUE(parser_->Parse(input_.get(), &file));
+  EXPECT_TRUE(
+      GetCapturedTestStderr().find("No syntax specified") != string::npos);
+}
+
 // ===================================================================
 
 typedef ParserTest ParseMessageTest;
+
+TEST_F(ParseMessageTest, IgnoreBOM) {
+  char input[] = "   message TestMessage {\n"
+      "  required int32 foo = 1;\n"
+      "}\n";
+  // Set UTF-8 BOM.
+  input[0] = (char)0xEF;
+  input[1] = (char)0xBB;
+  input[2] = (char)0xBF;
+  ExpectParsesTo(input,
+    "message_type {"
+    "  name: \"TestMessage\""
+    "  field { name:\"foo\" label:LABEL_REQUIRED type:TYPE_INT32 number:1 }"
+    "}");
+}
+
+TEST_F(ParseMessageTest, BOMError) {
+  char input[] = "   message TestMessage {\n"
+      "  required int32 foo = 1;\n"
+      "}\n";
+  input[0] = (char)0xEF;
+  ExpectHasErrors(input,
+                  "0:1: Proto file starts with 0xEF but not UTF-8 BOM. "
+                  "Only UTF-8 is accepted for proto file.\n"
+                  "0:0: Expected top-level statement (e.g. \"message\").\n");
+}
 
 TEST_F(ParseMessageTest, SimpleMessage) {
   ExpectParsesTo(
@@ -249,6 +288,7 @@ TEST_F(ParseMessageTest, ExplicitSyntaxIdentifier) {
     "  required int32 foo = 1;\n"
     "}\n",
 
+    "syntax: 'proto2' "
     "message_type {"
     "  name: \"TestMessage\""
     "  field { name:\"foo\" label:LABEL_REQUIRED type:TYPE_INT32 number:1 }"
@@ -264,6 +304,7 @@ TEST_F(ParseMessageTest, ExplicitRequiredSyntaxIdentifier) {
     "  required int32 foo = 1;\n"
     "}\n",
 
+    "syntax: 'proto2' "
     "message_type {"
     "  name: \"TestMessage\""
     "  field { name:\"foo\" label:LABEL_REQUIRED type:TYPE_INT32 number:1 }"
@@ -364,37 +405,65 @@ TEST_F(ParseMessageTest, FieldDefaults) {
 #define ETC "name:\"foo\" label:LABEL_REQUIRED number:1"
     "message_type {"
     "  name: \"TestMessage\""
-    "  field { type:TYPE_INT32   default_value:\"1\"         "ETC" }"
-    "  field { type:TYPE_INT32   default_value:\"-2\"        "ETC" }"
-    "  field { type:TYPE_INT64   default_value:\"3\"         "ETC" }"
-    "  field { type:TYPE_INT64   default_value:\"-4\"        "ETC" }"
-    "  field { type:TYPE_UINT32  default_value:\"5\"         "ETC" }"
-    "  field { type:TYPE_UINT64  default_value:\"6\"         "ETC" }"
-    "  field { type:TYPE_FLOAT   default_value:\"7.5\"       "ETC" }"
-    "  field { type:TYPE_FLOAT   default_value:\"-8.5\"      "ETC" }"
-    "  field { type:TYPE_FLOAT   default_value:\"9\"         "ETC" }"
-    "  field { type:TYPE_DOUBLE  default_value:\"10.5\"      "ETC" }"
-    "  field { type:TYPE_DOUBLE  default_value:\"-11.5\"     "ETC" }"
-    "  field { type:TYPE_DOUBLE  default_value:\"12\"        "ETC" }"
-    "  field { type:TYPE_DOUBLE  default_value:\"inf\"       "ETC" }"
-    "  field { type:TYPE_DOUBLE  default_value:\"-inf\"      "ETC" }"
-    "  field { type:TYPE_DOUBLE  default_value:\"nan\"       "ETC" }"
-    "  field { type:TYPE_STRING  default_value:\"13\\001\"   "ETC" }"
-    "  field { type:TYPE_STRING  default_value:\"abc\"       "ETC" }"
-    "  field { type:TYPE_BYTES   default_value:\"14\\\\002\" "ETC" }"
-    "  field { type:TYPE_BYTES   default_value:\"abc\"       "ETC" }"
-    "  field { type:TYPE_BOOL    default_value:\"true\"      "ETC" }"
-    "  field { type_name:\"Foo\" default_value:\"FOO\"       "ETC" }"
+    "  field { type:TYPE_INT32   default_value:\"1\"         " ETC " }"
+    "  field { type:TYPE_INT32   default_value:\"-2\"        " ETC " }"
+    "  field { type:TYPE_INT64   default_value:\"3\"         " ETC " }"
+    "  field { type:TYPE_INT64   default_value:\"-4\"        " ETC " }"
+    "  field { type:TYPE_UINT32  default_value:\"5\"         " ETC " }"
+    "  field { type:TYPE_UINT64  default_value:\"6\"         " ETC " }"
+    "  field { type:TYPE_FLOAT   default_value:\"7.5\"       " ETC " }"
+    "  field { type:TYPE_FLOAT   default_value:\"-8.5\"      " ETC " }"
+    "  field { type:TYPE_FLOAT   default_value:\"9\"         " ETC " }"
+    "  field { type:TYPE_DOUBLE  default_value:\"10.5\"      " ETC " }"
+    "  field { type:TYPE_DOUBLE  default_value:\"-11.5\"     " ETC " }"
+    "  field { type:TYPE_DOUBLE  default_value:\"12\"        " ETC " }"
+    "  field { type:TYPE_DOUBLE  default_value:\"inf\"       " ETC " }"
+    "  field { type:TYPE_DOUBLE  default_value:\"-inf\"      " ETC " }"
+    "  field { type:TYPE_DOUBLE  default_value:\"nan\"       " ETC " }"
+    "  field { type:TYPE_STRING  default_value:\"13\\001\"   " ETC " }"
+    "  field { type:TYPE_STRING  default_value:\"abc\"       " ETC " }"
+    "  field { type:TYPE_BYTES   default_value:\"14\\\\002\" " ETC " }"
+    "  field { type:TYPE_BYTES   default_value:\"abc\"       " ETC " }"
+    "  field { type:TYPE_BOOL    default_value:\"true\"      " ETC " }"
+    "  field { type_name:\"Foo\" default_value:\"FOO\"       " ETC " }"
 
-    "  field { type:TYPE_INT32   default_value:\"2147483647\"           "ETC" }"
-    "  field { type:TYPE_INT32   default_value:\"-2147483648\"          "ETC" }"
-    "  field { type:TYPE_UINT32  default_value:\"4294967295\"           "ETC" }"
-    "  field { type:TYPE_INT64   default_value:\"9223372036854775807\"  "ETC" }"
-    "  field { type:TYPE_INT64   default_value:\"-9223372036854775808\" "ETC" }"
-    "  field { type:TYPE_UINT64  default_value:\"18446744073709551615\" "ETC" }"
-    "  field { type:TYPE_DOUBLE  default_value:\"43981\"                "ETC" }"
+    "  field {"
+    "    type:TYPE_INT32   default_value:\"2147483647\"           " ETC
+    "  }"
+    "  field {"
+    "    type:TYPE_INT32   default_value:\"-2147483648\"          " ETC
+    "  }"
+    "  field {"
+    "    type:TYPE_UINT32  default_value:\"4294967295\"           " ETC
+    "  }"
+    "  field {"
+    "    type:TYPE_INT64   default_value:\"9223372036854775807\"  " ETC
+    "  }"
+    "  field {"
+    "    type:TYPE_INT64   default_value:\"-9223372036854775808\" " ETC
+    "  }"
+    "  field {"
+    "    type:TYPE_UINT64  default_value:\"18446744073709551615\" " ETC
+    "  }"
+    "  field {"
+    "    type:TYPE_DOUBLE  default_value:\"43981\"                " ETC
+    "  }"
     "}");
 #undef ETC
+}
+
+TEST_F(ParseMessageTest, FieldJsonName) {
+  ExpectParsesTo(
+    "message TestMessage {\n"
+    "  optional string foo = 1 [json_name = \"@type\"];\n"
+    "}\n",
+    "message_type {"
+    "  name: \"TestMessage\""
+    "  field {\n"
+    "    name: \"foo\" label: LABEL_OPTIONAL type: TYPE_STRING number: 1"
+    "    json_name: \"@type\"\n"
+    "  }\n"
+    "}\n");
 }
 
 TEST_F(ParseMessageTest, FieldOptions) {
@@ -432,6 +501,117 @@ TEST_F(ParseMessageTest, FieldOptions) {
     "                                                   is_extension: true } "
     "                                            identifier_value: \"hey\" }"
     "          }"
+    "  }"
+    "}");
+}
+
+TEST_F(ParseMessageTest, Oneof) {
+  ExpectParsesTo(
+    "message TestMessage {\n"
+    "  oneof foo {\n"
+    "    int32 a = 1;\n"
+    "    string b = 2;\n"
+    "    TestMessage c = 3;\n"
+    "    group D = 4 { optional int32 i = 5; }\n"
+    "  }\n"
+    "}\n",
+
+    "message_type {"
+    "  name: \"TestMessage\""
+    "  field { name:\"a\" label:LABEL_OPTIONAL type:TYPE_INT32 number:1 "
+    "          oneof_index:0 }"
+    "  field { name:\"b\" label:LABEL_OPTIONAL type:TYPE_STRING number:2 "
+    "          oneof_index:0 }"
+    "  field { name:\"c\" label:LABEL_OPTIONAL type_name:\"TestMessage\" "
+    "          number:3 oneof_index:0 }"
+    "  field { name:\"d\" label:LABEL_OPTIONAL type:TYPE_GROUP "
+    "          type_name:\"D\" number:4 oneof_index:0 }"
+    "  oneof_decl {"
+    "    name: \"foo\""
+    "  }"
+    "  nested_type {"
+    "    name: \"D\""
+    "    field { name:\"i\" label:LABEL_OPTIONAL type:TYPE_INT32 number:5 }"
+    "  }"
+    "}");
+}
+
+TEST_F(ParseMessageTest, MultipleOneofs) {
+  ExpectParsesTo(
+    "message TestMessage {\n"
+    "  oneof foo {\n"
+    "    int32 a = 1;\n"
+    "    string b = 2;\n"
+    "  }\n"
+    "  oneof bar {\n"
+    "    int32 c = 3;\n"
+    "    string d = 4;\n"
+    "  }\n"
+    "}\n",
+
+    "message_type {"
+    "  name: \"TestMessage\""
+    "  field { name:\"a\" label:LABEL_OPTIONAL type:TYPE_INT32 number:1 "
+    "          oneof_index:0 }"
+    "  field { name:\"b\" label:LABEL_OPTIONAL type:TYPE_STRING number:2 "
+    "          oneof_index:0 }"
+    "  field { name:\"c\" label:LABEL_OPTIONAL type:TYPE_INT32 number:3 "
+    "          oneof_index:1 }"
+    "  field { name:\"d\" label:LABEL_OPTIONAL type:TYPE_STRING number:4 "
+    "          oneof_index:1 }"
+    "  oneof_decl {"
+    "    name: \"foo\""
+    "  }"
+    "  oneof_decl {"
+    "    name: \"bar\""
+    "  }"
+    "}");
+}
+
+TEST_F(ParseMessageTest, Maps) {
+  ExpectParsesTo(
+    "message TestMessage {\n"
+    "  map<int32, string> primitive_type_map = 1;\n"
+    "  map<KeyType, ValueType> composite_type_map = 2;\n"
+    "}\n",
+
+    "message_type {"
+    "  name: \"TestMessage\""
+    "  nested_type {"
+    "    name: \"PrimitiveTypeMapEntry\""
+    "    field { "
+    "       name: \"key\" number: 1 label:LABEL_OPTIONAL"
+    "       type:TYPE_INT32"
+    "    }"
+    "    field { "
+    "       name: \"value\" number: 2 label:LABEL_OPTIONAL"
+    "       type:TYPE_STRING"
+    "    }"
+    "    options { map_entry: true }"
+    "  }"
+    "  nested_type {"
+    "    name: \"CompositeTypeMapEntry\""
+    "    field { "
+    "       name: \"key\" number: 1 label:LABEL_OPTIONAL"
+    "       type_name: \"KeyType\""
+    "    }"
+    "    field { "
+    "       name: \"value\" number: 2 label:LABEL_OPTIONAL"
+    "       type_name: \"ValueType\""
+    "    }"
+    "    options { map_entry: true }"
+    "  }"
+    "  field {"
+    "    name: \"primitive_type_map\""
+    "    label: LABEL_REPEATED"
+    "    type_name: \"PrimitiveTypeMapEntry\""
+    "    number: 1"
+    "  }"
+    "  field {"
+    "    name: \"composite_type_map\""
+    "    label: LABEL_REPEATED"
+    "    type_name: \"CompositeTypeMapEntry\""
+    "    number: 2"
     "  }"
     "}");
 }
@@ -477,6 +657,36 @@ TEST_F(ParseMessageTest, NestedEnum) {
     "  enum_type { name: \"NestedEnum\" }"
     "  field { name:\"test_enum\" label:LABEL_OPTIONAL number:1"
     "          type_name: \"NestedEnum\" }"
+    "}");
+}
+
+TEST_F(ParseMessageTest, ReservedRange) {
+  ExpectParsesTo(
+    "message TestMessage {\n"
+    "  required int32 foo = 1;\n"
+    "  reserved 2, 15, 9 to 11, 3;\n"
+    "}\n",
+
+    "message_type {"
+    "  name: \"TestMessage\""
+    "  field { name:\"foo\" label:LABEL_REQUIRED type:TYPE_INT32 number:1 }"
+    "  reserved_range { start:2   end:3         }"
+    "  reserved_range { start:15  end:16        }"
+    "  reserved_range { start:9   end:12        }"
+    "  reserved_range { start:3   end:4         }"
+    "}");
+}
+
+TEST_F(ParseMessageTest, ReservedNames) {
+  ExpectParsesTo(
+    "message TestMessage {\n"
+    "  reserved \"foo\", \"bar\";\n"
+    "}\n",
+
+    "message_type {"
+    "  name: \"TestMessage\""
+    "  reserved_name: \"foo\""
+    "  reserved_name: \"bar\""
     "}");
 }
 
@@ -573,6 +783,19 @@ TEST_F(ParseMessageTest, MultipleExtensionsOneExtendee) {
     "            extendee: \"Extendee1\" } "
     "extension { name:\"bar\" label:LABEL_REPEATED number:22"
     "            type_name:\"TestMessage\" extendee: \"Extendee1\" }");
+}
+
+TEST_F(ParseMessageTest, OptionalLabelProto3) {
+  ExpectParsesTo(
+    "syntax = \"proto3\";\n"
+    "message TestMessage {\n"
+    "  int32 foo = 1;\n"
+    "}\n",
+
+    "syntax: \"proto3\" "
+    "message_type {"
+    "  name: \"TestMessage\""
+    "  field { name:\"foo\" label:LABEL_OPTIONAL type:TYPE_INT32 number:1 } }");
 }
 
 // ===================================================================
@@ -681,6 +904,8 @@ TEST_F(ParseServiceTest, MethodsAndStreams) {
     "}");
 }
 
+
+
 // ===================================================================
 // imports and packages
 
@@ -761,9 +986,9 @@ typedef ParserTest ParseErrorTest;
 
 TEST_F(ParseErrorTest, MissingSyntaxIdentifier) {
   require_syntax_identifier_ = true;
-  ExpectHasEarlyExitErrors(
-    "message TestMessage {}",
-    "0:0: File must begin with 'syntax = \"proto2\";'.\n");
+  ExpectHasEarlyExitErrors("message TestMessage {}",
+                           "0:0: File must begin with a syntax statement, e.g. "
+                           "'syntax = \"proto2\";'.\n");
   EXPECT_EQ("", parser_->GetSyntaxIdentifier());
 }
 
@@ -771,7 +996,7 @@ TEST_F(ParseErrorTest, UnknownSyntaxIdentifier) {
   ExpectHasEarlyExitErrors(
     "syntax = \"no_such_syntax\";",
     "0:9: Unrecognized syntax identifier \"no_such_syntax\".  This parser "
-      "only recognizes \"proto2\".\n");
+      "only recognizes \"proto2\" and \"proto3\".\n");
   EXPECT_EQ("no_such_syntax", parser_->GetSyntaxIdentifier());
 }
 
@@ -870,7 +1095,7 @@ TEST_F(ParseErrorTest, DefaultValueTypeMismatch) {
     "message TestMessage {\n"
     "  optional uint32 foo = 1 [default=true];\n"
     "}\n",
-    "1:35: Expected integer.\n");
+    "1:35: Expected integer for field default value.\n");
 }
 
 TEST_F(ParseErrorTest, DefaultValueNotBoolean) {
@@ -886,7 +1111,7 @@ TEST_F(ParseErrorTest, DefaultValueNotString) {
     "message TestMessage {\n"
     "  optional string foo = 1 [default=1];\n"
     "}\n",
-    "1:35: Expected string.\n");
+    "1:35: Expected string for field default value.\n");
 }
 
 TEST_F(ParseErrorTest, DefaultValueUnsignedNegative) {
@@ -915,6 +1140,22 @@ TEST_F(ParseErrorTest, DefaultValueTooLarge) {
     "6:36: Integer out of range.\n");
 }
 
+TEST_F(ParseErrorTest, JsonNameNotString) {
+  ExpectHasErrors(
+    "message TestMessage {\n"
+    "  optional string foo = 1 [json_name=1];\n"
+    "}\n",
+    "1:37: Expected string for JSON name.\n");
+}
+
+TEST_F(ParseErrorTest, DuplicateJsonName) {
+  ExpectHasErrors(
+    "message TestMessage {\n"
+    "  optional uint32 foo = 1 [json_name=\"a\",json_name=\"b\"];\n"
+    "}\n",
+    "1:41: Already set option \"json_name\".\n");
+}
+
 TEST_F(ParseErrorTest, EnumValueOutOfRange) {
   ExpectHasErrors(
     "enum TestEnum {\n"
@@ -929,12 +1170,35 @@ TEST_F(ParseErrorTest, EnumValueOutOfRange) {
     "4:19: Integer out of range.\n");
 }
 
+TEST_F(ParseErrorTest, EnumAllowAliasFalse) {
+  ExpectHasErrors(
+    "enum Foo {\n"
+    "  option allow_alias = false;\n"
+    "  BAR = 1;\n"
+    "  BAZ = 2;\n"
+    "}\n",
+    "5:0: \"Foo\" declares 'option allow_alias = false;' which has no effect. "
+    "Please remove the declaration.\n");
+}
+
+TEST_F(ParseErrorTest, UnnecessaryEnumAllowAlias) {
+  ExpectHasErrors(
+    "enum Foo {\n"
+    "  option allow_alias = true;\n"
+    "  BAR = 1;\n"
+    "  BAZ = 2;\n"
+    "}\n",
+    "5:0: \"Foo\" declares support for enum aliases but no enum values share "
+    "field numbers. Please remove the unnecessary 'option allow_alias = true;' "
+    "declaration.\n");
+}
+
 TEST_F(ParseErrorTest, DefaultValueMissing) {
   ExpectHasErrors(
     "message TestMessage {\n"
     "  optional uint32 foo = 1 [default=];\n"
     "}\n",
-    "1:35: Expected integer.\n");
+    "1:35: Expected integer for field default value.\n");
 }
 
 TEST_F(ParseErrorTest, DefaultValueForGroup) {
@@ -951,6 +1215,76 @@ TEST_F(ParseErrorTest, DuplicateDefaultValue) {
     "  optional uint32 foo = 1 [default=1,default=2];\n"
     "}\n",
     "1:37: Already set option \"default\".\n");
+}
+
+TEST_F(ParseErrorTest, MissingOneofName) {
+  ExpectHasErrors(
+    "message TestMessage {\n"
+    "  oneof {\n"
+    "    int32 bar = 1;\n"
+    "  }\n"
+    "}\n",
+    "1:8: Expected oneof name.\n");
+}
+
+TEST_F(ParseErrorTest, LabelInOneof) {
+  ExpectHasErrors(
+    "message TestMessage {\n"
+    "  oneof foo {\n"
+    "    optional int32 bar = 1;\n"
+    "  }\n"
+    "}\n",
+    "2:4: Fields in oneofs must not have labels (required / optional "
+      "/ repeated).\n");
+}
+
+TEST_F(ParseErrorTest, MapInOneof) {
+  ExpectHasErrors(
+    "message TestMessage {\n"
+    "  oneof foo {\n"
+    "    map<int32, int32> foo_map = 1;\n"
+    "    map message_field = 2;\n"  // a normal message field is OK
+    "  }\n"
+    "}\n",
+    "2:7: Map fields are not allowed in oneofs.\n");
+}
+
+TEST_F(ParseErrorTest, LabelForMap) {
+  ExpectHasErrors(
+    "message TestMessage {\n"
+    "  optional map<int32, int32> int_map = 1;\n"
+    "  required map<int32, int32> int_map2 = 2;\n"
+    "  repeated map<int32, int32> int_map3 = 3;\n"
+    "  optional map map_message = 4;\n"  // a normal message field is OK
+    "}\n",
+    "1:14: Field labels (required/optional/repeated) are not allowed on map "
+    "fields.\n"
+    "2:14: Field labels (required/optional/repeated) are not allowed on map "
+    "fields.\n"
+    "3:14: Field labels (required/optional/repeated) are not allowed on map "
+    "fields.\n");
+}
+
+TEST_F(ParseErrorTest, MalformedMaps) {
+  ExpectHasErrors(
+    "message TestMessage {\n"
+    "  map map_message = 1;\n"   // a normal message field lacking label
+    "  map<string> str_map = 2;\n"
+    "  map<string,> str_map2 = 3;\n"
+    "  map<,string> str_map3 = 4;\n"
+    "  map<> empty_map = 5;\n"
+    "  map<string,string str_map6 = 6;\n"
+    "}"
+    "extend SomeMessage {\n"
+    "  map<int32, int32> int_map = 1;\n"
+    "}",
+    "1:6: Expected \"required\", \"optional\", or \"repeated\".\n"
+    "2:12: Expected \",\".\n"
+    "3:13: Expected type name.\n"
+    "4:6: Expected type name.\n"
+    "5:6: Expected type name.\n"
+    "6:20: Expected \">\".\n"
+    "8:5: Map fields are not allowed to be extensions.\n");
 }
 
 TEST_F(ParseErrorTest, GroupNotCapitalized) {
@@ -1003,6 +1337,18 @@ TEST_F(ParseErrorTest, EofInAggregateValue) {
       "1:0: Unexpected end of stream while parsing aggregate value.\n");
 }
 
+TEST_F(ParseErrorTest, ExplicitOptionalLabelProto3) {
+  ExpectHasErrors(
+      "syntax = 'proto3';\n"
+      "message TestMessage {\n"
+      "  optional int32 foo = 1;\n"
+      "}\n",
+      "2:11: Explicit 'optional' labels are disallowed in the Proto3 syntax. "
+      "To define 'optional' fields in Proto3, simply remove the 'optional' "
+      "label, as fields are 'optional' by default.\n");
+}
+
+
 // -------------------------------------------------------------------
 // Enum errors
 
@@ -1018,6 +1364,33 @@ TEST_F(ParseErrorTest, EnumValueMissingNumber) {
     "  FOO;\n"
     "}\n",
     "1:5: Missing numeric value for enum constant.\n");
+}
+
+// -------------------------------------------------------------------
+// Reserved field number errors
+
+TEST_F(ParseErrorTest, ReservedMaxNotAllowed) {
+  ExpectHasErrors(
+    "message Foo {\n"
+    "  reserved 10 to max;\n"
+    "}\n",
+    "1:17: Expected integer.\n");
+}
+
+TEST_F(ParseErrorTest, ReservedMixNameAndNumber) {
+  ExpectHasErrors(
+    "message Foo {\n"
+    "  reserved 10, \"foo\";\n"
+    "}\n",
+    "1:15: Expected field number range.\n");
+}
+
+TEST_F(ParseErrorTest, ReservedMissingQuotes) {
+  ExpectHasErrors(
+    "message Foo {\n"
+    "  reserved foo;\n"
+    "}\n",
+    "1:11: Expected field name or number range.\n");
 }
 
 // -------------------------------------------------------------------
@@ -1244,17 +1617,93 @@ TEST_F(ParserValidationErrorTest, MethodOutputTypeError) {
 }
 
 
+TEST_F(ParserValidationErrorTest, ResovledUndefinedError) {
+  // Create another file which defines symbol ".base.bar".
+  FileDescriptorProto other_file;
+  other_file.set_name("base.proto");
+  other_file.set_package("base");
+  other_file.add_message_type()->set_name("bar");
+  EXPECT_TRUE(pool_.BuildFile(other_file) != NULL);
+
+  // Define "foo.base" and try "base.bar".
+  // "base.bar" is resolved to "foo.base.bar" which is not defined.
+  ExpectHasValidationErrors(
+    "package foo.base;\n"
+    "import \"base.proto\";\n"
+    "message qux {\n"
+    "  optional base.bar baz = 1;\n"
+    "  optional .base.bar quz = 2;\n"
+    "}\n",
+    "3:11: \"base.bar\" is resolved to \"foo.base.bar\","
+    " which is not defined. The innermost scope is searched first "
+    "in name resolution. Consider using a leading '.'(i.e., \".base.bar\")"
+    " to start from the outermost scope.\n");
+}
+
+TEST_F(ParserValidationErrorTest, ResovledUndefinedOptionError) {
+  // Build descriptor message in test pool
+  FileDescriptorProto descriptor_proto;
+  DescriptorProto::descriptor()->file()->CopyTo(&descriptor_proto);
+  ASSERT_TRUE(pool_.BuildFile(descriptor_proto) != NULL);
+
+  // base2.proto:
+  //   package baz
+  //   import google/protobuf/descriptor.proto
+  //   message Bar { optional int32 foo = 1; }
+  //   extend FileOptions { optional Bar bar = 7672757; }
+  FileDescriptorProto other_file;
+  other_file.set_name("base2.proto");
+  other_file.set_package("baz");
+  other_file.add_dependency();
+  other_file.set_dependency(0, descriptor_proto.name());
+
+  DescriptorProto* message(other_file.add_message_type());
+  message->set_name("Bar");
+  FieldDescriptorProto* field(message->add_field());
+  field->set_name("foo");
+  field->set_number(1);
+  field->set_label(FieldDescriptorProto_Label_LABEL_OPTIONAL);
+  field->set_type(FieldDescriptorProto_Type_TYPE_INT32);
+
+  FieldDescriptorProto* extension(other_file.add_extension());
+  extension->set_name("bar");
+  extension->set_number(7672757);
+  extension->set_label(FieldDescriptorProto_Label_LABEL_OPTIONAL);
+  extension->set_type(FieldDescriptorProto_Type_TYPE_MESSAGE);
+  extension->set_type_name("Bar");
+  extension->set_extendee("google.protobuf.FileOptions");
+
+  EXPECT_TRUE(pool_.BuildFile(other_file) != NULL);
+
+  // qux.proto:
+  //   package qux.baz
+  //   option (baz.bar).foo = 1;
+  //
+  // Although "baz.bar" is already defined, the lookup code will try
+  // "qux.baz.bar", since it's the match from the innermost scope,
+  // which will cause a symbol not defined error.
+  ExpectHasValidationErrors(
+      "package qux.baz;\n"
+      "import \"base2.proto\";\n"
+      "option (baz.bar).foo = 1;\n",
+      "2:7: Option \"(baz.bar)\" is resolved to \"(qux.baz.bar)\","
+      " which is not defined. The innermost scope is searched first "
+      "in name resolution. Consider using a leading '.'(i.e., \"(.baz.bar)\")"
+      " to start from the outermost scope.\n");
+}
+
 // ===================================================================
 // Test that the output from FileDescriptor::DebugString() (and all other
 // descriptor types) is parseable, and results in the same Descriptor
-// definitions again afoter parsing (not, however, that the order of messages
+// definitions again afoter parsing (note, however, that the order of messages
 // cannot be guaranteed to be the same)
 
-typedef ParserTest ParseDecriptorDebugTest;
+typedef ParserTest ParseDescriptorDebugTest;
 
 class CompareDescriptorNames {
  public:
-  bool operator()(const DescriptorProto* left, const DescriptorProto* right) {
+  bool operator()(const DescriptorProto* left,
+                  const DescriptorProto* right) const {
     return left->name() < right->name();
   }
 };
@@ -1268,7 +1717,7 @@ void SortMessages(DescriptorProto *descriptor_proto) {
   }
   DescriptorProto **data =
     descriptor_proto->mutable_nested_type()->mutable_data();
-  sort(data, data + size, CompareDescriptorNames());
+  std::sort(data, data + size, CompareDescriptorNames());
 }
 
 // Sorts DescriptorProtos belonging to a FileDescriptorProto, by name.
@@ -1280,10 +1729,31 @@ void SortMessages(FileDescriptorProto *file_descriptor_proto) {
   }
   DescriptorProto **data =
     file_descriptor_proto->mutable_message_type()->mutable_data();
-  sort(data, data + size, CompareDescriptorNames());
+  std::sort(data, data + size, CompareDescriptorNames());
 }
 
-TEST_F(ParseDecriptorDebugTest, TestAllDescriptorTypes) {
+// Strips the message and enum field type names for comparison purpose only.
+void StripFieldTypeName(DescriptorProto* proto) {
+  for (int i = 0; i < proto->field_size(); ++i) {
+    string type_name = proto->field(i).type_name();
+    string::size_type pos = type_name.find_last_of(".");
+    if (pos != string::npos) {
+      proto->mutable_field(i)->mutable_type_name()->assign(
+          type_name.begin() + pos + 1, type_name.end());
+    }
+  }
+  for (int i = 0; i < proto->nested_type_size(); ++i) {
+    StripFieldTypeName(proto->mutable_nested_type(i));
+  }
+}
+
+void StripFieldTypeName(FileDescriptorProto* file_proto) {
+  for (int i = 0; i < file_proto->message_type_size(); ++i) {
+    StripFieldTypeName(file_proto->mutable_message_type(i));
+  }
+}
+
+TEST_F(ParseDescriptorDebugTest, TestAllDescriptorTypes) {
   const FileDescriptor* original_file =
      protobuf_unittest::TestAllTypes::descriptor()->file();
   FileDescriptorProto expected;
@@ -1298,7 +1768,8 @@ TEST_F(ParseDecriptorDebugTest, TestAllDescriptorTypes) {
   FileDescriptorProto parsed;
   parser_->Parse(input_.get(), &parsed);
   EXPECT_EQ(io::Tokenizer::TYPE_END, input_->current().type);
-  ASSERT_EQ("", error_collector_.text_);
+  ASSERT_EQ("", error_collector_.text_)
+      << "Failed to parse:\n" << debug_string;
 
   // We now have a FileDescriptorProto, but to compare with the expected we
   // need to link to a FileDecriptor, then output back to a proto. We'll
@@ -1317,6 +1788,8 @@ TEST_F(ParseDecriptorDebugTest, TestAllDescriptorTypes) {
   ASSERT_TRUE(pool_.BuildFile(import_proto) != NULL);
   const FileDescriptor* actual = pool_.BuildFile(parsed);
   parsed.Clear();
+  ASSERT_TRUE(actual != NULL)
+      << "Failed to validate:\n" << debug_string;
   actual->CopyTo(&parsed);
   ASSERT_TRUE(actual != NULL);
 
@@ -1332,7 +1805,7 @@ TEST_F(ParseDecriptorDebugTest, TestAllDescriptorTypes) {
   EXPECT_EQ(expected.DebugString(), parsed.DebugString());
 }
 
-TEST_F(ParseDecriptorDebugTest, TestCustomOptions) {
+TEST_F(ParseDescriptorDebugTest, TestCustomOptions) {
   const FileDescriptor* original_file =
      protobuf_unittest::AggregateMessage::descriptor()->file();
   FileDescriptorProto expected;
@@ -1369,6 +1842,160 @@ TEST_F(ParseDecriptorDebugTest, TestCustomOptions) {
   SortMessages(&parsed);
 
   EXPECT_EQ(expected.DebugString(), parsed.DebugString());
+}
+
+// Ensure that DebugStringWithOptions(), with |include_comments| set to true,
+// includes comments from the original parser input in all of the appropriate
+// places.
+TEST_F(ParseDescriptorDebugTest, TestCommentsInDebugString) {
+  SetupParser(
+      "// Detached comment before syntax.\n"
+      "\n"
+      "// Syntax comment.\n"
+      "syntax = \"proto2\";\n"
+      "\n"
+      "// Detached comment before package.\n"
+      "\n"
+      "// Package comment.\n"
+      "package comment_test;\n"
+      "\n"
+      "// Detached comment before TestMessage1.\n"
+      "\n"
+      "// Message comment.\n"
+      "//\n"
+      "// More detail in message comment.\n"
+      "message TestMessage1 {\n"
+      "\n"
+      "  // Detached comment before foo.\n"
+      "\n"
+      "  // Field comment.\n"
+      "  optional int32 foo = 1;\n"
+      "\n"
+      "  // Detached comment before NestedMessage.\n"
+      "\n"
+      "  // Nested-message comment.\n"
+      "  message NestedMessage {\n"
+      "    optional int32 bar = 1;\n"
+      "  }\n"
+      "}\n"
+      "\n"
+      "// Detached comment before MyEnumType.\n"
+      "\n"
+      "// Enum comment.\n"
+      "enum MyEnumType {\n"
+      "\n"
+      "  // Detached comment before ASDF.\n"
+      "\n"
+      "  // Enum-value comment.\n"
+      "  ASDF = 1;\n"
+      "}\n"
+      "\n"
+      "// Detached comment before MyService.\n"
+      "\n"
+      "// Service comment.\n"
+      "service MyService {\n"
+      "\n"
+      "  // Detached comment before MyRPCCall.\n"
+      "\n"
+      "  // RPC comment.\n"
+      "  rpc MyRPCCall(TestMessage1) returns (TestMessage1) { }\n"
+      "}\n");
+
+  FileDescriptorProto parsed_desc;
+  parsed_desc.set_name("foo.proto");
+  SourceLocationTable source_locations;
+  parser_->RecordSourceLocationsTo(&source_locations);
+  parser_->Parse(input_.get(), &parsed_desc);
+  EXPECT_EQ(io::Tokenizer::TYPE_END, input_->current().type);
+  ASSERT_EQ("", error_collector_.text_);
+
+  // We need to import the FileDescriptorProto to get a FileDescriptor.
+  MockValidationErrorCollector collector(source_locations, &error_collector_);
+  const FileDescriptor* descriptor =
+      pool_.BuildFileCollectingErrors(parsed_desc, &collector);
+  ASSERT_TRUE(descriptor != NULL);
+
+  // Ensure that each of the comments appears somewhere in the DebugString().
+  // We don't test the exact comment placement or formatting, because we do not
+  // want to be too fragile here.
+  const char* expected_comments[] = {
+    "Detached comment before syntax.",
+    "Syntax comment.",
+    "Detached comment before package.",
+    "Package comment.",
+    "Detached comment before TestMessage1.",
+    "Message comment.",
+    "More detail in message comment.",
+    "Detached comment before foo.",
+    "Field comment",
+    "Detached comment before NestedMessage.",
+    "Nested-message comment",
+    "Detached comment before MyEnumType.",
+    "Enum comment",
+    "Detached comment before ASDF.",
+    "Enum-value comment",
+    "Detached comment before MyService.",
+    "Service comment",
+    "Detached comment before MyRPCCall.",
+    "RPC comment",
+  };
+
+  DebugStringOptions debug_string_options;
+  debug_string_options.include_comments = true;
+
+  {
+    const string debug_string =
+        descriptor->DebugStringWithOptions(debug_string_options);
+
+    for (int i = 0; i < GOOGLE_ARRAYSIZE(expected_comments); ++i) {
+      string::size_type found_pos = debug_string.find(expected_comments[i]);
+      EXPECT_TRUE(found_pos != string::npos)
+          << "\"" << expected_comments[i] << "\" not found.";
+    }
+
+    // Result of DebugStringWithOptions should be parseable.
+    SetupParser(debug_string.c_str());
+    FileDescriptorProto parsed;
+    parser_->Parse(input_.get(), &parsed);
+    EXPECT_EQ(io::Tokenizer::TYPE_END, input_->current().type);
+    ASSERT_EQ("", error_collector_.text_)
+        << "Failed to parse:\n" << debug_string;
+  }
+
+}
+
+TEST_F(ParseDescriptorDebugTest, TestMaps) {
+  SetupParser(
+      "syntax = \"proto3\"; "
+      "message Foo { "
+      "  message Bar { } "
+      "  map<int32, Bar> enum_message_map = 1; "
+      "  map<string, float> primitive_map = 2; "
+      "} ");
+  FileDescriptorProto original;
+  EXPECT_TRUE(parser_->Parse(input_.get(), &original));
+  original.set_name("foo.proto");
+  const FileDescriptor* file = pool_.BuildFile(original);
+  ASSERT_TRUE(file != NULL);
+
+  // Make sure the debug string uses map syntax and does not have the auto
+  // generated entry.
+  string debug_string = file->DebugString();
+  EXPECT_TRUE(debug_string.find("map<") != string::npos);
+  EXPECT_TRUE(debug_string.find("option map_entry") == string::npos);
+  EXPECT_TRUE(debug_string.find("MapEntry") == string::npos);
+
+  // Make sure the descriptor debug string is parsable.
+  FileDescriptorProto parsed;
+  SetupParser(debug_string.c_str());
+  parsed.set_name("foo.proto");
+  ASSERT_TRUE(parser_->Parse(input_.get(), &parsed));
+
+  original.clear_source_code_info();
+  parsed.clear_source_code_info();
+  StripFieldTypeName(&original);
+  StripFieldTypeName(&parsed);
+  EXPECT_EQ(original.DebugString(), parsed.DebugString());
 }
 
 // ===================================================================
@@ -1503,8 +2130,8 @@ class SourceInfoTest : public ParserTest {
         return false;
       }
 
-      spans_.insert(make_pair(SpanKey(*descriptor_proto, field, index),
-                              &location));
+      spans_.insert(
+          std::make_pair(SpanKey(*descriptor_proto, field, index), &location));
     }
 
     return true;
@@ -1525,16 +2152,18 @@ class SourceInfoTest : public ParserTest {
   bool HasSpan(char start_marker, char end_marker,
                const Message& descriptor_proto) {
     return HasSpanWithComment(
-        start_marker, end_marker, descriptor_proto, NULL, -1, NULL, NULL);
+        start_marker, end_marker, descriptor_proto, NULL, -1, NULL, NULL, NULL);
   }
 
   bool HasSpanWithComment(char start_marker, char end_marker,
                           const Message& descriptor_proto,
                           const char* expected_leading_comments,
-                          const char* expected_trailing_comments) {
+                          const char* expected_trailing_comments,
+                          const char* expected_leading_detached_comments) {
     return HasSpanWithComment(
         start_marker, end_marker, descriptor_proto, NULL, -1,
-        expected_leading_comments, expected_trailing_comments);
+        expected_leading_comments, expected_trailing_comments,
+        expected_leading_detached_comments);
   }
 
   bool HasSpan(char start_marker, char end_marker,
@@ -1546,14 +2175,15 @@ class SourceInfoTest : public ParserTest {
                const Message& descriptor_proto, const string& field_name,
                int index) {
     return HasSpan(start_marker, end_marker, descriptor_proto,
-                   field_name, index, NULL, NULL);
+                   field_name, index, NULL, NULL, NULL);
   }
 
   bool HasSpan(char start_marker, char end_marker,
                const Message& descriptor_proto,
                const string& field_name, int index,
                const char* expected_leading_comments,
-               const char* expected_trailing_comments) {
+               const char* expected_trailing_comments,
+               const char* expected_leading_detached_comments) {
     const FieldDescriptor* field =
         descriptor_proto.GetDescriptor()->FindFieldByName(field_name);
     if (field == NULL) {
@@ -1564,12 +2194,13 @@ class SourceInfoTest : public ParserTest {
 
     return HasSpanWithComment(
         start_marker, end_marker, descriptor_proto, field, index,
-        expected_leading_comments, expected_trailing_comments);
+        expected_leading_comments, expected_trailing_comments,
+        expected_leading_detached_comments);
   }
 
   bool HasSpan(const Message& descriptor_proto) {
     return HasSpanWithComment(
-        '\0', '\0', descriptor_proto, NULL, -1, NULL, NULL);
+        '\0', '\0', descriptor_proto, NULL, -1, NULL, NULL, NULL);
   }
 
   bool HasSpan(const Message& descriptor_proto, const string& field_name) {
@@ -1581,11 +2212,12 @@ class SourceInfoTest : public ParserTest {
     return HasSpan('\0', '\0', descriptor_proto, field_name, index);
   }
 
-  bool HasSpanWithComment(char start_marker, char end_marker,
-                          const Message& descriptor_proto,
-                          const FieldDescriptor* field, int index,
-                          const char* expected_leading_comments,
-                          const char* expected_trailing_comments) {
+  bool HasSpanWithComment(
+      char start_marker, char end_marker, const Message& descriptor_proto,
+      const FieldDescriptor* field, int index,
+      const char* expected_leading_comments,
+      const char* expected_trailing_comments,
+      const char* expected_leading_detached_comments) {
     pair<SpanMap::iterator, SpanMap::iterator> range =
         spans_.equal_range(SpanKey(descriptor_proto, field, index));
 
@@ -1623,6 +2255,13 @@ class SourceInfoTest : public ParserTest {
             EXPECT_TRUE(iter->second->has_trailing_comments());
             EXPECT_EQ(expected_trailing_comments,
                       iter->second->trailing_comments());
+          }
+          if (expected_leading_detached_comments == NULL) {
+            EXPECT_EQ(0, iter->second->leading_detached_comments_size());
+          } else {
+            EXPECT_EQ(
+                expected_leading_detached_comments,
+                Join(iter->second->leading_detached_comments(), "\n"));
           }
 
           spans_.erase(iter);
@@ -1674,7 +2313,7 @@ class SourceInfoTest : public ParserTest {
           text_without_markers_ += '$';
           ++column;
         } else {
-          markers_[*text] = make_pair(line, column);
+          markers_[*text] = std::make_pair(line, column);
           ++text;
           GOOGLE_CHECK_EQ('$', *text);
         }
@@ -1693,7 +2332,7 @@ class SourceInfoTest : public ParserTest {
 
 TEST_F(SourceInfoTest, BasicFileDecls) {
   EXPECT_TRUE(Parse(
-      "$a$syntax = \"proto2\";\n"
+      "$a$syntax = \"proto2\";$i$\n"
       "package $b$foo.bar$c$;\n"
       "import $d$\"baz.proto\"$e$;\n"
       "import $f$\"qux.proto\"$g$;$h$\n"
@@ -1704,6 +2343,7 @@ TEST_F(SourceInfoTest, BasicFileDecls) {
   EXPECT_TRUE(HasSpan('b', 'c', file_, "package"));
   EXPECT_TRUE(HasSpan('d', 'e', file_, "dependency", 0));
   EXPECT_TRUE(HasSpan('f', 'g', file_, "dependency", 1));
+  EXPECT_TRUE(HasSpan('a', 'i', file_, "syntax"));
 }
 
 TEST_F(SourceInfoTest, Messages) {
@@ -1871,6 +2511,31 @@ TEST_F(SourceInfoTest, ExtensionRanges) {
   EXPECT_TRUE(HasSpan(file_.message_type(0), "name"));
 }
 
+TEST_F(SourceInfoTest, Oneofs) {
+  EXPECT_TRUE(Parse(
+      "message Foo {\n"
+      "  $a$oneof $c$foo$d$ {\n"
+      "    $e$int32$f$ $g$a$h$ = $i$1$j$;$k$\n"
+      "  }$r$\n"
+      "}\n"));
+
+  const OneofDescriptorProto& oneof_decl = file_.message_type(0).oneof_decl(0);
+  const FieldDescriptorProto& field = file_.message_type(0).field(0);
+
+  EXPECT_TRUE(HasSpan('a', 'r', oneof_decl));
+  EXPECT_TRUE(HasSpan('c', 'd', oneof_decl, "name"));
+
+  EXPECT_TRUE(HasSpan('e', 'k', field));
+  EXPECT_TRUE(HasSpan('e', 'f', field, "type"));
+  EXPECT_TRUE(HasSpan('g', 'h', field, "name"));
+  EXPECT_TRUE(HasSpan('i', 'j', field, "number"));
+
+  // Ignore these.
+  EXPECT_TRUE(HasSpan(file_));
+  EXPECT_TRUE(HasSpan(file_.message_type(0)));
+  EXPECT_TRUE(HasSpan(file_.message_type(0), "name"));
+}
+
 TEST_F(SourceInfoTest, NestedMessages) {
   EXPECT_TRUE(Parse(
       "message Foo {\n"
@@ -2029,6 +2694,7 @@ TEST_F(SourceInfoTest, MethodsAndStreams) {
   EXPECT_TRUE(HasSpan(file_.service(0), "name"));
 }
 
+
 TEST_F(SourceInfoTest, Options) {
   EXPECT_TRUE(Parse(
       "$a$option $b$foo$c$.$d$($e$bar.baz$f$)$g$ = "
@@ -2108,6 +2774,9 @@ TEST_F(SourceInfoTest, ScopedOptions) {
     "  rpc M(X) returns(Y) {\n"
     "    $g$option mopt = 1;$h$\n"
     "  }\n"
+    "  rpc MS4($1$stream$2$ X) returns($3$stream$4$ Y) {\n"
+    "    $k$option mopt = 1;$l$\n"
+    "  }\n"
     "}\n"));
 
   EXPECT_TRUE(HasSpan('a', 'b', file_.message_type(0).options()));
@@ -2167,6 +2836,26 @@ TEST_F(SourceInfoTest, ScopedOptions) {
                       .uninterpreted_option(0).name(0), "name_part"));
   EXPECT_TRUE(HasSpan(file_.service(0).method(0).options()
                       .uninterpreted_option(0), "positive_int_value"));
+
+  EXPECT_TRUE(HasSpan('k', 'l', file_.service(0).method(1).options()));
+  EXPECT_TRUE(HasSpan(file_.service(0).method(1)));
+  EXPECT_TRUE(HasSpan(file_.service(0).method(1), "name"));
+  EXPECT_TRUE(HasSpan(file_.service(0).method(1), "input_type"));
+  EXPECT_TRUE(HasSpan(file_.service(0).method(1), "output_type"));
+  EXPECT_TRUE(HasSpan(file_.service(0).method(1).options()
+                      .uninterpreted_option(0)));
+  EXPECT_TRUE(HasSpan(file_.service(0).method(1).options()
+                      .uninterpreted_option(0), "name"));
+  EXPECT_TRUE(HasSpan(file_.service(0).method(1).options()
+                      .uninterpreted_option(0).name(0)));
+  EXPECT_TRUE(HasSpan(file_.service(0).method(1).options()
+                      .uninterpreted_option(0).name(0), "name_part"));
+  EXPECT_TRUE(HasSpan(file_.service(0).method(1).options()
+                      .uninterpreted_option(0), "positive_int_value"));
+  EXPECT_TRUE(HasSpan('1', '2', file_.service(0).method(1),
+                      "client_streaming"));
+  EXPECT_TRUE(HasSpan('3', '4', file_.service(0).method(1),
+                      "server_streaming"));
 }
 
 TEST_F(SourceInfoTest, FieldOptions) {
@@ -2252,7 +2941,7 @@ TEST_F(SourceInfoTest, DocComments) {
       "  // Foo trailing\n"
       "  // line 2\n"
       "\n"
-      "  // ignored\n"
+      "  // detached\n"
       "\n"
       "  // bar leading\n"
       "  $b$optional int32 bar = 1;$c$\n"
@@ -2266,10 +2955,12 @@ TEST_F(SourceInfoTest, DocComments) {
 
   EXPECT_TRUE(HasSpanWithComment('a', 'd', foo,
       " Foo leading\n line 2\n",
-      " Foo trailing\n line 2\n"));
+      " Foo trailing\n line 2\n",
+      NULL));
   EXPECT_TRUE(HasSpanWithComment('b', 'c', bar,
       " bar leading\n",
-      " bar trailing\n"));
+      " bar trailing\n",
+      " detached\n"));
 
   // Ignore these.
   EXPECT_TRUE(HasSpan(file_));
@@ -2282,20 +2973,22 @@ TEST_F(SourceInfoTest, DocComments) {
 
 TEST_F(SourceInfoTest, DocComments2) {
   EXPECT_TRUE(Parse(
-      "// ignored\n"
-      "syntax = \"proto2\";\n"
+      "// detached before message.\n"
+      "\n"
       "// Foo leading\n"
       "// line 2\n"
       "$a$message Foo {\n"
       "  /* Foo trailing\n"
       "   * line 2 */\n"
-      "  // ignored\n"
+      "  // detached\n"
       "  /* bar leading\n"
       "   */"
       "  $b$optional int32 bar = 1;$c$  // bar trailing\n"
-      "  // ignored\n"
+      "  // ignored detached\n"
       "}$d$\n"
       "// ignored\n"
+      "\n"
+      "// detached before option\n"
       "\n"
       "// option leading\n"
       "$e$option baz = 123;$f$\n"
@@ -2308,13 +3001,16 @@ TEST_F(SourceInfoTest, DocComments2) {
 
   EXPECT_TRUE(HasSpanWithComment('a', 'd', foo,
       " Foo leading\n line 2\n",
-      " Foo trailing\n line 2 "));
+      " Foo trailing\n line 2 ",
+      " detached before message.\n"));
   EXPECT_TRUE(HasSpanWithComment('b', 'c', bar,
       " bar leading\n",
-      " bar trailing\n"));
+      " bar trailing\n",
+      " detached\n"));
   EXPECT_TRUE(HasSpanWithComment('e', 'f', baz,
       " option leading\n",
-      " option trailing\n"));
+      " option trailing\n",
+      " detached before option\n"));
 
   // Ignore these.
   EXPECT_TRUE(HasSpan(file_));
@@ -2345,7 +3041,8 @@ TEST_F(SourceInfoTest, DocComments3) {
 
   EXPECT_TRUE(HasSpanWithComment('b', 'c', bar,
       " bar leading\n",
-      " bar trailing\n"));
+      " bar trailing\n",
+      NULL));
 
   // Ignore these.
   EXPECT_TRUE(HasSpan(file_));
@@ -2363,6 +3060,92 @@ TEST_F(SourceInfoTest, DocComments3) {
       bar.options().uninterpreted_option(0).name(0), "name_part"));
   EXPECT_TRUE(HasSpan(
       bar.options().uninterpreted_option(0), "aggregate_value"));
+}
+
+TEST_F(SourceInfoTest, DocCommentsTopLevel) {
+  EXPECT_TRUE(Parse(
+      "// detached before syntax paragraph 1\n"
+      "\n"
+      "// detached before syntax paragraph 2\n"
+      "\n"
+      "// syntax leading\n"
+      "$a$syntax = \"proto2\";$b$\n"
+      "// syntax trailing\n"
+      "\n"
+      "// syntax-package detached comments\n"
+      "\n"
+      ";\n"
+      "\n"
+      "// detached after empty before package\n"
+      "\n"
+      "// package leading\n"
+      "package $c$foo$d$;\n"
+      "// package trailing\n"
+      "\n"
+      "// ignored detach\n"
+      "\n"));
+
+  EXPECT_TRUE(HasSpan('a', 'b', file_, "syntax", -1,
+      " syntax leading\n",
+      " syntax trailing\n",
+      " detached before syntax paragraph 1\n"
+      "\n"
+      " detached before syntax paragraph 2\n"));
+  EXPECT_TRUE(HasSpan('c', 'd', file_, "package", -1,
+      " package leading\n",
+      " package trailing\n",
+      " syntax-package detached comments\n"
+      "\n"
+      " detached after empty before package\n"));
+
+  // ignore these.
+  EXPECT_TRUE(HasSpan(file_));
+}
+
+TEST_F(SourceInfoTest, DocCommentsOneof) {
+  EXPECT_TRUE(Parse(
+      "// Foo leading\n"
+      "$a$message Foo {\n"
+      "  /* Foo trailing\n"
+      "   */\n"
+      "  // detached before oneof\n"
+      "  /* bar leading\n"
+      "   * line 2 */\n"
+      "  $b$oneof bar {\n"
+      "  /* bar trailing\n"
+      "   * line 2 */\n"
+      "  // detached before bar_int\n"
+      "  /* bar_int leading\n"
+      "   */\n"
+      "  $c$int32 bar_int = 1;$d$  // bar_int trailing\n"
+      "  // detach comment ignored\n"
+      "  }$e$\n"
+      "}$f$\n"));
+
+  const DescriptorProto& foo = file_.message_type(0);
+  const OneofDescriptorProto& bar = foo.oneof_decl(0);
+  const FieldDescriptorProto& bar_int = foo.field(0);
+
+  EXPECT_TRUE(HasSpanWithComment('a', 'f', foo,
+      " Foo leading\n",
+      " Foo trailing\n",
+      NULL));
+  EXPECT_TRUE(HasSpanWithComment('b', 'e', bar,
+      " bar leading\n line 2 ",
+      " bar trailing\n line 2 ",
+      " detached before oneof\n"));
+  EXPECT_TRUE(HasSpanWithComment('c', 'd', bar_int,
+      " bar_int leading\n",
+      " bar_int trailing\n",
+      " detached before bar_int\n"));
+
+  // Ignore these.
+  EXPECT_TRUE(HasSpan(file_));
+  EXPECT_TRUE(HasSpan(foo, "name"));
+  EXPECT_TRUE(HasSpan(bar, "name"));
+  EXPECT_TRUE(HasSpan(bar_int, "type"));
+  EXPECT_TRUE(HasSpan(bar_int, "name"));
+  EXPECT_TRUE(HasSpan(bar_int, "number"));
 }
 
 // ===================================================================
