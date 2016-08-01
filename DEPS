@@ -36,11 +36,10 @@ deps = {
   "src/packager/third_party/curl/source":
     Var("curl_url") + "@curl-7_50_0",
 
-  "src/packager/third_party/gflags":
-    Var("chromium_git") + "/external/webrtc/trunk/third_party/gflags@cc7e9a4b374ff7b6a1cae4d76161113ea985b624",
 
   "src/packager/third_party/gflags/src":
-    Var("chromium_git") + "/external/gflags/src@e7390f9185c75f8d902c05ed7d20bb94eb914d0c",  #82
+    Var("chromium_git") + "/external/github.com/gflags/gflags@03bebcb065c83beff83d50ae025a55a4bf94dfca",
+
 
   # Required by libxml.
   "src/packager/third_party/icu":

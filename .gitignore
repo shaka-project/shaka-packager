@@ -15,7 +15,7 @@
 /packager/testing/gtest/
 /packager/third_party/boringssl/src/
 /packager/third_party/curl/source/
-/packager/third_party/gflags/
+/packager/third_party/gflags/src/
 /packager/third_party/gold/
 /packager/third_party/icu/
 /packager/third_party/libwebm/src/
