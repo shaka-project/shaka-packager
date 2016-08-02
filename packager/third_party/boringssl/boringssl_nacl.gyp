@@ -31,10 +31,6 @@
       ],
       'include_dirs': [
         'src/include',
-        # This is for arm_arch.h, which is needed by some asm files. Since the
-        # asm files are generated and kept in a different directory, they
-        # cannot use relative paths to find this file.
-        'src/crypto',
       ],
       'direct_dependent_settings': {
         'include_dirs': [

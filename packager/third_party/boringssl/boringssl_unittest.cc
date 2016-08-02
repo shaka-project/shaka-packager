@@ -161,6 +161,10 @@ TEST(BoringSSL, ByteString) {
   TestSimple("bytestring_test");
 }
 
+TEST(BoringSSL, ChaCha) {
+  TestSimple("chacha_test");
+}
+
 TEST(BoringSSL, Cipher) {
   base::FilePath data_file;
   ASSERT_TRUE(CryptoCipherTestPath(&data_file));
@@ -198,6 +202,19 @@ TEST(BoringSSL, EC) {
 
 TEST(BoringSSL, ECDSA) {
   TestSimple("ecdsa_test");
+}
+
+TEST(BoringSSL, ED25519) {
+  base::FilePath data_file;
+  ASSERT_TRUE(BoringSSLPath(&data_file));
+  data_file = data_file.Append(FILE_PATH_LITERAL("crypto"));
+  data_file = data_file.Append(FILE_PATH_LITERAL("curve25519"));
+  data_file = data_file.Append(FILE_PATH_LITERAL("ed25519_tests.txt"));
+
+  std::vector<base::CommandLine::StringType> args;
+  args.push_back(data_file.value());
+
+  TestProcess("ed25519_test", args);
 }
 
 TEST(BoringSSL, ERR) {
@@ -250,6 +267,23 @@ TEST(BoringSSL, LH) {
   TestSimple("lhash_test");
 }
 
+TEST(BoringSSL, NewHope) {
+  TestSimple("newhope_test");
+}
+
+TEST(BoringSSL, NewHopeVectors) {
+  base::FilePath data_file;
+  ASSERT_TRUE(BoringSSLPath(&data_file));
+  data_file = data_file.Append(FILE_PATH_LITERAL("crypto"));
+  data_file = data_file.Append(FILE_PATH_LITERAL("newhope"));
+  data_file = data_file.Append(FILE_PATH_LITERAL("newhope_test.txt"));
+
+  std::vector<base::CommandLine::StringType> args;
+  args.push_back(data_file.value());
+
+  TestProcess("newhope_vectors_test", args);
+}
+
 TEST(BoringSSL, PBKDF) {
   TestSimple("pbkdf_test");
 }
@@ -269,6 +303,10 @@ TEST(BoringSSL, Poly1305) {
 
 TEST(BoringSSL, PKCS7) {
   TestSimple("pkcs7_test");
+}
+
+TEST(BoringSSL, PKCS8) {
+  TestSimple("pkcs8_test");
 }
 
 TEST(BoringSSL, PKCS12) {
@@ -301,4 +339,12 @@ TEST(BoringSSL, Thread) {
 
 TEST(BoringSSL, V3NameTest) {
   TestSimple("v3name_test");
+}
+
+TEST(BoringSSL, X25519) {
+  TestSimple("x25519_test");
+}
+
+TEST(BoringSSL, X509) {
+  TestSimple("x509_test");
 }

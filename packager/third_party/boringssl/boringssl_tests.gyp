@@ -6,20 +6,24 @@
   'includes': [
     'boringssl_tests.gypi',
   ],
-  'targets': [
-    {
-      'target_name': 'boringssl_unittests',
-      'type': 'executable',
-      'sources': [
-        'boringssl_unittest.cc',
-       ],
-      'dependencies': [
-        '<@(boringssl_test_targets)',
-        '../../base/base.gyp:base',
-        '../../base/base.gyp:run_all_unittests',
-        '../../base/base.gyp:test_support_base',
-        '../../testing/gtest.gyp:gtest',
+  'conditions': [
+    ['OS!="ios"', {
+      'targets': [
+        {
+          'target_name': 'boringssl_unittests',
+          'type': 'executable',
+          'sources': [
+            'boringssl_unittest.cc',
+           ],
+          'dependencies': [
+            '<@(boringssl_test_targets)',
+            '../../base/base.gyp:base',
+            '../../base/base.gyp:run_all_unittests',
+            '../../base/base.gyp:test_support_base',
+            '../../testing/gtest.gyp:gtest',
+          ],
+        },
       ],
-    },
+    }],
   ],
 }

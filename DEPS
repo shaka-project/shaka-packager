@@ -9,9 +9,7 @@
 vars = {
   "chromium_git": "https://chromium.googlesource.com",
   "googlesource_git": "https://%s.googlesource.com",
-  "curl_url": "https://github.com/bagder/curl.git",
-  # TODO(kqyang): Replace with an official release.
-  "curl_rev": "26ddc536b0ab5fc62d6503c82c34dd3dbf112dc3",
+  "curl_url": "https://github.com/curl/curl.git",
 }
 
 deps = {
@@ -33,10 +31,10 @@ deps = {
    # Make sure the version matches the one in
    # src/packager/third_party/boringssl, which contains perl generated files.
   "src/packager/third_party/boringssl/src":
-    (Var("googlesource_git") % "boringssl") + "/boringssl@209b2562235f7dab66b8260624e7b3c5b00d14a6",
+    (Var("googlesource_git") % "boringssl") + "/boringssl@3cab5572b1fcf5a8f6018529dc30dc8d21b2a4bd",
 
   "src/packager/third_party/curl/source":
-    Var("curl_url") + "@" + Var("curl_rev"),
+    Var("curl_url") + "@curl-7_50_0",
 
   "src/packager/third_party/gflags":
     Var("chromium_git") + "/external/webrtc/trunk/third_party/gflags@cc7e9a4b374ff7b6a1cae4d76161113ea985b624",
