@@ -32,6 +32,8 @@ int64_t kSecondsToNs = 1000000000L;
 Segmenter::Segmenter(const MuxerOptions& options)
     : reference_frame_timestamp_(0),
       options_(options),
+      clear_lead_(0),
+      enable_encryption_(false),
       info_(NULL),
       muxer_listener_(NULL),
       progress_listener_(NULL),
@@ -144,6 +146,15 @@ Status Segmenter::AddSample(scoped_refptr<MediaSample> sample) {
       segment_length_sec_ = 0;
       cluster_length_sec_ = 0;
       wrote_frame = true;
+
+      if (encryptor_ && !enable_encryption_) {
+        if (sample->pts() - first_timestamp_ >=
+            clear_lead_ * info_->time_scale()) {
+          enable_encryption_ = true;
+          if (muxer_listener_)
+            muxer_listener_->OnEncryptionStart();
+        }
+      }
     }
   } else if (cluster_length_sec_ >= options_.fragment_duration) {
     if (sample->is_key_frame() || !options_.fragment_sap_aligned) {
@@ -161,19 +172,12 @@ Status Segmenter::AddSample(scoped_refptr<MediaSample> sample) {
 
   // Encrypt the frame.
   if (encryptor_) {
-    const bool encrypt_frame =
-        static_cast<double>(sample->pts() - first_timestamp_) /
-            info_->time_scale() >=
-        clear_lead_;
-    status = encryptor_->EncryptFrame(sample, encrypt_frame);
+    status = encryptor_->EncryptFrame(sample, enable_encryption_);
     if (!status.ok()) {
       LOG(ERROR) << "Error encrypting frame.";
       return status;
     }
-    if (encrypt_frame && muxer_listener_)
-      muxer_listener_->OnEncryptionStart();
   }
-
 
   // Add the sample to the durations even though we have not written the frame
   // yet.  This is needed to make sure we split Clusters at the correct point.

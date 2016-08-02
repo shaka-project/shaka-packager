@@ -135,6 +135,7 @@ class Segmenter {
   const MuxerOptions& options_;
   std::unique_ptr<Encryptor> encryptor_;
   double clear_lead_;
+  bool enable_encryption_;  // Encryption is enabled only after clear_lead_.
 
   std::unique_ptr<mkvmuxer::Cluster> cluster_;
   mkvmuxer::Cues cues_;
