@@ -59,6 +59,9 @@
         }],
         ['OS == "win"', {
           'direct_dependent_settings': {
+            'defines': [
+              'CURL_DISABLE_LDAP',
+            ],
             'link_settings': {
               'libraries': [
                 '-lws2_32.lib',
@@ -75,6 +78,17 @@
         ['_type == "static_library"', {
           'defines': [
             'CURL_STATICLIB',
+          ],
+        }],
+        ['OS == "win"', {
+          'sources': [
+            'source/lib/config-win32.h',
+            'source/lib/idn_win32.c',
+            'source/lib/system_win32.c',
+            'source/lib/system_win32.h',
+          ],
+          'defines': [
+            'BUILDING_LIBCURL',
           ],
         }],
       ],
