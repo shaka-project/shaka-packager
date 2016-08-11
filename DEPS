@@ -34,7 +34,7 @@ deps = {
     (Var("googlesource_git") % "boringssl") + "/boringssl@3cab5572b1fcf5a8f6018529dc30dc8d21b2a4bd",
 
   "src/packager/third_party/curl/source":
-    Var("curl_url") + "@curl-7_50_0",
+    Var("curl_url") + "@79e63a53bb9598af863b0afe49ad662795faeef4",  #7_50_0
 
 
   "src/packager/third_party/gflags/src":
