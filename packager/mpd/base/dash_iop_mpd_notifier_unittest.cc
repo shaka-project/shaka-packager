@@ -101,7 +101,7 @@ class DashIopMpdNotifierTest
 
   void SetUp() override {
     ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
-    output_path_ = temp_file_path_.value();
+    output_path_ = temp_file_path_.AsUTF8Unsafe();
     ON_CALL(*default_mock_adaptation_set_, Group())
         .WillByDefault(Return(kDefaultGroupId));
   }

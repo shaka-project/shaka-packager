@@ -8,6 +8,7 @@
 """Test wrapper for the sample packager binary."""
 
 import os
+import platform
 import subprocess
 
 import test_env
@@ -17,7 +18,10 @@ class PackagerApp(object):
   """Main integration class for testing the packager binary."""
 
   def __init__(self):
-    self.binary = os.path.join(test_env.SCRIPT_DIR, 'packager')
+    packager_name = 'packager'
+    if platform.system() == 'Windows':
+      packager_name += '.exe'
+    self.binary = os.path.join(test_env.SCRIPT_DIR, packager_name)
     assert os.path.exists(self.binary), ('Please run from output directory, '
                                          'e.g. out/Debug/packager_test.py')
 

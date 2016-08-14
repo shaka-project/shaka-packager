@@ -20,6 +20,7 @@
 #include "packager/base/command_line.h"
 #include "packager/base/files/file_path.h"
 #include "packager/base/logging.h"
+#include "packager/base/path_service.h"
 #include "packager/base/stl_util.h"
 #include "packager/base/strings/string_split.h"
 #include "packager/base/strings/stringprintf.h"
@@ -45,6 +46,12 @@
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/simple_mpd_notifier.h"
 #include "packager/version/version.h"
+
+#if defined(OS_WIN)
+#include <codecvt>
+#include <functional>
+#include <locale>
+#endif  // defined(OS_WIN)
 
 DEFINE_bool(use_fake_clock_for_muxer,
             false,
@@ -480,13 +487,14 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
 
   scoped_ptr<hls::HlsNotifier> hls_notifier;
   if (!FLAGS_hls_master_playlist_output.empty()) {
-    base::FilePath master_playlist_path(FLAGS_hls_master_playlist_output);
+    base::FilePath master_playlist_path(
+        base::FilePath::FromUTF8Unsafe(FLAGS_hls_master_playlist_output));
     base::FilePath master_playlist_name = master_playlist_path.BaseName();
 
     hls_notifier.reset(new hls::SimpleHlsNotifier(
         hls::HlsNotifier::HlsProfile::kOnDemandProfile, FLAGS_hls_base_url,
-        master_playlist_path.DirName().AsEndingWithSeparator().value(),
-        master_playlist_name.value()));
+        master_playlist_path.DirName().AsEndingWithSeparator().AsUTF8Unsafe(),
+        master_playlist_name.AsUTF8Unsafe()));
   }
 
   std::vector<RemuxJob*> remux_jobs;
@@ -521,7 +529,16 @@ int PackagerMain(int argc, char** argv) {
   base::AtExitManager exit;
   // Needed to enable VLOG/DVLOG through --vmodule or --v.
   base::CommandLine::Init(argc, argv);
-  CHECK(logging::InitLogging(logging::LoggingSettings()));
+
+  // Set up logging.
+  logging::LoggingSettings log_settings;
+  base::FilePath log_filename;
+  PathService::Get(base::DIR_EXE, &log_filename);
+  log_filename = log_filename.AppendASCII("packager.log");
+  log_settings.logging_dest = logging::LOG_TO_ALL;
+  log_settings.log_file = log_filename.value().c_str();
+  log_settings.delete_old = logging::DELETE_OLD_LOG_FILE;
+  CHECK(logging::InitLogging(log_settings));
 
   google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
   google::ParseCommandLineFlags(&argc, &argv, true);
@@ -552,6 +569,29 @@ int PackagerMain(int argc, char** argv) {
 }  // namespace media
 }  // namespace shaka
 
+#if defined(OS_WIN)
+// Windows wmain, which converts wide character arguments to UTF-8.
+int wmain(int argc, wchar_t* argv[], wchar_t* envp[]) {
+  std::unique_ptr<char* [], std::function<void(char**)>> utf8_argv(
+      new char*[argc], [argc](char** utf8_args) {
+        // TODO(tinskip): This leaks, but if this code is enabled, it crashes.
+        // Figure out why. I suspect gflags does something funny with the
+        // argument array.
+        // for (int idx = 0; idx < argc; ++idx)
+        //   delete[] utf8_args[idx];
+        delete[] utf8_args;
+      });
+  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+  for (int idx = 0; idx < argc; ++idx) {
+    std::string utf8_arg(converter.to_bytes(argv[idx]));
+    utf8_arg += '\0';
+    utf8_argv[idx] = new char[utf8_arg.size()];
+    memcpy(utf8_argv[idx], &utf8_arg[0], utf8_arg.size());
+  }
+  return shaka::media::PackagerMain(argc, utf8_argv.get());
+}
+#else
 int main(int argc, char** argv) {
   return shaka::media::PackagerMain(argc, argv);
 }
+#endif  // defined(OS_WIN)

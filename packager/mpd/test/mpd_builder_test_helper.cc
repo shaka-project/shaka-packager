@@ -78,7 +78,7 @@ bool ValidateMpdSchema(const std::string& mpd) {
   xml::scoped_xml_ptr<xmlDoc> schema_as_doc(
       xmlReadMemory(schema_str.data(),
                     schema_str.size(),
-                    schema_path.value().c_str(),
+                    schema_path.AsUTF8Unsafe().c_str(),
                     NULL,
                     0));
   DCHECK(schema_as_doc);

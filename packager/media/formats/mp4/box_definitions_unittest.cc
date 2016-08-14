@@ -452,7 +452,7 @@ class BoxDefinitionsTestGeneral : public testing::Test {
 
   void Modify(WebVTTConfigurationBox* vttc) {
     vttc->config = "WEBVTT\n"
-                   "Region: id=someting width=40\% lines=3";
+                   "Region: id=someting width=40% lines=3";
   }
 
   void Fill(WebVTTSourceLabelBox* vlab) {

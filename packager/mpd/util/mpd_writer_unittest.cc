@@ -92,14 +92,14 @@ TEST_F(MpdWriterTest, WriteMpdToFile) {
       GetTestDataFilePath(kFileNameVideoMediaInfo2);
 
   SetMpdNotifierFactoryForTest();
-  EXPECT_TRUE(mpd_writer_.AddFile(media_info_file1.value(), ""));
-  EXPECT_TRUE(mpd_writer_.AddFile(media_info_file2.value(), ""));
+  EXPECT_TRUE(mpd_writer_.AddFile(media_info_file1.AsUTF8Unsafe(), ""));
+  EXPECT_TRUE(mpd_writer_.AddFile(media_info_file2.AsUTF8Unsafe(), ""));
   mpd_writer_.AddBaseUrl(kBaseUrl1);
   mpd_writer_.AddBaseUrl(kBaseUrl2);
 
   base::FilePath mpd_file_path;
   ASSERT_TRUE(base::CreateTemporaryFile(&mpd_file_path));
-  EXPECT_TRUE(mpd_writer_.WriteMpdToFile(mpd_file_path.value().c_str()));
+  EXPECT_TRUE(mpd_writer_.WriteMpdToFile(mpd_file_path.AsUTF8Unsafe().c_str()));
 }
 
 }  // namespace shaka

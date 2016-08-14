@@ -20,6 +20,8 @@ const int kDataSize = 1024;
 namespace shaka {
 namespace media {
 
+using base::FilePath;
+
 class LocalFileTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -29,7 +31,7 @@ class LocalFileTest : public testing::Test {
 
     // Test file path for file_util API.
     ASSERT_TRUE(base::CreateTemporaryFile(&test_file_path_));
-    local_file_name_no_prefix_ = test_file_path_.value();
+    local_file_name_no_prefix_ = test_file_path_.AsUTF8Unsafe();
 
     // Local file name with prefix for File API.
     local_file_name_ = kLocalFilePrefix;
@@ -38,13 +40,14 @@ class LocalFileTest : public testing::Test {
 
   void TearDown() override {
     // Remove test file if created.
-    base::DeleteFile(base::FilePath(local_file_name_no_prefix_), false);
+    base::DeleteFile(FilePath::FromUTF8Unsafe(local_file_name_no_prefix_),
+         false);
   }
 
   std::string data_;
 
   // Path to the temporary file for this test.
-  base::FilePath test_file_path_;
+  FilePath test_file_path_;
   // Same as |test_file_path_| but in string form.
   std::string local_file_name_no_prefix_;
 
@@ -54,7 +57,8 @@ class LocalFileTest : public testing::Test {
 
 TEST_F(LocalFileTest, ReadNotExist) {
   // Remove test file if it exists.
-  base::DeleteFile(base::FilePath(local_file_name_no_prefix_), false);
+  base::DeleteFile(FilePath::FromUTF8Unsafe(local_file_name_no_prefix_),
+       false);
   ASSERT_TRUE(File::Open(local_file_name_.c_str(), "r") == NULL);
 }
 
@@ -68,13 +72,16 @@ TEST_F(LocalFileTest, Copy) {
   ASSERT_EQ(kDataSize,
             base::WriteFile(test_file_path_, data_.data(), kDataSize));
 
-  base::FilePath temp_dir;
-  ASSERT_TRUE(base::CreateNewTempDirectory("", &temp_dir));
+  FilePath temp_dir;
+  ASSERT_TRUE(base::CreateNewTempDirectory(FilePath::StringType(),
+             &temp_dir));
 
   // Copy the test file to temp dir as filename "a".
-  base::FilePath destination = temp_dir.Append("a");
+  FilePath destination =
+    temp_dir.Append(FilePath::FromUTF8Unsafe("a"));
   ASSERT_TRUE(
-      File::Copy(local_file_name_.c_str(), destination.value().c_str()));
+      File::Copy(FilePath::FromUTF8Unsafe(local_file_name_).AsUTF8Unsafe().c_str(),
+     destination.AsUTF8Unsafe().c_str()));
 
   // Make a buffer bigger than the expected file content size to make sure that
   // there isn't extra stuff appended.

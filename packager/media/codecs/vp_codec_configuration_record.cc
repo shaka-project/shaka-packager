@@ -161,7 +161,8 @@ void VPCodecConfigurationRecord::WriteMP4(std::vector<uint8_t>* data) const {
   uint8_t chroma = (chroma_subsampling_ << 4) | (transfer_function_ << 1) |
                    (video_full_range_flag_ ? 1 : 0);
   writer.AppendInt(chroma);
-  uint16_t codec_initialization_data_size = codec_initialization_data_.size();
+  uint16_t codec_initialization_data_size =
+    static_cast<uint16_t>(codec_initialization_data_.size());
   writer.AppendInt(codec_initialization_data_size);
   writer.AppendVector(codec_initialization_data_);
   writer.SwapBuffer(data);

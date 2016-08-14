@@ -22,6 +22,7 @@ using ::testing::AtLeast;
 using ::testing::Return;
 using ::testing::ReturnRef;
 using ::testing::_;
+using base::FilePath;
 
 namespace {
 const char kDefaultMasterPlaylistName[] = "playlist.m3u8";
@@ -39,7 +40,7 @@ class MasterPlaylistTest : public ::testing::Test {
   }
 
   MasterPlaylist master_playlist_;
-  base::FilePath test_output_dir_path_;
+  FilePath test_output_dir_path_;
   std::string test_output_dir_;
 
  private:
@@ -48,12 +49,13 @@ class MasterPlaylistTest : public ::testing::Test {
   // using base::File* related API.
   // |output_dir| is set to an equivalent value to |temp_dir_path| but formatted
   // so that media::File interface can Open it.
-  void GetOutputDir(base::FilePath* temp_dir_path, std::string* output_dir) {
+  void GetOutputDir(FilePath* temp_dir_path, std::string* output_dir) {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     ASSERT_TRUE(temp_dir_.IsValid());
     *temp_dir_path = temp_dir_.path();
     // TODO(rkuroiwa): Use memory file sys once prefix is exposed.
-    *output_dir = media::kLocalFilePrefix + temp_dir_.path().value() + "/";
+    *output_dir = media::kLocalFilePrefix + temp_dir_.path().AsUTF8Unsafe()
+      + "/";
   }
 
   base::ScopedTempDir temp_dir_;
@@ -78,8 +80,9 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistOneVideo) {
   const char kBaseUrl[] = "http://myplaylistdomain.com/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
 
-  base::FilePath master_playlist_path =
-      test_output_dir_path_.Append(kDefaultMasterPlaylistName);
+  FilePath master_playlist_path =
+    test_output_dir_path_.Append(FilePath::FromUTF8Unsafe(
+        kDefaultMasterPlaylistName));
   ASSERT_TRUE(base::PathExists(master_playlist_path))
       << "Cannot find " << master_playlist_path.value();
 
@@ -149,8 +152,9 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistVideoAndAudio) {
   const char kBaseUrl[] = "http://playlists.org/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
 
-  base::FilePath master_playlist_path =
-      test_output_dir_path_.Append(kDefaultMasterPlaylistName);
+  FilePath master_playlist_path =
+    test_output_dir_path_.Append(FilePath::FromUTF8Unsafe(
+        kDefaultMasterPlaylistName));
   ASSERT_TRUE(base::PathExists(master_playlist_path))
       << "Cannot find " << master_playlist_path.value();
 
@@ -216,8 +220,8 @@ TEST_F(MasterPlaylistTest, WriteMasterPlaylistMultipleAudioGroups) {
   const char kBaseUrl[] = "http://anydomain.com/";
   EXPECT_TRUE(master_playlist_.WriteMasterPlaylist(kBaseUrl, test_output_dir_));
 
-  base::FilePath master_playlist_path =
-      test_output_dir_path_.Append(kDefaultMasterPlaylistName);
+  FilePath master_playlist_path = test_output_dir_path_.Append(
+      FilePath::FromUTF8Unsafe(kDefaultMasterPlaylistName));
   ASSERT_TRUE(base::PathExists(master_playlist_path))
       << "Cannot find " << master_playlist_path.value();
 
@@ -266,15 +270,17 @@ TEST_F(MasterPlaylistTest, WriteAllPlaylists) {
   EXPECT_CALL(mock_playlist, SetTargetDuration(10)).WillOnce(Return(true));
   master_playlist_.AddMediaPlaylist(&mock_playlist);
 
-  EXPECT_CALL(mock_playlist,
-              WriteToFile(FileNameMatches(
-                  test_output_dir_path_.Append("media1.m3u8").value())))
+  EXPECT_CALL(
+      mock_playlist,
+      WriteToFile(FileNameMatches(
+          test_output_dir_path_.Append(FilePath::FromUTF8Unsafe("media1.m3u8"))
+              .AsUTF8Unsafe())))
       .WillOnce(Return(true));
 
   const char kBaseUrl[] = "http://domain.com/";
   EXPECT_TRUE(master_playlist_.WriteAllPlaylists(kBaseUrl, test_output_dir_));
-  base::FilePath master_playlist_path =
-      test_output_dir_path_.Append(kDefaultMasterPlaylistName);
+  FilePath master_playlist_path = test_output_dir_path_.Append(
+      FilePath::FromUTF8Unsafe(kDefaultMasterPlaylistName));
   ASSERT_TRUE(base::PathExists(master_playlist_path))
       << "Cannot find master playlist at " << master_playlist_path.value();
 }

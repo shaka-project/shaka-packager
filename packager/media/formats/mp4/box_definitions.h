@@ -117,14 +117,14 @@ struct SampleEncryption : FullBox {
   ///             entries.
   /// @return true on success, false otherwise.
   bool ParseFromSampleEncryptionData(
-      size_t iv_size,
+      uint8_t iv_size,
       std::vector<SampleEncryptionEntry>* sample_encryption_entries) const;
 
   /// We may not know @a iv_size before reading this box. In this case, we will
   /// store sample encryption data for parsing later when @a iv_size is known.
   std::vector<uint8_t> sample_encryption_data;
 
-  size_t iv_size;
+  uint8_t iv_size;
   std::vector<SampleEncryptionEntry> sample_encryption_entries;
 };
 

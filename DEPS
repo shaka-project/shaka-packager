@@ -55,7 +55,7 @@ deps = {
     Var("chromium_git") + "/chromium/src/third_party/tcmalloc/chromium@fa1492f75861094061043a17c0f779c3d35780bf",
 
   "src/packager/third_party/zlib":
-    Var("chromium_git") + "/chromium/src/third_party/zlib@bcf81d2e5f3a62b698d179c1fadba94604c5dad3",
+    Var("chromium_git") + "/chromium/src/third_party/zlib@830b5c25b5fbe37e032ea09dd011d57042dd94df",
 
   "src/packager/tools/clang":
     Var("chromium_git") + "/chromium/src/tools/clang@0de8f3bb6af64e13876273c601704795d5e00faf",

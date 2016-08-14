@@ -304,8 +304,8 @@ void MP4Muxer::GenerateAudioTrak(const AudioStreamInfo* audio_info,
     // values.
     const uint64_t kNanosecondsPerSecond = 1000000000ull;
     sample_group_description.audio_roll_recovery_entries[0].roll_distance =
-        -(audio_info->seek_preroll_ns() * audio.samplerate +
-          kNanosecondsPerSecond / 2) /
+        (0 - (audio_info->seek_preroll_ns() * audio.samplerate +
+              kNanosecondsPerSecond / 2)) /
         kNanosecondsPerSecond;
 
     sample_table.sample_to_groups.resize(1);

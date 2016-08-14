@@ -164,7 +164,7 @@ TEST_F(BufferWriterTest, WriteToFile) {
   LOG(INFO) << "Created temporary file: " << path.value();
 
   // Append an array to buffer and then write to the temporary file.
-  File* const output_file = File::Open(path.value().c_str(), "w");
+  File* const output_file = File::Open(path.AsUTF8Unsafe().c_str(), "w");
   writer_->AppendArray(kuint8Array, sizeof(kuint8Array));
   ASSERT_EQ(sizeof(kuint8Array), writer_->Size());
   ASSERT_OK(writer_->WriteToFile(output_file));
@@ -172,12 +172,11 @@ TEST_F(BufferWriterTest, WriteToFile) {
   ASSERT_TRUE(output_file->Close());
 
   // Read the file and verify.
-  File* const input_file = File::Open(path.value().c_str(), "r");
+  File* const input_file = File::Open(path.AsUTF8Unsafe().c_str(), "r");
   ASSERT_TRUE(input_file != NULL);
   std::vector<uint8_t> data_read(sizeof(kuint8Array), 0);
-  EXPECT_EQ(
-      sizeof(kuint8Array),
-      static_cast<size_t>(input_file->Read(&data_read[0], data_read.size())));
+  EXPECT_EQ(sizeof(kuint8Array), static_cast<size_t>(input_file->Read(
+                                     &data_read[0], data_read.size())));
   ASSERT_TRUE(input_file->Close());
 
   for (size_t i = 0; i < sizeof(kuint8Array); ++i)

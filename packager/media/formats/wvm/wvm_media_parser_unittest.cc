@@ -88,7 +88,7 @@ class WvmMediaParserTest : public testing::Test {
   int video_frame_count_;
   int encrypted_sample_count_;
   int64_t video_max_dts_;
-  uint32_t current_track_id_;
+  int32_t current_track_id_;
   EncryptionKey encryption_key_;
 
   void OnInit(const std::vector<scoped_refptr<StreamInfo> >& stream_infos) {
@@ -103,7 +103,7 @@ class WvmMediaParserTest : public testing::Test {
   bool OnNewSample(uint32_t track_id,
                    const scoped_refptr<MediaSample>& sample) {
     std::string stream_type;
-    if (track_id != current_track_id_) {
+    if (static_cast<int32_t>(track_id) != current_track_id_) {
       // onto next track.
       video_max_dts_ = kNoTimestamp;
       current_track_id_ = track_id;

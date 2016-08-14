@@ -87,7 +87,8 @@ class PackagerTestBasic : public ::testing::TestWithParam<const char*> {
 
   void SetUp() override {
     // Create a test directory for testing, will be deleted after test.
-    ASSERT_TRUE(base::CreateNewTempDirectory("packager_", &test_directory_));
+    ASSERT_TRUE(base::CreateNewTempDirectory(
+        base::FilePath::FromUTF8Unsafe("packager_").value(), &test_directory_));
 
     // Copy the input to test directory for easy reference.
     ASSERT_TRUE(base::CopyFile(GetTestDataFilePath(GetParam()),
@@ -118,7 +119,8 @@ class PackagerTestBasic : public ::testing::TestWithParam<const char*> {
 };
 
 std::string PackagerTestBasic::GetFullPath(const std::string& file_name) {
-  return test_directory_.AppendASCII(file_name).value();
+  return test_directory_.Append(
+      base::FilePath::FromUTF8Unsafe(file_name)).AsUTF8Unsafe();
 }
 
 bool PackagerTestBasic::ContentsEqual(const std::string& file1,
@@ -140,7 +142,7 @@ MuxerOptions PackagerTestBasic::SetupOptions(const std::string& output,
 
   options.output_file_name = GetFullPath(output);
   options.segment_template = GetFullPath(kSegmentTemplate);
-  options.temp_dir = test_directory_.value();
+  options.temp_dir = test_directory_.AsUTF8Unsafe();
   return options;
 }
 

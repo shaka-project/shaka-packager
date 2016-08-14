@@ -40,6 +40,15 @@ class BitReader {
     return ret;
   }
 
+  // Explicit T=bool overload to make MSVC happy.
+  bool ReadBits(int num_bits, bool* out) {
+    DCHECK_EQ(num_bits, 1);
+    uint64_t temp;
+    bool ret = ReadBitsInternal(num_bits, &temp);
+    *out = temp != 0;
+    return ret;
+  }
+
   /// Skip a number of bits from stream.
   /// @param num_bits specifies the number of bits to be skipped.
   /// @return false if the given number of bits cannot be skipped (not enough

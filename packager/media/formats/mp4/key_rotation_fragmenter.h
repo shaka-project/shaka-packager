@@ -66,7 +66,7 @@ class KeyRotationFragmenter : public EncryptingFragmenter {
   KeySource* encryption_key_source_;
   KeySource::TrackType track_type_;
   const int64_t crypto_period_duration_;
-  size_t prev_crypto_period_index_;
+  int64_t prev_crypto_period_index_;
 
   // For notifying new pssh boxes to the event handler.
   MuxerListener* const muxer_listener_;

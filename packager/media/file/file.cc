@@ -25,6 +25,11 @@ DEFINE_uint64(io_block_size,
               2ULL << 20,
               "Size of the block size used for threaded I/O, in bytes.");
 
+// Needed for Windows weirdness which somewhere defines CopyFile as CopyFileW.
+#ifdef CopyFile
+#undef CopyFile
+#endif  // CopyFile
+
 namespace shaka {
 namespace media {
 

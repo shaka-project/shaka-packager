@@ -332,8 +332,7 @@ std::string RoleToText(AdaptationSet::Role role) {
     case AdaptationSet::kRoleDub:
       return "dub";
     default:
-      NOTREACHED();
-      return "";
+      break;
   }
 
   NOTREACHED();
@@ -653,8 +652,8 @@ void MpdBuilder::MakePathsRelativeToMpd(const std::string& mpd_path,
                                   : mpd_path;
 
   if (!mpd_file_path.empty()) {
-    std::string mpd_dir(
-        FilePath(mpd_file_path).DirName().AsEndingWithSeparator().value());
+    std::string mpd_dir(FilePath::FromUTF8Unsafe(mpd_file_path)
+      .DirName().AsEndingWithSeparator().AsUTF8Unsafe());
     if (!mpd_dir.empty()) {
       if (media_info->has_media_file_name()) {
         media_info->set_media_file_name(

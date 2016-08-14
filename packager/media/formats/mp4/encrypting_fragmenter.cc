@@ -173,8 +173,9 @@ void EncryptingFragmenter::FinalizeFragmentForEncryption() {
   traf()->auxiliary_offset.offsets.push_back(0);
 
   // For 'cbcs' scheme, Constant IVs SHALL be used.
-  const size_t per_sample_iv_size =
-      (protection_scheme_ == FOURCC_cbcs) ? 0 : encryptor_->iv().size();
+  const uint8_t per_sample_iv_size =
+    (protection_scheme_ == FOURCC_cbcs) ? 0 :
+    static_cast<uint8_t>(encryptor_->iv().size());
   traf()->sample_encryption.iv_size = per_sample_iv_size;
 
   // Optimize saiz box.
@@ -189,7 +190,7 @@ void EncryptingFragmenter::FinalizeFragmentForEncryption() {
     // |sample_info_sizes| table is filled in only for subsample encryption,
     // otherwise |sample_info_size| is just the IV size.
     DCHECK(!IsSubsampleEncryptionRequired());
-    saiz.default_sample_info_size = per_sample_iv_size;
+    saiz.default_sample_info_size = static_cast<uint8_t>(per_sample_iv_size);
   }
 
   // It should only happen with full sample encryption + constant iv, i.e.
@@ -266,7 +267,8 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
       const bool is_superframe = vpx_frames.size() > 1;
       for (const VPxFrameInfo& frame : vpx_frames) {
         SubsampleEntry subsample;
-        subsample.clear_bytes = frame.uncompressed_header_size;
+        subsample.clear_bytes =
+            static_cast<uint16_t>(frame.uncompressed_header_size);
         subsample.cipher_bytes =
             frame.frame_size - frame.uncompressed_header_size;
 
@@ -296,7 +298,7 @@ Status EncryptingFragmenter::EncryptSample(scoped_refptr<MediaSample> sample) {
         DCHECK_LE(index_size, 2 + vpx_frames.size() * 4);
         DCHECK_GE(index_size, 2 + vpx_frames.size() * 1);
         SubsampleEntry subsample;
-        subsample.clear_bytes = index_size;
+        subsample.clear_bytes = static_cast<uint16_t>(index_size);
         subsample.cipher_bytes = 0;
         sample_encryption_entry.subsamples.push_back(subsample);
       }

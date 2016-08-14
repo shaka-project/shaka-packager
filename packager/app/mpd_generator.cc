@@ -14,6 +14,12 @@
 #include "packager/mpd/util/mpd_writer.h"
 #include "packager/version/version.h"
 
+#if defined(OS_WIN)
+#include <codecvt>
+#include <functional>
+#include <locale>
+#endif  // defined(OS_WIN)
+
 namespace shaka {
 namespace {
 const char kUsage[] =
@@ -103,6 +109,29 @@ int MpdMain(int argc, char** argv) {
 }  // namespace
 }  // namespace shaka
 
+#if defined(OS_WIN)
+// Windows wmain, which converts wide character arguments to UTF-8.
+int wmain(int argc, wchar_t* argv[], wchar_t* envp[]) {
+  std::unique_ptr<char* [], std::function<void(char**)>> utf8_argv(
+      new char*[argc], [argc](char** utf8_args) {
+        // TODO(tinskip): This leaks, but if this code is enabled, it crashes.
+        // Figure out why. I suspect gflags does something funny with the
+        // argument array.
+        // for (int idx = 0; idx < argc; ++idx)
+        //   delete[] utf8_args[idx];
+        delete[] utf8_args;
+      });
+  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
+  for (int idx = 0; idx < argc; ++idx) {
+    std::string utf8_arg(converter.to_bytes(argv[idx]));
+    utf8_arg += '\0';
+    utf8_argv[idx] = new char[utf8_arg.size()];
+    memcpy(utf8_argv[idx], &utf8_arg[0], utf8_arg.size());
+  }
+  return shaka::MpdMain(argc, utf8_argv.get());
+}
+#else
 int main(int argc, char** argv) {
   return shaka::MpdMain(argc, argv);
 }
+#endif  // !defined(OS_WIN)

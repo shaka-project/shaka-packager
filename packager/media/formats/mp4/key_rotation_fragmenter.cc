@@ -52,7 +52,7 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption(
     bool enable_encryption) {
   bool need_to_refresh_encryptor = !encryptor();
 
-  size_t current_crypto_period_index =
+  int64_t current_crypto_period_index =
       traf()->decode_time.decode_time / crypto_period_duration_;
   if (current_crypto_period_index != prev_crypto_period_index_) {
     scoped_ptr<EncryptionKey> encryption_key(new EncryptionKey());
@@ -123,7 +123,8 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption(
     sample_group_entry.per_sample_iv_size = 0;
     sample_group_entry.constant_iv = encryptor()->iv();
   } else {
-    sample_group_entry.per_sample_iv_size = encryptor()->iv().size();
+    sample_group_entry.per_sample_iv_size =
+      static_cast<uint8_t>(encryptor()->iv().size());
   }
   sample_group_entry.crypt_byte_block = crypt_byte_block();
   sample_group_entry.skip_byte_block = skip_byte_block();

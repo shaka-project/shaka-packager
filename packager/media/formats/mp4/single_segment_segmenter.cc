@@ -83,10 +83,11 @@ Status SingleSegmentSegmenter::DoInitialize() {
       LOG(ERROR) << "Failed to create temporary file.";
       return Status(error::FILE_FAILURE, "Unable to create temporary file.");
     }
-    temp_file_name_ = temp_file_path.value();
+    temp_file_name_ = temp_file_path.AsUTF8Unsafe();
   } else {
     temp_file_name_ =
-        base::FilePath(options().temp_dir).Append(TempFileName()).value();
+      base::FilePath::FromUTF8Unsafe(options().temp_dir)
+        .Append(base::FilePath::FromUTF8Unsafe(TempFileName())).AsUTF8Unsafe();
   }
   temp_file_.reset(File::Open(temp_file_name_.c_str(), "w"));
   return temp_file_

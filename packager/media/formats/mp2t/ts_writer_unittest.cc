@@ -108,7 +108,8 @@ class TsWriterTest : public ::testing::Test {
   void SetUp() override {
     base::CreateTemporaryFile(&test_file_path_);
     // TODO(rkuroiwa): Use memory file prefix once its exposed.
-    test_file_name_ = kLocalFilePrefix + test_file_path_.value();
+    test_file_name_ =
+        std::string(kLocalFilePrefix) + test_file_path_.AsUTF8Unsafe();
   }
 
   void TearDown() override {

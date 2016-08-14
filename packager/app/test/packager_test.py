@@ -9,6 +9,7 @@
 
 import filecmp
 import os
+import platform
 import re
 import shutil
 import subprocess
@@ -66,6 +67,7 @@ class PackagerAppTest(unittest.TestCase):
                             ' num_channels: 2\n'
                             ' sampling_frequency: 44100\n'
                             ' language: und\n')
+    stream_info = stream_info.replace('\r\n', '\n')
     self.assertIn(expected_stream_info, stream_info,
                   '\nExpecting: \n %s\n\nBut seeing: \n%s' %
                   (expected_stream_info, stream_info))
@@ -527,7 +529,10 @@ class PackagerAppTest(unittest.TestCase):
     else:
       match = filecmp.cmp(test_output, golden_file)
       if not match:
-        p = subprocess.Popen(['git', '--no-pager', 'diff', '--color=auto',
+        git = 'git'
+        if platform.system() == 'Windows':
+          git += '.bat'
+        p = subprocess.Popen([git, '--no-pager', 'diff', '--color=auto',
                               '--no-ext-diff', '--no-index', golden_file,
                               test_output],
                              stdout=subprocess.PIPE,
@@ -538,11 +543,13 @@ class PackagerAppTest(unittest.TestCase):
   # '*.media_info' outputs contain media file names, which is changing for
   # every test run. These needs to be replaced for comparison.
   def _DiffMediaInfoGold(self, test_output, golden_file_name):
+    if platform.system() == 'Windows':
+      test_output = test_output.replace('\\', '\\\\')
     media_info_output = test_output + '.media_info'
     # Replaces filename, which is changing for every test run.
-    with open(media_info_output, 'r') as f:
+    with open(media_info_output, 'rb') as f:
       content = f.read()
-    with open(media_info_output, 'w') as f:
+    with open(media_info_output, 'wb') as f:
       f.write(content.replace(test_output, 'place_holder'))
     self._DiffGold(media_info_output, golden_file_name + '.media_info')
 
@@ -565,7 +572,7 @@ class PackagerAppTest(unittest.TestCase):
   # Live mpd contains current availabilityStartTime and publishTime, which
   # needs to be replaced for comparison.
   def _DiffLiveMpdGold(self, test_output, golden_file_name):
-    with open(test_output, 'r') as f:
+    with open(test_output, 'rb') as f:
       content = f.read()
 
     # Extract availabilityStartTime.
@@ -579,7 +586,7 @@ class PackagerAppTest(unittest.TestCase):
     self.assertIsNotNone(m)
     publish_time = m.group(0)
     print publish_time
-    with open(test_output, 'w') as f:
+    with open(test_output, 'wb') as f:
       f.write(content.replace(
           availability_start_time,
           'availabilityStartTime="some_availability_start_time"').replace(

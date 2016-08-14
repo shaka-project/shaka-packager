@@ -140,15 +140,17 @@ void ESDescriptor::Write(BufferWriter* writer) const {
   const std::vector<uint8_t> kEmptyDecodingBufferSize(3, 0);
   const uint8_t kNoEsFlags = 0;
 
-  const uint8_t decoder_specific_info_size = decoder_specific_info_.size();
+  const uint8_t decoder_specific_info_size =
+    static_cast<uint8_t>(decoder_specific_info_.size());
 
   // 6 bit stream type. The last bit is reserved with 1.
   const uint8_t stream_type = (kAudioStreamType << 2) | 1;
-  const uint8_t decoder_config_size = decoder_specific_info_size + kHeaderSize +
-                                      sizeof(uint8_t) +  // object_type_.
-                                      sizeof(stream_type) +
-                                      kEmptyDecodingBufferSize.size() +
-                                      sizeof(kUnknownBitrate) * 2;
+  const uint8_t decoder_config_size =
+    static_cast<uint8_t>(decoder_specific_info_size + kHeaderSize +
+       sizeof(uint8_t) +  // object_type_.
+       sizeof(stream_type) +
+       kEmptyDecodingBufferSize.size() +
+       sizeof(kUnknownBitrate) * 2);
 
   const uint8_t sl_config_size = sizeof(uint8_t);  // predefined.
   const uint8_t es_size = decoder_config_size + kHeaderSize + sl_config_size +
@@ -178,7 +180,8 @@ void ESDescriptor::Write(BufferWriter* writer) const {
 
 size_t ESDescriptor::ComputeSize() const {
   // A bit magical. Refer to ESDescriptor::Write for details.
-  const uint8_t decoder_specific_info_size = decoder_specific_info_.size();
+  const uint8_t decoder_specific_info_size =
+    static_cast<uint8_t>(decoder_specific_info_.size());
   const uint8_t decoder_config_size = decoder_specific_info_size + kHeaderSize +
                                       sizeof(uint8_t) * 5 +
                                       sizeof(uint32_t) * 2;

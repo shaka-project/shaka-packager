@@ -46,7 +46,7 @@ const size_t kInvalidIvSize = 1;
 // According to ISO/IEC FDIS 23001-7: CENC spec, IV should be either
 // 64-bit (8-byte) or 128-bit (16-byte).
 // |per_sample_iv_size| of 0 means constant_iv is used.
-bool IsIvSizeValid(size_t per_sample_iv_size) {
+bool IsIvSizeValid(uint8_t per_sample_iv_size) {
   return per_sample_iv_size == 0 || per_sample_iv_size == 8 ||
          per_sample_iv_size == 16;
 }
@@ -251,7 +251,7 @@ bool SampleEncryptionEntry::ReadWrite(uint8_t iv_size,
     return true;
   }
 
-  uint16_t subsample_count = subsamples.size();
+  uint16_t subsample_count = static_cast<uint16_t>(subsamples.size());
   RCHECK(buffer->ReadWriteUInt16(&subsample_count));
   RCHECK(subsample_count > 0);
   subsamples.resize(subsample_count);
@@ -289,7 +289,7 @@ bool SampleEncryptionEntry::ParseFromBuffer(uint8_t iv_size,
 
 uint32_t SampleEncryptionEntry::ComputeSize() const {
   const uint32_t subsample_entry_size = sizeof(uint16_t) + sizeof(uint32_t);
-  const uint16_t subsample_count = subsamples.size();
+  const uint16_t subsample_count = static_cast<uint16_t>(subsamples.size());
   return initialization_vector.size() +
          (subsample_count > 0 ? (sizeof(subsample_count) +
                                  subsample_entry_size * subsample_count)
@@ -331,7 +331,7 @@ bool SampleEncryption::ReadWriteInternal(BoxBuffer* buffer) {
   sample_encryption_entries.resize(sample_count);
   for (auto& sample_encryption_entry : sample_encryption_entries) {
     RCHECK(sample_encryption_entry.ReadWrite(
-        iv_size, flags & kUseSubsampleEncryption, buffer));
+        iv_size, (flags & kUseSubsampleEncryption) != 0, buffer) != 0);
   }
   return true;
 }
@@ -357,7 +357,7 @@ uint32_t SampleEncryption::ComputeSizeInternal() {
 }
 
 bool SampleEncryption::ParseFromSampleEncryptionData(
-    size_t iv_size,
+    uint8_t iv_size,
     std::vector<SampleEncryptionEntry>* sample_encryption_entries) const {
   DCHECK(IsIvSizeValid(iv_size));
 
@@ -369,7 +369,7 @@ bool SampleEncryption::ParseFromSampleEncryptionData(
   sample_encryption_entries->resize(sample_count);
   for (auto& sample_encryption_entry : *sample_encryption_entries) {
     RCHECK(sample_encryption_entry.ParseFromBuffer(
-        iv_size, flags & kUseSubsampleEncryption, &reader));
+        iv_size, (flags & kUseSubsampleEncryption) != 0, &reader) != 0);
   }
   return true;
 }
@@ -439,7 +439,8 @@ bool TrackEncryption::ReadWriteInternal(BoxBuffer* buffer) {
 
   if (default_is_protected == 1) {
     if (default_per_sample_iv_size == 0) {  // For constant iv.
-      uint8_t default_constant_iv_size = default_constant_iv.size();
+      uint8_t default_constant_iv_size =
+          static_cast<uint8_t>(default_constant_iv.size());
       RCHECK(buffer->ReadWriteUInt8(&default_constant_iv_size));
       RCHECK(default_constant_iv_size == 8 || default_constant_iv_size == 16);
       RCHECK(buffer->ReadWriteVector(&default_constant_iv,
@@ -960,7 +961,7 @@ bool CencSampleEncryptionInfoEntry::ReadWrite(BoxBuffer* buffer) {
 
   if (is_protected == 1) {
     if (per_sample_iv_size == 0) {  // For constant iv.
-      uint8_t constant_iv_size = constant_iv.size();
+      uint8_t constant_iv_size = static_cast<uint8_t>(constant_iv.size());
       RCHECK(buffer->ReadWriteUInt8(&constant_iv_size));
       RCHECK(constant_iv_size == 8 || constant_iv_size == 16);
       RCHECK(buffer->ReadWriteVector(&constant_iv, constant_iv_size));
@@ -2369,7 +2370,7 @@ bool TrackFragmentRun::ReadWriteInternal(BoxBuffer* buffer) {
     NOTIMPLEMENTED();
   }
 
-  uint32_t first_sample_flags;
+  uint32_t first_sample_flags(0);
 
   if (buffer->Reading()) {
     if (first_sample_flags_present)
@@ -2541,7 +2542,7 @@ bool SegmentIndex::ReadWriteInternal(BoxBuffer* buffer) {
       buffer->ReadWriteUInt64NBytes(&earliest_presentation_time, num_bytes) &&
       buffer->ReadWriteUInt64NBytes(&first_offset, num_bytes));
 
-  uint16_t reference_count = references.size();
+  uint16_t reference_count = static_cast<uint16_t>(references.size());
   RCHECK(buffer->IgnoreBytes(2) &&  // reserved.
          buffer->ReadWriteUInt16(&reference_count));
   references.resize(reference_count);

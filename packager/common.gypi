@@ -32,6 +32,14 @@
           '-Wno-reserved-user-defined-literal',
         ],
       }],
+      ['OS == "win"', {
+        'msvs_settings': {
+          'VCCLCompilerTool': {
+            'WarnAsError': 'true',
+            'DisableSpecificWarnings': ['4125']
+          },
+        },
+      }],
     ],
   },
 }

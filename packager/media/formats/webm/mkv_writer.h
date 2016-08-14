@@ -56,7 +56,7 @@ class MkvWriter : public mkvmuxer::IMkvWriter {
   /// Writes the contents of the given file to this file, up to a maximum
   /// number of bytes.  If @a max_copy is negative, will copy to EOF.
   /// @return The number of bytes written; or < 0 on error.
-  int64_t WriteFromFile(File* source, uint64_t max_copy);
+  int64_t WriteFromFile(File* source, int64_t max_copy);
 
   File* file() { return file_.get(); }
 

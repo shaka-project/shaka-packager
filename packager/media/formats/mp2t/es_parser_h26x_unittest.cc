@@ -171,7 +171,7 @@ void EsParserH26xTest::RunTest(const H265NaluType* types,
       cur_sample_data.push_back(0);
       cur_sample_data.push_back(0);
       cur_sample_data.push_back(0);
-      cur_sample_data.push_back(es_data.size());
+      cur_sample_data.push_back(static_cast<uint8_t>(es_data.size()));
       cur_sample_data.insert(cur_sample_data.end(), es_data.begin(),
                              es_data.end());
       es_data.insert(es_data.begin(), kStartCode,

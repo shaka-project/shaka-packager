@@ -378,7 +378,7 @@ bool AacProgramMapTableWriter::EncryptedSegmentPmtWithParameters(
   // -12 because there are 12 bytes between 'descriptor_length' in
   // registration_descriptor and 'setup_data_length' in audio_setup_information.
   if (aac_audio_specific_config_.size() >
-      std::numeric_limits<uint8_t>::max() - 12) {
+      std::numeric_limits<uint8_t>::max() - 12U) {
     LOG(ERROR) << "AACAudioSpecificConfig of size: "
                << aac_audio_specific_config_.size()
                << " will not fit in the descriptor.";

@@ -102,7 +102,8 @@ void GenerateSinf(const EncryptionKey& encryption_key,
     track_encryption.default_per_sample_iv_size = 0;
     track_encryption.default_constant_iv = encryption_key.iv;
   } else {
-    track_encryption.default_per_sample_iv_size = encryption_key.iv.size();
+    track_encryption.default_per_sample_iv_size =
+      static_cast<uint8_t>(encryption_key.iv.size());
   }
   track_encryption.default_crypt_byte_block = pattern.crypt_byte_block;
   track_encryption.default_skip_byte_block = pattern.skip_byte_block;

@@ -65,7 +65,8 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
     ASSERT_TRUE(base::CreateTemporaryFile(&temp_file_path_));
     DLOG(INFO) << "Created temp file: " << temp_file_path_.value();
 
-    listener_.reset(new VodMediaInfoDumpMuxerListener(temp_file_path_.value()));
+    listener_.reset(new VodMediaInfoDumpMuxerListener(temp_file_path_
+                  .AsUTF8Unsafe()));
   }
 
   void TearDown() override {
@@ -106,7 +107,7 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
 
   void ExpectTempFileToEqual(const std::string& expected_protobuf) {
     std::string temp_file_media_info_str;
-    ASSERT_TRUE(File::ReadFileToString(temp_file_path_.value().c_str(),
+    ASSERT_TRUE(File::ReadFileToString(temp_file_path_.AsUTF8Unsafe().c_str(),
                                        &temp_file_media_info_str));
     ASSERT_TRUE(!temp_file_media_info_str.empty());
 

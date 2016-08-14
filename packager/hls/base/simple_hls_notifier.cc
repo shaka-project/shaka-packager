@@ -53,9 +53,9 @@ void MakePathsRelativeToOutputDirectory(const std::string& output_dir,
     return;
 
   std::string directory_with_separator(
-      base::FilePath(prefix_stripped_output_dir)
-          .AsEndingWithSeparator()
-          .value());
+      base::FilePath::FromUTF8Unsafe(prefix_stripped_output_dir)
+      .AsEndingWithSeparator()
+      .AsUTF8Unsafe());
   if (directory_with_separator.empty())
     return;
 

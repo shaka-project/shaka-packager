@@ -99,7 +99,7 @@ class MP4MediaParserTest : public testing::Test {
 
   bool ParseMP4File(const std::string& filename, int append_bytes) {
     InitializeParser(NULL);
-    if (!parser_->LoadMoov(GetTestDataFilePath(filename).value()))
+    if (!parser_->LoadMoov(GetTestDataFilePath(filename).AsUTF8Unsafe()))
       return false;
     std::vector<uint8_t> buffer = ReadTestDataFile(filename);
     return AppendDataInPieces(buffer.data(), buffer.size(), append_bytes);

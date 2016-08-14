@@ -194,14 +194,14 @@ class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
 
   // Injects a clock that always returns 2016 Jan 11 15:10:24 in UTC.
   void InjectTestClock() {
-    base::Time::Exploded test_time = {.year = 2016,
-                                      .month = 1,
-                                      .day_of_week = 1,  // Monday.
-                                      .day_of_month = 11,
-                                      .hour = 15,
-                                      .minute = 10,
-                                      .second = 24,
-                                      .millisecond = 0};
+    base::Time::Exploded test_time = { 2016,  // year.
+                                       1,  // month
+                                       1,  // day_of_week = Monday.
+                                       11,  // day_of_month
+                                       15,  // hour.
+                                       10,  // minute.
+                                       24,  // second.
+                                       0 };  // millisecond.
     ASSERT_TRUE(test_time.HasValidValues());
     mpd_.InjectClockForTesting(scoped_ptr<base::Clock>(
         new TestClock(base::Time::FromUTCExploded(test_time))));
@@ -1975,7 +1975,7 @@ TEST_F(StaticMpdBuilderTest, WriteToFile) {
 
   base::FilePath file_path;
   ASSERT_TRUE(base::CreateTemporaryFile(&file_path));
-  media::File* file = media::File::Open(file_path.value().data(), "w");
+  media::File* file = media::File::Open(file_path.AsUTF8Unsafe().c_str(), "w");
   ASSERT_TRUE(file);
   ASSERT_TRUE(mpd_.WriteMpdToFile(file));
   ASSERT_TRUE(file->Close());
@@ -2472,17 +2472,22 @@ TEST_F(TimeShiftBufferDepthTest, ManySegments) {
 }
 
 TEST(RelativePaths, PathsModified) {
-  const std::string kCommonPath(FilePath("foo").Append("bar").value());
+  const FilePath kCommonPath(
+      FilePath::FromUTF8Unsafe("foo").Append(FilePath::FromUTF8Unsafe("bar")));
   const std::string kMediaFileBase("media.mp4");
   const std::string kInitSegmentBase("init.mp4");
   const std::string kSegmentTemplateBase("segment-$Number$.mp4");
   const std::string kMediaFile(
-      FilePath(kCommonPath).Append(kMediaFileBase).value());
+      kCommonPath.Append(FilePath::FromUTF8Unsafe(kMediaFileBase))
+          .AsUTF8Unsafe());
   const std::string kInitSegment(
-      FilePath(kCommonPath).Append(kInitSegmentBase).value());
+      kCommonPath.Append(FilePath::FromUTF8Unsafe(kInitSegmentBase))
+          .AsUTF8Unsafe());
   const std::string kSegmentTemplate(
-      FilePath(kCommonPath).Append(kSegmentTemplateBase).value());
-  const std::string kMpd(FilePath(kCommonPath).Append("media.mpd").value());
+      kCommonPath.Append(FilePath::FromUTF8Unsafe(kSegmentTemplateBase))
+          .AsUTF8Unsafe());
+  const std::string kMpd(
+      kCommonPath.Append(FilePath::FromUTF8Unsafe("media.mpd")).AsUTF8Unsafe());
   MediaInfo media_info;
 
   media_info.set_media_file_name(kMediaFile);
@@ -2495,18 +2500,24 @@ TEST(RelativePaths, PathsModified) {
 }
 
 TEST(RelativePaths, PathsNotModified) {
-  const std::string kMediaCommon(FilePath("foo").Append("bar").value());
+  const FilePath kMediaCommon(
+      FilePath::FromUTF8Unsafe("foo").Append(FilePath::FromUTF8Unsafe("bar")));
   const std::string kMediaFileBase("media.mp4");
   const std::string kInitSegmentBase("init.mp4");
   const std::string kSegmentTemplateBase("segment-$Number$.mp4");
   const std::string kMediaFile(
-      FilePath(kMediaCommon).Append(kMediaFileBase).value());
+      kMediaCommon.Append(FilePath::FromUTF8Unsafe(kMediaFileBase))
+          .AsUTF8Unsafe());
   const std::string kInitSegment(
-      FilePath(kMediaCommon).Append(kInitSegmentBase).value());
+      kMediaCommon.Append(FilePath::FromUTF8Unsafe(kInitSegmentBase))
+          .AsUTF8Unsafe());
   const std::string kSegmentTemplate(
-      FilePath(kMediaCommon).Append(kSegmentTemplateBase).value());
-  const std::string kMpd(
-      FilePath("foo").Append("baz").Append("media.mpd").value());
+      kMediaCommon.Append(FilePath::FromUTF8Unsafe(kSegmentTemplateBase))
+          .AsUTF8Unsafe());
+  const std::string kMpd(FilePath::FromUTF8Unsafe("foo")
+                             .Append(FilePath::FromUTF8Unsafe("baz"))
+                             .Append(FilePath::FromUTF8Unsafe("media.mpd"))
+                             .AsUTF8Unsafe());
   MediaInfo media_info;
 
   media_info.set_media_file_name(kMediaFile);

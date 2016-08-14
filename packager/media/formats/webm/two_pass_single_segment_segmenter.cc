@@ -40,7 +40,8 @@ std::string TempFileName(const MuxerOptions& options) {
   }
   std::string file_prefix =
       base::StringPrintf("packager-tempfile-%x-%" PRIx64 ".tmp", tid, rand);
-  return base::FilePath(options.temp_dir).Append(file_prefix).value();
+  return base::FilePath::FromUTF8Unsafe(options.temp_dir).Append(
+      base::FilePath::FromUTF8Unsafe(file_prefix)).AsUTF8Unsafe();
 }
 
 // Skips a given number of bytes in a file by reading.  This allows

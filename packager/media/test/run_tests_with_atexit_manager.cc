@@ -8,15 +8,27 @@
 
 #include "packager/base/at_exit.h"
 #include "packager/base/command_line.h"
+#include "packager/base/files/file_path.h"
 #include "packager/base/logging.h"
+#include "packager/base/path_service.h"
 
 int main(int argc, char **argv) {
-  ::testing::InitGoogleTest(&argc, argv);
+  base::AtExitManager exit;
 
   // Needed to enable VLOG/DVLOG through --vmodule or --v.
   base::CommandLine::Init(argc, argv);
-  CHECK(logging::InitLogging(logging::LoggingSettings()));
 
-  base::AtExitManager exit;
+  // Set up logging.
+  logging::LoggingSettings log_settings;
+  base::FilePath log_filename;
+  PathService::Get(base::DIR_EXE, &log_filename);
+  log_filename = log_filename.AppendASCII("test.log");
+  log_settings.logging_dest = logging::LOG_TO_ALL;
+  log_settings.log_file = log_filename.value().c_str();
+  log_settings.delete_old = logging::DELETE_OLD_LOG_FILE;
+  CHECK(logging::InitLogging(log_settings));
+
+  ::testing::InitGoogleTest(&argc, argv);
+
   return RUN_ALL_TESTS();
 }
