@@ -27,10 +27,9 @@ const int kH265NaluHeaderSize = 2;
 
 }  // namespace
 
-
 EsParserH26x::EsParserH26x(
     Nalu::CodecType type,
-    scoped_ptr<H26xByteToUnitStreamConverter> stream_converter,
+    std::unique_ptr<H26xByteToUnitStreamConverter> stream_converter,
     uint32_t pid,
     const EmitSampleCB& emit_sample_cb)
     : EsParser(pid),
@@ -38,7 +37,7 @@ EsParserH26x::EsParserH26x(
       type_(type),
       es_queue_(new media::OffsetByteQueue()),
       current_search_position_(0),
-      stream_converter_(stream_converter.Pass()),
+      stream_converter_(std::move(stream_converter)),
       pending_sample_duration_(0),
       waiting_for_key_frame_(true) {}
 

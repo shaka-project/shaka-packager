@@ -8,10 +8,10 @@
 #define MEDIA_FORMATS_MP4_SEGMENTER_H_
 
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "packager/base/memory/ref_counted.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/status.h"
 #include "packager/media/formats/mp4/box_definitions.h"
@@ -41,8 +41,8 @@ class Fragmenter;
 class Segmenter {
  public:
   Segmenter(const MuxerOptions& options,
-            scoped_ptr<FileType> ftyp,
-            scoped_ptr<Movie> moov);
+            std::unique_ptr<FileType> ftyp,
+            std::unique_ptr<Movie> moov);
   virtual ~Segmenter();
 
   /// Initialize the segmenter.
@@ -129,11 +129,11 @@ class Segmenter {
   Status FinalizeFragment(bool finalize_segment, Fragmenter* fragment);
 
   const MuxerOptions& options_;
-  scoped_ptr<FileType> ftyp_;
-  scoped_ptr<Movie> moov_;
-  scoped_ptr<MovieFragment> moof_;
-  scoped_ptr<BufferWriter> fragment_buffer_;
-  scoped_ptr<SegmentIndex> sidx_;
+  std::unique_ptr<FileType> ftyp_;
+  std::unique_ptr<Movie> moov_;
+  std::unique_ptr<MovieFragment> moof_;
+  std::unique_ptr<BufferWriter> fragment_buffer_;
+  std::unique_ptr<SegmentIndex> sidx_;
   std::vector<Fragmenter*> fragmenters_;
   std::vector<uint64_t> segment_durations_;
   std::map<const MediaStream*, uint32_t> stream_map_;

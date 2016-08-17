@@ -82,13 +82,13 @@ namespace shaka {
 namespace media {
 namespace mp2t {
 
-TsSectionPes::TsSectionPes(scoped_ptr<EsParser> es_parser)
-  : es_parser_(es_parser.release()),
-    wait_for_pusi_(true),
-    previous_pts_valid_(false),
-    previous_pts_(0),
-    previous_dts_valid_(false),
-    previous_dts_(0) {
+TsSectionPes::TsSectionPes(std::unique_ptr<EsParser> es_parser)
+    : es_parser_(es_parser.release()),
+      wait_for_pusi_(true),
+      previous_pts_valid_(false),
+      previous_pts_(0),
+      previous_dts_valid_(false),
+      previous_dts_(0) {
   DCHECK(es_parser_);
 }
 

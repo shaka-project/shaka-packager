@@ -11,11 +11,11 @@
 #ifndef MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_
 #define MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
-#include "packager/base/compiler_specific.h"
-#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/macros.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/event/muxer_listener.h"
 
@@ -68,9 +68,8 @@ class VodMediaInfoDumpMuxerListener : public MuxerListener {
                                    const std::string& output_file_path);
 
  private:
-
   std::string output_file_name_;
-  scoped_ptr<MediaInfo> media_info_;
+  std::unique_ptr<MediaInfo> media_info_;
 
   bool is_encrypted_;
   // Storage for values passed to OnEncryptionInfoReady().

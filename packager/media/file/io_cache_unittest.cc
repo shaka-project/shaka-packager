@@ -91,8 +91,8 @@ class IoCacheTest : public testing::Test {
     }
   }
 
-  scoped_ptr<IoCache> cache_;
-  scoped_ptr<ClosureThread> writer_thread_;
+  std::unique_ptr<IoCache> cache_;
+  std::unique_ptr<ClosureThread> writer_thread_;
   uint8_t reference_block_[kBlockSize];
   bool cache_closed_;
 };

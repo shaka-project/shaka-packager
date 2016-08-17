@@ -1134,7 +1134,7 @@ bool WvmMediaParser::ProcessEcm() {
   std::vector<uint8_t> decrypted_content_key_vec(
       content_key_buffer.begin() + 4,
       content_key_buffer.begin() + 20);
-  scoped_ptr<AesCbcDecryptor> content_decryptor(
+  std::unique_ptr<AesCbcDecryptor> content_decryptor(
       new AesCbcDecryptor(kCtsPadding, AesCryptor::kUseConstantIv));
   if (!content_decryptor->InitializeWithIv(decrypted_content_key_vec,
                                            zero_iv)) {
@@ -1142,7 +1142,7 @@ bool WvmMediaParser::ProcessEcm() {
     return false;
   }
 
-  content_decryptor_ = content_decryptor.Pass();
+  content_decryptor_ = std::move(content_decryptor);
   return true;
 }
 

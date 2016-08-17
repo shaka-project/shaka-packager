@@ -7,8 +7,8 @@
 #ifndef PACKAGER_FILE_THREADED_IO_FILE_H_
 #define PACKAGER_FILE_THREADED_IO_FILE_H_
 
+#include <memory>
 #include "packager/base/atomicops.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/synchronization/waitable_event.h"
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
@@ -25,7 +25,7 @@ class ThreadedIoFile : public File {
     kOutputMode
   };
 
-  ThreadedIoFile(scoped_ptr<File, FileCloser> internal_file,
+  ThreadedIoFile(std::unique_ptr<File, FileCloser> internal_file,
                  Mode mode,
                  uint64_t io_cache_size,
                  uint64_t io_block_size);
@@ -53,7 +53,7 @@ class ThreadedIoFile : public File {
   void RunInInputMode();
   void RunInOutputMode();
 
-  scoped_ptr<File, FileCloser> internal_file_;
+  std::unique_ptr<File, FileCloser> internal_file_;
   const Mode mode_;
   IoCache cache_;
   std::vector<uint8_t> io_buffer_;

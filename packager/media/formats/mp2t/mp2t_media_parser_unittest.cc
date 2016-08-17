@@ -36,7 +36,7 @@ class Mp2tMediaParserTest : public testing::Test {
  protected:
   typedef std::map<int, scoped_refptr<StreamInfo> > StreamMap;
 
-  scoped_ptr<Mp2tMediaParser> parser_;
+  std::unique_ptr<Mp2tMediaParser> parser_;
   StreamMap stream_map_;
   int audio_frame_count_;
   int video_frame_count_;

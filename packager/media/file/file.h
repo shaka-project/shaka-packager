@@ -128,7 +128,7 @@ class File {
  protected:
   explicit File(const std::string& file_name) : file_name_(file_name) {}
   /// Do *not* call the destructor directly (with the "delete" keyword)
-  /// nor use scoped_ptr; instead use Close().
+  /// nor use std::unique_ptr; instead use Close().
   virtual ~File() {}
 
   /// Internal open. Should not be used directly.

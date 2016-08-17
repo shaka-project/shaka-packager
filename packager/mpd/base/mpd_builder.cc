@@ -12,13 +12,13 @@
 #include <cmath>
 #include <iterator>
 #include <list>
+#include <memory>
 #include <string>
 
 #include "packager/base/base64.h"
 #include "packager/base/bind.h"
 #include "packager/base/files/file_path.h"
 #include "packager/base/logging.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/synchronization/lock.h"
@@ -411,7 +411,7 @@ void MpdBuilder::AddBaseUrl(const std::string& base_url) {
 }
 
 AdaptationSet* MpdBuilder::AddAdaptationSet(const std::string& lang) {
-  scoped_ptr<AdaptationSet> adaptation_set(
+  std::unique_ptr<AdaptationSet> adaptation_set(
       new AdaptationSet(adaptation_set_counter_.GetNext(), lang, mpd_options_,
                         type_, &representation_counter_));
 
@@ -468,7 +468,7 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
       adaptation_sets_.begin();
   for (; adaptation_sets_it != adaptation_sets_.end(); ++adaptation_sets_it) {
     xml::scoped_xml_ptr<xmlNode> child((*adaptation_sets_it)->GetXml());
-    if (!child.get() || !period.AddChild(child.Pass()))
+    if (!child.get() || !period.AddChild(std::move(child)))
       return NULL;
   }
 
@@ -694,10 +694,10 @@ Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
   const uint32_t representation_id = representation_counter_->GetNext();
   // Note that AdaptationSet outlive Representation, so this object
   // will die before AdaptationSet.
-  scoped_ptr<RepresentationStateChangeListener> listener(
+  std::unique_ptr<RepresentationStateChangeListener> listener(
       new RepresentationStateChangeListenerImpl(representation_id, this));
-  scoped_ptr<Representation> representation(new Representation(
-      media_info, mpd_options_, representation_id, listener.Pass()));
+  std::unique_ptr<Representation> representation(new Representation(
+      media_info, mpd_options_, representation_id, std::move(listener)));
 
   if (!representation->Init())
     return NULL;
@@ -826,7 +826,7 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
     if (suppress_representation_frame_rate)
       representation->SuppressOnce(Representation::kSuppressFrameRate);
     xml::scoped_xml_ptr<xmlNode> child(representation->GetXml());
-    if (!child || !adaptation_set.AddChild(child.Pass()))
+    if (!child || !adaptation_set.AddChild(std::move(child)))
       return xml::scoped_xml_ptr<xmlNode>();
   }
 
@@ -1036,13 +1036,13 @@ Representation::Representation(
     const MediaInfo& media_info,
     const MpdOptions& mpd_options,
     uint32_t id,
-    scoped_ptr<RepresentationStateChangeListener> state_change_listener)
+    std::unique_ptr<RepresentationStateChangeListener> state_change_listener)
     : media_info_(media_info),
       id_(id),
       bandwidth_estimator_(BandwidthEstimator::kUseAllBlocks),
       mpd_options_(mpd_options),
       start_number_(1),
-      state_change_listener_(state_change_listener.Pass()),
+      state_change_listener_(std::move(state_change_listener)),
       output_suppression_flags_(0) {}
 
 Representation::~Representation() {}

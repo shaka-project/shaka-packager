@@ -17,12 +17,12 @@ AesPatternCryptor::AesPatternCryptor(uint8_t crypt_byte_block,
                                      uint8_t skip_byte_block,
                                      PatternEncryptionMode encryption_mode,
                                      ConstantIvFlag constant_iv_flag,
-                                     scoped_ptr<AesCryptor> cryptor)
+                                     std::unique_ptr<AesCryptor> cryptor)
     : AesCryptor(constant_iv_flag),
       crypt_byte_block_(crypt_byte_block),
       skip_byte_block_(skip_byte_block),
       encryption_mode_(encryption_mode),
-      cryptor_(cryptor.Pass()) {
+      cryptor_(std::move(cryptor)) {
   // |crypt_byte_block_| should never be 0. |skip_byte_block_| can be 0 to allow
   // a special pattern of 1:0, which is the pattern for the case of pattern
   // encryption when applied to non video tracks.

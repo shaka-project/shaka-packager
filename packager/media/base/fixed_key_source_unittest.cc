@@ -47,8 +47,9 @@ const char kDefaultPsshBoxHex[] =
 
 TEST(FixedKeySourceTest, CreateFromHexStrings_Succes) {
   std::string pssh_boxes = std::string(kPsshBox1Hex) + kPsshBox2Hex;
-  scoped_ptr<FixedKeySource> key_source = FixedKeySource::CreateFromHexStrings(
-      kKeyIdHex, kKeyHex, pssh_boxes, kIvHex);
+  std::unique_ptr<FixedKeySource> key_source =
+      FixedKeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex, pssh_boxes,
+                                           kIvHex);
   ASSERT_NE(nullptr, key_source);
 
   EncryptionKey key;
@@ -64,8 +65,8 @@ TEST(FixedKeySourceTest, CreateFromHexStrings_Succes) {
 }
 
 TEST(FixedKeySourceTest, CreateFromHexStrings_EmptyPssh) {
-  scoped_ptr<FixedKeySource> key_source = FixedKeySource::CreateFromHexStrings(
-      kKeyIdHex, kKeyHex, "", kIvHex);
+  std::unique_ptr<FixedKeySource> key_source =
+      FixedKeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex, "", kIvHex);
   ASSERT_NE(nullptr, key_source);
 
   EncryptionKey key;
@@ -80,8 +81,9 @@ TEST(FixedKeySourceTest, CreateFromHexStrings_EmptyPssh) {
 }
 
 TEST(FixedKeySourceTest, CreateFromHexStrings_Failure) {
-  scoped_ptr<FixedKeySource> key_source = FixedKeySource::CreateFromHexStrings(
-      kKeyIdHex, "invalid_hex_value", kPsshBox1Hex, kIvHex);
+  std::unique_ptr<FixedKeySource> key_source =
+      FixedKeySource::CreateFromHexStrings(kKeyIdHex, "invalid_hex_value",
+                                           kPsshBox1Hex, kIvHex);
   EXPECT_EQ(nullptr, key_source);
 
   // Invalid key id size.

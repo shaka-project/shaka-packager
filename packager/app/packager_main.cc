@@ -164,15 +164,14 @@ class FakeClock : public base::Clock {
 // Demux, Mux(es) and worker thread used to remux a source file/stream.
 class RemuxJob : public base::SimpleThread {
  public:
-  RemuxJob(scoped_ptr<Demuxer> demuxer)
-      : SimpleThread("RemuxJob"),
-        demuxer_(demuxer.Pass()) {}
+  RemuxJob(std::unique_ptr<Demuxer> demuxer)
+      : SimpleThread("RemuxJob"), demuxer_(std::move(demuxer)) {}
 
   ~RemuxJob() override {
     STLDeleteElements(&muxers_);
   }
 
-  void AddMuxer(scoped_ptr<Muxer> mux) {
+  void AddMuxer(std::unique_ptr<Muxer> mux) {
     muxers_.push_back(mux.release());
   }
 
@@ -185,7 +184,7 @@ class RemuxJob : public base::SimpleThread {
     status_ = demuxer_->Run();
   }
 
-  scoped_ptr<Demuxer> demuxer_;
+  std::unique_ptr<Demuxer> demuxer_;
   std::vector<Muxer*> muxers_;
   Status status_;
 
@@ -231,15 +230,15 @@ bool StreamInfoToTextMediaInfo(const StreamDescriptor& stream_descriptor,
   return true;
 }
 
-scoped_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options,
-                                    MediaContainerName container) {
+std::unique_ptr<Muxer> CreateOutputMuxer(const MuxerOptions& options,
+                                         MediaContainerName container) {
   if (container == CONTAINER_WEBM) {
-    return scoped_ptr<Muxer>(new webm::WebMMuxer(options));
+    return std::unique_ptr<Muxer>(new webm::WebMMuxer(options));
   } else if (container == CONTAINER_MPEG2TS) {
-    return scoped_ptr<Muxer>(new mp2t::TsMuxer(options));
+    return std::unique_ptr<Muxer>(new mp2t::TsMuxer(options));
   } else {
     DCHECK_EQ(container, CONTAINER_MOV);
-    return scoped_ptr<Muxer>(new mp4::MP4Muxer(options));
+    return std::unique_ptr<Muxer>(new mp4::MP4Muxer(options));
   }
 }
 
@@ -308,13 +307,13 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
 
     if (stream_iter->input != previous_input) {
       // New remux job needed. Create demux and job thread.
-      scoped_ptr<Demuxer> demuxer(new Demuxer(stream_iter->input));
+      std::unique_ptr<Demuxer> demuxer(new Demuxer(stream_iter->input));
       if (FLAGS_enable_widevine_decryption ||
           FLAGS_enable_fixed_key_decryption) {
-        scoped_ptr<KeySource> key_source(CreateDecryptionKeySource());
+        std::unique_ptr<KeySource> key_source(CreateDecryptionKeySource());
         if (!key_source)
           return false;
-        demuxer->SetKeySource(key_source.Pass());
+        demuxer->SetKeySource(std::move(key_source));
       }
       Status status = demuxer->Initialize();
       if (!status.ok()) {
@@ -327,12 +326,12 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
         if (stream_iter->output.empty())
           continue;  // just need stream info.
       }
-      remux_jobs->push_back(new RemuxJob(demuxer.Pass()));
+      remux_jobs->push_back(new RemuxJob(std::move(demuxer)));
       previous_input = stream_iter->input;
     }
     DCHECK(!remux_jobs->empty());
 
-    scoped_ptr<Muxer> muxer(
+    std::unique_ptr<Muxer> muxer(
         CreateOutputMuxer(stream_muxer_options, stream_iter->output_format));
     if (FLAGS_use_fake_clock_for_muxer) muxer->set_clock(fake_clock);
 
@@ -344,20 +343,20 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                           GetProtectionScheme(FLAGS_protection_scheme));
     }
 
-    scoped_ptr<MuxerListener> muxer_listener;
+    std::unique_ptr<MuxerListener> muxer_listener;
     DCHECK(!(FLAGS_output_media_info && mpd_notifier));
     if (FLAGS_output_media_info) {
       const std::string output_media_info_file_name =
           stream_muxer_options.output_file_name + kMediaInfoSuffix;
-      scoped_ptr<VodMediaInfoDumpMuxerListener>
+      std::unique_ptr<VodMediaInfoDumpMuxerListener>
           vod_media_info_dump_muxer_listener(
               new VodMediaInfoDumpMuxerListener(output_media_info_file_name));
-      muxer_listener = vod_media_info_dump_muxer_listener.Pass();
+      muxer_listener = std::move(vod_media_info_dump_muxer_listener);
     }
     if (mpd_notifier) {
-      scoped_ptr<MpdNotifyMuxerListener> mpd_notify_muxer_listener(
+      std::unique_ptr<MpdNotifyMuxerListener> mpd_notify_muxer_listener(
           new MpdNotifyMuxerListener(mpd_notifier));
-      muxer_listener = mpd_notify_muxer_listener.Pass();
+      muxer_listener = std::move(mpd_notify_muxer_listener);
     }
 
     if (hls_notifier) {
@@ -378,7 +377,7 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
     }
 
     if (muxer_listener)
-      muxer->SetMuxerListener(muxer_listener.Pass());
+      muxer->SetMuxerListener(std::move(muxer_listener));
 
     if (!AddStreamToMuxer(remux_jobs->back()->demuxer()->streams(),
                           stream_iter->stream_selector,
@@ -386,7 +385,7 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                           muxer.get())) {
       return false;
     }
-    remux_jobs->back()->AddMuxer(muxer.Pass());
+    remux_jobs->back()->AddMuxer(std::move(muxer));
   }
 
   return true;
@@ -459,14 +458,14 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
     return false;
 
   // Create encryption key source if needed.
-  scoped_ptr<KeySource> encryption_key_source;
+  std::unique_ptr<KeySource> encryption_key_source;
   if (FLAGS_enable_widevine_encryption || FLAGS_enable_fixed_key_encryption) {
     encryption_key_source = CreateEncryptionKeySource();
     if (!encryption_key_source)
       return false;
   }
 
-  scoped_ptr<MpdNotifier> mpd_notifier;
+  std::unique_ptr<MpdNotifier> mpd_notifier;
   if (!FLAGS_mpd_output.empty()) {
     DashProfile profile =
         FLAGS_single_segment ? kOnDemandProfile : kLiveProfile;
@@ -485,7 +484,7 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
     }
   }
 
-  scoped_ptr<hls::HlsNotifier> hls_notifier;
+  std::unique_ptr<hls::HlsNotifier> hls_notifier;
   if (!FLAGS_hls_master_playlist_output.empty()) {
     base::FilePath master_playlist_path(
         base::FilePath::FromUTF8Unsafe(FLAGS_hls_master_playlist_output));

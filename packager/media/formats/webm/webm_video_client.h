@@ -5,10 +5,10 @@
 #ifndef MEDIA_FORMATS_WEBM_WEBM_VIDEO_CLIENT_H_
 #define MEDIA_FORMATS_WEBM_WEBM_VIDEO_CLIENT_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/video_stream_info.h"
 #include "packager/media/formats/webm/webm_parser.h"
 

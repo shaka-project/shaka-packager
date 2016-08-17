@@ -8,11 +8,11 @@
 #define MPD_BASE_SIMPLE_MPD_NOTIFIER_H_
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "packager/base/gtest_prod_util.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/synchronization/lock.h"
 #include "packager/mpd/base/mpd_notifier.h"
 #include "packager/mpd/base/mpd_notifier_util.h"
@@ -65,13 +65,13 @@ class SimpleMpdNotifier : public MpdNotifier {
   }
 
   // Testing only method. Sets mpd_builder_.
-  void SetMpdBuilderForTesting(scoped_ptr<MpdBuilder> mpd_builder) {
-    mpd_builder_ = mpd_builder.Pass();
+  void SetMpdBuilderForTesting(std::unique_ptr<MpdBuilder> mpd_builder) {
+    mpd_builder_ = std::move(mpd_builder);
   }
 
   // MPD output path.
   std::string output_path_;
-  scoped_ptr<MpdBuilder> mpd_builder_;
+  std::unique_ptr<MpdBuilder> mpd_builder_;
   base::Lock lock_;
 
   typedef std::map<std::string, AdaptationSet*> AdaptationSetMap;

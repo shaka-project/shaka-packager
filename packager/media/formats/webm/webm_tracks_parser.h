@@ -6,12 +6,11 @@
 #define MEDIA_FORMATS_WEBM_WEBM_TRACKS_PARSER_H_
 
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
 
-#include "packager/base/compiler_specific.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/time/time.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/text_track_config.h"
@@ -88,7 +87,7 @@ class WebMTracksParser : public WebMParserClient {
   int64_t seek_preroll_;
   int64_t codec_delay_;
   int64_t default_duration_;
-  scoped_ptr<WebMContentEncodingsClient> track_content_encodings_client_;
+  std::unique_ptr<WebMContentEncodingsClient> track_content_encodings_client_;
 
   int64_t audio_track_num_;
   int64_t audio_default_duration_;

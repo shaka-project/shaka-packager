@@ -115,8 +115,8 @@ class DashIopMpdNotifierTest
   }
 
   void SetMpdBuilder(DashIopMpdNotifier* notifier,
-                     scoped_ptr<MpdBuilder> mpd_builder) {
-    notifier->SetMpdBuilderForTesting(mpd_builder.Pass());
+                     std::unique_ptr<MpdBuilder> mpd_builder) {
+    notifier->SetMpdBuilderForTesting(std::move(mpd_builder));
   }
 
   MpdBuilder::MpdType mpd_type() {
@@ -136,8 +136,8 @@ class DashIopMpdNotifierTest
   // Default mocks that can be used for the tests.
   // IOW, if a test only requires one instance of
   // Mock{AdaptationSet,Representation}, these can be used.
-  scoped_ptr<MockAdaptationSet> default_mock_adaptation_set_;
-  scoped_ptr<MockRepresentation> default_mock_representation_;
+  std::unique_ptr<MockAdaptationSet> default_mock_adaptation_set_;
+  std::unique_ptr<MockRepresentation> default_mock_representation_;
 
  private:
   base::FilePath temp_file_path_;
@@ -162,7 +162,8 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainer) {
   DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
                               empty_base_urls_, output_path_);
 
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder(mpd_type()));
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
+      new MockMpdBuilder(mpd_type()));
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
       .WillOnce(Return(default_mock_adaptation_set_.get()));
@@ -171,11 +172,11 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainer) {
       .WillOnce(Return(default_mock_representation_.get()));
 
   // This is for the Flush() below but adding expectation here because the next
-  // lines Pass() the pointer.
+  // std::move(lines) the pointer.
   EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   uint32_t unused_container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &unused_container_id));
   EXPECT_TRUE(notifier.Flush());
@@ -193,7 +194,8 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewTextContainer) {
   DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
                               empty_base_urls_, output_path_);
 
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder(mpd_type()));
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
+      new MockMpdBuilder(mpd_type()));
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(StrEq("en")))
       .WillOnce(Return(default_mock_adaptation_set_.get()));
@@ -203,11 +205,11 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewTextContainer) {
       .WillOnce(Return(default_mock_representation_.get()));
 
   // This is for the Flush() below but adding expectation here because the next
-  // lines Pass() the pointer.
+  // std::move(lines) the pointer.
   EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   uint32_t unused_container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kTextMediaInfo),
                                           &unused_container_id));
   EXPECT_TRUE(notifier.Flush());
@@ -221,7 +223,8 @@ TEST_P(DashIopMpdNotifierTest,
        NotifyNewContainersWithDifferentProtectedContent) {
   DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
                               empty_base_urls_, output_path_);
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder(mpd_type()));
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
+      new MockMpdBuilder(mpd_type()));
 
   // Note they both have different (bogus) pssh, like real use case.
   // default Key ID = _default_key_id_
@@ -287,9 +290,9 @@ TEST_P(DashIopMpdNotifierTest,
   // mocks by named mocks.
   const uint32_t kSdAdaptationSetId = 2u;
   const uint32_t kHdAdaptationSetId = 3u;
-  scoped_ptr<MockAdaptationSet> sd_adaptation_set(
+  std::unique_ptr<MockAdaptationSet> sd_adaptation_set(
       new MockAdaptationSet(kSdAdaptationSetId));
-  scoped_ptr<MockAdaptationSet> hd_adaptation_set(
+  std::unique_ptr<MockAdaptationSet> hd_adaptation_set(
       new MockAdaptationSet(kHdAdaptationSetId));
 
   ON_CALL(*sd_adaptation_set, Group()).WillByDefault(Return(kDefaultGroupId));
@@ -299,9 +302,9 @@ TEST_P(DashIopMpdNotifierTest,
 
   const uint32_t kSdRepresentation = 4u;
   const uint32_t kHdRepresentation = 5u;
-  scoped_ptr<MockRepresentation> sd_representation(
+  std::unique_ptr<MockRepresentation> sd_representation(
       new MockRepresentation(kSdRepresentation));
-  scoped_ptr<MockRepresentation> hd_representation(
+  std::unique_ptr<MockRepresentation> hd_representation(
       new MockRepresentation(kHdRepresentation));
 
   InSequence in_sequence;
@@ -328,7 +331,7 @@ TEST_P(DashIopMpdNotifierTest,
       .WillOnce(Return(hd_representation.get()));
 
   uint32_t unused_container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kSdProtectedContent), &unused_container_id));
   EXPECT_TRUE(notifier.NotifyNewContainer(
@@ -341,7 +344,8 @@ TEST_P(DashIopMpdNotifierTest,
 TEST_P(DashIopMpdNotifierTest, NotifyNewContainersWithSameProtectedContent) {
   DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
                               empty_base_urls_, output_path_);
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder(mpd_type()));
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
+      new MockMpdBuilder(mpd_type()));
 
   // These have the same default key ID and PSSH.
   const char kSdProtectedContent[] =
@@ -401,9 +405,9 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainersWithSameProtectedContent) {
 
   const uint32_t kSdRepresentation = 6u;
   const uint32_t kHdRepresentation = 7u;
-  scoped_ptr<MockRepresentation> sd_representation(
+  std::unique_ptr<MockRepresentation> sd_representation(
       new MockRepresentation(kSdRepresentation));
-  scoped_ptr<MockRepresentation> hd_representation(
+  std::unique_ptr<MockRepresentation> hd_representation(
       new MockRepresentation(kHdRepresentation));
 
   // No reason to set @group if there is only one AdaptationSet.
@@ -431,7 +435,7 @@ TEST_P(DashIopMpdNotifierTest, NotifyNewContainersWithSameProtectedContent) {
       .WillOnce(Return(hd_representation.get()));
 
   uint32_t unused_container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kSdProtectedContent), &unused_container_id));
   EXPECT_TRUE(notifier.NotifyNewContainer(
@@ -443,7 +447,8 @@ TEST_P(DashIopMpdNotifierTest, AddContentProtection) {
   DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
                               empty_base_urls_, output_path_);
 
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder(mpd_type()));
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
+      new MockMpdBuilder(mpd_type()));
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
       .WillOnce(Return(default_mock_adaptation_set_.get()));
@@ -451,7 +456,7 @@ TEST_P(DashIopMpdNotifierTest, AddContentProtection) {
       .WillOnce(Return(default_mock_representation_.get()));
 
   uint32_t container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &container_id));
 
@@ -474,7 +479,8 @@ TEST_P(DashIopMpdNotifierTest, AddContentProtection) {
 TEST_P(DashIopMpdNotifierTest, SetGroup) {
   DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
                               empty_base_urls_, output_path_);
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder(mpd_type()));
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
+      new MockMpdBuilder(mpd_type()));
 
   // These have the same default key ID and PSSH.
   const char kSdProtectedContent[] =
@@ -519,9 +525,9 @@ TEST_P(DashIopMpdNotifierTest, SetGroup) {
 
   const uint32_t kSdAdaptationSetId = 6u;
   const uint32_t kHdAdaptationSetId = 7u;
-  scoped_ptr<MockAdaptationSet> sd_adaptation_set(
+  std::unique_ptr<MockAdaptationSet> sd_adaptation_set(
       new MockAdaptationSet(kSdAdaptationSetId));
-  scoped_ptr<MockAdaptationSet> hd_adaptation_set(
+  std::unique_ptr<MockAdaptationSet> hd_adaptation_set(
       new MockAdaptationSet(kHdAdaptationSetId));
 
   ON_CALL(*sd_adaptation_set, Group()).WillByDefault(Return(kDefaultGroupId));
@@ -529,9 +535,9 @@ TEST_P(DashIopMpdNotifierTest, SetGroup) {
 
   const uint32_t kSdRepresentation = 4u;
   const uint32_t kHdRepresentation = 5u;
-  scoped_ptr<MockRepresentation> sd_representation(
+  std::unique_ptr<MockRepresentation> sd_representation(
       new MockRepresentation(kSdRepresentation));
-  scoped_ptr<MockRepresentation> hd_representation(
+  std::unique_ptr<MockRepresentation> hd_representation(
       new MockRepresentation(kHdRepresentation));
 
   InSequence in_sequence;
@@ -555,7 +561,7 @@ TEST_P(DashIopMpdNotifierTest, SetGroup) {
   // This is not very nice but we need it for settings expectations later.
   MockMpdBuilder* mock_mpd_builder_raw = mock_mpd_builder.get();
   uint32_t unused_container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kSdProtectedContent), &unused_container_id));
   EXPECT_TRUE(notifier.NotifyNewContainer(
@@ -588,13 +594,13 @@ TEST_P(DashIopMpdNotifierTest, SetGroup) {
       "container_type: 1\n";
 
   const uint32_t k4kAdaptationSetId = 4000u;
-  scoped_ptr<MockAdaptationSet> fourk_adaptation_set(
+  std::unique_ptr<MockAdaptationSet> fourk_adaptation_set(
       new MockAdaptationSet(k4kAdaptationSetId));
   ON_CALL(*fourk_adaptation_set, Group())
       .WillByDefault(Return(kDefaultGroupId));
 
   const uint32_t k4kRepresentationId = 4001u;
-  scoped_ptr<MockRepresentation> fourk_representation(
+  std::unique_ptr<MockRepresentation> fourk_representation(
       new MockRepresentation(k4kRepresentationId));
 
   EXPECT_CALL(*mock_mpd_builder_raw, AddAdaptationSet(_))
@@ -615,7 +621,8 @@ TEST_P(DashIopMpdNotifierTest, SetGroup) {
 TEST_P(DashIopMpdNotifierTest, DoNotSetGroupIfContentTypesDifferent) {
   DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
                               empty_base_urls_, output_path_);
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder(mpd_type()));
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
+      new MockMpdBuilder(mpd_type()));
 
   // These have the same default key ID and PSSH.
   const char kVideoContent[] =
@@ -659,9 +666,9 @@ TEST_P(DashIopMpdNotifierTest, DoNotSetGroupIfContentTypesDifferent) {
 
   const uint32_t kVideoAdaptationSetId = 6u;
   const uint32_t kAudioAdaptationSetId = 7u;
-  scoped_ptr<MockAdaptationSet> video_adaptation_set(
+  std::unique_ptr<MockAdaptationSet> video_adaptation_set(
       new MockAdaptationSet(kVideoAdaptationSetId));
-  scoped_ptr<MockAdaptationSet> audio_adaptation_set(
+  std::unique_ptr<MockAdaptationSet> audio_adaptation_set(
       new MockAdaptationSet(kAudioAdaptationSetId));
 
   ON_CALL(*video_adaptation_set, Group())
@@ -675,9 +682,9 @@ TEST_P(DashIopMpdNotifierTest, DoNotSetGroupIfContentTypesDifferent) {
 
   const uint32_t kVideoRepresentation = 8u;
   const uint32_t kAudioRepresentation = 9u;
-  scoped_ptr<MockRepresentation> video_representation(
+  std::unique_ptr<MockRepresentation> video_representation(
       new MockRepresentation(kVideoRepresentation));
-  scoped_ptr<MockRepresentation> audio_representation(
+  std::unique_ptr<MockRepresentation> audio_representation(
       new MockRepresentation(kAudioRepresentation));
 
   InSequence in_sequence;
@@ -696,7 +703,7 @@ TEST_P(DashIopMpdNotifierTest, DoNotSetGroupIfContentTypesDifferent) {
       .WillOnce(Return(audio_representation.get()));
 
   uint32_t unused_container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kVideoContent), &unused_container_id));
   EXPECT_TRUE(notifier.NotifyNewContainer(
@@ -727,7 +734,8 @@ TEST_P(DashIopMpdNotifierTest, UpdateEncryption) {
   DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
                               empty_base_urls_, output_path_);
 
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder(mpd_type()));
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
+      new MockMpdBuilder(mpd_type()));
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
       .WillOnce(Return(default_mock_adaptation_set_.get()));
@@ -736,7 +744,7 @@ TEST_P(DashIopMpdNotifierTest, UpdateEncryption) {
       .WillOnce(Return(default_mock_representation_.get()));
 
   uint32_t container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kProtectedContent),
                                           &container_id));
 
@@ -830,16 +838,21 @@ TEST_P(DashIopMpdNotifierTest, SplitAdaptationSetsByLanguageAndCodec) {
 
   DashIopMpdNotifier notifier(dash_profile(), empty_mpd_option_,
                               empty_base_urls_, output_path_);
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder(mpd_type()));
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
+      new MockMpdBuilder(mpd_type()));
 
-  scoped_ptr<MockAdaptationSet> adaptation_set1(new MockAdaptationSet(1));
-  scoped_ptr<MockAdaptationSet> adaptation_set2(new MockAdaptationSet(2));
-  scoped_ptr<MockAdaptationSet> adaptation_set3(new MockAdaptationSet(3));
+  std::unique_ptr<MockAdaptationSet> adaptation_set1(new MockAdaptationSet(1));
+  std::unique_ptr<MockAdaptationSet> adaptation_set2(new MockAdaptationSet(2));
+  std::unique_ptr<MockAdaptationSet> adaptation_set3(new MockAdaptationSet(3));
 
-  scoped_ptr<MockRepresentation> representation1(new MockRepresentation(1));
-  scoped_ptr<MockRepresentation> representation2(new MockRepresentation(2));
-  scoped_ptr<MockRepresentation> representation3(new MockRepresentation(3));
-  scoped_ptr<MockRepresentation> representation4(new MockRepresentation(4));
+  std::unique_ptr<MockRepresentation> representation1(
+      new MockRepresentation(1));
+  std::unique_ptr<MockRepresentation> representation2(
+      new MockRepresentation(2));
+  std::unique_ptr<MockRepresentation> representation3(
+      new MockRepresentation(3));
+  std::unique_ptr<MockRepresentation> representation4(
+      new MockRepresentation(4));
 
   // We expect three AdaptationSets.
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
@@ -858,7 +871,7 @@ TEST_P(DashIopMpdNotifierTest, SplitAdaptationSetsByLanguageAndCodec) {
       .WillOnce(Return(representation4.get()));
 
   uint32_t unused_container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kAudioContent1), &unused_container_id));
   EXPECT_TRUE(notifier.NotifyNewContainer(

@@ -20,8 +20,8 @@ RequestSigner::RequestSigner(const std::string& signer_name)
 RequestSigner::~RequestSigner() {}
 
 AesRequestSigner::AesRequestSigner(const std::string& signer_name,
-                                   scoped_ptr<AesCbcEncryptor> encryptor)
-    : RequestSigner(signer_name), aes_cbc_encryptor_(encryptor.Pass()) {
+                                   std::unique_ptr<AesCbcEncryptor> encryptor)
+    : RequestSigner(signer_name), aes_cbc_encryptor_(std::move(encryptor)) {
   DCHECK(aes_cbc_encryptor_);
 }
 AesRequestSigner::~AesRequestSigner() {}
@@ -40,11 +40,11 @@ AesRequestSigner* AesRequestSigner::CreateSigner(const std::string& signer_name,
     return NULL;
   }
 
-  scoped_ptr<AesCbcEncryptor> encryptor(
+  std::unique_ptr<AesCbcEncryptor> encryptor(
       new AesCbcEncryptor(kPkcs5Padding, AesCryptor::kUseConstantIv));
   if (!encryptor->InitializeWithIv(aes_key, iv))
     return NULL;
-  return new AesRequestSigner(signer_name, encryptor.Pass());
+  return new AesRequestSigner(signer_name, std::move(encryptor));
 }
 
 bool AesRequestSigner::GenerateSignature(const std::string& message,
@@ -53,9 +53,10 @@ bool AesRequestSigner::GenerateSignature(const std::string& message,
   return true;
 }
 
-RsaRequestSigner::RsaRequestSigner(const std::string& signer_name,
-                                   scoped_ptr<RsaPrivateKey> rsa_private_key)
-    : RequestSigner(signer_name), rsa_private_key_(rsa_private_key.Pass()) {
+RsaRequestSigner::RsaRequestSigner(
+    const std::string& signer_name,
+    std::unique_ptr<RsaPrivateKey> rsa_private_key)
+    : RequestSigner(signer_name), rsa_private_key_(std::move(rsa_private_key)) {
   DCHECK(rsa_private_key_);
 }
 RsaRequestSigner::~RsaRequestSigner() {}
@@ -63,11 +64,11 @@ RsaRequestSigner::~RsaRequestSigner() {}
 RsaRequestSigner* RsaRequestSigner::CreateSigner(
     const std::string& signer_name,
     const std::string& pkcs1_rsa_key) {
-  scoped_ptr<RsaPrivateKey> rsa_private_key(
+  std::unique_ptr<RsaPrivateKey> rsa_private_key(
       RsaPrivateKey::Create(pkcs1_rsa_key));
   if (!rsa_private_key)
     return NULL;
-  return new RsaRequestSigner(signer_name, rsa_private_key.Pass());
+  return new RsaRequestSigner(signer_name, std::move(rsa_private_key));
 }
 
 bool RsaRequestSigner::GenerateSignature(const std::string& message,

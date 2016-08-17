@@ -5,9 +5,8 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include <gtest/gtest.h>
-
+#include <memory>
 #include "packager/base/logging.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/formats/mp4/chunk_info_iterator.h"
 
 namespace {
@@ -50,7 +49,7 @@ class ChunkInfoIteratorTest : public testing::Test {
  protected:
   std::vector<ChunkProperty> chunk_info_table_;
   SampleToChunk sample_to_chunk_;
-  scoped_ptr<ChunkInfoIterator> chunk_info_iterator_;
+  std::unique_ptr<ChunkInfoIterator> chunk_info_iterator_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ChunkInfoIteratorTest);

@@ -88,7 +88,7 @@ TEST(ProducerConsumerQueueTest, PeekOnPoppedElement) {
 }
 
 TEST(ProducerConsumerQueueTest, PushWithTimeout) {
-  scoped_ptr<base::ElapsedTimer> timer;
+  std::unique_ptr<base::ElapsedTimer> timer;
   ProducerConsumerQueue<int> queue(kCapacity);
 
   for (size_t i = 0; i < kCapacity; ++i) {
@@ -105,7 +105,7 @@ TEST(ProducerConsumerQueueTest, PushWithTimeout) {
 }
 
 TEST(ProducerConsumerQueueTest, PopWithTimeout) {
-  scoped_ptr<base::ElapsedTimer> timer;
+  std::unique_ptr<base::ElapsedTimer> timer;
   ProducerConsumerQueue<size_t> queue(kCapacity);
 
   for (size_t i = 0; i < kCapacity; ++i)
@@ -127,7 +127,7 @@ TEST(ProducerConsumerQueueTest, PopWithTimeout) {
 }
 
 TEST(ProducerConsumerQueueTest, PeekWithTimeout) {
-  scoped_ptr<base::ElapsedTimer> timer;
+  std::unique_ptr<base::ElapsedTimer> timer;
   ProducerConsumerQueue<size_t> queue(kCapacity);
 
   for (size_t i = 0; i < kCapacity; ++i)
@@ -150,7 +150,7 @@ TEST(ProducerConsumerQueueTest, PeekWithTimeout) {
 }
 
 TEST(ProducerConsumerQueueTest, CheckStop) {
-  scoped_ptr<base::ElapsedTimer> timer;
+  std::unique_ptr<base::ElapsedTimer> timer;
   ProducerConsumerQueue<int> queue(kUnlimitedCapacity);
 
   ASSERT_FALSE(queue.Stopped());

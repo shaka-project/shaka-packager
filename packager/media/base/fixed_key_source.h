@@ -7,10 +7,10 @@
 #ifndef MEDIA_BASE_FIXED_KEY_SOURCE_H_
 #define MEDIA_BASE_FIXED_KEY_SOURCE_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/key_source.h"
 
 namespace shaka {
@@ -51,7 +51,7 @@ class FixedKeySource : public KeySource {
   ///        generated IV with the default length will be used.
   /// Note: GetKey on the created key source will always return the same key
   ///       for all track types.
-  static scoped_ptr<FixedKeySource> CreateFromHexStrings(
+  static std::unique_ptr<FixedKeySource> CreateFromHexStrings(
       const std::string& key_id_hex,
       const std::string& key_hex,
       const std::string& pssh_boxes_hex,
@@ -62,9 +62,9 @@ class FixedKeySource : public KeySource {
   FixedKeySource();
 
  private:
-  explicit FixedKeySource(scoped_ptr<EncryptionKey> key);
+  explicit FixedKeySource(std::unique_ptr<EncryptionKey> key);
 
-  scoped_ptr<EncryptionKey> encryption_key_;
+  std::unique_ptr<EncryptionKey> encryption_key_;
 
   DISALLOW_COPY_AND_ASSIGN(FixedKeySource);
 };

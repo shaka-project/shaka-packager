@@ -31,8 +31,8 @@ struct SegmentType;
 class MultiSegmentSegmenter : public Segmenter {
  public:
   MultiSegmentSegmenter(const MuxerOptions& options,
-                        scoped_ptr<FileType> ftyp,
-                        scoped_ptr<Movie> moov);
+                        std::unique_ptr<FileType> ftyp,
+                        std::unique_ptr<Movie> moov);
   ~MultiSegmentSegmenter() override;
 
   /// @name Segmenter implementation overrides.
@@ -50,7 +50,7 @@ class MultiSegmentSegmenter : public Segmenter {
   // Write segment to file.
   Status WriteSegment();
 
-  scoped_ptr<SegmentType> styp_;
+  std::unique_ptr<SegmentType> styp_;
   uint32_t num_segments_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiSegmentSegmenter);

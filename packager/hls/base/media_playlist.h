@@ -11,7 +11,6 @@
 #include <string>
 
 #include "packager/base/macros.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/stl_util.h"
 #include "packager/mpd/base/media_info.pb.h"
 
@@ -165,7 +164,6 @@ class MediaPlaylist {
   uint32_t time_scale_ = 0;
 
   uint64_t max_bitrate_ = 0;
-  double total_duration_in_seconds_ = 0.0;
 
   // See SetTargetDuration() comments.
   bool target_duration_set_ = false;

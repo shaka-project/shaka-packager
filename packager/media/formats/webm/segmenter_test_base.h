@@ -11,10 +11,10 @@
 
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/muxer_options.h"
-#include "packager/media/base/video_stream_info.h"
 #include "packager/media/base/status.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/base/test/status_test_util.h"
+#include "packager/media/base/video_stream_info.h"
 #include "packager/media/file/file_closer.h"
 #include "packager/media/file/file_test_util.h"
 #include "packager/media/file/memory_file.h"
@@ -44,19 +44,20 @@ class SegmentTestBase : public ::testing::Test {
 
   /// Creates a Segmenter of the given type and initializes it.
   template <typename S>
-  void CreateAndInitializeSegmenter(const MuxerOptions& options,
-                                    StreamInfo* info,
-                                    KeySource* key_source,
-                                    scoped_ptr<webm::Segmenter>* result) const {
-    scoped_ptr<S> segmenter(new S(options));
+  void CreateAndInitializeSegmenter(
+      const MuxerOptions& options,
+      StreamInfo* info,
+      KeySource* key_source,
+      std::unique_ptr<webm::Segmenter>* result) const {
+    std::unique_ptr<S> segmenter(new S(options));
 
-    scoped_ptr<MkvWriter> writer(new MkvWriter());
+    std::unique_ptr<MkvWriter> writer(new MkvWriter());
     ASSERT_OK(writer->Open(options.output_file_name));
     ASSERT_OK(segmenter->Initialize(
-        writer.Pass(), info, NULL /* progress_listener */,
+        std::move(writer), info, NULL /* progress_listener */,
         NULL /* muxer_listener */, key_source, 0 /* max_sd_pixels */,
         1 /* clear_lead_in_seconds */));
-    *result = segmenter.Pass();
+    *result = std::move(segmenter);
   }
 
   /// Creates a new media sample.

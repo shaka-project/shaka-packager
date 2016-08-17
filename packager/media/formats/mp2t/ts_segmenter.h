@@ -7,7 +7,7 @@
 #ifndef PACKAGER_MEDIA_FORMATS_MP2T_TS_SEGMENTER_H_
 #define PACKAGER_MEDIA_FORMATS_MP2T_TS_SEGMENTER_H_
 
-#include "packager/base/memory/scoped_ptr.h"
+#include <memory>
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/status.h"
@@ -54,11 +54,11 @@ class TsSegmenter {
   Status AddSample(scoped_refptr<MediaSample> sample);
 
   /// Only for testing.
-  void InjectTsWriterForTesting(scoped_ptr<TsWriter> writer);
+  void InjectTsWriterForTesting(std::unique_ptr<TsWriter> writer);
 
   /// Only for testing.
   void InjectPesPacketGeneratorForTesting(
-      scoped_ptr<PesPacketGenerator> generator);
+      std::unique_ptr<PesPacketGenerator> generator);
 
   /// Only for testing.
   void SetTsWriterFileOpenedForTesting(bool value);
@@ -94,11 +94,11 @@ class TsSegmenter {
   // Used for segment template.
   uint64_t segment_number_ = 0;
 
-  scoped_ptr<TsWriter> ts_writer_;
+  std::unique_ptr<TsWriter> ts_writer_;
   // Set to true if TsWriter::NewFile() succeeds, set to false after
   // TsWriter::FinalizeFile() succeeds.
   bool ts_writer_file_opened_ = false;
-  scoped_ptr<PesPacketGenerator> pes_packet_generator_;
+  std::unique_ptr<PesPacketGenerator> pes_packet_generator_;
 
   // For OnNewSegment().
   uint64_t current_segment_start_time_ = 0;
@@ -106,7 +106,7 @@ class TsSegmenter {
   // the segment has been finalized.
   std::string current_segment_path_;
 
-  scoped_ptr<EncryptionKey> encryption_key_;
+  std::unique_ptr<EncryptionKey> encryption_key_;
   double clear_lead_in_seconds_ = 0;
 
   // The total duration of the segments that it has segmented. This only

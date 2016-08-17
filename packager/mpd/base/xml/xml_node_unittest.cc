@@ -47,7 +47,7 @@ std::string GetDocAsFlatString(xmlDocPtr doc) {
 scoped_xml_ptr<xmlDoc> MakeDoc(scoped_xml_ptr<xmlNode> node) {
   xml::scoped_xml_ptr<xmlDoc> doc(xmlNewDoc(BAD_CAST ""));
   xmlDocSetRootElement(doc.get(), node.release());
-  return doc.Pass();
+  return doc;
 }
 
 }  // namespace

@@ -147,11 +147,11 @@ void GenerateEncryptedSampleEntry(const EncryptionKey& encryption_key,
 }  // namespace
 
 Segmenter::Segmenter(const MuxerOptions& options,
-                     scoped_ptr<FileType> ftyp,
-                     scoped_ptr<Movie> moov)
+                     std::unique_ptr<FileType> ftyp,
+                     std::unique_ptr<Movie> moov)
     : options_(options),
-      ftyp_(ftyp.Pass()),
-      moov_(moov.Pass()),
+      ftyp_(std::move(ftyp)),
+      moov_(std::move(moov)),
       moof_(new MovieFragment()),
       fragment_buffer_(new BufferWriter()),
       sidx_(new SegmentIndex()),
@@ -230,7 +230,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
       continue;
     }
 
-    scoped_ptr<EncryptionKey> encryption_key(new EncryptionKey());
+    std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
     Status status =
         encryption_key_source->GetKey(track_type, encryption_key.get());
     if (!status.ok())
@@ -259,7 +259,7 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
     }
 
     fragmenters_[i] = new EncryptingFragmenter(
-        streams[i]->info(), &moof_->tracks[i], encryption_key.Pass(),
+        streams[i]->info(), &moof_->tracks[i], std::move(encryption_key),
         clear_lead_in_seconds * streams[i]->info()->time_scale(),
         protection_scheme, pattern.crypt_byte_block, pattern.skip_byte_block,
         muxer_listener_);

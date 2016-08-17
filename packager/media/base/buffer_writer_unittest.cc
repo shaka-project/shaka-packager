@@ -7,9 +7,9 @@
 #include "packager/media/base/buffer_writer.h"
 
 #include <limits>
+#include <memory>
 
 #include "packager/base/files/file_util.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/buffer_reader.h"
 #include "packager/media/base/test/status_test_util.h"
 #include "packager/media/file/file.h"
@@ -69,8 +69,8 @@ class BufferWriterTest : public testing::Test {
   }
 
  protected:
-  scoped_ptr<BufferWriter> writer_;
-  scoped_ptr<BufferReader> reader_;
+  std::unique_ptr<BufferWriter> writer_;
+  std::unique_ptr<BufferReader> reader_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(BufferWriterTest);

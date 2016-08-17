@@ -59,13 +59,17 @@ uint8_t GetNaluLengthSize(const StreamInfo& stream_info) {
 }  // namespace
 
 EncryptingFragmenter::EncryptingFragmenter(
-    scoped_refptr<StreamInfo> info, TrackFragment* traf,
-    scoped_ptr<EncryptionKey> encryption_key, int64_t clear_time,
-    FourCC protection_scheme, uint8_t crypt_byte_block, uint8_t skip_byte_block,
+    scoped_refptr<StreamInfo> info,
+    TrackFragment* traf,
+    std::unique_ptr<EncryptionKey> encryption_key,
+    int64_t clear_time,
+    FourCC protection_scheme,
+    uint8_t crypt_byte_block,
+    uint8_t skip_byte_block,
     MuxerListener* listener)
     : Fragmenter(info, traf),
       info_(info),
-      encryption_key_(encryption_key.Pass()),
+      encryption_key_(std::move(encryption_key)),
       nalu_length_size_(GetNaluLengthSize(*info)),
       video_codec_(GetCodec(*info)),
       clear_time_(clear_time),
@@ -203,7 +207,7 @@ void EncryptingFragmenter::FinalizeFragmentForEncryption() {
 
 Status EncryptingFragmenter::CreateEncryptor() {
   DCHECK(encryption_key_);
-  scoped_ptr<AesCryptor> encryptor;
+  std::unique_ptr<AesCryptor> encryptor;
   switch (protection_scheme_) {
     case FOURCC_cenc:
       encryptor.reset(new AesCtrEncryptor);
@@ -216,14 +220,14 @@ Status EncryptingFragmenter::CreateEncryptor() {
           crypt_byte_block(), skip_byte_block(),
           AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
           AesCryptor::kDontUseConstantIv,
-          scoped_ptr<AesCryptor>(new AesCtrEncryptor())));
+          std::unique_ptr<AesCryptor>(new AesCtrEncryptor())));
       break;
     case FOURCC_cbcs:
       encryptor.reset(new AesPatternCryptor(
           crypt_byte_block(), skip_byte_block(),
           AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
           AesCryptor::kUseConstantIv,
-          scoped_ptr<AesCryptor>(new AesCbcEncryptor(kNoPadding))));
+          std::unique_ptr<AesCryptor>(new AesCbcEncryptor(kNoPadding))));
       break;
     default:
       return Status(error::MUXER_FAILURE, "Unsupported protection scheme.");
@@ -234,7 +238,7 @@ Status EncryptingFragmenter::CreateEncryptor() {
       encryptor->InitializeWithIv(encryption_key_->key, encryption_key_->iv);
   if (!initialized)
     return Status(error::MUXER_FAILURE, "Failed to create the encryptor.");
-  encryptor_ = encryptor.Pass();
+  encryptor_ = std::move(encryptor);
   return Status::OK;
 }
 

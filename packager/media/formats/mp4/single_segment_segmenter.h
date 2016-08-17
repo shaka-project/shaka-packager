@@ -28,8 +28,8 @@ namespace mp4 {
 class SingleSegmentSegmenter : public Segmenter {
  public:
   SingleSegmentSegmenter(const MuxerOptions& options,
-                         scoped_ptr<FileType> ftyp,
-                         scoped_ptr<Movie> moov);
+                         std::unique_ptr<FileType> ftyp,
+                         std::unique_ptr<Movie> moov);
   ~SingleSegmentSegmenter() override;
 
   /// @name Segmenter implementation overrides.
@@ -44,9 +44,9 @@ class SingleSegmentSegmenter : public Segmenter {
   Status DoFinalize() override;
   Status DoFinalizeSegment() override;
 
-  scoped_ptr<SegmentIndex> vod_sidx_;
+  std::unique_ptr<SegmentIndex> vod_sidx_;
   std::string temp_file_name_;
-  scoped_ptr<File, FileCloser> temp_file_;
+  std::unique_ptr<File, FileCloser> temp_file_;
 
   DISALLOW_COPY_AND_ASSIGN(SingleSegmentSegmenter);
 };

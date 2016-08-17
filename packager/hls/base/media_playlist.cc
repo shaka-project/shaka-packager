@@ -200,9 +200,8 @@ void MediaPlaylist::AddSegment(const std::string& file_name,
 // Note that when erasing std::list iterators, only the deleted iterators are
 // invalidated.
 void MediaPlaylist::RemoveOldestSegment() {
-  static_assert(
-      base::is_same<decltype(entries_), std::list<HlsEntry*>>::value,
-      "This algorithm assumes std::list.");
+  static_assert(std::is_same<decltype(entries_), std::list<HlsEntry*>>::value,
+                "This algorithm assumes std::list.");
   if (entries_.empty())
     return;
   if (entries_.front()->type() == HlsEntry::EntryType::kExtInf) {

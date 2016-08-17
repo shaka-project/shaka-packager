@@ -40,7 +40,7 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
       return false;
     }
 
-    scoped_ptr<AesCryptor> aes_decryptor;
+    std::unique_ptr<AesCryptor> aes_decryptor;
     switch (decrypt_config->protection_scheme()) {
       case FOURCC_cenc:
         aes_decryptor.reset(new AesCtrDecryptor);
@@ -54,7 +54,7 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
             decrypt_config->skip_byte_block(),
             AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
             AesCryptor::kDontUseConstantIv,
-            scoped_ptr<AesCryptor>(new AesCtrDecryptor())));
+            std::unique_ptr<AesCryptor>(new AesCtrDecryptor())));
         break;
       case FOURCC_cbcs:
         aes_decryptor.reset(new AesPatternCryptor(
@@ -62,7 +62,7 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
             decrypt_config->skip_byte_block(),
             AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
             AesCryptor::kUseConstantIv,
-            scoped_ptr<AesCryptor>(new AesCbcDecryptor(kNoPadding))));
+            std::unique_ptr<AesCryptor>(new AesCbcDecryptor(kNoPadding))));
         break;
       default:
         LOG(ERROR) << "Unsupported protection scheme: "

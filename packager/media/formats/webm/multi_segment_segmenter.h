@@ -7,11 +7,10 @@
 #ifndef MEDIA_FORMATS_WEBM_MULTI_SEGMENT_SEGMENTER_H_
 #define MEDIA_FORMATS_WEBM_MULTI_SEGMENT_SEGMENTER_H_
 
-#include "packager/media/formats/webm/segmenter.h"
-
-#include "packager/base/memory/scoped_ptr.h"
+#include <memory>
 #include "packager/media/base/status.h"
 #include "packager/media/formats/webm/mkv_writer.h"
+#include "packager/media/formats/webm/segmenter.h"
 
 namespace shaka {
 namespace media {
@@ -35,7 +34,7 @@ class MultiSegmentSegmenter : public Segmenter {
 
  protected:
   // Segmenter implementation overrides.
-  Status DoInitialize(scoped_ptr<MkvWriter> writer) override;
+  Status DoInitialize(std::unique_ptr<MkvWriter> writer) override;
   Status DoFinalize() override;
 
  private:
@@ -45,7 +44,7 @@ class MultiSegmentSegmenter : public Segmenter {
 
   Status FinalizeSegment();
 
-  scoped_ptr<MkvWriter> writer_;
+  std::unique_ptr<MkvWriter> writer_;
   uint32_t num_segment_;
 
   DISALLOW_COPY_AND_ASSIGN(MultiSegmentSegmenter);

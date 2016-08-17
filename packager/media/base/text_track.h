@@ -5,10 +5,10 @@
 #ifndef MEDIA_BASE_TEXT_TRACK_H_
 #define MEDIA_BASE_TEXT_TRACK_H_
 
+#include <memory>
 #include <string>
 
 #include "packager/base/callback.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/time/time.h"
 
 namespace shaka {
@@ -33,10 +33,10 @@ class TextTrack {
                             const std::string& settings) = 0;
 };
 
-typedef base::Callback<scoped_ptr<TextTrack>
-    (TextKind kind,
-     const std::string& label,
-     const std::string& language)> AddTextTrackCB;
+typedef base::Callback<std::unique_ptr<TextTrack>(TextKind kind,
+                                                  const std::string& label,
+                                                  const std::string& language)>
+    AddTextTrackCB;
 
 }  // namespace media
 }  // namespace shaka

@@ -356,7 +356,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
     // Every encrypted Block has a signal byte and IV prepended to it. Current
     // encrypted WebM request for comments specification is here
     // http://wiki.webmproject.org/encryption/webm-encryption-rfc
-    scoped_ptr<DecryptConfig> decrypt_config;
+    std::unique_ptr<DecryptConfig> decrypt_config;
     int data_offset = 0;
     if (!encryption_key_id.empty() &&
         !WebMCreateDecryptConfig(
@@ -411,7 +411,7 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
       streams.push_back(audio_stream_info_);
     if (video_stream_info_) {
       if (stream_type == kStreamVideo) {
-        scoped_ptr<VPxParser> vpx_parser;
+        std::unique_ptr<VPxParser> vpx_parser;
         switch (video_stream_info_->codec()) {
           case kCodecVP8:
             vpx_parser.reset(new VP8Parser);

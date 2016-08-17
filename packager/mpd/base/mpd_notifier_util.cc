@@ -8,8 +8,8 @@
 
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
-#include "packager/media/file/file_closer.h"
 #include "packager/media/file/file.h"
+#include "packager/media/file/file_closer.h"
 #include "packager/mpd/base/mpd_utils.h"
 
 namespace shaka {
@@ -26,7 +26,7 @@ bool WriteMpdToFile(const std::string& output_path, MpdBuilder* mpd_builder) {
     return false;
   }
 
-  scoped_ptr<File, FileCloser> file(File::Open(output_path.c_str(), "w"));
+  std::unique_ptr<File, FileCloser> file(File::Open(output_path.c_str(), "w"));
   if (!file) {
     LOG(ERROR) << "Failed to open file for writing: " << output_path;
     return false;

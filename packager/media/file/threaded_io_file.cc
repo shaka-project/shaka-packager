@@ -17,12 +17,12 @@ namespace media {
 using base::subtle::NoBarrier_Load;
 using base::subtle::NoBarrier_Store;
 
-ThreadedIoFile::ThreadedIoFile(scoped_ptr<File, FileCloser> internal_file,
+ThreadedIoFile::ThreadedIoFile(std::unique_ptr<File, FileCloser> internal_file,
                                Mode mode,
                                uint64_t io_cache_size,
                                uint64_t io_block_size)
     : File(internal_file->file_name()),
-      internal_file_(internal_file.Pass()),
+      internal_file_(std::move(internal_file)),
       mode_(mode),
       cache_(io_cache_size),
       io_buffer_(io_block_size),

@@ -7,8 +7,8 @@
 #ifndef MEDIA_FORMATS_WEBM_SEGMENTER_H_
 #define MEDIA_FORMATS_WEBM_SEGMENTER_H_
 
+#include <memory>
 #include "packager/base/memory/ref_counted.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/status.h"
 #include "packager/media/formats/webm/encryptor.h"
 #include "packager/media/formats/webm/mkv_writer.h"
@@ -50,7 +50,7 @@ class Segmenter {
   ///        pixels per frame than max_sd_pixels, it is HD, SD otherwise.
   /// @param clear_time specifies clear lead duration in seconds.
   /// @return OK on success, an error status otherwise.
-  Status Initialize(scoped_ptr<MkvWriter> writer,
+  Status Initialize(std::unique_ptr<MkvWriter> writer,
                     StreamInfo* info,
                     ProgressListener* progress_listener,
                     MuxerListener* muxer_listener,
@@ -106,7 +106,7 @@ class Segmenter {
   uint64_t segment_payload_pos() const { return segment_payload_pos_; }
   double cluster_length_sec() const { return cluster_length_sec_; }
 
-  virtual Status DoInitialize(scoped_ptr<MkvWriter> writer) = 0;
+  virtual Status DoInitialize(std::unique_ptr<MkvWriter> writer) = 0;
   virtual Status DoFinalize() = 0;
 
  private:
@@ -133,10 +133,10 @@ class Segmenter {
   uint64_t reference_frame_timestamp_;
 
   const MuxerOptions& options_;
-  scoped_ptr<Encryptor> encryptor_;
+  std::unique_ptr<Encryptor> encryptor_;
   double clear_lead_;
 
-  scoped_ptr<mkvmuxer::Cluster> cluster_;
+  std::unique_ptr<mkvmuxer::Cluster> cluster_;
   mkvmuxer::Cues cues_;
   SeekHead seek_head_;
   mkvmuxer::SegmentInfo segment_info_;

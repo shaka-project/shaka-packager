@@ -10,8 +10,8 @@
 
 #include "packager/base/logging.h"
 #include "packager/media/base/audio_stream_info.h"
-#include "packager/media/base/video_stream_info.h"
 #include "packager/media/base/protection_system_specific_info.h"
+#include "packager/media/base/video_stream_info.h"
 #include "packager/media/event/muxer_listener_internal.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/mpd_notifier.h"
@@ -61,7 +61,7 @@ void MpdNotifyMuxerListener::OnMediaStart(
     const StreamInfo& stream_info,
     uint32_t time_scale,
     ContainerType container_type) {
-  scoped_ptr<MediaInfo> media_info(new MediaInfo());
+  std::unique_ptr<MediaInfo> media_info(new MediaInfo());
   if (!internal::GenerateMediaInfo(muxer_options,
                                    stream_info,
                                    time_scale,
@@ -80,7 +80,7 @@ void MpdNotifyMuxerListener::OnMediaStart(
     // TODO(kqyang): Check return result.
     mpd_notifier_->NotifyNewContainer(*media_info, &notification_id_);
   } else {
-    media_info_ = media_info.Pass();
+    media_info_ = std::move(media_info);
   }
 }
 

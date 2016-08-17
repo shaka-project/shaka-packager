@@ -7,13 +7,12 @@
 #ifndef MEDIA_BASE_MEDIA_PARSER_H_
 #define MEDIA_BASE_MEDIA_PARSER_H_
 
+#include <memory>
 #include <string>
 #include <vector>
-
 #include "packager/base/callback.h"
 #include "packager/base/compiler_specific.h"
 #include "packager/base/memory/ref_counted.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/container_names.h"
 
 namespace shaka {

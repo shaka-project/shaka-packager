@@ -18,8 +18,8 @@ SingleSegmentSegmenter::SingleSegmentSegmenter(const MuxerOptions& options)
 
 SingleSegmentSegmenter::~SingleSegmentSegmenter() {}
 
-Status SingleSegmentSegmenter::DoInitialize(scoped_ptr<MkvWriter> writer) {
-  writer_ = writer.Pass();
+Status SingleSegmentSegmenter::DoInitialize(std::unique_ptr<MkvWriter> writer) {
+  writer_ = std::move(writer);
   Status ret = WriteSegmentHeader(0, writer_.get());
   init_end_ = writer_->Position() - 1;
   seek_head()->set_cluster_pos(init_end_ + 1 - segment_payload_pos());

@@ -180,9 +180,9 @@ bool PesPacketGenerator::PushSample(scoped_refptr<MediaSample> sample) {
 }
 
 bool PesPacketGenerator::SetEncryptionKey(
-    scoped_ptr<EncryptionKey> encryption_key) {
+    std::unique_ptr<EncryptionKey> encryption_key) {
   if (stream_type_ == kStreamVideo) {
-    scoped_ptr<AesCbcEncryptor> cbc(
+    std::unique_ptr<AesCbcEncryptor> cbc(
         new AesCbcEncryptor(CbcPaddingScheme::kNoPadding));
 
     const uint8_t kEncryptedBlocks = 1;
@@ -190,7 +190,7 @@ bool PesPacketGenerator::SetEncryptionKey(
     encryptor_.reset(new AesPatternCryptor(
         kEncryptedBlocks, kClearBlocks,
         AesPatternCryptor::kSkipIfCryptByteBlockRemaining,
-        AesCryptor::ConstantIvFlag::kUseConstantIv, cbc.Pass()));
+        AesCryptor::ConstantIvFlag::kUseConstantIv, std::move(cbc)));
   } else if (stream_type_ == kStreamAudio) {
     encryptor_.reset(
         new AesCbcEncryptor(CbcPaddingScheme::kNoPadding,
@@ -207,11 +207,11 @@ size_t PesPacketGenerator::NumberOfReadyPesPackets() {
   return pes_packets_.size();
 }
 
-scoped_ptr<PesPacket> PesPacketGenerator::GetNextPesPacket() {
+std::unique_ptr<PesPacket> PesPacketGenerator::GetNextPesPacket() {
   DCHECK(!pes_packets_.empty());
   PesPacket* pes = pes_packets_.front();
   pes_packets_.pop_front();
-  return scoped_ptr<PesPacket>(pes);
+  return std::unique_ptr<PesPacket>(pes);
 }
 
 bool PesPacketGenerator::Flush() {

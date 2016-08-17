@@ -40,9 +40,9 @@ std::string TempFileName() {
 }  // namespace
 
 SingleSegmentSegmenter::SingleSegmentSegmenter(const MuxerOptions& options,
-                                               scoped_ptr<FileType> ftyp,
-                                               scoped_ptr<Movie> moov)
-    : Segmenter(options, ftyp.Pass(), moov.Pass()) {}
+                                               std::unique_ptr<FileType> ftyp,
+                                               std::unique_ptr<Movie> moov)
+    : Segmenter(options, std::move(ftyp), std::move(moov)) {}
 
 SingleSegmentSegmenter::~SingleSegmentSegmenter() {
   if (temp_file_)
@@ -108,7 +108,7 @@ Status SingleSegmentSegmenter::DoFinalize() {
                   "Cannot close the temp file " + temp_file_name_);
   }
 
-  scoped_ptr<File, FileCloser> file(
+  std::unique_ptr<File, FileCloser> file(
       File::Open(options().output_file_name.c_str(), "w"));
   if (file == NULL) {
     return Status(error::FILE_FAILURE,
@@ -119,7 +119,7 @@ Status SingleSegmentSegmenter::DoFinalize() {
             << options().output_file_name << "'.";
 
   // Write ftyp, moov and sidx to output file.
-  scoped_ptr<BufferWriter> buffer(new BufferWriter());
+  std::unique_ptr<BufferWriter> buffer(new BufferWriter());
   ftyp()->Write(buffer.get());
   moov()->Write(buffer.get());
   vod_sidx_->Write(buffer.get());
@@ -128,7 +128,7 @@ Status SingleSegmentSegmenter::DoFinalize() {
     return status;
 
   // Load the temp file and write to output file.
-  scoped_ptr<File, FileCloser> temp_file(
+  std::unique_ptr<File, FileCloser> temp_file(
       File::Open(temp_file_name_.c_str(), "r"));
   if (temp_file == NULL) {
     return Status(error::FILE_FAILURE,
@@ -139,7 +139,7 @@ Status SingleSegmentSegmenter::DoFinalize() {
   const uint64_t re_segment_progress_target = progress_target() * 0.5;
 
   const int kBufSize = 0x200000;  // 2MB.
-  scoped_ptr<uint8_t[]> buf(new uint8_t[kBufSize]);
+  std::unique_ptr<uint8_t[]> buf(new uint8_t[kBufSize]);
   while (true) {
     int64_t size = temp_file->Read(buf.get(), kBufSize);
     if (size == 0) {

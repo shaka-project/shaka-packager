@@ -5,8 +5,7 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include <gtest/gtest.h>
-
-#include "packager/base/memory/scoped_ptr.h"
+#include <memory>
 #include "packager/media/formats/mp4/decoding_time_iterator.h"
 
 namespace shaka {
@@ -38,7 +37,7 @@ class DecodingTimeIteratorTest : public testing::Test {
  protected:
   std::vector<uint32_t> decoding_time_table_;
   DecodingTimeToSample decoding_time_to_sample_;
-  scoped_ptr<DecodingTimeIterator> decoding_time_iterator_;
+  std::unique_ptr<DecodingTimeIterator> decoding_time_iterator_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(DecodingTimeIteratorTest);

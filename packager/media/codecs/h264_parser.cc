@@ -4,8 +4,8 @@
 
 #include "packager/media/codecs/h264_parser.h"
 
+#include <memory>
 #include "packager/base/logging.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/stl_util.h"
 #include "packager/media/base/buffer_reader.h"
 
@@ -596,7 +596,7 @@ H264Parser::Result H264Parser::ParseSps(const Nalu& nalu, int* sps_id) {
 
   *sps_id = -1;
 
-  scoped_ptr<H264Sps> sps(new H264Sps());
+  std::unique_ptr<H264Sps> sps(new H264Sps());
 
   READ_BITS_OR_RETURN(8, &sps->profile_idc);
   READ_BOOL_OR_RETURN(&sps->constraint_set0_flag);
@@ -718,7 +718,7 @@ H264Parser::Result H264Parser::ParsePps(const Nalu& nalu, int* pps_id) {
 
   *pps_id = -1;
 
-  scoped_ptr<H264Pps> pps(new H264Pps());
+  std::unique_ptr<H264Pps> pps(new H264Pps());
 
   READ_UE_OR_RETURN(&pps->pic_parameter_set_id);
   READ_UE_OR_RETURN(&pps->seq_parameter_set_id);

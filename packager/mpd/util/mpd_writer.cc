@@ -35,11 +35,11 @@ class DashIopMpdNotifierFactory : public MpdNotifierFactory {
   DashIopMpdNotifierFactory() {}
   ~DashIopMpdNotifierFactory() override {}
 
-  scoped_ptr<MpdNotifier> Create(DashProfile dash_profile,
-                                 const MpdOptions& mpd_options,
-                                 const std::vector<std::string>& base_urls,
-                                 const std::string& output_path) override {
-    return scoped_ptr<MpdNotifier>(new DashIopMpdNotifier(
+  std::unique_ptr<MpdNotifier> Create(DashProfile dash_profile,
+                                      const MpdOptions& mpd_options,
+                                      const std::vector<std::string>& base_urls,
+                                      const std::string& output_path) override {
+    return std::unique_ptr<MpdNotifier>(new DashIopMpdNotifier(
         dash_profile, mpd_options, base_urls, output_path));
   }
 };
@@ -50,11 +50,11 @@ class SimpleMpdNotifierFactory : public MpdNotifierFactory {
   SimpleMpdNotifierFactory() {}
   ~SimpleMpdNotifierFactory() override {}
 
-  scoped_ptr<MpdNotifier> Create(DashProfile dash_profile,
-                                 const MpdOptions& mpd_options,
-                                 const std::vector<std::string>& base_urls,
-                                 const std::string& output_path) override {
-    return scoped_ptr<MpdNotifier>(new SimpleMpdNotifier(
+  std::unique_ptr<MpdNotifier> Create(DashProfile dash_profile,
+                                      const MpdOptions& mpd_options,
+                                      const std::vector<std::string>& base_urls,
+                                      const std::string& output_path) override {
+    return std::unique_ptr<MpdNotifier>(new SimpleMpdNotifier(
         dash_profile, mpd_options, base_urls, output_path));
   }
 };
@@ -96,7 +96,7 @@ void MpdWriter::AddBaseUrl(const std::string& base_url) {
 
 bool MpdWriter::WriteMpdToFile(const char* file_name) {
   CHECK(file_name);
-  scoped_ptr<MpdNotifier> notifier = notifier_factory_->Create(
+  std::unique_ptr<MpdNotifier> notifier = notifier_factory_->Create(
       kOnDemandProfile, MpdOptions(), base_urls_, file_name);
   if (!notifier->Init()) {
     LOG(ERROR) << "failed to initialize MpdNotifier.";
@@ -122,8 +122,8 @@ bool MpdWriter::WriteMpdToFile(const char* file_name) {
 }
 
 void MpdWriter::SetMpdNotifierFactoryForTest(
-    scoped_ptr<MpdNotifierFactory> factory) {
-  notifier_factory_ = factory.Pass();
+    std::unique_ptr<MpdNotifierFactory> factory) {
+  notifier_factory_ = std::move(factory);
 }
 
 }  // namespace shaka

@@ -277,12 +277,13 @@ Status WidevineKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
   return GetKeyInternal(crypto_period_index, track_type, key);
 }
 
-void WidevineKeySource::set_signer(scoped_ptr<RequestSigner> signer) {
-  signer_ = signer.Pass();
+void WidevineKeySource::set_signer(std::unique_ptr<RequestSigner> signer) {
+  signer_ = std::move(signer);
 }
 
-void WidevineKeySource::set_key_fetcher(scoped_ptr<KeyFetcher> key_fetcher) {
-  key_fetcher_ = key_fetcher.Pass();
+void WidevineKeySource::set_key_fetcher(
+    std::unique_ptr<KeyFetcher> key_fetcher) {
+  key_fetcher_ = std::move(key_fetcher);
 }
 
 Status WidevineKeySource::GetKeyInternal(uint32_t crypto_period_index,
@@ -465,7 +466,9 @@ bool WidevineKeySource::DecodeResponse(
   DCHECK(response);
 
   // Extract base64 formatted response from JSON formatted raw response.
-  scoped_ptr<base::Value> root(base::JSONReader::Read(raw_response));
+  // TODO(kqyang): Remove ".release()" when base is updated to use unique_ptr.
+  std::unique_ptr<base::Value> root(
+      base::JSONReader::Read(raw_response).release());
   if (!root) {
     LOG(ERROR) << "'" << raw_response << "' is not in JSON format.";
     return false;
@@ -487,7 +490,8 @@ bool WidevineKeySource::ExtractEncryptionKey(
   DCHECK(transient_error);
   *transient_error = false;
 
-  scoped_ptr<base::Value> root(base::JSONReader::Read(response));
+  // TODO(kqyang): Remove ".release()" when base is updated to use unique_ptr.
+  std::unique_ptr<base::Value> root(base::JSONReader::Read(response).release());
   if (!root) {
     LOG(ERROR) << "'" << response << "' is not in JSON format.";
     return false;
@@ -541,7 +545,7 @@ bool WidevineKeySource::ExtractEncryptionKey(
     DCHECK_NE(TRACK_TYPE_UNKNOWN, track_type);
     RCHECK(encryption_key_map.find(track_type) == encryption_key_map.end());
 
-    scoped_ptr<EncryptionKey> encryption_key(new EncryptionKey());
+    std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
 
     if (!GetKeyFromTrack(*track_dict, &encryption_key->key))
       return false;

@@ -6,8 +6,7 @@
 #include "packager/media/formats/webm/two_pass_single_segment_segmenter.h"
 
 #include <gtest/gtest.h>
-
-#include "packager/base/memory/scoped_ptr.h"
+#include <memory>
 #include "packager/media/formats/webm/segmenter_test_base.h"
 
 namespace shaka {
@@ -171,7 +170,7 @@ class SingleSegmentSegmenterTest : public SegmentTestBase,
   }
 
   scoped_refptr<StreamInfo> info_;
-  scoped_ptr<webm::Segmenter> segmenter_;
+  std::unique_ptr<webm::Segmenter> segmenter_;
 };
 
 TEST_P(SingleSegmentSegmenterTest, BasicSupport) {

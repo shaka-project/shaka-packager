@@ -48,7 +48,7 @@ std::string TempFileName(const MuxerOptions& options) {
 // forward-seeking in non-seekable files.
 bool ReadSkip(File* file, int64_t byte_count) {
   const int64_t kBufferSize = 0x40000;  // 256KB.
-  scoped_ptr<char[]> buffer(new char[kBufferSize]);
+  std::unique_ptr<char[]> buffer(new char[kBufferSize]);
   int64_t bytes_read = 0;
   while (bytes_read < byte_count) {
     int64_t size = std::min(kBufferSize, byte_count - bytes_read);
@@ -72,21 +72,21 @@ TwoPassSingleSegmentSegmenter::TwoPassSingleSegmentSegmenter(
 
 TwoPassSingleSegmentSegmenter::~TwoPassSingleSegmentSegmenter() {}
 
-Status
-TwoPassSingleSegmentSegmenter::DoInitialize(scoped_ptr<MkvWriter> writer) {
+Status TwoPassSingleSegmentSegmenter::DoInitialize(
+    std::unique_ptr<MkvWriter> writer) {
   // Assume the amount of time to copy the temp file as the same amount
   // of time as to make it.
   set_progress_target(info()->duration() * 2);
 
-  real_writer_ = writer.Pass();
+  real_writer_ = std::move(writer);
 
   temp_file_name_ = TempFileName(options());
-  scoped_ptr<MkvWriter> temp(new MkvWriter);
+  std::unique_ptr<MkvWriter> temp(new MkvWriter);
   Status status = temp->Open(temp_file_name_);
   if (!status.ok())
     return status;
 
-  return SingleSegmentSegmenter::DoInitialize(temp.Pass());
+  return SingleSegmentSegmenter::DoInitialize(std::move(temp));
 }
 
 Status TwoPassSingleSegmentSegmenter::DoFinalize() {
@@ -106,8 +106,8 @@ Status TwoPassSingleSegmentSegmenter::DoFinalize() {
     return temp;
 
   // Close the temp file and open it for reading.
-  set_writer(scoped_ptr<MkvWriter>());
-  scoped_ptr<File, FileCloser> temp_reader(
+  set_writer(std::unique_ptr<MkvWriter>());
+  std::unique_ptr<File, FileCloser> temp_reader(
       File::Open(temp_file_name_.c_str(), "r"));
   if (!temp_reader)
     return Status(error::FILE_FAILURE, "Error opening temp file.");

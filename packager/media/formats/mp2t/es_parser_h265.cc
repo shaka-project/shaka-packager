@@ -26,7 +26,7 @@ EsParserH265::EsParserH265(uint32_t pid,
                            const NewStreamInfoCB& new_stream_info_cb,
                            const EmitSampleCB& emit_sample_cb)
     : EsParserH26x(Nalu::kH265,
-                   scoped_ptr<H26xByteToUnitStreamConverter>(
+                   std::unique_ptr<H26xByteToUnitStreamConverter>(
                        new H265ByteToUnitStreamConverter()),
                    pid,
                    emit_sample_cb),

@@ -6,8 +6,9 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <memory>
+
 #include "packager/base/logging.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/rcheck.h"
 #include "packager/media/formats/mp4/box_buffer.h"
 
@@ -93,7 +94,8 @@ class BoxReaderTest : public testing::Test {
 TEST_F(BoxReaderTest, ExpectedOperationTest) {
   std::vector<uint8_t> buf = GetBuf();
   bool err;
-  scoped_ptr<BoxReader> reader(BoxReader::ReadBox(&buf[0], buf.size(), &err));
+  std::unique_ptr<BoxReader> reader(
+      BoxReader::ReadBox(&buf[0], buf.size(), &err));
   EXPECT_FALSE(err);
   EXPECT_TRUE(reader.get());
 
@@ -120,7 +122,8 @@ TEST_F(BoxReaderTest, OuterTooShortTest) {
   bool err;
 
   // Create a soft failure by truncating the outer box.
-  scoped_ptr<BoxReader> r(BoxReader::ReadBox(&buf[0], buf.size() - 2, &err));
+  std::unique_ptr<BoxReader> r(
+      BoxReader::ReadBox(&buf[0], buf.size() - 2, &err));
 
   EXPECT_FALSE(err);
   EXPECT_FALSE(r.get());
@@ -132,7 +135,8 @@ TEST_F(BoxReaderTest, InnerTooLongTest) {
 
   // Make an inner box too big for its outer box.
   buf[25] = 1;
-  scoped_ptr<BoxReader> reader(BoxReader::ReadBox(&buf[0], buf.size(), &err));
+  std::unique_ptr<BoxReader> reader(
+      BoxReader::ReadBox(&buf[0], buf.size(), &err));
 
   SkipBox box;
   EXPECT_FALSE(box.Parse(reader.get()));
@@ -141,7 +145,8 @@ TEST_F(BoxReaderTest, InnerTooLongTest) {
 TEST_F(BoxReaderTest, ScanChildrenTest) {
   std::vector<uint8_t> buf = GetBuf();
   bool err;
-  scoped_ptr<BoxReader> reader(BoxReader::ReadBox(&buf[0], buf.size(), &err));
+  std::unique_ptr<BoxReader> reader(
+      BoxReader::ReadBox(&buf[0], buf.size(), &err));
 
   EXPECT_TRUE(reader->SkipBytes(16) && reader->ScanChildren());
 
@@ -164,7 +169,8 @@ TEST_F(BoxReaderTest, ReadAllChildrenTest) {
   // Modify buffer to exclude its last 'free' box.
   buf[3] = 0x38;
   bool err;
-  scoped_ptr<BoxReader> reader(BoxReader::ReadBox(&buf[0], buf.size(), &err));
+  std::unique_ptr<BoxReader> reader(
+      BoxReader::ReadBox(&buf[0], buf.size(), &err));
 
   std::vector<PsshBox> kids;
   EXPECT_TRUE(reader->SkipBytes(16) && reader->ReadAllChildren(&kids));
@@ -182,7 +188,8 @@ TEST_F(BoxReaderTest, SkippingBloc) {
   std::vector<uint8_t> buf(kData, kData + sizeof(kData));
 
   bool err;
-  scoped_ptr<BoxReader> reader(BoxReader::ReadBox(&buf[0], buf.size(), &err));
+  std::unique_ptr<BoxReader> reader(
+      BoxReader::ReadBox(&buf[0], buf.size(), &err));
 
   EXPECT_FALSE(err);
   EXPECT_TRUE(reader);

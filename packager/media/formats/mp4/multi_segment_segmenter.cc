@@ -21,9 +21,9 @@ namespace media {
 namespace mp4 {
 
 MultiSegmentSegmenter::MultiSegmentSegmenter(const MuxerOptions& options,
-                                             scoped_ptr<FileType> ftyp,
-                                             scoped_ptr<Movie> moov)
-    : Segmenter(options, ftyp.Pass(), moov.Pass()),
+                                             std::unique_ptr<FileType> ftyp,
+                                             std::unique_ptr<Movie> moov)
+    : Segmenter(options, std::move(ftyp), std::move(moov)),
       styp_(new SegmentType),
       num_segments_(0) {
   // Use the same brands for styp as ftyp.
@@ -53,7 +53,7 @@ Status MultiSegmentSegmenter::DoInitialize() {
     return Status(error::FILE_FAILURE,
                   "Cannot open file for write " + options().output_file_name);
   }
-  scoped_ptr<BufferWriter> buffer(new BufferWriter);
+  std::unique_ptr<BufferWriter> buffer(new BufferWriter);
   ftyp()->Write(buffer.get());
   moov()->Write(buffer.get());
   Status status = buffer->WriteToFile(file);
@@ -135,7 +135,7 @@ Status MultiSegmentSegmenter::WriteSegment() {
   DCHECK(fragment_buffer());
   DCHECK(styp_);
 
-  scoped_ptr<BufferWriter> buffer(new BufferWriter());
+  std::unique_ptr<BufferWriter> buffer(new BufferWriter());
   File* file;
   std::string file_name;
   if (options().segment_template.empty()) {

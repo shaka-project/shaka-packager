@@ -588,7 +588,7 @@ const TrackEncryption& TrackRunIterator::track_encryption() const {
   return video_description().sinf.info.track_encryption;
 }
 
-scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
+std::unique_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
   size_t sample_idx = sample_itr_ - run_itr_->samples.begin();
   DCHECK_LT(sample_idx, run_itr_->sample_encryption_entries.size());
   const SampleEncryptionEntry& sample_encryption_entry =
@@ -601,7 +601,7 @@ scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
   if (total_size_of_subsamples != 0 &&
       total_size_of_subsamples != static_cast<size_t>(sample_size())) {
     LOG(ERROR) << "Incorrect CENC subsample size.";
-    return scoped_ptr<DecryptConfig>();
+    return std::unique_ptr<DecryptConfig>();
   }
 
   FourCC protection_scheme = is_audio() ? audio_description().sinf.type.type
@@ -615,10 +615,10 @@ scoped_ptr<DecryptConfig> TrackRunIterator::GetDecryptConfig() {
     iv = track_encryption().default_constant_iv;
     if (iv.empty()) {
       LOG(ERROR) << "IV cannot be empty.";
-      return scoped_ptr<DecryptConfig>();
+      return std::unique_ptr<DecryptConfig>();
     }
   }
-  return scoped_ptr<DecryptConfig>(new DecryptConfig(
+  return std::unique_ptr<DecryptConfig>(new DecryptConfig(
       track_encryption().default_kid, iv, sample_encryption_entry.subsamples,
       protection_scheme, track_encryption().default_crypt_byte_block,
       track_encryption().default_skip_byte_block));

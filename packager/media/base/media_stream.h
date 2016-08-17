@@ -8,9 +8,9 @@
 #define MEDIA_BASE_MEDIA_STREAM_H_
 
 #include <deque>
+#include <memory>
 
 #include "packager/base/memory/ref_counted.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/status.h"
 
 namespace shaka {

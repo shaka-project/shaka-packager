@@ -23,7 +23,7 @@ EsParserH264::EsParserH264(uint32_t pid,
                            const NewStreamInfoCB& new_stream_info_cb,
                            const EmitSampleCB& emit_sample_cb)
     : EsParserH26x(Nalu::kH264,
-                   scoped_ptr<H26xByteToUnitStreamConverter>(
+                   std::unique_ptr<H26xByteToUnitStreamConverter>(
                        new H264ByteToUnitStreamConverter()),
                    pid,
                    emit_sample_cb),

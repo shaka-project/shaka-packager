@@ -13,7 +13,7 @@
 namespace shaka {
 namespace media {
 
-/// Used by scoped_ptr to automatically close the file when it goes out of
+/// Used by std::unique_ptr to automatically close the file when it goes out of
 /// scope.
 struct FileCloser {
   inline void operator()(File* file) const {

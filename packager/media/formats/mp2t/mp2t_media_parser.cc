@@ -4,8 +4,8 @@
 
 #include "packager/media/formats/mp2t/mp2t_media_parser.h"
 
+#include <memory>
 #include "packager/base/bind.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/stl_util.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/stream_info.h"
@@ -41,8 +41,9 @@ class PidState {
     kPidVideoPes,
   };
 
-  PidState(int pid, PidType pid_type,
-           scoped_ptr<TsSection> section_parser);
+  PidState(int pid,
+           PidType pid_type,
+           std::unique_ptr<TsSection> section_parser);
 
   // Extract the content of the TS packet and parse it.
   // Return true if successful.
@@ -71,7 +72,7 @@ class PidState {
 
   int pid_;
   PidType pid_type_;
-  scoped_ptr<TsSection> section_parser_;
+  std::unique_ptr<TsSection> section_parser_;
 
   bool enable_;
   int continuity_counter_;
@@ -79,11 +80,12 @@ class PidState {
   SampleQueue sample_queue_;
 };
 
-PidState::PidState(int pid, PidType pid_type,
-                   scoped_ptr<TsSection> section_parser)
+PidState::PidState(int pid,
+                   PidType pid_type,
+                   std::unique_ptr<TsSection> section_parser)
     : pid_(pid),
       pid_type_(pid_type),
-      section_parser_(section_parser.Pass()),
+      section_parser_(std::move(section_parser)),
       enable_(false),
       continuity_counter_(-1) {
   DCHECK(section_parser_);
@@ -210,7 +212,8 @@ bool Mp2tMediaParser::Parse(const uint8_t* buf, int size) {
     }
 
     // Parse the TS header, skipping 1 byte if the header is invalid.
-    scoped_ptr<TsPacket> ts_packet(TsPacket::Parse(ts_buffer, ts_buffer_size));
+    std::unique_ptr<TsPacket> ts_packet(
+        TsPacket::Parse(ts_buffer, ts_buffer_size));
     if (!ts_packet) {
       DVLOG(1) << "Error: invalid TS packet";
       ts_byte_queue_.Pop(1);
@@ -225,13 +228,10 @@ bool Mp2tMediaParser::Parse(const uint8_t* buf, int size) {
     if (it == pids_.end() &&
         ts_packet->pid() == TsSection::kPidPat) {
       // Create the PAT state here if needed.
-      scoped_ptr<TsSection> pat_section_parser(
-          new TsSectionPat(
-              base::Bind(&Mp2tMediaParser::RegisterPmt,
-                         base::Unretained(this))));
-      scoped_ptr<PidState> pat_pid_state(
-          new PidState(ts_packet->pid(), PidState::kPidPat,
-                       pat_section_parser.Pass()));
+      std::unique_ptr<TsSection> pat_section_parser(new TsSectionPat(
+          base::Bind(&Mp2tMediaParser::RegisterPmt, base::Unretained(this))));
+      std::unique_ptr<PidState> pat_pid_state(new PidState(
+          ts_packet->pid(), PidState::kPidPat, std::move(pat_section_parser)));
       pat_pid_state->Enable();
       it = pids_.insert(
           std::pair<int, PidState*>(ts_packet->pid(),
@@ -271,12 +271,10 @@ void Mp2tMediaParser::RegisterPmt(int program_number, int pmt_pid) {
 
   // Create the PMT state here if needed.
   DVLOG(1) << "Create a new PMT parser";
-  scoped_ptr<TsSection> pmt_section_parser(
-      new TsSectionPmt(
-          base::Bind(&Mp2tMediaParser::RegisterPes,
-                     base::Unretained(this), pmt_pid)));
-  scoped_ptr<PidState> pmt_pid_state(
-      new PidState(pmt_pid, PidState::kPidPmt, pmt_section_parser.Pass()));
+  std::unique_ptr<TsSection> pmt_section_parser(new TsSectionPmt(base::Bind(
+      &Mp2tMediaParser::RegisterPes, base::Unretained(this), pmt_pid)));
+  std::unique_ptr<PidState> pmt_pid_state(
+      new PidState(pmt_pid, PidState::kPidPmt, std::move(pmt_section_parser)));
   pmt_pid_state->Enable();
   pids_.insert(std::pair<int, PidState*>(pmt_pid, pmt_pid_state.release()));
 }
@@ -293,7 +291,7 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
 
   // Create a stream parser corresponding to the stream type.
   bool is_audio = false;
-  scoped_ptr<EsParser> es_parser;
+  std::unique_ptr<EsParser> es_parser;
   if (stream_type == kStreamTypeAVC) {
     es_parser.reset(
         new EsParserH264(
@@ -326,12 +324,12 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
 
   // Create the PES state here.
   DVLOG(1) << "Create a new PES state";
-  scoped_ptr<TsSection> pes_section_parser(
-      new TsSectionPes(es_parser.Pass()));
+  std::unique_ptr<TsSection> pes_section_parser(
+      new TsSectionPes(std::move(es_parser)));
   PidState::PidType pid_type =
       is_audio ? PidState::kPidAudioPes : PidState::kPidVideoPes;
-  scoped_ptr<PidState> pes_pid_state(
-      new PidState(pes_pid, pid_type, pes_section_parser.Pass()));
+  std::unique_ptr<PidState> pes_pid_state(
+      new PidState(pes_pid, pid_type, std::move(pes_section_parser)));
   pes_pid_state->Enable();
   pids_.insert(std::pair<int, PidState*>(pes_pid, pes_pid_state.release()));
 }

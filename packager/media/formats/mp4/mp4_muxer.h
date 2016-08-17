@@ -64,7 +64,7 @@ class MP4Muxer : public Muxer {
   // Get time in seconds since midnight, Jan. 1, 1904, in UTC Time.
   uint64_t IsoTimeNow();
 
-  scoped_ptr<Segmenter> segmenter_;
+  std::unique_ptr<Segmenter> segmenter_;
 
   DISALLOW_COPY_AND_ASSIGN(MP4Muxer);
 };

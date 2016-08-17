@@ -27,7 +27,7 @@ MockRepresentation::MockRepresentation(uint32_t representation_id)
     : Representation(MediaInfo(),
                      kDefaultMpdOptions,
                      representation_id,
-                     scoped_ptr<RepresentationStateChangeListener>()) {}
+                     std::unique_ptr<RepresentationStateChangeListener>()) {}
 MockRepresentation::~MockRepresentation() {}
 
 }  // namespace shaka

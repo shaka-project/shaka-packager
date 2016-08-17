@@ -156,7 +156,7 @@ bool MP4MediaParser::Parse(const uint8_t* buf, int size) {
 }
 
 bool MP4MediaParser::LoadMoov(const std::string& file_path) {
-  scoped_ptr<File, FileCloser> file(
+  std::unique_ptr<File, FileCloser> file(
       File::OpenWithNoBuffering(file_path.c_str(), "r"));
   if (!file) {
     LOG(ERROR) << "Unable to open media file '" << file_path << "'";
@@ -237,7 +237,7 @@ bool MP4MediaParser::ParseBox(bool* err) {
   if (!size)
     return false;
 
-  scoped_ptr<BoxReader> reader(BoxReader::ReadBox(buf, size, err));
+  std::unique_ptr<BoxReader> reader(BoxReader::ReadBox(buf, size, err));
   if (reader.get() == NULL)
     return false;
 
@@ -690,7 +690,7 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
       return false;
     }
 
-    scoped_ptr<DecryptConfig> decrypt_config = runs_->GetDecryptConfig();
+    std::unique_ptr<DecryptConfig> decrypt_config = runs_->GetDecryptConfig();
     if (!decrypt_config ||
         !decryptor_source_->DecryptSampleBuffer(decrypt_config.get(),
                                                 stream_sample->writable_data(),

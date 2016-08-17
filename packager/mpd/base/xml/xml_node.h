@@ -15,6 +15,7 @@
 
 #include <list>
 
+#include "packager/base/macros.h"
 #include "packager/mpd/base/content_protection_element.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/xml/scoped_xml_ptr.h"

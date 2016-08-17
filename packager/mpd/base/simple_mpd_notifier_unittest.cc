@@ -51,12 +51,14 @@ class SimpleMpdNotifierTest
     base::DeleteFile(temp_file_path_, false /* non recursive, just 1 file */);
   }
 
-  scoped_ptr<MockMpdBuilder> StaticMpdBuilderMock() {
-    return make_scoped_ptr(new MockMpdBuilder(MpdBuilder::kStatic));
+  std::unique_ptr<MockMpdBuilder> StaticMpdBuilderMock() {
+    return std::unique_ptr<MockMpdBuilder>(
+        new MockMpdBuilder(MpdBuilder::kStatic));
   }
 
-  scoped_ptr<MockMpdBuilder> DynamicMpdBuilderMock() {
-    return make_scoped_ptr(new MockMpdBuilder(MpdBuilder::kDynamic));
+  std::unique_ptr<MockMpdBuilder> DynamicMpdBuilderMock() {
+    return std::unique_ptr<MockMpdBuilder>(
+        new MockMpdBuilder(MpdBuilder::kDynamic));
   }
 
   MpdBuilder::MpdType GetMpdBuilderType(const SimpleMpdNotifier& notifier) {
@@ -64,8 +66,8 @@ class SimpleMpdNotifierTest
   }
 
   void SetMpdBuilder(SimpleMpdNotifier* notifier,
-                     scoped_ptr<MpdBuilder> mpd_builder) {
-    notifier->SetMpdBuilderForTesting(mpd_builder.Pass());
+                     std::unique_ptr<MpdBuilder> mpd_builder) {
+    notifier->SetMpdBuilderForTesting(std::move(mpd_builder));
   }
 
   // Use output_path_ for specifying the MPD output path so that
@@ -75,7 +77,7 @@ class SimpleMpdNotifierTest
   const std::vector<std::string> empty_base_urls_;
 
   // Default AdaptationSet mock.
-  scoped_ptr<MockAdaptationSet> default_mock_adaptation_set_;
+  std::unique_ptr<MockAdaptationSet> default_mock_adaptation_set_;
 
  private:
   base::FilePath temp_file_path_;
@@ -102,8 +104,9 @@ TEST_P(SimpleMpdNotifierTest, NotifyNewContainer) {
 
   const uint32_t kRepresentationId = 1u;
   const MpdBuilder::MpdType mpd_type = GetParam();
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(new MockMpdBuilder(mpd_type));
-  scoped_ptr<MockRepresentation> mock_representation(
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(
+      new MockMpdBuilder(mpd_type));
+  std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
@@ -112,11 +115,11 @@ TEST_P(SimpleMpdNotifierTest, NotifyNewContainer) {
       .WillOnce(Return(mock_representation.get()));
 
   // This is for the Flush() below but adding expectation here because the next
-  // lines Pass() the pointer.
+  // std::move(lines) the pointer.
   EXPECT_CALL(*mock_mpd_builder, ToString(_)).WillOnce(Return(true));
 
   uint32_t unused_container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &unused_container_id));
   EXPECT_TRUE(notifier.Flush());
@@ -128,8 +131,8 @@ TEST_F(SimpleMpdNotifierTest, LiveNotifySampleDuration) {
                              output_path_);
 
   const uint32_t kRepresentationId = 8u;
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(DynamicMpdBuilderMock());
-  scoped_ptr<MockRepresentation> mock_representation(
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(DynamicMpdBuilderMock());
+  std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
@@ -138,7 +141,7 @@ TEST_F(SimpleMpdNotifierTest, LiveNotifySampleDuration) {
       .WillOnce(Return(mock_representation.get()));
 
   uint32_t container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &container_id));
   EXPECT_EQ(kRepresentationId, container_id);
@@ -159,8 +162,8 @@ TEST_F(SimpleMpdNotifierTest, OnDemandNotifySampleDuration) {
                              empty_base_urls_, output_path_);
 
   const uint32_t kRepresentationId = 14u;
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(StaticMpdBuilderMock());
-  scoped_ptr<MockRepresentation> mock_representation(
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(StaticMpdBuilderMock());
+  std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
@@ -169,7 +172,7 @@ TEST_F(SimpleMpdNotifierTest, OnDemandNotifySampleDuration) {
       .WillOnce(Return(mock_representation.get()));
 
   uint32_t container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &container_id));
   EXPECT_EQ(kRepresentationId, container_id);
@@ -202,8 +205,8 @@ TEST_F(SimpleMpdNotifierTest, LiveNotifyNewSegment) {
                              output_path_);
 
   const uint32_t kRepresentationId = 447834u;
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(DynamicMpdBuilderMock());
-  scoped_ptr<MockRepresentation> mock_representation(
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(DynamicMpdBuilderMock());
+  std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
@@ -212,7 +215,7 @@ TEST_F(SimpleMpdNotifierTest, LiveNotifyNewSegment) {
       .WillOnce(Return(mock_representation.get()));
 
   uint32_t container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &container_id));
   EXPECT_EQ(kRepresentationId, container_id);
@@ -233,8 +236,8 @@ TEST_F(SimpleMpdNotifierTest, AddContentProtectionElement) {
                              empty_base_urls_, output_path_);
 
   const uint32_t kRepresentationId = 0u;
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(StaticMpdBuilderMock());
-  scoped_ptr<MockRepresentation> mock_representation(
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(StaticMpdBuilderMock());
+  std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
@@ -243,7 +246,7 @@ TEST_F(SimpleMpdNotifierTest, AddContentProtectionElement) {
       .WillOnce(Return(mock_representation.get()));
 
   uint32_t container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kValidMediaInfo),
                                           &container_id));
   EXPECT_EQ(kRepresentationId, container_id);
@@ -276,8 +279,8 @@ TEST_P(SimpleMpdNotifierTest, UpdateEncryption) {
   SimpleMpdNotifier notifier(kLiveProfile, empty_mpd_option_, empty_base_urls_,
                              output_path_);
   const uint32_t kRepresentationId = 447834u;
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(DynamicMpdBuilderMock());
-  scoped_ptr<MockRepresentation> mock_representation(
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(DynamicMpdBuilderMock());
+  std::unique_ptr<MockRepresentation> mock_representation(
       new MockRepresentation(kRepresentationId));
 
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
@@ -286,7 +289,7 @@ TEST_P(SimpleMpdNotifierTest, UpdateEncryption) {
       .WillOnce(Return(mock_representation.get()));
 
   uint32_t container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(ConvertToMediaInfo(kProtectedContent),
                                           &container_id));
 
@@ -364,16 +367,20 @@ TEST_P(SimpleMpdNotifierTest, SplitAdaptationSetsByLanguageAndCodec) {
 
   SimpleMpdNotifier notifier(kOnDemandProfile, empty_mpd_option_,
                              empty_base_urls_, output_path_);
-  scoped_ptr<MockMpdBuilder> mock_mpd_builder(StaticMpdBuilderMock());
+  std::unique_ptr<MockMpdBuilder> mock_mpd_builder(StaticMpdBuilderMock());
 
-  scoped_ptr<MockAdaptationSet> adaptation_set1(new MockAdaptationSet(1));
-  scoped_ptr<MockAdaptationSet> adaptation_set2(new MockAdaptationSet(2));
-  scoped_ptr<MockAdaptationSet> adaptation_set3(new MockAdaptationSet(3));
+  std::unique_ptr<MockAdaptationSet> adaptation_set1(new MockAdaptationSet(1));
+  std::unique_ptr<MockAdaptationSet> adaptation_set2(new MockAdaptationSet(2));
+  std::unique_ptr<MockAdaptationSet> adaptation_set3(new MockAdaptationSet(3));
 
-  scoped_ptr<MockRepresentation> representation1(new MockRepresentation(1));
-  scoped_ptr<MockRepresentation> representation2(new MockRepresentation(2));
-  scoped_ptr<MockRepresentation> representation3(new MockRepresentation(3));
-  scoped_ptr<MockRepresentation> representation4(new MockRepresentation(4));
+  std::unique_ptr<MockRepresentation> representation1(
+      new MockRepresentation(1));
+  std::unique_ptr<MockRepresentation> representation2(
+      new MockRepresentation(2));
+  std::unique_ptr<MockRepresentation> representation3(
+      new MockRepresentation(3));
+  std::unique_ptr<MockRepresentation> representation4(
+      new MockRepresentation(4));
 
   // We expect three AdaptationSets.
   EXPECT_CALL(*mock_mpd_builder, AddAdaptationSet(_))
@@ -392,7 +399,7 @@ TEST_P(SimpleMpdNotifierTest, SplitAdaptationSetsByLanguageAndCodec) {
       .WillOnce(Return(representation4.get()));
 
   uint32_t unused_container_id;
-  SetMpdBuilder(&notifier, mock_mpd_builder.Pass());
+  SetMpdBuilder(&notifier, std::move(mock_mpd_builder));
   EXPECT_TRUE(notifier.NotifyNewContainer(
       ConvertToMediaInfo(kAudioContent1), &unused_container_id));
   EXPECT_TRUE(notifier.NotifyNewContainer(

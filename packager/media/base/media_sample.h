@@ -13,7 +13,6 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/memory/ref_counted.h"
-#include "packager/base/memory/scoped_ptr.h"
 
 namespace shaka {
 namespace media {

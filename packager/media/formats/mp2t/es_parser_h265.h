@@ -10,11 +10,11 @@
 #include <stdint.h>
 
 #include <list>
+#include <memory>
 #include <utility>
 
 #include "packager/base/callback.h"
 #include "packager/base/compiler_specific.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/formats/mp2t/es_parser_h26x.h"
 
 namespace shaka {
@@ -52,7 +52,7 @@ class EsParserH265 : public EsParserH26x {
   scoped_refptr<StreamInfo> last_video_decoder_config_;
   bool decoder_config_check_pending_;
 
-  scoped_ptr<H265Parser> h265_parser_;
+  std::unique_ptr<H265Parser> h265_parser_;
 };
 
 }  // namespace mp2t

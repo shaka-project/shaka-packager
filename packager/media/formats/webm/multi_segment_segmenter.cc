@@ -31,8 +31,8 @@ bool MultiSegmentSegmenter::GetIndexRangeStartAndEnd(uint64_t* start,
   return false;
 }
 
-Status MultiSegmentSegmenter::DoInitialize(scoped_ptr<MkvWriter> writer) {
-  writer_ = writer.Pass();
+Status MultiSegmentSegmenter::DoInitialize(std::unique_ptr<MkvWriter> writer) {
+  writer_ = std::move(writer);
   return WriteSegmentHeader(0, writer_.get());
 }
 

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "packager/base/macros.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/aes_cryptor.h"
 
 namespace shaka {

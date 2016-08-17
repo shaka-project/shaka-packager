@@ -7,8 +7,8 @@
 #ifndef MEDIA_FORMATS_MP4_ENCRYPTING_FRAGMENTER_H_
 #define MEDIA_FORMATS_MP4_ENCRYPTING_FRAGMENTER_H_
 
+#include <memory>
 #include "packager/base/memory/ref_counted.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/codecs/video_slice_header_parser.h"
 #include "packager/media/codecs/vpx_parser.h"
@@ -40,7 +40,7 @@ class EncryptingFragmenter : public Fragmenter {
   ///        in pattern based encryption.
   EncryptingFragmenter(scoped_refptr<StreamInfo> info,
                        TrackFragment* traf,
-                       scoped_ptr<EncryptionKey> encryption_key,
+                       std::unique_ptr<EncryptionKey> encryption_key,
                        int64_t clear_time,
                        FourCC protection_scheme,
                        uint8_t crypt_byte_block,
@@ -74,8 +74,8 @@ class EncryptingFragmenter : public Fragmenter {
   uint8_t crypt_byte_block() const { return crypt_byte_block_; }
   uint8_t skip_byte_block() const { return skip_byte_block_; }
 
-  void set_encryption_key(scoped_ptr<EncryptionKey> encryption_key) {
-    encryption_key_ = encryption_key.Pass();
+  void set_encryption_key(std::unique_ptr<EncryptionKey> encryption_key) {
+    encryption_key_ = std::move(encryption_key);
   }
 
  private:
@@ -86,8 +86,8 @@ class EncryptingFragmenter : public Fragmenter {
   bool IsSubsampleEncryptionRequired();
 
   scoped_refptr<StreamInfo> info_;
-  scoped_ptr<EncryptionKey> encryption_key_;
-  scoped_ptr<AesCryptor> encryptor_;
+  std::unique_ptr<EncryptionKey> encryption_key_;
+  std::unique_ptr<AesCryptor> encryptor_;
   // If this stream contains AVC, subsample encryption specifies that the size
   // and type of NAL units remain unencrypted. This function returns the size of
   // the size field in bytes. Can be 1, 2 or 4 bytes.
@@ -99,8 +99,8 @@ class EncryptingFragmenter : public Fragmenter {
   const uint8_t skip_byte_block_;
   MuxerListener* listener_;
 
-  scoped_ptr<VPxParser> vpx_parser_;
-  scoped_ptr<VideoSliceHeaderParser> header_parser_;
+  std::unique_ptr<VPxParser> vpx_parser_;
+  std::unique_ptr<VideoSliceHeaderParser> header_parser_;
 
   DISALLOW_COPY_AND_ASSIGN(EncryptingFragmenter);
 };

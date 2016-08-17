@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/macros.h"
 #include "packager/media/base/fourccs.h"
 
 namespace shaka {

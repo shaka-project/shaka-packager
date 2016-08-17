@@ -45,11 +45,11 @@ class MockMediaPlaylistFactory : public MediaPlaylistFactory {
                               const std::string& name,
                               const std::string& group_id));
 
-  scoped_ptr<MediaPlaylist> Create(MediaPlaylist::MediaPlaylistType type,
-                                   const std::string& file_name,
-                                   const std::string& name,
-                                   const std::string& group_id) override {
-    return scoped_ptr<MediaPlaylist>(
+  std::unique_ptr<MediaPlaylist> Create(MediaPlaylist::MediaPlaylistType type,
+                                        const std::string& file_name,
+                                        const std::string& name,
+                                        const std::string& group_id) override {
+    return std::unique_ptr<MediaPlaylist>(
         CreateMock(type, file_name, name, group_id));
   }
 };
@@ -82,22 +82,23 @@ class SimpleHlsNotifierTest : public ::testing::Test {
             media::kCommonSystemId,
             media::kCommonSystemId + arraysize(media::kCommonSystemId)) {}
 
-  void InjectMediaPlaylistFactory(scoped_ptr<MediaPlaylistFactory> factory) {
-    notifier_.media_playlist_factory_ = factory.Pass();
+  void InjectMediaPlaylistFactory(
+      std::unique_ptr<MediaPlaylistFactory> factory) {
+    notifier_.media_playlist_factory_ = std::move(factory);
   }
 
-  void InjectMediaPlaylistFactory(scoped_ptr<MediaPlaylistFactory> factory,
+  void InjectMediaPlaylistFactory(std::unique_ptr<MediaPlaylistFactory> factory,
                                   SimpleHlsNotifier* notifier) {
-    notifier->media_playlist_factory_ = factory.Pass();
+    notifier->media_playlist_factory_ = std::move(factory);
   }
 
-  void InjectMasterPlaylist(scoped_ptr<MasterPlaylist> playlist) {
-    notifier_.master_playlist_ = playlist.Pass();
+  void InjectMasterPlaylist(std::unique_ptr<MasterPlaylist> playlist) {
+    notifier_.master_playlist_ = std::move(playlist);
   }
 
-  void InjectMasterPlaylist(scoped_ptr<MasterPlaylist> playlist,
+  void InjectMasterPlaylist(std::unique_ptr<MasterPlaylist> playlist,
                             SimpleHlsNotifier* notifier) {
-    notifier->master_playlist_ = playlist.Pass();
+    notifier->master_playlist_ = std::move(playlist);
   }
 
   const std::map<uint32_t, MediaPlaylist*>& GetMediaPlaylistMap() {
@@ -105,9 +106,9 @@ class SimpleHlsNotifierTest : public ::testing::Test {
   }
 
   uint32_t SetupStream(MockMediaPlaylist* mock_media_playlist) {
-    scoped_ptr<MockMasterPlaylist> mock_master_playlist(
+    std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
         new MockMasterPlaylist());
-    scoped_ptr<MockMediaPlaylistFactory> factory(
+    std::unique_ptr<MockMediaPlaylistFactory> factory(
         new MockMediaPlaylistFactory());
 
     EXPECT_CALL(
@@ -117,8 +118,8 @@ class SimpleHlsNotifierTest : public ::testing::Test {
     EXPECT_CALL(*factory, CreateMock(_, _, _, _))
         .WillOnce(Return(mock_media_playlist));
 
-    InjectMasterPlaylist(mock_master_playlist.Pass());
-    InjectMediaPlaylistFactory(factory.Pass());
+    InjectMasterPlaylist(std::move(mock_master_playlist));
+    InjectMediaPlaylistFactory(std::move(factory));
     EXPECT_TRUE(notifier_.Init());
     MediaInfo media_info;
     uint32_t stream_id;
@@ -140,8 +141,10 @@ TEST_F(SimpleHlsNotifierTest, Init) {
 // For this test, since the prefix "anything/" matches, the prefix should be
 // stripped.
 TEST_F(SimpleHlsNotifierTest, RebaseSegmentTemplateRelative) {
-  scoped_ptr<MockMasterPlaylist> mock_master_playlist(new MockMasterPlaylist());
-  scoped_ptr<MockMediaPlaylistFactory> factory(new MockMediaPlaylistFactory());
+  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
+      new MockMasterPlaylist());
+  std::unique_ptr<MockMediaPlaylistFactory> factory(
+      new MockMediaPlaylistFactory());
 
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
@@ -160,8 +163,8 @@ TEST_F(SimpleHlsNotifierTest, RebaseSegmentTemplateRelative) {
                                    StrEq("name"), StrEq("groupid")))
       .WillOnce(Return(mock_media_playlist));
 
-  InjectMasterPlaylist(mock_master_playlist.Pass());
-  InjectMediaPlaylistFactory(factory.Pass());
+  InjectMasterPlaylist(std::move(mock_master_playlist));
+  InjectMediaPlaylistFactory(std::move(factory));
   EXPECT_TRUE(notifier_.Init());
   MediaInfo media_info;
   media_info.set_segment_template("anything/path/to/media$Number$.ts");
@@ -184,8 +187,10 @@ TEST_F(SimpleHlsNotifierTest,
                                   kTestPrefix, kAbsoluteOutputDir,
                                   kMasterPlaylistName);
 
-  scoped_ptr<MockMasterPlaylist> mock_master_playlist(new MockMasterPlaylist());
-  scoped_ptr<MockMediaPlaylistFactory> factory(new MockMediaPlaylistFactory());
+  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
+      new MockMasterPlaylist());
+  std::unique_ptr<MockMediaPlaylistFactory> factory(
+      new MockMediaPlaylistFactory());
 
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
@@ -203,8 +208,8 @@ TEST_F(SimpleHlsNotifierTest,
                                    StrEq("name"), StrEq("groupid")))
       .WillOnce(Return(mock_media_playlist));
 
-  InjectMasterPlaylist(mock_master_playlist.Pass(), &test_notifier);
-  InjectMediaPlaylistFactory(factory.Pass(), &test_notifier);
+  InjectMasterPlaylist(std::move(mock_master_playlist), &test_notifier);
+  InjectMediaPlaylistFactory(std::move(factory), &test_notifier);
   EXPECT_TRUE(test_notifier.Init());
   MediaInfo media_info;
   media_info.set_segment_template("/tmp/something/media$Number$.ts");
@@ -226,8 +231,10 @@ TEST_F(SimpleHlsNotifierTest,
                                   kTestPrefix, kAbsoluteOutputDir,
                                   kMasterPlaylistName);
 
-  scoped_ptr<MockMasterPlaylist> mock_master_playlist(new MockMasterPlaylist());
-  scoped_ptr<MockMediaPlaylistFactory> factory(new MockMediaPlaylistFactory());
+  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
+      new MockMasterPlaylist());
+  std::unique_ptr<MockMediaPlaylistFactory> factory(
+      new MockMediaPlaylistFactory());
 
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
@@ -245,8 +252,8 @@ TEST_F(SimpleHlsNotifierTest,
                                    StrEq("name"), StrEq("groupid")))
       .WillOnce(Return(mock_media_playlist));
 
-  InjectMasterPlaylist(mock_master_playlist.Pass(), &test_notifier);
-  InjectMediaPlaylistFactory(factory.Pass(), &test_notifier);
+  InjectMasterPlaylist(std::move(mock_master_playlist), &test_notifier);
+  InjectMediaPlaylistFactory(std::move(factory), &test_notifier);
   EXPECT_TRUE(test_notifier.Init());
   MediaInfo media_info;
   media_info.set_segment_template("/var/somewhereelse/media$Number$.ts");
@@ -259,8 +266,10 @@ TEST_F(SimpleHlsNotifierTest,
 }
 
 TEST_F(SimpleHlsNotifierTest, NotifyNewStream) {
-  scoped_ptr<MockMasterPlaylist> mock_master_playlist(new MockMasterPlaylist());
-  scoped_ptr<MockMediaPlaylistFactory> factory(new MockMediaPlaylistFactory());
+  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
+      new MockMasterPlaylist());
+  std::unique_ptr<MockMediaPlaylistFactory> factory(
+      new MockMediaPlaylistFactory());
 
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
@@ -272,8 +281,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewStream) {
                                    StrEq("name"), StrEq("groupid")))
       .WillOnce(Return(mock_media_playlist));
 
-  InjectMasterPlaylist(mock_master_playlist.Pass());
-  InjectMediaPlaylistFactory(factory.Pass());
+  InjectMasterPlaylist(std::move(mock_master_playlist));
+  InjectMediaPlaylistFactory(std::move(factory));
   EXPECT_TRUE(notifier_.Init());
   MediaInfo media_info;
   uint32_t stream_id;
@@ -283,8 +292,10 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewStream) {
 }
 
 TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
-  scoped_ptr<MockMasterPlaylist> mock_master_playlist(new MockMasterPlaylist());
-  scoped_ptr<MockMediaPlaylistFactory> factory(new MockMediaPlaylistFactory());
+  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
+      new MockMasterPlaylist());
+  std::unique_ptr<MockMediaPlaylistFactory> factory(
+      new MockMediaPlaylistFactory());
 
   // Pointer released by SimpleHlsNotifier.
   MockMediaPlaylist* mock_media_playlist =
@@ -304,8 +315,8 @@ TEST_F(SimpleHlsNotifierTest, NotifyNewSegment) {
   EXPECT_CALL(*mock_media_playlist,
               AddSegment(StrEq(kTestPrefix + segment_name), kDuration, kSize));
 
-  InjectMasterPlaylist(mock_master_playlist.Pass());
-  InjectMediaPlaylistFactory(factory.Pass());
+  InjectMasterPlaylist(std::move(mock_master_playlist));
+  InjectMediaPlaylistFactory(std::move(factory));
   EXPECT_TRUE(notifier_.Init());
   MediaInfo media_info;
   uint32_t stream_id;
@@ -527,13 +538,15 @@ TEST_F(SimpleHlsNotifierTest, NotifyEncryptionUpdateWithoutStreamsRegistered) {
 }
 
 TEST_F(SimpleHlsNotifierTest, Flush) {
-  scoped_ptr<MockMasterPlaylist> mock_master_playlist(new MockMasterPlaylist());
+  std::unique_ptr<MockMasterPlaylist> mock_master_playlist(
+      new MockMasterPlaylist());
   EXPECT_CALL(*mock_master_playlist,
               WriteAllPlaylists(StrEq(kTestPrefix), StrEq(kAnyOutputDir)))
       .WillOnce(Return(true));
-  scoped_ptr<MockMediaPlaylistFactory> factory(new MockMediaPlaylistFactory());
+  std::unique_ptr<MockMediaPlaylistFactory> factory(
+      new MockMediaPlaylistFactory());
 
-  InjectMasterPlaylist(mock_master_playlist.Pass());
+  InjectMasterPlaylist(std::move(mock_master_playlist));
   EXPECT_TRUE(notifier_.Init());
   EXPECT_TRUE(notifier_.Flush());
 }

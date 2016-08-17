@@ -12,8 +12,8 @@
 #include "packager/base/logging.h"
 #include "packager/base/macros.h"
 #include "packager/base/stl_util.h"
-#include "packager/base/sys_byteorder.h"
 #include "packager/base/strings/string_number_conversions.h"
+#include "packager/base/sys_byteorder.h"
 #include "packager/mpd/base/media_info.pb.h"
 #include "packager/mpd/base/segment_info.h"
 
@@ -137,7 +137,7 @@ void XmlNode::SetContent(const std::string& content) {
 scoped_xml_ptr<xmlNode> XmlNode::PassScopedPtr() {
   DVLOG(2) << "Passing node_.";
   DCHECK(node_);
-  return node_.Pass();
+  return std::move(node_);
 }
 
 xmlNodePtr XmlNode::Release() {

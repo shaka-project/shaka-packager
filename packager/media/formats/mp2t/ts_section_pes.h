@@ -6,9 +6,8 @@
 #define MEDIA_FORMATS_MP2T_TS_SECTION_PES_H_
 
 #include <stdint.h>
-
+#include <memory>
 #include "packager/base/compiler_specific.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/byte_queue.h"
 #include "packager/media/formats/mp2t/ts_section.h"
 
@@ -20,7 +19,7 @@ class EsParser;
 
 class TsSectionPes : public TsSection {
  public:
-  explicit TsSectionPes(scoped_ptr<EsParser> es_parser);
+  explicit TsSectionPes(std::unique_ptr<EsParser> es_parser);
   ~TsSectionPes() override;
 
   // TsSection implementation.
@@ -46,7 +45,7 @@ class TsSectionPes : public TsSection {
   ByteQueue pes_byte_queue_;
 
   // ES parser.
-  scoped_ptr<EsParser> es_parser_;
+  std::unique_ptr<EsParser> es_parser_;
 
   // Do not start parsing before getting a unit start indicator.
   bool wait_for_pusi_;

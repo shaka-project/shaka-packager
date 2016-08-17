@@ -235,7 +235,7 @@ bool TsWriter::FinalizeSegment() {
   return current_file_.release()->Close();
 }
 
-bool TsWriter::AddPesPacket(scoped_ptr<PesPacket> pes_packet) {
+bool TsWriter::AddPesPacket(std::unique_ptr<PesPacket> pes_packet) {
   DCHECK(current_file_);
   if (!WritePesToFile(*pes_packet, &elementary_stream_continuity_counter_,
                       current_file_.get())) {
@@ -248,8 +248,8 @@ bool TsWriter::AddPesPacket(scoped_ptr<PesPacket> pes_packet) {
 }
 
 void TsWriter::SetProgramMapTableWriterForTesting(
-    scoped_ptr<ProgramMapTableWriter> table_writer) {
-  pmt_writer_ = table_writer.Pass();
+    std::unique_ptr<ProgramMapTableWriter> table_writer) {
+  pmt_writer_ = std::move(table_writer);
 }
 
 }  // namespace mp2t

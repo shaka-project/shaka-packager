@@ -6,11 +6,11 @@
 #define MEDIA_FORMATS_MP2T_ES_PARSER_ADTS_H_
 
 #include <list>
+#include <memory>
 #include <utility>
 
 #include "packager/base/callback.h"
 #include "packager/base/compiler_specific.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/audio_stream_info.h"
 #include "packager/media/base/byte_queue.h"
 #include "packager/media/formats/mp2t/es_parser.h"
@@ -65,7 +65,7 @@ class EsParserAdts : public EsParser {
   EsPtsList pts_list_;
 
   // Interpolated PTS for frames that don't have one.
-  scoped_ptr<AudioTimestampHelper> audio_timestamp_helper_;
+  std::unique_ptr<AudioTimestampHelper> audio_timestamp_helper_;
 
   scoped_refptr<StreamInfo> last_audio_decoder_config_;
 

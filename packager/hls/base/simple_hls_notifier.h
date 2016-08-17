@@ -8,12 +8,12 @@
 #define PACKAGER_HLS_BASE_SIMPLE_HLS_NOTIFIER_H_
 
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "packager/base/atomic_sequence_num.h"
 #include "packager/base/macros.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/stl_util.h"
 #include "packager/base/synchronization/lock.h"
 #include "packager/hls/base/hls_notifier.h"
@@ -28,7 +28,7 @@ namespace hls {
 class MediaPlaylistFactory {
  public:
   virtual ~MediaPlaylistFactory();
-  virtual scoped_ptr<MediaPlaylist> Create(
+  virtual std::unique_ptr<MediaPlaylist> Create(
       MediaPlaylist::MediaPlaylistType type,
       const std::string& file_name,
       const std::string& name,
@@ -80,8 +80,8 @@ class SimpleHlsNotifier : public HlsNotifier {
   const std::string prefix_;
   const std::string output_dir_;
 
-  scoped_ptr<MediaPlaylistFactory> media_playlist_factory_;
-  scoped_ptr<MasterPlaylist> master_playlist_;
+  std::unique_ptr<MediaPlaylistFactory> media_playlist_factory_;
+  std::unique_ptr<MasterPlaylist> master_playlist_;
   std::map<uint32_t, MediaPlaylist*> media_playlist_map_;
   STLValueDeleter<decltype(media_playlist_map_)> media_playlist_map_deleter_;
 

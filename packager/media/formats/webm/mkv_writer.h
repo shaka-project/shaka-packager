@@ -7,9 +7,9 @@
 #ifndef MEDIA_FORMATS_WEBM_MKV_WRITER_H_
 #define MEDIA_FORMATS_WEBM_MKV_WRITER_H_
 
+#include <memory>
 #include <string>
 
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/status.h"
 #include "packager/media/file/file_closer.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
@@ -61,7 +61,7 @@ class MkvWriter : public mkvmuxer::IMkvWriter {
   File* file() { return file_.get(); }
 
  private:
-  scoped_ptr<File, FileCloser> file_;
+  std::unique_ptr<File, FileCloser> file_;
   // Keep track of the position and whether we can seek.
   mkvmuxer::int64 position_;
   bool seekable_;

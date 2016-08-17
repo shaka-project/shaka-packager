@@ -10,11 +10,11 @@
 #define MPD_UTIL_MPD_WRITER_H_
 
 #include <list>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "packager/base/macros.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/mpd/base/mpd_notifier.h"
 #include "packager/mpd/base/mpd_options.h"
 
@@ -34,7 +34,7 @@ class MpdNotifierFactory {
   MpdNotifierFactory() {}
   virtual ~MpdNotifierFactory() {}
 
-  virtual scoped_ptr<MpdNotifier> Create(
+  virtual std::unique_ptr<MpdNotifier> Create(
       DashProfile dash_profile,
       const MpdOptions& mpd_options,
       const std::vector<std::string>& base_urls,
@@ -77,12 +77,13 @@ class MpdWriter {
  private:
   friend class MpdWriterTest;
 
-  void SetMpdNotifierFactoryForTest(scoped_ptr<MpdNotifierFactory> factory);
+  void SetMpdNotifierFactoryForTest(
+      std::unique_ptr<MpdNotifierFactory> factory);
 
   std::list<MediaInfo> media_infos_;
   std::vector<std::string> base_urls_;
 
-  scoped_ptr<MpdNotifierFactory> notifier_factory_;
+  std::unique_ptr<MpdNotifierFactory> notifier_factory_;
 
   DISALLOW_COPY_AND_ASSIGN(MpdWriter);
 };

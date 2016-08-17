@@ -5,8 +5,7 @@
 #include <gtest/gtest.h>
 #include <stdint.h>
 #include <string.h>
-
-#include "packager/base/memory/scoped_ptr.h"
+#include <memory>
 #include "packager/media/base/offset_byte_queue.h"
 
 namespace shaka {
@@ -29,7 +28,7 @@ class OffsetByteQueueTest : public testing::Test {
   }
 
  protected:
-  scoped_ptr<OffsetByteQueue> queue_;
+  std::unique_ptr<OffsetByteQueue> queue_;
 };
 
 TEST_F(OffsetByteQueueTest, SetUp) {

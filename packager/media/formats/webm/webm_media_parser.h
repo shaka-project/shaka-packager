@@ -71,7 +71,7 @@ class WebMMediaParser : public MediaParser {
 
   bool unknown_segment_size_;
 
-  scoped_ptr<WebMClusterParser> cluster_parser_;
+  std::unique_ptr<WebMClusterParser> cluster_parser_;
   ByteQueue byte_queue_;
 
   DISALLOW_COPY_AND_ASSIGN(WebMMediaParser);

@@ -9,8 +9,8 @@
 
 #include <vector>
 
-#include "packager/base/files/file_util.h"
 #include "packager/base/files/file_path.h"
+#include "packager/base/files/file_util.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/video_stream_info.h"
@@ -117,7 +117,7 @@ class VodMediaInfoDumpMuxerListenerTest : public ::testing::Test {
 
  protected:
   base::FilePath temp_file_path_;
-  scoped_ptr<VodMediaInfoDumpMuxerListener> listener_;
+  std::unique_ptr<VodMediaInfoDumpMuxerListener> listener_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(VodMediaInfoDumpMuxerListenerTest);

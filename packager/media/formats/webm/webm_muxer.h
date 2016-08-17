@@ -32,7 +32,7 @@ class WebMMuxer : public Muxer {
   void FireOnMediaStartEvent();
   void FireOnMediaEndEvent();
 
-  scoped_ptr<Segmenter> segmenter_;
+  std::unique_ptr<Segmenter> segmenter_;
 
   DISALLOW_COPY_AND_ASSIGN(WebMMuxer);
 };

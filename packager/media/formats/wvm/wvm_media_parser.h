@@ -8,11 +8,11 @@
 
 #include <deque>
 #include <map>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "packager/base/compiler_specific.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/media_parser.h"
 #include "packager/media/base/network_util.h"
 #include "packager/media/codecs/h264_byte_to_unit_stream_converter.h"
@@ -252,7 +252,7 @@ class WvmMediaParser : public MediaParser {
   std::deque<DemuxStreamIdMediaSample> media_sample_queue_;
   std::vector<uint8_t> sample_data_;
   KeySource* decryption_key_source_;
-  scoped_ptr<AesCbcDecryptor> content_decryptor_;
+  std::unique_ptr<AesCbcDecryptor> content_decryptor_;
 
   DISALLOW_COPY_AND_ASSIGN(WvmMediaParser);
 };

@@ -10,13 +10,11 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "packager/base/callback_forward.h"
-#include "packager/base/compiler_specific.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/memory/ref_counted.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/decryptor_source.h"
 #include "packager/media/base/media_parser.h"
 #include "packager/media/base/offset_byte_queue.h"
@@ -87,7 +85,7 @@ class MP4MediaParser : public MediaParser {
   InitCB init_cb_;
   NewSampleCB new_sample_cb_;
   KeySource* decryption_key_source_;
-  scoped_ptr<DecryptorSource> decryptor_source_;
+  std::unique_ptr<DecryptorSource> decryptor_source_;
 
   OffsetByteQueue queue_;
 
@@ -101,8 +99,8 @@ class MP4MediaParser : public MediaParser {
   // Valid iff it is greater than the head of the queue.
   int64_t mdat_tail_;
 
-  scoped_ptr<Movie> moov_;
-  scoped_ptr<TrackRunIterator> runs_;
+  std::unique_ptr<Movie> moov_;
+  std::unique_ptr<TrackRunIterator> runs_;
 
   DISALLOW_COPY_AND_ASSIGN(MP4MediaParser);
 };

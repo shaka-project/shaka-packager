@@ -57,7 +57,7 @@ bool MasterPlaylist::WriteAllPlaylists(const std::string& base_url,
           << "Target duration was already set for " << file_path;
     }
 
-    scoped_ptr<media::File, media::FileCloser> file(
+    std::unique_ptr<media::File, media::FileCloser> file(
         media::File::Open(file_path.c_str(), "w"));
     if (!file) {
       LOG(ERROR) << "Failed to open file " << file_path;
@@ -76,7 +76,7 @@ bool MasterPlaylist::WriteAllPlaylists(const std::string& base_url,
 bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
                                          const std::string& output_dir) {
   std::string file_path = output_dir + file_name_;
-  scoped_ptr<media::File, media::FileCloser> file(
+  std::unique_ptr<media::File, media::FileCloser> file(
       media::File::Open(file_path.c_str(), "w"));
   if (!file) {
     LOG(ERROR) << "Failed to open file " << file_path;

@@ -6,9 +6,8 @@
 #define MEDIA_FORMATS_WEBM_WEBM_CONTENT_ENCODINGS_H_
 
 #include <stdint.h>
+#include <memory>
 #include <string>
-
-#include "packager/base/memory/scoped_ptr.h"
 
 namespace shaka {
 namespace media {

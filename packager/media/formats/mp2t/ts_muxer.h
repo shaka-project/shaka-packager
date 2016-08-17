@@ -32,7 +32,7 @@ class TsMuxer : public Muxer {
   void FireOnMediaStartEvent();
   void FireOnMediaEndEvent();
 
-  scoped_ptr<TsSegmenter> segmenter_;
+  std::unique_ptr<TsSegmenter> segmenter_;
 
   DISALLOW_COPY_AND_ASSIGN(TsMuxer);
 };

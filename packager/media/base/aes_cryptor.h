@@ -7,11 +7,11 @@
 #ifndef PACKAGER_MEDIA_BASE_AES_CRYPTOR_H_
 #define PACKAGER_MEDIA_BASE_AES_CRYPTOR_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "packager/base/macros.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/fourccs.h"
 
 struct aes_key_st;
@@ -119,7 +119,7 @@ class AesCryptor {
   virtual size_t NumPaddingBytes(size_t size) const;
 
   // Openssl AES_KEY.
-  scoped_ptr<AES_KEY> aes_key_;
+  std::unique_ptr<AES_KEY> aes_key_;
 
   // Indicates whether a constant iv is used. Internal iv will be reset to
   // |iv_| before calling Crypt if that is the case.

@@ -136,31 +136,32 @@ class MpdBuilderTest : public ::testing::Test {
   // TODO(rkuroiwa): Once std::forward() is allowed by chromium style guide, use
   // variadic template and std::forward() so that we don't need to copy the
   // constructor signatures.
-  scoped_ptr<Representation> CreateRepresentation(
+  std::unique_ptr<Representation> CreateRepresentation(
       const MediaInfo& media_info,
       const MpdOptions& mpd_options,
       uint32_t representation_id,
-      scoped_ptr<RepresentationStateChangeListener> state_change_listener) {
-    return make_scoped_ptr(new Representation(media_info, mpd_options,
-                                              representation_id,
-                                              state_change_listener.Pass()));
+      std::unique_ptr<RepresentationStateChangeListener>
+          state_change_listener) {
+    return std::unique_ptr<Representation>(
+        new Representation(media_info, mpd_options, representation_id,
+                           std::move(state_change_listener)));
   }
 
-  scoped_ptr<AdaptationSet> CreateAdaptationSet(
+  std::unique_ptr<AdaptationSet> CreateAdaptationSet(
       uint32_t adaptation_set_id,
       const std::string& lang,
       const MpdOptions& mpd_options,
       MpdBuilder::MpdType mpd_type,
       base::AtomicSequenceNumber* representation_counter) {
-    return make_scoped_ptr(new AdaptationSet(adaptation_set_id, lang,
-                                             mpd_options, mpd_type,
-                                             representation_counter));
+    return std::unique_ptr<AdaptationSet>(
+        new AdaptationSet(adaptation_set_id, lang, mpd_options, mpd_type,
+                          representation_counter));
   }
 
   // Helper function to return an empty listener for tests that don't need
   // it.
-  scoped_ptr<RepresentationStateChangeListener> NoListener() {
-    return scoped_ptr<RepresentationStateChangeListener>();
+  std::unique_ptr<RepresentationStateChangeListener> NoListener() {
+    return std::unique_ptr<RepresentationStateChangeListener>();
   }
 
   MpdBuilder mpd_;
@@ -203,7 +204,7 @@ class DynamicMpdBuilderTest : public MpdBuilderTest<MpdBuilder::kDynamic> {
                                        24,  // second.
                                        0 };  // millisecond.
     ASSERT_TRUE(test_time.HasValidValues());
-    mpd_.InjectClockForTesting(scoped_ptr<base::Clock>(
+    mpd_.InjectClockForTesting(std::unique_ptr<base::Clock>(
         new TestClock(base::Time::FromUTCExploded(test_time))));
   }
 
@@ -613,13 +614,13 @@ TEST_F(CommonMpdBuilderTest,
 
   const uint64_t kStartTime = 199238u;
   const uint64_t kDuration = 98u;
-  scoped_ptr<MockRepresentationStateChangeListener> listener(
+  std::unique_ptr<MockRepresentationStateChangeListener> listener(
       new MockRepresentationStateChangeListener());
   EXPECT_CALL(*listener,
               OnNewSegmentForRepresentation(kStartTime, kDuration));
-  auto representation = CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo),
-                                           MpdOptions(), kAnyRepresentationId,
-                                           listener.Pass());
+  auto representation =
+      CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
+                           kAnyRepresentationId, std::move(listener));
   EXPECT_TRUE(representation->Init());
 
   representation->AddNewSegment(kStartTime, kDuration, 10 /* any size */);
@@ -644,13 +645,13 @@ TEST_F(CommonMpdBuilderTest,
 
   const uint64_t kTimeScale = 1000u;
   const uint64_t kFrameDuration = 33u;
-  scoped_ptr<MockRepresentationStateChangeListener> listener(
+  std::unique_ptr<MockRepresentationStateChangeListener> listener(
       new MockRepresentationStateChangeListener());
   EXPECT_CALL(*listener,
               OnSetFrameRateForRepresentation(kFrameDuration, kTimeScale));
   auto representation =
       CreateRepresentation(ConvertToMediaInfo(kTestMediaInfo), MpdOptions(),
-                           kAnyRepresentationId, listener.Pass());
+                           kAnyRepresentationId, std::move(listener));
   EXPECT_TRUE(representation->Init());
 
   representation->SetSampleDuration(kFrameDuration);
@@ -747,7 +748,7 @@ TEST_F(CommonMpdBuilderTest, TtmlMp4MimeType) {
 
   auto representation =
       CreateRepresentation(ConvertToMediaInfo(kTtmlMp4MediaInfo), MpdOptions(),
-                           kAnyRepresentationId, NoListener()).Pass();
+                           kAnyRepresentationId, NoListener());
   EXPECT_TRUE(representation->Init());
   EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
       "mimeType", "application/mp4", representation->GetXml().get()));
@@ -762,7 +763,7 @@ TEST_F(CommonMpdBuilderTest, WebVttMimeType) {
 
   auto representation =
       CreateRepresentation(ConvertToMediaInfo(kWebVttMediaInfo), MpdOptions(),
-                           kAnyRepresentationId, NoListener()).Pass();
+                           kAnyRepresentationId, NoListener());
   EXPECT_TRUE(representation->Init());
   EXPECT_NO_FATAL_FAILURE(ExpectAttributeEqString(
       "mimeType", "text/vtt", representation->GetXml().get()));
@@ -1660,7 +1661,7 @@ TEST_F(CommonMpdBuilderTest, SetSampleDuration) {
       ExpectAttributeNotSet("frameRate", adaptation_set_xml.get()));
 
   representation->SetSampleDuration(2u);
-  adaptation_set_xml = adaptation_set->GetXml().Pass();
+  adaptation_set_xml = adaptation_set->GetXml();
   EXPECT_NO_FATAL_FAILURE(
       ExpectAttributeEqString("frameRate", "3000/2", adaptation_set_xml.get()));
 }

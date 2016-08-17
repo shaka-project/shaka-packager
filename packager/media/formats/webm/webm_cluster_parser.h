@@ -7,11 +7,11 @@
 
 #include <deque>
 #include <map>
+#include <memory>
 #include <set>
 #include <string>
 
 #include "packager/base/compiler_specific.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/decryptor_source.h"
 #include "packager/media/base/media_parser.h"
 #include "packager/media/base/media_sample.h"
@@ -190,7 +190,7 @@ class WebMClusterParser : public WebMParserClient {
   scoped_refptr<VideoStreamInfo> video_stream_info_;
   std::set<int64_t> ignored_tracks_;
 
-  scoped_ptr<DecryptorSource> decryptor_source_;
+  std::unique_ptr<DecryptorSource> decryptor_source_;
   std::string audio_encryption_key_id_;
   std::string video_encryption_key_id_;
 
@@ -203,12 +203,12 @@ class WebMClusterParser : public WebMParserClient {
   MediaParser::InitCB init_cb_;
 
   int64_t last_block_timecode_ = -1;
-  scoped_ptr<uint8_t[]> block_data_;
+  std::unique_ptr<uint8_t[]> block_data_;
   int block_data_size_ = -1;
   int64_t block_duration_ = -1;
   int64_t block_add_id_ = -1;
 
-  scoped_ptr<uint8_t[]> block_additional_data_;
+  std::unique_ptr<uint8_t[]> block_additional_data_;
   // Must be 0 if |block_additional_data_| is null. Must be > 0 if
   // |block_additional_data_| is NOT null.
   int block_additional_data_size_ = 0;

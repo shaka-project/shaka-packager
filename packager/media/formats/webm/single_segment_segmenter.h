@@ -9,7 +9,7 @@
 
 #include "packager/media/formats/webm/segmenter.h"
 
-#include "packager/base/memory/scoped_ptr.h"
+#include <memory>
 #include "packager/media/base/status.h"
 #include "packager/media/formats/webm/mkv_writer.h"
 
@@ -39,10 +39,12 @@ class SingleSegmentSegmenter : public Segmenter {
   void set_init_end(uint64_t end) { init_end_ = end; }
   void set_index_start(uint64_t start) { index_start_ = start; }
   void set_index_end(uint64_t end) { index_end_ = end; }
-  void set_writer(scoped_ptr<MkvWriter> writer) { writer_ = writer.Pass(); }
+  void set_writer(std::unique_ptr<MkvWriter> writer) {
+    writer_ = std::move(writer);
+  }
 
   // Segmenter implementation overrides.
-  Status DoInitialize(scoped_ptr<MkvWriter> writer) override;
+  Status DoInitialize(std::unique_ptr<MkvWriter> writer) override;
   Status DoFinalize() override;
 
  private:
@@ -50,7 +52,7 @@ class SingleSegmentSegmenter : public Segmenter {
   Status NewSubsegment(uint64_t start_timescale) override;
   Status NewSegment(uint64_t start_timescale) override;
 
-  scoped_ptr<MkvWriter> writer_;
+  std::unique_ptr<MkvWriter> writer_;
   uint64_t init_end_;
   uint64_t index_start_;
   uint64_t index_end_;

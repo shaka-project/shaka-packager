@@ -7,9 +7,9 @@
 #include <inttypes.h>
 
 #include <limits>
+#include <memory>
 
 #include "packager/base/logging.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/media/formats/mp4/box.h"
 
@@ -37,7 +37,7 @@ BoxReader::~BoxReader() {
 BoxReader* BoxReader::ReadBox(const uint8_t* buf,
                               const size_t buf_size,
                               bool* err) {
-  scoped_ptr<BoxReader> reader(new BoxReader(buf, buf_size));
+  std::unique_ptr<BoxReader> reader(new BoxReader(buf, buf_size));
   if (!reader->ReadHeader(err))
     return NULL;
 
@@ -70,7 +70,7 @@ bool BoxReader::ScanChildren() {
   scanned_ = true;
 
   while (pos() < size()) {
-    scoped_ptr<BoxReader> child(
+    std::unique_ptr<BoxReader> child(
         new BoxReader(&data()[pos()], size() - pos()));
     bool err;
     if (!child->ReadHeader(&err))

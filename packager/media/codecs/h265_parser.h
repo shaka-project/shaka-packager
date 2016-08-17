@@ -8,9 +8,9 @@
 #define MEDIA_CODECS_H265_PARSER_H_
 
 #include <map>
+#include <memory>
 #include <vector>
 
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/codecs/h26x_bit_reader.h"
 
 namespace shaka {

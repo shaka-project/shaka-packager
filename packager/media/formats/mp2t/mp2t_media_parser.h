@@ -7,10 +7,9 @@
 
 #include <deque>
 #include <map>
+#include <memory>
 
-#include "packager/base/compiler_specific.h"
 #include "packager/base/memory/ref_counted.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/byte_queue.h"
 #include "packager/media/base/media_parser.h"
 #include "packager/media/base/stream_info.h"

@@ -60,9 +60,9 @@ class FakeByteToUnitStreamConverter : public H26xByteToUnitStreamConverter {
 class TestableEsParser : public EsParserH26x {
  public:
   TestableEsParser(const NewStreamInfoCB& new_stream_info_cb,
-               const EmitSampleCB& emit_sample_cb)
+                   const EmitSampleCB& emit_sample_cb)
       : EsParserH26x(Nalu::kH265,
-                     scoped_ptr<H26xByteToUnitStreamConverter>(
+                     std::unique_ptr<H26xByteToUnitStreamConverter>(
                          new FakeByteToUnitStreamConverter()),
                      0,
                      emit_sample_cb),

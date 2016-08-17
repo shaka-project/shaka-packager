@@ -124,14 +124,14 @@ scoped_refptr<AudioStreamInfo> CreateAudioStreamInfo(Codec codec) {
 class PesPacketGeneratorTest : public ::testing::Test {
  protected:
   void UseMockNalUnitToByteStreamConverter(
-      scoped_ptr<MockNalUnitToByteStreamConverter>
+      std::unique_ptr<MockNalUnitToByteStreamConverter>
           mock_nal_unit_to_byte_stream_converter) {
-    generator_.converter_ = mock_nal_unit_to_byte_stream_converter.Pass();
+    generator_.converter_ = std::move(mock_nal_unit_to_byte_stream_converter);
   }
 
   void UseMockAACAudioSpecificConfig(
-      scoped_ptr<MockAACAudioSpecificConfig> mock) {
-    generator_.adts_converter_ = mock.Pass();
+      std::unique_ptr<MockAACAudioSpecificConfig> mock) {
+    generator_.adts_converter_ = std::move(mock);
   }
 
   void H264EncryptionTest(const uint8_t* input,
@@ -150,7 +150,7 @@ class PesPacketGeneratorTest : public ::testing::Test {
     sample->set_pts(kPts);
     sample->set_dts(kDts);
 
-    scoped_ptr<MockNalUnitToByteStreamConverter> mock(
+    std::unique_ptr<MockNalUnitToByteStreamConverter> mock(
         new MockNalUnitToByteStreamConverter());
 
     // Returning only the input data so that it doesn't have all the unnecessary
@@ -159,17 +159,17 @@ class PesPacketGeneratorTest : public ::testing::Test {
     EXPECT_CALL(*mock, ConvertUnitToByteStream(_, input_size, kIsKeyFrame, _))
         .WillOnce(DoAll(SetArgPointee<3>(clear_data), Return(true)));
 
-    UseMockNalUnitToByteStreamConverter(mock.Pass());
+    UseMockNalUnitToByteStreamConverter(std::move(mock));
 
     const std::vector<uint8_t> all_zero(16, 0);
-    scoped_ptr<EncryptionKey> encryption_key(new EncryptionKey());
+    std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
     encryption_key->key = all_zero;
     encryption_key->iv = all_zero;
-    EXPECT_TRUE(generator_.SetEncryptionKey(encryption_key.Pass()));
+    EXPECT_TRUE(generator_.SetEncryptionKey(std::move(encryption_key)));
 
     EXPECT_TRUE(generator_.PushSample(sample));
     EXPECT_EQ(1u, generator_.NumberOfReadyPesPackets());
-    scoped_ptr<PesPacket> pes_packet = generator_.GetNextPesPacket();
+    std::unique_ptr<PesPacket> pes_packet = generator_.GetNextPesPacket();
     ASSERT_TRUE(pes_packet);
 
     std::vector<uint8_t> expected(expected_output,
@@ -197,21 +197,21 @@ class PesPacketGeneratorTest : public ::testing::Test {
     scoped_refptr<MediaSample> sample = MediaSample::CopyFrom(
         input, input_size, kIsKeyFrame);
 
-    scoped_ptr<MockAACAudioSpecificConfig> mock(
+    std::unique_ptr<MockAACAudioSpecificConfig> mock(
         new MockAACAudioSpecificConfig());
     EXPECT_CALL(*mock, ConvertToADTS(_)).WillOnce(Return(true));
 
-    UseMockAACAudioSpecificConfig(mock.Pass());
+    UseMockAACAudioSpecificConfig(std::move(mock));
 
     const std::vector<uint8_t> all_zero(16, 0);
-    scoped_ptr<EncryptionKey> encryption_key(new EncryptionKey());
+    std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
     encryption_key->key = all_zero;
     encryption_key->iv = all_zero;
-    EXPECT_TRUE(generator_.SetEncryptionKey(encryption_key.Pass()));
+    EXPECT_TRUE(generator_.SetEncryptionKey(std::move(encryption_key)));
 
     EXPECT_TRUE(generator_.PushSample(sample));
     EXPECT_EQ(1u, generator_.NumberOfReadyPesPackets());
-    scoped_ptr<PesPacket> pes_packet = generator_.GetNextPesPacket();
+    std::unique_ptr<PesPacket> pes_packet = generator_.GetNextPesPacket();
     ASSERT_TRUE(pes_packet);
 
     std::vector<uint8_t> expected(expected_output,
@@ -266,17 +266,17 @@ TEST_F(PesPacketGeneratorTest, AddVideoSample) {
 
   std::vector<uint8_t> expected_data(kAnyData, kAnyData + arraysize(kAnyData));
 
-  scoped_ptr<MockNalUnitToByteStreamConverter> mock(
+  std::unique_ptr<MockNalUnitToByteStreamConverter> mock(
       new MockNalUnitToByteStreamConverter());
   EXPECT_CALL(*mock,
               ConvertUnitToByteStream(_, arraysize(kAnyData), kIsKeyFrame, _))
       .WillOnce(DoAll(SetArgPointee<3>(expected_data), Return(true)));
 
-  UseMockNalUnitToByteStreamConverter(mock.Pass());
+  UseMockNalUnitToByteStreamConverter(std::move(mock));
 
   EXPECT_TRUE(generator_.PushSample(sample));
   EXPECT_EQ(1u, generator_.NumberOfReadyPesPackets());
-  scoped_ptr<PesPacket> pes_packet = generator_.GetNextPesPacket();
+  std::unique_ptr<PesPacket> pes_packet = generator_.GetNextPesPacket();
   ASSERT_TRUE(pes_packet);
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
@@ -297,13 +297,13 @@ TEST_F(PesPacketGeneratorTest, AddVideoSampleFailedToConvert) {
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
 
   std::vector<uint8_t> expected_data(kAnyData, kAnyData + arraysize(kAnyData));
-  scoped_ptr<MockNalUnitToByteStreamConverter> mock(
+  std::unique_ptr<MockNalUnitToByteStreamConverter> mock(
       new MockNalUnitToByteStreamConverter());
   EXPECT_CALL(*mock,
               ConvertUnitToByteStream(_, arraysize(kAnyData), kIsKeyFrame, _))
       .WillOnce(Return(false));
 
-  UseMockNalUnitToByteStreamConverter(mock.Pass());
+  UseMockNalUnitToByteStreamConverter(std::move(mock));
 
   EXPECT_FALSE(generator_.PushSample(sample));
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
@@ -320,15 +320,16 @@ TEST_F(PesPacketGeneratorTest, AddAudioSample) {
 
   std::vector<uint8_t> expected_data(kAnyData, kAnyData + arraysize(kAnyData));
 
-  scoped_ptr<MockAACAudioSpecificConfig> mock(new MockAACAudioSpecificConfig());
+  std::unique_ptr<MockAACAudioSpecificConfig> mock(
+      new MockAACAudioSpecificConfig());
   EXPECT_CALL(*mock, ConvertToADTS(_))
       .WillOnce(DoAll(SetArgPointee<0>(expected_data), Return(true)));
 
-  UseMockAACAudioSpecificConfig(mock.Pass());
+  UseMockAACAudioSpecificConfig(std::move(mock));
 
   EXPECT_TRUE(generator_.PushSample(sample));
   EXPECT_EQ(1u, generator_.NumberOfReadyPesPackets());
-  scoped_ptr<PesPacket> pes_packet = generator_.GetNextPesPacket();
+  std::unique_ptr<PesPacket> pes_packet = generator_.GetNextPesPacket();
   ASSERT_TRUE(pes_packet);
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 
@@ -346,10 +347,11 @@ TEST_F(PesPacketGeneratorTest, AddAudioSampleFailedToConvert) {
   scoped_refptr<MediaSample> sample =
       MediaSample::CopyFrom(kAnyData, arraysize(kAnyData), kIsKeyFrame);
 
-  scoped_ptr<MockAACAudioSpecificConfig> mock(new MockAACAudioSpecificConfig());
+  std::unique_ptr<MockAACAudioSpecificConfig> mock(
+      new MockAACAudioSpecificConfig());
   EXPECT_CALL(*mock, ConvertToADTS(_)).WillOnce(Return(false));
 
-  UseMockAACAudioSpecificConfig(mock.Pass());
+  UseMockAACAudioSpecificConfig(std::move(mock));
 
   EXPECT_FALSE(generator_.PushSample(sample));
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
@@ -375,17 +377,17 @@ TEST_F(PesPacketGeneratorTest, TimeStampScaling) {
   sample->set_pts(kPts);
   sample->set_dts(kDts);
 
-  scoped_ptr<MockNalUnitToByteStreamConverter> mock(
+  std::unique_ptr<MockNalUnitToByteStreamConverter> mock(
       new MockNalUnitToByteStreamConverter());
   EXPECT_CALL(*mock,
               ConvertUnitToByteStream(_, arraysize(kAnyData), kIsKeyFrame, _))
       .WillOnce(Return(true));
 
-  UseMockNalUnitToByteStreamConverter(mock.Pass());
+  UseMockNalUnitToByteStreamConverter(std::move(mock));
 
   EXPECT_TRUE(generator_.PushSample(sample));
   EXPECT_EQ(1u, generator_.NumberOfReadyPesPackets());
-  scoped_ptr<PesPacket> pes_packet = generator_.GetNextPesPacket();
+  std::unique_ptr<PesPacket> pes_packet = generator_.GetNextPesPacket();
   ASSERT_TRUE(pes_packet);
   EXPECT_EQ(0u, generator_.NumberOfReadyPesPackets());
 

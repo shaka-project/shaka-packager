@@ -33,7 +33,7 @@ class WebMTracksParserTest : public testing::Test {
                            TextKind text_kind,
                            const std::string& name,
                            const std::string& language) {
-    scoped_ptr<WebMTracksParser> parser(new WebMTracksParser(false));
+    std::unique_ptr<WebMTracksParser> parser(new WebMTracksParser(false));
 
     int result = parser->Parse(buffer, buffer_size);
     EXPECT_GT(result, 0);
@@ -101,7 +101,7 @@ TEST_F(WebMTracksParserTest, IgnoringTextTracks) {
   tb.AddTextTrack(2, 2, kWebMCodecSubtitles, "Commentary", "fre");
 
   const std::vector<uint8_t> buf = tb.Finish();
-  scoped_ptr<WebMTracksParser> parser(new WebMTracksParser(true));
+  std::unique_ptr<WebMTracksParser> parser(new WebMTracksParser(true));
 
   int result = parser->Parse(&buf[0], buf.size());
   EXPECT_GT(result, 0);
@@ -134,7 +134,7 @@ TEST_F(WebMTracksParserTest, AudioVideoDefaultDurationUnset) {
   tb.AddVideoTrack(2, 2, "V_VP8", "video", "", -1, 320, 240);
   const std::vector<uint8_t> buf = tb.Finish();
 
-  scoped_ptr<WebMTracksParser> parser(new WebMTracksParser(true));
+  std::unique_ptr<WebMTracksParser> parser(new WebMTracksParser(true));
   int result = parser->Parse(&buf[0], buf.size());
   EXPECT_LE(0, result);
   EXPECT_EQ(static_cast<int>(buf.size()), result);
@@ -165,7 +165,7 @@ TEST_F(WebMTracksParserTest, AudioVideoDefaultDurationSet) {
   tb.AddVideoTrack(2, 2, "V_VP8", "video", "", 987654321, 320, 240);
   const std::vector<uint8_t> buf = tb.Finish();
 
-  scoped_ptr<WebMTracksParser> parser(new WebMTracksParser(true));
+  std::unique_ptr<WebMTracksParser> parser(new WebMTracksParser(true));
   int result = parser->Parse(&buf[0], buf.size());
   EXPECT_LE(0, result);
   EXPECT_EQ(static_cast<int>(buf.size()), result);
@@ -185,7 +185,7 @@ TEST_F(WebMTracksParserTest, InvalidZeroDefaultDurationSet) {
   tb.AddAudioTrack(1, 1, "A_VORBIS", "audio", "", 0, 2, 8000);
   const std::vector<uint8_t> buf = tb.Finish();
 
-  scoped_ptr<WebMTracksParser> parser(new WebMTracksParser(true));
+  std::unique_ptr<WebMTracksParser> parser(new WebMTracksParser(true));
 
   EXPECT_EQ(-1, parser->Parse(&buf[0], buf.size()));
 }
@@ -197,7 +197,7 @@ TEST_F(WebMTracksParserTest, HighTrackUID) {
   tb.AddAudioTrack(1, 1ULL << 31, "A_VORBIS", "audio", "", 40, 2, 8000);
   const std::vector<uint8_t> buf = tb.Finish();
 
-  scoped_ptr<WebMTracksParser> parser(new WebMTracksParser(true));
+  std::unique_ptr<WebMTracksParser> parser(new WebMTracksParser(true));
   EXPECT_GT(parser->Parse(&buf[0], buf.size()),0);
 }
 

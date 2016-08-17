@@ -9,10 +9,10 @@
 #ifndef MEDIA_BASE_MUXER_H_
 #define MEDIA_BASE_MUXER_H_
 
+#include <memory>
 #include <vector>
 
 #include "packager/base/memory/ref_counted.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/time/clock.h"
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/muxer_options.h"
@@ -65,11 +65,11 @@ class Muxer {
 
   /// Set a MuxerListener event handler for this object.
   /// @param muxer_listener should not be NULL.
-  void SetMuxerListener(scoped_ptr<MuxerListener> muxer_listener);
+  void SetMuxerListener(std::unique_ptr<MuxerListener> muxer_listener);
 
   /// Set a ProgressListener event handler for this object.
   /// @param progress_listener should not be NULL.
-  void SetProgressListener(scoped_ptr<ProgressListener> progress_listener);
+  void SetProgressListener(std::unique_ptr<ProgressListener> progress_listener);
 
   const std::vector<MediaStream*>& streams() const { return streams_; }
 
@@ -125,8 +125,8 @@ class Muxer {
   FourCC protection_scheme_;
   bool cancelled_;
 
-  scoped_ptr<MuxerListener> muxer_listener_;
-  scoped_ptr<ProgressListener> progress_listener_;
+  std::unique_ptr<MuxerListener> muxer_listener_;
+  std::unique_ptr<ProgressListener> progress_listener_;
   // An external injected clock, can be NULL.
   base::Clock* clock_;
 

@@ -49,8 +49,8 @@ Demuxer::~Demuxer() {
   STLDeleteElements(&streams_);
 }
 
-void Demuxer::SetKeySource(scoped_ptr<KeySource> key_source) {
-  key_source_ = key_source.Pass();
+void Demuxer::SetKeySource(std::unique_ptr<KeySource> key_source) {
+  key_source_ = std::move(key_source);
 }
 
 Status Demuxer::Initialize() {

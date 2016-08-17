@@ -174,7 +174,7 @@ Status Encryptor::CreateEncryptor(MuxerListener* muxer_listener,
                                   Codec codec,
                                   KeySource* key_source,
                                   bool webm_subsample_encryption) {
-  scoped_ptr<EncryptionKey> encryption_key(new EncryptionKey());
+  std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
   Status status = key_source->GetKey(track_type, encryption_key.get());
   if (!status.ok())
     return status;
@@ -183,7 +183,7 @@ Status Encryptor::CreateEncryptor(MuxerListener* muxer_listener,
       return Status(error::INTERNAL_ERROR, "Failed to generate random iv.");
   }
   DCHECK_EQ(kWebMIvSize, encryption_key->iv.size());
-  scoped_ptr<AesCtrEncryptor> encryptor(new AesCtrEncryptor());
+  std::unique_ptr<AesCtrEncryptor> encryptor(new AesCtrEncryptor());
   const bool initialized =
       encryptor->InitializeWithIv(encryption_key->key, encryption_key->iv);
   if (!initialized)
@@ -201,8 +201,8 @@ Status Encryptor::CreateEncryptor(MuxerListener* muxer_listener,
         encryptor->iv(), encryption_key->key_system_info);
   }
 
-  key_ = encryption_key.Pass();
-  encryptor_ = encryptor.Pass();
+  key_ = std::move(encryption_key);
+  encryptor_ = std::move(encryptor);
   return Status::OK;
 }
 

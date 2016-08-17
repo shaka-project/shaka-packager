@@ -157,11 +157,11 @@ void PackagerTestBasic::Remux(const std::string& input,
   Demuxer demuxer(GetFullPath(input));
   ASSERT_OK(demuxer.Initialize());
 
-  scoped_ptr<KeySource> encryption_key_source(
+  std::unique_ptr<KeySource> encryption_key_source(
       FixedKeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex, "", ""));
   DCHECK(encryption_key_source);
 
-  scoped_ptr<Muxer> muxer_video;
+  std::unique_ptr<Muxer> muxer_video;
   if (!video_output.empty()) {
     muxer_video.reset(
         new mp4::MP4Muxer(SetupOptions(video_output, single_segment)));
@@ -181,7 +181,7 @@ void PackagerTestBasic::Remux(const std::string& input,
     }
   }
 
-  scoped_ptr<Muxer> muxer_audio;
+  std::unique_ptr<Muxer> muxer_audio;
   if (!audio_output.empty()) {
     muxer_audio.reset(
         new mp4::MP4Muxer(SetupOptions(audio_output, single_segment)));
@@ -211,13 +211,13 @@ void PackagerTestBasic::Decrypt(const std::string& input,
   CHECK(!video_output.empty() || !audio_output.empty());
 
   Demuxer demuxer(GetFullPath(input));
-  scoped_ptr<KeySource> decryption_key_source(
+  std::unique_ptr<KeySource> decryption_key_source(
       FixedKeySource::CreateFromHexStrings(kKeyIdHex, kKeyHex, "", ""));
   ASSERT_TRUE(decryption_key_source);
-  demuxer.SetKeySource(decryption_key_source.Pass());
+  demuxer.SetKeySource(std::move(decryption_key_source));
   ASSERT_OK(demuxer.Initialize());
 
-  scoped_ptr<Muxer> muxer;
+  std::unique_ptr<Muxer> muxer;
   MediaStream* stream(NULL);
   if (!video_output.empty()) {
     muxer.reset(

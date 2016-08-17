@@ -16,9 +16,8 @@ namespace shaka {
 
 namespace {
 xml::scoped_xml_ptr<xmlDoc> GetDocFromString(const std::string& xml_str) {
-  xml::scoped_xml_ptr<xmlDoc> schema_as_doc(xmlReadMemory(
-      xml_str.data(), xml_str.size(), NULL, NULL, 0));
-  return schema_as_doc.Pass();
+  return xml::scoped_xml_ptr<xmlDoc>(
+      xmlReadMemory(xml_str.data(), xml_str.size(), NULL, NULL, 0));
 }
 
 // Make a map from attributes of the node.

@@ -38,7 +38,7 @@ Status WebMMuxer::Initialize() {
                   "WebM does not support protection scheme other than 'cenc'.");
   }
 
-  scoped_ptr<MkvWriter> writer(new MkvWriter);
+  std::unique_ptr<MkvWriter> writer(new MkvWriter);
   Status status = writer->Open(options().output_file_name);
   if (!status.ok())
     return status;
@@ -52,7 +52,7 @@ Status WebMMuxer::Initialize() {
   }
 
   Status initialized = segmenter_->Initialize(
-      writer.Pass(), streams()[0]->info().get(), progress_listener(),
+      std::move(writer), streams()[0]->info().get(), progress_listener(),
       muxer_listener(), encryption_key_source(), max_sd_pixels(),
       clear_lead_in_seconds());
 

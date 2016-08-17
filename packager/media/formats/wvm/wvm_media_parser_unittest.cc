@@ -81,8 +81,8 @@ class WvmMediaParserTest : public testing::Test {
  protected:
   typedef std::map<int, scoped_refptr<StreamInfo> > StreamMap;
 
-  scoped_ptr<WvmMediaParser> parser_;
-  scoped_ptr<MockKeySource> key_source_;
+  std::unique_ptr<WvmMediaParser> parser_;
+  std::unique_ptr<MockKeySource> key_source_;
   StreamMap stream_map_;
   int audio_frame_count_;
   int video_frame_count_;

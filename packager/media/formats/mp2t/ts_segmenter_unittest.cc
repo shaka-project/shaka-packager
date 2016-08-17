@@ -55,17 +55,19 @@ class MockPesPacketGenerator : public PesPacketGenerator {
   MOCK_METHOD1(Initialize, bool(const StreamInfo& info));
   MOCK_METHOD1(PushSample, bool(scoped_refptr<MediaSample> sample));
   MOCK_METHOD1(SetEncryptionKeyMock, bool(EncryptionKey* encryption_key));
-  bool SetEncryptionKey(scoped_ptr<EncryptionKey> encryption_key) override {
+  bool SetEncryptionKey(
+      std::unique_ptr<EncryptionKey> encryption_key) override {
     return SetEncryptionKeyMock(encryption_key.get());
   }
 
   MOCK_METHOD0(NumberOfReadyPesPackets, size_t());
 
-  // Hack found at the URL below for mocking methods that return scoped_ptr.
+  // Hack found at the URL below for mocking methods that return
+  // std::unique_ptr.
   // https://groups.google.com/a/chromium.org/forum/#!topic/chromium-dev/01sDxsJ1OYw
   MOCK_METHOD0(GetNextPesPacketMock, PesPacket*());
-  scoped_ptr<PesPacket> GetNextPesPacket() override {
-    return scoped_ptr<PesPacket>(GetNextPesPacketMock());
+  std::unique_ptr<PesPacket> GetNextPesPacket() override {
+    return std::unique_ptr<PesPacket>(GetNextPesPacketMock());
   }
 
   MOCK_METHOD0(Flush, bool());
@@ -78,9 +80,9 @@ class MockTsWriter : public TsWriter {
   MOCK_METHOD0(SignalEncrypted, void());
   MOCK_METHOD0(FinalizeSegment, bool());
 
-  // Similar to the hack above but takes a scoped_ptr.
+  // Similar to the hack above but takes a std::unique_ptr.
   MOCK_METHOD1(AddPesPacketMock, bool(PesPacket* pes_packet));
-  bool AddPesPacket(scoped_ptr<PesPacket> pes_packet) override {
+  bool AddPesPacket(std::unique_ptr<PesPacket> pes_packet) override {
     // No need to keep the pes packet around for the current tests.
     return AddPesPacketMock(pes_packet.get());
   }
@@ -101,8 +103,8 @@ class TsSegmenterTest : public ::testing::Test {
     mock_pes_packet_generator_.reset(new MockPesPacketGenerator());
   }
 
-  scoped_ptr<MockTsWriter> mock_ts_writer_;
-  scoped_ptr<MockPesPacketGenerator> mock_pes_packet_generator_;
+  std::unique_ptr<MockTsWriter> mock_ts_writer_;
+  std::unique_ptr<MockPesPacketGenerator> mock_pes_packet_generator_;
 };
 
 TEST_F(TsSegmenterTest, Initialize) {
@@ -118,9 +120,9 @@ TEST_F(TsSegmenterTest, Initialize) {
   EXPECT_CALL(*mock_pes_packet_generator_, Initialize(_))
       .WillOnce(Return(true));
 
-  segmenter.InjectTsWriterForTesting(mock_ts_writer_.Pass());
+  segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   segmenter.InjectPesPacketGeneratorForTesting(
-      mock_pes_packet_generator_.Pass());
+      std::move(mock_pes_packet_generator_));
 
   EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0));
 }
@@ -165,9 +167,9 @@ TEST_F(TsSegmenterTest, AddSample) {
   EXPECT_CALL(*mock_pes_packet_generator_, GetNextPesPacketMock())
       .WillOnce(Return(new PesPacket()));
 
-  segmenter.InjectTsWriterForTesting(mock_ts_writer_.Pass());
+  segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   segmenter.InjectPesPacketGeneratorForTesting(
-      mock_pes_packet_generator_.Pass());
+      std::move(mock_pes_packet_generator_));
 
   EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0));
   EXPECT_OK(segmenter.AddSample(sample));
@@ -270,9 +272,9 @@ TEST_F(TsSegmenterTest, PassedSegmentDuration) {
       .InSequence(pes_packet_sequence)
       .WillOnce(Return(new PesPacket()));
 
-  segmenter.InjectTsWriterForTesting(mock_ts_writer_.Pass());
+  segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   segmenter.InjectPesPacketGeneratorForTesting(
-      mock_pes_packet_generator_.Pass());
+      std::move(mock_pes_packet_generator_));
   EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0));
   EXPECT_OK(segmenter.AddSample(sample1));
   EXPECT_OK(segmenter.AddSample(sample2));
@@ -297,9 +299,9 @@ TEST_F(TsSegmenterTest, InitializeThenFinalize) {
   ON_CALL(*mock_pes_packet_generator_, NumberOfReadyPesPackets())
       .WillByDefault(Return(0));
 
-  segmenter.InjectTsWriterForTesting(mock_ts_writer_.Pass());
+  segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   segmenter.InjectPesPacketGeneratorForTesting(
-      mock_pes_packet_generator_.Pass());
+      std::move(mock_pes_packet_generator_));
   EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0));
   EXPECT_OK(segmenter.Finalize());
 }
@@ -328,9 +330,9 @@ TEST_F(TsSegmenterTest, Finalize) {
       .WillOnce(Return(0u));
   EXPECT_CALL(*mock_ts_writer_, FinalizeSegment()).WillOnce(Return(true));
 
-  segmenter.InjectTsWriterForTesting(mock_ts_writer_.Pass());
+  segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   segmenter.InjectPesPacketGeneratorForTesting(
-      mock_pes_packet_generator_.Pass());
+      std::move(mock_pes_packet_generator_));
   EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0));
   segmenter.SetTsWriterFileOpenedForTesting(true);
   EXPECT_OK(segmenter.Finalize());
@@ -434,9 +436,9 @@ TEST_F(TsSegmenterTest, SegmentOnlyBeforeKeyFrame) {
       .InSequence(pes_packet_sequence)
       .WillOnce(Return(new PesPacket()));
 
-  segmenter.InjectTsWriterForTesting(mock_ts_writer_.Pass());
+  segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   segmenter.InjectPesPacketGeneratorForTesting(
-      mock_pes_packet_generator_.Pass());
+      std::move(mock_pes_packet_generator_));
   EXPECT_OK(segmenter.Initialize(*stream_info, nullptr, 0, 0));
   EXPECT_OK(segmenter.AddSample(key_frame_sample1));
   EXPECT_OK(segmenter.AddSample(non_key_frame_sample));
@@ -464,9 +466,9 @@ TEST_F(TsSegmenterTest, WithEncryptionNoClearLead) {
   EXPECT_CALL(*mock_pes_packet_generator_, SetEncryptionKeyMock(_))
       .WillOnce(Return(true));
 
-  segmenter.InjectTsWriterForTesting(mock_ts_writer_.Pass());
+  segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   segmenter.InjectPesPacketGeneratorForTesting(
-      mock_pes_packet_generator_.Pass());
+      std::move(mock_pes_packet_generator_));
 
   MockKeySource mock_key_source;
   EXPECT_CALL(mock_key_source, GetKey(KeySource::TRACK_TYPE_HD, _))
@@ -502,9 +504,9 @@ TEST_F(TsSegmenterTest, WithEncryptionNoClearLeadNoMuxerListener) {
   EXPECT_CALL(*mock_pes_packet_generator_, SetEncryptionKeyMock(_))
       .WillOnce(Return(true));
 
-  segmenter.InjectTsWriterForTesting(mock_ts_writer_.Pass());
+  segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   segmenter.InjectPesPacketGeneratorForTesting(
-      mock_pes_packet_generator_.Pass());
+      std::move(mock_pes_packet_generator_));
 
   MockKeySource mock_key_source;
   EXPECT_CALL(mock_key_source, GetKey(KeySource::TRACK_TYPE_HD, _))
@@ -597,9 +599,9 @@ TEST_F(TsSegmenterTest, WithEncryptionWithClearLead) {
 
   MockTsWriter* mock_ts_writer_raw = mock_ts_writer_.get();
 
-  segmenter.InjectTsWriterForTesting(mock_ts_writer_.Pass());
+  segmenter.InjectTsWriterForTesting(std::move(mock_ts_writer_));
   segmenter.InjectPesPacketGeneratorForTesting(
-      mock_pes_packet_generator_.Pass());
+      std::move(mock_pes_packet_generator_));
 
   MockKeySource mock_key_source;
   // This should be called AFTER the first AddSample().

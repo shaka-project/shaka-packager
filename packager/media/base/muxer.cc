@@ -6,6 +6,8 @@
 
 #include "packager/media/base/muxer.h"
 
+#include <algorithm>
+
 #include "packager/media/base/fourccs.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/media_stream.h"
@@ -83,13 +85,13 @@ void Muxer::Cancel() {
   cancelled_ = true;
 }
 
-void Muxer::SetMuxerListener(scoped_ptr<MuxerListener> muxer_listener) {
-  muxer_listener_ = muxer_listener.Pass();
+void Muxer::SetMuxerListener(std::unique_ptr<MuxerListener> muxer_listener) {
+  muxer_listener_ = std::move(muxer_listener);
 }
 
 void Muxer::SetProgressListener(
-    scoped_ptr<ProgressListener> progress_listener) {
-  progress_listener_ = progress_listener.Pass();
+    std::unique_ptr<ProgressListener> progress_listener) {
+  progress_listener_ = std::move(progress_listener);
 }
 
 Status Muxer::AddSample(const MediaStream* stream,

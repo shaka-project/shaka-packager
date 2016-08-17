@@ -194,7 +194,7 @@ TEST_F(TsWriterTest, InitializeAudioNonAac) {
 // This test covers verifies the PAT, and since it doesn't change, other tests
 // shouldn't have to check this.
 TEST_F(TsWriterTest, ClearH264Psi) {
-  scoped_ptr<MockProgramMapTableWriter> mock_pmt_writer(
+  std::unique_ptr<MockProgramMapTableWriter> mock_pmt_writer(
       new MockProgramMapTableWriter());
   EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(WriteOnePmt());
 
@@ -204,7 +204,7 @@ TEST_F(TsWriterTest, ClearH264Psi) {
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 
-  ts_writer_.SetProgramMapTableWriterForTesting(mock_pmt_writer.Pass());
+  ts_writer_.SetProgramMapTableWriterForTesting(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
   ASSERT_TRUE(ts_writer_.FinalizeSegment());
 
@@ -248,7 +248,7 @@ TEST_F(TsWriterTest, ClearH264Psi) {
 }
 
 TEST_F(TsWriterTest, ClearAacPmt) {
-  scoped_ptr<MockProgramMapTableWriter> mock_pmt_writer(
+  std::unique_ptr<MockProgramMapTableWriter> mock_pmt_writer(
       new MockProgramMapTableWriter());
   EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(WriteOnePmt());
 
@@ -259,7 +259,7 @@ TEST_F(TsWriterTest, ClearAacPmt) {
       kMaxBitrate, kAverageBitrate, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 
-  ts_writer_.SetProgramMapTableWriterForTesting(mock_pmt_writer.Pass());
+  ts_writer_.SetProgramMapTableWriterForTesting(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
   ASSERT_TRUE(ts_writer_.FinalizeSegment());
 
@@ -275,7 +275,7 @@ TEST_F(TsWriterTest, ClearAacPmt) {
 // The stream is flaged with will_be_encrypted. Verify that 2 PMTs are created.
 // One for clear lead and another for encrypted segments that follow.
 TEST_F(TsWriterTest, ClearLeadH264Pmt) {
-  scoped_ptr<MockProgramMapTableWriter> mock_pmt_writer(
+  std::unique_ptr<MockProgramMapTableWriter> mock_pmt_writer(
       new MockProgramMapTableWriter());
   EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_))
       .WillOnce(WriteTwoPmts());
@@ -286,7 +286,7 @@ TEST_F(TsWriterTest, ClearLeadH264Pmt) {
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 
-  ts_writer_.SetProgramMapTableWriterForTesting(mock_pmt_writer.Pass());
+  ts_writer_.SetProgramMapTableWriterForTesting(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
   EXPECT_TRUE(ts_writer_.FinalizeSegment());
 
@@ -303,7 +303,7 @@ TEST_F(TsWriterTest, ClearLeadH264Pmt) {
 
 // Check the encrypted segments' PMT (after clear lead).
 TEST_F(TsWriterTest, EncryptedSegmentsH264Pmt) {
-  scoped_ptr<MockProgramMapTableWriter> mock_pmt_writer(
+  std::unique_ptr<MockProgramMapTableWriter> mock_pmt_writer(
       new MockProgramMapTableWriter());
   InSequence s;
   EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(Return(true));
@@ -315,7 +315,7 @@ TEST_F(TsWriterTest, EncryptedSegmentsH264Pmt) {
       kTrickPlayRate, kNaluLengthSize, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 
-  ts_writer_.SetProgramMapTableWriterForTesting(mock_pmt_writer.Pass());
+  ts_writer_.SetProgramMapTableWriterForTesting(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
   EXPECT_TRUE(ts_writer_.FinalizeSegment());
 
@@ -335,7 +335,7 @@ TEST_F(TsWriterTest, EncryptedSegmentsH264Pmt) {
 
 // Same as ClearLeadH264Pmt but for AAC.
 TEST_F(TsWriterTest, ClearLeadAacPmt) {
-  scoped_ptr<MockProgramMapTableWriter> mock_pmt_writer(
+  std::unique_ptr<MockProgramMapTableWriter> mock_pmt_writer(
       new MockProgramMapTableWriter());
   EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_))
       .WillOnce(WriteTwoPmts());
@@ -347,7 +347,7 @@ TEST_F(TsWriterTest, ClearLeadAacPmt) {
       kMaxBitrate, kAverageBitrate, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 
-  ts_writer_.SetProgramMapTableWriterForTesting(mock_pmt_writer.Pass());
+  ts_writer_.SetProgramMapTableWriterForTesting(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
   ASSERT_TRUE(ts_writer_.FinalizeSegment());
 
@@ -364,7 +364,7 @@ TEST_F(TsWriterTest, ClearLeadAacPmt) {
 
 // Same as EncryptedSegmentsH264Pmt but for AAC.
 TEST_F(TsWriterTest, EncryptedSegmentsAacPmt) {
-  scoped_ptr<MockProgramMapTableWriter> mock_pmt_writer(
+  std::unique_ptr<MockProgramMapTableWriter> mock_pmt_writer(
       new MockProgramMapTableWriter());
   InSequence s;
   EXPECT_CALL(*mock_pmt_writer, ClearSegmentPmt(_)).WillOnce(Return(true));
@@ -377,7 +377,7 @@ TEST_F(TsWriterTest, EncryptedSegmentsAacPmt) {
       kMaxBitrate, kAverageBitrate, kLanguage, kIsEncrypted));
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
 
-  ts_writer_.SetProgramMapTableWriterForTesting(mock_pmt_writer.Pass());
+  ts_writer_.SetProgramMapTableWriterForTesting(std::move(mock_pmt_writer));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
   EXPECT_TRUE(ts_writer_.FinalizeSegment());
 
@@ -404,7 +404,7 @@ TEST_F(TsWriterTest, AddPesPacket) {
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
 
-  scoped_ptr<PesPacket> pes(new PesPacket());
+  std::unique_ptr<PesPacket> pes(new PesPacket());
   pes->set_stream_id(0xE0);
   pes->set_pts(0x900);
   pes->set_dts(0x900);
@@ -413,7 +413,7 @@ TEST_F(TsWriterTest, AddPesPacket) {
   };
   pes->mutable_data()->assign(kAnyData, kAnyData + arraysize(kAnyData));
 
-  EXPECT_TRUE(ts_writer_.AddPesPacket(pes.Pass()));
+  EXPECT_TRUE(ts_writer_.AddPesPacket(std::move(pes)));
   ASSERT_TRUE(ts_writer_.FinalizeSegment());
 
   std::vector<uint8_t> content;
@@ -469,14 +469,14 @@ TEST_F(TsWriterTest, BigPesPacket) {
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
 
-  scoped_ptr<PesPacket> pes(new PesPacket());
+  std::unique_ptr<PesPacket> pes(new PesPacket());
   pes->set_pts(0);
   pes->set_dts(0);
   // A little over 2 TS Packets (3 TS Packets).
   const std::vector<uint8_t> big_data(400, 0x23);
   *pes->mutable_data() = big_data;
 
-  EXPECT_TRUE(ts_writer_.AddPesPacket(pes.Pass()));
+  EXPECT_TRUE(ts_writer_.AddPesPacket(std::move(pes)));
   ASSERT_TRUE(ts_writer_.FinalizeSegment());
 
   std::vector<uint8_t> content;
@@ -505,7 +505,7 @@ TEST_F(TsWriterTest, PesPtsZeroNoDts) {
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
 
-  scoped_ptr<PesPacket> pes(new PesPacket());
+  std::unique_ptr<PesPacket> pes(new PesPacket());
   pes->set_stream_id(0xE0);
   pes->set_pts(0x0);
   const uint8_t kAnyData[] = {
@@ -513,7 +513,7 @@ TEST_F(TsWriterTest, PesPtsZeroNoDts) {
   };
   pes->mutable_data()->assign(kAnyData, kAnyData + arraysize(kAnyData));
 
-  EXPECT_TRUE(ts_writer_.AddPesPacket(pes.Pass()));
+  EXPECT_TRUE(ts_writer_.AddPesPacket(std::move(pes)));
   ASSERT_TRUE(ts_writer_.FinalizeSegment());
 
   std::vector<uint8_t> content;
@@ -565,7 +565,7 @@ TEST_F(TsWriterTest, TsPacketPayload183Bytes) {
   EXPECT_TRUE(ts_writer_.Initialize(*stream_info));
   EXPECT_TRUE(ts_writer_.NewSegment(test_file_name_));
 
-  scoped_ptr<PesPacket> pes(new PesPacket());
+  std::unique_ptr<PesPacket> pes(new PesPacket());
   pes->set_stream_id(0xE0);
   pes->set_pts(0x00);
   pes->set_dts(0x00);
@@ -577,7 +577,7 @@ TEST_F(TsWriterTest, TsPacketPayload183Bytes) {
   std::vector<uint8_t> pes_payload(157 + 183, 0xAF);
   *pes->mutable_data() = pes_payload;
 
-  EXPECT_TRUE(ts_writer_.AddPesPacket(pes.Pass()));
+  EXPECT_TRUE(ts_writer_.AddPesPacket(std::move(pes)));
   ASSERT_TRUE(ts_writer_.FinalizeSegment());
 
   const uint8_t kExpectedOutputPrefix[] = {

@@ -5,8 +5,7 @@
 // https://developers.google.com/open-source/licenses/bsd
 
 #include <gtest/gtest.h>
-
-#include "packager/base/memory/scoped_ptr.h"
+#include <memory>
 #include "packager/media/formats/mp4/composition_offset_iterator.h"
 
 namespace shaka {
@@ -37,7 +36,7 @@ class CompositionOffsetIteratorTest : public testing::Test {
  protected:
   std::vector<int64_t> composition_offset_table_;
   CompositionTimeToSample composition_time_to_sample_;
-  scoped_ptr<CompositionOffsetIterator> composition_offset_iterator_;
+  std::unique_ptr<CompositionOffsetIterator> composition_offset_iterator_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CompositionOffsetIteratorTest);

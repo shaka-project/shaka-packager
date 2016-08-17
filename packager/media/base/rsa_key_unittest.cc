@@ -7,8 +7,7 @@
 // Unit test for rsa_key RSA encryption and signing.
 
 #include <gtest/gtest.h>
-
-#include "packager/base/memory/scoped_ptr.h"
+#include <memory>
 #include "packager/media/base/rsa_key.h"
 #include "packager/media/base/test/fake_prng.h"
 #include "packager/media/base/test/rsa_test_data.h"
@@ -44,41 +43,42 @@ class RsaKeyTest : public ::testing::TestWithParam<RsaTestSet> {
 
  protected:
   const RsaTestSet& test_set_;
-  scoped_ptr<RsaPrivateKey> private_key_;
-  scoped_ptr<RsaPublicKey> public_key_;
+  std::unique_ptr<RsaPrivateKey> private_key_;
+  std::unique_ptr<RsaPublicKey> public_key_;
 };
 
 TEST_P(RsaKeyTest, BadPublicKey) {
-  scoped_ptr<RsaPublicKey> public_key(RsaPublicKey::Create("bad_public_key"));
+  std::unique_ptr<RsaPublicKey> public_key(
+      RsaPublicKey::Create("bad_public_key"));
   EXPECT_TRUE(public_key == NULL);
 }
 
 TEST_P(RsaKeyTest, BadPrivateKey) {
-  scoped_ptr<RsaPrivateKey> private_key(
+  std::unique_ptr<RsaPrivateKey> private_key(
       RsaPrivateKey::Create("bad_private_key"));
   EXPECT_TRUE(private_key == NULL);
 }
 
 TEST_P(RsaKeyTest, LoadPublicKey) {
-  scoped_ptr<RsaPublicKey> public_key(
+  std::unique_ptr<RsaPublicKey> public_key(
       RsaPublicKey::Create(test_set_.public_key));
   EXPECT_TRUE(public_key != NULL);
 }
 
 TEST_P(RsaKeyTest, LoadPrivateKey) {
-  scoped_ptr<RsaPrivateKey> private_key(
+  std::unique_ptr<RsaPrivateKey> private_key(
       RsaPrivateKey::Create(test_set_.private_key));
   EXPECT_TRUE(private_key != NULL);
 }
 
 TEST_P(RsaKeyTest, LoadPublicKeyInPrivateKey) {
-  scoped_ptr<RsaPrivateKey> private_key(
+  std::unique_ptr<RsaPrivateKey> private_key(
       RsaPrivateKey::Create(test_set_.public_key));
   EXPECT_TRUE(private_key == NULL);
 }
 
 TEST_P(RsaKeyTest, LoadPrivateKeyInPublicKey) {
-  scoped_ptr<RsaPublicKey> public_key(
+  std::unique_ptr<RsaPublicKey> public_key(
       RsaPublicKey::Create(test_set_.private_key));
   EXPECT_TRUE(public_key == NULL);
 }

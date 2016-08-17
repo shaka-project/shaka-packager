@@ -114,12 +114,12 @@ bool WidevinePsshToJson(const std::vector<uint8_t>& pssh_data,
 
 MediaPlaylistFactory::~MediaPlaylistFactory() {}
 
-scoped_ptr<MediaPlaylist> MediaPlaylistFactory::Create(
+std::unique_ptr<MediaPlaylist> MediaPlaylistFactory::Create(
     MediaPlaylist::MediaPlaylistType type,
     const std::string& file_name,
     const std::string& name,
     const std::string& group_id) {
-  return scoped_ptr<MediaPlaylist>(
+  return std::unique_ptr<MediaPlaylist>(
       new MediaPlaylist(type, file_name, name, group_id));
 }
 
@@ -163,7 +163,7 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
   MediaInfo adjusted_media_info(media_info);
   MakePathsRelativeToOutputDirectory(output_dir_, &adjusted_media_info);
 
-  scoped_ptr<MediaPlaylist> media_playlist =
+  std::unique_ptr<MediaPlaylist> media_playlist =
       media_playlist_factory_->Create(type, playlist_name, name, group_id);
   if (!media_playlist->SetMediaInfo(adjusted_media_info)) {
     LOG(ERROR) << "Failed to set media info for playlist " << playlist_name;

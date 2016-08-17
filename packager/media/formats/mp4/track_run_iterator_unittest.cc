@@ -4,9 +4,8 @@
 
 #include <gtest/gtest.h>
 #include <stdint.h>
-
+#include <memory>
 #include "packager/base/logging.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 #include "packager/media/formats/mp4/track_run_iterator.h"
 
@@ -104,7 +103,7 @@ class TrackRunIteratorTest : public testing::Test {
 
  protected:
   Movie moov_;
-  scoped_ptr<TrackRunIterator> iter_;
+  std::unique_ptr<TrackRunIterator> iter_;
 
   void CreateMovie() {
     moov_.header.timescale = 1000;
@@ -456,7 +455,7 @@ TEST_F(TrackRunIteratorTest,
   EXPECT_EQ(iter_->aux_info_size(), 0);
   EXPECT_EQ(iter_->sample_offset(), 200);
   EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[1].runs[0].data_offset);
-  scoped_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
+  std::unique_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
   EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId)),
             config->key_id());
   EXPECT_EQ(std::vector<uint8_t>(kIv1, kIv1 + arraysize(kIv1)), config->iv());
@@ -494,7 +493,7 @@ TEST_F(TrackRunIteratorTest,
   EXPECT_EQ(iter_->aux_info_size(), 0);
   EXPECT_EQ(iter_->sample_offset(), 200);
   EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[1].runs[0].data_offset);
-  scoped_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
+  std::unique_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
   EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId)),
             config->key_id());
   EXPECT_EQ(std::vector<uint8_t>(kIv1, kIv1 + arraysize(kIv1)), config->iv());
@@ -523,7 +522,7 @@ TEST_F(TrackRunIteratorTest,
   EXPECT_TRUE(iter_->is_encrypted());
   EXPECT_EQ(iter_->sample_offset(), 200);
   EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[1].runs[0].data_offset);
-  scoped_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
+  std::unique_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
   EXPECT_EQ(FOURCC_cbcs, config->protection_scheme());
   EXPECT_EQ(kDefaultCryptByteBlock, config->crypt_byte_block());
   EXPECT_EQ(kDefaultSkipByteBlock, config->skip_byte_block());
@@ -565,7 +564,7 @@ TEST_F(TrackRunIteratorTest,
   EXPECT_TRUE(iter_->is_encrypted());
   EXPECT_EQ(iter_->sample_offset(), 200);
   EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[1].runs[0].data_offset);
-  scoped_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
+  std::unique_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
   EXPECT_EQ(FOURCC_cbcs, config->protection_scheme());
   EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId)),
             config->key_id());
@@ -605,7 +604,7 @@ TEST_F(TrackRunIteratorTest, DecryptConfigTestWithAuxInfo) {
   EXPECT_FALSE(iter_->AuxInfoNeedsToBeCached());
   EXPECT_EQ(iter_->sample_offset(), 200);
   EXPECT_EQ(iter_->GetMaxClearOffset(), moof.tracks[0].runs[0].data_offset);
-  scoped_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
+  std::unique_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
   EXPECT_EQ(std::vector<uint8_t>(kKeyId, kKeyId + arraysize(kKeyId)),
             config->key_id());
   EXPECT_EQ(std::vector<uint8_t>(kIv1, kIv1 + arraysize(kIv1)), config->iv());
@@ -633,7 +632,7 @@ TEST_F(TrackRunIteratorTest, SharedAuxInfoTest) {
   EXPECT_EQ(iter_->track_id(), 1u);
   EXPECT_EQ(iter_->aux_info_offset(), 50);
   EXPECT_TRUE(iter_->CacheAuxInfo(kAuxInfo, arraysize(kAuxInfo)));
-  scoped_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
+  std::unique_ptr<DecryptConfig> config = iter_->GetDecryptConfig();
   ASSERT_EQ(arraysize(kIv1), config->iv().size());
   EXPECT_TRUE(!memcmp(kIv1, config->iv().data(), config->iv().size()));
   iter_->AdvanceSample();

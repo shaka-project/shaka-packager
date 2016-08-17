@@ -8,8 +8,7 @@
 #define MEDIA_BASE_WIDEVINE_KEY_SOURCE_H_
 
 #include <map>
-
-#include "packager/base/memory/scoped_ptr.h"
+#include <memory>
 #include "packager/base/synchronization/waitable_event.h"
 #include "packager/base/values.h"
 #include "packager/media/base/closure_thread.h"
@@ -58,11 +57,11 @@ class WidevineKeySource : public KeySource {
 
   /// Set signer for the key source.
   /// @param signer signs the request message.
-  void set_signer(scoped_ptr<RequestSigner> signer);
+  void set_signer(std::unique_ptr<RequestSigner> signer);
 
   /// Inject an @b KeyFetcher object, mainly used for testing.
   /// @param key_fetcher points to the @b KeyFetcher object to be injected.
-  void set_key_fetcher(scoped_ptr<KeyFetcher> key_fetcher);
+  void set_key_fetcher(std::unique_ptr<KeyFetcher> key_fetcher);
 
  protected:
    ClosureThread key_production_thread_;
@@ -111,9 +110,9 @@ class WidevineKeySource : public KeySource {
   // The fetcher object used to fetch keys from the license service.
   // It is initialized to a default fetcher on class initialization.
   // Can be overridden using set_key_fetcher for testing or other purposes.
-  scoped_ptr<KeyFetcher> key_fetcher_;
+  std::unique_ptr<KeyFetcher> key_fetcher_;
   std::string server_url_;
-  scoped_ptr<RequestSigner> signer_;
+  std::unique_ptr<RequestSigner> signer_;
   base::DictionaryValue request_dict_;
 
   const uint32_t crypto_period_count_;
@@ -122,7 +121,7 @@ class WidevineKeySource : public KeySource {
   bool key_production_started_;
   base::WaitableEvent start_key_production_;
   uint32_t first_crypto_period_index_;
-  scoped_ptr<EncryptionKeyQueue> key_pool_;
+  std::unique_ptr<EncryptionKeyQueue> key_pool_;
   EncryptionKeyMap encryption_key_map_;  // For non key rotation request.
   Status common_encryption_request_status_;
 

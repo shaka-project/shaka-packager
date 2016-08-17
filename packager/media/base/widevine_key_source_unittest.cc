@@ -175,7 +175,7 @@ class WidevineKeySourceTest : public ::testing::Test,
  protected:
   void CreateWidevineKeySource() {
     widevine_key_source_.reset(new WidevineKeySource(kServerUrl, GetParam()));
-    widevine_key_source_->set_key_fetcher(mock_key_fetcher_.Pass());
+    widevine_key_source_->set_key_fetcher(std::move(mock_key_fetcher_));
   }
 
   void VerifyKeys(bool classic) {
@@ -214,9 +214,9 @@ class WidevineKeySourceTest : public ::testing::Test,
       }
     }
   }
-  scoped_ptr<MockRequestSigner> mock_request_signer_;
-  scoped_ptr<MockKeyFetcher> mock_key_fetcher_;
-  scoped_ptr<WidevineKeySource> widevine_key_source_;
+  std::unique_ptr<MockRequestSigner> mock_request_signer_;
+  std::unique_ptr<MockKeyFetcher> mock_key_fetcher_;
+  std::unique_ptr<WidevineKeySource> widevine_key_source_;
   std::vector<uint8_t> content_id_;
 
  private:
@@ -239,7 +239,7 @@ TEST_P(WidevineKeySourceTest, GenerateSignatureFailure) {
       .WillOnce(Return(false));
 
   CreateWidevineKeySource();
-  widevine_key_source_->set_signer(mock_request_signer_.Pass());
+  widevine_key_source_->set_signer(std::move(mock_request_signer_));
   ASSERT_EQ(Status(error::INTERNAL_ERROR, "Signature generation failed."),
             widevine_key_source_->FetchKeys(content_id_, kPolicy));
 }
@@ -264,7 +264,7 @@ TEST_P(WidevineKeySourceTest, HttpFetchFailure) {
       .WillOnce(Return(kMockStatus));
 
   CreateWidevineKeySource();
-  widevine_key_source_->set_signer(mock_request_signer_.Pass());
+  widevine_key_source_->set_signer(std::move(mock_request_signer_));
   ASSERT_EQ(kMockStatus,
             widevine_key_source_->FetchKeys(content_id_, kPolicy));
 }
@@ -309,7 +309,7 @@ TEST_P(WidevineKeySourceTest, LicenseStatusCencWithPsshBoxOK) {
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
   CreateWidevineKeySource();
-  widevine_key_source_->set_signer(mock_request_signer_.Pass());
+  widevine_key_source_->set_signer(std::move(mock_request_signer_));
   std::vector<uint8_t> pssh_box(kRequestPsshBox,
                                 kRequestPsshBox + arraysize(kRequestPsshBox));
   ASSERT_OK(widevine_key_source_->FetchKeys(pssh_box));
@@ -333,7 +333,7 @@ TEST_P(WidevineKeySourceTest, LicenseStatusCencWithKeyIdsOK) {
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
   CreateWidevineKeySource();
-  widevine_key_source_->set_signer(mock_request_signer_.Pass());
+  widevine_key_source_->set_signer(std::move(mock_request_signer_));
   std::vector<std::vector<uint8_t>> key_ids;
   key_ids.push_back(std::vector<uint8_t>(
       kRequestKeyId, kRequestKeyId + arraysize(kRequestKeyId)));
@@ -355,7 +355,7 @@ TEST_P(WidevineKeySourceTest, LicenseStatusClassicOK) {
       .WillOnce(DoAll(SetArgPointee<2>(mock_response), Return(Status::OK)));
 
   CreateWidevineKeySource();
-  widevine_key_source_->set_signer(mock_request_signer_.Pass());
+  widevine_key_source_->set_signer(std::move(mock_request_signer_));
   ASSERT_OK(widevine_key_source_->FetchKeys(kClassicAssetId));
   VerifyKeys(true);
 }
@@ -490,7 +490,7 @@ TEST_P(WidevineKeySourceTest, KeyRotationTest) {
   }
 
   CreateWidevineKeySource();
-  widevine_key_source_->set_signer(mock_request_signer_.Pass());
+  widevine_key_source_->set_signer(std::move(mock_request_signer_));
   ASSERT_OK(widevine_key_source_->FetchKeys(content_id_, kPolicy));
 
   EncryptionKey encryption_key;

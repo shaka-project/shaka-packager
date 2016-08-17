@@ -30,7 +30,7 @@ KeyRotationFragmenter::KeyRotationFragmenter(MovieFragment* moof,
                                              MuxerListener* muxer_listener)
     : EncryptingFragmenter(info,
                            traf,
-                           scoped_ptr<EncryptionKey>(new EncryptionKey()),
+                           std::unique_ptr<EncryptionKey>(new EncryptionKey()),
                            clear_time,
                            protection_scheme,
                            crypt_byte_block,
@@ -55,7 +55,7 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption(
   int64_t current_crypto_period_index =
       traf()->decode_time.decode_time / crypto_period_duration_;
   if (current_crypto_period_index != prev_crypto_period_index_) {
-    scoped_ptr<EncryptionKey> encryption_key(new EncryptionKey());
+    std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
     Status status = encryption_key_source_->GetCryptoPeriodKey(
         current_crypto_period_index, track_type_, encryption_key.get());
     if (!status.ok())
@@ -66,7 +66,7 @@ Status KeyRotationFragmenter::PrepareFragmentForEncryption(
         return Status(error::INTERNAL_ERROR, "Failed to generate random iv.");
       }
     }
-    set_encryption_key(encryption_key.Pass());
+    set_encryption_key(std::move(encryption_key));
     prev_crypto_period_index_ = current_crypto_period_index;
     need_to_refresh_encryptor = true;
   }

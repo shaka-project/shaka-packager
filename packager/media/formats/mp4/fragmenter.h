@@ -7,11 +7,11 @@
 #ifndef MEDIA_FORMATS_MP4_FRAGMENTER_H_
 #define MEDIA_FORMATS_MP4_FRAGMENTER_H_
 
+#include <memory>
 #include <vector>
 
 #include "packager/base/logging.h"
 #include "packager/base/memory/ref_counted.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/status.h"
 
 namespace shaka {
@@ -93,7 +93,7 @@ class Fragmenter {
   int64_t presentation_start_time_;
   int64_t earliest_presentation_time_;
   int64_t first_sap_time_;
-  scoped_ptr<BufferWriter> data_;
+  std::unique_ptr<BufferWriter> data_;
 
   DISALLOW_COPY_AND_ASSIGN(Fragmenter);
 };

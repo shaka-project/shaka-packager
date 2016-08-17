@@ -7,9 +7,10 @@
 #ifndef MEDIA_BASE_REQUEST_SIGNER_H_
 #define MEDIA_BASE_REQUEST_SIGNER_H_
 
+#include <memory>
 #include <string>
 
-#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/macros.h"
 
 namespace shaka {
 namespace media {
@@ -56,9 +57,9 @@ class AesRequestSigner : public RequestSigner {
 
  private:
   AesRequestSigner(const std::string& signer_name,
-                   scoped_ptr<AesCbcEncryptor> encryptor);
+                   std::unique_ptr<AesCbcEncryptor> encryptor);
 
-  scoped_ptr<AesCbcEncryptor> aes_cbc_encryptor_;
+  std::unique_ptr<AesCbcEncryptor> aes_cbc_encryptor_;
 
   DISALLOW_COPY_AND_ASSIGN(AesRequestSigner);
 };
@@ -79,9 +80,9 @@ class RsaRequestSigner : public RequestSigner {
 
  private:
   RsaRequestSigner(const std::string& signer_name,
-                   scoped_ptr<RsaPrivateKey> rsa_private_key);
+                   std::unique_ptr<RsaPrivateKey> rsa_private_key);
 
-  scoped_ptr<RsaPrivateKey> rsa_private_key_;
+  std::unique_ptr<RsaPrivateKey> rsa_private_key_;
 
   DISALLOW_COPY_AND_ASSIGN(RsaRequestSigner);
 };

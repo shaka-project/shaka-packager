@@ -5,9 +5,9 @@
 #ifndef MEDIA_FORMATS_MP4_TRACK_RUN_ITERATOR_H_
 #define MEDIA_FORMATS_MP4_TRACK_RUN_ITERATOR_H_
 
+#include <memory>
 #include <vector>
 
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 
 namespace shaka {
@@ -98,7 +98,7 @@ class TrackRunIterator {
 
   /// Only call when is_encrypted() is true and AuxInfoNeedsToBeCached() is
   /// false. Result is owned by caller.
-  scoped_ptr<DecryptConfig> GetDecryptConfig();
+  std::unique_ptr<DecryptConfig> GetDecryptConfig();
 
  private:
   void ResetRun();

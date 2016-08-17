@@ -10,10 +10,10 @@
 #define MEDIA_EVENT_MPD_NOTIFY_MUXER_LISTENER_H_
 
 #include <list>
+#include <memory>
 #include <vector>
 
-#include "packager/base/compiler_specific.h"
-#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/macros.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/event/muxer_listener.h"
 
@@ -69,7 +69,7 @@ class MpdNotifyMuxerListener : public MuxerListener {
 
   MpdNotifier* const mpd_notifier_;
   uint32_t notification_id_;
-  scoped_ptr<MediaInfo> media_info_;
+  std::unique_ptr<MediaInfo> media_info_;
 
   bool is_encrypted_;
   // Storage for values passed to OnEncryptionInfoReady().

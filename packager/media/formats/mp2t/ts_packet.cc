@@ -4,7 +4,7 @@
 
 #include "packager/media/formats/mp2t/ts_packet.h"
 
-#include "packager/base/memory/scoped_ptr.h"
+#include <memory>
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"
 
@@ -57,7 +57,7 @@ TsPacket* TsPacket::Parse(const uint8_t* buf, int size) {
     return NULL;
   }
 
-  scoped_ptr<TsPacket> ts_packet(new TsPacket());
+  std::unique_ptr<TsPacket> ts_packet(new TsPacket());
   bool status = ts_packet->ParseHeader(buf);
   if (!status) {
     DVLOG(1) << "Parsing header failed";

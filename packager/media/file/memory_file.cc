@@ -9,9 +9,9 @@
 #include <string.h>  // for memcpy
 
 #include <map>
+#include <memory>
 
 #include "packager/base/logging.h"
-#include "packager/base/memory/scoped_ptr.h"
 
 namespace shaka {
 namespace media {
@@ -44,13 +44,13 @@ class FileSystem {
  private:
   FileSystem() {}
 
-  static scoped_ptr<FileSystem> g_file_system_;
+  static std::unique_ptr<FileSystem> g_file_system_;
 
   std::map<std::string, std::vector<uint8_t> > files_;
   DISALLOW_COPY_AND_ASSIGN(FileSystem);
 };
 
-scoped_ptr<FileSystem> FileSystem::g_file_system_;
+std::unique_ptr<FileSystem> FileSystem::g_file_system_;
 
 }  // namespace
 

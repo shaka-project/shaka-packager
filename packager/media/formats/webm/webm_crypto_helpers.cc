@@ -31,7 +31,7 @@ bool WebMCreateDecryptConfig(const uint8_t* data,
                              int data_size,
                              const uint8_t* key_id,
                              int key_id_size,
-                             scoped_ptr<DecryptConfig>* decrypt_config,
+                             std::unique_ptr<DecryptConfig>* decrypt_config,
                              int* data_offset) {
   int header_size = kWebMSignalByteSize;
   if (data_size < header_size) {

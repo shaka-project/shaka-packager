@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/protection_system_specific_info.h"
 #include "packager/media/base/status.h"
 

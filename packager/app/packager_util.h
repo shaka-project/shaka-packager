@@ -10,10 +10,9 @@
 #define APP_PACKAGER_UTIL_H_
 
 #include <gflags/gflags.h>
+#include <memory>
 #include <string>
 #include <vector>
-
-#include "packager/base/memory/scoped_ptr.h"
 
 DECLARE_bool(dump_stream_info);
 
@@ -33,15 +32,15 @@ void DumpStreamInfo(const std::vector<MediaStream*>& streams);
 
 /// Create KeySource based on provided command line options for content
 /// encryption. Also fetches keys.
-/// @return A scoped_ptr containing a new KeySource, or NULL if
+/// @return A std::unique_ptr containing a new KeySource, or nullptr if
 ///         encryption is not required.
-scoped_ptr<KeySource> CreateEncryptionKeySource();
+std::unique_ptr<KeySource> CreateEncryptionKeySource();
 
 /// Create KeySource based on provided command line options for content
 /// decryption. Does not fetch keys.
-/// @return A scoped_ptr containing a new KeySource, or NULL if decryption
-///         is not required.
-scoped_ptr<KeySource> CreateDecryptionKeySource();
+/// @return A std::unique_ptr containing a new KeySource, or nullptr if
+///         decryption is not required.
+std::unique_ptr<KeySource> CreateDecryptionKeySource();
 
 /// Set flags according to profile.
 bool AssignFlagsFromProfile();

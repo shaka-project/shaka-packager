@@ -45,7 +45,7 @@ class AesPatternCryptorTest : public ::testing::Test {
                          kSkipByteBlock,
                          AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
                          AesCryptor::kDontUseConstantIv,
-                         scoped_ptr<MockAesCryptor>(mock_cryptor_)) {}
+                         std::unique_ptr<MockAesCryptor>(mock_cryptor_)) {}
 
  protected:
   MockAesCryptor* mock_cryptor_;
@@ -146,7 +146,7 @@ TEST(AesPatternCryptorConstIvTest, UseConstantIv) {
       kCryptByteBlock, kSkipByteBlock,
       AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
       AesPatternCryptor::kUseConstantIv,
-      scoped_ptr<MockAesCryptor>(mock_cryptor));
+      std::unique_ptr<MockAesCryptor>(mock_cryptor));
 
   std::vector<uint8_t> iv(8, 'i');
   // SetIv will be called twice:
@@ -165,7 +165,7 @@ TEST(AesPatternCryptorConstIvTest, DontUseConstantIv) {
       kCryptByteBlock, kSkipByteBlock,
       AesPatternCryptor::kEncryptIfCryptByteBlockRemaining,
       AesPatternCryptor::kDontUseConstantIv,
-      scoped_ptr<MockAesCryptor>(mock_cryptor));
+      std::unique_ptr<MockAesCryptor>(mock_cryptor));
 
   std::vector<uint8_t> iv(8, 'i');
   // SetIv will be called only once by AesPatternCryptor::SetIv.
@@ -186,7 +186,7 @@ TEST(SampleAesPatternCryptor, 16Bytes) {
       kSampleAesEncryptedBlock, kSampleAesClearBlock,
       AesPatternCryptor::kSkipIfCryptByteBlockRemaining,
       AesPatternCryptor::kUseConstantIv,
-      scoped_ptr<MockAesCryptor>(mock_cryptor));
+      std::unique_ptr<MockAesCryptor>(mock_cryptor));
 
   std::vector<uint8_t> iv(8, 'i');
   // SetIv will be called only once by AesPatternCryptor::SetIv.
@@ -208,7 +208,7 @@ TEST(SampleAesPatternCryptor, MoreThan16Bytes) {
       kSampleAesEncryptedBlock, kSampleAesClearBlock,
       AesPatternCryptor::kSkipIfCryptByteBlockRemaining,
       AesPatternCryptor::kUseConstantIv,
-      scoped_ptr<MockAesCryptor>(mock_cryptor));
+      std::unique_ptr<MockAesCryptor>(mock_cryptor));
 
   std::vector<uint8_t> iv(8, 'i');
   // SetIv will be called only once by AesPatternCryptor::SetIv.
@@ -236,7 +236,7 @@ TEST(FullSampleSpecialPatternTest, Test) {
       kFulLSampleCryptBlock, kFullSampleSkipBlock,
       AesPatternCryptor::kSkipIfCryptByteBlockRemaining,
       AesPatternCryptor::kUseConstantIv,
-      scoped_ptr<MockAesCryptor>(mock_cryptor));
+      std::unique_ptr<MockAesCryptor>(mock_cryptor));
 
   std::vector<uint8_t> iv(8, 'i');
   // SetIv will be called only once by AesPatternCryptor::SetIv.

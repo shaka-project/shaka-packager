@@ -83,38 +83,38 @@ Status FixedKeySource::GetCryptoPeriodKey(uint32_t crypto_period_index,
   return Status::OK;
 }
 
-scoped_ptr<FixedKeySource> FixedKeySource::CreateFromHexStrings(
+std::unique_ptr<FixedKeySource> FixedKeySource::CreateFromHexStrings(
     const std::string& key_id_hex,
     const std::string& key_hex,
     const std::string& pssh_boxes_hex,
     const std::string& iv_hex) {
-  scoped_ptr<EncryptionKey> encryption_key(new EncryptionKey());
+  std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
 
   if (!base::HexStringToBytes(key_id_hex, &encryption_key->key_id)) {
     LOG(ERROR) << "Cannot parse key_id_hex " << key_id_hex;
-    return scoped_ptr<FixedKeySource>();
+    return std::unique_ptr<FixedKeySource>();
   } else if (encryption_key->key_id.size() != 16) {
     LOG(ERROR) << "Invalid key ID size '" << encryption_key->key_id.size()
                << "', must be 16 bytes.";
-    return scoped_ptr<FixedKeySource>();
+    return std::unique_ptr<FixedKeySource>();
   }
 
   if (!base::HexStringToBytes(key_hex, &encryption_key->key)) {
     LOG(ERROR) << "Cannot parse key_hex " << key_hex;
-    return scoped_ptr<FixedKeySource>();
+    return std::unique_ptr<FixedKeySource>();
   }
 
   std::vector<uint8_t> pssh_boxes;
   if (!pssh_boxes_hex.empty() &&
       !base::HexStringToBytes(pssh_boxes_hex, &pssh_boxes)) {
     LOG(ERROR) << "Cannot parse pssh_hex " << pssh_boxes_hex;
-    return scoped_ptr<FixedKeySource>();
+    return std::unique_ptr<FixedKeySource>();
   }
 
   if (!iv_hex.empty()) {
     if (!base::HexStringToBytes(iv_hex, &encryption_key->iv)) {
       LOG(ERROR) << "Cannot parse iv_hex " << iv_hex;
-      return scoped_ptr<FixedKeySource>();
+      return std::unique_ptr<FixedKeySource>();
     }
   }
 
@@ -122,7 +122,7 @@ scoped_ptr<FixedKeySource> FixedKeySource::CreateFromHexStrings(
           pssh_boxes.data(), pssh_boxes.size(),
           &encryption_key->key_system_info)) {
     LOG(ERROR) << "--pssh argument should be full PSSH boxes.";
-    return scoped_ptr<FixedKeySource>();
+    return std::unique_ptr<FixedKeySource>();
   }
 
   // If there aren't any PSSH boxes given, create one with the common system ID.
@@ -135,12 +135,13 @@ scoped_ptr<FixedKeySource> FixedKeySource::CreateFromHexStrings(
     encryption_key->key_system_info.push_back(info);
   }
 
-  return scoped_ptr<FixedKeySource>(new FixedKeySource(encryption_key.Pass()));
+  return std::unique_ptr<FixedKeySource>(
+      new FixedKeySource(std::move(encryption_key)));
 }
 
 FixedKeySource::FixedKeySource() {}
-FixedKeySource::FixedKeySource(scoped_ptr<EncryptionKey> key)
-    : encryption_key_(key.Pass()) {}
+FixedKeySource::FixedKeySource(std::unique_ptr<EncryptionKey> key)
+    : encryption_key_(std::move(key)) {}
 
 }  // namespace media
 }  // namespace shaka

@@ -7,8 +7,9 @@
 #ifndef MEDIA_FORMATS_WEBM_ENCRYPTOR_H_
 #define MEDIA_FORMATS_WEBM_ENCRYPTOR_H_
 
+#include <memory>
+#include "packager/base/macros.h"
 #include "packager/base/memory/ref_counted.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/status.h"
 #include "packager/media/base/stream_info.h"
@@ -59,9 +60,11 @@ class Encryptor {
                          bool webm_subsample_encryption);
 
  private:
-  scoped_ptr<EncryptionKey> key_;
-  scoped_ptr<AesCtrEncryptor> encryptor_;
-  scoped_ptr<VPxParser> vpx_parser_;
+  std::unique_ptr<EncryptionKey> key_;
+  std::unique_ptr<AesCtrEncryptor> encryptor_;
+  std::unique_ptr<VPxParser> vpx_parser_;
+
+  DISALLOW_COPY_AND_ASSIGN(Encryptor);
 };
 
 }  // namespace webm

@@ -42,8 +42,8 @@ void DumpStreamInfo(const std::vector<MediaStream*>& streams) {
     printf("Stream [%zu] %s\n", i, streams[i]->info()->ToString().c_str());
 }
 
-scoped_ptr<RequestSigner> CreateSigner() {
-  scoped_ptr<RequestSigner> signer;
+std::unique_ptr<RequestSigner> CreateSigner() {
+  std::unique_ptr<RequestSigner> signer;
 
   if (!FLAGS_aes_signing_key.empty()) {
     signer.reset(AesRequestSigner::CreateSigner(
@@ -52,7 +52,7 @@ scoped_ptr<RequestSigner> CreateSigner() {
       LOG(ERROR) << "Cannot create an AES signer object from '"
                  << FLAGS_aes_signing_key << "':'" << FLAGS_aes_signing_iv
                  << "'.";
-      return scoped_ptr<RequestSigner>();
+      return std::unique_ptr<RequestSigner>();
     }
   } else if (!FLAGS_rsa_signing_key_path.empty()) {
     std::string rsa_private_key;
@@ -60,69 +60,69 @@ scoped_ptr<RequestSigner> CreateSigner() {
                                 &rsa_private_key)) {
       LOG(ERROR) << "Failed to read from '" << FLAGS_rsa_signing_key_path
                  << "'.";
-      return scoped_ptr<RequestSigner>();
+      return std::unique_ptr<RequestSigner>();
     }
     signer.reset(RsaRequestSigner::CreateSigner(FLAGS_signer, rsa_private_key));
     if (!signer) {
       LOG(ERROR) << "Cannot create a RSA signer object from '"
                  << FLAGS_rsa_signing_key_path << "'.";
-      return scoped_ptr<RequestSigner>();
+      return std::unique_ptr<RequestSigner>();
     }
   }
-  return signer.Pass();
+  return signer;
 }
 
-scoped_ptr<KeySource> CreateEncryptionKeySource() {
-  scoped_ptr<KeySource> encryption_key_source;
+std::unique_ptr<KeySource> CreateEncryptionKeySource() {
+  std::unique_ptr<KeySource> encryption_key_source;
   if (FLAGS_enable_widevine_encryption) {
-    scoped_ptr<WidevineKeySource> widevine_key_source(
+    std::unique_ptr<WidevineKeySource> widevine_key_source(
         new WidevineKeySource(FLAGS_key_server_url, FLAGS_include_common_pssh));
     if (!FLAGS_signer.empty()) {
-      scoped_ptr<RequestSigner> request_signer(CreateSigner());
+      std::unique_ptr<RequestSigner> request_signer(CreateSigner());
       if (!request_signer)
-        return scoped_ptr<KeySource>();
-      widevine_key_source->set_signer(request_signer.Pass());
+        return std::unique_ptr<KeySource>();
+      widevine_key_source->set_signer(std::move(request_signer));
     }
 
     std::vector<uint8_t> content_id;
     if (!base::HexStringToBytes(FLAGS_content_id, &content_id)) {
       LOG(ERROR) << "Invalid content_id hex string specified.";
-      return scoped_ptr<KeySource>();
+      return std::unique_ptr<KeySource>();
     }
     Status status = widevine_key_source->FetchKeys(content_id, FLAGS_policy);
     if (!status.ok()) {
       LOG(ERROR) << "Widevine encryption key source failed to fetch keys: "
                  << status.ToString();
-      return scoped_ptr<KeySource>();
+      return std::unique_ptr<KeySource>();
     }
-    encryption_key_source = widevine_key_source.Pass();
+    encryption_key_source = std::move(widevine_key_source);
   } else if (FLAGS_enable_fixed_key_encryption) {
     encryption_key_source = FixedKeySource::CreateFromHexStrings(
         FLAGS_key_id, FLAGS_key, FLAGS_pssh, FLAGS_iv);
   }
-  return encryption_key_source.Pass();
+  return encryption_key_source;
 }
 
-scoped_ptr<KeySource> CreateDecryptionKeySource() {
-  scoped_ptr<KeySource> decryption_key_source;
+std::unique_ptr<KeySource> CreateDecryptionKeySource() {
+  std::unique_ptr<KeySource> decryption_key_source;
   if (FLAGS_enable_widevine_decryption) {
-    scoped_ptr<WidevineKeySource> widevine_key_source(
+    std::unique_ptr<WidevineKeySource> widevine_key_source(
         new WidevineKeySource(FLAGS_key_server_url, FLAGS_include_common_pssh));
     if (!FLAGS_signer.empty()) {
-      scoped_ptr<RequestSigner> request_signer(CreateSigner());
+      std::unique_ptr<RequestSigner> request_signer(CreateSigner());
       if (!request_signer)
-        return scoped_ptr<KeySource>();
-      widevine_key_source->set_signer(request_signer.Pass());
+        return std::unique_ptr<KeySource>();
+      widevine_key_source->set_signer(std::move(request_signer));
     }
 
-    decryption_key_source = widevine_key_source.Pass();
+    decryption_key_source = std::move(widevine_key_source);
   } else if (FLAGS_enable_fixed_key_decryption) {
     const char kNoPssh[] = "";
     const char kNoIv[] = "";
     decryption_key_source = FixedKeySource::CreateFromHexStrings(
         FLAGS_key_id, FLAGS_key, kNoPssh, kNoIv);
   }
-  return decryption_key_source.Pass();
+  return decryption_key_source;
 }
 
 bool AssignFlagsFromProfile() {

@@ -6,8 +6,8 @@
 
 #include "packager/media/codecs/h265_parser.h"
 
-#include <algorithm>
 #include <math.h>
+#include <algorithm>
 
 #include "packager/base/logging.h"
 #include "packager/base/stl_util.h"
@@ -410,7 +410,7 @@ H265Parser::Result H265Parser::ParsePps(const Nalu& nalu, int* pps_id) {
   H26xBitReader* br = &reader;
 
   *pps_id = -1;
-  scoped_ptr<H265Pps> pps(new H265Pps);
+  std::unique_ptr<H265Pps> pps(new H265Pps);
 
   TRUE_OR_RETURN(br->ReadUE(&pps->pic_parameter_set_id));
   TRUE_OR_RETURN(br->ReadUE(&pps->seq_parameter_set_id));
@@ -520,7 +520,7 @@ H265Parser::Result H265Parser::ParseSps(const Nalu& nalu, int* sps_id) {
 
   *sps_id = -1;
 
-  scoped_ptr<H265Sps> sps(new H265Sps);
+  std::unique_ptr<H265Sps> sps(new H265Sps);
 
   TRUE_OR_RETURN(br->ReadBits(4, &sps->video_parameter_set_id));
   TRUE_OR_RETURN(br->ReadBits(3, &sps->max_sub_layers_minus1));

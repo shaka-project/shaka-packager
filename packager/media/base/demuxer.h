@@ -8,11 +8,11 @@
 #define MEDIA_BASE_DEMUXER_H_
 
 #include <deque>
+#include <memory>
 #include <vector>
 
 #include "packager/base/compiler_specific.h"
 #include "packager/base/memory/ref_counted.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/container_names.h"
 #include "packager/media/base/status.h"
 
@@ -41,7 +41,7 @@ class Demuxer {
   /// @param key_source points to the source of decryption keys. The key
   ///        source must support fetching of keys for the type of media being
   ///        demuxed.
-  void SetKeySource(scoped_ptr<KeySource> key_source);
+  void SetKeySource(std::unique_ptr<KeySource> key_source);
 
   /// Initialize the Demuxer. Calling other public methods of this class
   /// without this method returning OK, results in an undefined behavior.
@@ -96,11 +96,11 @@ class Demuxer {
   Status init_parsing_status_;
   // Queued samples received in NewSampleEvent() before ParserInitEvent().
   std::deque<QueuedSample> queued_samples_;
-  scoped_ptr<MediaParser> parser_;
+  std::unique_ptr<MediaParser> parser_;
   std::vector<MediaStream*> streams_;
   MediaContainerName container_name_;
-  scoped_ptr<uint8_t[]> buffer_;
-  scoped_ptr<KeySource> key_source_;
+  std::unique_ptr<uint8_t[]> buffer_;
+  std::unique_ptr<KeySource> key_source_;
   bool cancelled_;
 
   DISALLOW_COPY_AND_ASSIGN(Demuxer);

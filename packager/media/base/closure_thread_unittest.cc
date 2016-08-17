@@ -7,8 +7,9 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include <memory>
+
 #include "packager/base/bind.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/synchronization/waitable_event.h"
 #include "packager/media/base/closure_thread.h"
 
@@ -55,7 +56,7 @@ class ClosureThreadTest : public ::testing::Test {
   void set_val(int val) { val_ = val; }
 
   MockOperation operation_;
-  scoped_ptr<ClosureThread> thread_;
+  std::unique_ptr<ClosureThread> thread_;
 
  private:
   int val_;

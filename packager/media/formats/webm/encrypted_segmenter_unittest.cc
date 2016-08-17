@@ -6,8 +6,7 @@
 #include "packager/media/formats/webm/two_pass_single_segment_segmenter.h"
 
 #include <gtest/gtest.h>
-
-#include "packager/base/memory/scoped_ptr.h"
+#include <memory>
 #include "packager/media/base/fixed_key_source.h"
 #include "packager/media/formats/webm/segmenter_test_base.h"
 
@@ -208,8 +207,8 @@ class EncrypedSegmenterTest : public SegmentTestBase {
   }
 
   scoped_refptr<StreamInfo> info_;
-  scoped_ptr<webm::Segmenter> segmenter_;
-  scoped_ptr<KeySource> key_source_;
+  std::unique_ptr<webm::Segmenter> segmenter_;
+  std::unique_ptr<KeySource> key_source_;
 };
 
 TEST_F(EncrypedSegmenterTest, BasicSupport) {

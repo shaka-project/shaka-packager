@@ -6,8 +6,9 @@
 
 #include "packager/media/base/aes_cryptor.h"
 
+#include <memory>
+
 #include "packager/base/macros.h"
-#include "packager/base/memory/scoped_ptr.h"
 
 namespace shaka {
 namespace media {
@@ -53,7 +54,7 @@ class AesPatternCryptor : public AesCryptor {
                     uint8_t skip_byte_block,
                     PatternEncryptionMode encryption_mode,
                     ConstantIvFlag constant_iv_flag,
-                    scoped_ptr<AesCryptor> cryptor);
+                    std::unique_ptr<AesCryptor> cryptor);
   ~AesPatternCryptor() override;
 
   /// @name AesCryptor implementation overrides.
@@ -74,7 +75,7 @@ class AesPatternCryptor : public AesCryptor {
   const uint8_t crypt_byte_block_;
   const uint8_t skip_byte_block_;
   const PatternEncryptionMode encryption_mode_;
-  scoped_ptr<AesCryptor> cryptor_;
+  std::unique_ptr<AesCryptor> cryptor_;
 
   DISALLOW_COPY_AND_ASSIGN(AesPatternCryptor);
 };

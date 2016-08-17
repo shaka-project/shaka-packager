@@ -9,10 +9,10 @@
 
 #include <deque>
 #include <list>
+#include <memory>
 
 #include "packager/base/callback.h"
 #include "packager/base/compiler_specific.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/codecs/nalu_reader.h"
 #include "packager/media/formats/mp2t/es_parser.h"
 
@@ -28,7 +28,7 @@ namespace mp2t {
 class EsParserH26x : public EsParser {
  public:
   EsParserH26x(Nalu::CodecType type,
-               scoped_ptr<H26xByteToUnitStreamConverter> stream_converter,
+               std::unique_ptr<H26xByteToUnitStreamConverter> stream_converter,
                uint32_t pid,
                const EmitSampleCB& emit_sample_cb);
   ~EsParserH26x() override;
@@ -99,7 +99,7 @@ class EsParserH26x : public EsParser {
   Nalu::CodecType type_;
 
   // Bytes of the ES stream that have not been emitted yet.
-  scoped_ptr<media::OffsetByteQueue> es_queue_;
+  std::unique_ptr<media::OffsetByteQueue> es_queue_;
   std::list<std::pair<int64_t, TimingDesc>> timing_desc_list_;
 
   // Parser state.
@@ -111,7 +111,7 @@ class EsParserH26x : public EsParser {
   std::deque<NaluInfo> access_unit_nalus_;
 
   // Filter to convert H.264/H.265 Annex B byte stream to unit stream.
-  scoped_ptr<H26xByteToUnitStreamConverter> stream_converter_;
+  std::unique_ptr<H26xByteToUnitStreamConverter> stream_converter_;
 
   // Frame for which we do not yet have a duration.
   scoped_refptr<MediaSample> pending_sample_;

@@ -48,7 +48,7 @@ class MP4MediaParserTest : public testing::Test {
  protected:
   typedef std::map<int, scoped_refptr<StreamInfo> > StreamMap;
   StreamMap stream_map_;
-  scoped_ptr<MP4MediaParser> parser_;
+  std::unique_ptr<MP4MediaParser> parser_;
   size_t num_streams_;
   size_t num_samples_;
 

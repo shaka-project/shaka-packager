@@ -7,13 +7,12 @@
 #ifndef MEDIA_FORMATS_WEBM_TWO_PASS_SINGLE_SEGMENT_SEGMENTER_H_
 #define MEDIA_FORMATS_WEBM_TWO_PASS_SINGLE_SEGMENT_SEGMENTER_H_
 
+#include <memory>
 #include <string>
 
-#include "packager/media/formats/webm/single_segment_segmenter.h"
-
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/base/status.h"
 #include "packager/media/formats/webm/mkv_writer.h"
+#include "packager/media/formats/webm/single_segment_segmenter.h"
 
 namespace shaka {
 namespace media {
@@ -30,7 +29,7 @@ class TwoPassSingleSegmentSegmenter : public SingleSegmentSegmenter {
   ~TwoPassSingleSegmentSegmenter() override;
 
   // Segmenter implementation overrides.
-  Status DoInitialize(scoped_ptr<MkvWriter> writer) override;
+  Status DoInitialize(std::unique_ptr<MkvWriter> writer) override;
   Status DoFinalize() override;
 
  private:
@@ -42,7 +41,7 @@ class TwoPassSingleSegmentSegmenter : public SingleSegmentSegmenter {
                                   MkvWriter* dest,
                                   uint64_t last_size);
 
-  scoped_ptr<MkvWriter> real_writer_;
+  std::unique_ptr<MkvWriter> real_writer_;
   std::string temp_file_name_;
 
   DISALLOW_COPY_AND_ASSIGN(TwoPassSingleSegmentSegmenter);

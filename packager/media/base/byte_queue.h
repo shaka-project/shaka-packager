@@ -7,7 +7,9 @@
 
 #include <stdint.h>
 
-#include "packager/base/memory/scoped_ptr.h"
+#include <memory>
+
+#include "packager/base/macros.h"
 
 namespace shaka {
 namespace media {
@@ -40,7 +42,7 @@ class ByteQueue {
   // Returns a pointer to the front of the queue.
   uint8_t* front() const;
 
-  scoped_ptr<uint8_t[]> buffer_;
+  std::unique_ptr<uint8_t[]> buffer_;
 
   // Size of |buffer_|.
   size_t size_;

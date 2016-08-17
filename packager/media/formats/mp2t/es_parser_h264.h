@@ -6,9 +6,8 @@
 #define MEDIA_FORMATS_MP2T_ES_PARSER_H264_H_
 
 #include <stdint.h>
-
+#include <memory>
 #include "packager/base/callback.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/formats/mp2t/es_parser_h26x.h"
 
 namespace shaka {
@@ -50,7 +49,7 @@ class EsParserH264 : public EsParserH26x {
   scoped_refptr<StreamInfo> last_video_decoder_config_;
   bool decoder_config_check_pending_;
 
-  scoped_ptr<H264Parser> h264_parser_;
+  std::unique_ptr<H264Parser> h264_parser_;
 };
 
 }  // namespace mp2t

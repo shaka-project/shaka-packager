@@ -85,8 +85,8 @@ MP4Muxer::~MP4Muxer() {}
 Status MP4Muxer::Initialize() {
   DCHECK(!streams().empty());
 
-  scoped_ptr<FileType> ftyp(new FileType);
-  scoped_ptr<Movie> moov(new Movie);
+  std::unique_ptr<FileType> ftyp(new FileType);
+  std::unique_ptr<Movie> moov(new Movie);
 
   ftyp->major_brand = FOURCC_dash;
   ftyp->compatible_brands.push_back(FOURCC_iso6);
@@ -135,11 +135,11 @@ Status MP4Muxer::Initialize() {
   }
 
   if (options().single_segment) {
-    segmenter_.reset(
-        new SingleSegmentSegmenter(options(), ftyp.Pass(), moov.Pass()));
+    segmenter_.reset(new SingleSegmentSegmenter(options(), std::move(ftyp),
+                                                std::move(moov)));
   } else {
     segmenter_.reset(
-        new MultiSegmentSegmenter(options(), ftyp.Pass(), moov.Pass()));
+        new MultiSegmentSegmenter(options(), std::move(ftyp), std::move(moov)));
   }
 
   const Status segmenter_initialized = segmenter_->Initialize(

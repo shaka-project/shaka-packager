@@ -30,16 +30,16 @@ class TestMpdNotifierFactory : public MpdNotifierFactory {
 
   // So sad that this method cannot be mocked (gmock errors at compile time).
   // Also (probably) this version of gmock does not support returning
-  // scoped_ptr.
+  // std::unique_ptr.
   // For now we only need to return MockMpdNotifier() with these set of
   // expectations for all the tests.
-  scoped_ptr<MpdNotifier> Create(DashProfile dash_profile,
-                                 const MpdOptions& mpd_options,
-                                 const std::vector<std::string>& base_urls,
-                                 const std::string& output_path) override {
+  std::unique_ptr<MpdNotifier> Create(DashProfile dash_profile,
+                                      const MpdOptions& mpd_options,
+                                      const std::vector<std::string>& base_urls,
+                                      const std::string& output_path) override {
     EXPECT_EQ(expected_base_urls_, base_urls);
 
-    scoped_ptr<MockMpdNotifier> mock_notifier(
+    std::unique_ptr<MockMpdNotifier> mock_notifier(
         new MockMpdNotifier(kOnDemandProfile));
 
     EXPECT_CALL(*mock_notifier, Init()).WillOnce(Return(true));
@@ -47,7 +47,7 @@ class TestMpdNotifierFactory : public MpdNotifierFactory {
         .Times(2)
         .WillRepeatedly(Return(true));
     EXPECT_CALL(*mock_notifier, Flush()).WillOnce(Return(true));
-    return mock_notifier.Pass();
+    return std::move(mock_notifier);
   }
 
   void SetExpectedBaseUrls(const std::vector<std::string>& base_urls) {
@@ -68,10 +68,10 @@ class MpdWriterTest : public ::testing::Test {
   }
 
   void SetMpdNotifierFactoryForTest() {
-    mpd_writer_.SetMpdNotifierFactoryForTest(notifier_factory_.Pass());
+    mpd_writer_.SetMpdNotifierFactoryForTest(std::move(notifier_factory_));
   }
 
-  scoped_ptr<TestMpdNotifierFactory> notifier_factory_;
+  std::unique_ptr<TestMpdNotifierFactory> notifier_factory_;
   MpdWriter mpd_writer_;
 };
 

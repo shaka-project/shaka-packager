@@ -90,8 +90,8 @@ class MpdNotifyMuxerListenerTest : public ::testing::Test {
                           params.file_size);
   }
 
-  scoped_ptr<MpdNotifyMuxerListener> listener_;
-  scoped_ptr<MockMpdNotifier> notifier_;
+  std::unique_ptr<MpdNotifyMuxerListener> listener_;
+  std::unique_ptr<MockMpdNotifier> notifier_;
 };
 
 MATCHER_P(ExpectMediaInfoEq, expected_text_format, "") {

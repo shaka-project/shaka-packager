@@ -5,11 +5,11 @@
 #ifndef MEDIA_FORMATS_WEBM_WEBM_CONTENT_ENCODINGS_CLIENT_H_
 #define MEDIA_FORMATS_WEBM_WEBM_CONTENT_ENCODINGS_CLIENT_H_
 
+#include <memory>
 #include <vector>
 
 #include "packager/base/callback.h"
 #include "packager/base/compiler_specific.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/media/formats/webm/webm_content_encodings.h"
 #include "packager/media/formats/webm/webm_parser.h"
 
@@ -33,7 +33,7 @@ class WebMContentEncodingsClient : public WebMParserClient {
   bool OnBinary(int id, const uint8_t* data, int size) override;
 
  private:
-  scoped_ptr<ContentEncoding> cur_content_encoding_;
+  std::unique_ptr<ContentEncoding> cur_content_encoding_;
   bool content_encryption_encountered_;
   ContentEncodings content_encodings_;
 

@@ -102,8 +102,8 @@ class MpdBuilder {
 
   // Inject a |clock| that returns the current time.
   /// This is for testing.
-  void InjectClockForTesting(scoped_ptr<base::Clock> clock) {
-    clock_ = clock.Pass();
+  void InjectClockForTesting(std::unique_ptr<base::Clock> clock) {
+    clock_ = std::move(clock);
   }
 
  private:
@@ -157,7 +157,7 @@ class MpdBuilder {
 
   // By default, this returns the current time. This can be injected for
   // testing.
-  scoped_ptr<base::Clock> clock_;
+  std::unique_ptr<base::Clock> clock_;
 
   DISALLOW_COPY_AND_ASSIGN(MpdBuilder);
 };
@@ -515,7 +515,7 @@ class Representation {
       const MediaInfo& media_info,
       const MpdOptions& mpd_options,
       uint32_t representation_id,
-      scoped_ptr<RepresentationStateChangeListener> state_change_listener);
+      std::unique_ptr<RepresentationStateChangeListener> state_change_listener);
 
  private:
   friend class AdaptationSet;
@@ -567,7 +567,7 @@ class Representation {
 
   // If this is not null, then Representation is responsible for calling the
   // right methods at right timings.
-  scoped_ptr<RepresentationStateChangeListener> state_change_listener_;
+  std::unique_ptr<RepresentationStateChangeListener> state_change_listener_;
 
   // Bit vector for tracking witch attributes should not be output.
   int output_suppression_flags_;

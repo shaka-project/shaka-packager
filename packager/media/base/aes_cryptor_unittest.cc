@@ -6,11 +6,12 @@
 
 #include <gtest/gtest.h>
 
+#include <memory>
+
 #include "packager/base/logging.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/strings/string_number_conversions.h"
-#include "packager/media/base/aes_encryptor.h"
 #include "packager/media/base/aes_decryptor.h"
+#include "packager/media/base/aes_encryptor.h"
 
 namespace {
 
@@ -361,8 +362,8 @@ class AesCbcTest : public ::testing::Test {
     EXPECT_EQ(plaintext, buffer);
   }
 
-  scoped_ptr<AesCbcEncryptor> encryptor_;
-  scoped_ptr<AesCbcDecryptor> decryptor_;
+  std::unique_ptr<AesCbcEncryptor> encryptor_;
+  std::unique_ptr<AesCbcDecryptor> decryptor_;
   std::vector<uint8_t> key_;
   std::vector<uint8_t> iv_;
 };

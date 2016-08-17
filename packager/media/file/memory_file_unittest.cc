@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 #include <gtest/gtest.h>
-
-#include "packager/base/memory/scoped_ptr.h"
+#include <memory>
 #include "packager/media/file/file.h"
 #include "packager/media/file/file_closer.h"
 #include "packager/media/file/memory_file.h"
@@ -26,14 +25,14 @@ class MemoryFileTest : public testing::Test {
 };
 
 TEST_F(MemoryFileTest, ModifiesSameFile) {
-  scoped_ptr<File, FileCloser> writer(File::Open("memory://file1", "w"));
+  std::unique_ptr<File, FileCloser> writer(File::Open("memory://file1", "w"));
   ASSERT_TRUE(writer);
   ASSERT_EQ(kWriteBufferSize, writer->Write(kWriteBuffer, kWriteBufferSize));
 
   // Since File::Open should not create a ThreadedIoFile so there should be
   // no cache.
 
-  scoped_ptr<File, FileCloser> reader(File::Open("memory://file1", "r"));
+  std::unique_ptr<File, FileCloser> reader(File::Open("memory://file1", "r"));
   ASSERT_TRUE(reader);
 
   uint8_t read_buffer[kWriteBufferSize];
@@ -42,8 +41,8 @@ TEST_F(MemoryFileTest, ModifiesSameFile) {
 }
 
 TEST_F(MemoryFileTest, SupportsDifferentFiles) {
-  scoped_ptr<File, FileCloser> writer(File::Open("memory://file1", "w"));
-  scoped_ptr<File, FileCloser> reader(File::Open("memory://file2", "w"));
+  std::unique_ptr<File, FileCloser> writer(File::Open("memory://file1", "w"));
+  std::unique_ptr<File, FileCloser> reader(File::Open("memory://file2", "w"));
   ASSERT_TRUE(writer);
   ASSERT_TRUE(reader);
 
@@ -52,7 +51,7 @@ TEST_F(MemoryFileTest, SupportsDifferentFiles) {
 }
 
 TEST_F(MemoryFileTest, SeekAndTell) {
-  scoped_ptr<File, FileCloser> file(File::Open("memory://file1", "w"));
+  std::unique_ptr<File, FileCloser> file(File::Open("memory://file1", "w"));
   ASSERT_TRUE(file);
 
   ASSERT_EQ(kWriteBufferSize, file->Write(kWriteBuffer, kWriteBufferSize));
@@ -67,7 +66,7 @@ TEST_F(MemoryFileTest, SeekAndTell) {
 }
 
 TEST_F(MemoryFileTest, EndOfFile) {
-  scoped_ptr<File, FileCloser> file(File::Open("memory://file1", "w"));
+  std::unique_ptr<File, FileCloser> file(File::Open("memory://file1", "w"));
   ASSERT_TRUE(file);
 
   ASSERT_EQ(kWriteBufferSize, file->Write(kWriteBuffer, kWriteBufferSize));
@@ -83,7 +82,7 @@ TEST_F(MemoryFileTest, EndOfFile) {
 }
 
 TEST_F(MemoryFileTest, ExtendsSize) {
-  scoped_ptr<File, FileCloser> file(File::Open("memory://file1", "w"));
+  std::unique_ptr<File, FileCloser> file(File::Open("memory://file1", "w"));
   ASSERT_TRUE(file);
   ASSERT_EQ(kWriteBufferSize, file->Write(kWriteBuffer, kWriteBufferSize));
 
@@ -97,16 +96,16 @@ TEST_F(MemoryFileTest, ExtendsSize) {
 }
 
 TEST_F(MemoryFileTest, ReadMissingFileFails) {
-  scoped_ptr<File, FileCloser> file(File::Open("memory://file1", "r"));
+  std::unique_ptr<File, FileCloser> file(File::Open("memory://file1", "r"));
   EXPECT_FALSE(file);
 }
 
 TEST_F(MemoryFileTest, WriteExistingFileDeletes) {
-  scoped_ptr<File, FileCloser> file1(File::Open("memory://file1", "w"));
+  std::unique_ptr<File, FileCloser> file1(File::Open("memory://file1", "w"));
   ASSERT_TRUE(file1);
   ASSERT_EQ(kWriteBufferSize, file1->Write(kWriteBuffer, kWriteBufferSize));
 
-  scoped_ptr<File, FileCloser> file2(File::Open("memory://file1", "w"));
+  std::unique_ptr<File, FileCloser> file2(File::Open("memory://file1", "w"));
   ASSERT_TRUE(file2);
   EXPECT_EQ(0, file2->Size());
 }

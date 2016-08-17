@@ -8,14 +8,13 @@
 
 #include <gflags/gflags.h>
 #include <algorithm>
-
+#include <memory>
 #include "packager/base/logging.h"
-#include "packager/base/memory/scoped_ptr.h"
+#include "packager/base/strings/string_util.h"
 #include "packager/media/file/local_file.h"
 #include "packager/media/file/memory_file.h"
 #include "packager/media/file/threaded_io_file.h"
 #include "packager/media/file/udp_file.h"
-#include "packager/base/strings/string_util.h"
 
 DEFINE_uint64(io_cache_size,
               32ULL << 20,
@@ -98,7 +97,7 @@ static const SupportedTypeInfo kSupportedTypeInfo[] = {
 }  // namespace
 
 File* File::Create(const char* file_name, const char* mode) {
-  scoped_ptr<File, FileCloser> internal_file(
+  std::unique_ptr<File, FileCloser> internal_file(
       CreateInternalFile(file_name, mode));
 
   if (!strncmp(file_name, kMemoryFilePrefix, strlen(kMemoryFilePrefix))) {
@@ -109,15 +108,13 @@ File* File::Create(const char* file_name, const char* mode) {
   if (FLAGS_io_cache_size) {
     // Enable threaded I/O for "r", "w", and "a" modes only.
     if (!strcmp(mode, "r")) {
-      return new ThreadedIoFile(internal_file.Pass(),
-                                ThreadedIoFile::kInputMode,
-                                FLAGS_io_cache_size,
+      return new ThreadedIoFile(std::move(internal_file),
+                                ThreadedIoFile::kInputMode, FLAGS_io_cache_size,
                                 FLAGS_io_block_size);
     } else if (!strcmp(mode, "w") || !strcmp(mode, "a")) {
-      return new ThreadedIoFile(internal_file.Pass(),
+      return new ThreadedIoFile(std::move(internal_file),
                                 ThreadedIoFile::kOutputMode,
-                                FLAGS_io_cache_size,
-                                FLAGS_io_block_size);
+                                FLAGS_io_cache_size, FLAGS_io_block_size);
     }
   }
 
@@ -127,7 +124,7 @@ File* File::Create(const char* file_name, const char* mode) {
 }
 
 File* File::CreateInternalFile(const char* file_name, const char* mode) {
-  scoped_ptr<File, FileCloser> internal_file;
+  std::unique_ptr<File, FileCloser> internal_file;
   for (size_t i = 0; i < arraysize(kSupportedTypeInfo); ++i) {
     const SupportedTypeInfo& type_info = kSupportedTypeInfo[i];
     if (strncmp(type_info.type, file_name, type_info.type_length) == 0) {
@@ -194,7 +191,7 @@ bool File::ReadFileToString(const char* file_name, std::string* contents) {
     return false;
 
   const size_t kBufferSize = 0x40000;  // 256KB.
-  scoped_ptr<char[]> buf(new char[kBufferSize]);
+  std::unique_ptr<char[]> buf(new char[kBufferSize]);
 
   int64_t len;
   while ((len = file->Read(buf.get(), kBufferSize)) > 0)
@@ -211,7 +208,7 @@ bool File::Copy(const char* from_file_name, const char* to_file_name) {
     return false;
   }
 
-  scoped_ptr<File, FileCloser> output_file(File::Open(to_file_name, "w"));
+  std::unique_ptr<File, FileCloser> output_file(File::Open(to_file_name, "w"));
   if (!output_file) {
     LOG(ERROR) << "Failed to write to " << to_file_name;
     return false;
@@ -244,7 +241,7 @@ int64_t File::CopyFile(File* source, File* destination, int64_t max_copy) {
     max_copy = std::numeric_limits<int64_t>::max();
 
   const int64_t kBufferSize = 0x40000;  // 256KB.
-  scoped_ptr<uint8_t[]> buffer(new uint8_t[kBufferSize]);
+  std::unique_ptr<uint8_t[]> buffer(new uint8_t[kBufferSize]);
   int64_t bytes_copied = 0;
   while (bytes_copied < max_copy) {
     const int64_t size = std::min(kBufferSize, max_copy - bytes_copied);

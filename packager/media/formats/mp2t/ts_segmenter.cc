@@ -45,7 +45,7 @@ Status TsSegmenter::Initialize(const StreamInfo& stream_info,
   }
 
   if (encryption_key_source) {
-    scoped_ptr<EncryptionKey> encryption_key(new EncryptionKey());
+    std::unique_ptr<EncryptionKey> encryption_key(new EncryptionKey());
     const KeySource::TrackType type =
         GetTrackTypeForEncryption(stream_info, max_sd_pixels);
     Status status = encryption_key_source->GetKey(type, encryption_key.get());
@@ -58,7 +58,7 @@ Status TsSegmenter::Initialize(const StreamInfo& stream_info,
     if (!status.ok())
       return status;
 
-    encryption_key_ = encryption_key.Pass();
+    encryption_key_ = std::move(encryption_key);
     clear_lead_in_seconds_ = clear_lead_in_seconds;
 
     if (listener_) {
@@ -109,13 +109,13 @@ Status TsSegmenter::AddSample(scoped_refptr<MediaSample> sample) {
   return WritePesPacketsToFile();
 }
 
-void TsSegmenter::InjectTsWriterForTesting(scoped_ptr<TsWriter> writer) {
-  ts_writer_ = writer.Pass();
+void TsSegmenter::InjectTsWriterForTesting(std::unique_ptr<TsWriter> writer) {
+  ts_writer_ = std::move(writer);
 }
 
 void TsSegmenter::InjectPesPacketGeneratorForTesting(
-    scoped_ptr<PesPacketGenerator> generator) {
-  pes_packet_generator_ = generator.Pass();
+    std::unique_ptr<PesPacketGenerator> generator) {
+  pes_packet_generator_ = std::move(generator);
 }
 
 void TsSegmenter::SetTsWriterFileOpenedForTesting(bool value) {
@@ -138,14 +138,14 @@ Status TsSegmenter::OpenNewSegmentIfClosed(uint32_t next_pts) {
 
 Status TsSegmenter::WritePesPacketsToFile() {
   while (pes_packet_generator_->NumberOfReadyPesPackets() > 0u) {
-    scoped_ptr<PesPacket> pes_packet =
+    std::unique_ptr<PesPacket> pes_packet =
         pes_packet_generator_->GetNextPesPacket();
 
     Status status = OpenNewSegmentIfClosed(pes_packet->pts());
     if (!status.ok())
       return status;
 
-    if (!ts_writer_->AddPesPacket(pes_packet.Pass()))
+    if (!ts_writer_->AddPesPacket(std::move(pes_packet)))
       return Status(error::MUXER_FAILURE, "Failed to add PES packet.");
   }
   return Status::OK;
@@ -187,7 +187,7 @@ Status TsSegmenter::NotifyEncrypted() {
     if (listener_)
       listener_->OnEncryptionStart();
 
-    if (!pes_packet_generator_->SetEncryptionKey(encryption_key_.Pass()))
+    if (!pes_packet_generator_->SetEncryptionKey(std::move(encryption_key_)))
       return Status(error::INTERNAL_ERROR, "Failed to set encryption key.");
     ts_writer_->SignalEncrypted();
   }

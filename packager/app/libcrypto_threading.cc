@@ -8,10 +8,10 @@
 
 #include <openssl/thread.h>
 
+#include <memory>
 #include <vector>
 
 #include "packager/base/logging.h"
-#include "packager/base/memory/scoped_ptr.h"
 #include "packager/base/synchronization/lock.h"
 #include "packager/base/threading/platform_thread.h"
 
@@ -20,7 +20,7 @@ namespace media {
 
 namespace {
 
-scoped_ptr<base::Lock[]> global_locks;
+std::unique_ptr<base::Lock[]> global_locks;
 
 void LockFunction(int mode, int n, const char* file, int line) {
   VLOG(2) << "CryptoLock @ " << file << ":" << line;

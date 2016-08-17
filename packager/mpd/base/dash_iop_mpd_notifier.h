@@ -89,8 +89,8 @@ class DashIopMpdNotifier : public MpdNotifier {
   }
 
   // Testing only method. Sets mpd_builder_.
-  void SetMpdBuilderForTesting(scoped_ptr<MpdBuilder> mpd_builder) {
-    mpd_builder_ = mpd_builder.Pass();
+  void SetMpdBuilderForTesting(std::unique_ptr<MpdBuilder> mpd_builder) {
+    mpd_builder_ = std::move(mpd_builder);
   }
 
   std::map<std::string, std::list<AdaptationSet*>> adaptation_set_list_map_;
@@ -101,7 +101,7 @@ class DashIopMpdNotifier : public MpdNotifier {
 
   // MPD output path.
   std::string output_path_;
-  scoped_ptr<MpdBuilder> mpd_builder_;
+  std::unique_ptr<MpdBuilder> mpd_builder_;
   base::Lock lock_;
 
   // Next group ID to use for AdapationSets that can be grouped.
