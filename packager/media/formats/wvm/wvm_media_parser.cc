@@ -91,7 +91,6 @@ namespace wvm {
 WvmMediaParser::WvmMediaParser()
     : is_initialized_(false),
       parse_state_(StartCode1),
-      is_psm_needed_(true),
       skip_bytes_(0),
       metadata_is_complete_(false),
       current_program_id_(0),

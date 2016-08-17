@@ -286,7 +286,7 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
       }
 
       if (mpd_notifier) {
-        uint32 unused;
+        uint32_t unused;
         if (!mpd_notifier->NotifyNewContainer(text_media_info, &unused)) {
           LOG(ERROR) << "Failed to process text file " << stream_iter->input;
         } else {
@@ -469,8 +469,8 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
   if (!FLAGS_mpd_output.empty()) {
     DashProfile profile =
         FLAGS_single_segment ? kOnDemandProfile : kLiveProfile;
-    std::vector<std::string> base_urls;
-    base::SplitString(FLAGS_base_urls, ',', &base_urls);
+    std::vector<std::string> base_urls = base::SplitString(
+        FLAGS_base_urls, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     if (FLAGS_generate_dash_if_iop_compliant_mpd) {
       mpd_notifier.reset(new DashIopMpdNotifier(profile, mpd_options, base_urls,
                                                 FLAGS_mpd_output));

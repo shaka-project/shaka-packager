@@ -21,8 +21,10 @@ namespace media {
 
 IoCache::IoCache(uint64_t cache_size)
     : cache_size_(cache_size),
-      read_event_(false, false),
-      write_event_(false, false),
+      read_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                  base::WaitableEvent::InitialState::NOT_SIGNALED),
+      write_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                   base::WaitableEvent::InitialState::NOT_SIGNALED),
       // Make the buffer one byte larger than the cache so that when the
       // condition r_ptr == w_ptr is unambiguous (buffer empty).
       circular_buffer_(cache_size + 1),

@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <memory>
 #include "packager/base/logging.h"
-#include "packager/base/strings/string_util.h"
 #include "packager/media/file/local_file.h"
 #include "packager/media/file/memory_file.h"
 #include "packager/media/file/threaded_io_file.h"
@@ -57,7 +56,7 @@ bool DeleteLocalFile(const char* file_name) {
 }
 
 File* CreateUdpFile(const char* file_name, const char* mode) {
-  if (base::strcasecmp(mode, "r")) {
+  if (strcmp(mode, "r")) {
     NOTIMPLEMENTED() << "UdpFile only supports read (receive) mode.";
     return NULL;
   }

@@ -1,0 +1,47 @@
+# Copyright 2015 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("libc++abi_warnings") {
+  if (is_clang) {
+    # http://llvm.org/PR25978
+    cflags = [ "-Wno-unused-function" ]
+  }
+}
+
+static_library("libc++abi") {
+  sources = [
+    "trunk/src/abort_message.cpp",
+    "trunk/src/cxa_aux_runtime.cpp",
+    "trunk/src/cxa_default_handlers.cpp",
+    "trunk/src/cxa_demangle.cpp",
+    "trunk/src/cxa_exception.cpp",
+    "trunk/src/cxa_exception_storage.cpp",
+    "trunk/src/cxa_guard.cpp",
+    "trunk/src/cxa_handlers.cpp",
+    "trunk/src/cxa_new_delete.cpp",
+    "trunk/src/cxa_personality.cpp",
+    "trunk/src/cxa_thread_atexit.cpp",
+    "trunk/src/cxa_unexpected.cpp",
+    "trunk/src/cxa_vector.cpp",
+    "trunk/src/cxa_virtual.cpp",
+    "trunk/src/exception.cpp",
+    "trunk/src/private_typeinfo.cpp",
+    "trunk/src/stdexcept.cpp",
+    "trunk/src/typeinfo.cpp",
+  ]
+  configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:no_rtti",
+    "//build/config/gcc:no_exceptions",
+    "//build/config/gcc:symbol_visibility_hidden",
+  ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    "//build/config/compiler:rtti",
+    "//build/config/gcc:symbol_visibility_default",
+    "//buildtools/third_party/libc++:config",
+    # Must be after no_chromium_code.
+    ":libc++abi_warnings",
+  ]
+}

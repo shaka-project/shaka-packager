@@ -138,7 +138,7 @@ TEST_F(IoCacheTest, LotsOfUnalignedBlocks) {
   EXPECT_EQ(kUnalignBlockSize,
             cache_->Read(read_buffer1.data(), kUnalignBlockSize));
   EXPECT_EQ(write_buffer1, read_buffer1);
-  std::vector<uint8> verify_buffer;
+  std::vector<uint8_t> verify_buffer;
   for (uint64_t idx = 0; idx < kNumWrites; ++idx)
     verify_buffer.insert(verify_buffer.end(),
                          write_buffer2.begin(),

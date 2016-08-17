@@ -45,7 +45,7 @@ Status CreateContentEncryption(mkvmuxer::Track* track, EncryptionKey* key) {
 
   if (!key->key_id.empty() &&
       !encoding->SetEncryptionID(
-          reinterpret_cast<const uint8*>(key->key_id.data()),
+          reinterpret_cast<const uint8_t*>(key->key_id.data()),
           key->key_id.size())) {
     return Status(error::INTERNAL_ERROR, "Error setting encryption ID.");
   }
@@ -114,7 +114,7 @@ Status Encryptor::EncryptFrame(scoped_refptr<MediaSample> sample,
       memcpy(sample_data + kWebMSignalByteSize, encryptor_->iv().data(),
              iv_size);
       sample_data[kWebMSignalByteSize + kWebMIvSize] = num_partitions;
-      uint32 partition_offset = 0;
+      uint32_t partition_offset = 0;
       BufferWriter offsets_buffer(kWebMPartitionOffsetSize * num_partitions);
       for (const auto& vpx_frame : vpx_frames) {
         uint32_t encrypted_size =

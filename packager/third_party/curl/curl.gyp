@@ -92,6 +92,12 @@
           ],
         }],
       ],
+      'variables': {
+        'clang_warning_flags': [
+          # TODO(kqyang): Fix curl bug.
+          '-Wno-varargs',
+        ],
+      },
       'include_dirs': [
         'source/lib',
         'source/include',

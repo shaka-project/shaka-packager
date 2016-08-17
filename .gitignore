@@ -9,7 +9,8 @@
 /out*
 /packager/base/
 /packager/build/
-/packager/buildtools/
+/packager/buildtools/third_party/libc++/trunk/
+/packager/buildtools/third_party/libc++abi/trunk/
 /packager/docs/
 /packager/testing/gmock/
 /packager/testing/gtest/

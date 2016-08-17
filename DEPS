@@ -14,19 +14,22 @@ vars = {
 
 deps = {
   "src/packager/base":
-    Var("chromium_git") + "/chromium/src/base@d24f251a44cd0304e56406d843644b79138c584b",  #339798
+    Var("chromium_git") + "/chromium/src/base@a34eabec0d807cf03dc8cfc1a6240156ac2bbd01",  #409071
 
   "src/packager/build":
-    Var("chromium_git") + "/chromium/src/build@8316b2d4d47438a9eed3e89d2ba5dd625e8c8aef",  #339877
+    Var("chromium_git") + "/chromium/src/build@f0243d787961584ac95a86e7dae897b9b60ea674",  #409966
 
-  'src/packager/buildtools':
-    Var("chromium_git") + '/chromium/buildtools.git@5fc8d3943e163ee627c8af50366c700c0325bba2',
+  "src/packager/buildtools/third_party/libc++/trunk":
+    "https://github.com/llvm-mirror/libcxx.git@8c22696675a2c5ea1c79fc64a4d7dfe1c2f4ca8b",
+
+  "src/packager/buildtools/third_party/libc++abi/trunk":
+    "https://github.com/llvm-mirror/libcxxabi.git@6092bfa6c153ad712e2fc90c7b9e536420bf3c57",
 
   "src/packager/testing/gmock":
-    Var("chromium_git") + "/external/googlemock@29763965ab52f24565299976b936d1265cb6a271",  #501
+    Var("chromium_git") + "/external/googlemock@0421b6f358139f02e102c9c332ce19a33faf75be",  #566
 
   "src/packager/testing/gtest":
-    Var("chromium_git") + "/external/googletest@00a70a9667d92a4695d84e4fa36b64f611f147da",  #725
+    Var("chromium_git") + "/external/github.com/google/googletest@6f8a66431cb592dad629028a50b3dd418a408c87",
 
    # Make sure the version matches the one in
    # src/packager/third_party/boringssl, which contains perl generated files.
@@ -36,32 +39,30 @@ deps = {
   "src/packager/third_party/curl/source":
     Var("curl_url") + "@79e63a53bb9598af863b0afe49ad662795faeef4",  #7_50_0
 
-
   "src/packager/third_party/gflags/src":
     Var("chromium_git") + "/external/github.com/gflags/gflags@03bebcb065c83beff83d50ae025a55a4bf94dfca",
 
-
   # Required by libxml.
   "src/packager/third_party/icu":
-    Var("chromium_git") + "/chromium/third_party/icu46@78597121d71a5922f5726e715c6ad06c50ae6cdc",
+    Var("chromium_git") + "/chromium/deps/icu@ef5c735307d0f86c7622f69620994c9468beba99",
 
   "src/packager/third_party/libwebm/src":
     Var("chromium_git") + "/webm/libwebm@1ad314e297a43966605c4ef23a6442bb58e1d9be",
 
   "src/packager/third_party/modp_b64":
-    Var("chromium_git") + "/chromium/src/third_party/modp_b64@3a0e3b4ef6c54678a2d14522533df56b33b56119",
+    Var("chromium_git") + "/chromium/src/third_party/modp_b64@aae60754fa997799e8037f5e8ca1f56d58df763d",  #405651
 
   "src/packager/third_party/tcmalloc/chromium":
-    Var("chromium_git") + "/chromium/src/third_party/tcmalloc/chromium@fa1492f75861094061043a17c0f779c3d35780bf",
+    Var("chromium_git") + "/chromium/src/third_party/tcmalloc/chromium@58a93bea442dbdcb921e9f63e9d8b0009eea8fdb",  #374449
 
   "src/packager/third_party/zlib":
-    Var("chromium_git") + "/chromium/src/third_party/zlib@830b5c25b5fbe37e032ea09dd011d57042dd94df",
+    Var("chromium_git") + "/chromium/src/third_party/zlib@830b5c25b5fbe37e032ea09dd011d57042dd94df",  #408157
 
   "src/packager/tools/clang":
-    Var("chromium_git") + "/chromium/src/tools/clang@0de8f3bb6af64e13876273c601704795d5e00faf",
+    Var("chromium_git") + "/chromium/src/tools/clang@0b06ba9e49a0cba97f6accd71a974c1623d69e16",  #409802
 
   "src/packager/tools/gyp":
-    Var("chromium_git") + "/external/gyp@5122240c5e5c4d8da12c543d82b03d6089eb77c5",
+    Var("chromium_git") + "/external/gyp@e7079f0e0e14108ab0dba58728ff219637458563",
 
   "src/packager/tools/valgrind":
     Var("chromium_git") + "/chromium/deps/valgrind@3a97aa8142b6e63f16789b22daafb42d202f91dc",
@@ -76,11 +77,31 @@ deps_os = {
   "win": {
     # Required by boringssl.
     "src/packager/third_party/yasm/source/patched-yasm":
-      Var("chromium_git") + "/chromium/deps/yasm/patched-yasm.git@4671120cd8558ce62ee8672ebf3eb6f5216f909b",
+      Var("chromium_git") + "/chromium/deps/yasm/patched-yasm.git@7da28c6c7c6a1387217352ce02b31754deb54d2a",
   },
 }
 
 hooks = [
+  {
+    # Downloads the current stable linux sysroot to build/linux/ if needed.
+    # This script is a no-op except for linux.
+    'name': 'sysroot',
+    'pattern': '.',
+    'action': ['python', 'src/packager/build/linux/sysroot_scripts/install-sysroot.py',
+               '--running-as-hook'],
+  },
+  {
+    # Update the Windows toolchain if necessary.
+    'name': 'win_toolchain',
+    'pattern': '.',
+    'action': ['python', 'src/packager/build/vs_toolchain.py', 'update'],
+  },
+  {
+    # Update the Mac toolchain if necessary.
+    'name': 'mac_toolchain',
+    'pattern': '.',
+    'action': ['python', 'src/packager/build/mac_toolchain.py'],
+  },
   {
     # Pull clang if needed or requested via GYP_DEFINES (GYP_DEFINES="clang=1").
     # Note: On Win, this should run after win_toolchain, as it may use it.
@@ -92,5 +113,12 @@ hooks = [
     # A change to a .gyp, .gypi, or to GYP itself should run the generator.
     "pattern": ".",
     "action": ["python", "src/gyp_packager.py", "--depth=src/packager"],
+  },
+  {
+    # Update LASTCHANGE.
+    'name': 'lastchange',
+    'pattern': '.',
+    'action': ['python', 'src/packager/build/util/lastchange.py',
+               '-o', 'src/packager/build/util/LASTCHANGE'],
   },
 ]

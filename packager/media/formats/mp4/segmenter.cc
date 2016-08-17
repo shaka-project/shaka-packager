@@ -46,8 +46,8 @@ struct ProtectionPattern {
   uint8_t skip_byte_block;
 };
 
-COMPILE_ASSERT(arraysize(kKeyRotationDefaultKeyId) == kCencKeyIdSize,
-               cenc_key_id_must_be_size_16);
+static_assert(arraysize(kKeyRotationDefaultKeyId) == kCencKeyIdSize,
+              "cenc_key_id_must_be_size_16");
 
 uint64_t Rescale(uint64_t time_in_old_scale,
                  uint32_t old_scale,

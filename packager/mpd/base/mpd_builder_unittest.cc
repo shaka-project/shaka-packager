@@ -1037,8 +1037,8 @@ TEST_F(CommonMpdBuilderTest,
 
   // Then set 480p to be 5fps (10/2) so that maxFrameRate is set.
   const uint32_t k5FPSFrameDuration = 2;
-  COMPILE_ASSERT(k5FPSFrameDuration < kSameFrameDuration,
-                 frame_duration_must_be_shorter_for_max_frame_rate);
+  static_assert(k5FPSFrameDuration < kSameFrameDuration,
+                "frame_duration_must_be_shorter_for_max_frame_rate");
   representation_480p->SetSampleDuration(k5FPSFrameDuration);
 
   xml::scoped_xml_ptr<xmlNode> max_frame_rate(adaptation_set->GetXml());
@@ -1467,7 +1467,7 @@ TEST_F(StaticMpdBuilderTest, ForceSetsubsegmentAlignment) {
   // Use different starting times to make the segments "not aligned".
   const uint64_t kStartTime1 = 1u;
   const uint64_t kStartTime2 = 2u;
-  COMPILE_ASSERT(kStartTime1 != kStartTime2, StartTimesShouldBeDifferent);
+  static_assert(kStartTime1 != kStartTime2, "StartTimesShouldBeDifferent");
   const uint64_t kDuration = 10u;
   const uint64_t kAnySize = 19834u;
   representation_480p->AddNewSegment(kStartTime1, kDuration, kAnySize);
@@ -2427,9 +2427,9 @@ TEST_F(TimeShiftBufferDepthTest, HugeGap) {
       first_s_element_end_time +
       (kTimeShiftBufferDepth + 1) * DefaultTimeScale();
   const uint64_t kSecondSElementRepeat = 9;
-  COMPILE_ASSERT(
+  static_assert(
       kSecondSElementRepeat < static_cast<uint64_t>(kTimeShiftBufferDepth),
-      second_s_element_repeat_must_be_less_than_time_shift_buffer_depth);
+      "second_s_element_repeat_must_be_less_than_time_shift_buffer_depth");
   AddSegments(gap_s_element_start_time, kDuration, kSize, kSecondSElementRepeat);
 
   std::string expected_s_element = base::StringPrintf(kSElementTemplate,

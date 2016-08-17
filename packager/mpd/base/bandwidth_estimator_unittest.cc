@@ -37,8 +37,8 @@ TEST(BandwidthEstimatorTest, FiveBlocksFiveBlocksAdded) {
       18
   };
 
-  COMPILE_ASSERT(kNumBlocksForEstimate == arraysize(kExpectedResults),
-                 incorrect_number_of_expectations);
+  static_assert(kNumBlocksForEstimate == arraysize(kExpectedResults),
+                "incorrect_number_of_expectations");
   for (uint64_t i = 1; i <= arraysize(kExpectedResults); ++i) {
     be.AddBlock(i, kDuration);
     EXPECT_EQ(kExpectedResults[i - 1], be.Estimate());

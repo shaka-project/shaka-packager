@@ -160,14 +160,14 @@ TEST_F(LocalFileTest, WriteRead) {
 }
 
 TEST_F(LocalFileTest, WriteFlushCheckSize) {
-  const uint32 kNumCycles(10);
-  const uint32 kNumWrites(10);
+  const uint32_t kNumCycles(10);
+  const uint32_t kNumWrites(10);
 
-  for (uint32 cycle_idx = 0; cycle_idx < kNumCycles; ++cycle_idx) {
+  for (uint32_t cycle_idx = 0; cycle_idx < kNumCycles; ++cycle_idx) {
     // Write file using File API, using file name directly (without prefix).
     File* file = File::Open(local_file_name_no_prefix_.c_str(), "w");
     ASSERT_TRUE(file != NULL);
-    for (uint32 write_idx = 0; write_idx < kNumWrites; ++write_idx)
+    for (uint32_t write_idx = 0; write_idx < kNumWrites; ++write_idx)
       EXPECT_EQ(kDataSize, file->Write(data_.data(), kDataSize));
     ASSERT_NO_FATAL_FAILURE(file->Flush());
     EXPECT_TRUE(file->Close());

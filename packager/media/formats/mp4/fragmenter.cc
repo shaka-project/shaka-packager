@@ -36,7 +36,6 @@ Fragmenter::Fragmenter(scoped_refptr<StreamInfo> info, TrackFragment* traf)
       fragment_initialized_(false),
       fragment_finalized_(false),
       fragment_duration_(0),
-      presentation_start_time_(kInvalidTime),
       earliest_presentation_time_(kInvalidTime),
       first_sap_time_(kInvalidTime) {
   DCHECK(traf);

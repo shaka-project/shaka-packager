@@ -11,10 +11,12 @@ namespace shaka {
 namespace media {
 
 // Utility function to create side data item for decoder buffer.
-template<typename T>
-void MakeSideData(T id_begin, T id_end,
-                  T settings_begin, T settings_end,
-                  std::vector<uint8>* side_data) {
+template <typename T>
+void MakeSideData(T id_begin,
+                  T id_end,
+                  T settings_begin,
+                  T settings_end,
+                  std::vector<uint8_t>* side_data) {
   // The DecoderBuffer only supports a single side data item. In the case of
   // a WebVTT cue, we can have potentially two side data items. In order to
   // avoid disrupting DecoderBuffer any more than we need to, we copy both

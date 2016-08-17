@@ -59,13 +59,14 @@ ExitStatus CheckRequiredFlags() {
 ExitStatus RunMpdGenerator() {
   DCHECK_EQ(CheckRequiredFlags(), kSuccess);
   std::vector<std::string> base_urls;
-  std::vector<std::string> input_files;
   typedef std::vector<std::string>::const_iterator Iterator;
 
-  base::SplitString(FLAGS_input, ',', &input_files);
+  std::vector<std::string> input_files = base::SplitString(
+      FLAGS_input, ",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (!FLAGS_base_urls.empty()) {
-    base::SplitString(FLAGS_base_urls, ',', &base_urls);
+    base_urls = base::SplitString(FLAGS_base_urls, ",", base::KEEP_WHITESPACE,
+                                  base::SPLIT_WANT_ALL);
   }
 
   MpdWriter mpd_writer;

@@ -179,8 +179,8 @@ static const int kTableSarWidth[] = {
 static const int kTableSarHeight[] = {
   0, 1, 11, 11, 11, 33, 11, 11, 11, 33, 11, 11, 33, 99, 3, 2, 1
 };
-COMPILE_ASSERT(arraysize(kTableSarWidth) == arraysize(kTableSarHeight),
-               sar_tables_must_have_same_size);
+static_assert(arraysize(kTableSarWidth) == arraysize(kTableSarHeight),
+              "sar_tables_must_have_same_size");
 
 H264Parser::H264Parser() {}
 

@@ -40,8 +40,8 @@ bool ValidateSegmentTemplate(const std::string& segment_template) {
   if (segment_template.empty())
     return false;
 
-  std::vector<std::string> splits;
-  base::SplitString(segment_template, '$', &splits);
+  std::vector<std::string> splits = base::SplitString(
+      segment_template, "$", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // ISO/IEC 23009-1:2012 5.3.9.4.4 Template-based Segment URL construction.
   // Allowed identifiers: $$, $RepresentationID$, $Number$, $Bandwidth$, $Time$.
@@ -105,8 +105,8 @@ std::string GetSegmentName(const std::string& segment_template,
                            uint32_t bandwidth) {
   DCHECK(ValidateSegmentTemplate(segment_template));
 
-  std::vector<std::string> splits;
-  base::SplitString(segment_template, '$', &splits);
+  std::vector<std::string> splits = base::SplitString(
+      segment_template, "$", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   // "$" always appears in pairs, so there should be odd number of splits.
   DCHECK_EQ(1u, splits.size() % 2);
 

@@ -1,0 +1,131 @@
+# Copyright 2015 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/sanitizers/sanitizers.gni")
+import("//build/toolchain/toolchain.gni")
+
+# Used by libc++ and libc++abi.
+config("config") {
+  defines = [ "LIBCXX_BUILDING_LIBCXXABI" ]
+  cflags = [
+    "-fPIC",
+    "-fstrict-aliasing",
+    "-pthread",
+  ]
+  cflags_cc = [
+    "-nostdinc++",
+    "-isystem" + rebase_path("trunk/include", root_build_dir),
+    "-isystem" + rebase_path("../libc++abi/trunk/include", root_build_dir),
+    "-std=c++11",
+  ]
+}
+
+shared_library("libc++") {
+  sources = [
+    "trunk/src/algorithm.cpp",
+    "trunk/src/any.cpp",
+    "trunk/src/bind.cpp",
+    "trunk/src/chrono.cpp",
+    "trunk/src/condition_variable.cpp",
+    "trunk/src/debug.cpp",
+    "trunk/src/exception.cpp",
+    "trunk/src/future.cpp",
+    "trunk/src/hash.cpp",
+    "trunk/src/ios.cpp",
+    "trunk/src/iostream.cpp",
+    "trunk/src/locale.cpp",
+    "trunk/src/memory.cpp",
+    "trunk/src/mutex.cpp",
+    "trunk/src/new.cpp",
+    "trunk/src/optional.cpp",
+    "trunk/src/random.cpp",
+    "trunk/src/regex.cpp",
+    "trunk/src/shared_mutex.cpp",
+    "trunk/src/stdexcept.cpp",
+    "trunk/src/string.cpp",
+    "trunk/src/strstream.cpp",
+    "trunk/src/system_error.cpp",
+    "trunk/src/thread.cpp",
+    "trunk/src/typeinfo.cpp",
+    "trunk/src/utility.cpp",
+    "trunk/src/valarray.cpp",
+  ]
+  configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:no_rtti",
+    "//build/config/gcc:no_exceptions",
+    "//build/config/gcc:symbol_visibility_hidden",
+  ]
+  configs += [
+    ":config",
+    "//build/config/compiler:no_chromium_code",
+    "//build/config/compiler:rtti",
+    "//build/config/gcc:symbol_visibility_default",
+    "//build/config/sanitizers:sanitizer_options_link_helper",
+  ]
+
+  ldflags = [ "-nodefaultlibs" ]
+
+  # TODO(GYP): Remove "-pthread" from ldflags.
+  # -nodefaultlibs turns -pthread into a no-op, causing an unused argument
+  # warning. Explicitly link with -lpthread instead.
+
+  libs = [
+    "m",
+  ]
+
+  if (!is_mac) {
+    libs += [
+      "c",
+      "gcc_s",
+      "pthread",
+      "rt",
+    ]
+  }
+
+  # libc++abi is linked statically into libc++.so. This allows us to get both
+  # libc++ and libc++abi by passing '-stdlib=libc++'. If libc++abi was a
+  # separate DSO, we'd have to link against it explicitly.
+  deps = [
+    "//buildtools/third_party/libc++abi",
+  ]
+
+  if (is_mac && using_sanitizer) {
+    # -nodefaultlibs on mac doesn't add any kind of runtime libraries.
+    # These runtimes have to be added manually.
+    lib_dirs = [ "//third_party/llvm-build/Release+Asserts/lib/clang/$clang_version/lib/darwin" ]
+
+    if (is_asan) {
+      libs += [ "clang_rt.asan_osx_dynamic" ]
+    }
+  }
+}
+
+group("libcxx_proxy") {
+  deps = [
+    ":libc++",
+  ]
+  public_configs = [ ":link_helper" ]
+}
+
+# This config is only used by binaries and shared library targets.
+# //build/config/sanitizers:default_sanitizer_flags sets the include paths for
+# everything else.
+config("link_helper") {
+  ldflags = [
+    "-stdlib=libc++",
+  ]
+
+  if (!is_mac) {
+    ldflags += [
+      # Normally the generator takes care of RPATH. Our case is special because
+      # the generator is unaware of the libc++.so dependency. Note that setting
+      # RPATH here is a potential security issue. See the following for another
+      # example of this issue: https://code.google.com/p/gyp/issues/detail?id=315
+      "-Wl,-rpath,\$ORIGIN/",
+    ]
+  }
+
+  lib_dirs = [ root_build_dir ]
+}

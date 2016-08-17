@@ -144,7 +144,8 @@ WidevineKeySource::WidevineKeySource(const std::string& server_url,
       crypto_period_count_(kDefaultCryptoPeriodCount),
       add_common_pssh_(add_common_pssh),
       key_production_started_(false),
-      start_key_production_(false, false),
+      start_key_production_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                            base::WaitableEvent::InitialState::NOT_SIGNALED),
       first_crypto_period_index_(0) {
   key_production_thread_.Start();
 }

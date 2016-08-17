@@ -75,8 +75,12 @@ TEST_F(ClosureThreadTest, Basic) {
 }
 
 TEST_F(ClosureThreadTest, CheckInteraction) {
-  base::WaitableEvent event_in_thread(true, false);
-  base::WaitableEvent event_in_main(true, false);
+  base::WaitableEvent event_in_thread(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
+  base::WaitableEvent event_in_main(
+      base::WaitableEvent::ResetPolicy::MANUAL,
+      base::WaitableEvent::InitialState::NOT_SIGNALED);
   set_val(8);
 
   // Expect the operation to be invoked twice:

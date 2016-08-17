@@ -244,8 +244,8 @@ void SetContentProtectionFields(
 
 std::string CreateUUIDString(const std::vector<uint8_t>& data) {
   DCHECK_EQ(16u, data.size());
-  std::string uuid = base::HexEncode(data.data(), data.size());
-  base::StringToLowerASCII(&uuid);
+  std::string uuid =
+      base::ToLowerASCII(base::HexEncode(data.data(), data.size()));
   uuid.insert(20, "-");
   uuid.insert(16, "-");
   uuid.insert(12, "-");

@@ -11,7 +11,7 @@
 // encrypted request for comments specification is here
 // http://wiki.webmproject.org/encryption/webm-encryption-rfc
 
-#include <iomanip>
+#include <limits>
 
 #include "packager/base/logging.h"
 #include "packager/base/numerics/safe_conversions.h"
@@ -469,7 +469,7 @@ static int ParseWebMElementHeaderField(const uint8_t* buf,
   }
 
   if (all_ones)
-    *num = kint64max;
+    *num = std::numeric_limits<int64_t>::max();
 
   return bytes_used;
 }
@@ -492,7 +492,7 @@ int WebMParseElementHeader(const uint8_t* buf,
   if (num_id_bytes <= 0)
     return num_id_bytes;
 
-  if (tmp == kint64max)
+  if (tmp == std::numeric_limits<int64_t>::max())
     tmp = kWebMReservedId;
 
   *id = static_cast<int>(tmp);
@@ -504,7 +504,7 @@ int WebMParseElementHeader(const uint8_t* buf,
   if (num_size_bytes <= 0)
     return num_size_bytes;
 
-  if (tmp == kint64max)
+  if (tmp == std::numeric_limits<int64_t>::max())
     tmp = kWebMUnknownSize;
 
   *element_size = tmp;

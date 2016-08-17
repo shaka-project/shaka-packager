@@ -23,7 +23,6 @@
 #include "packager/media/test/test_data_util.h"
 
 namespace {
-const int64_t kNoTimestamp = std::numeric_limits<int64_t>::min();
 const char kWvmFile[] = "bear-640x360.wvm";
 // Constants associated with kWvmFile follows.
 const uint32_t kExpectedStreams = 4;

@@ -40,7 +40,6 @@ src_dir = os.path.join(checkout_dir, 'packager')
 # pylint: disable=g-import-not-at-top,g-bad-import-order
 
 sys.path.insert(0, os.path.join(src_dir, 'build'))
-import detect_host_arch
 import gyp_helper
 
 sys.path.insert(0, os.path.join(src_dir, 'tools', 'gyp', 'pylib'))
@@ -66,17 +65,17 @@ if __name__ == '__main__':
                       'use_openssl': 1,
                       'use_x11': 0,
                       'linux_use_gold_binary': 0,
-                      'linux_use_gold_flags': 0}
-
-  # Disable clang on 32 bit systems by default, which is not supported.
-  if detect_host_arch.HostArch() == 'ia32':
-    _DEFAULT_DEFINES['clang'] = 0
+                      'linux_use_gold_flags': 0,
+                      'clang_use_chrome_plugins': 0}
 
   gyp_defines = (os.environ['GYP_DEFINES'] if os.environ.get('GYP_DEFINES') else
                  '')
   for key in _DEFAULT_DEFINES:
     if key not in gyp_defines:
       gyp_defines += ' {0}={1}'.format(key, _DEFAULT_DEFINES[key])
+  # Somehow gcc don't like use_sysroot.
+  if 'clang=0' in gyp_defines and 'use_sysroot' not in gyp_defines:
+    gyp_defines += ' use_sysroot=0'
   os.environ['GYP_DEFINES'] = gyp_defines.strip()
 
   # Default to ninja, but only if no generator has explicitly been set.

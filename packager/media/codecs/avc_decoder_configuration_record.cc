@@ -99,8 +99,7 @@ std::string AVCDecoderConfigurationRecord::GetCodecString(
     uint8_t avc_level) {
   const uint8_t bytes[] = {profile_indication, profile_compatibility,
                            avc_level};
-  return "avc1." +
-         base::StringToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));
+  return "avc1." + base::ToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));
 }
 
 }  // namespace media

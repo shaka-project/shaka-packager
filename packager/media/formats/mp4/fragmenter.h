@@ -90,7 +90,6 @@ class Fragmenter {
   bool fragment_initialized_;
   bool fragment_finalized_;
   uint64_t fragment_duration_;
-  int64_t presentation_start_time_;
   int64_t earliest_presentation_time_;
   int64_t first_sap_time_;
   std::unique_ptr<BufferWriter> data_;

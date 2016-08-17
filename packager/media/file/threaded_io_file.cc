@@ -30,9 +30,11 @@ ThreadedIoFile::ThreadedIoFile(std::unique_ptr<File, FileCloser> internal_file,
       size_(0),
       eof_(false),
       flushing_(false),
-      flush_complete_event_(false, false),
+      flush_complete_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                            base::WaitableEvent::InitialState::NOT_SIGNALED),
       internal_file_error_(0),
-      task_exit_event_(false, false) {
+      task_exit_event_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
+                       base::WaitableEvent::InitialState::NOT_SIGNALED) {
   DCHECK(internal_file_);
 }
 

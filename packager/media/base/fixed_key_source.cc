@@ -6,6 +6,7 @@
 
 #include "packager/media/base/fixed_key_source.h"
 
+#include <algorithm>
 #include "packager/base/logging.h"
 #include "packager/base/strings/string_number_conversions.h"
 

@@ -301,7 +301,10 @@ enum Operation {
 class MultiThreadProducerConsumerQueueStopTest
     : public ::testing::TestWithParam<Operation> {
  public:
-  MultiThreadProducerConsumerQueueStopTest() : queue_(1), event_(true, false) {}
+  MultiThreadProducerConsumerQueueStopTest()
+      : queue_(1),
+        event_(base::WaitableEvent::ResetPolicy::MANUAL,
+               base::WaitableEvent::InitialState::NOT_SIGNALED) {}
   ~MultiThreadProducerConsumerQueueStopTest() override {}
 
  public:

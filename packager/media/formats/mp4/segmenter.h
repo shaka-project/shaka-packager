@@ -137,7 +137,6 @@ class Segmenter {
   std::vector<Fragmenter*> fragmenters_;
   std::vector<uint64_t> segment_durations_;
   std::map<const MediaStream*, uint32_t> stream_map_;
-  bool end_of_segment_;
   MuxerListener* muxer_listener_;
   ProgressListener* progress_listener_;
   uint64_t progress_target_;

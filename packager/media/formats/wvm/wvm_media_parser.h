@@ -223,7 +223,6 @@ class WvmMediaParser : public MediaParser {
   // Internal content parsing state.
   State parse_state_;
 
-  bool is_psm_needed_;
   uint32_t skip_bytes_;
   bool metadata_is_complete_;
   uint8_t current_program_id_;
