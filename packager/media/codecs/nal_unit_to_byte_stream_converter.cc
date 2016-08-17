@@ -46,6 +46,27 @@ void AddAccessUnitDelimiter(BufferWriter* buffer_writer) {
   buffer_writer->AppendInt(kAccessUnitDelimiterRbspAnyPrimaryPicType);
 }
 
+bool CheckSubsampleValid(const std::vector<SubsampleEntry>* subsamples,
+                         size_t subsample_id,
+                         size_t nalu_size,
+                         bool* is_nalu_all_clear) {
+  if (subsample_id >= subsamples->size()) {
+    LOG(ERROR) << "Subsample index exceeds subsamples' size.";
+    return false;
+  }
+  const SubsampleEntry& subsample = subsamples->at(subsample_id);
+  if (nalu_size == subsample.clear_bytes + subsample.cipher_bytes) {
+    *is_nalu_all_clear = false;
+  } else if (nalu_size < subsample.clear_bytes) {
+    *is_nalu_all_clear = true;
+  } else {
+    LOG(ERROR) << "Unexpected subsample entry " << subsample.clear_bytes << ":"
+               << subsample.cipher_bytes << " nalu size: " << nalu_size;
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 void EscapeNalByteSequence(const uint8_t* input,
@@ -144,16 +165,38 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStream(
     size_t sample_size,
     bool is_key_frame,
     std::vector<uint8_t>* output) {
+  return ConvertUnitToByteStreamWithSubsamples(
+      sample, sample_size, is_key_frame, output,
+      nullptr);       // Skip subsample update.
+}
+
+// This ignores all AUD, SPS, and PPS in the sample. Instead uses the data
+// parsed in Initialize().
+bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
+    const uint8_t* sample,
+    size_t sample_size,
+    bool is_key_frame,
+    std::vector<uint8_t>* output,
+    std::vector<SubsampleEntry>* subsamples) {
   if (!sample || sample_size == 0) {
     LOG(WARNING) << "Sample is empty.";
     return true;
   }
+
+  if (subsamples && escape_data_) {
+    LOG(ERROR) << "escape_data_ should not be set when updating subsamples.";
+    return false;
+  }
+
 
   BufferWriter buffer_writer(sample_size);
   buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
   AddAccessUnitDelimiter(&buffer_writer);
   if (is_key_frame)
     buffer_writer.AppendVector(decoder_configuration_in_byte_stream_);
+
+  int adjustment = buffer_writer.Size();
+  size_t subsample_id = 0;
 
   NaluReader nalu_reader(Nalu::kH264, nalu_length_size_, sample, sample_size);
   Nalu nalu;
@@ -166,12 +209,50 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStream(
       case Nalu::H264_SPS:
         FALLTHROUGH_INTENDED;
       case Nalu::H264_PPS:
+        if (subsamples) {
+          const size_t old_nalu_size =
+              nalu_length_size_ + nalu.header_size() + nalu.payload_size();
+          bool is_nalu_all_clear;
+          if (!CheckSubsampleValid(subsamples, subsample_id, old_nalu_size,
+                                   &is_nalu_all_clear)) {
+            return false;
+          }
+          if (is_nalu_all_clear) {
+            // If AUD/SPS/PPS is all clear, reduce the clear bytes.
+            subsamples->at(subsample_id).clear_bytes -= old_nalu_size;
+          } else {
+            // If AUD/SPS/PPS has cipher, drop the corresponding subsample.
+            subsamples->erase(subsamples->begin() + subsample_id);
+          }
+        }
         break;
       default:
         buffer_writer.AppendArray(kNaluStartCode, arraysize(kNaluStartCode));
         AppendNalu(nalu, nalu_length_size_, escape_data_, &buffer_writer);
+
+        if (subsamples) {
+          const size_t old_nalu_size =
+              nalu_length_size_ + nalu.header_size() + nalu.payload_size();
+          bool is_nalu_all_clear;
+          if (!CheckSubsampleValid(subsamples, subsample_id, old_nalu_size,
+                                   &is_nalu_all_clear)) {
+            return false;
+          }
+          if (is_nalu_all_clear) {
+            // Add this nalu to the adjustment and remove it from clear_bytes.
+            subsamples->at(subsample_id).clear_bytes -= old_nalu_size;
+            adjustment += old_nalu_size;
+          } else {
+            // Apply the adjustment on the current subsample, reset the
+            // adjustment and move to the next subsample.
+            subsamples->at(subsample_id).clear_bytes += adjustment;
+            subsample_id++;
+            adjustment = 0;
+          }
+        }
         break;
     }
+
     result = nalu_reader.Advance(&nalu);
   }
 

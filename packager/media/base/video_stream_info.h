@@ -42,11 +42,16 @@ class VideoStreamInfo : public StreamInfo {
   uint32_t pixel_height() const { return pixel_height_; }
   uint8_t nalu_length_size() const { return nalu_length_size_; }
   int16_t trick_play_rate() const { return trick_play_rate_; }
+  const std::vector<uint8_t>& eme_init_data() const { return eme_init_data_; }
 
   void set_width(uint32_t width) { width_ = width; }
   void set_height(uint32_t height) { height_ = height; }
   void set_pixel_width(uint32_t pixel_width) { pixel_width_ = pixel_width; }
   void set_pixel_height(uint32_t pixel_height) { pixel_height_ = pixel_height; }
+  void set_eme_init_data(const uint8_t* eme_init_data,
+                         size_t eme_init_data_size) {
+    eme_init_data_.assign(eme_init_data, eme_init_data + eme_init_data_size);
+  }
 
  private:
   ~VideoStreamInfo() override;
@@ -64,6 +69,10 @@ class VideoStreamInfo : public StreamInfo {
   // 4 bytes, or 0 if the size if unknown or the stream is not a AVC stream
   // (H.264).
   uint8_t nalu_length_size_;
+
+  // Container-specific data used by CDM to generate a license request:
+  // https://w3c.github.io/encrypted-media/#initialization-data.
+  std::vector<uint8_t> eme_init_data_;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the extra data is

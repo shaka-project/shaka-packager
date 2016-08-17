@@ -13,6 +13,7 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/memory/ref_counted.h"
+#include "packager/media/base/decrypt_config.h"
 
 namespace shaka {
 namespace media {
@@ -117,6 +118,10 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
     return side_data_.size();
   }
 
+  const DecryptConfig* decrypt_config() const {
+    return decrypt_config_.get();
+  }
+
   void set_data(const uint8_t* data, const size_t data_size) {
     data_.assign(data, data + data_size);
   }
@@ -131,6 +136,10 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
 
   void set_is_encrypted(bool value) {
     is_encrypted_ = value;
+  }
+
+  void set_decrypt_config(std::unique_ptr<DecryptConfig> decrypt_config) {
+    decrypt_config_ = std::move(decrypt_config);
   }
 
   // If there's no data in this buffer, it represents end of stream.
@@ -177,6 +186,9 @@ class MediaSample : public base::RefCountedThreadSafe<MediaSample> {
   // Text specific fields.
   // For now this is the cue identifier for WebVTT.
   std::string config_id_;
+
+  // Decrypt configuration.
+  std::unique_ptr<DecryptConfig> decrypt_config_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaSample);
 };

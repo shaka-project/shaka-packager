@@ -22,7 +22,7 @@ MediaStream::MediaStream(scoped_refptr<StreamInfo> info, Demuxer* demuxer)
 MediaStream::~MediaStream() {}
 
 Status MediaStream::PullSample(scoped_refptr<MediaSample>* sample) {
-  DCHECK_EQ(state_, kPulling);
+  DCHECK(state_ == kPulling || state_ == kIdle);
 
   // Trigger a new parse in demuxer if no more samples.
   while (samples_.empty()) {

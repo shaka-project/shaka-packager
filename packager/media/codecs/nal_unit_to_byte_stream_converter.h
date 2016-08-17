@@ -12,6 +12,7 @@
 
 #include "packager/base/macros.h"
 #include "packager/base/memory/ref_counted.h"
+#include "packager/media/base/decrypt_config.h"
 
 namespace shaka {
 namespace media {
@@ -53,12 +54,29 @@ class NalUnitToByteStreamConverter {
   /// SAMPLE-AES encryption.
   /// @param sample is the sample to be converted.
   /// @param sample_size is the size of @a sample.
-  /// @param output is set to the the converted sample, on success.
+  /// @param[out] output is set to the the converted sample, on success.
   /// @return true on success, false otherwise.
   virtual bool ConvertUnitToByteStream(const uint8_t* sample,
                                        size_t sample_size,
                                        bool is_key_frame,
                                        std::vector<uint8_t>* output);
+
+  /// Converts unit stream to byte stream using the data passed to Initialize()
+  /// and update the corresponding subsamples of the media sample.
+  /// The method will function correctly even if @a sample is encrypted using
+  /// SAMPLE-AES encryption.
+  /// @param sample is the sample to be converted.
+  /// @param sample_size is the size of @a sample.
+  /// @param[out] output is set to the the converted sample, on success.
+  /// @param[in,out] subsamples has the input subsamples and output updated
+  ///                subsamples, on sucess.
+  /// @return true on success, false otherwise.
+  virtual bool ConvertUnitToByteStreamWithSubsamples(
+      const uint8_t* sample,
+      size_t sample_size,
+      bool is_key_frame,
+      std::vector<uint8_t>* output,
+      std::vector<SubsampleEntry>* subsamples);
 
  private:
   friend class NalUnitToByteStreamConverterTest;

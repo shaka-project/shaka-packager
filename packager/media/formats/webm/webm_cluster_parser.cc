@@ -373,13 +373,13 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
 
     if (decrypt_config) {
       if (!decryptor_source_) {
-        LOG(ERROR) << "Encrypted media sample encountered, but decryption is "
-                      "not enabled";
-        return false;
-      }
-      if (!decryptor_source_->DecryptSampleBuffer(decrypt_config.get(),
-                                                  buffer->writable_data(),
-                                                  buffer->data_size())) {
+        // If the demuxer does not have the decryptor_source_, store
+        // decrypt_config so that the demuxed sample can be decrypted later.
+        buffer->set_decrypt_config(std::move(decrypt_config));
+        buffer->set_is_encrypted(true);
+      } else if (!decryptor_source_->DecryptSampleBuffer(
+                     decrypt_config.get(), buffer->writable_data(),
+                     buffer->data_size())) {
         LOG(ERROR) << "Cannot decrypt samples";
         return false;
       }

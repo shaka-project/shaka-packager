@@ -562,13 +562,26 @@ bool MP4MediaParser::ParseMoov(BoxReader* reader) {
       const bool is_encrypted =
           entry.sinf.info.track_encryption.default_is_protected == 1;
       DVLOG(1) << "is_video_track_encrypted_: " << is_encrypted;
-      streams.push_back(new VideoStreamInfo(
+      scoped_refptr<VideoStreamInfo> video_stream_info(new VideoStreamInfo(
           track->header.track_id, timescale, duration, video_codec,
           codec_string, entry.codec_configuration.data.data(),
           entry.codec_configuration.data.size(), coded_width, coded_height,
           pixel_width, pixel_height,
           0,  // trick_play_rate
           nalu_length_size, track->media.header.language.code, is_encrypted));
+
+      // Set pssh raw data if it has.
+      if (moov_->pssh.size() > 0) {
+        std::vector<uint8_t> pssh_raw_data;
+        for (const auto& pssh : moov_->pssh) {
+          pssh_raw_data.insert(pssh_raw_data.end(), pssh.raw_box.begin(),
+                               pssh.raw_box.end());
+        }
+        video_stream_info->set_eme_init_data(pssh_raw_data.data(),
+                                             pssh_raw_data.size());
+      }
+
+      streams.push_back(video_stream_info);
     }
   }
 
@@ -684,18 +697,21 @@ bool MP4MediaParser::EnqueueSample(bool* err) {
   scoped_refptr<MediaSample> stream_sample(MediaSample::CopyFrom(
       buf, runs_->sample_size(), runs_->is_keyframe()));
   if (runs_->is_encrypted()) {
-    if (!decryptor_source_) {
+    std::unique_ptr<DecryptConfig> decrypt_config = runs_->GetDecryptConfig();
+    if (!decrypt_config) {
       *err = true;
-      LOG(ERROR) << "Encrypted media sample encountered, but decryption is not "
-                    "enabled";
+      LOG(ERROR) << "Missing decrypt config.";
       return false;
     }
 
-    std::unique_ptr<DecryptConfig> decrypt_config = runs_->GetDecryptConfig();
-    if (!decrypt_config ||
-        !decryptor_source_->DecryptSampleBuffer(decrypt_config.get(),
-                                                stream_sample->writable_data(),
-                                                stream_sample->data_size())) {
+    if (!decryptor_source_) {
+      // If the demuxer does not have the decryptor_source_, store
+      // decrypt_config so that the demuxed sample can be decrypted later.
+      stream_sample->set_decrypt_config(std::move(decrypt_config));
+      stream_sample->set_is_encrypted(true);
+    } else if (!decryptor_source_->DecryptSampleBuffer(
+                   decrypt_config.get(), stream_sample->writable_data(),
+                   stream_sample->data_size())) {
       *err = true;
       LOG(ERROR) << "Cannot decrypt samples.";
       return false;

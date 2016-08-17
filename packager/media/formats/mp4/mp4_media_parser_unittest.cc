@@ -228,9 +228,13 @@ TEST_F(MP4MediaParserTest, NON_FRAGMENTED_MP4) {
 }
 
 TEST_F(MP4MediaParserTest, CencWithoutDecryptionSource) {
-  // Parsing should fail but it will get the streams successfully.
-  EXPECT_FALSE(ParseMP4File("bear-640x360-v_frag-cenc-aux.mp4", 512));
+  EXPECT_TRUE(ParseMP4File("bear-640x360-v_frag-cenc-aux.mp4", 512));
   EXPECT_EQ(1u, num_streams_);
+  // Check if pssh is present.
+  const int kVideoTrackId = 1;
+  EXPECT_NE(0u,
+            reinterpret_cast<VideoStreamInfo*>(stream_map_[kVideoTrackId].get())
+                ->eme_init_data().size());
 }
 
 TEST_F(MP4MediaParserTest, CencInitWithoutDecryptionSource) {
