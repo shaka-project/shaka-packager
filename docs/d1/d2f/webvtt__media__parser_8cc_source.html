@@ -383,102 +383,99 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;          <span class="comment">// There is no one metadata to determine what the language is. Parts</span></div>
 <div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;          <span class="comment">// of the text may be annotated as some specific language.</span></div>
 <div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;          <span class="keyword">const</span> <span class="keywordtype">char</span> kLanguage[] = <span class="stringliteral">&quot;&quot;</span>;</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;          streams.push_back(<span class="keyword">new</span> <a class="code" href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html">TextStreamInfo</a>(</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;              kTrackId,</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;              kTimescale,</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;              kDuration,</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;              <span class="stringliteral">&quot;wvtt&quot;</span>,</div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;              kLanguage,</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;              base::JoinString(header_, <span class="stringliteral">&quot;\n&quot;</span>),</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;              0,         <span class="comment">// Not necessary.</span></div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;              0));       <span class="comment">// Not necessary.</span></div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;          init_cb_.Run(streams);</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;          state_ = kCueIdentifierOrTimingOrComment;</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;          <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;        }</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;        header_.push_back(line);</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;      }</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;      <span class="keywordflow">case</span> kCueIdentifierOrTimingOrComment: {</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        <span class="comment">// Note that there can be one or more line breaks before a cue starts;</span></div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;        <span class="comment">// skip this line.</span></div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;        <span class="comment">// Or the file could end without a new cue.</span></div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;        <span class="keywordflow">if</span> (line.empty())</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;          <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;</div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;        <span class="keywordflow">if</span> (!has_arrow) {</div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;          <span class="keywordflow">if</span> (base::StartsWith(line, <span class="stringliteral">&quot;NOTE&quot;</span>,</div>
-<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;                                      base::CompareCase::INSENSITIVE_ASCII)) {</div>
-<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;            state_ = kComment;</div>
-<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;            current_cue_.comment.push_back(line);</div>
-<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;          } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;            <span class="comment">// A cue can start from a cue identifier.</span></div>
-<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;            <span class="comment">// https://w3c.github.io/webvtt/#webvtt-cue-identifier</span></div>
-<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;            current_cue_.identifier = line;</div>
-<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;            <span class="comment">// The next line must be a timing.</span></div>
-<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;            state_ = kCueTiming;</div>
-<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;          }</div>
-<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;          <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;        }</div>
-<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;</div>
-<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;        <span class="comment">// No break statement if the line has an arrow; it should be a WebVTT</span></div>
-<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;        <span class="comment">// timing, so fall thru. Setting state_ to kCueTiming so that the state</span></div>
-<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;        <span class="comment">// always matches the case.</span></div>
-<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;        state_ = kCueTiming;</div>
-<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;        FALLTHROUGH_INTENDED;</div>
-<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;      }</div>
-<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;      <span class="keywordflow">case</span> kCueTiming: {</div>
-<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;        DCHECK(has_arrow);</div>
-<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;        <span class="keywordflow">if</span> (!ParseTimingAndSettingsLine(line, &amp;current_cue_.start_time,</div>
-<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;                                        &amp;current_cue_.duration,</div>
-<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;                                        &amp;current_cue_.settings)) {</div>
-<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;          state_ = kParseError;</div>
-<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;        }</div>
-<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;        state_ = kCuePayload;</div>
-<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;      }</div>
-<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;      <span class="keywordflow">case</span> kCuePayload: {</div>
-<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;        <span class="keywordflow">if</span> (line.empty()) {</div>
-<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;          state_ = kCueIdentifierOrTimingOrComment;</div>
-<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;          <span class="keywordflow">if</span> (!new_sample_cb_.Run(kTrackId, CueToMediaSample(current_cue_))) {</div>
-<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;            state_ = kParseError;</div>
-<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;          }</div>
-<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;          current_cue_ = <a class="code" href="../../dd/dce/structshaka_1_1media_1_1Cue.html">Cue</a>();</div>
-<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;          <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;        }</div>
-<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;</div>
-<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;        current_cue_.payload.push_back(line);</div>
-<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;      }</div>
-<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;      <span class="keywordflow">case</span> kComment: {</div>
-<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;        <span class="keywordflow">if</span> (line.empty()) {</div>
-<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;          state_ = kCueIdentifierOrTimingOrComment;</div>
-<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;          <span class="keywordflow">if</span> (!new_sample_cb_.Run(kTrackId, CueToMediaSample(current_cue_))) {</div>
-<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;            state_ = kParseError;</div>
-<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;          }</div>
-<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;          current_cue_ = <a class="code" href="../../dd/dce/structshaka_1_1media_1_1Cue.html">Cue</a>();</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;          <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;        }</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;        current_cue_.comment.push_back(line);</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;      }</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;      <span class="keywordflow">case</span> kParseError:</div>
-<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;        NOTREACHED();</div>
-<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;    }</div>
-<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;  }</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;          streams.push_back(<span class="keyword">new</span> <a class="code" href="../../db/dab/classshaka_1_1media_1_1TextStreamInfo.html">TextStreamInfo</a>(kTrackId, kTimescale, kDuration,</div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;                                               <span class="stringliteral">&quot;wvtt&quot;</span>,</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;                                               base::JoinString(header_, <span class="stringliteral">&quot;\n&quot;</span>),</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;                                               0,  <span class="comment">// Not necessary.</span></div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;                                               0,</div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;                                               kLanguage));  <span class="comment">// Not necessary.</span></div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;          init_cb_.Run(streams);</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;          state_ = kCueIdentifierOrTimingOrComment;</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;          <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;        }</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        header_.push_back(line);</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;      }</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;      <span class="keywordflow">case</span> kCueIdentifierOrTimingOrComment: {</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;        <span class="comment">// Note that there can be one or more line breaks before a cue starts;</span></div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;        <span class="comment">// skip this line.</span></div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;        <span class="comment">// Or the file could end without a new cue.</span></div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;        <span class="keywordflow">if</span> (line.empty())</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;          <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;</div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;        <span class="keywordflow">if</span> (!has_arrow) {</div>
+<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;          <span class="keywordflow">if</span> (base::StartsWith(line, <span class="stringliteral">&quot;NOTE&quot;</span>,</div>
+<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;                                      base::CompareCase::INSENSITIVE_ASCII)) {</div>
+<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;            state_ = kComment;</div>
+<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;            current_cue_.comment.push_back(line);</div>
+<div class="line"><a name="l00324"></a><span class="lineno">  324</span>&#160;          } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00325"></a><span class="lineno">  325</span>&#160;            <span class="comment">// A cue can start from a cue identifier.</span></div>
+<div class="line"><a name="l00326"></a><span class="lineno">  326</span>&#160;            <span class="comment">// https://w3c.github.io/webvtt/#webvtt-cue-identifier</span></div>
+<div class="line"><a name="l00327"></a><span class="lineno">  327</span>&#160;            current_cue_.identifier = line;</div>
+<div class="line"><a name="l00328"></a><span class="lineno">  328</span>&#160;            <span class="comment">// The next line must be a timing.</span></div>
+<div class="line"><a name="l00329"></a><span class="lineno">  329</span>&#160;            state_ = kCueTiming;</div>
+<div class="line"><a name="l00330"></a><span class="lineno">  330</span>&#160;          }</div>
+<div class="line"><a name="l00331"></a><span class="lineno">  331</span>&#160;          <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00332"></a><span class="lineno">  332</span>&#160;        }</div>
+<div class="line"><a name="l00333"></a><span class="lineno">  333</span>&#160;</div>
+<div class="line"><a name="l00334"></a><span class="lineno">  334</span>&#160;        <span class="comment">// No break statement if the line has an arrow; it should be a WebVTT</span></div>
+<div class="line"><a name="l00335"></a><span class="lineno">  335</span>&#160;        <span class="comment">// timing, so fall thru. Setting state_ to kCueTiming so that the state</span></div>
+<div class="line"><a name="l00336"></a><span class="lineno">  336</span>&#160;        <span class="comment">// always matches the case.</span></div>
+<div class="line"><a name="l00337"></a><span class="lineno">  337</span>&#160;        state_ = kCueTiming;</div>
+<div class="line"><a name="l00338"></a><span class="lineno">  338</span>&#160;        FALLTHROUGH_INTENDED;</div>
+<div class="line"><a name="l00339"></a><span class="lineno">  339</span>&#160;      }</div>
+<div class="line"><a name="l00340"></a><span class="lineno">  340</span>&#160;      <span class="keywordflow">case</span> kCueTiming: {</div>
+<div class="line"><a name="l00341"></a><span class="lineno">  341</span>&#160;        DCHECK(has_arrow);</div>
+<div class="line"><a name="l00342"></a><span class="lineno">  342</span>&#160;        <span class="keywordflow">if</span> (!ParseTimingAndSettingsLine(line, &amp;current_cue_.start_time,</div>
+<div class="line"><a name="l00343"></a><span class="lineno">  343</span>&#160;                                        &amp;current_cue_.duration,</div>
+<div class="line"><a name="l00344"></a><span class="lineno">  344</span>&#160;                                        &amp;current_cue_.settings)) {</div>
+<div class="line"><a name="l00345"></a><span class="lineno">  345</span>&#160;          state_ = kParseError;</div>
+<div class="line"><a name="l00346"></a><span class="lineno">  346</span>&#160;          <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00347"></a><span class="lineno">  347</span>&#160;        }</div>
+<div class="line"><a name="l00348"></a><span class="lineno">  348</span>&#160;        state_ = kCuePayload;</div>
+<div class="line"><a name="l00349"></a><span class="lineno">  349</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00350"></a><span class="lineno">  350</span>&#160;      }</div>
+<div class="line"><a name="l00351"></a><span class="lineno">  351</span>&#160;      <span class="keywordflow">case</span> kCuePayload: {</div>
+<div class="line"><a name="l00352"></a><span class="lineno">  352</span>&#160;        <span class="keywordflow">if</span> (line.empty()) {</div>
+<div class="line"><a name="l00353"></a><span class="lineno">  353</span>&#160;          state_ = kCueIdentifierOrTimingOrComment;</div>
+<div class="line"><a name="l00354"></a><span class="lineno">  354</span>&#160;          <span class="keywordflow">if</span> (!new_sample_cb_.Run(kTrackId, CueToMediaSample(current_cue_))) {</div>
+<div class="line"><a name="l00355"></a><span class="lineno">  355</span>&#160;            state_ = kParseError;</div>
+<div class="line"><a name="l00356"></a><span class="lineno">  356</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00357"></a><span class="lineno">  357</span>&#160;          }</div>
+<div class="line"><a name="l00358"></a><span class="lineno">  358</span>&#160;          current_cue_ = <a class="code" href="../../dd/dce/structshaka_1_1media_1_1Cue.html">Cue</a>();</div>
+<div class="line"><a name="l00359"></a><span class="lineno">  359</span>&#160;          <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00360"></a><span class="lineno">  360</span>&#160;        }</div>
+<div class="line"><a name="l00361"></a><span class="lineno">  361</span>&#160;</div>
+<div class="line"><a name="l00362"></a><span class="lineno">  362</span>&#160;        current_cue_.payload.push_back(line);</div>
+<div class="line"><a name="l00363"></a><span class="lineno">  363</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00364"></a><span class="lineno">  364</span>&#160;      }</div>
+<div class="line"><a name="l00365"></a><span class="lineno">  365</span>&#160;      <span class="keywordflow">case</span> kComment: {</div>
+<div class="line"><a name="l00366"></a><span class="lineno">  366</span>&#160;        <span class="keywordflow">if</span> (line.empty()) {</div>
+<div class="line"><a name="l00367"></a><span class="lineno">  367</span>&#160;          state_ = kCueIdentifierOrTimingOrComment;</div>
+<div class="line"><a name="l00368"></a><span class="lineno">  368</span>&#160;          <span class="keywordflow">if</span> (!new_sample_cb_.Run(kTrackId, CueToMediaSample(current_cue_))) {</div>
+<div class="line"><a name="l00369"></a><span class="lineno">  369</span>&#160;            state_ = kParseError;</div>
+<div class="line"><a name="l00370"></a><span class="lineno">  370</span>&#160;            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00371"></a><span class="lineno">  371</span>&#160;          }</div>
+<div class="line"><a name="l00372"></a><span class="lineno">  372</span>&#160;          current_cue_ = <a class="code" href="../../dd/dce/structshaka_1_1media_1_1Cue.html">Cue</a>();</div>
+<div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;          <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;        }</div>
+<div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;        current_cue_.comment.push_back(line);</div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;        <span class="keywordflow">break</span>;</div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;      }</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;      <span class="keywordflow">case</span> kParseError:</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;        NOTREACHED();</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;    }</div>
+<div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;  }</div>
+<div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;</div>
+<div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00386"></a><span class="lineno">  386</span>&#160;}</div>
 <div class="line"><a name="l00387"></a><span class="lineno">  387</span>&#160;</div>
-<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;}</div>
-<div class="line"><a name="l00390"></a><span class="lineno">  390</span>&#160;</div>
-<div class="line"><a name="l00391"></a><span class="lineno">  391</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00392"></a><span class="lineno">  392</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00388"></a><span class="lineno">  388</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00389"></a><span class="lineno">  389</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_a1d23b68125525a019bde262e4c5a46f0"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a1d23b68125525a019bde262e4c5a46f0">shaka::media::MediaSample::FromMetadata</a></div><div class="ttdeci">static scoped_refptr&lt; MediaSample &gt; FromMetadata(const uint8_t *metadata, size_t metadata_size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00067">media_sample.cc:67</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebVttMediaParser_html_af6c0fb7de806cccd0e1f9dd92b5310f3"><div class="ttname"><a href="../../dc/df2/classshaka_1_1media_1_1WebVttMediaParser.html#af6c0fb7de806cccd0e1f9dd92b5310f3">shaka::media::WebVttMediaParser::Init</a></div><div class="ttdeci">void Init(const InitCB &amp;init_cb, const NewSampleCB &amp;new_sample_cb, KeySource *decryption_key_source) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d2f/webvtt__media__parser_8cc_source.html#l00221">webvtt_media_parser.cc:221</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebVttMediaParser_html_a5295c061b251726d1525cefc091101a2"><div class="ttname"><a href="../../dc/df2/classshaka_1_1media_1_1WebVttMediaParser.html#a5295c061b251726d1525cefc091101a2">shaka::media::WebVttMediaParser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *buf, int size) override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d2f/webvtt__media__parser_8cc_source.html#l00250">webvtt_media_parser.cc:250</a></div></div>
@@ -491,7 +488,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 18 2016 20:58:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Aug 18 2016 21:18:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

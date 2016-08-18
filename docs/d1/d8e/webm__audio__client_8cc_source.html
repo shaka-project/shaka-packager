@@ -125,7 +125,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;    int64_t codec_delay,</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;    <span class="keyword">const</span> std::string&amp; language,</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;    <span class="keywordtype">bool</span> is_encrypted) {</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  AudioCodec audio_codec = kUnknownAudioCodec;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  Codec audio_codec = kUnknownCodec;</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordflow">if</span> (codec_id == <span class="stringliteral">&quot;A_VORBIS&quot;</span>) {</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    audio_codec = kCodecVorbis;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (codec_id == <span class="stringliteral">&quot;A_OPUS&quot;</span>) {</div>
@@ -159,10 +159,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keyword">const</span> uint8_t kSampleSizeInBits = 16u;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordflow">return</span> scoped_refptr&lt;AudioStreamInfo&gt;(<span class="keyword">new</span> <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html">AudioStreamInfo</a>(</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;      track_num, kWebMTimeScale, 0, audio_codec,</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a2a09eeb3559dd38c333c071d78be1e8c">AudioStreamInfo::GetCodecString</a>(audio_codec, 0), language,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      kSampleSizeInBits, channels_, sampling_frequency,</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;      <a class="code" href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">AudioStreamInfo::GetCodecString</a>(audio_codec, 0), codec_config,</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      codec_config_size, kSampleSizeInBits, channels_, sampling_frequency,</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      seek_preroll &lt; 0 ? 0 : seek_preroll, codec_delay &lt; 0 ? 0 : codec_delay, 0,</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      0, codec_config, codec_config_size, is_encrypted));</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;      0, language, is_encrypted));</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;}</div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;</div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="keywordtype">bool</span> WebMAudioClient::OnUInt(<span class="keywordtype">int</span> <span class="keywordtype">id</span>, int64_t val) {</div>
@@ -207,14 +207,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_a2a09eeb3559dd38c333c071d78be1e8c"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#a2a09eeb3559dd38c333c071d78be1e8c">shaka::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(AudioCodec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00112">audio_stream_info.cc:112</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_aee79e7aa61b741bb96f451c6de1c9d42"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">shaka::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(Codec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00095">audio_stream_info.cc:95</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMAudioClient_html_afd1a338848c52dc4db79d89ae13b6ea6"><div class="ttname"><a href="../../d3/d7c/classshaka_1_1media_1_1WebMAudioClient.html#afd1a338848c52dc4db79d89ae13b6ea6">shaka::media::WebMAudioClient::Reset</a></div><div class="ttdeci">void Reset()</div><div class="ttdoc">Reset this object&#39;s state so it can process a new audio track element. </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d8e/webm__audio__client_8cc_source.html#l00025">webm_audio_client.cc:25</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html">shaka::media::AudioStreamInfo</a></div><div class="ttdoc">Holds audio stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../df/d32/audio__stream__info_8h_source.html#l00035">audio_stream_info.h:35</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html">shaka::media::AudioStreamInfo</a></div><div class="ttdoc">Holds audio stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../df/d32/audio__stream__info_8h_source.html#l00018">audio_stream_info.h:18</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMAudioClient_html_a8a23999bc3e6e88276d3ad62bd81e63f"><div class="ttname"><a href="../../d3/d7c/classshaka_1_1media_1_1WebMAudioClient.html#a8a23999bc3e6e88276d3ad62bd81e63f">shaka::media::WebMAudioClient::GetAudioStreamInfo</a></div><div class="ttdeci">scoped_refptr&lt; AudioStreamInfo &gt; GetAudioStreamInfo(int64_t track_num, const std::string &amp;codec_id, const std::vector&lt; uint8_t &gt; &amp;codec_private, int64_t seek_preroll, int64_t codec_delay, const std::string &amp;language, bool is_encrypted)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d8e/webm__audio__client_8cc_source.html#l00031">webm_audio_client.cc:31</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 18 2016 20:58:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Aug 18 2016 21:18:07 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

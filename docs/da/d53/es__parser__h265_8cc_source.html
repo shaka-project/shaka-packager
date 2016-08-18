@@ -237,37 +237,26 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  }</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  last_video_decoder_config_ = scoped_refptr&lt;StreamInfo&gt;(</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;      <span class="keyword">new</span> VideoStreamInfo(</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;          pid(),</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;          kMpeg2Timescale,</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;          kInfiniteDuration,</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;          kCodecHVC1,</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;          decoder_config.GetCodecString(kCodecHVC1),</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;          std::string(),</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;          coded_width,</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;          coded_height,</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;          pixel_width,</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;          pixel_height,</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;          0,</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;          H26xByteToUnitStreamConverter::kUnitStreamNaluLengthSize,</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;          decoder_config_record.data(),</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;          decoder_config_record.size(),</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;          <span class="keyword">false</span>));</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  <span class="comment">// Video config notification.</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  new_stream_info_cb_.Run(last_video_decoder_config_);</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;}</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;  last_video_decoder_config_ = scoped_refptr&lt;StreamInfo&gt;(<span class="keyword">new</span> VideoStreamInfo(</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;      pid(), kMpeg2Timescale, kInfiniteDuration, kCodecHVC1,</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;      decoder_config.GetCodecString(kCodecHVC1), decoder_config_record.data(),</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;      decoder_config_record.size(), coded_width, coded_height, pixel_width,</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;      pixel_height, 0, H26xByteToUnitStreamConverter::kUnitStreamNaluLengthSize,</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      std::string(), <span class="keyword">false</span>));</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  <span class="comment">// Video config notification.</span></div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;  new_stream_info_cb_.Run(last_video_decoder_config_);</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;}</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 18 2016 20:58:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Aug 18 2016 21:18:07 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

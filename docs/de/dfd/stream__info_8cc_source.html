@@ -103,47 +103,44 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;StreamInfo::StreamInfo(StreamType stream_type,</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                       <span class="keywordtype">int</span> track_id,</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                       uint32_t time_scale,</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                       uint64_t duration,</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                       <span class="keyword">const</span> std::string&amp; codec_string,</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                       <span class="keyword">const</span> std::string&amp; language,</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                       <span class="keyword">const</span> uint8_t* codec_config,</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;                       <span class="keywordtype">size_t</span> codec_config_size,</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;                       <span class="keywordtype">bool</span> is_encrypted)</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    : stream_type_(stream_type),</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;      track_id_(track_id),</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      time_scale_(time_scale),</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;      duration_(duration),</div>
-<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;      codec_string_(codec_string),</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;      language_(language),</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;      is_encrypted_(is_encrypted) {</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordflow">if</span> (codec_config_size &gt; 0) {</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    codec_config_.assign(codec_config, codec_config + codec_config_size);</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  }</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;}</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;StreamInfo::~StreamInfo() {}</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html#aa11d2fe5509ebfdc038aa3f2cdbbe00d">   40</a></span>&#160;std::string <a class="code" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html#aa11d2fe5509ebfdc038aa3f2cdbbe00d">StreamInfo::ToString</a>()<span class="keyword"> const </span>{</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordflow">return</span> base::StringPrintf(</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      <span class="stringliteral">&quot;type: %s\n codec_string: %s\n time_scale: %d\n duration: &quot;</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      <span class="stringliteral">&quot;%&quot;</span> PRIu64 <span class="stringliteral">&quot; (%.1f seconds)\n is_encrypted: %s\n&quot;</span>,</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      (stream_type_ == kStreamAudio ? <span class="stringliteral">&quot;Audio&quot;</span> : <span class="stringliteral">&quot;Video&quot;</span>),</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      codec_string_.c_str(),</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      time_scale_, duration_,</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(duration_) / time_scale_,</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;      is_encrypted_ ? <span class="stringliteral">&quot;true&quot;</span> : <span class="stringliteral">&quot;false&quot;</span>);</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;}</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1StreamInfo_html_aa11d2fe5509ebfdc038aa3f2cdbbe00d"><div class="ttname"><a href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html#aa11d2fe5509ebfdc038aa3f2cdbbe00d">shaka::media::StreamInfo::ToString</a></div><div class="ttdeci">virtual std::string ToString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../de/dfd/stream__info_8cc_source.html#l00040">stream_info.cc:40</a></div></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;StreamInfo::StreamInfo(StreamType stream_type, <span class="keywordtype">int</span> track_id,</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;                       uint32_t time_scale, uint64_t duration, Codec codec,</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;                       <span class="keyword">const</span> std::string&amp; codec_string,</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;                       <span class="keyword">const</span> uint8_t* codec_config, <span class="keywordtype">size_t</span> codec_config_size,</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                       <span class="keyword">const</span> std::string&amp; language, <span class="keywordtype">bool</span> is_encrypted)</div>
+<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;    : stream_type_(stream_type),</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;      track_id_(track_id),</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      time_scale_(time_scale),</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;      duration_(duration),</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;      codec_(codec),</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;      codec_string_(codec_string),</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      language_(language),</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;      is_encrypted_(is_encrypted) {</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordflow">if</span> (codec_config_size &gt; 0) {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    codec_config_.assign(codec_config, codec_config + codec_config_size);</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  }</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;}</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;StreamInfo::~StreamInfo() {}</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html#aa11d2fe5509ebfdc038aa3f2cdbbe00d">   37</a></span>&#160;std::string <a class="code" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html#aa11d2fe5509ebfdc038aa3f2cdbbe00d">StreamInfo::ToString</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordflow">return</span> base::StringPrintf(</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      <span class="stringliteral">&quot;type: %s\n codec_string: %s\n time_scale: %d\n duration: &quot;</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      <span class="stringliteral">&quot;%&quot;</span> PRIu64 <span class="stringliteral">&quot; (%.1f seconds)\n is_encrypted: %s\n&quot;</span>,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;      (stream_type_ == kStreamAudio ? <span class="stringliteral">&quot;Audio&quot;</span> : <span class="stringliteral">&quot;Video&quot;</span>),</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      codec_string_.c_str(),</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      time_scale_, duration_,</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(duration_) / time_scale_,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      is_encrypted_ ? <span class="stringliteral">&quot;true&quot;</span> : <span class="stringliteral">&quot;false&quot;</span>);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;}</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1StreamInfo_html_aa11d2fe5509ebfdc038aa3f2cdbbe00d"><div class="ttname"><a href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html#aa11d2fe5509ebfdc038aa3f2cdbbe00d">shaka::media::StreamInfo::ToString</a></div><div class="ttdeci">virtual std::string ToString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../de/dfd/stream__info_8cc_source.html#l00037">stream_info.cc:37</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 18 2016 20:58:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Aug 18 2016 21:18:07 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

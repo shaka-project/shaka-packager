@@ -98,8 +98,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ace5a25125eb3ca9848813ac044e56429"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html#ace5a25125eb3ca9848813ac044e56429">Initialize</a> (<a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> *muxer_listener, KeySource::TrackType track_type, <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *key_source)</td></tr>
-<tr class="separator:ace5a25125eb3ca9848813ac044e56429"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa6065049fad093b96643b9e3d70595f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html#afa6065049fad093b96643b9e3d70595f">Initialize</a> (<a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> *muxer_listener, KeySource::TrackType track_type, Codec codec, <a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *key_source, bool webm_subsample_encryption)</td></tr>
+<tr class="separator:afa6065049fad093b96643b9e3d70595f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a866bb619cd0fde0c28ee522cbd4a8c59"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html#a866bb619cd0fde0c28ee522cbd4a8c59">AddTrackInfo</a> (mkvmuxer::Track *track)</td></tr>
 <tr class="separator:a866bb619cd0fde0c28ee522cbd4a8c59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3bfe9e0d99652811cb785832529f3d3c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dfa/classshaka_1_1media_1_1webm_1_1Encryptor.html#a3bfe9e0d99652811cb785832529f3d3c">EncryptFrame</a> (scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample, bool encrypt_frame)</td></tr>
@@ -108,7 +108,7 @@ Public Member Functions</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>A helper class used to encrypt WebM frames before being written to the <a class="el" href="../../d1/dd5/classshaka_1_1media_1_1Cluster.html">Cluster</a>. This can also handle unencrypted frames. </p>
 
-<p>Definition at line <a class="el" href="../../dd/d42/encryptor_8h_source.html#l00027">27</a> of file <a class="el" href="../../dd/d42/encryptor_8h_source.html">encryptor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../dd/d42/encryptor_8h_source.html#l00029">29</a> of file <a class="el" href="../../dd/d42/encryptor_8h_source.html">encryptor.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
 <a class="anchor" id="a866bb619cd0fde0c28ee522cbd4a8c59"></a>
 <div class="memitem">
@@ -126,7 +126,7 @@ Public Member Functions</h2></td></tr>
 <p>Adds the encryption info to the given track. Initialize must be called first. </p>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/d98/encryptor_8cc_source.html#l00062">62</a> of file <a class="el" href="../../d5/d98/encryptor_8cc_source.html">encryptor.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d98/encryptor_8cc_source.html#l00071">71</a> of file <a class="el" href="../../d5/d98/encryptor_8cc_source.html">encryptor.cc</a>.</p>
 
 </div>
 </div>
@@ -156,11 +156,11 @@ Public Member Functions</h2></td></tr>
 <p>Encrypt the data. This needs to be told whether the current frame will be encrypted (e.g. for a clear lead). </p>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/d98/encryptor_8cc_source.html#l00067">67</a> of file <a class="el" href="../../d5/d98/encryptor_8cc_source.html">encryptor.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d98/encryptor_8cc_source.html#l00076">76</a> of file <a class="el" href="../../d5/d98/encryptor_8cc_source.html">encryptor.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="ace5a25125eb3ca9848813ac044e56429"></a>
+<a class="anchor" id="afa6065049fad093b96643b9e3d70595f"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -179,8 +179,20 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">Codec&#160;</td>
+          <td class="paramname"><em>codec</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype"><a class="el" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a> *&#160;</td>
-          <td class="paramname"><em>key_source</em>&#160;</td>
+          <td class="paramname"><em>key_source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>webm_subsample_encryption</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -192,7 +204,7 @@ Public Member Functions</h2></td></tr>
 <p>Initializes the encryptor with the given key source. </p>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d5/d98/encryptor_8cc_source.html#l00055">55</a> of file <a class="el" href="../../d5/d98/encryptor_8cc_source.html">encryptor.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d5/d98/encryptor_8cc_source.html#l00061">61</a> of file <a class="el" href="../../d5/d98/encryptor_8cc_source.html">encryptor.cc</a>.</p>
 
 </div>
 </div>
@@ -203,7 +215,7 @@ Public Member Functions</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 18 2016 20:58:31 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Aug 18 2016 21:18:13 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
