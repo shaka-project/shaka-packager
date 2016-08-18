@@ -106,6 +106,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad72778b38786be93fa55aa983501010d"><td class="memTemplParams" colspan="2">template&lt;typename T &gt; </td></tr>
 <tr class="memitem:ad72778b38786be93fa55aa983501010d"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#ad72778b38786be93fa55aa983501010d">ReadBits</a> (int num_bits, T *out)</td></tr>
 <tr class="separator:ad72778b38786be93fa55aa983501010d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae70de9b094a2fa91320d328d1a8daa06"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae70de9b094a2fa91320d328d1a8daa06"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><b>ReadBits</b> (int num_bits, bool *out)</td></tr>
+<tr class="separator:ae70de9b094a2fa91320d328d1a8daa06"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5c7e9d8cedb921042076770c8f6033d7"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a5c7e9d8cedb921042076770c8f6033d7">SkipBits</a> (int num_bits)</td></tr>
 <tr class="separator:a5c7e9d8cedb921042076770c8f6033d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a83d80cc51b96ca864a44fa169ce9c67a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/da9/classshaka_1_1media_1_1BitReader.html#a83d80cc51b96ca864a44fa169ce9c67a">SkipBitsConditional</a> (bool condition, int num_bits)</td></tr>
@@ -181,7 +184,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The current bit position. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d4/dd3/bit__reader_8h_source.html#l00081">81</a> of file <a class="el" href="../../d4/dd3/bit__reader_8h_source.html">bit_reader.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/dd3/bit__reader_8h_source.html#l00090">90</a> of file <a class="el" href="../../d4/dd3/bit__reader_8h_source.html">bit_reader.h</a>.</p>
 
 </div>
 </div>
@@ -207,7 +210,7 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 <dl class="section return"><dt>Returns</dt><dd>The number of bits available for reading. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d4/dd3/bit__reader_8h_source.html#l00076">76</a> of file <a class="el" href="../../d4/dd3/bit__reader_8h_source.html">bit_reader.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/dd3/bit__reader_8h_source.html#l00085">85</a> of file <a class="el" href="../../d4/dd3/bit__reader_8h_source.html">bit_reader.h</a>.</p>
 
 </div>
 </div>
@@ -325,7 +328,7 @@ template&lt;typename T &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>false if the one bit cannot be read (not enough bits in the stream) or if the bit is set but the given number of bits cannot be skipped (not enough bits in the stream), true otherwise. When false is returned, the stream will enter a state where further ReadXXX/SkipXXX operations will always return false. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d4/dd3/bit__reader_8h_source.html#l00060">60</a> of file <a class="el" href="../../d4/dd3/bit__reader_8h_source.html">bit_reader.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d4/dd3/bit__reader_8h_source.html#l00069">69</a> of file <a class="el" href="../../d4/dd3/bit__reader_8h_source.html">bit_reader.h</a>.</p>
 
 </div>
 </div>
@@ -362,7 +365,7 @@ template&lt;typename T &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 11 2016 22:33:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Aug 18 2016 20:58:27 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

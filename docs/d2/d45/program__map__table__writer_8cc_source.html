@@ -467,7 +467,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;  <span class="comment">// -12 because there are 12 bytes between &#39;descriptor_length&#39; in</span></div>
 <div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;  <span class="comment">// registration_descriptor and &#39;setup_data_length&#39; in audio_setup_information.</span></div>
 <div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;  <span class="keywordflow">if</span> (aac_audio_specific_config_.size() &gt;</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;      std::numeric_limits&lt;uint8_t&gt;::max() - 12) {</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;      std::numeric_limits&lt;uint8_t&gt;::max() - 12U) {</div>
 <div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;AACAudioSpecificConfig of size: &quot;</span></div>
 <div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;               &lt;&lt; aac_audio_specific_config_.size()</div>
 <div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;               &lt;&lt; <span class="stringliteral">&quot; will not fit in the descriptor.&quot;</span>;</div>
@@ -500,7 +500,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 11 2016 22:33:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Aug 18 2016 20:58:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

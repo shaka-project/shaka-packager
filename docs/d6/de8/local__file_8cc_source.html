@@ -96,102 +96,122 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/local_file.h&quot;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;stdio.h&gt;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/base/files/file_util.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">namespace </span>shaka {</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>media {</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#abb25b0c4dae0509458507d9afb83da0d">   17</a></span>&#160;<a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#abb25b0c4dae0509458507d9afb83da0d">LocalFile::LocalFile</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* file_name, <span class="keyword">const</span> <span class="keywordtype">char</span>* mode)</div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;    : <a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html">File</a>(file_name), file_mode_(mode), internal_file_(NULL) {}</div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a8bc11d5bf5ee05904620ab3816c6eaf4">   20</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a8bc11d5bf5ee05904620ab3816c6eaf4">LocalFile::Close</a>() {</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;  <span class="keywordtype">bool</span> result = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;  <span class="keywordflow">if</span> (internal_file_) {</div>
-<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    result = base::CloseFile(internal_file_);</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    internal_file_ = NULL;</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;  }</div>
-<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keyword">delete</span> <span class="keyword">this</span>;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#if defined(OS_WIN)</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &lt;windows.h&gt;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#endif  // defined(OS_WIN)</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#include &quot;packager/base/files/file_util.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>shaka {</div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>media {</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="comment">// Always open files in binary mode.</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="keyword">const</span> <span class="keywordtype">char</span> kAdditionalFileMode[] = <span class="stringliteral">&quot;b&quot;</span>;</div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#abb25b0c4dae0509458507d9afb83da0d">   22</a></span>&#160;<a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#abb25b0c4dae0509458507d9afb83da0d">LocalFile::LocalFile</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* file_name, <span class="keyword">const</span> <span class="keywordtype">char</span>* mode)</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;    : <a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html">File</a>(file_name),</div>
+<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;      file_mode_(mode),</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;      internal_file_(NULL) {</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  <span class="keywordflow">if</span> (file_mode_.find(kAdditionalFileMode) == std::string::npos)</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;    file_mode_ += kAdditionalFileMode;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;}</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a65a1abae386202a08deb5bfa8aeef7c1">   30</a></span>&#160;int64_t <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a65a1abae386202a08deb5bfa8aeef7c1">LocalFile::Read</a>(<span class="keywordtype">void</span>* buffer, uint64_t length) {</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  DCHECK(buffer != NULL);</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  DCHECK(internal_file_ != NULL);</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordflow">return</span> fread(buffer, <span class="keyword">sizeof</span>(<span class="keywordtype">char</span>), length, internal_file_);</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;}</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00036"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ac23125695f0cfe77adee36df9650da8b">   36</a></span>&#160;int64_t <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ac23125695f0cfe77adee36df9650da8b">LocalFile::Write</a>(<span class="keyword">const</span> <span class="keywordtype">void</span>* buffer, uint64_t length) {</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  DCHECK(buffer != NULL);</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  DCHECK(internal_file_ != NULL);</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="keywordflow">return</span> fwrite(buffer, <span class="keyword">sizeof</span>(<span class="keywordtype">char</span>), length, internal_file_);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;}</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a4cc3427bb01a0989de7711b2a004a099">   42</a></span>&#160;int64_t <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a4cc3427bb01a0989de7711b2a004a099">LocalFile::Size</a>() {</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  DCHECK(internal_file_ != NULL);</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <span class="comment">// Flush any buffered data, so we get the true file size.</span></div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad09f01654ef3109b66e3fb5dd9730516">Flush</a>()) {</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot flush file.&quot;</span>;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;    <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  }</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  int64_t file_size;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="keywordflow">if</span> (!base::GetFileSize(base::FilePath(<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#abe158b9e7b1e073956a16c55a8fcf5f4">file_name</a>()), &amp;file_size)) {</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot get file size.&quot;</span>;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <span class="keywordflow">return</span> -1;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  }</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordflow">return</span> file_size;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;}</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad09f01654ef3109b66e3fb5dd9730516">   59</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad09f01654ef3109b66e3fb5dd9730516">LocalFile::Flush</a>() {</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  DCHECK(internal_file_ != NULL);</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordflow">return</span> ((fflush(internal_file_) == 0) &amp;&amp; !ferror(internal_file_));</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;}</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
-<div class="line"><a name="l00064"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a6cb6e6bf3a47fbcda6d759ff4f551939">   64</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a6cb6e6bf3a47fbcda6d759ff4f551939">LocalFile::Seek</a>(uint64_t position) {</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">return</span> fseeko(internal_file_, position, SEEK_SET) &gt;= 0;</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;}</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad8dd99ee399830616cd23869ed35d768">   68</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad8dd99ee399830616cd23869ed35d768">LocalFile::Tell</a>(uint64_t* position) {</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  off_t offset = ftello(internal_file_);</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="keywordflow">if</span> (offset &lt; 0)</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  *position = offset;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;}</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;LocalFile::~LocalFile() {}</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a73844c50f00e8427233038abf45425a7">   78</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a73844c50f00e8427233038abf45425a7">LocalFile::Open</a>() {</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  internal_file_ =</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;      base::OpenFile(base::FilePath(<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#abe158b9e7b1e073956a16c55a8fcf5f4">file_name</a>()), file_mode_.c_str());</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  <span class="keywordflow">return</span> (internal_file_ != NULL);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;}</div>
+<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a8bc11d5bf5ee05904620ab3816c6eaf4">   30</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a8bc11d5bf5ee05904620ab3816c6eaf4">LocalFile::Close</a>() {</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordtype">bool</span> result = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keywordflow">if</span> (internal_file_) {</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    result = base::CloseFile(internal_file_);</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    internal_file_ = NULL;</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  }</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keyword">delete</span> <span class="keyword">this</span>;</div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keywordflow">return</span> result;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;}</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
+<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a65a1abae386202a08deb5bfa8aeef7c1">   40</a></span>&#160;int64_t <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a65a1abae386202a08deb5bfa8aeef7c1">LocalFile::Read</a>(<span class="keywordtype">void</span>* buffer, uint64_t length) {</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  DCHECK(buffer != NULL);</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  DCHECK(internal_file_ != NULL);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordflow">return</span> fread(buffer, <span class="keyword">sizeof</span>(<span class="keywordtype">char</span>), length, internal_file_);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;}</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
+<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ac23125695f0cfe77adee36df9650da8b">   46</a></span>&#160;int64_t <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ac23125695f0cfe77adee36df9650da8b">LocalFile::Write</a>(<span class="keyword">const</span> <span class="keywordtype">void</span>* buffer, uint64_t length) {</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  DCHECK(buffer != NULL);</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  DCHECK(internal_file_ != NULL);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="keywordflow">return</span> fwrite(buffer, <span class="keyword">sizeof</span>(<span class="keywordtype">char</span>), length, internal_file_);</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;}</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a4cc3427bb01a0989de7711b2a004a099">   52</a></span>&#160;int64_t <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a4cc3427bb01a0989de7711b2a004a099">LocalFile::Size</a>() {</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  DCHECK(internal_file_ != NULL);</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="comment">// Flush any buffered data, so we get the true file size.</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="keywordflow">if</span> (!<a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad09f01654ef3109b66e3fb5dd9730516">Flush</a>()) {</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot flush file.&quot;</span>;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  }</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  int64_t file_size;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordflow">if</span> (!base::GetFileSize(base::FilePath::FromUTF8Unsafe(<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#abe158b9e7b1e073956a16c55a8fcf5f4">file_name</a>()),</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;       &amp;file_size)) {</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot get file size.&quot;</span>;</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordflow">return</span> -1;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  }</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordflow">return</span> file_size;</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad09f01654ef3109b66e3fb5dd9730516">   70</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad09f01654ef3109b66e3fb5dd9730516">LocalFile::Flush</a>() {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  DCHECK(internal_file_ != NULL);</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordflow">return</span> ((fflush(internal_file_) == 0) &amp;&amp; !ferror(internal_file_));</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a6cb6e6bf3a47fbcda6d759ff4f551939">   75</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a6cb6e6bf3a47fbcda6d759ff4f551939">LocalFile::Seek</a>(uint64_t position) {</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="preprocessor">#if defined(OS_WIN)</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="preprocessor"></span>  <span class="keywordflow">return</span> _fseeki64(internal_file_, static_cast&lt;__int64&gt;(position),</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;       SEEK_SET) == 0;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;<span class="preprocessor"></span>  <span class="keywordflow">return</span> fseeko(internal_file_, position, SEEK_SET) &gt;= 0;</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;<span class="preprocessor">#endif  // !defined(OS_WIN)</span></div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="preprocessor"></span>}</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#aab9c8faf7e459f38e2f8fb2d63e5bd59">   84</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#aab9c8faf7e459f38e2f8fb2d63e5bd59">LocalFile::Delete</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* file_name) {</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  <span class="keywordflow">return</span> base::DeleteFile(base::FilePath(file_name), <span class="keyword">false</span>);</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;}</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_a65a1abae386202a08deb5bfa8aeef7c1"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a65a1abae386202a08deb5bfa8aeef7c1">shaka::media::LocalFile::Read</a></div><div class="ttdeci">int64_t Read(void *buffer, uint64_t length) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00030">local_file.cc:30</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_a8bc11d5bf5ee05904620ab3816c6eaf4"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a8bc11d5bf5ee05904620ab3816c6eaf4">shaka::media::LocalFile::Close</a></div><div class="ttdeci">bool Close() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00020">local_file.cc:20</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_a6cb6e6bf3a47fbcda6d759ff4f551939"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a6cb6e6bf3a47fbcda6d759ff4f551939">shaka::media::LocalFile::Seek</a></div><div class="ttdeci">bool Seek(uint64_t position) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00064">local_file.cc:64</a></div></div>
+<div class="line"><a name="l00084"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad8dd99ee399830616cd23869ed35d768">   84</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad8dd99ee399830616cd23869ed35d768">LocalFile::Tell</a>(uint64_t* position) {</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<span class="preprocessor">#if defined(OS_WIN)</span></div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor"></span>  __int64 offset = _ftelli64(internal_file_);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="preprocessor">#else</span></div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="preprocessor"></span>  off_t offset = ftello(internal_file_);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;<span class="preprocessor">#endif  // !defined(OS_WIN)</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="preprocessor"></span>  <span class="keywordflow">if</span> (offset &lt; 0)</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  *position = <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(offset);</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;LocalFile::~LocalFile() {}</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;</div>
+<div class="line"><a name="l00098"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a73844c50f00e8427233038abf45425a7">   98</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a73844c50f00e8427233038abf45425a7">LocalFile::Open</a>() {</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  internal_file_ =</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;    base::OpenFile(base::FilePath::FromUTF8Unsafe(<a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#abe158b9e7b1e073956a16c55a8fcf5f4">file_name</a>()), file_mode_.c_str());</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keywordflow">return</span> (internal_file_ != NULL);</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;}</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;</div>
+<div class="line"><a name="l00104"></a><span class="lineno"><a class="line" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#aab9c8faf7e459f38e2f8fb2d63e5bd59">  104</a></span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#aab9c8faf7e459f38e2f8fb2d63e5bd59">LocalFile::Delete</a>(<span class="keyword">const</span> <span class="keywordtype">char</span>* file_name) {</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="keywordflow">return</span> base::DeleteFile(base::FilePath::FromUTF8Unsafe(file_name), <span class="keyword">false</span>);</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;}</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_a65a1abae386202a08deb5bfa8aeef7c1"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a65a1abae386202a08deb5bfa8aeef7c1">shaka::media::LocalFile::Read</a></div><div class="ttdeci">int64_t Read(void *buffer, uint64_t length) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00040">local_file.cc:40</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_a8bc11d5bf5ee05904620ab3816c6eaf4"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a8bc11d5bf5ee05904620ab3816c6eaf4">shaka::media::LocalFile::Close</a></div><div class="ttdeci">bool Close() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00030">local_file.cc:30</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_a6cb6e6bf3a47fbcda6d759ff4f551939"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a6cb6e6bf3a47fbcda6d759ff4f551939">shaka::media::LocalFile::Seek</a></div><div class="ttdeci">bool Seek(uint64_t position) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00075">local_file.cc:75</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1File_html"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html">shaka::media::File</a></div><div class="ttdoc">Define an abstract file interface. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4d/file_8h_source.html#l00024">file.h:24</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_abb25b0c4dae0509458507d9afb83da0d"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#abb25b0c4dae0509458507d9afb83da0d">shaka::media::LocalFile::LocalFile</a></div><div class="ttdeci">LocalFile(const char *file_name, const char *mode)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00017">local_file.cc:17</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_ad8dd99ee399830616cd23869ed35d768"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad8dd99ee399830616cd23869ed35d768">shaka::media::LocalFile::Tell</a></div><div class="ttdeci">bool Tell(uint64_t *position) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00068">local_file.cc:68</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_ac23125695f0cfe77adee36df9650da8b"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ac23125695f0cfe77adee36df9650da8b">shaka::media::LocalFile::Write</a></div><div class="ttdeci">int64_t Write(const void *buffer, uint64_t length) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00036">local_file.cc:36</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_abb25b0c4dae0509458507d9afb83da0d"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#abb25b0c4dae0509458507d9afb83da0d">shaka::media::LocalFile::LocalFile</a></div><div class="ttdeci">LocalFile(const char *file_name, const char *mode)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00022">local_file.cc:22</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_ad8dd99ee399830616cd23869ed35d768"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad8dd99ee399830616cd23869ed35d768">shaka::media::LocalFile::Tell</a></div><div class="ttdeci">bool Tell(uint64_t *position) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00084">local_file.cc:84</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_ac23125695f0cfe77adee36df9650da8b"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ac23125695f0cfe77adee36df9650da8b">shaka::media::LocalFile::Write</a></div><div class="ttdeci">int64_t Write(const void *buffer, uint64_t length) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00046">local_file.cc:46</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1File_html_abe158b9e7b1e073956a16c55a8fcf5f4"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#abe158b9e7b1e073956a16c55a8fcf5f4">shaka::media::File::file_name</a></div><div class="ttdeci">const std::string &amp; file_name() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4d/file_8h_source.html#l00091">file.h:91</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_a73844c50f00e8427233038abf45425a7"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a73844c50f00e8427233038abf45425a7">shaka::media::LocalFile::Open</a></div><div class="ttdeci">bool Open() override</div><div class="ttdoc">Internal open. Should not be used directly. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00078">local_file.cc:78</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_ad09f01654ef3109b66e3fb5dd9730516"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad09f01654ef3109b66e3fb5dd9730516">shaka::media::LocalFile::Flush</a></div><div class="ttdeci">bool Flush() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00059">local_file.cc:59</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_a4cc3427bb01a0989de7711b2a004a099"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a4cc3427bb01a0989de7711b2a004a099">shaka::media::LocalFile::Size</a></div><div class="ttdeci">int64_t Size() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00042">local_file.cc:42</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_aab9c8faf7e459f38e2f8fb2d63e5bd59"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#aab9c8faf7e459f38e2f8fb2d63e5bd59">shaka::media::LocalFile::Delete</a></div><div class="ttdeci">static bool Delete(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00084">local_file.cc:84</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_a73844c50f00e8427233038abf45425a7"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a73844c50f00e8427233038abf45425a7">shaka::media::LocalFile::Open</a></div><div class="ttdeci">bool Open() override</div><div class="ttdoc">Internal open. Should not be used directly. </div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00098">local_file.cc:98</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_ad09f01654ef3109b66e3fb5dd9730516"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#ad09f01654ef3109b66e3fb5dd9730516">shaka::media::LocalFile::Flush</a></div><div class="ttdeci">bool Flush() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00070">local_file.cc:70</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_a4cc3427bb01a0989de7711b2a004a099"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#a4cc3427bb01a0989de7711b2a004a099">shaka::media::LocalFile::Size</a></div><div class="ttdeci">int64_t Size() override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00052">local_file.cc:52</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1LocalFile_html_aab9c8faf7e459f38e2f8fb2d63e5bd59"><div class="ttname"><a href="../../d9/de6/classshaka_1_1media_1_1LocalFile.html#aab9c8faf7e459f38e2f8fb2d63e5bd59">shaka::media::LocalFile::Delete</a></div><div class="ttdeci">static bool Delete(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/de8/local__file_8cc_source.html#l00104">local_file.cc:104</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 11 2016 22:33:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Aug 18 2016 20:58:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -393,8 +393,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;    <span class="comment">// values.</span></div>
 <div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;    <span class="keyword">const</span> uint64_t kNanosecondsPerSecond = 1000000000ull;</div>
 <div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;    sample_group_description.audio_roll_recovery_entries[0].roll_distance =</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;        -(audio_info-&gt;seek_preroll_ns() * audio.samplerate +</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;          kNanosecondsPerSecond / 2) /</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;        (0 - (audio_info-&gt;seek_preroll_ns() * audio.samplerate +</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;              kNanosecondsPerSecond / 2)) /</div>
 <div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;        kNanosecondsPerSecond;</div>
 <div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;</div>
 <div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    sample_table.sample_to_groups.resize(1);</div>
@@ -503,14 +503,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html_a5397ee8759a663aea68261600e528d82"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82">shaka::media::MuxerOptions::output_file_name</a></div><div class="ttdeci">std::string output_file_name</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00062">muxer_options.h:62</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4Muxer_html_a5b6a878865250e3e17268c011a361497"><div class="ttname"><a href="../../db/d30/classshaka_1_1media_1_1mp4_1_1MP4Muxer.html#a5b6a878865250e3e17268c011a361497">shaka::media::mp4::MP4Muxer::MP4Muxer</a></div><div class="ttdeci">MP4Muxer(const MuxerOptions &amp;options)</div><div class="ttdoc">Create a MP4Muxer object from MuxerOptions. </div><div class="ttdef"><b>Definition:</b> <a href="../../da/d88/mp4__muxer_8cc_source.html#l00089">mp4_muxer.cc:89</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">shaka::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1File_html_a6981994874ee5832e3394744fd51fd79"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a6981994874ee5832e3394744fd51fd79">shaka::media::File::GetFileSize</a></div><div class="ttdeci">static int64_t GetFileSize(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00175">file.cc:175</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1File_html_a6981994874ee5832e3394744fd51fd79"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a6981994874ee5832e3394744fd51fd79">shaka::media::File::GetFileSize</a></div><div class="ttdeci">static int64_t GetFileSize(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00180">file.cc:180</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Muxer_html"><div class="ttname"><a href="../../df/d46/classshaka_1_1media_1_1Muxer.html">shaka::media::Muxer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/df6/muxer_8h_source.html#l00033">muxer.h:33</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a31536ec385a7ec22f323a42b872b499a"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a31536ec385a7ec22f323a42b872b499a">shaka::media::MuxerListener::OnMediaStart</a></div><div class="ttdeci">virtual void OnMediaStart(const MuxerOptions &amp;muxer_options, const StreamInfo &amp;stream_info, uint32_t time_scale, ContainerType container_type)=0</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 11 2016 22:33:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Aug 18 2016 20:58:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -231,9 +231,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;  adts[1] = 0xf1;</div>
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  adts[2] = ((audio_object_type_ - 1) &lt;&lt; 6) + (frequency_index_ &lt;&lt; 2) +</div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;      (channel_config_ &gt;&gt; 2);</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  adts[3] = ((channel_config_ &amp; 0x3) &lt;&lt; 6) + (size &gt;&gt; 11);</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  adts[4] = (size &amp; 0x7ff) &gt;&gt; 3;</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  adts[5] = ((size &amp; 7) &lt;&lt; 5) + 0x1f;</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  adts[3] = ((channel_config_ &amp; 0x3) &lt;&lt; 6) + <span class="keyword">static_cast&lt;</span>uint8_t<span class="keyword">&gt;</span>(size &gt;&gt; 11);</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  adts[4] = <span class="keyword">static_cast&lt;</span>uint8_t<span class="keyword">&gt;</span>((size &amp; 0x7ff) &gt;&gt; 3);</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  adts[5] = <span class="keyword">static_cast&lt;</span>uint8_t<span class="keyword">&gt;</span>(((size &amp; 7) &lt;&lt; 5) + 0x1f);</div>
 <div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  adts[6] = 0xfc;</div>
 <div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;</div>
 <div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
@@ -358,7 +358,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 11 2016 22:33:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Aug 18 2016 20:58:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

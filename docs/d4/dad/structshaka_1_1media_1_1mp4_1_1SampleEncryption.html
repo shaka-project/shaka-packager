@@ -116,8 +116,8 @@ Public Types</h2></td></tr>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a62cd7e5cc8c102db09cbd3d7947604dd"><td class="memItemLeft" align="right" valign="top">FourCC&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dad/structshaka_1_1media_1_1mp4_1_1SampleEncryption.html#a62cd7e5cc8c102db09cbd3d7947604dd">BoxType</a> () const override</td></tr>
 <tr class="separator:a62cd7e5cc8c102db09cbd3d7947604dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2ed0aa8236ed7bc84fc605eeca61146a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dad/structshaka_1_1media_1_1mp4_1_1SampleEncryption.html#a2ed0aa8236ed7bc84fc605eeca61146a">ParseFromSampleEncryptionData</a> (size_t iv_size, std::vector&lt; <a class="el" href="../../d6/dcb/structshaka_1_1media_1_1mp4_1_1SampleEncryptionEntry.html">SampleEncryptionEntry</a> &gt; *sample_encryption_entries) const </td></tr>
-<tr class="separator:a2ed0aa8236ed7bc84fc605eeca61146a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0498009b07beb46e029c65bfb55fc741"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dad/structshaka_1_1media_1_1mp4_1_1SampleEncryption.html#a0498009b07beb46e029c65bfb55fc741">ParseFromSampleEncryptionData</a> (uint8_t iv_size, std::vector&lt; <a class="el" href="../../d6/dcb/structshaka_1_1media_1_1mp4_1_1SampleEncryptionEntry.html">SampleEncryptionEntry</a> &gt; *sample_encryption_entries) const </td></tr>
+<tr class="separator:a0498009b07beb46e029c65bfb55fc741"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_structshaka_1_1media_1_1mp4_1_1FullBox"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_structshaka_1_1media_1_1mp4_1_1FullBox')"><img src="../../closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="../../dd/dc1/structshaka_1_1media_1_1mp4_1_1FullBox.html">shaka::media::mp4::FullBox</a></td></tr>
 <tr class="memitem:a21cc4d085f650dc18a20a4dd05cb6750 inherit pub_methods_structshaka_1_1media_1_1mp4_1_1FullBox"><td class="memItemLeft" align="right" valign="top">uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/dc1/structshaka_1_1media_1_1mp4_1_1FullBox.html#a21cc4d085f650dc18a20a4dd05cb6750">HeaderSize</a> () const final</td></tr>
 <tr class="separator:a21cc4d085f650dc18a20a4dd05cb6750 inherit pub_methods_structshaka_1_1media_1_1mp4_1_1FullBox"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -137,9 +137,9 @@ Public Member Functions</h2></td></tr>
 Public Attributes</h2></td></tr>
 <tr class="memitem:a621791262888f30b4ee8a8acb37cd5a3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; uint8_t &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d4/dad/structshaka_1_1media_1_1mp4_1_1SampleEncryption.html#a621791262888f30b4ee8a8acb37cd5a3">sample_encryption_data</a></td></tr>
 <tr class="separator:a621791262888f30b4ee8a8acb37cd5a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:affee76ea9666ed8984781d04f945f4e9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="affee76ea9666ed8984781d04f945f4e9"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>iv_size</b></td></tr>
-<tr class="separator:affee76ea9666ed8984781d04f945f4e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a74ab9fb12c13097ac9a5f7296a7d7969"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a74ab9fb12c13097ac9a5f7296a7d7969"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>iv_size</b></td></tr>
+<tr class="separator:a74ab9fb12c13097ac9a5f7296a7d7969"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab6ec8c21ea88ab5cda9a87ffd0e71657"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab6ec8c21ea88ab5cda9a87ffd0e71657"></a>
 std::vector<br class="typebreak"/>
 &lt; <a class="el" href="../../d6/dcb/structshaka_1_1media_1_1mp4_1_1SampleEncryptionEntry.html">SampleEncryptionEntry</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>sample_encryption_entries</b></td></tr>
@@ -190,14 +190,14 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="a2ed0aa8236ed7bc84fc605eeca61146a"></a>
+<a class="anchor" id="a0498009b07beb46e029c65bfb55fc741"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">bool shaka::media::mp4::SampleEncryption::ParseFromSampleEncryptionData </td>
           <td>(</td>
-          <td class="paramtype">size_t&#160;</td>
+          <td class="paramtype">uint8_t&#160;</td>
           <td class="paramname"><em>iv_size</em>, </td>
         </tr>
         <tr>
@@ -250,7 +250,7 @@ Additional Inherited Members</h2></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Aug 11 2016 22:33:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Aug 18 2016 20:58:29 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
