@@ -98,9 +98,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;string.h&gt;</span>  <span class="comment">// for memcpy</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/scoped_ptr.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>shaka {</div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">namespace </span>media {</div>
@@ -133,13 +133,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160; <span class="keyword">private</span>:</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  FileSystem() {}</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keyword">static</span> scoped_ptr&lt;FileSystem&gt; g_file_system_;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keyword">static</span> std::unique_ptr&lt;FileSystem&gt; g_file_system_;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  std::map&lt;std::string, std::vector&lt;uint8_t&gt; &gt; files_;</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  DISALLOW_COPY_AND_ASSIGN(FileSystem);</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;};</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;scoped_ptr&lt;FileSystem&gt; FileSystem::g_file_system_;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;std::unique_ptr&lt;FileSystem&gt; FileSystem::g_file_system_;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;}  <span class="comment">// namespace</span></div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;</div>
@@ -241,7 +241,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

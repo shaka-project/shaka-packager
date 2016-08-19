@@ -103,12 +103,13 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aa0346189f99b2f0fc2c71da1543155fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a72fdec2c03caf45fe447f61ecd4fd683"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a72fdec2c03caf45fe447f61ecd4fd683">PushSample</a> (scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
 <tr class="separator:a72fdec2c03caf45fe447f61ecd4fd683"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a346abd50baa9a1e6e42a49ba60f5f916"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a346abd50baa9a1e6e42a49ba60f5f916">SetEncryptionKey</a> (scoped_ptr&lt; <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt; encryption_key)</td></tr>
-<tr class="separator:a346abd50baa9a1e6e42a49ba60f5f916"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc603c661a6e0c592091b8bde5a77e3a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#acc603c661a6e0c592091b8bde5a77e3a">SetEncryptionKey</a> (std::unique_ptr&lt; <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt; encryption_key)</td></tr>
+<tr class="separator:acc603c661a6e0c592091b8bde5a77e3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a27a700967eb692a8207fd5054263fc3a"><td class="memItemLeft" align="right" valign="top">virtual size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a27a700967eb692a8207fd5054263fc3a">NumberOfReadyPesPackets</a> ()</td></tr>
 <tr class="separator:a27a700967eb692a8207fd5054263fc3a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9834c58c732715a51c57a2a6385a761b"><td class="memItemLeft" align="right" valign="top">virtual scoped_ptr&lt; <a class="el" href="../../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html">PesPacket</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a9834c58c732715a51c57a2a6385a761b">GetNextPesPacket</a> ()</td></tr>
-<tr class="separator:a9834c58c732715a51c57a2a6385a761b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf11010f62ab9d2b46308f2cce8b3650"><td class="memItemLeft" align="right" valign="top">virtual std::unique_ptr<br class="typebreak"/>
+&lt; <a class="el" href="../../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html">PesPacket</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#acf11010f62ab9d2b46308f2cce8b3650">GetNextPesPacket</a> ()</td></tr>
+<tr class="separator:acf11010f62ab9d2b46308f2cce8b3650"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a71ea0819224b94ba9df5c951424bc6b1"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html#a71ea0819224b94ba9df5c951424bc6b1">Flush</a> ()</td></tr>
 <tr class="separator:a71ea0819224b94ba9df5c951424bc6b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -150,7 +151,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 
 </div>
 </div>
-<a class="anchor" id="a9834c58c732715a51c57a2a6385a761b"></a>
+<a class="anchor" id="acf11010f62ab9d2b46308f2cce8b3650"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -158,7 +159,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">scoped_ptr&lt; <a class="el" href="../../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html">PesPacket</a> &gt; shaka::media::mp2t::PesPacketGenerator::GetNextPesPacket </td>
+          <td class="memname">std::unique_ptr&lt; <a class="el" href="../../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html">PesPacket</a> &gt; shaka::media::mp2t::PesPacketGenerator::GetNextPesPacket </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -265,7 +266,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 
 </div>
 </div>
-<a class="anchor" id="a346abd50baa9a1e6e42a49ba60f5f916"></a>
+<a class="anchor" id="acc603c661a6e0c592091b8bde5a77e3a"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -275,7 +276,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
         <tr>
           <td class="memname">bool shaka::media::mp2t::PesPacketGenerator::SetEncryptionKey </td>
           <td>(</td>
-          <td class="paramtype">scoped_ptr&lt; <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt;&#160;</td>
           <td class="paramname"><em>encryption_key</em></td><td>)</td>
           <td></td>
         </tr>
@@ -306,7 +307,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>PesPacketGeneratorTe
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

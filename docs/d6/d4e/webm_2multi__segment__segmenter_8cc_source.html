@@ -120,8 +120,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;}</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> MultiSegmentSegmenter::DoInitialize(scoped_ptr&lt;MkvWriter&gt; writer) {</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  writer_ = writer.Pass();</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> MultiSegmentSegmenter::DoInitialize(std::unique_ptr&lt;MkvWriter&gt; writer) {</div>
+<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  writer_ = std::move(writer);</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keywordflow">return</span> WriteSegmentHeader(0, writer_.get());</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;}</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
@@ -188,7 +188,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -93,8 +93,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/h264_parser.h&quot;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
-<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/scoped_ptr.h&quot;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;packager/base/stl_util.h&quot;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/buffer_reader.h&quot;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
@@ -685,7 +685,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00596"></a><span class="lineno">  596</span>&#160;</div>
 <div class="line"><a name="l00597"></a><span class="lineno">  597</span>&#160;  *sps_id = -1;</div>
 <div class="line"><a name="l00598"></a><span class="lineno">  598</span>&#160;</div>
-<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;  scoped_ptr&lt;H264Sps&gt; sps(<span class="keyword">new</span> H264Sps());</div>
+<div class="line"><a name="l00599"></a><span class="lineno">  599</span>&#160;  std::unique_ptr&lt;H264Sps&gt; sps(<span class="keyword">new</span> H264Sps());</div>
 <div class="line"><a name="l00600"></a><span class="lineno">  600</span>&#160;</div>
 <div class="line"><a name="l00601"></a><span class="lineno">  601</span>&#160;  READ_BITS_OR_RETURN(8, &amp;sps-&gt;profile_idc);</div>
 <div class="line"><a name="l00602"></a><span class="lineno">  602</span>&#160;  READ_BOOL_OR_RETURN(&amp;sps-&gt;constraint_set0_flag);</div>
@@ -807,7 +807,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00718"></a><span class="lineno">  718</span>&#160;</div>
 <div class="line"><a name="l00719"></a><span class="lineno">  719</span>&#160;  *pps_id = -1;</div>
 <div class="line"><a name="l00720"></a><span class="lineno">  720</span>&#160;</div>
-<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;  scoped_ptr&lt;H264Pps&gt; pps(<span class="keyword">new</span> H264Pps());</div>
+<div class="line"><a name="l00721"></a><span class="lineno">  721</span>&#160;  std::unique_ptr&lt;H264Pps&gt; pps(<span class="keyword">new</span> H264Pps());</div>
 <div class="line"><a name="l00722"></a><span class="lineno">  722</span>&#160;</div>
 <div class="line"><a name="l00723"></a><span class="lineno">  723</span>&#160;  READ_UE_OR_RETURN(&amp;pps-&gt;pic_parameter_set_id);</div>
 <div class="line"><a name="l00724"></a><span class="lineno">  724</span>&#160;  READ_UE_OR_RETURN(&amp;pps-&gt;seq_parameter_set_id);</div>
@@ -1264,7 +1264,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

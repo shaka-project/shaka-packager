@@ -100,11 +100,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#ifndef MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/base/compiler_specific.h&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/scoped_ptr.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/base/macros.h&quot;</span></div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/muxer_options.h&quot;</span></div>
 <div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;packager/media/event/muxer_listener.h&quot;</span></div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
@@ -150,23 +150,22 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                                   <span class="keyword">const</span> std::string&amp; output_file_path);</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  std::string output_file_name_;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  scoped_ptr&lt;MediaInfo&gt; media_info_;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="keywordtype">bool</span> is_encrypted_;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">// Storage for values passed to OnEncryptionInfoReady().</span></div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  FourCC protection_scheme_;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  std::string default_key_id_;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  std::vector&lt;ProtectionSystemSpecificInfo&gt; key_system_info_;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html">VodMediaInfoDumpMuxerListener</a>);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;};</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="preprocessor">#endif  // MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_</span></div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  std::string output_file_name_;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  std::unique_ptr&lt;MediaInfo&gt; media_info_;</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="keywordtype">bool</span> is_encrypted_;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">// Storage for values passed to OnEncryptionInfoReady().</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  FourCC protection_scheme_;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  std::string default_key_id_;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  std::vector&lt;ProtectionSystemSpecificInfo&gt; key_system_info_;</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html">VodMediaInfoDumpMuxerListener</a>);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;};</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="preprocessor">#endif  // MEDIA_EVENT_VOD_MEDIA_INFO_DUMP_MUXER_LISTENER_H_</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1StreamInfo_html"><div class="ttname"><a href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">shaka::media::StreamInfo</a></div><div class="ttdoc">Abstract class holds stream information. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/daa/stream__info_8h_source.html#l00053">stream_info.h:53</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener_html_a25fc470ed18733954876a4d4256aacf9"><div class="ttname"><a href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html#a25fc470ed18733954876a4d4256aacf9">shaka::media::VodMediaInfoDumpMuxerListener::OnSampleDurationReady</a></div><div class="ttdeci">void OnSampleDurationReady(uint32_t sample_duration) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d49/vod__media__info__dump__muxer__listener_8cc_source.html#l00067">vod_media_info_dump_muxer_listener.cc:67</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener_html"><div class="ttname"><a href="../../db/dd0/classshaka_1_1media_1_1VodMediaInfoDumpMuxerListener.html">shaka::media::VodMediaInfoDumpMuxerListener</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/daa/vod__media__info__dump__muxer__listener_8h_source.html#l00028">vod_media_info_dump_muxer_listener.h:28</a></div></div>
@@ -181,7 +180,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

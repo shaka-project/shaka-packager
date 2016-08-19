@@ -96,10 +96,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#ifndef MEDIA_BASE_FIXED_KEY_SOURCE_H_</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MEDIA_BASE_FIXED_KEY_SOURCE_H_</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/scoped_ptr.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/key_source.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="keyword">namespace </span>shaka {</div>
@@ -127,7 +127,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                            TrackType track_type,</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;                            <a class="code" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a>* key) <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keyword">static</span> scoped_ptr&lt;FixedKeySource&gt; <a class="code" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a091b4ea22419b73f8532db862f985f99">CreateFromHexStrings</a>(</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keyword">static</span> std::unique_ptr&lt;FixedKeySource&gt; <a class="code" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a9a91ba439d785022a1e2ceeaa9ebe81a">CreateFromHexStrings</a>(</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      <span class="keyword">const</span> std::string&amp; key_id_hex,</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      <span class="keyword">const</span> std::string&amp; key_hex,</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      <span class="keyword">const</span> std::string&amp; pssh_boxes_hex,</div>
@@ -138,9 +138,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <a class="code" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html">FixedKeySource</a>();</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html">FixedKeySource</a>(scoped_ptr&lt;EncryptionKey&gt; key);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html">FixedKeySource</a>(std::unique_ptr&lt;EncryptionKey&gt; key);</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  scoped_ptr&lt;EncryptionKey&gt; encryption_key_;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  std::unique_ptr&lt;EncryptionKey&gt; encryption_key_;</div>
 <div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html">FixedKeySource</a>);</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;};</div>
@@ -149,18 +149,18 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_FIXED_KEY_SOURCE_H_</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1FixedKeySource_html_a091b4ea22419b73f8532db862f985f99"><div class="ttname"><a href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a091b4ea22419b73f8532db862f985f99">shaka::media::FixedKeySource::CreateFromHexStrings</a></div><div class="ttdeci">static scoped_ptr&lt; FixedKeySource &gt; CreateFromHexStrings(const std::string &amp;key_id_hex, const std::string &amp;key_hex, const std::string &amp;pssh_boxes_hex, const std::string &amp;iv_hex)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d6b/fixed__key__source_8cc_source.html#l00086">fixed_key_source.cc:86</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1FixedKeySource_html_a358b0955ecec61e6ce23611e2772265b"><div class="ttname"><a href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a358b0955ecec61e6ce23611e2772265b">shaka::media::FixedKeySource::FetchKeys</a></div><div class="ttdeci">Status FetchKeys(const std::vector&lt; uint8_t &gt; &amp;pssh_box) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d6b/fixed__key__source_8cc_source.html#l00017">fixed_key_source.cc:17</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1FixedKeySource_html_a9a91ba439d785022a1e2ceeaa9ebe81a"><div class="ttname"><a href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a9a91ba439d785022a1e2ceeaa9ebe81a">shaka::media::FixedKeySource::CreateFromHexStrings</a></div><div class="ttdeci">static std::unique_ptr&lt; FixedKeySource &gt; CreateFromHexStrings(const std::string &amp;key_id_hex, const std::string &amp;key_hex, const std::string &amp;pssh_boxes_hex, const std::string &amp;iv_hex)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d6b/fixed__key__source_8cc_source.html#l00086">fixed_key_source.cc:86</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1FixedKeySource_html"><div class="ttname"><a href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html">shaka::media::FixedKeySource</a></div><div class="ttdoc">A key source that uses fixed keys for encryption. </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d72/fixed__key__source_8h_source.html#l00027">fixed_key_source.h:27</a></div></div>
-<div class="ttc" id="structshaka_1_1media_1_1EncryptionKey_html"><div class="ttname"><a href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">shaka::media::EncryptionKey</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00020">key_source.h:20</a></div></div>
+<div class="ttc" id="structshaka_1_1media_1_1EncryptionKey_html"><div class="ttname"><a href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">shaka::media::EncryptionKey</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00019">key_source.h:19</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1FixedKeySource_html_a267d1f36d1c015fd5e8c20b93f270d0a"><div class="ttname"><a href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#a267d1f36d1c015fd5e8c20b93f270d0a">shaka::media::FixedKeySource::GetKey</a></div><div class="ttdeci">Status GetKey(TrackType track_type, EncryptionKey *key) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d6b/fixed__key__source_8cc_source.html#l00033">fixed_key_source.cc:33</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00031">key_source.h:31</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00030">key_source.h:30</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1FixedKeySource_html_afa9abf3a9104cbcb4711eac65c8a5bdf"><div class="ttname"><a href="../../d0/dac/classshaka_1_1media_1_1FixedKeySource.html#afa9abf3a9104cbcb4711eac65c8a5bdf">shaka::media::FixedKeySource::GetCryptoPeriodKey</a></div><div class="ttdeci">Status GetCryptoPeriodKey(uint32_t crypto_period_index, TrackType track_type, EncryptionKey *key) override</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/d6b/fixed__key__source_8cc_source.html#l00054">fixed_key_source.cc:54</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -168,8 +168,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  }</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="comment">// Testing only method. Sets mpd_builder_.</span></div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordtype">void</span> SetMpdBuilderForTesting(scoped_ptr&lt;MpdBuilder&gt; mpd_builder) {</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    mpd_builder_ = mpd_builder.Pass();</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordtype">void</span> SetMpdBuilderForTesting(std::unique_ptr&lt;MpdBuilder&gt; mpd_builder) {</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    mpd_builder_ = std::move(mpd_builder);</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  }</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  std::map&lt;std::string, std::list&lt;AdaptationSet*&gt;&gt; adaptation_set_list_map_;</div>
@@ -180,7 +180,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">// MPD output path.</span></div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  std::string output_path_;</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  scoped_ptr&lt;MpdBuilder&gt; mpd_builder_;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  std::unique_ptr&lt;MpdBuilder&gt; mpd_builder_;</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  base::Lock lock_;</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  <span class="comment">// Next group ID to use for AdapationSets that can be grouped.</span></div>
@@ -210,7 +210,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

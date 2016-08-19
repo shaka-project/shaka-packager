@@ -171,13 +171,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="keyword">namespace </span>media {</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keyword">namespace </span>mp2t {</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;TsSectionPes::TsSectionPes(scoped_ptr&lt;EsParser&gt; es_parser)</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  : es_parser_(es_parser.release()),</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    wait_for_pusi_(true),</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    previous_pts_valid_(false),</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;    previous_pts_(0),</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;    previous_dts_valid_(false),</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;    previous_dts_(0) {</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;TsSectionPes::TsSectionPes(std::unique_ptr&lt;EsParser&gt; es_parser)</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    : es_parser_(es_parser.release()),</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;      wait_for_pusi_(true),</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;      previous_pts_valid_(false),</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;      previous_pts_(0),</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;      previous_dts_valid_(false),</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;      previous_dts_(0) {</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  DCHECK(es_parser_);</div>
 <div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}</div>
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;</div>
@@ -405,7 +405,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

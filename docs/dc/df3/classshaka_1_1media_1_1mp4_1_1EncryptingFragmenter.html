@@ -112,8 +112,8 @@ Inheritance diagram for shaka::media::mp4::EncryptingFragmenter:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5a331edd7e75f6cd15ccbe9c688440a4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/df3/classshaka_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a5a331edd7e75f6cd15ccbe9c688440a4">EncryptingFragmenter</a> (scoped_refptr&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; info, <a class="el" href="../../df/d7b/structshaka_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a> *traf, scoped_ptr&lt; <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt; encryption_key, int64_t clear_time, FourCC protection_scheme, uint8_t crypt_byte_block, uint8_t skip_byte_block, <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> *listener)</td></tr>
-<tr class="separator:a5a331edd7e75f6cd15ccbe9c688440a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3c1c1037b7d9e6edf1f476434705c3d5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/df3/classshaka_1_1media_1_1mp4_1_1EncryptingFragmenter.html#a3c1c1037b7d9e6edf1f476434705c3d5">EncryptingFragmenter</a> (scoped_refptr&lt; <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a> &gt; info, <a class="el" href="../../df/d7b/structshaka_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a> *traf, std::unique_ptr&lt; <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt; encryption_key, int64_t clear_time, FourCC protection_scheme, uint8_t crypt_byte_block, uint8_t skip_byte_block, <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> *listener)</td></tr>
+<tr class="separator:a3c1c1037b7d9e6edf1f476434705c3d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">Fragmenter implementation overrides.</div></td></tr>
 <tr class="memitem:afeb03755fa2e6a53376ae5ceb7440021"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/df3/classshaka_1_1media_1_1mp4_1_1EncryptingFragmenter.html#afeb03755fa2e6a53376ae5ceb7440021">AddSample</a> (scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample) override</td></tr>
 <tr class="separator:afeb03755fa2e6a53376ae5ceb7440021"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -176,9 +176,9 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>crypt_byte_block</
 <tr class="memitem:a05d4dc71b3853d13c3250ca6572c14d0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a05d4dc71b3853d13c3250ca6572c14d0"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><b>skip_byte_block</b> () const </td></tr>
 <tr class="separator:a05d4dc71b3853d13c3250ca6572c14d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4580cb2195b7c4909ad185abf17a68c8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4580cb2195b7c4909ad185abf17a68c8"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b> (scoped_ptr&lt; <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt; encryption_key)</td></tr>
-<tr class="separator:a4580cb2195b7c4909ad185abf17a68c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6378d0ec695ff5b84a6b44aad4511383"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6378d0ec695ff5b84a6b44aad4511383"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b> (std::unique_ptr&lt; <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt; encryption_key)</td></tr>
+<tr class="separator:a6378d0ec695ff5b84a6b44aad4511383"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classshaka_1_1media_1_1mp4_1_1Fragmenter"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classshaka_1_1media_1_1mp4_1_1Fragmenter')"><img src="../../closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html">shaka::media::mp4::Fragmenter</a></td></tr>
 <tr class="memitem:a206f6568b2258fe9bcd271d8590d661d inherit pro_methods_classshaka_1_1media_1_1mp4_1_1Fragmenter"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a206f6568b2258fe9bcd271d8590d661d"></a>
 <a class="el" href="../../df/d7b/structshaka_1_1media_1_1mp4_1_1TrackFragment.html">TrackFragment</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>traf</b> ()</td></tr>
@@ -192,7 +192,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 
 <p>Definition at line <a class="el" href="../../d1/dcb/encrypting__fragmenter_8h_source.html#l00028">28</a> of file <a class="el" href="../../d1/dcb/encrypting__fragmenter_8h_source.html">encrypting_fragmenter.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="a5a331edd7e75f6cd15ccbe9c688440a4"></a>
+<a class="anchor" id="a3c1c1037b7d9e6edf1f476434705c3d5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -211,7 +211,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">scoped_ptr&lt; <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">EncryptionKey</a> &gt;&#160;</td>
           <td class="paramname"><em>encryption_key</em>, </td>
         </tr>
         <tr>
@@ -301,7 +301,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 
 <p>Reimplemented from <a class="el" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a684c1f318ac05e85f4dbf373ea65b7ad">shaka::media::mp4::Fragmenter</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00102">102</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00106">106</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -328,7 +328,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 <p>Create the encryptor for the internal encryption key. The existing encryptor will be reset if it is not NULL. </p>
 <dl class="section return"><dt>Returns</dt><dd>OK on success, an error status otherwise. </dd></dl>
 
-<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00204">204</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00208">208</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -364,7 +364,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 
 <p>Reimplemented from <a class="el" href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#aa702c2af5ea5096d94f2943076a21e4a">shaka::media::mp4::Fragmenter</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00117">117</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00121">121</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -394,7 +394,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 
 <p>Reimplemented in <a class="el" href="../../d2/d29/classshaka_1_1media_1_1mp4_1_1KeyRotationFragmenter.html#a3bdb3a237cb8eb1484ee98e195d290a7">shaka::media::mp4::KeyRotationFragmenter</a>.</p>
 
-<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00161">161</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html#l00165">165</a> of file <a class="el" href="../../d6/d41/encrypting__fragmenter_8cc_source.html">encrypting_fragmenter.cc</a>.</p>
 
 </div>
 </div>
@@ -405,7 +405,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>set_encryption_key</b
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:26 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

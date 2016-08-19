@@ -96,11 +96,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &lt;deque&gt;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;set&gt;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/compiler_specific.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/scoped_ptr.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;set&gt;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/base/compiler_specific.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/decryptor_source.h&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_parser.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/media_sample.h&quot;</span></div>
@@ -243,7 +243,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  scoped_refptr&lt;VideoStreamInfo&gt; video_stream_info_;</div>
 <div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  std::set&lt;int64_t&gt; ignored_tracks_;</div>
 <div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  scoped_ptr&lt;DecryptorSource&gt; decryptor_source_;</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  std::unique_ptr&lt;DecryptorSource&gt; decryptor_source_;</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  std::string audio_encryption_key_id_;</div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  std::string video_encryption_key_id_;</div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;</div>
@@ -256,12 +256,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;  <a class="code" href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a95d25a50ad371304f1abce9971ce3704">MediaParser::InitCB</a> init_cb_;</div>
 <div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;</div>
 <div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;  int64_t last_block_timecode_ = -1;</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  scoped_ptr&lt;uint8_t[]&gt; block_data_;</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;  std::unique_ptr&lt;uint8_t[]&gt; block_data_;</div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;  <span class="keywordtype">int</span> block_data_size_ = -1;</div>
 <div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  int64_t block_duration_ = -1;</div>
 <div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;  int64_t block_add_id_ = -1;</div>
 <div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;  scoped_ptr&lt;uint8_t[]&gt; block_additional_data_;</div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;  std::unique_ptr&lt;uint8_t[]&gt; block_additional_data_;</div>
 <div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;  <span class="comment">// Must be 0 if |block_additional_data_| is null. Must be &gt; 0 if</span></div>
 <div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;  <span class="comment">// |block_additional_data_| is NOT null.</span></div>
 <div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;  <span class="keywordtype">int</span> block_additional_data_size_ = 0;</div>
@@ -288,11 +288,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WEBM_WEBM_CLUSTER_PARSER_H_</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMListParser_html"><div class="ttname"><a href="../../dc/dca/classshaka_1_1media_1_1WebMListParser.html">shaka::media::WebMListParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d46/webm__parser_8h_source.html#l00054">webm_parser.h:54</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMClusterParser_html_abe19fd2154084026a514541e152600e0a696e4587c758dc7908ad6bbb376ae06d"><div class="ttname"><a href="../../da/de4/classshaka_1_1media_1_1WebMClusterParser.html#abe19fd2154084026a514541e152600e0a696e4587c758dc7908ad6bbb376ae06d">shaka::media::WebMClusterParser::kDefaultAudioBufferDurationInMs</a></div><div class="ttdoc">Common 1k samples @44.1kHz. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3c/webm__cluster__parser_8h_source.html#l00030">webm_cluster_parser.h:30</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaParser_html_a95d25a50ad371304f1abce9971ce3704"><div class="ttname"><a href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a95d25a50ad371304f1abce9971ce3704">shaka::media::MediaParser::InitCB</a></div><div class="ttdeci">base::Callback&lt; void(const std::vector&lt; scoped_refptr&lt; StreamInfo &gt; &gt; &amp;stream_info)&gt; InitCB</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d12/media__parser_8h_source.html#l00035">media_parser.h:35</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaParser_html_a95d25a50ad371304f1abce9971ce3704"><div class="ttname"><a href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a95d25a50ad371304f1abce9971ce3704">shaka::media::MediaParser::InitCB</a></div><div class="ttdeci">base::Callback&lt; void(const std::vector&lt; scoped_refptr&lt; StreamInfo &gt; &gt; &amp;stream_info)&gt; InitCB</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d12/media__parser_8h_source.html#l00034">media_parser.h:34</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMClusterParser_html_a66f87fef54ed47bd36d740254d52b9c7"><div class="ttname"><a href="../../da/de4/classshaka_1_1media_1_1WebMClusterParser.html#a66f87fef54ed47bd36d740254d52b9c7">shaka::media::WebMClusterParser::cluster_ended</a></div><div class="ttdeci">bool cluster_ended() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3c/webm__cluster__parser_8h_source.html#l00151">webm_cluster_parser.h:151</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMClusterParser_html_aba1bae97c2d96181027e43b0a1993e67"><div class="ttname"><a href="../../da/de4/classshaka_1_1media_1_1WebMClusterParser.html#aba1bae97c2d96181027e43b0a1993e67">shaka::media::WebMClusterParser::Parse</a></div><div class="ttdeci">int Parse(const uint8_t *buf, int size)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d8f/webm__cluster__parser_8cc_source.html#l00090">webm_cluster_parser.cc:90</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMClusterParser_html_ac3d4be1a12667ed722915be727747eee"><div class="ttname"><a href="../../da/de4/classshaka_1_1media_1_1WebMClusterParser.html#ac3d4be1a12667ed722915be727747eee">shaka::media::WebMClusterParser::Flush</a></div><div class="ttdeci">bool Flush() WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d8f/webm__cluster__parser_8cc_source.html#l00082">webm_cluster_parser.cc:82</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1MediaParser_html_a0ac13291317f7d3d9175c4e91e57b891"><div class="ttname"><a href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a0ac13291317f7d3d9175c4e91e57b891">shaka::media::MediaParser::NewSampleCB</a></div><div class="ttdeci">base::Callback&lt; bool(uint32_t track_id, const scoped_refptr&lt; MediaSample &gt; &amp;media_sample)&gt; NewSampleCB</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d12/media__parser_8h_source.html#l00044">media_parser.h:44</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MediaParser_html_a0ac13291317f7d3d9175c4e91e57b891"><div class="ttname"><a href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a0ac13291317f7d3d9175c4e91e57b891">shaka::media::MediaParser::NewSampleCB</a></div><div class="ttdeci">base::Callback&lt; bool(uint32_t track_id, const scoped_refptr&lt; MediaSample &gt; &amp;media_sample)&gt; NewSampleCB</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d12/media__parser_8h_source.html#l00043">media_parser.h:43</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMClusterParser_html"><div class="ttname"><a href="../../da/de4/classshaka_1_1media_1_1WebMClusterParser.html">shaka::media::WebMClusterParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3c/webm__cluster__parser_8h_source.html#l00024">webm_cluster_parser.h:24</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMClusterParser_html_a8a7c7e7ac6a5da1cd45ab50f914f6826"><div class="ttname"><a href="../../da/de4/classshaka_1_1media_1_1WebMClusterParser.html#a8a7c7e7ac6a5da1cd45ab50f914f6826">shaka::media::WebMClusterParser::WebMClusterParser</a></div><div class="ttdeci">WebMClusterParser(int64_t timecode_scale, scoped_refptr&lt; AudioStreamInfo &gt; audio_stream_info, scoped_refptr&lt; VideoStreamInfo &gt; video_stream_info, int64_t audio_default_duration, int64_t video_default_duration, const WebMTracksParser::TextTracks &amp;text_tracks, const std::set&lt; int64_t &gt; &amp;ignored_tracks, const std::string &amp;audio_encryption_key_id, const std::string &amp;video_encryption_key_id, const MediaParser::NewSampleCB &amp;new_sample_cb, const MediaParser::InitCB &amp;init_cb, KeySource *decryption_key_source)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d8f/webm__cluster__parser_8cc_source.html#l00028">webm_cluster_parser.cc:28</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1WebMClusterParser_html_abe19fd2154084026a514541e152600e0ae4ed667d0b90505a42a7983b0aa4d57f"><div class="ttname"><a href="../../da/de4/classshaka_1_1media_1_1WebMClusterParser.html#abe19fd2154084026a514541e152600e0ae4ed667d0b90505a42a7983b0aa4d57f">shaka::media::WebMClusterParser::kDefaultVideoBufferDurationInMs</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3c/webm__cluster__parser_8h_source.html#l00034">webm_cluster_parser.h:34</a></div></div>
@@ -301,7 +301,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

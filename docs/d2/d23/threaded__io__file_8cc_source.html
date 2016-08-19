@@ -106,12 +106,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="keyword">using</span> base::subtle::NoBarrier_Load;</div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="keyword">using</span> base::subtle::NoBarrier_Store;</div>
 <div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;ThreadedIoFile::ThreadedIoFile(scoped_ptr&lt;File, FileCloser&gt; internal_file,</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;ThreadedIoFile::ThreadedIoFile(std::unique_ptr&lt;File, FileCloser&gt; internal_file,</div>
 <div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;                               Mode mode,</div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;                               uint64_t io_cache_size,</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;                               uint64_t io_block_size)</div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;    : File(internal_file-&gt;file_name()),</div>
-<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;      internal_file_(internal_file.Pass()),</div>
+<div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;      internal_file_(std::move(internal_file)),</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;      mode_(mode),</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;      cache_(io_cache_size),</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;      io_buffer_(io_block_size),</div>
@@ -315,7 +315,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

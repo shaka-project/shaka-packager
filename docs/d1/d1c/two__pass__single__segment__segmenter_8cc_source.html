@@ -136,7 +136,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="comment">// forward-seeking in non-seekable files.</span></div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="keywordtype">bool</span> ReadSkip(File* file, int64_t byte_count) {</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keyword">const</span> int64_t kBufferSize = 0x40000;  <span class="comment">// 256KB.</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  scoped_ptr&lt;char[]&gt; buffer(<span class="keyword">new</span> <span class="keywordtype">char</span>[kBufferSize]);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  std::unique_ptr&lt;char[]&gt; buffer(<span class="keyword">new</span> <span class="keywordtype">char</span>[kBufferSize]);</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  int64_t bytes_read = 0;</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordflow">while</span> (bytes_read &lt; byte_count) {</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    int64_t size = std::min(kBufferSize, byte_count - bytes_read);</div>
@@ -160,21 +160,21 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;TwoPassSingleSegmentSegmenter::~TwoPassSingleSegmentSegmenter() {}</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;Status</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;TwoPassSingleSegmentSegmenter::DoInitialize(scoped_ptr&lt;MkvWriter&gt; writer) {</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;Status TwoPassSingleSegmentSegmenter::DoInitialize(</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    std::unique_ptr&lt;MkvWriter&gt; writer) {</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// Assume the amount of time to copy the temp file as the same amount</span></div>
 <div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// of time as to make it.</span></div>
 <div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  set_progress_target(info()-&gt;duration() * 2);</div>
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  real_writer_ = writer.Pass();</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  real_writer_ = std::move(writer);</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
 <div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  temp_file_name_ = TempFileName(options());</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  scoped_ptr&lt;MkvWriter&gt; temp(<span class="keyword">new</span> MkvWriter);</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  std::unique_ptr&lt;MkvWriter&gt; temp(<span class="keyword">new</span> MkvWriter);</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  Status status = temp-&gt;Open(temp_file_name_);</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    <span class="keywordflow">return</span> status;</div>
 <div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordflow">return</span> SingleSegmentSegmenter::DoInitialize(temp.Pass());</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordflow">return</span> SingleSegmentSegmenter::DoInitialize(std::move(temp));</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;Status TwoPassSingleSegmentSegmenter::DoFinalize() {</div>
@@ -182,7 +182,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Error finalizing cluster.&quot;</span>);</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  <span class="comment">// Write the Cues to the end of the temp file.</span></div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  uint64_t cues_pos = writer()-&gt;Position();</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  uint64_t cues_pos = writer()-&gt;<a class="code" href="../../d1/d0a/classshaka_1_1media_1_1MkvWriter.html#a468dcd83a7c087cc83e755703488e92b">Position</a>();</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  set_index_start(cues_pos);</div>
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  seek_head()-&gt;set_cues_pos(cues_pos - segment_payload_pos());</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keywordflow">if</span> (!cues()-&gt;Write(writer()))</div>
@@ -194,8 +194,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    <span class="keywordflow">return</span> temp;</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
 <div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  <span class="comment">// Close the temp file and open it for reading.</span></div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  set_writer(scoped_ptr&lt;MkvWriter&gt;());</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  scoped_ptr&lt;File, FileCloser&gt; temp_reader(</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  set_writer(std::unique_ptr&lt;MkvWriter&gt;());</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  std::unique_ptr&lt;File, FileCloser&gt; temp_reader(</div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;      <a class="code" href="../../d3/d61/classshaka_1_1media_1_1File.html#aad6b77e734bb22d077ece029c9e735a4">File::Open</a>(temp_file_name_.c_str(), <span class="stringliteral">&quot;r&quot;</span>));</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  <span class="keywordflow">if</span> (!temp_reader)</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Error opening temp file.&quot;</span>);</div>
@@ -272,11 +272,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;}  <span class="comment">// namespace media</span></div>
 <div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1File_html_aad6b77e734bb22d077ece029c9e735a4"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#aad6b77e734bb22d077ece029c9e735a4">shaka::media::File::Open</a></div><div class="ttdeci">virtual bool Open()=0</div><div class="ttdoc">Internal open. Should not be used directly. </div></div>
-<div class="ttc" id="classshaka_1_1media_1_1File_html_a92cdfd68e6384dfcc14c78b20c98368e"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a92cdfd68e6384dfcc14c78b20c98368e">shaka::media::File::Delete</a></div><div class="ttdeci">static bool Delete(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00167">file.cc:167</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1MkvWriter_html_a468dcd83a7c087cc83e755703488e92b"><div class="ttname"><a href="../../d1/d0a/classshaka_1_1media_1_1MkvWriter.html#a468dcd83a7c087cc83e755703488e92b">shaka::media::MkvWriter::Position</a></div><div class="ttdeci">mkvmuxer::int64 Position() const override</div><div class="ttdef"><b>Definition:</b> <a href="../../d6/dc8/mkv__writer_8cc_source.html#l00071">mkv_writer.cc:71</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1File_html_a92cdfd68e6384dfcc14c78b20c98368e"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a92cdfd68e6384dfcc14c78b20c98368e">shaka::media::File::Delete</a></div><div class="ttdeci">static bool Delete(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00164">file.cc:164</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

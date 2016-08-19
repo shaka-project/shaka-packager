@@ -126,10 +126,10 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 <tr class="separator:adc96fbcd6a4d4ba9845f8d00974ace0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9204fe352d13cea8a367ae9c14e9639e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a9204fe352d13cea8a367ae9c14e9639e">Cancel</a> ()</td></tr>
 <tr class="separator:a9204fe352d13cea8a367ae9c14e9639e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a786fbb91d7ece58c68334f5cef16ae71"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a786fbb91d7ece58c68334f5cef16ae71">SetMuxerListener</a> (scoped_ptr&lt; <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> &gt; muxer_listener)</td></tr>
-<tr class="separator:a786fbb91d7ece58c68334f5cef16ae71"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a2dfb3924ce1307f98c339e6587369c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a0a2dfb3924ce1307f98c339e6587369c">SetProgressListener</a> (scoped_ptr&lt; <a class="el" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html">ProgressListener</a> &gt; progress_listener)</td></tr>
-<tr class="separator:a0a2dfb3924ce1307f98c339e6587369c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0e76dd0a5c07dd538221459365ae824a"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a0e76dd0a5c07dd538221459365ae824a">SetMuxerListener</a> (std::unique_ptr&lt; <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> &gt; muxer_listener)</td></tr>
+<tr class="separator:a0e76dd0a5c07dd538221459365ae824a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a25a146d553c385aad70dbff6b3e87eec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../df/d46/classshaka_1_1media_1_1Muxer.html#a25a146d553c385aad70dbff6b3e87eec">SetProgressListener</a> (std::unique_ptr&lt; <a class="el" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html">ProgressListener</a> &gt; progress_listener)</td></tr>
+<tr class="separator:a25a146d553c385aad70dbff6b3e87eec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0a1451c6277554ad1956225a345f5d3d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0a1451c6277554ad1956225a345f5d3d"></a>
 const std::vector&lt; <a class="el" href="../../d8/d5c/classshaka_1_1media_1_1MediaStream.html">MediaStream</a> * &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>streams</b> () const </td></tr>
 <tr class="separator:a0a1451c6277554ad1956225a345f5d3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -191,7 +191,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
 </div><div class="memdoc">
 <p>Cancel a muxing job in progress. Will cause <em>Run</em> to exit with an error status of type CANCELLED. </p>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00082">82</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00084">84</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
@@ -281,18 +281,18 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00029">29</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00031">31</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a786fbb91d7ece58c68334f5cef16ae71"></a>
+<a class="anchor" id="a0e76dd0a5c07dd538221459365ae824a"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void shaka::media::Muxer::SetMuxerListener </td>
           <td>(</td>
-          <td class="paramtype">scoped_ptr&lt; <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html">MuxerListener</a> &gt;&#160;</td>
           <td class="paramname"><em>muxer_listener</em></td><td>)</td>
           <td></td>
         </tr>
@@ -306,18 +306,18 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00086">86</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00088">88</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
-<a class="anchor" id="a0a2dfb3924ce1307f98c339e6587369c"></a>
+<a class="anchor" id="a25a146d553c385aad70dbff6b3e87eec"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void shaka::media::Muxer::SetProgressListener </td>
           <td>(</td>
-          <td class="paramtype">scoped_ptr&lt; <a class="el" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html">ProgressListener</a> &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="../../d4/de6/classshaka_1_1media_1_1ProgressListener.html">ProgressListener</a> &gt;&#160;</td>
           <td class="paramname"><em>progress_listener</em></td><td>)</td>
           <td></td>
         </tr>
@@ -331,7 +331,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
   </dd>
 </dl>
 
-<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00090">90</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
+<p>Definition at line <a class="el" href="../../d9/db9/muxer_8cc_source.html#l00092">92</a> of file <a class="el" href="../../d9/db9/muxer_8cc_source.html">muxer.cc</a>.</p>
 
 </div>
 </div>
@@ -342,7 +342,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>MediaStream</b></td>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:19 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

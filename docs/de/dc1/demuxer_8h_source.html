@@ -97,11 +97,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MEDIA_BASE_DEMUXER_H_</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;deque&gt;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/compiler_specific.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/ref_counted.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/scoped_ptr.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/base/compiler_specific.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/ref_counted.h&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/container_names.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/status.h&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
@@ -121,7 +121,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keyword">explicit</span> <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#ae2fee69f99e5815de4f686b24393402e">Demuxer</a>(<span class="keyword">const</span> std::string&amp; file_name);</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  ~<a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html">Demuxer</a>();</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#acad9afa8ef3b5682324a4ded402ab93a">SetKeySource</a>(scoped_ptr&lt;KeySource&gt; key_source);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordtype">void</span> <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#abfcf3a9a3f64c0e27497c72324049a1e">SetKeySource</a>(std::unique_ptr&lt;KeySource&gt; key_source);</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> <a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a436ed9fd2a3ddd78056ec7cf656fd9ad">Initialize</a>();</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
@@ -160,11 +160,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;  Status init_parsing_status_;</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;  <span class="comment">// Queued samples received in NewSampleEvent() before ParserInitEvent().</span></div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  std::deque&lt;QueuedSample&gt; queued_samples_;</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  scoped_ptr&lt;MediaParser&gt; parser_;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  std::unique_ptr&lt;MediaParser&gt; parser_;</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  std::vector&lt;MediaStream*&gt; streams_;</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  MediaContainerName container_name_;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  scoped_ptr&lt;uint8_t[]&gt; buffer_;</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  scoped_ptr&lt;KeySource&gt; key_source_;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  std::unique_ptr&lt;uint8_t[]&gt; buffer_;</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  std::unique_ptr&lt;KeySource&gt; key_source_;</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordtype">bool</span> cancelled_;</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#ae2fee69f99e5815de4f686b24393402e">Demuxer</a>);</div>
@@ -174,11 +174,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;<span class="preprocessor">#endif  // MEDIA_BASE_DEMUXER_H_</span></div>
-<div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_acad9afa8ef3b5682324a4ded402ab93a"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#acad9afa8ef3b5682324a4ded402ab93a">shaka::media::Demuxer::SetKeySource</a></div><div class="ttdeci">void SetKeySource(scoped_ptr&lt; KeySource &gt; key_source)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbe/demuxer_8cc_source.html#l00052">demuxer.cc:52</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_a385c93fd8d589b7d3bccd35e14c58290"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a385c93fd8d589b7d3bccd35e14c58290">shaka::media::Demuxer::container_name</a></div><div class="ttdeci">MediaContainerName container_name()</div><div class="ttdef"><b>Definition:</b> <a href="../../de/dc1/demuxer_8h_source.html#l00072">demuxer.h:72</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_a9e0b4a430603fdf4639c2153622ae1a2"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a9e0b4a430603fdf4639c2153622ae1a2">shaka::media::Demuxer::Run</a></div><div class="ttdeci">Status Run()</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbe/demuxer_8cc_source.html#l00173">demuxer.cc:173</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_a117ba5528a92b0cf4752d15d3692e158"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a117ba5528a92b0cf4752d15d3692e158">shaka::media::Demuxer::Cancel</a></div><div class="ttdeci">void Cancel()</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbe/demuxer_8cc_source.html#l00232">demuxer.cc:232</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_af89c3d15b452d45bcacea9470ba43a7f"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#af89c3d15b452d45bcacea9470ba43a7f">shaka::media::Demuxer::streams</a></div><div class="ttdeci">const std::vector&lt; MediaStream * &gt; &amp; streams()</div><div class="ttdef"><b>Definition:</b> <a href="../../de/dc1/demuxer_8h_source.html#l00068">demuxer.h:68</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_abfcf3a9a3f64c0e27497c72324049a1e"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#abfcf3a9a3f64c0e27497c72324049a1e">shaka::media::Demuxer::SetKeySource</a></div><div class="ttdeci">void SetKeySource(std::unique_ptr&lt; KeySource &gt; key_source)</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbe/demuxer_8cc_source.html#l00052">demuxer.cc:52</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html">shaka::media::Demuxer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dc1/demuxer_8h_source.html#l00032">demuxer.h:32</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_a0f9b7c954ff48c3021467300d755ac29"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a0f9b7c954ff48c3021467300d755ac29">shaka::media::Demuxer::Parse</a></div><div class="ttdeci">Status Parse()</div><div class="ttdoc">Read from the source and send it to the parser. </div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbe/demuxer_8cc_source.html#l00207">demuxer.cc:207</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Demuxer_html_a436ed9fd2a3ddd78056ec7cf656fd9ad"><div class="ttname"><a href="../../dd/d17/classshaka_1_1media_1_1Demuxer.html#a436ed9fd2a3ddd78056ec7cf656fd9ad">shaka::media::Demuxer::Initialize</a></div><div class="ttdeci">Status Initialize()</div><div class="ttdef"><b>Definition:</b> <a href="../../d3/dbe/demuxer_8cc_source.html#l00056">demuxer.cc:56</a></div></div>
@@ -187,7 +187,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -120,7 +120,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                             <span class="keywordtype">int</span> data_size,</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;                             <span class="keyword">const</span> uint8_t* key_id,</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;                             <span class="keywordtype">int</span> key_id_size,</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                             scoped_ptr&lt;DecryptConfig&gt;* decrypt_config,</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;                             std::unique_ptr&lt;DecryptConfig&gt;* decrypt_config,</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;                             <span class="keywordtype">int</span>* data_offset) {</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="keywordtype">int</span> header_size = kWebMSignalByteSize;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keywordflow">if</span> (data_size &lt; header_size) {</div>
@@ -205,7 +205,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

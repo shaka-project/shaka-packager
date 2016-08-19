@@ -104,14 +104,14 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ac92da7c996e2a270fd704facc8f7a149"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5fc925f3324b5cfab955b1fac1f52094"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#a5fc925f3324b5cfab955b1fac1f52094">AddSample</a> (scoped_refptr&lt; <a class="el" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html">MediaSample</a> &gt; sample)</td></tr>
 <tr class="separator:a5fc925f3324b5cfab955b1fac1f52094"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2bf9d53ebc0a42551e7c460d9464650d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2bf9d53ebc0a42551e7c460d9464650d"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#a2bf9d53ebc0a42551e7c460d9464650d">InjectTsWriterForTesting</a> (scoped_ptr&lt; <a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html">TsWriter</a> &gt; writer)</td></tr>
-<tr class="memdesc:a2bf9d53ebc0a42551e7c460d9464650d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only for testing. <br/></td></tr>
-<tr class="separator:a2bf9d53ebc0a42551e7c460d9464650d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a01c6ce7398b8e7a9966959dadcd30b25"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a01c6ce7398b8e7a9966959dadcd30b25"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#a01c6ce7398b8e7a9966959dadcd30b25">InjectPesPacketGeneratorForTesting</a> (scoped_ptr&lt; <a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html">PesPacketGenerator</a> &gt; generator)</td></tr>
-<tr class="memdesc:a01c6ce7398b8e7a9966959dadcd30b25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only for testing. <br/></td></tr>
-<tr class="separator:a01c6ce7398b8e7a9966959dadcd30b25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae3ed0f86d2163444e24a2577e35517a9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae3ed0f86d2163444e24a2577e35517a9"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#ae3ed0f86d2163444e24a2577e35517a9">InjectTsWriterForTesting</a> (std::unique_ptr&lt; <a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html">TsWriter</a> &gt; writer)</td></tr>
+<tr class="memdesc:ae3ed0f86d2163444e24a2577e35517a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only for testing. <br/></td></tr>
+<tr class="separator:ae3ed0f86d2163444e24a2577e35517a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb78b18426643d58bc44ea61823dc29c"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="abb78b18426643d58bc44ea61823dc29c"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#abb78b18426643d58bc44ea61823dc29c">InjectPesPacketGeneratorForTesting</a> (std::unique_ptr&lt; <a class="el" href="../../d5/de0/classshaka_1_1media_1_1mp2t_1_1PesPacketGenerator.html">PesPacketGenerator</a> &gt; generator)</td></tr>
+<tr class="memdesc:abb78b18426643d58bc44ea61823dc29c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only for testing. <br/></td></tr>
+<tr class="separator:abb78b18426643d58bc44ea61823dc29c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a34ab9fbaee43115d68be87e4b9e90918"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a34ab9fbaee43115d68be87e4b9e90918"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/dde/classshaka_1_1media_1_1mp2t_1_1TsSegmenter.html#a34ab9fbaee43115d68be87e4b9e90918">SetTsWriterFileOpenedForTesting</a> (bool value)</td></tr>
 <tr class="memdesc:a34ab9fbaee43115d68be87e4b9e90918"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only for testing. <br/></td></tr>
@@ -256,7 +256,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

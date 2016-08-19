@@ -174,8 +174,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;<a class="code" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a> MP4Muxer::Initialize() {</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  DCHECK(!streams().empty());</div>
 <div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  scoped_ptr&lt;FileType&gt; ftyp(<span class="keyword">new</span> FileType);</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  scoped_ptr&lt;Movie&gt; moov(<span class="keyword">new</span> Movie);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  std::unique_ptr&lt;FileType&gt; ftyp(<span class="keyword">new</span> FileType);</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  std::unique_ptr&lt;Movie&gt; moov(<span class="keyword">new</span> Movie);</div>
 <div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
 <div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  ftyp-&gt;major_brand = FOURCC_dash;</div>
 <div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  ftyp-&gt;compatible_brands.push_back(FOURCC_iso6);</div>
@@ -224,11 +224,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  }</div>
 <div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;</div>
 <div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  <span class="keywordflow">if</span> (options().single_segment) {</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    segmenter_.reset(</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;        <span class="keyword">new</span> SingleSegmentSegmenter(options(), ftyp.Pass(), moov.Pass()));</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;    segmenter_.reset(<span class="keyword">new</span> SingleSegmentSegmenter(options(), std::move(ftyp),</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;                                                std::move(moov)));</div>
 <div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;  } <span class="keywordflow">else</span> {</div>
 <div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    segmenter_.reset(</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;        <span class="keyword">new</span> MultiSegmentSegmenter(options(), ftyp.Pass(), moov.Pass()));</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;        <span class="keyword">new</span> MultiSegmentSegmenter(options(), std::move(ftyp), std::move(moov)));</div>
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  }</div>
 <div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;</div>
 <div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  <span class="keyword">const</span> Status segmenter_initialized = segmenter_-&gt;Initialize(</div>
@@ -496,14 +496,14 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html_a5397ee8759a663aea68261600e528d82"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82">shaka::media::MuxerOptions::output_file_name</a></div><div class="ttdeci">std::string output_file_name</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00062">muxer_options.h:62</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1MP4Muxer_html_a5b6a878865250e3e17268c011a361497"><div class="ttname"><a href="../../db/d30/classshaka_1_1media_1_1mp4_1_1MP4Muxer.html#a5b6a878865250e3e17268c011a361497">shaka::media::mp4::MP4Muxer::MP4Muxer</a></div><div class="ttdeci">MP4Muxer(const MuxerOptions &amp;options)</div><div class="ttdoc">Create a MP4Muxer object from MuxerOptions. </div><div class="ttdef"><b>Definition:</b> <a href="../../da/d88/mp4__muxer_8cc_source.html#l00082">mp4_muxer.cc:82</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">shaka::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1File_html_a6981994874ee5832e3394744fd51fd79"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a6981994874ee5832e3394744fd51fd79">shaka::media::File::GetFileSize</a></div><div class="ttdeci">static int64_t GetFileSize(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00180">file.cc:180</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1File_html_a6981994874ee5832e3394744fd51fd79"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a6981994874ee5832e3394744fd51fd79">shaka::media::File::GetFileSize</a></div><div class="ttdeci">static int64_t GetFileSize(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00177">file.cc:177</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Muxer_html"><div class="ttname"><a href="../../df/d46/classshaka_1_1media_1_1Muxer.html">shaka::media::Muxer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/df6/muxer_8h_source.html#l00033">muxer.h:33</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a31536ec385a7ec22f323a42b872b499a"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a31536ec385a7ec22f323a42b872b499a">shaka::media::MuxerListener::OnMediaStart</a></div><div class="ttdeci">virtual void OnMediaStart(const MuxerOptions &amp;muxer_options, const StreamInfo &amp;stream_info, uint32_t time_scale, ContainerType container_type)=0</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

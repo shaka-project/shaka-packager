@@ -127,7 +127,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                  <span class="stringliteral">&quot;WebM does not support protection scheme other than &#39;cenc&#39;.&quot;</span>);</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  }</div>
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  scoped_ptr&lt;MkvWriter&gt; writer(<span class="keyword">new</span> MkvWriter);</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  std::unique_ptr&lt;MkvWriter&gt; writer(<span class="keyword">new</span> MkvWriter);</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  Status status = writer-&gt;Open(options().output_file_name);</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keywordflow">return</span> status;</div>
@@ -141,7 +141,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  }</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  Status initialized = segmenter_-&gt;Initialize(</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      writer.Pass(), streams()[0]-&gt;info().get(), progress_listener(),</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;      std::move(writer), streams()[0]-&gt;info().<span class="keyword">get</span>(), progress_listener(),</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;      muxer_listener(), encryption_key_source(), max_sd_pixels(),</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;      clear_lead_in_seconds());</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
@@ -216,7 +216,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_ac89a028372db9abbccf569819d9b2b35"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#ac89a028372db9abbccf569819d9b2b35">shaka::media::MuxerListener::OnMediaEnd</a></div><div class="ttdeci">virtual void OnMediaEnd(bool has_init_range, uint64_t init_range_start, uint64_t init_range_end, bool has_index_range, uint64_t index_range_start, uint64_t index_range_end, float duration_seconds, uint64_t file_size)=0</div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html_a5397ee8759a663aea68261600e528d82"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a5397ee8759a663aea68261600e528d82">shaka::media::MuxerOptions::output_file_name</a></div><div class="ttdeci">std::string output_file_name</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00062">muxer_options.h:62</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html">shaka::media::MuxerOptions</a></div><div class="ttdoc">This structure contains the list of configuration options for Muxer. </div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00018">muxer_options.h:18</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1File_html_a6981994874ee5832e3394744fd51fd79"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a6981994874ee5832e3394744fd51fd79">shaka::media::File::GetFileSize</a></div><div class="ttdeci">static int64_t GetFileSize(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00180">file.cc:180</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1File_html_a6981994874ee5832e3394744fd51fd79"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a6981994874ee5832e3394744fd51fd79">shaka::media::File::GetFileSize</a></div><div class="ttdeci">static int64_t GetFileSize(const char *file_name)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00177">file.cc:177</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Muxer_html"><div class="ttname"><a href="../../df/d46/classshaka_1_1media_1_1Muxer.html">shaka::media::Muxer</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/df6/muxer_8h_source.html#l00033">muxer.h:33</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Status_html"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html">shaka::media::Status</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00075">status.h:75</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a31536ec385a7ec22f323a42b872b499a"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a31536ec385a7ec22f323a42b872b499a">shaka::media::MuxerListener::OnMediaStart</a></div><div class="ttdeci">virtual void OnMediaStart(const MuxerOptions &amp;muxer_options, const StreamInfo &amp;stream_info, uint32_t time_scale, ContainerType container_type)=0</div></div>
@@ -225,7 +225,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

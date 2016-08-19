@@ -112,10 +112,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a93480a98e423d0456482844ac629bd2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6fb9680be887d3b9367e015029f909f2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a6fb9680be887d3b9367e015029f909f2">FetchKeys</a> (const std::vector&lt; uint8_t &gt; &amp;content_id, const std::string &amp;policy)</td></tr>
 <tr class="separator:a6fb9680be887d3b9367e015029f909f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abdff0d3cc5f59b744c68b11b0c1f6272"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#abdff0d3cc5f59b744c68b11b0c1f6272">set_signer</a> (scoped_ptr&lt; <a class="el" href="../../df/d3c/classshaka_1_1media_1_1RequestSigner.html">RequestSigner</a> &gt; signer)</td></tr>
-<tr class="separator:abdff0d3cc5f59b744c68b11b0c1f6272"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc5154b2994b5fe1f8f0c494bbd2bcdd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#afc5154b2994b5fe1f8f0c494bbd2bcdd">set_key_fetcher</a> (scoped_ptr&lt; <a class="el" href="../../df/d66/classshaka_1_1media_1_1KeyFetcher.html">KeyFetcher</a> &gt; key_fetcher)</td></tr>
-<tr class="separator:afc5154b2994b5fe1f8f0c494bbd2bcdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48d182da15ecc85e2ae7fd164ba0a526"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a48d182da15ecc85e2ae7fd164ba0a526">set_signer</a> (std::unique_ptr&lt; <a class="el" href="../../df/d3c/classshaka_1_1media_1_1RequestSigner.html">RequestSigner</a> &gt; signer)</td></tr>
+<tr class="separator:a48d182da15ecc85e2ae7fd164ba0a526"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a97c0565df9381e178ebb50c193cebd04"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#a97c0565df9381e178ebb50c193cebd04">set_key_fetcher</a> (std::unique_ptr&lt; <a class="el" href="../../df/d66/classshaka_1_1media_1_1KeyFetcher.html">KeyFetcher</a> &gt; key_fetcher)</td></tr>
+<tr class="separator:a97c0565df9381e178ebb50c193cebd04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">KeySource implementation overrides.</div></td></tr>
 <tr class="memitem:ae6490d21a6538b9c909fdf996398e576"><td class="memItemLeft" align="right" valign="top"><a class="el" href="../../d0/d93/classshaka_1_1media_1_1Status.html">Status</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html#ae6490d21a6538b9c909fdf996398e576">FetchKeys</a> (const std::vector&lt; uint8_t &gt; &amp;pssh_box) override</td></tr>
 <tr class="separator:ae6490d21a6538b9c909fdf996398e576"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -163,7 +163,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p><a class="el" href="../../da/ddd/classshaka_1_1media_1_1WidevineKeySource.html">WidevineKeySource</a> talks to the Widevine encryption service to acquire the encryption keys. </p>
 
-<p>Definition at line <a class="el" href="../../da/d5c/widevine__key__source_8h_source.html#l00031">31</a> of file <a class="el" href="../../da/d5c/widevine__key__source_8h_source.html">widevine_key_source.h</a>.</p>
+<p>Definition at line <a class="el" href="../../da/d5c/widevine__key__source_8h_source.html#l00030">30</a> of file <a class="el" href="../../da/d5c/widevine__key__source_8h_source.html">widevine_key_source.h</a>.</p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a class="anchor" id="a93480a98e423d0456482844ac629bd2e"></a>
 <div class="memitem">
@@ -493,14 +493,14 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 
 </div>
 </div>
-<a class="anchor" id="afc5154b2994b5fe1f8f0c494bbd2bcdd"></a>
+<a class="anchor" id="a97c0565df9381e178ebb50c193cebd04"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void shaka::media::WidevineKeySource::set_key_fetcher </td>
           <td>(</td>
-          <td class="paramtype">scoped_ptr&lt; <a class="el" href="../../df/d66/classshaka_1_1media_1_1KeyFetcher.html">KeyFetcher</a> &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="../../df/d66/classshaka_1_1media_1_1KeyFetcher.html">KeyFetcher</a> &gt;&#160;</td>
           <td class="paramname"><em>key_fetcher</em></td><td>)</td>
           <td></td>
         </tr>
@@ -518,14 +518,14 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 
 </div>
 </div>
-<a class="anchor" id="abdff0d3cc5f59b744c68b11b0c1f6272"></a>
+<a class="anchor" id="a48d182da15ecc85e2ae7fd164ba0a526"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
           <td class="memname">void shaka::media::WidevineKeySource::set_signer </td>
           <td>(</td>
-          <td class="paramtype">scoped_ptr&lt; <a class="el" href="../../df/d3c/classshaka_1_1media_1_1RequestSigner.html">RequestSigner</a> &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="../../df/d3c/classshaka_1_1media_1_1RequestSigner.html">RequestSigner</a> &gt;&#160;</td>
           <td class="paramname"><em>signer</em></td><td>)</td>
           <td></td>
         </tr>
@@ -550,7 +550,7 @@ static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:22 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:19 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

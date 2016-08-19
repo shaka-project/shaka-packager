@@ -1223,7 +1223,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01134"></a><span class="lineno"> 1134</span>&#160;  std::vector&lt;uint8_t&gt; decrypted_content_key_vec(</div>
 <div class="line"><a name="l01135"></a><span class="lineno"> 1135</span>&#160;      content_key_buffer.begin() + 4,</div>
 <div class="line"><a name="l01136"></a><span class="lineno"> 1136</span>&#160;      content_key_buffer.begin() + 20);</div>
-<div class="line"><a name="l01137"></a><span class="lineno"> 1137</span>&#160;  scoped_ptr&lt;AesCbcDecryptor&gt; content_decryptor(</div>
+<div class="line"><a name="l01137"></a><span class="lineno"> 1137</span>&#160;  std::unique_ptr&lt;AesCbcDecryptor&gt; content_decryptor(</div>
 <div class="line"><a name="l01138"></a><span class="lineno"> 1138</span>&#160;      <span class="keyword">new</span> AesCbcDecryptor(kCtsPadding, AesCryptor::kUseConstantIv));</div>
 <div class="line"><a name="l01139"></a><span class="lineno"> 1139</span>&#160;  <span class="keywordflow">if</span> (!content_decryptor-&gt;InitializeWithIv(decrypted_content_key_vec,</div>
 <div class="line"><a name="l01140"></a><span class="lineno"> 1140</span>&#160;                                           zero_iv)) {</div>
@@ -1231,7 +1231,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01142"></a><span class="lineno"> 1142</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l01143"></a><span class="lineno"> 1143</span>&#160;  }</div>
 <div class="line"><a name="l01144"></a><span class="lineno"> 1144</span>&#160;</div>
-<div class="line"><a name="l01145"></a><span class="lineno"> 1145</span>&#160;  content_decryptor_ = content_decryptor.Pass();</div>
+<div class="line"><a name="l01145"></a><span class="lineno"> 1145</span>&#160;  content_decryptor_ = std::move(content_decryptor);</div>
 <div class="line"><a name="l01146"></a><span class="lineno"> 1146</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
 <div class="line"><a name="l01147"></a><span class="lineno"> 1147</span>&#160;}</div>
 <div class="line"><a name="l01148"></a><span class="lineno"> 1148</span>&#160;</div>
@@ -1261,12 +1261,12 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01172"></a><span class="lineno"> 1172</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp2t_1_1AdtsHeader_html_a149fb9c7fa2718d719008af2dce8157f"><div class="ttname"><a href="../../d3/d0c/classshaka_1_1media_1_1mp2t_1_1AdtsHeader.html#a149fb9c7fa2718d719008af2dce8157f">shaka::media::mp2t::AdtsHeader::GetAdtsFrameSize</a></div><div class="ttdeci">static size_t GetAdtsFrameSize(const uint8_t *data, size_t num_bytes)</div><div class="ttdef"><b>Definition:</b> <a href="../../de/d5b/adts__header_8cc_source.html#l00023">adts_header.cc:23</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1AudioStreamInfo_html_aee79e7aa61b741bb96f451c6de1c9d42"><div class="ttname"><a href="../../da/d4e/classshaka_1_1media_1_1AudioStreamInfo.html#aee79e7aa61b741bb96f451c6de1c9d42">shaka::media::AudioStreamInfo::GetCodecString</a></div><div class="ttdeci">static std::string GetCodecString(Codec codec, uint8_t audio_object_type)</div><div class="ttdef"><b>Definition:</b> <a href="../../da/d04/audio__stream__info_8cc_source.html#l00095">audio_stream_info.cc:95</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00031">key_source.h:31</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00030">key_source.h:30</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_a59e7bbd2ee8cfa1697093d14d16a6c4d"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a59e7bbd2ee8cfa1697093d14d16a6c4d">shaka::media::MediaSample::CreateEmptyMediaSample</a></div><div class="ttdeci">static scoped_refptr&lt; MediaSample &gt; CreateEmptyMediaSample()</div><div class="ttdoc">Create a MediaSample object with default members. </div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00074">media_sample.cc:74</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

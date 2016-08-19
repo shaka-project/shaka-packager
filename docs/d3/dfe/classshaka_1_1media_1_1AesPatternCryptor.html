@@ -123,8 +123,8 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ad76aebd0a9f7cc78f6f841cbce359107"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#ad76aebd0a9f7cc78f6f841cbce359107">AesPatternCryptor</a> (uint8_t crypt_byte_block, uint8_t skip_byte_block, <a class="el" href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0">PatternEncryptionMode</a> encryption_mode, ConstantIvFlag constant_iv_flag, scoped_ptr&lt; <a class="el" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html">AesCryptor</a> &gt; cryptor)</td></tr>
-<tr class="separator:ad76aebd0a9f7cc78f6f841cbce359107"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb94f2d6a527b12854e81839fd10e1d5"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#abb94f2d6a527b12854e81839fd10e1d5">AesPatternCryptor</a> (uint8_t crypt_byte_block, uint8_t skip_byte_block, <a class="el" href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#a54fd35d7782d3b4948c7eb68387711f0">PatternEncryptionMode</a> encryption_mode, ConstantIvFlag constant_iv_flag, std::unique_ptr&lt; <a class="el" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html">AesCryptor</a> &gt; cryptor)</td></tr>
+<tr class="separator:abb94f2d6a527b12854e81839fd10e1d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr><td colspan="2"><div class="groupHeader">AesCryptor implementation overrides.</div></td></tr>
 <tr class="memitem:af878688f0f277f3f6757e85654439c34"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/dfe/classshaka_1_1media_1_1AesPatternCryptor.html#af878688f0f277f3f6757e85654439c34">InitializeWithIv</a> (const std::vector&lt; uint8_t &gt; &amp;key, const std::vector&lt; uint8_t &gt; &amp;<a class="el" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html#a96dde16f12a82a563c77f6d5522571f3">iv</a>) override</td></tr>
 <tr class="separator:af878688f0f277f3f6757e85654439c34"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -167,7 +167,7 @@ AES_KEY *&#160;</td><td class="memItemRight" valign="bottom"><b>mutable_aes_key<
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Implements pattern-based encryption/decryption. </p>
 
-<p>Definition at line <a class="el" href="../../d6/d09/aes__pattern__cryptor_8h_source.html#l00016">16</a> of file <a class="el" href="../../d6/d09/aes__pattern__cryptor_8h_source.html">aes_pattern_cryptor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d09/aes__pattern__cryptor_8h_source.html#l00017">17</a> of file <a class="el" href="../../d6/d09/aes__pattern__cryptor_8h_source.html">aes_pattern_cryptor.h</a>.</p>
 </div><h2 class="groupheader">Member Enumeration Documentation</h2>
 <a class="anchor" id="a54fd35d7782d3b4948c7eb68387711f0"></a>
 <div class="memitem">
@@ -188,12 +188,12 @@ AES_KEY *&#160;</td><td class="memItemRight" valign="bottom"><b>mutable_aes_key<
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="../../d6/d09/aes__pattern__cryptor_8h_source.html#l00020">20</a> of file <a class="el" href="../../d6/d09/aes__pattern__cryptor_8h_source.html">aes_pattern_cryptor.h</a>.</p>
+<p>Definition at line <a class="el" href="../../d6/d09/aes__pattern__cryptor_8h_source.html#l00021">21</a> of file <a class="el" href="../../d6/d09/aes__pattern__cryptor_8h_source.html">aes_pattern_cryptor.h</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a class="anchor" id="ad76aebd0a9f7cc78f6f841cbce359107"></a>
+<a class="anchor" id="abb94f2d6a527b12854e81839fd10e1d5"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -224,7 +224,7 @@ AES_KEY *&#160;</td><td class="memItemRight" valign="bottom"><b>mutable_aes_key<
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">scoped_ptr&lt; <a class="el" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html">AesCryptor</a> &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="../../df/d87/classshaka_1_1media_1_1AesCryptor.html">AesCryptor</a> &gt;&#160;</td>
           <td class="paramname"><em>cryptor</em>&#160;</td>
         </tr>
         <tr>
@@ -297,7 +297,7 @@ AES_KEY *&#160;</td><td class="memItemRight" valign="bottom"><b>mutable_aes_key<
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -93,7 +93,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00004"></a><span class="lineno">    4</span>&#160;</div>
 <div class="line"><a name="l00005"></a><span class="lineno">    5</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp2t/ts_packet.h&quot;</span></div>
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
-<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/scoped_ptr.h&quot;</span></div>
+<div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/bit_reader.h&quot;</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp2t/mp2t_common.h&quot;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
@@ -146,7 +146,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">return</span> NULL;</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  }</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  scoped_ptr&lt;TsPacket&gt; ts_packet(<span class="keyword">new</span> TsPacket());</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  std::unique_ptr&lt;TsPacket&gt; ts_packet(<span class="keyword">new</span> TsPacket());</div>
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;  <span class="keywordtype">bool</span> status = ts_packet-&gt;ParseHeader(buf);</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;  <span class="keywordflow">if</span> (!status) {</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;Parsing header failed&quot;</span>;</div>
@@ -304,7 +304,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

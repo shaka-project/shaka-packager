@@ -98,10 +98,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;</div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;deque&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;list&gt;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/callback.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/base/compiler_specific.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/scoped_ptr.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/base/callback.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/base/compiler_specific.h&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/nalu_reader.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp2t/es_parser.h&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;</div>
@@ -117,7 +117,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00028"></a><span class="lineno"><a class="line" href="../../da/d23/classshaka_1_1media_1_1mp2t_1_1EsParserH26x.html">   28</a></span>&#160;<span class="keyword">class </span><a class="code" href="../../da/d23/classshaka_1_1media_1_1mp2t_1_1EsParserH26x.html">EsParserH26x</a> : <span class="keyword">public</span> <a class="code" href="../../da/d10/classshaka_1_1media_1_1mp2t_1_1EsParser.html">EsParser</a> {</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160; <span class="keyword">public</span>:</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <a class="code" href="../../da/d23/classshaka_1_1media_1_1mp2t_1_1EsParserH26x.html">EsParserH26x</a>(Nalu::CodecType type,</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;               scoped_ptr&lt;H26xByteToUnitStreamConverter&gt; stream_converter,</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;               std::unique_ptr&lt;H26xByteToUnitStreamConverter&gt; stream_converter,</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;               uint32_t pid,</div>
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;               <span class="keyword">const</span> EmitSampleCB&amp; emit_sample_cb);</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;  ~<a class="code" href="../../da/d23/classshaka_1_1media_1_1mp2t_1_1EsParserH26x.html">EsParserH26x</a>() <span class="keyword">override</span>;</div>
@@ -188,7 +188,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  Nalu::CodecType type_;</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="comment">// Bytes of the ES stream that have not been emitted yet.</span></div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  scoped_ptr&lt;media::OffsetByteQueue&gt; es_queue_;</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  std::unique_ptr&lt;media::OffsetByteQueue&gt; es_queue_;</div>
 <div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  std::list&lt;std::pair&lt;int64_t, TimingDesc&gt;&gt; timing_desc_list_;</div>
 <div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  <span class="comment">// Parser state.</span></div>
@@ -200,7 +200,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  std::deque&lt;NaluInfo&gt; access_unit_nalus_;</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
 <div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;  <span class="comment">// Filter to convert H.264/H.265 Annex B byte stream to unit stream.</span></div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  scoped_ptr&lt;H26xByteToUnitStreamConverter&gt; stream_converter_;</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;  std::unique_ptr&lt;H26xByteToUnitStreamConverter&gt; stream_converter_;</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="comment">// Frame for which we do not yet have a duration.</span></div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  scoped_refptr&lt;MediaSample&gt; pending_sample_;</div>
@@ -222,7 +222,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -96,8 +96,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#ifndef PACKAGER_FILE_THREADED_IO_FILE_H_</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define PACKAGER_FILE_THREADED_IO_FILE_H_</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;packager/base/atomicops.h&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/scoped_ptr.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/base/atomicops.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/base/synchronization/waitable_event.h&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file.h&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file_closer.h&quot;</span></div>
@@ -113,7 +113,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;    kOutputMode</div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;  };</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <a class="code" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html">ThreadedIoFile</a>(scoped_ptr&lt;File, FileCloser&gt; internal_file,</div>
+<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  <a class="code" href="../../d0/d66/classshaka_1_1media_1_1ThreadedIoFile.html">ThreadedIoFile</a>(std::unique_ptr&lt;File, FileCloser&gt; internal_file,</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;                 Mode mode,</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;                 uint64_t io_cache_size,</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;                 uint64_t io_block_size);</div>
@@ -138,7 +138,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="keywordtype">void</span> RunInInputMode();</div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="keywordtype">void</span> RunInOutputMode();</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  scoped_ptr&lt;File, FileCloser&gt; internal_file_;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  std::unique_ptr&lt;File, FileCloser&gt; internal_file_;</div>
 <div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keyword">const</span> Mode mode_;</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <a class="code" href="../../dd/d7c/classshaka_1_1media_1_1IoCache.html">IoCache</a> cache_;</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  std::vector&lt;uint8_t&gt; io_buffer_;</div>
@@ -172,7 +172,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

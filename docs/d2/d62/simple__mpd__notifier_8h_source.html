@@ -97,11 +97,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define MPD_BASE_SIMPLE_MPD_NOTIFIER_H_</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/base/gtest_prod_util.h&quot;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/scoped_ptr.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/base/gtest_prod_util.h&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/base/synchronization/lock.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/mpd_notifier.h&quot;</span></div>
 <div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/mpd_notifier_util.h&quot;</span></div>
@@ -149,13 +149,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  }</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="comment">// Testing only method. Sets mpd_builder_.</span></div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keywordtype">void</span> SetMpdBuilderForTesting(scoped_ptr&lt;MpdBuilder&gt; mpd_builder) {</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    mpd_builder_ = mpd_builder.Pass();</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keywordtype">void</span> SetMpdBuilderForTesting(std::unique_ptr&lt;MpdBuilder&gt; mpd_builder) {</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    mpd_builder_ = std::move(mpd_builder);</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  }</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="comment">// MPD output path.</span></div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  std::string output_path_;</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  scoped_ptr&lt;MpdBuilder&gt; mpd_builder_;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  std::unique_ptr&lt;MpdBuilder&gt; mpd_builder_;</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  base::Lock lock_;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="keyword">typedef</span> std::map&lt;std::string, AdaptationSet*&gt; AdaptationSetMap;</div>
@@ -186,7 +186,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -130,7 +130,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="comment">// Sanity check to make sure we didn&#39;t overflow.</span></div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    CHECK_GT(new_size, size_);</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    scoped_ptr&lt;uint8_t[]&gt; new_buffer(<span class="keyword">new</span> uint8_t[new_size]);</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    std::unique_ptr&lt;uint8_t[]&gt; new_buffer(<span class="keyword">new</span> uint8_t[new_size]);</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;    <span class="comment">// Copy the data from the old buffer to the start of the new one.</span></div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    <span class="keywordflow">if</span> (used_ &gt; 0)</div>
@@ -182,7 +182,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

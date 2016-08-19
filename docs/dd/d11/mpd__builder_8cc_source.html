@@ -101,13 +101,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &lt;cmath&gt;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &lt;iterator&gt;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;list&gt;</span></div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/base/base64.h&quot;</span></div>
-<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/base/bind.h&quot;</span></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;packager/base/files/file_path.h&quot;</span></div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/scoped_ptr.h&quot;</span></div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;</div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;<span class="preprocessor">#include &quot;packager/base/base64.h&quot;</span></div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;<span class="preprocessor">#include &quot;packager/base/bind.h&quot;</span></div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;<span class="preprocessor">#include &quot;packager/base/files/file_path.h&quot;</span></div>
+<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;<span class="preprocessor">#include &quot;packager/base/strings/string_number_conversions.h&quot;</span></div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="preprocessor">#include &quot;packager/base/strings/stringprintf.h&quot;</span></div>
 <div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;<span class="preprocessor">#include &quot;packager/base/synchronization/lock.h&quot;</span></div>
@@ -500,7 +500,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;}</div>
 <div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;</div>
 <div class="line"><a name="l00413"></a><span class="lineno"><a class="line" href="../../dc/da1/classshaka_1_1MpdBuilder.html#ad32d4f20e6325b20267a2e905e1ec243">  413</a></span>&#160;<a class="code" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a>* <a class="code" href="../../dc/da1/classshaka_1_1MpdBuilder.html#ad32d4f20e6325b20267a2e905e1ec243">MpdBuilder::AddAdaptationSet</a>(<span class="keyword">const</span> std::string&amp; lang) {</div>
-<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;  scoped_ptr&lt;AdaptationSet&gt; adaptation_set(</div>
+<div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;  std::unique_ptr&lt;AdaptationSet&gt; adaptation_set(</div>
 <div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;      <span class="keyword">new</span> <a class="code" href="../../d8/d8e/classshaka_1_1AdaptationSet.html">AdaptationSet</a>(adaptation_set_counter_.GetNext(), lang, mpd_options_,</div>
 <div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;                        type_, &amp;representation_counter_));</div>
 <div class="line"><a name="l00417"></a><span class="lineno">  417</span>&#160;</div>
@@ -557,7 +557,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00468"></a><span class="lineno">  468</span>&#160;      adaptation_sets_.begin();</div>
 <div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;  <span class="keywordflow">for</span> (; adaptation_sets_it != adaptation_sets_.end(); ++adaptation_sets_it) {</div>
 <div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;    xml::scoped_xml_ptr&lt;xmlNode&gt; child((*adaptation_sets_it)-&gt;GetXml());</div>
-<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;    <span class="keywordflow">if</span> (!child.get() || !period.AddChild(child.Pass()))</div>
+<div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;    <span class="keywordflow">if</span> (!child.get() || !period.AddChild(std::move(child)))</div>
 <div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;      <span class="keywordflow">return</span> NULL;</div>
 <div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;  }</div>
 <div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;</div>
@@ -783,10 +783,10 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00694"></a><span class="lineno">  694</span>&#160;  <span class="keyword">const</span> uint32_t representation_id = representation_counter_-&gt;GetNext();</div>
 <div class="line"><a name="l00695"></a><span class="lineno">  695</span>&#160;  <span class="comment">// Note that AdaptationSet outlive Representation, so this object</span></div>
 <div class="line"><a name="l00696"></a><span class="lineno">  696</span>&#160;  <span class="comment">// will die before AdaptationSet.</span></div>
-<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;  scoped_ptr&lt;RepresentationStateChangeListener&gt; listener(</div>
+<div class="line"><a name="l00697"></a><span class="lineno">  697</span>&#160;  std::unique_ptr&lt;RepresentationStateChangeListener&gt; listener(</div>
 <div class="line"><a name="l00698"></a><span class="lineno">  698</span>&#160;      <span class="keyword">new</span> RepresentationStateChangeListenerImpl(representation_id, <span class="keyword">this</span>));</div>
-<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;  scoped_ptr&lt;Representation&gt; representation(<span class="keyword">new</span> <a class="code" href="../../de/d52/classshaka_1_1Representation.html">Representation</a>(</div>
-<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;      media_info, mpd_options_, representation_id, listener.Pass()));</div>
+<div class="line"><a name="l00699"></a><span class="lineno">  699</span>&#160;  std::unique_ptr&lt;Representation&gt; representation(<span class="keyword">new</span> <a class="code" href="../../de/d52/classshaka_1_1Representation.html">Representation</a>(</div>
+<div class="line"><a name="l00700"></a><span class="lineno">  700</span>&#160;      media_info, mpd_options_, representation_id, std::move(listener)));</div>
 <div class="line"><a name="l00701"></a><span class="lineno">  701</span>&#160;</div>
 <div class="line"><a name="l00702"></a><span class="lineno">  702</span>&#160;  <span class="keywordflow">if</span> (!representation-&gt;Init())</div>
 <div class="line"><a name="l00703"></a><span class="lineno">  703</span>&#160;    <span class="keywordflow">return</span> NULL;</div>
@@ -915,7 +915,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00826"></a><span class="lineno">  826</span>&#160;    <span class="keywordflow">if</span> (suppress_representation_frame_rate)</div>
 <div class="line"><a name="l00827"></a><span class="lineno">  827</span>&#160;      representation-&gt;SuppressOnce(Representation::kSuppressFrameRate);</div>
 <div class="line"><a name="l00828"></a><span class="lineno">  828</span>&#160;    xml::scoped_xml_ptr&lt;xmlNode&gt; child(representation-&gt;GetXml());</div>
-<div class="line"><a name="l00829"></a><span class="lineno">  829</span>&#160;    <span class="keywordflow">if</span> (!child || !adaptation_set.AddChild(child.Pass()))</div>
+<div class="line"><a name="l00829"></a><span class="lineno">  829</span>&#160;    <span class="keywordflow">if</span> (!child || !adaptation_set.AddChild(std::move(child)))</div>
 <div class="line"><a name="l00830"></a><span class="lineno">  830</span>&#160;      <span class="keywordflow">return</span> xml::scoped_xml_ptr&lt;xmlNode&gt;();</div>
 <div class="line"><a name="l00831"></a><span class="lineno">  831</span>&#160;  }</div>
 <div class="line"><a name="l00832"></a><span class="lineno">  832</span>&#160;</div>
@@ -1121,17 +1121,17 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l01032"></a><span class="lineno"> 1032</span>&#160;      base::IntToString(timescale) + <span class="stringliteral">&quot;/&quot;</span> + base::IntToString(frame_duration);</div>
 <div class="line"><a name="l01033"></a><span class="lineno"> 1033</span>&#160;}</div>
 <div class="line"><a name="l01034"></a><span class="lineno"> 1034</span>&#160;</div>
-<div class="line"><a name="l01035"></a><span class="lineno"><a class="line" href="../../de/d52/classshaka_1_1Representation.html#ad029323166bb60175a2369c3e887dca0"> 1035</a></span>&#160;<a class="code" href="../../de/d52/classshaka_1_1Representation.html#ad029323166bb60175a2369c3e887dca0">Representation::Representation</a>(</div>
+<div class="line"><a name="l01035"></a><span class="lineno"><a class="line" href="../../de/d52/classshaka_1_1Representation.html#a997138fcaa5deef5151a64a2d7ce6aeb"> 1035</a></span>&#160;<a class="code" href="../../de/d52/classshaka_1_1Representation.html#a997138fcaa5deef5151a64a2d7ce6aeb">Representation::Representation</a>(</div>
 <div class="line"><a name="l01036"></a><span class="lineno"> 1036</span>&#160;    <span class="keyword">const</span> MediaInfo&amp; media_info,</div>
 <div class="line"><a name="l01037"></a><span class="lineno"> 1037</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d1/df3/structshaka_1_1MpdOptions.html">MpdOptions</a>&amp; mpd_options,</div>
 <div class="line"><a name="l01038"></a><span class="lineno"> 1038</span>&#160;    uint32_t <span class="keywordtype">id</span>,</div>
-<div class="line"><a name="l01039"></a><span class="lineno"> 1039</span>&#160;    scoped_ptr&lt;RepresentationStateChangeListener&gt; state_change_listener)</div>
+<div class="line"><a name="l01039"></a><span class="lineno"> 1039</span>&#160;    std::unique_ptr&lt;RepresentationStateChangeListener&gt; state_change_listener)</div>
 <div class="line"><a name="l01040"></a><span class="lineno"> 1040</span>&#160;    : media_info_(media_info),</div>
 <div class="line"><a name="l01041"></a><span class="lineno"> 1041</span>&#160;      id_(id),</div>
 <div class="line"><a name="l01042"></a><span class="lineno"> 1042</span>&#160;      bandwidth_estimator_(<a class="code" href="../../d2/d6f/classBandwidthEstimator.html">BandwidthEstimator</a>::kUseAllBlocks),</div>
 <div class="line"><a name="l01043"></a><span class="lineno"> 1043</span>&#160;      mpd_options_(mpd_options),</div>
 <div class="line"><a name="l01044"></a><span class="lineno"> 1044</span>&#160;      start_number_(1),</div>
-<div class="line"><a name="l01045"></a><span class="lineno"> 1045</span>&#160;      state_change_listener_(state_change_listener.Pass()),</div>
+<div class="line"><a name="l01045"></a><span class="lineno"> 1045</span>&#160;      state_change_listener_(std::move(state_change_listener)),</div>
 <div class="line"><a name="l01046"></a><span class="lineno"> 1046</span>&#160;      output_suppression_flags_(0) {}</div>
 <div class="line"><a name="l01047"></a><span class="lineno"> 1047</span>&#160;</div>
 <div class="line"><a name="l01048"></a><span class="lineno"> 1048</span>&#160;Representation::~Representation() {}</div>
@@ -1476,6 +1476,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="classshaka_1_1Representation_html_a6ca8bbfd34ef8ca782d2ef18aeaad932"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a6ca8bbfd34ef8ca782d2ef18aeaad932">shaka::Representation::AddNewSegment</a></div><div class="ttdeci">virtual void AddNewSegment(uint64_t start_time, uint64_t duration, uint64_t size)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01104">mpd_builder.cc:1104</a></div></div>
 <div class="ttc" id="classshaka_1_1Representation_html_ae998409ae94f3ba12909a96e8f3f4f7e"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#ae998409ae94f3ba12909a96e8f3f4f7e">shaka::Representation::Init</a></div><div class="ttdeci">bool Init()</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01050">mpd_builder.cc:1050</a></div></div>
 <div class="ttc" id="classshaka_1_1MpdBuilder_html_a35685a28f837c397e1f862d44b2205d9"><div class="ttname"><a href="../../dc/da1/classshaka_1_1MpdBuilder.html#a35685a28f837c397e1f862d44b2205d9">shaka::MpdBuilder::WriteMpdToFile</a></div><div class="ttdeci">bool WriteMpdToFile(media::File *output_file)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00423">mpd_builder.cc:423</a></div></div>
+<div class="ttc" id="classshaka_1_1Representation_html_a997138fcaa5deef5151a64a2d7ce6aeb"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a997138fcaa5deef5151a64a2d7ce6aeb">shaka::Representation::Representation</a></div><div class="ttdeci">Representation(const MediaInfo &amp;media_info, const MpdOptions &amp;mpd_options, uint32_t representation_id, std::unique_ptr&lt; RepresentationStateChangeListener &gt; state_change_listener)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01035">mpd_builder.cc:1035</a></div></div>
 <div class="ttc" id="classshaka_1_1AdaptationSet_html_acd24d0537c3625d709b58cf9565d8fcf"><div class="ttname"><a href="../../d8/d8e/classshaka_1_1AdaptationSet.html#acd24d0537c3625d709b58cf9565d8fcf">shaka::AdaptationSet::AdaptationSet</a></div><div class="ttdeci">AdaptationSet(uint32_t adaptation_set_id, const std::string &amp;lang, const MpdOptions &amp;mpd_options, MpdBuilder::MpdType mpd_type, base::AtomicSequenceNumber *representation_counter)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00674">mpd_builder.cc:674</a></div></div>
 <div class="ttc" id="classshaka_1_1AdaptationSet_html"><div class="ttname"><a href="../../d8/d8e/classshaka_1_1AdaptationSet.html">shaka::AdaptationSet</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d6/da3/mpd__builder_8h_source.html#l00167">mpd_builder.h:167</a></div></div>
 <div class="ttc" id="classshaka_1_1Representation_html_a11b32833166b9c4bea78cca2c6069d98"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#a11b32833166b9c4bea78cca2c6069d98">shaka::Representation::SetSampleDuration</a></div><div class="ttdeci">virtual void SetSampleDuration(uint32_t sample_duration)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01128">mpd_builder.cc:1128</a></div></div>
@@ -1483,7 +1484,6 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="namespaceshaka_html_a5f657931280fdf63cae2ed8a8f891288"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a5f657931280fdf63cae2ed8a8f891288">shaka::LanguageToShortestForm</a></div><div class="ttdeci">std::string LanguageToShortestForm(const std::string &amp;language)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d72/language__utils_8cc_source.html#l00089">language_utils.cc:89</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1File_html"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html">shaka::media::File</a></div><div class="ttdoc">Define an abstract file interface. </div><div class="ttdef"><b>Definition:</b> <a href="../../d2/d4d/file_8h_source.html#l00024">file.h:24</a></div></div>
 <div class="ttc" id="classshaka_1_1AdaptationSet_html_a28c52febc71a581ebec2c1308f6ea15c"><div class="ttname"><a href="../../d8/d8e/classshaka_1_1AdaptationSet.html#a28c52febc71a581ebec2c1308f6ea15c">shaka::AdaptationSet::AddContentProtectionElement</a></div><div class="ttdeci">virtual void AddContentProtectionElement(const ContentProtectionElement &amp;element)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00737">mpd_builder.cc:737</a></div></div>
-<div class="ttc" id="classshaka_1_1Representation_html_ad029323166bb60175a2369c3e887dca0"><div class="ttname"><a href="../../de/d52/classshaka_1_1Representation.html#ad029323166bb60175a2369c3e887dca0">shaka::Representation::Representation</a></div><div class="ttdeci">Representation(const MediaInfo &amp;media_info, const MpdOptions &amp;mpd_options, uint32_t representation_id, scoped_ptr&lt; RepresentationStateChangeListener &gt; state_change_listener)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l01035">mpd_builder.cc:1035</a></div></div>
 <div class="ttc" id="structshaka_1_1ContentProtectionElement_html"><div class="ttname"><a href="../../da/d43/structshaka_1_1ContentProtectionElement.html">shaka::ContentProtectionElement</a></div><div class="ttdef"><b>Definition:</b> <a href="../../de/dd6/content__protection__element_8h_source.html#l00036">content_protection_element.h:36</a></div></div>
 <div class="ttc" id="classshaka_1_1AdaptationSet_html_ae96ad89ec7cc7d5ef1db467a9cf13730"><div class="ttname"><a href="../../d8/d8e/classshaka_1_1AdaptationSet.html#ae96ad89ec7cc7d5ef1db467a9cf13730">shaka::AdaptationSet::AddRole</a></div><div class="ttdeci">virtual void AddRole(Role role)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00749">mpd_builder.cc:749</a></div></div>
 <div class="ttc" id="classshaka_1_1MpdBuilder_html_ab6fd968035d1cba5060fe23a107f8bdb"><div class="ttname"><a href="../../dc/da1/classshaka_1_1MpdBuilder.html#ab6fd968035d1cba5060fe23a107f8bdb">shaka::MpdBuilder::AddBaseUrl</a></div><div class="ttdeci">void AddBaseUrl(const std::string &amp;base_url)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00409">mpd_builder.cc:409</a></div></div>
@@ -1508,7 +1508,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

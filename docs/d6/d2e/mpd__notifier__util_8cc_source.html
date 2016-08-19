@@ -97,8 +97,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &quot;packager/base/strings/string_number_conversions.h&quot;</span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &quot;packager/base/strings/string_util.h&quot;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file_closer.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file.h&quot;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file.h&quot;</span></div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/media/file/file_closer.h&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/mpd_utils.h&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">namespace </span>shaka {</div>
@@ -115,7 +115,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  }</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;</div>
-<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  scoped_ptr&lt;File, FileCloser&gt; file(File::Open(output_path.c_str(), <span class="stringliteral">&quot;w&quot;</span>));</div>
+<div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;  std::unique_ptr&lt;File, FileCloser&gt; file(File::Open(output_path.c_str(), <span class="stringliteral">&quot;w&quot;</span>));</div>
 <div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;  <span class="keywordflow">if</span> (!file) {</div>
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failed to open file for writing: &quot;</span> &lt;&lt; output_path;</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
@@ -170,7 +170,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

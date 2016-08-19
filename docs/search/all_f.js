@@ -19,7 +19,7 @@ var searchData=
   ['release',['Release',['../d1/d31/classshaka_1_1xml_1_1XmlNode.html#ae5cb2c3000ccbd53c0a1867db0b8a2d0',1,'shaka::xml::XmlNode']]],
   ['reopen',['Reopen',['../dd/d7c/classshaka_1_1media_1_1IoCache.html#ae751faea047196ba2770f5bf90649185',1,'shaka::media::IoCache']]],
   ['representation',['Representation',['../de/d52/classshaka_1_1Representation.html',1,'shaka']]],
-  ['representation',['Representation',['../de/d52/classshaka_1_1Representation.html#ad029323166bb60175a2369c3e887dca0',1,'shaka::Representation']]],
+  ['representation',['Representation',['../de/d52/classshaka_1_1Representation.html#a997138fcaa5deef5151a64a2d7ce6aeb',1,'shaka::Representation']]],
   ['representationbasexmlnode',['RepresentationBaseXmlNode',['../dd/db9/classshaka_1_1xml_1_1RepresentationBaseXmlNode.html',1,'shaka::xml']]],
   ['representationstatechangelistener',['RepresentationStateChangeListener',['../df/d94/classshaka_1_1RepresentationStateChangeListener.html',1,'shaka']]],
   ['representationxmlnode',['RepresentationXmlNode',['../df/d9e/classshaka_1_1xml_1_1RepresentationXmlNode.html',1,'shaka::xml']]],

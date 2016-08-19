@@ -124,11 +124,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;  DashIopMpdNotifierFactory() {}</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  ~DashIopMpdNotifierFactory()<span class="keyword"> override </span>{}</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  scoped_ptr&lt;MpdNotifier&gt; Create(DashProfile dash_profile,</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                                 <span class="keyword">const</span> MpdOptions&amp; mpd_options,</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                                 <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; base_urls,</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                                 <span class="keyword">const</span> std::string&amp; output_path)<span class="keyword"> override </span>{</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordflow">return</span> scoped_ptr&lt;MpdNotifier&gt;(<span class="keyword">new</span> DashIopMpdNotifier(</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  std::unique_ptr&lt;MpdNotifier&gt; Create(DashProfile dash_profile,</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                                      <span class="keyword">const</span> MpdOptions&amp; mpd_options,</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                                      <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; base_urls,</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;                                      <span class="keyword">const</span> std::string&amp; output_path)<span class="keyword"> override </span>{</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordflow">return</span> std::unique_ptr&lt;MpdNotifier&gt;(<span class="keyword">new</span> DashIopMpdNotifier(</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;        dash_profile, mpd_options, base_urls, output_path));</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  }</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;};</div>
@@ -139,11 +139,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  SimpleMpdNotifierFactory() {}</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  ~SimpleMpdNotifierFactory()<span class="keyword"> override </span>{}</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  scoped_ptr&lt;MpdNotifier&gt; Create(DashProfile dash_profile,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                                 <span class="keyword">const</span> MpdOptions&amp; mpd_options,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                                 <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; base_urls,</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                                 <span class="keyword">const</span> std::string&amp; output_path)<span class="keyword"> override </span>{</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">return</span> scoped_ptr&lt;MpdNotifier&gt;(<span class="keyword">new</span> SimpleMpdNotifier(</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  std::unique_ptr&lt;MpdNotifier&gt; Create(DashProfile dash_profile,</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                                      <span class="keyword">const</span> MpdOptions&amp; mpd_options,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                                      <span class="keyword">const</span> std::vector&lt;std::string&gt;&amp; base_urls,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                                      <span class="keyword">const</span> std::string&amp; output_path)<span class="keyword"> override </span>{</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;    <span class="keywordflow">return</span> std::unique_ptr&lt;MpdNotifier&gt;(<span class="keyword">new</span> SimpleMpdNotifier(</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;        dash_profile, mpd_options, base_urls, output_path));</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  }</div>
 <div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;};</div>
@@ -185,7 +185,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="keywordtype">bool</span> MpdWriter::WriteMpdToFile(<span class="keyword">const</span> <span class="keywordtype">char</span>* file_name) {</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  CHECK(file_name);</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  scoped_ptr&lt;MpdNotifier&gt; notifier = notifier_factory_-&gt;Create(</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;  std::unique_ptr&lt;MpdNotifier&gt; notifier = notifier_factory_-&gt;Create(</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;      kOnDemandProfile, MpdOptions(), base_urls_, file_name);</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;  <span class="keywordflow">if</span> (!notifier-&gt;Init()) {</div>
 <div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;    LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;failed to initialize MpdNotifier.&quot;</span>;</div>
@@ -211,17 +211,17 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;}</div>
 <div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;</div>
 <div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;<span class="keywordtype">void</span> MpdWriter::SetMpdNotifierFactoryForTest(</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    scoped_ptr&lt;MpdNotifierFactory&gt; factory) {</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  notifier_factory_ = factory.Pass();</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;    std::unique_ptr&lt;MpdNotifierFactory&gt; factory) {</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  notifier_factory_ = std::move(factory);</div>
 <div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;}</div>
 <div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;</div>
 <div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1MpdBuilder_html_a247a9c807274d4e707530f24e2d207f9"><div class="ttname"><a href="../../dc/da1/classshaka_1_1MpdBuilder.html#a247a9c807274d4e707530f24e2d207f9">shaka::MpdBuilder::MakePathsRelativeToMpd</a></div><div class="ttdeci">static void MakePathsRelativeToMpd(const std::string &amp;mpd_path, MediaInfo *media_info)</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d11/mpd__builder_8cc_source.html#l00646">mpd_builder.cc:646</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1File_html_a622dbc8abacebb40b816aa0174ba7c60"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a622dbc8abacebb40b816aa0174ba7c60">shaka::media::File::ReadFileToString</a></div><div class="ttdeci">static bool ReadFileToString(const char *file_name, std::string *contents)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00189">file.cc:189</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1File_html_a622dbc8abacebb40b816aa0174ba7c60"><div class="ttname"><a href="../../d3/d61/classshaka_1_1media_1_1File.html#a622dbc8abacebb40b816aa0174ba7c60">shaka::media::File::ReadFileToString</a></div><div class="ttdeci">static bool ReadFileToString(const char *file_name, std::string *contents)</div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dfc/file_8cc_source.html#l00186">file.cc:186</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

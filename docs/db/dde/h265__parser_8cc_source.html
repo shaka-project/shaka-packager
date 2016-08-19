@@ -95,8 +95,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00006"></a><span class="lineno">    6</span>&#160;</div>
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &quot;packager/media/codecs/h265_parser.h&quot;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
-<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;algorithm&gt;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;math.h&gt;</span></div>
+<div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;math.h&gt;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;algorithm&gt;</span></div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/stl_util.h&quot;</span></div>
@@ -499,7 +499,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00410"></a><span class="lineno">  410</span>&#160;  <a class="code" href="../../de/db4/classshaka_1_1media_1_1H26xBitReader.html">H26xBitReader</a>* br = &amp;reader;</div>
 <div class="line"><a name="l00411"></a><span class="lineno">  411</span>&#160;</div>
 <div class="line"><a name="l00412"></a><span class="lineno">  412</span>&#160;  *pps_id = -1;</div>
-<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;  scoped_ptr&lt;H265Pps&gt; pps(<span class="keyword">new</span> <a class="code" href="../../de/d33/structshaka_1_1media_1_1H265Pps.html">H265Pps</a>);</div>
+<div class="line"><a name="l00413"></a><span class="lineno">  413</span>&#160;  std::unique_ptr&lt;H265Pps&gt; pps(<span class="keyword">new</span> <a class="code" href="../../de/d33/structshaka_1_1media_1_1H265Pps.html">H265Pps</a>);</div>
 <div class="line"><a name="l00414"></a><span class="lineno">  414</span>&#160;</div>
 <div class="line"><a name="l00415"></a><span class="lineno">  415</span>&#160;  TRUE_OR_RETURN(br-&gt;ReadUE(&amp;pps-&gt;pic_parameter_set_id));</div>
 <div class="line"><a name="l00416"></a><span class="lineno">  416</span>&#160;  TRUE_OR_RETURN(br-&gt;ReadUE(&amp;pps-&gt;seq_parameter_set_id));</div>
@@ -609,7 +609,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00520"></a><span class="lineno">  520</span>&#160;</div>
 <div class="line"><a name="l00521"></a><span class="lineno">  521</span>&#160;  *sps_id = -1;</div>
 <div class="line"><a name="l00522"></a><span class="lineno">  522</span>&#160;</div>
-<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;  scoped_ptr&lt;H265Sps&gt; sps(<span class="keyword">new</span> <a class="code" href="../../d4/dfd/structshaka_1_1media_1_1H265Sps.html">H265Sps</a>);</div>
+<div class="line"><a name="l00523"></a><span class="lineno">  523</span>&#160;  std::unique_ptr&lt;H265Sps&gt; sps(<span class="keyword">new</span> <a class="code" href="../../d4/dfd/structshaka_1_1media_1_1H265Sps.html">H265Sps</a>);</div>
 <div class="line"><a name="l00524"></a><span class="lineno">  524</span>&#160;</div>
 <div class="line"><a name="l00525"></a><span class="lineno">  525</span>&#160;  TRUE_OR_RETURN(br-&gt;ReadBits(4, &amp;sps-&gt;video_parameter_set_id));</div>
 <div class="line"><a name="l00526"></a><span class="lineno">  526</span>&#160;  TRUE_OR_RETURN(br-&gt;ReadBits(3, &amp;sps-&gt;max_sub_layers_minus1));</div>
@@ -1221,7 +1221,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

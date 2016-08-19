@@ -96,9 +96,9 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00007"></a><span class="lineno">    7</span>&#160;<span class="preprocessor">#include &lt;inttypes.h&gt;</span></div>
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;</div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor">#include &lt;limits&gt;</span></div>
-<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/base/memory/scoped_ptr.h&quot;</span></div>
+<div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/base/strings/stringprintf.h&quot;</span></div>
 <div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/formats/mp4/box.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
@@ -126,7 +126,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00037"></a><span class="lineno"><a class="line" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#ae348922875d67128d2af6d88b692e205">   37</a></span>&#160;<a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">BoxReader</a>* <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html#ae348922875d67128d2af6d88b692e205">BoxReader::ReadBox</a>(<span class="keyword">const</span> uint8_t* buf,</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;                              <span class="keyword">const</span> <span class="keywordtype">size_t</span> buf_size,</div>
 <div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                              <span class="keywordtype">bool</span>* err) {</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  scoped_ptr&lt;BoxReader&gt; reader(<span class="keyword">new</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">BoxReader</a>(buf, buf_size));</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  std::unique_ptr&lt;BoxReader&gt; reader(<span class="keyword">new</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">BoxReader</a>(buf, buf_size));</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordflow">if</span> (!reader-&gt;ReadHeader(err))</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordflow">return</span> NULL;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
@@ -159,7 +159,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  scanned_ = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
 <div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordflow">while</span> (pos() &lt; size()) {</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    scoped_ptr&lt;BoxReader&gt; child(</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    std::unique_ptr&lt;BoxReader&gt; child(</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;        <span class="keyword">new</span> <a class="code" href="../../d1/dee/classshaka_1_1media_1_1mp4_1_1BoxReader.html">BoxReader</a>(&amp;data()[pos()], size() - pos()));</div>
 <div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    <span class="keywordtype">bool</span> err;</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;    <span class="keywordflow">if</span> (!child-&gt;ReadHeader(&amp;err))</div>
@@ -260,7 +260,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

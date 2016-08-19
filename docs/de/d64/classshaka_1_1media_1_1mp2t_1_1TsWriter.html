@@ -108,19 +108,19 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr class="separator:afc47f61bce7cd4f8f6a6ea0ec2c96d4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9979f940d7a07127709576aa1f766a1"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#ae9979f940d7a07127709576aa1f766a1">FinalizeSegment</a> ()</td></tr>
 <tr class="separator:ae9979f940d7a07127709576aa1f766a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8b2b5caa68f34a332a377524a5f23e61"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#a8b2b5caa68f34a332a377524a5f23e61">AddPesPacket</a> (scoped_ptr&lt; <a class="el" href="../../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html">PesPacket</a> &gt; pes_packet)</td></tr>
-<tr class="separator:a8b2b5caa68f34a332a377524a5f23e61"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0bead9b328bf6c7c9d5bc6997fea2971"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0bead9b328bf6c7c9d5bc6997fea2971"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#a0bead9b328bf6c7c9d5bc6997fea2971">SetProgramMapTableWriterForTesting</a> (scoped_ptr&lt; <a class="el" href="../../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html">ProgramMapTableWriter</a> &gt; table_writer)</td></tr>
-<tr class="memdesc:a0bead9b328bf6c7c9d5bc6997fea2971"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only for testing. <br/></td></tr>
-<tr class="separator:a0bead9b328bf6c7c9d5bc6997fea2971"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a19a7699df7ac129aedfdff074a8a18a3"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#a19a7699df7ac129aedfdff074a8a18a3">AddPesPacket</a> (std::unique_ptr&lt; <a class="el" href="../../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html">PesPacket</a> &gt; pes_packet)</td></tr>
+<tr class="separator:a19a7699df7ac129aedfdff074a8a18a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6eeeadf8e60dc09378b5df7c62eb2bf0"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6eeeadf8e60dc09378b5df7c62eb2bf0"></a>
+void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d64/classshaka_1_1media_1_1mp2t_1_1TsWriter.html#a6eeeadf8e60dc09378b5df7c62eb2bf0">SetProgramMapTableWriterForTesting</a> (std::unique_ptr&lt; <a class="el" href="../../dc/d03/classshaka_1_1media_1_1mp2t_1_1ProgramMapTableWriter.html">ProgramMapTableWriter</a> &gt; table_writer)</td></tr>
+<tr class="memdesc:a6eeeadf8e60dc09378b5df7c62eb2bf0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Only for testing. <br/></td></tr>
+<tr class="separator:a6eeeadf8e60dc09378b5df7c62eb2bf0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This class takes PesPackets, encapsulates them into TS packets, and write the data to file. This also creates PSI from <a class="el" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html" title="Abstract class holds stream information. ">StreamInfo</a>. </p>
 
 <p>Definition at line <a class="el" href="../../d8/dca/ts__writer_8h_source.html#l00028">28</a> of file <a class="el" href="../../d8/dca/ts__writer_8h_source.html">ts_writer.h</a>.</p>
 </div><h2 class="groupheader">Member Function Documentation</h2>
-<a class="anchor" id="a8b2b5caa68f34a332a377524a5f23e61"></a>
+<a class="anchor" id="a19a7699df7ac129aedfdff074a8a18a3"></a>
 <div class="memitem">
 <div class="memproto">
 <table class="mlabels">
@@ -130,7 +130,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
         <tr>
           <td class="memname">bool shaka::media::mp2t::TsWriter::AddPesPacket </td>
           <td>(</td>
-          <td class="paramtype">scoped_ptr&lt; <a class="el" href="../../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html">PesPacket</a> &gt;&#160;</td>
+          <td class="paramtype">std::unique_ptr&lt; <a class="el" href="../../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html">PesPacket</a> &gt;&#160;</td>
           <td class="paramname"><em>pes_packet</em></td><td>)</td>
           <td></td>
         </tr>
@@ -257,7 +257,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../.
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:23 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

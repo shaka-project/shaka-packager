@@ -99,8 +99,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;</div>
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/audio_stream_info.h&quot;</span></div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/video_stream_info.h&quot;</span></div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/protection_system_specific_info.h&quot;</span></div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/protection_system_specific_info.h&quot;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &quot;packager/media/base/video_stream_info.h&quot;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="preprocessor">#include &quot;packager/media/event/muxer_listener_internal.h&quot;</span></div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/media_info.pb.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/mpd/base/mpd_notifier.h&quot;</span></div>
@@ -150,7 +150,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keyword">const</span> <a class="code" href="../../d5/db1/classshaka_1_1media_1_1StreamInfo.html">StreamInfo</a>&amp; stream_info,</div>
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    uint32_t time_scale,</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    ContainerType container_type) {</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  scoped_ptr&lt;MediaInfo&gt; media_info(<span class="keyword">new</span> MediaInfo());</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  std::unique_ptr&lt;MediaInfo&gt; media_info(<span class="keyword">new</span> MediaInfo());</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  <span class="keywordflow">if</span> (!internal::GenerateMediaInfo(muxer_options,</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                                   stream_info,</div>
 <div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                                   time_scale,</div>
@@ -169,7 +169,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    <span class="comment">// TODO(kqyang): Check return result.</span></div>
 <div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    mpd_notifier_-&gt;<a class="code" href="../../d3/dd0/classshaka_1_1MpdNotifier.html#ae10c06fe6022a1020fc889de389be430">NotifyNewContainer</a>(*media_info, &amp;notification_id_);</div>
 <div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    media_info_ = media_info.Pass();</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;    media_info_ = std::move(media_info);</div>
 <div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  }</div>
 <div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;}</div>
 <div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
@@ -274,7 +274,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:08:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
