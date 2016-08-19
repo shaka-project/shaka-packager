@@ -129,8 +129,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="keywordflow">if</span> (segment_template.empty())</div>
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  std::vector&lt;std::string&gt; splits;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  base::SplitString(segment_template, <span class="charliteral">&#39;$&#39;</span>, &amp;splits);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  std::vector&lt;std::string&gt; splits = base::SplitString(</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      segment_template, <span class="stringliteral">&quot;$&quot;</span>, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="comment">// ISO/IEC 23009-1:2012 5.3.9.4.4 Template-based Segment URL construction.</span></div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="comment">// Allowed identifiers: $$, $RepresentationID$, $Number$, $Bandwidth$, $Time$.</span></div>
@@ -194,8 +194,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;                           uint32_t bandwidth) {</div>
 <div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  DCHECK(ValidateSegmentTemplate(segment_template));</div>
 <div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  std::vector&lt;std::string&gt; splits;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  base::SplitString(segment_template, <span class="charliteral">&#39;$&#39;</span>, &amp;splits);</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  std::vector&lt;std::string&gt; splits = base::SplitString(</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;      segment_template, <span class="stringliteral">&quot;$&quot;</span>, base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);</div>
 <div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  <span class="comment">// &quot;$&quot; always appears in pairs, so there should be odd number of splits.</span></div>
 <div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  DCHECK_EQ(1u, splits.size() % 2);</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
@@ -264,7 +264,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:58:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 23:43:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

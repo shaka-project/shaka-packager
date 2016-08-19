@@ -309,61 +309,60 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;  <span class="comment">// Internal content parsing state.</span></div>
 <div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;  State parse_state_;</div>
 <div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;</div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  <span class="keywordtype">bool</span> is_psm_needed_;</div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  uint32_t skip_bytes_;</div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  <span class="keywordtype">bool</span> metadata_is_complete_;</div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  uint8_t current_program_id_;</div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  uint32_t pes_stream_id_;</div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  uint32_t prev_pes_stream_id_;</div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  uint16_t pes_packet_bytes_;</div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  uint8_t pes_flags_1_;</div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  uint8_t pes_flags_2_;</div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  uint8_t prev_pes_flags_1_;</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  uint8_t pes_header_data_bytes_;</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  uint64_t timestamp_;</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;  uint64_t pts_;</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  uint64_t dts_;</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  uint8_t index_program_id_;</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;  scoped_refptr&lt;MediaSample&gt; media_sample_;</div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  uint32_t crypto_unit_start_pos_;</div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  <a class="code" href="../../d2/d0f/structshaka_1_1media_1_1wvm_1_1PrevSampleData.html">PrevSampleData</a> prev_media_sample_data_;</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;  <a class="code" href="../../d8/d08/classshaka_1_1media_1_1H264ByteToUnitStreamConverter.html">H264ByteToUnitStreamConverter</a> byte_to_unit_stream_converter_;</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;  std::vector&lt;uint8_t, std::allocator&lt;uint8_t&gt; &gt; ecm_;</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;  std::vector&lt;uint8_t&gt; psm_data_;</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  std::vector&lt;uint8_t&gt; index_data_;</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  std::map&lt;std::string, uint32_t&gt; program_demux_stream_map_;</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  <span class="keywordtype">int</span> stream_id_count_;</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  std::vector&lt;scoped_refptr&lt;StreamInfo&gt; &gt; stream_infos_;</div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  std::deque&lt;DemuxStreamIdMediaSample&gt; media_sample_queue_;</div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;  std::vector&lt;uint8_t&gt; sample_data_;</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;  <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>* decryption_key_source_;</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;  std::unique_ptr&lt;AesCbcDecryptor&gt; content_decryptor_;</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../dc/d18/classshaka_1_1media_1_1wvm_1_1WvmMediaParser.html">WvmMediaParser</a>);</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;};</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;</div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;}  <span class="comment">// namespace wvm</span></div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_</span></div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;  uint32_t skip_bytes_;</div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;  <span class="keywordtype">bool</span> metadata_is_complete_;</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;  uint8_t current_program_id_;</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;  uint32_t pes_stream_id_;</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;  uint32_t prev_pes_stream_id_;</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;  uint16_t pes_packet_bytes_;</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;  uint8_t pes_flags_1_;</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;  uint8_t pes_flags_2_;</div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;  uint8_t prev_pes_flags_1_;</div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;  uint8_t pes_header_data_bytes_;</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;  uint64_t timestamp_;</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;  uint64_t pts_;</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;  uint64_t dts_;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;  uint8_t index_program_id_;</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;  scoped_refptr&lt;MediaSample&gt; media_sample_;</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;  uint32_t crypto_unit_start_pos_;</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;  <a class="code" href="../../d2/d0f/structshaka_1_1media_1_1wvm_1_1PrevSampleData.html">PrevSampleData</a> prev_media_sample_data_;</div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;  <a class="code" href="../../d8/d08/classshaka_1_1media_1_1H264ByteToUnitStreamConverter.html">H264ByteToUnitStreamConverter</a> byte_to_unit_stream_converter_;</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;  std::vector&lt;uint8_t, std::allocator&lt;uint8_t&gt; &gt; ecm_;</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;  std::vector&lt;uint8_t&gt; psm_data_;</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;  std::vector&lt;uint8_t&gt; index_data_;</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  std::map&lt;std::string, uint32_t&gt; program_demux_stream_map_;</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  <span class="keywordtype">int</span> stream_id_count_;</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;  std::vector&lt;scoped_refptr&lt;StreamInfo&gt; &gt; stream_infos_;</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;  std::deque&lt;DemuxStreamIdMediaSample&gt; media_sample_queue_;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;  std::vector&lt;uint8_t&gt; sample_data_;</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;  <a class="code" href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">KeySource</a>* decryption_key_source_;</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;  std::unique_ptr&lt;AesCbcDecryptor&gt; content_decryptor_;</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;  DISALLOW_COPY_AND_ASSIGN(<a class="code" href="../../dc/d18/classshaka_1_1media_1_1wvm_1_1WvmMediaParser.html">WvmMediaParser</a>);</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;};</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;}  <span class="comment">// namespace wvm</span></div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;<span class="preprocessor">#endif  // MEDIA_FORMATS_WVM_WVM_MEDIA_PARSER_H_</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaParser_html"><div class="ttname"><a href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html">shaka::media::MediaParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d12/media__parser_8h_source.html#l00025">media_parser.h:25</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1H264ByteToUnitStreamConverter_html"><div class="ttname"><a href="../../d8/d08/classshaka_1_1media_1_1H264ByteToUnitStreamConverter.html">shaka::media::H264ByteToUnitStreamConverter</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d7/dec/h264__byte__to__unit__stream__converter_8h_source.html#l00022">h264_byte_to_unit_stream_converter.h:22</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1wvm_1_1PrevSampleData_html"><div class="ttname"><a href="../../d2/d0f/structshaka_1_1media_1_1wvm_1_1PrevSampleData.html">shaka::media::wvm::PrevSampleData</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/d96/wvm__media__parser_8h_source.html#l00038">wvm_media_parser.h:38</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1wvm_1_1WvmMediaParser_html_a6f931f1702724a9b19c3078a7832bc77"><div class="ttname"><a href="../../dc/d18/classshaka_1_1media_1_1wvm_1_1WvmMediaParser.html#a6f931f1702724a9b19c3078a7832bc77">shaka::media::wvm::WvmMediaParser::Init</a></div><div class="ttdeci">void Init(const InitCB &amp;init_cb, const NewSampleCB &amp;new_sample_cb, KeySource *decryption_key_source) override</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d30/wvm__media__parser_8cc_source.html#l00117">wvm_media_parser.cc:117</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1wvm_1_1WvmMediaParser_html_a6f931f1702724a9b19c3078a7832bc77"><div class="ttname"><a href="../../dc/d18/classshaka_1_1media_1_1wvm_1_1WvmMediaParser.html#a6f931f1702724a9b19c3078a7832bc77">shaka::media::wvm::WvmMediaParser::Init</a></div><div class="ttdeci">void Init(const InitCB &amp;init_cb, const NewSampleCB &amp;new_sample_cb, KeySource *decryption_key_source) override</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d30/wvm__media__parser_8cc_source.html#l00116">wvm_media_parser.cc:116</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1wvm_1_1WvmMediaParser_html"><div class="ttname"><a href="../../dc/d18/classshaka_1_1media_1_1wvm_1_1WvmMediaParser.html">shaka::media::wvm::WvmMediaParser</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/d96/wvm__media__parser_8h_source.html#l00051">wvm_media_parser.h:51</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1wvm_1_1WvmMediaParser_html_ac5680e3bd6cdb07fd65af3f39fce999a"><div class="ttname"><a href="../../dc/d18/classshaka_1_1media_1_1wvm_1_1WvmMediaParser.html#ac5680e3bd6cdb07fd65af3f39fce999a">shaka::media::wvm::WvmMediaParser::Flush</a></div><div class="ttdeci">bool Flush() override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d30/wvm__media__parser_8cc_source.html#l00519">wvm_media_parser.cc:519</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1wvm_1_1WvmMediaParser_html_ac5680e3bd6cdb07fd65af3f39fce999a"><div class="ttname"><a href="../../dc/d18/classshaka_1_1media_1_1wvm_1_1WvmMediaParser.html#ac5680e3bd6cdb07fd65af3f39fce999a">shaka::media::wvm::WvmMediaParser::Flush</a></div><div class="ttdeci">bool Flush() override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d30/wvm__media__parser_8cc_source.html#l00518">wvm_media_parser.cc:518</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaParser_html_a95d25a50ad371304f1abce9971ce3704"><div class="ttname"><a href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a95d25a50ad371304f1abce9971ce3704">shaka::media::MediaParser::InitCB</a></div><div class="ttdeci">base::Callback&lt; void(const std::vector&lt; scoped_refptr&lt; StreamInfo &gt; &gt; &amp;stream_info)&gt; InitCB</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d12/media__parser_8h_source.html#l00034">media_parser.h:34</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1EncryptionKey_html"><div class="ttname"><a href="../../dd/dbd/structshaka_1_1media_1_1EncryptionKey.html">shaka::media::EncryptionKey</a></div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00019">key_source.h:19</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1wvm_1_1WvmMediaParser_html_a246702aa75891cbe396ca7cc11e13eeb"><div class="ttname"><a href="../../dc/d18/classshaka_1_1media_1_1wvm_1_1WvmMediaParser.html#a246702aa75891cbe396ca7cc11e13eeb">shaka::media::wvm::WvmMediaParser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *buf, int size) override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d30/wvm__media__parser_8cc_source.html#l00128">wvm_media_parser.cc:128</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1wvm_1_1WvmMediaParser_html_a246702aa75891cbe396ca7cc11e13eeb"><div class="ttname"><a href="../../dc/d18/classshaka_1_1media_1_1wvm_1_1WvmMediaParser.html#a246702aa75891cbe396ca7cc11e13eeb">shaka::media::wvm::WvmMediaParser::Parse</a></div><div class="ttdeci">bool Parse(const uint8_t *buf, int size) override WARN_UNUSED_RESULT</div><div class="ttdef"><b>Definition:</b> <a href="../../dd/d30/wvm__media__parser_8cc_source.html#l00127">wvm_media_parser.cc:127</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaParser_html_a0ac13291317f7d3d9175c4e91e57b891"><div class="ttname"><a href="../../d3/d0a/classshaka_1_1media_1_1MediaParser.html#a0ac13291317f7d3d9175c4e91e57b891">shaka::media::MediaParser::NewSampleCB</a></div><div class="ttdeci">base::Callback&lt; bool(uint32_t track_id, const scoped_refptr&lt; MediaSample &gt; &amp;media_sample)&gt; NewSampleCB</div><div class="ttdef"><b>Definition:</b> <a href="../../d7/d12/media__parser_8h_source.html#l00043">media_parser.h:43</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html">shaka::media::KeySource</a></div><div class="ttdoc">KeySource is responsible for encryption key acquisition. </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d3f/key__source_8h_source.html#l00030">key_source.h:30</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1wvm_1_1DemuxStreamIdMediaSample_html"><div class="ttname"><a href="../../d1/da1/structshaka_1_1media_1_1wvm_1_1DemuxStreamIdMediaSample.html">shaka::media::wvm::DemuxStreamIdMediaSample</a></div><div class="ttdef"><b>Definition:</b> <a href="../../db/d96/wvm__media__parser_8h_source.html#l00029">wvm_media_parser.h:29</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:58:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

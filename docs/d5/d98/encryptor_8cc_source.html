@@ -134,7 +134,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="keywordflow">if</span> (!key-&gt;key_id.empty() &amp;&amp;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      !encoding-&gt;SetEncryptionID(</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;          reinterpret_cast&lt;const uint8*&gt;(key-&gt;key_id.data()),</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;          reinterpret_cast&lt;const uint8_t*&gt;(key-&gt;key_id.data()),</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;          key-&gt;key_id.size())) {</div>
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keywordflow">return</span> Status(error::INTERNAL_ERROR, <span class="stringliteral">&quot;Error setting encryption ID.&quot;</span>);</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  }</div>
@@ -203,7 +203,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;      memcpy(sample_data + kWebMSignalByteSize, encryptor_-&gt;iv().data(),</div>
 <div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;             iv_size);</div>
 <div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;      sample_data[kWebMSignalByteSize + kWebMIvSize] = num_partitions;</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      uint32 partition_offset = 0;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;      uint32_t partition_offset = 0;</div>
 <div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;      <a class="code" href="../../dc/d41/classshaka_1_1media_1_1BufferWriter.html">BufferWriter</a> offsets_buffer(kWebMPartitionOffsetSize * num_partitions);</div>
 <div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;      <span class="keywordflow">for</span> (<span class="keyword">const</span> <span class="keyword">auto</span>&amp; vpx_frame : vpx_frames) {</div>
 <div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;        uint32_t encrypted_size =</div>
@@ -316,7 +316,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

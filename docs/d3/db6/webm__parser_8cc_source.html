@@ -100,7 +100,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="comment">// encrypted request for comments specification is here</span></div>
 <div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="comment">// http://wiki.webmproject.org/encryption/webm-encryption-rfc</span></div>
 <div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;iomanip&gt;</span></div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="preprocessor">#include &lt;limits&gt;</span></div>
 <div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
 <div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;<span class="preprocessor">#include &quot;packager/base/logging.h&quot;</span></div>
 <div class="line"><a name="l00017"></a><span class="lineno">   17</span>&#160;<span class="preprocessor">#include &quot;packager/base/numerics/safe_conversions.h&quot;</span></div>
@@ -558,7 +558,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00469"></a><span class="lineno">  469</span>&#160;  }</div>
 <div class="line"><a name="l00470"></a><span class="lineno">  470</span>&#160;</div>
 <div class="line"><a name="l00471"></a><span class="lineno">  471</span>&#160;  <span class="keywordflow">if</span> (all_ones)</div>
-<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;    *num = kint64max;</div>
+<div class="line"><a name="l00472"></a><span class="lineno">  472</span>&#160;    *num = std::numeric_limits&lt;int64_t&gt;::max();</div>
 <div class="line"><a name="l00473"></a><span class="lineno">  473</span>&#160;</div>
 <div class="line"><a name="l00474"></a><span class="lineno">  474</span>&#160;  <span class="keywordflow">return</span> bytes_used;</div>
 <div class="line"><a name="l00475"></a><span class="lineno">  475</span>&#160;}</div>
@@ -581,7 +581,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00492"></a><span class="lineno">  492</span>&#160;  <span class="keywordflow">if</span> (num_id_bytes &lt;= 0)</div>
 <div class="line"><a name="l00493"></a><span class="lineno">  493</span>&#160;    <span class="keywordflow">return</span> num_id_bytes;</div>
 <div class="line"><a name="l00494"></a><span class="lineno">  494</span>&#160;</div>
-<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;  <span class="keywordflow">if</span> (tmp == kint64max)</div>
+<div class="line"><a name="l00495"></a><span class="lineno">  495</span>&#160;  <span class="keywordflow">if</span> (tmp == std::numeric_limits&lt;int64_t&gt;::max())</div>
 <div class="line"><a name="l00496"></a><span class="lineno">  496</span>&#160;    tmp = kWebMReservedId;</div>
 <div class="line"><a name="l00497"></a><span class="lineno">  497</span>&#160;</div>
 <div class="line"><a name="l00498"></a><span class="lineno">  498</span>&#160;  *<span class="keywordtype">id</span> = <span class="keyword">static_cast&lt;</span><span class="keywordtype">int</span><span class="keyword">&gt;</span>(tmp);</div>
@@ -593,7 +593,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00504"></a><span class="lineno">  504</span>&#160;  <span class="keywordflow">if</span> (num_size_bytes &lt;= 0)</div>
 <div class="line"><a name="l00505"></a><span class="lineno">  505</span>&#160;    <span class="keywordflow">return</span> num_size_bytes;</div>
 <div class="line"><a name="l00506"></a><span class="lineno">  506</span>&#160;</div>
-<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;  <span class="keywordflow">if</span> (tmp == kint64max)</div>
+<div class="line"><a name="l00507"></a><span class="lineno">  507</span>&#160;  <span class="keywordflow">if</span> (tmp == std::numeric_limits&lt;int64_t&gt;::max())</div>
 <div class="line"><a name="l00508"></a><span class="lineno">  508</span>&#160;    tmp = kWebMUnknownSize;</div>
 <div class="line"><a name="l00509"></a><span class="lineno">  509</span>&#160;</div>
 <div class="line"><a name="l00510"></a><span class="lineno">  510</span>&#160;  *element_size = tmp;</div>
@@ -1068,7 +1068,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

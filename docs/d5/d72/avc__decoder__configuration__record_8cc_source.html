@@ -188,12 +188,11 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;    uint8_t avc_level) {</div>
 <div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  <span class="keyword">const</span> uint8_t bytes[] = {profile_indication, profile_compatibility,</div>
 <div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;                           avc_level};</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="keywordflow">return</span> <span class="stringliteral">&quot;avc1.&quot;</span> +</div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;         base::StringToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));</div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;}</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="keywordflow">return</span> <span class="stringliteral">&quot;avc1.&quot;</span> + base::ToLowerASCII(base::HexEncode(bytes, arraysize(bytes)));</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;}</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1AVCDecoderConfigurationRecord_html_a52fbab2c863be9e771eafa20b34b89bc"><div class="ttname"><a href="../../d6/d57/classshaka_1_1media_1_1AVCDecoderConfigurationRecord.html#a52fbab2c863be9e771eafa20b34b89bc">shaka::media::AVCDecoderConfigurationRecord::GetCodecString</a></div><div class="ttdeci">std::string GetCodecString() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/d72/avc__decoder__configuration__record_8cc_source.html#l00091">avc_decoder_configuration_record.cc:91</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1DecoderConfigurationRecord_html_a6b2234ce5bdffaaaad217414df314598"><div class="ttname"><a href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#a6b2234ce5bdffaaaad217414df314598">shaka::media::DecoderConfigurationRecord::AddNalu</a></div><div class="ttdeci">void AddNalu(const Nalu &amp;nalu)</div><div class="ttdoc">Adds the given Nalu to the configuration. </div><div class="ttdef"><b>Definition:</b> <a href="../../d5/dec/decoder__configuration__record_8cc_source.html#l00022">decoder_configuration_record.cc:22</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1DecoderConfigurationRecord_html_a20e0a9cb8002c943814853bd6ce488df"><div class="ttname"><a href="../../de/de0/classshaka_1_1media_1_1DecoderConfigurationRecord.html#a20e0a9cb8002c943814853bd6ce488df">shaka::media::DecoderConfigurationRecord::data</a></div><div class="ttdeci">const uint8_t * data() const </div><div class="ttdef"><b>Definition:</b> <a href="../../d1/db2/decoder__configuration__record_8h_source.html#l00053">decoder_configuration_record.h:53</a></div></div>
@@ -203,7 +202,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:58:16 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 23:43:08 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

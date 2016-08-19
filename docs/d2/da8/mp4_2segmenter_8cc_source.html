@@ -135,8 +135,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  uint8_t skip_byte_block;</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;};</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;COMPILE_ASSERT(arraysize(kKeyRotationDefaultKeyId) == kCencKeyIdSize,</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;               cenc_key_id_must_be_size_16);</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;static_assert(arraysize(kKeyRotationDefaultKeyId) == kCencKeyIdSize,</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;              <span class="stringliteral">&quot;cenc_key_id_must_be_size_16&quot;</span>);</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;uint64_t Rescale(uint64_t time_in_old_scale,</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                 uint32_t old_scale,</div>
@@ -577,7 +577,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html_acb335182d4bd226c1f044cc83705f4fc"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#acb335182d4bd226c1f044cc83705f4fc">shaka::media::MuxerOptions::fragment_sap_aligned</a></div><div class="ttdeci">bool fragment_sap_aligned</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00043">muxer_options.h:43</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1webm_1_1Segmenter_html_a277aeb59ed41fc484a86101d565017ae"><div class="ttname"><a href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#a277aeb59ed41fc484a86101d565017ae">shaka::media::webm::Segmenter::GetDuration</a></div><div class="ttdeci">float GetDuration() const </div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d53/webm_2segmenter_8cc_source.html#l00190">segmenter.cc:190</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1webm_1_1Segmenter_html_aa15ccabe1a33c660201ef1d8386067e5"><div class="ttname"><a href="../../dd/dc5/classshaka_1_1media_1_1webm_1_1Segmenter.html#aa15ccabe1a33c660201ef1d8386067e5">shaka::media::webm::Segmenter::AddSample</a></div><div class="ttdeci">Status AddSample(scoped_refptr&lt; MediaSample &gt; sample)</div><div class="ttdef"><b>Definition:</b> <a href="../../dc/d53/webm_2segmenter_8cc_source.html#l00118">segmenter.cc:118</a></div></div>
-<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Fragmenter_html_a684c1f318ac05e85f4dbf373ea65b7ad"><div class="ttname"><a href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a684c1f318ac05e85f4dbf373ea65b7ad">shaka::media::mp4::Fragmenter::AddSample</a></div><div class="ttdeci">virtual Status AddSample(scoped_refptr&lt; MediaSample &gt; sample)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d9a/fragmenter_8cc_source.html#l00047">fragmenter.cc:47</a></div></div>
+<div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Fragmenter_html_a684c1f318ac05e85f4dbf373ea65b7ad"><div class="ttname"><a href="../../db/d95/classshaka_1_1media_1_1mp4_1_1Fragmenter.html#a684c1f318ac05e85f4dbf373ea65b7ad">shaka::media::mp4::Fragmenter::AddSample</a></div><div class="ttdeci">virtual Status AddSample(scoped_refptr&lt; MediaSample &gt; sample)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d9a/fragmenter_8cc_source.html#l00046">fragmenter.cc:46</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html_a4d3d8c1923a2e0f684c2591cd7f4a890"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a4d3d8c1923a2e0f684c2591cd7f4a890">shaka::media::MuxerOptions::mp4_use_decoding_timestamp_in_timeline</a></div><div class="ttdeci">bool mp4_use_decoding_timestamp_in_timeline</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00057">muxer_options.h:57</a></div></div>
 <div class="ttc" id="structshaka_1_1media_1_1MuxerOptions_html_a1f1336e9be8b12733fe28da083eaf93f"><div class="ttname"><a href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a1f1336e9be8b12733fe28da083eaf93f">shaka::media::MuxerOptions::segment_sap_aligned</a></div><div class="ttdeci">bool segment_sap_aligned</div><div class="ttdef"><b>Definition:</b> <a href="../../d0/d0e/muxer__options_8h_source.html#l00038">muxer_options.h:38</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1KeySource_html_a994eb66cf09d8b08fd1c964f6afd3ab3"><div class="ttname"><a href="../../d1/d1f/classshaka_1_1media_1_1KeySource.html#a994eb66cf09d8b08fd1c964f6afd3ab3">shaka::media::KeySource::GetKey</a></div><div class="ttdeci">virtual Status GetKey(TrackType track_type, EncryptionKey *key)=0</div></div>
@@ -601,7 +601,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Aug 19 2016 00:58:17 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Aug 19 2016 23:43:09 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
