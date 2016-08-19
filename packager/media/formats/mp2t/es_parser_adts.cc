@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <list>
 
 #include "packager/base/logging.h"

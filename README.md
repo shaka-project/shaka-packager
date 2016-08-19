@@ -1,6 +1,7 @@
 # ![Shaka Packager](docs/shaka-packager.png)
 
 [![Build Status](https://travis-ci.org/google/shaka-packager.svg?branch=master)](https://travis-ci.org/google/shaka-packager)
+[![Build status](https://ci.appveyor.com/api/projects/status/3t8iu603rp25sa74?svg=true)](https://ci.appveyor.com/project/shaka/shaka-packager)
 
 Media packaging SDK intended for C++ programmers writing DASH/HLS packager applications with common encryption support, Widevine DRM support, Live, and Video-On-Demand.
 

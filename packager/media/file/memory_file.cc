@@ -8,6 +8,7 @@
 
 #include <string.h>  // for memcpy
 
+#include <algorithm>
 #include <map>
 #include <memory>
 

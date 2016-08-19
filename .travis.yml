@@ -23,7 +23,7 @@ before_script:
   - gclient config https://github.com/google/shaka-packager.git --name=src --unmanaged
   - gclient sync
   - cd src
-  - ninja -C out/${BUILD_TYPE}
+  - ninja -C out/${BUILD_TYPE} -k 100
 
 script:
   - ( find out/${BUILD_TYPE} -name "*_*test" | while read i ; do $i || exit ; done )

@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+
 #include "packager/base/logging.h"
 #include "packager/media/base/bit_reader.h"
 #include "packager/media/formats/mp2t/mp2t_common.h"

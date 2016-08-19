@@ -13,6 +13,7 @@
 #include <map>
 #include <set>
 
+#include "packager/base/files/file_path.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/hls/base/media_playlist.h"
@@ -48,8 +49,12 @@ bool MasterPlaylist::WriteAllPlaylists(const std::string& base_url,
     }
   }
 
+  base::FilePath output_path = base::FilePath::FromUTF8Unsafe(output_dir);
   for (MediaPlaylist* playlist : media_playlists_) {
-    std::string file_path = output_dir + playlist->file_name();
+    std::string file_path =
+        output_path
+            .Append(base::FilePath::FromUTF8Unsafe(playlist->file_name()))
+            .AsUTF8Unsafe();
     if (!has_set_playlist_target_duration_) {
       const bool set_target_duration = playlist->SetTargetDuration(
           static_cast<uint32_t>(ceil(longest_segment_duration)));
@@ -75,7 +80,10 @@ bool MasterPlaylist::WriteAllPlaylists(const std::string& base_url,
 
 bool MasterPlaylist::WriteMasterPlaylist(const std::string& base_url,
                                          const std::string& output_dir) {
-  std::string file_path = output_dir + file_name_;
+  std::string file_path =
+      base::FilePath::FromUTF8Unsafe(output_dir)
+          .Append(base::FilePath::FromUTF8Unsafe(file_name_))
+          .AsUTF8Unsafe();
   std::unique_ptr<media::File, media::FileCloser> file(
       media::File::Open(file_path.c_str(), "w"));
   if (!file) {

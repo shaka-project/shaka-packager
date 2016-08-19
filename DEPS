@@ -91,12 +91,6 @@ hooks = [
                '--running-as-hook'],
   },
   {
-    # Update the Windows toolchain if necessary.
-    'name': 'win_toolchain',
-    'pattern': '.',
-    'action': ['python', 'src/packager/build/vs_toolchain.py', 'update'],
-  },
-  {
     # Update the Mac toolchain if necessary.
     'name': 'mac_toolchain',
     'pattern': '.',

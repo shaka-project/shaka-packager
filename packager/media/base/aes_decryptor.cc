@@ -7,7 +7,7 @@
 #include "packager/media/base/aes_decryptor.h"
 
 #include <openssl/aes.h>
-
+#include <algorithm>
 #include "packager/base/logging.h"
 
 namespace {

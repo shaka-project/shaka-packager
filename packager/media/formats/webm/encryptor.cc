@@ -102,7 +102,7 @@ Status Encryptor::EncryptFrame(scoped_refptr<MediaSample> sample,
         return Status(error::MUXER_FAILURE,
                       "Maximum number of VPx encryption partitions exceeded.");
       }
-      uint8_t num_partitions =
+      size_t num_partitions =
           vpx_frames.size() == 1 ? 1 : vpx_frames.size() * 2;
       size_t header_size = kWebMSignalByteSize + iv_size +
                            kWebMNumPartitionsSize +
@@ -113,7 +113,8 @@ Status Encryptor::EncryptFrame(scoped_refptr<MediaSample> sample,
       sample_data[0] = kWebMEncryptedSignal | kWebMPartitionedSignal;
       memcpy(sample_data + kWebMSignalByteSize, encryptor_->iv().data(),
              iv_size);
-      sample_data[kWebMSignalByteSize + kWebMIvSize] = num_partitions;
+      sample_data[kWebMSignalByteSize + kWebMIvSize] =
+          static_cast<uint8_t>(num_partitions);
       uint32_t partition_offset = 0;
       BufferWriter offsets_buffer(kWebMPartitionOffsetSize * num_partitions);
       for (const auto& vpx_frame : vpx_frames) {

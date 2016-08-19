@@ -4,6 +4,7 @@
 
 #include "packager/media/formats/webm/webm_cluster_parser.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "packager/base/logging.h"

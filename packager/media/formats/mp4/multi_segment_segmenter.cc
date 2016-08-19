@@ -6,6 +6,8 @@
 
 #include "packager/media/formats/mp4/multi_segment_segmenter.h"
 
+#include <algorithm>
+
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/media/base/buffer_writer.h"
