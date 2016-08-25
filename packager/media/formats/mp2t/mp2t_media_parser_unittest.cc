@@ -138,7 +138,7 @@ TEST_F(Mp2tMediaParserTest, UnalignedAppend512_H264) {
 TEST_F(Mp2tMediaParserTest, UnalignedAppend17_H265) {
   // Test small, non-segment-aligned appends.
   ParseMpeg2TsFile("bear-640x360-hevc.ts", 17);
-  EXPECT_EQ(79, video_frame_count_);
+  EXPECT_EQ(78, video_frame_count_);
   EXPECT_TRUE(parser_->Flush());
   EXPECT_EQ(82, video_frame_count_);
 }
@@ -146,7 +146,7 @@ TEST_F(Mp2tMediaParserTest, UnalignedAppend17_H265) {
 TEST_F(Mp2tMediaParserTest, UnalignedAppend512_H265) {
   // Test small, non-segment-aligned appends.
   ParseMpeg2TsFile("bear-640x360-hevc.ts", 512);
-  EXPECT_EQ(79, video_frame_count_);
+  EXPECT_EQ(78, video_frame_count_);
   EXPECT_TRUE(parser_->Flush());
   EXPECT_EQ(82, video_frame_count_);
 }

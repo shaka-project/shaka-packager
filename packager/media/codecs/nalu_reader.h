@@ -110,6 +110,7 @@ class Nalu {
   /// H264NaluType and H265NaluType enums may be used to compare against the
   /// return value.
   int type() const { return type_; }
+  bool is_aud() const { return is_aud_; }
   bool is_video_slice() const { return is_video_slice_; }
   bool can_start_access_unit() const { return can_start_access_unit_; }
 
@@ -119,19 +120,20 @@ class Nalu {
 
   // A pointer to the NALU (i.e. points to the header).  This pointer is not
   // owned by this instance.
-  const uint8_t* data_;
+  const uint8_t* data_ = nullptr;
   // NALU header size (e.g. 1 byte for H.264).  Note that it does not include
   // header extension data in some NAL units.
-  uint64_t header_size_;
+  uint64_t header_size_ = 0;
   // Size of data after the header.
-  uint64_t payload_size_;
+  uint64_t payload_size_ = 0;
 
-  int ref_idc_;
-  int nuh_layer_id_;
-  int nuh_temporal_id_;
-  int type_;
-  bool is_video_slice_;
-  bool can_start_access_unit_;
+  int ref_idc_ = 0;
+  int nuh_layer_id_ = 0;
+  int nuh_temporal_id_ = 0;
+  int type_ = 0;
+  bool is_aud_ = false;
+  bool is_video_slice_ = false;
+  bool can_start_access_unit_ = false;
 
   // Don't use DISALLOW_COPY_AND_ASSIGN since it is just numbers and a pointer
   // it does not own.  This allows Nalus to be stored in a vector.

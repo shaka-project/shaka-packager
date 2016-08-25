@@ -21,15 +21,7 @@ inline bool IsStartCode(const uint8_t* data) {
 }
 }  // namespace
 
-Nalu::Nalu()
-    : data_(nullptr),
-      header_size_(0),
-      payload_size_(0),
-      ref_idc_(0),
-      nuh_layer_id_(0),
-      nuh_temporal_id_(0),
-      type_(0),
-      is_video_slice_(false) {}
+Nalu::Nalu() = default;
 
 bool Nalu::Initialize(CodecType type,
                       const uint8_t* data,
@@ -68,8 +60,8 @@ bool Nalu::InitializeFromH264(const uint8_t* data, uint64_t size) {
                  << ").";
     return false;
   } else if (type_ == Nalu::H264_IDRSlice || type_ == Nalu::H264_SPS ||
-      type_ == Nalu::H264_SPSExtension || type_ == Nalu::H264_SubsetSPS ||
-      type_ == Nalu::H264_PPS) {
+             type_ == Nalu::H264_SPSExtension ||
+             type_ == Nalu::H264_SubsetSPS || type_ == Nalu::H264_PPS) {
     if (ref_idc_ == 0) {
       LOG(WARNING) << "nal_ref_idc shall not be equal to 0 for nalu type "
                    << type_ << " (header 0x" << std::hex
@@ -86,6 +78,7 @@ bool Nalu::InitializeFromH264(const uint8_t* data, uint64_t size) {
     }
   }
 
+  is_aud_ = type_ == H264_AUD;
   is_video_slice_ = (type_ >= Nalu::H264_NonIDRSlice &&
                      type_ <= Nalu::H264_IDRSlice);
   can_start_access_unit_ =
@@ -153,6 +146,7 @@ bool Nalu::InitializeFromH265(const uint8_t* data, uint64_t size) {
     }
   }
 
+  is_aud_ = type_ == H265_AUD;
   is_video_slice_ = type_ >= Nalu::H265_TRAIL_N && type_ <= Nalu::H265_CRA_NUT;
   can_start_access_unit_ =
       nuh_layer_id_ == 0 &&

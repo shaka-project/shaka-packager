@@ -35,11 +35,8 @@ class EsParserH265 : public EsParserH26x {
   void Reset() override;
 
  private:
-  // Processes a NAL unit found in ParseInternal.  The @a pps_id_for_access_unit
-  // value will be passed to UpdateVideoDecoderConfig.
-  bool ProcessNalu(const Nalu& nalu,
-                   bool* is_key_frame,
-                   int* pps_id_for_access_unit) override;
+  // Processes a NAL unit found in ParseInternal.
+  bool ProcessNalu(const Nalu& nalu, VideoSliceInfo* video_slice_info) override;
 
   // Update the video decoder config based on an H264 SPS.
   // Return true if successful.

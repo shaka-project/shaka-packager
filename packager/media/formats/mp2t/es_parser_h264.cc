@@ -42,8 +42,8 @@ void EsParserH264::Reset() {
 }
 
 bool EsParserH264::ProcessNalu(const Nalu& nalu,
-                               bool* is_key_frame,
-                               int* pps_id_for_access_unit) {
+                               VideoSliceInfo* video_slice_info) {
+  video_slice_info->valid = false;
   switch (nalu.type()) {
     case Nalu::H264_AUD: {
       DVLOG(LOG_LEVEL_ES) << "Nalu: AUD";
@@ -71,7 +71,7 @@ bool EsParserH264::ProcessNalu(const Nalu& nalu,
     }
     case Nalu::H264_IDRSlice:
     case Nalu::H264_NonIDRSlice: {
-      *is_key_frame = (nalu.type() == Nalu::H264_IDRSlice);
+      const bool is_key_frame = (nalu.type() == Nalu::H264_IDRSlice);
       DVLOG(LOG_LEVEL_ES) << "Nalu: slice IDR=" << is_key_frame;
       H264SliceHeader shdr;
       if (h264_parser_->ParseSliceHeader(nalu, &shdr) != H264Parser::kOk) {
@@ -80,7 +80,10 @@ bool EsParserH264::ProcessNalu(const Nalu& nalu,
         if (last_video_decoder_config_)
           return false;
       } else {
-        *pps_id_for_access_unit = shdr.pic_parameter_set_id;
+        video_slice_info->valid = true;
+        video_slice_info->is_key_frame = is_key_frame;
+        video_slice_info->frame_num = shdr.frame_num;
+        video_slice_info->pps_id = shdr.pic_parameter_set_id;
       }
       break;
     }

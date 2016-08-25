@@ -36,10 +36,7 @@ EsParserH26x::EsParserH26x(
       emit_sample_cb_(emit_sample_cb),
       type_(type),
       es_queue_(new media::OffsetByteQueue()),
-      current_search_position_(0),
-      stream_converter_(std::move(stream_converter)),
-      pending_sample_duration_(0),
-      waiting_for_key_frame_(true) {}
+      stream_converter_(std::move(stream_converter)) {}
 
 EsParserH26x::~EsParserH26x() {}
 
@@ -69,42 +66,28 @@ bool EsParserH26x::Parse(const uint8_t* buf,
 
   // Add the incoming bytes to the ES queue.
   es_queue_->Push(buf, size);
-
-  // We should always have entries in the vector and it should always start
-  // with |can_start_access_unit == true|.  If not, we are just starting and
-  // should skip to the first access unit.
-  if (access_unit_nalus_.empty()) {
-    if (!SkipToFirstAccessUnit())
-      return true;
-  }
-  DCHECK(!access_unit_nalus_.empty());
-  DCHECK(access_unit_nalus_.front().nalu.can_start_access_unit());
-
   return ParseInternal();
 }
 
 void EsParserH26x::Flush() {
   DVLOG(1) << "EsParserH26x::Flush";
 
-  // Simulate an additional AUD to force emitting the last access unit
+  // Simulate two additional AUDs to force emitting the last access unit
   // which is assumed to be complete at this point.
+  // Two AUDs are needed because the exact size of a NAL unit can only be
+  // determined after seeing the next NAL unit, so we need a second AUD to
+  // finish the parsing of the first AUD.
   if (type_ == Nalu::kH264) {
-    const uint8_t aud[] = {0x00, 0x00, 0x01, 0x09};
+    const uint8_t aud[] = {0x00, 0x00, 0x01, 0x09, 0x00, 0x00, 0x01, 0x09};
     es_queue_->Push(aud, sizeof(aud));
   } else {
     DCHECK_EQ(Nalu::kH265, type_);
-    const uint8_t aud[] = {0x00, 0x00, 0x01, 0x46, 0x01};
+    const uint8_t aud[] = {0x00, 0x00, 0x01, 0x46, 0x01,
+                           0x00, 0x00, 0x01, 0x46, 0x01};
     es_queue_->Push(aud, sizeof(aud));
   }
 
   CHECK(ParseInternal());
-
-  // Note that the end argument is exclusive.  We do not want to include the
-  // fake AUD we just added, so the argument should point to the AUD.
-  if (access_unit_nalus_.size() > 1 &&
-      !ProcessAccessUnit(access_unit_nalus_.end() - 1)) {
-    LOG(WARNING) << "Error processing last access unit.";
-  }
 
   if (pending_sample_) {
     // Flush pending sample.
@@ -118,28 +101,18 @@ void EsParserH26x::Flush() {
 void EsParserH26x::Reset() {
   es_queue_.reset(new media::OffsetByteQueue());
   current_search_position_ = 0;
-  access_unit_nalus_.clear();
+  current_access_unit_position_ = 0;
+  current_video_slice_info_.valid = false;
+  next_access_unit_position_set_ = false;
+  next_access_unit_position_ = 0;
+  current_nalu_info_.reset();
   timing_desc_list_.clear();
   pending_sample_ = scoped_refptr<MediaSample>();
   pending_sample_duration_ = 0;
   waiting_for_key_frame_ = true;
 }
 
-bool EsParserH26x::SkipToFirstAccessUnit() {
-  DCHECK(access_unit_nalus_.empty());
-  while (access_unit_nalus_.empty()) {
-    if (!SearchForNextNalu())
-      return false;
-
-    // If we can't start an access unit, remove it and continue.
-    DCHECK_EQ(1u, access_unit_nalus_.size());
-    if (!access_unit_nalus_.back().nalu.can_start_access_unit())
-      access_unit_nalus_.clear();
-  }
-  return true;
-}
-
-bool EsParserH26x::SearchForNextNalu() {
+bool EsParserH26x::SearchForNalu(uint64_t* position, Nalu* nalu) {
   const uint8_t* es;
   int es_size;
   es_queue_->PeekAt(current_search_position_, &es, &es_size);
@@ -158,7 +131,7 @@ bool EsParserH26x::SearchForNextNalu() {
   }
 
   // Ensure the next NAL unit is a real NAL unit.
-  const uint8_t* nalu_ptr = es + start_code_offset + start_code_size;
+  const uint8_t* next_nalu_ptr = es + start_code_offset + start_code_size;
   // This size is likely inaccurate, this is just to get the header info.
   const int64_t next_nalu_size = es_size - start_code_offset - start_code_size;
   if (next_nalu_size <
@@ -167,106 +140,129 @@ bool EsParserH26x::SearchForNextNalu() {
     return false;
   }
 
-  Nalu next_nalu;
-  if (!next_nalu.Initialize(type_, nalu_ptr, next_nalu_size)) {
-    // The next NAL unit is invalid, skip it and search again.
-    current_search_position_ += start_code_offset + start_code_size;
-    return SearchForNextNalu();
-  }
-
+  // Update search position for next nalu.
   current_search_position_ += start_code_offset + start_code_size;
 
-  NaluInfo info;
-  info.position = current_search_position_ - start_code_size;
-  info.start_code_size = start_code_size;
-  info.nalu = next_nalu;
-  access_unit_nalus_.push_back(info);
-
-  return true;
-}
-
-bool EsParserH26x::ProcessAccessUnit(std::deque<NaluInfo>::iterator end) {
-  DCHECK(end < access_unit_nalus_.end());
-  auto begin = access_unit_nalus_.begin();
-  const uint8_t* es;
-  int es_size;
-  es_queue_->PeekAt(begin->position, &es, &es_size);
-  DCHECK_GE(static_cast<uint64_t>(es_size), (end->position - begin->position));
-
-  // Process the NAL units in the access unit.
-  bool is_key_frame = false;
-  int pps_id = -1;
-  for (auto it = begin; it != end; ++it) {
-    if (it->nalu.nuh_layer_id() == 0) {
-      // Update the NALU because the data pointer may have been invalidated.
-      CHECK(it->nalu.Initialize(
-          type_, es + (it->position - begin->position) + it->start_code_size,
-          ((it+1)->position - it->position) - it->start_code_size));
-      if (!ProcessNalu(it->nalu, &is_key_frame, &pps_id))
-        return false;
-    }
+  // |next_nalu_info_| is made global intentionally to avoid repetitive memory
+  // allocation which could create memory fragments.
+  if (!next_nalu_info_)
+    next_nalu_info_.reset(new NaluInfo);
+  if (!next_nalu_info_->nalu.Initialize(type_, next_nalu_ptr, next_nalu_size)) {
+    // This NAL unit is invalid, skip it and search again.
+    return SearchForNalu(position, nalu);
   }
+  next_nalu_info_->position = current_search_position_ - start_code_size;
+  next_nalu_info_->start_code_size = start_code_size;
 
-  if (is_key_frame)
-    waiting_for_key_frame_ = false;
-  if (!waiting_for_key_frame_) {
-    const uint64_t access_unit_size = end->position - begin->position;
-    RCHECK(EmitFrame(begin->position, access_unit_size, is_key_frame, pps_id));
+  const bool current_nalu_set = current_nalu_info_ ? true : false;
+  if (current_nalu_info_) {
+    // Starting position for the nalu including start code.
+    *position = current_nalu_info_->position;
+    // Update the NALU because the data pointer may have been invalidated.
+    const uint8_t* current_nalu_ptr =
+        next_nalu_ptr +
+        (current_nalu_info_->position + current_nalu_info_->start_code_size) -
+        current_search_position_;
+    const uint64_t current_nalu_size = next_nalu_info_->position -
+                                       current_nalu_info_->position -
+                                       current_nalu_info_->start_code_size;
+    CHECK(nalu->Initialize(type_, current_nalu_ptr, current_nalu_size));
   }
-
-  return true;
+  current_nalu_info_.swap(next_nalu_info_);
+  return current_nalu_set ? true : SearchForNalu(position, nalu);
 }
 
 bool EsParserH26x::ParseInternal() {
-  while (true) {
-    if (!SearchForNextNalu())
-      return true;
-
+  uint64_t position;
+  Nalu nalu;
+  VideoSliceInfo video_slice_info;
+  while (SearchForNalu(&position, &nalu)) {
     // ITU H.264 sec. 7.4.1.2.3
     // H264: The first of the NAL units with |can_start_access_unit() == true|
     //   after the last VCL NAL unit of a primary coded picture specifies the
-    //   start of a new access unit. |nuh_layer_id()| is for H265 only; it is
-    //   included below for ease of computation (the value is always 0).
+    //   start of a new access unit.
     // ITU H.265 sec. 7.4.2.4.4
     // H265: The first of the NAL units with |can_start_access_unit() == true|
     //   after the last VCL NAL unit preceding firstBlPicNalUnit (the first
     //   VCL NAL unit of a coded picture with nuh_layer_id equal to 0), if
     //   any, specifies the start of a new access unit.
-    DCHECK(!access_unit_nalus_.empty());
-    if (!access_unit_nalus_.back().nalu.is_video_slice() ||
-        access_unit_nalus_.back().nalu.nuh_layer_id() != 0) {
+    if (nalu.can_start_access_unit()) {
+      if (!next_access_unit_position_set_) {
+        next_access_unit_position_set_ = true;
+        next_access_unit_position_ = position;
+      }
+      RCHECK(ProcessNalu(nalu, &video_slice_info));
+      if (nalu.is_video_slice() && !video_slice_info.valid) {
+        // This could happen only if decoder config is not available yet. Drop
+        // this frame.
+        DCHECK(!current_video_slice_info_.valid);
+        next_access_unit_position_set_ = false;
+        continue;
+      }
+    } else if (nalu.is_video_slice()) {
+      // This isn't the first VCL NAL unit. Next access unit should start after
+      // this NAL unit.
+      next_access_unit_position_set_ = false;
       continue;
     }
 
-    // First, find the end of the access unit.  Search backward to find the
-    // first VCL NALU before the current one.
-    auto access_unit_end_rit = access_unit_nalus_.rbegin();
-    bool found_vcl = false;
-    for (auto rit = access_unit_nalus_.rbegin() + 1;
-         rit != access_unit_nalus_.rend(); ++rit) {
-      if (rit->nalu.is_video_slice()) {
-        found_vcl = true;
-        break;
-      } else if (rit->nalu.can_start_access_unit()) {
-        // The start of the next access unit is the first unit with
-        // |can_start_access_unit| after the previous VCL unit.
-        access_unit_end_rit = rit;
+    // AUD shall be the first NAL unit if present. There shall be at most one
+    // AUD in any access unit. We can emit the current access unit which shall
+    // not contain the AUD.
+    if (nalu.is_aud())
+      return EmitCurrentAccessUnit();
+
+    // We can only determine if the current access unit ends after seeing
+    // another VCL NAL unit.
+    if (!video_slice_info.valid)
+      continue;
+
+    // Check if it is the first VCL NAL unit of a primary coded picture. It is
+    // always true for H265 as nuh_layer_id shall be == 0 at this point.
+    bool is_first_vcl_nalu = true;
+    if (type_ == Nalu::kH264) {
+      if (current_video_slice_info_.valid) {
+        // ITU H.264 sec. 7.4.1.2.4 Detection of the first VCL NAL unit of a
+        // primary coded picture. Only pps_id and frame_num are checked here.
+        is_first_vcl_nalu =
+            video_slice_info.frame_num != current_video_slice_info_.frame_num ||
+            video_slice_info.pps_id != current_video_slice_info_.pps_id;
       }
     }
-    if (!found_vcl)
-      return true;
+    if (!is_first_vcl_nalu) {
+      // This isn't the first VCL NAL unit. Next access unit should start after
+      // this NAL unit.
+      next_access_unit_position_set_ = false;
+      continue;
+    }
 
-    // Get a forward iterator that corresponds to the same element pointed by
-    // |access_unit_end_rit|. Note: |end| refers to the exclusive end and
-    // will point to a valid object.
-    auto end = (access_unit_end_rit + 1).base();
-    if (!ProcessAccessUnit(end))
-      return false;
+    DCHECK(next_access_unit_position_set_);
+    RCHECK(EmitCurrentAccessUnit());
 
     // Delete the data we have already processed.
-    es_queue_->Trim(end->position);
-    access_unit_nalus_.erase(access_unit_nalus_.begin(), end);
+    es_queue_->Trim(next_access_unit_position_);
+
+    current_access_unit_position_ = next_access_unit_position_;
+    current_video_slice_info_ = video_slice_info;
+    next_access_unit_position_set_ = false;
   }
+  return true;
+}
+
+bool EsParserH26x::EmitCurrentAccessUnit() {
+  if (current_video_slice_info_.valid) {
+    if (current_video_slice_info_.is_key_frame)
+      waiting_for_key_frame_ = false;
+    if (!waiting_for_key_frame_) {
+      RCHECK(
+          EmitFrame(current_access_unit_position_,
+                    next_access_unit_position_ - current_access_unit_position_,
+                    current_video_slice_info_.is_key_frame,
+                    current_video_slice_info_.pps_id));
+    }
+    current_video_slice_info_.valid = false;
+  }
+  return true;
 }
 
 bool EsParserH26x::EmitFrame(int64_t access_unit_pos,
