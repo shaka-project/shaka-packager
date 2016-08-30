@@ -6,15 +6,14 @@
 
 #include "packager/media/base/aes_cryptor.h"
 
-#include <string>
-#include <vector>
-
 #include <openssl/aes.h>
 #include <openssl/err.h>
 #include <openssl/rand.h>
 
+#include <string>
+#include <vector>
+
 #include "packager/base/logging.h"
-#include "packager/base/stl_util.h"
 
 namespace {
 
@@ -58,8 +57,7 @@ bool AesCryptor::Crypt(const std::string& text, std::string* crypt_text) {
   crypt_text->resize(text_size + NumPaddingBytes(text_size));
   size_t crypt_text_size = crypt_text->size();
   if (!Crypt(reinterpret_cast<const uint8_t*>(text.data()), text_size,
-             reinterpret_cast<uint8_t*>(string_as_array(crypt_text)),
-             &crypt_text_size))
+             reinterpret_cast<uint8_t*>(&(*crypt_text)[0]), &crypt_text_size))
     return false;
   DCHECK_LE(crypt_text_size, crypt_text->size());
   crypt_text->resize(crypt_text_size);
@@ -132,5 +130,3 @@ size_t AesCryptor::NumPaddingBytes(size_t size) const {
 
 }  // namespace media
 }  // namespace shaka
-
-

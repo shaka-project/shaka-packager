@@ -5,7 +5,6 @@
 #include "packager/media/formats/webm/webm_content_encodings_client.h"
 
 #include "packager/base/logging.h"
-#include "packager/base/stl_util.h"
 #include "packager/media/formats/webm/webm_constants.h"
 
 namespace shaka {
@@ -14,9 +13,7 @@ namespace media {
 WebMContentEncodingsClient::WebMContentEncodingsClient()
     : content_encryption_encountered_(false), content_encodings_ready_(false) {}
 
-WebMContentEncodingsClient::~WebMContentEncodingsClient() {
-  STLDeleteElements(&content_encodings_);
-}
+WebMContentEncodingsClient::~WebMContentEncodingsClient() {}
 
 const ContentEncodings& WebMContentEncodingsClient::content_encodings() const {
   DCHECK(content_encodings_ready_);
@@ -27,7 +24,7 @@ WebMParserClient* WebMContentEncodingsClient::OnListStart(int id) {
   if (id == kWebMIdContentEncodings) {
     DCHECK(!cur_content_encoding_.get());
     DCHECK(!content_encryption_encountered_);
-    STLDeleteElements(&content_encodings_);
+    content_encodings_.clear();
     content_encodings_ready_ = false;
     return this;
   }
@@ -102,14 +99,14 @@ bool WebMContentEncodingsClient::OnListEnd(int id) {
     }
 
     // Enforce mandatory elements without default values.
-    DCHECK(cur_content_encoding_->type() == ContentEncoding::kTypeEncryption);
+    DCHECK_EQ(cur_content_encoding_->type(), ContentEncoding::kTypeEncryption);
     if (!content_encryption_encountered_) {
       LOG(ERROR) << "ContentEncodingType is encryption but"
                  << " ContentEncryption is missing.";
       return false;
     }
 
-    content_encodings_.push_back(cur_content_encoding_.release());
+    content_encodings_.push_back(std::move(cur_content_encoding_));
     content_encryption_encountered_ = false;
     return true;
   }

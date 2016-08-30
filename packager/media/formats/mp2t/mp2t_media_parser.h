@@ -42,7 +42,7 @@ class Mp2tMediaParser : public MediaParser {
   /// @}
 
  private:
-  typedef std::map<int, PidState*> PidMap;
+  typedef std::map<int, std::unique_ptr<PidState>> PidMap;
 
   // Callback invoked to register a Program Map Table.
   // Note: Does nothing if the PID is already registered.

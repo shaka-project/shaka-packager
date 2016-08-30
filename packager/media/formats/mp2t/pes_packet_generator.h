@@ -10,7 +10,6 @@
 #include <list>
 #include <memory>
 
-#include "packager/base/stl_util.h"
 #include "packager/media/base/aes_cryptor.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
@@ -82,8 +81,7 @@ class PesPacketGenerator {
   // This can be used to create a PES from multiple audio samples.
   std::unique_ptr<PesPacket> current_processing_pes_;
 
-  std::list<PesPacket*> pes_packets_;
-  STLElementDeleter<decltype(pes_packets_)> pes_packets_deleter_;
+  std::list<std::unique_ptr<PesPacket>> pes_packets_;
 
   // Current encryption key.
   std::unique_ptr<AesCryptor> encryptor_;

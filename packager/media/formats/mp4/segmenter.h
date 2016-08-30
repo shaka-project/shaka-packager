@@ -134,7 +134,7 @@ class Segmenter {
   std::unique_ptr<MovieFragment> moof_;
   std::unique_ptr<BufferWriter> fragment_buffer_;
   std::unique_ptr<SegmentIndex> sidx_;
-  std::vector<Fragmenter*> fragmenters_;
+  std::vector<std::unique_ptr<Fragmenter>> fragmenters_;
   std::vector<uint64_t> segment_durations_;
   std::map<const MediaStream*, uint32_t> stream_map_;
   MuxerListener* muxer_listener_;

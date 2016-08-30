@@ -25,7 +25,6 @@
 #include "packager/base/atomic_sequence_num.h"
 #include "packager/base/callback.h"
 #include "packager/base/gtest_prod_util.h"
-#include "packager/base/stl_util.h"
 #include "packager/base/time/clock.h"
 #include "packager/base/time/time.h"
 #include "packager/mpd/base/bandwidth_estimator.h"
@@ -146,8 +145,7 @@ class MpdBuilder {
 
   MpdType type_;
   MpdOptions mpd_options_;
-  std::list<AdaptationSet*> adaptation_sets_;
-  STLElementDeleter<std::list<AdaptationSet*> > adaptation_sets_deleter_;
+  std::list<std::unique_ptr<AdaptationSet>> adaptation_sets_;
 
   std::list<std::string> base_urls_;
   std::string availability_start_time_;
@@ -341,8 +339,7 @@ class AdaptationSet {
   void RecordFrameRate(uint32_t frame_duration, uint32_t timescale);
 
   std::list<ContentProtectionElement> content_protection_elements_;
-  std::list<Representation*> representations_;
-  STLElementDeleter<std::list<Representation*> > representations_deleter_;
+  std::list<std::unique_ptr<Representation>> representations_;
 
   base::AtomicSequenceNumber* const representation_counter_;
 

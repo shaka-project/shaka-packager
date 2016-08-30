@@ -9,14 +9,13 @@
 #include <vector>
 
 #include "packager/base/callback.h"
-#include "packager/base/compiler_specific.h"
 #include "packager/media/formats/webm/webm_content_encodings.h"
 #include "packager/media/formats/webm/webm_parser.h"
 
 namespace shaka {
 namespace media {
 
-typedef std::vector<ContentEncoding*> ContentEncodings;
+typedef std::vector<std::unique_ptr<ContentEncoding>> ContentEncodings;
 
 /// Parser for WebM ContentEncodings element.
 class WebMContentEncodingsClient : public WebMParserClient {

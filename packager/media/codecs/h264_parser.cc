@@ -6,7 +6,6 @@
 
 #include <memory>
 #include "packager/base/logging.h"
-#include "packager/base/stl_util.h"
 #include "packager/media/base/buffer_reader.h"
 
 namespace shaka {
@@ -184,17 +183,14 @@ static_assert(arraysize(kTableSarWidth) == arraysize(kTableSarHeight),
 
 H264Parser::H264Parser() {}
 
-H264Parser::~H264Parser() {
-  STLDeleteValues(&active_SPSes_);
-  STLDeleteValues(&active_PPSes_);
-}
+H264Parser::~H264Parser() {}
 
 const H264Pps* H264Parser::GetPps(int pps_id) {
-  return active_PPSes_[pps_id];
+  return active_PPSes_[pps_id].get();
 }
 
 const H264Sps* H264Parser::GetSps(int sps_id) {
-  return active_SPSes_[sps_id];
+  return active_SPSes_[sps_id].get();
 }
 
 // Default scaling lists (per spec).
@@ -702,8 +698,7 @@ H264Parser::Result H264Parser::ParseSps(const Nalu& nalu, int* sps_id) {
 
   // If an SPS with the same id already exists, replace it.
   *sps_id = sps->seq_parameter_set_id;
-  delete active_SPSes_[*sps_id];
-  active_SPSes_[*sps_id] = sps.release();
+  active_SPSes_[*sps_id] = std::move(sps);
 
   return kOk;
 }
@@ -776,8 +771,7 @@ H264Parser::Result H264Parser::ParsePps(const Nalu& nalu, int* pps_id) {
 
   // If a PPS with the same id already exists, replace it.
   *pps_id = pps->pic_parameter_set_id;
-  delete active_PPSes_[*pps_id];
-  active_PPSes_[*pps_id] = pps.release();
+  active_PPSes_[*pps_id] = std::move(pps);
 
   return kOk;
 }

@@ -36,7 +36,7 @@ DEFINE_bool(dump_stream_info, false, "Dump demuxed stream info.");
 namespace shaka {
 namespace media {
 
-void DumpStreamInfo(const std::vector<MediaStream*>& streams) {
+void DumpStreamInfo(const std::vector<std::unique_ptr<MediaStream>>& streams) {
   printf("Found %zu stream(s).\n", streams.size());
   for (size_t i = 0; i < streams.size(); ++i)
     printf("Stream [%zu] %s\n", i, streams[i]->info()->ToString().c_str());
@@ -180,29 +180,31 @@ bool GetMpdOptions(MpdOptions* mpd_options) {
   return true;
 }
 
-MediaStream* FindFirstStreamOfType(const std::vector<MediaStream*>& streams,
-                                   StreamType stream_type) {
-  typedef std::vector<MediaStream*>::const_iterator StreamIterator;
-  for (StreamIterator it = streams.begin(); it != streams.end(); ++it) {
-    if ((*it)->info()->stream_type() == stream_type)
-      return *it;
+MediaStream* FindFirstStreamOfType(
+    const std::vector<std::unique_ptr<MediaStream>>& streams,
+    StreamType stream_type) {
+  for (const std::unique_ptr<MediaStream>& stream : streams) {
+    if (stream->info()->stream_type() == stream_type)
+      return stream.get();
   }
-  return NULL;
+  return nullptr;
 }
-MediaStream* FindFirstVideoStream(const std::vector<MediaStream*>& streams) {
+MediaStream* FindFirstVideoStream(
+    const std::vector<std::unique_ptr<MediaStream>>& streams) {
   return FindFirstStreamOfType(streams, kStreamVideo);
 }
-MediaStream* FindFirstAudioStream(const std::vector<MediaStream*>& streams) {
+MediaStream* FindFirstAudioStream(
+    const std::vector<std::unique_ptr<MediaStream>>& streams) {
   return FindFirstStreamOfType(streams, kStreamAudio);
 }
 
-bool AddStreamToMuxer(const std::vector<MediaStream*>& streams,
+bool AddStreamToMuxer(const std::vector<std::unique_ptr<MediaStream>>& streams,
                       const std::string& stream_selector,
                       const std::string& language_override,
                       Muxer* muxer) {
   DCHECK(muxer);
 
-  MediaStream* stream = NULL;
+  MediaStream* stream = nullptr;
   if (stream_selector == "video") {
     stream = FindFirstVideoStream(streams);
   } else if (stream_selector == "audio") {
@@ -217,7 +219,7 @@ bool AddStreamToMuxer(const std::vector<MediaStream*>& streams,
                  << streams.size() - 1 << "].";
       return false;
     }
-    stream = streams[stream_id];
+    stream = streams[stream_id].get();
     DCHECK(stream);
   }
 

@@ -65,7 +65,9 @@ class Demuxer {
   ///         add or remove streams from the returned vector, but the caller is
   ///         allowed to change the internal state of the streams in the vector
   ///         through MediaStream APIs.
-  const std::vector<MediaStream*>& streams() { return streams_; }
+  const std::vector<std::unique_ptr<MediaStream>>& streams() {
+    return streams_;
+  }
 
   /// @return Container name (type). Value is CONTAINER_UNKNOWN if the demuxer
   ///         is not initialized.
@@ -97,7 +99,7 @@ class Demuxer {
   // Queued samples received in NewSampleEvent() before ParserInitEvent().
   std::deque<QueuedSample> queued_samples_;
   std::unique_ptr<MediaParser> parser_;
-  std::vector<MediaStream*> streams_;
+  std::vector<std::unique_ptr<MediaStream>> streams_;
   MediaContainerName container_name_;
   std::unique_ptr<uint8_t[]> buffer_;
   std::unique_ptr<KeySource> key_source_;

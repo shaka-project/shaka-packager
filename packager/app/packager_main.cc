@@ -21,7 +21,6 @@
 #include "packager/base/files/file_path.h"
 #include "packager/base/logging.h"
 #include "packager/base/path_service.h"
-#include "packager/base/stl_util.h"
 #include "packager/base/strings/string_split.h"
 #include "packager/base/strings/stringprintf.h"
 #include "packager/base/threading/simple_thread.h"
@@ -167,12 +166,10 @@ class RemuxJob : public base::SimpleThread {
   RemuxJob(std::unique_ptr<Demuxer> demuxer)
       : SimpleThread("RemuxJob"), demuxer_(std::move(demuxer)) {}
 
-  ~RemuxJob() override {
-    STLDeleteElements(&muxers_);
-  }
+  ~RemuxJob() override {}
 
   void AddMuxer(std::unique_ptr<Muxer> mux) {
-    muxers_.push_back(mux.release());
+    muxers_.push_back(std::move(mux));
   }
 
   Demuxer* demuxer() { return demuxer_.get(); }
@@ -185,7 +182,7 @@ class RemuxJob : public base::SimpleThread {
   }
 
   std::unique_ptr<Demuxer> demuxer_;
-  std::vector<Muxer*> muxers_;
+  std::vector<std::unique_ptr<Muxer>> muxers_;
   Status status_;
 
   DISALLOW_COPY_AND_ASSIGN(RemuxJob);
@@ -248,7 +245,7 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
                      KeySource* key_source,
                      MpdNotifier* mpd_notifier,
                      hls::HlsNotifier* hls_notifier,
-                     std::vector<RemuxJob*>* remux_jobs) {
+                     std::vector<std::unique_ptr<RemuxJob>>* remux_jobs) {
   // No notifiers OR (mpd_notifier XOR hls_notifier); which is NAND.
   DCHECK(!(mpd_notifier && hls_notifier));
   DCHECK(remux_jobs);
@@ -326,7 +323,7 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
         if (stream_iter->output.empty())
           continue;  // just need stream info.
       }
-      remux_jobs->push_back(new RemuxJob(std::move(demuxer)));
+      remux_jobs->emplace_back(new RemuxJob(std::move(demuxer)));
       previous_input = stream_iter->input;
     }
     DCHECK(!remux_jobs->empty());
@@ -391,29 +388,24 @@ bool CreateRemuxJobs(const StreamDescriptorList& stream_descriptors,
   return true;
 }
 
-Status RunRemuxJobs(const std::vector<RemuxJob*>& remux_jobs) {
+Status RunRemuxJobs(const std::vector<std::unique_ptr<RemuxJob>>& remux_jobs) {
   // Start the job threads.
-  for (std::vector<RemuxJob*>::const_iterator job_iter = remux_jobs.begin();
-       job_iter != remux_jobs.end();
-       ++job_iter) {
-    (*job_iter)->Start();
-  }
+  for (const std::unique_ptr<RemuxJob>& job : remux_jobs)
+    job->Start();
 
   // Wait for all jobs to complete or an error occurs.
   Status status;
   bool all_joined;
   do {
     all_joined = true;
-    for (std::vector<RemuxJob*>::const_iterator job_iter = remux_jobs.begin();
-         job_iter != remux_jobs.end();
-         ++job_iter) {
-      if ((*job_iter)->HasBeenJoined()) {
-        status = (*job_iter)->status();
+    for (const std::unique_ptr<RemuxJob>& job : remux_jobs) {
+      if (job->HasBeenJoined()) {
+        status = job->status();
         if (!status.ok())
           break;
       } else {
         all_joined = false;
-        (*job_iter)->Join();
+        job->Join();
       }
     }
   } while (!all_joined && status.ok());
@@ -496,8 +488,7 @@ bool RunPackager(const StreamDescriptorList& stream_descriptors) {
         master_playlist_name.AsUTF8Unsafe()));
   }
 
-  std::vector<RemuxJob*> remux_jobs;
-  STLElementDeleter<std::vector<RemuxJob*> > scoped_jobs_deleter(&remux_jobs);
+  std::vector<std::unique_ptr<RemuxJob>> remux_jobs;
   FakeClock fake_clock;
   if (!CreateRemuxJobs(stream_descriptors, muxer_options, &fake_clock,
                        encryption_key_source.get(), mpd_notifier.get(),

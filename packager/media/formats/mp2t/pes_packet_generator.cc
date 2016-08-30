@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <memory>
 
 #include "packager/media/base/aes_encryptor.h"
 #include "packager/media/base/aes_pattern_cryptor.h"
@@ -86,12 +87,11 @@ bool EncryptAacSample(AesCryptor* encryptor,
 }
 }  // namespace
 
-PesPacketGenerator::PesPacketGenerator()
-    : pes_packets_deleter_(&pes_packets_) {}
+PesPacketGenerator::PesPacketGenerator() {}
 PesPacketGenerator::~PesPacketGenerator() {}
 
 bool PesPacketGenerator::Initialize(const StreamInfo& stream_info) {
-  STLDeleteElements(&pes_packets_);
+  pes_packets_.clear();
   stream_type_ = stream_info.stream_type();
 
   if (stream_type_ == kStreamVideo) {
@@ -148,7 +148,7 @@ bool PesPacketGenerator::PushSample(scoped_refptr<MediaSample> sample) {
     }
     current_processing_pes_->mutable_data()->swap(byte_stream);
     current_processing_pes_->set_stream_id(kVideoStreamId);
-    pes_packets_.push_back(current_processing_pes_.release());
+    pes_packets_.push_back(std::move(current_processing_pes_));
     return true;
   }
   DCHECK_EQ(stream_type_, kStreamAudio);
@@ -175,7 +175,7 @@ bool PesPacketGenerator::PushSample(scoped_refptr<MediaSample> sample) {
   // packets.
   current_processing_pes_->mutable_data()->swap(aac_frame);
   current_processing_pes_->set_stream_id(kAudioStreamId);
-  pes_packets_.push_back(current_processing_pes_.release());
+  pes_packets_.push_back(std::move(current_processing_pes_));
   return true;
 }
 
@@ -209,9 +209,9 @@ size_t PesPacketGenerator::NumberOfReadyPesPackets() {
 
 std::unique_ptr<PesPacket> PesPacketGenerator::GetNextPesPacket() {
   DCHECK(!pes_packets_.empty());
-  PesPacket* pes = pes_packets_.front();
+  std::unique_ptr<PesPacket> pes = std::move(pes_packets_.front());
   pes_packets_.pop_front();
-  return std::unique_ptr<PesPacket>(pes);
+  return pes;
 }
 
 bool PesPacketGenerator::Flush() {

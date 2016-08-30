@@ -101,7 +101,8 @@ class SimpleHlsNotifierTest : public ::testing::Test {
     notifier->master_playlist_ = std::move(playlist);
   }
 
-  const std::map<uint32_t, MediaPlaylist*>& GetMediaPlaylistMap() {
+  const std::map<uint32_t, std::unique_ptr<MediaPlaylist>>&
+  GetMediaPlaylistMap() {
     return notifier_.media_playlist_map_;
   }
 

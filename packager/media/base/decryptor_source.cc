@@ -7,7 +7,6 @@
 #include "packager/media/base/decryptor_source.h"
 
 #include "packager/base/logging.h"
-#include "packager/base/stl_util.h"
 #include "packager/media/base/aes_decryptor.h"
 #include "packager/media/base/aes_pattern_cryptor.h"
 
@@ -18,9 +17,7 @@ DecryptorSource::DecryptorSource(KeySource* key_source)
     : key_source_(key_source) {
   CHECK(key_source);
 }
-DecryptorSource::~DecryptorSource() {
-  STLDeleteValues(&decryptor_map_);
-}
+DecryptorSource::~DecryptorSource() {}
 
 bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
                                           uint8_t* buffer,
@@ -29,7 +26,7 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
   DCHECK(buffer);
 
   // Get the decryptor object.
-  AesCryptor* decryptor;
+  AesCryptor* decryptor = nullptr;
   auto found = decryptor_map_.find(decrypt_config->key_id());
   if (found == decryptor_map_.end()) {
     // Create new AesDecryptor based on decryption mode.
@@ -74,10 +71,10 @@ bool DecryptorSource::DecryptSampleBuffer(const DecryptConfig* decrypt_config,
       LOG(ERROR) << "Failed to initialize AesDecryptor for decryption.";
       return false;
     }
-    decryptor = aes_decryptor.release();
-    decryptor_map_[decrypt_config->key_id()] = decryptor;
+    decryptor = aes_decryptor.get();
+    decryptor_map_[decrypt_config->key_id()] = std::move(aes_decryptor);
   } else {
-    decryptor = found->second;
+    decryptor = found->second.get();
   }
   if (!decryptor->SetIv(decrypt_config->iv())) {
     LOG(ERROR) << "Invalid initialization vector.";

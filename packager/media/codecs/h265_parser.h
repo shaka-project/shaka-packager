@@ -342,8 +342,8 @@ class H265Parser {
                                    bool sub_pic_hdr_params_present_flag,
                                    H26xBitReader* br);
 
-  typedef std::map<int, H265Sps*> SpsById;
-  typedef std::map<int, H265Pps*> PpsById;
+  typedef std::map<int, std::unique_ptr<H265Sps>> SpsById;
+  typedef std::map<int, std::unique_ptr<H265Pps>> PpsById;
 
   SpsById active_spses_;
   PpsById active_ppses_;

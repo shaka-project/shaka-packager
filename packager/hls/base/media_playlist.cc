@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <memory>
 
 #include "packager/base/logging.h"
 #include "packager/base/strings/stringprintf.h"
@@ -125,14 +126,11 @@ MediaPlaylist::MediaPlaylist(MediaPlaylistType type,
                              const std::string& file_name,
                              const std::string& name,
                              const std::string& group_id)
-    : file_name_(file_name),
-      name_(name),
-      group_id_(group_id),
-      type_(type),
-      entries_deleter_(&entries_) {
+    : file_name_(file_name), name_(name), group_id_(group_id), type_(type) {
   LOG_IF(WARNING, type != MediaPlaylistType::kVod)
       << "Non VOD Media Playlist is not supported.";
 }
+
 MediaPlaylist::~MediaPlaylist() {}
 
 void MediaPlaylist::SetStreamTypeForTesting(
@@ -174,7 +172,7 @@ void MediaPlaylist::AddSegment(const std::string& file_name,
     LOG(WARNING) << "Timescale is not set and the duration for " << duration
                  << " cannot be calculated. The output will be wrong.";
 
-    entries_.push_back(new SegmentInfoEntry(file_name, 0.0));
+    entries_.emplace_back(new SegmentInfoEntry(file_name, 0.0));
     return;
   }
 
@@ -186,7 +184,8 @@ void MediaPlaylist::AddSegment(const std::string& file_name,
   const int kBitsInByte = 8;
   const uint64_t bitrate = kBitsInByte * size / segment_duration_seconds;
   max_bitrate_ = std::max(max_bitrate_, bitrate);
-  entries_.push_back(new SegmentInfoEntry(file_name, segment_duration_seconds));
+  entries_.emplace_back(
+      new SegmentInfoEntry(file_name, segment_duration_seconds));
 }
 
 // TODO(rkuroiwa): This works for single key format but won't work for multiple
@@ -200,12 +199,12 @@ void MediaPlaylist::AddSegment(const std::string& file_name,
 // Note that when erasing std::list iterators, only the deleted iterators are
 // invalidated.
 void MediaPlaylist::RemoveOldestSegment() {
-  static_assert(std::is_same<decltype(entries_), std::list<HlsEntry*>>::value,
+  static_assert(std::is_same<decltype(entries_),
+                             std::list<std::unique_ptr<HlsEntry>>>::value,
                 "This algorithm assumes std::list.");
   if (entries_.empty())
     return;
   if (entries_.front()->type() == HlsEntry::EntryType::kExtInf) {
-    delete entries_.front();
     entries_.pop_front();
     return;
   }
@@ -223,10 +222,8 @@ void MediaPlaylist::RemoveOldestSegment() {
     auto entries_itr = entries_.begin();
     ++entries_itr;
     if ((*entries_itr)->type() == HlsEntry::EntryType::kExtKey) {
-      delete entries_.front();
       entries_.pop_front();
     } else {
-      delete *entries_itr;
       entries_.erase(entries_itr);
     }
     return;
@@ -235,8 +232,7 @@ void MediaPlaylist::RemoveOldestSegment() {
   auto entries_itr = entries_.begin();
   ++entries_itr;
   if ((*entries_itr)->type() == HlsEntry::EntryType::kExtInf) {
-    DCHECK((*entries_itr)->type() == HlsEntry::EntryType::kExtInf);
-    delete *entries_itr;
+    DCHECK_EQ((*entries_itr)->type(), HlsEntry::EntryType::kExtInf);
     entries_.erase(entries_itr);
     return;
   }
@@ -244,10 +240,8 @@ void MediaPlaylist::RemoveOldestSegment() {
   ++entries_itr;
   // This assumes that there is a segment between 2 EXT-X-KEY entries.
   // Which should be the case due to logic in AddEncryptionInfo().
-  DCHECK((*entries_itr)->type() == HlsEntry::EntryType::kExtInf);
-  delete *entries_itr;
+  DCHECK_EQ((*entries_itr)->type(), HlsEntry::EntryType::kExtInf);
   entries_.erase(entries_itr);
-  delete entries_.front();
   entries_.pop_front();
 }
 
@@ -262,9 +256,8 @@ void MediaPlaylist::AddEncryptionInfo(MediaPlaylist::EncryptionMethod method,
     if (entries_.back()->type() == HlsEntry::EntryType::kExtKey)
       entries_.pop_back();
   }
-  entries_.push_back(
-      new EncryptionInfoEntry(
-          method, url, iv, key_format, key_format_versions));
+  entries_.emplace_back(new EncryptionInfoEntry(method, url, iv, key_format,
+                                                key_format_versions));
 }
 
 bool MediaPlaylist::WriteToFile(media::File* file) {

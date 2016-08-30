@@ -131,8 +131,7 @@ SimpleHlsNotifier::SimpleHlsNotifier(HlsProfile profile,
       prefix_(prefix),
       output_dir_(output_dir),
       media_playlist_factory_(new MediaPlaylistFactory()),
-      master_playlist_(new MasterPlaylist(master_playlist_name)),
-      media_playlist_map_deleter_(&media_playlist_map_) {}
+      master_playlist_(new MasterPlaylist(master_playlist_name)) {}
 
 SimpleHlsNotifier::~SimpleHlsNotifier() {}
 
@@ -174,7 +173,7 @@ bool SimpleHlsNotifier::NotifyNewStream(const MediaInfo& media_info,
   base::AutoLock auto_lock(lock_);
   master_playlist_->AddMediaPlaylist(media_playlist.get());
   media_playlist_map_.insert(
-      std::make_pair(*stream_id, media_playlist.release()));
+      std::make_pair(*stream_id, std::move(media_playlist)));
   return true;
 }
 

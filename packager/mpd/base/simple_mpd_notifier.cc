@@ -7,6 +7,7 @@
 #include "packager/mpd/base/simple_mpd_notifier.h"
 
 #include "packager/base/logging.h"
+#include "packager/base/stl_util.h"
 #include "packager/mpd/base/mpd_builder.h"
 #include "packager/mpd/base/mpd_notifier_util.h"
 #include "packager/mpd/base/mpd_utils.h"

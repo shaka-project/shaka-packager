@@ -57,19 +57,21 @@ const char kKeyHex[] = "6fc96fe628a265b13aeddec0bc421f4d";
 const double kClearLeadInSeconds = 1.5;
 const double kCryptoDurationInSeconds = 0;  // Key rotation is disabled.
 
-MediaStream* FindFirstStreamOfType(const std::vector<MediaStream*>& streams,
-                                   StreamType stream_type) {
-  typedef std::vector<MediaStream*>::const_iterator StreamIterator;
-  for (StreamIterator it = streams.begin(); it != streams.end(); ++it) {
-    if ((*it)->info()->stream_type() == stream_type)
-      return *it;
+MediaStream* FindFirstStreamOfType(
+    const std::vector<std::unique_ptr<MediaStream>>& streams,
+    StreamType stream_type) {
+  for (const std::unique_ptr<MediaStream>& stream : streams) {
+    if (stream->info()->stream_type() == stream_type)
+      return stream.get();
   }
-  return NULL;
+  return nullptr;
 }
-MediaStream* FindFirstVideoStream(const std::vector<MediaStream*>& streams) {
+MediaStream* FindFirstVideoStream(
+    const std::vector<std::unique_ptr<MediaStream>>& streams) {
   return FindFirstStreamOfType(streams, kStreamVideo);
 }
-MediaStream* FindFirstAudioStream(const std::vector<MediaStream*>& streams) {
+MediaStream* FindFirstAudioStream(
+    const std::vector<std::unique_ptr<MediaStream>>& streams) {
   return FindFirstStreamOfType(streams, kStreamAudio);
 }
 

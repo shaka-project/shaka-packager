@@ -6,7 +6,6 @@
 
 #include <memory>
 #include "packager/base/bind.h"
-#include "packager/base/stl_util.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/stream_info.h"
 #include "packager/media/formats/mp2t/es_parser.h"
@@ -153,9 +152,7 @@ Mp2tMediaParser::Mp2tMediaParser()
       is_initialized_(false) {
 }
 
-Mp2tMediaParser::~Mp2tMediaParser() {
-  STLDeleteValues(&pids_);
-}
+Mp2tMediaParser::~Mp2tMediaParser() {}
 
 void Mp2tMediaParser::Init(
     const InitCB& init_cb,
@@ -174,14 +171,13 @@ bool Mp2tMediaParser::Flush() {
   DVLOG(1) << "Mp2tMediaParser::Flush";
 
   // Flush the buffers and reset the pids.
-  for (std::map<int, PidState*>::iterator it = pids_.begin();
-       it != pids_.end(); ++it) {
-    DVLOG(1) << "Flushing PID: " << it->first;
-    PidState* pid_state = it->second;
+  for (const auto& pair : pids_) {
+    DVLOG(1) << "Flushing PID: " << pair.first;
+    PidState* pid_state = pair.second.get();
     pid_state->Flush();
   }
   bool result = EmitRemainingSamples();
-  STLDeleteValues(&pids_);
+  pids_.clear();
 
   // Remove any bytes left in the TS buffer.
   // (i.e. any partial TS packet => less than 188 bytes).
@@ -224,7 +220,8 @@ bool Mp2tMediaParser::Parse(const uint8_t* buf, int size) {
         << " start_unit=" << ts_packet->payload_unit_start_indicator();
 
     // Parse the section.
-    std::map<int, PidState*>::iterator it = pids_.find(ts_packet->pid());
+    std::map<int, std::unique_ptr<PidState>>::iterator it =
+        pids_.find(ts_packet->pid());
     if (it == pids_.end() &&
         ts_packet->pid() == TsSection::kPidPat) {
       // Create the PAT state here if needed.
@@ -233,9 +230,10 @@ bool Mp2tMediaParser::Parse(const uint8_t* buf, int size) {
       std::unique_ptr<PidState> pat_pid_state(new PidState(
           ts_packet->pid(), PidState::kPidPat, std::move(pat_section_parser)));
       pat_pid_state->Enable();
-      it = pids_.insert(
-          std::pair<int, PidState*>(ts_packet->pid(),
-                                    pat_pid_state.release())).first;
+      it = pids_
+               .insert(std::pair<int, std::unique_ptr<PidState>>(
+                   ts_packet->pid(), std::move(pat_pid_state)))
+               .first;
     }
 
     if (it != pids_.end()) {
@@ -260,11 +258,9 @@ void Mp2tMediaParser::RegisterPmt(int program_number, int pmt_pid) {
 
   // Only one TS program is allowed. Ignore the incoming program map table,
   // if there is already one registered.
-  for (std::map<int, PidState*>::iterator it = pids_.begin();
-       it != pids_.end(); ++it) {
-    PidState* pid_state = it->second;
-    if (pid_state->pid_type() == PidState::kPidPmt) {
-      DVLOG_IF(1, pmt_pid != it->first) << "More than one program is defined";
+  for (const auto& pair : pids_) {
+    if (pair.second->pid_type() == PidState::kPidPmt) {
+      DVLOG_IF(1, pmt_pid != pair.first) << "More than one program is defined";
       return;
     }
   }
@@ -276,7 +272,8 @@ void Mp2tMediaParser::RegisterPmt(int program_number, int pmt_pid) {
   std::unique_ptr<PidState> pmt_pid_state(
       new PidState(pmt_pid, PidState::kPidPmt, std::move(pmt_section_parser)));
   pmt_pid_state->Enable();
-  pids_.insert(std::pair<int, PidState*>(pmt_pid, pmt_pid_state.release()));
+  pids_.insert(std::pair<int, std::unique_ptr<PidState>>(
+      pmt_pid, std::move(pmt_pid_state)));
 }
 
 void Mp2tMediaParser::RegisterPes(int pmt_pid,
@@ -285,7 +282,7 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
   DVLOG(1) << "RegisterPes:"
            << " pes_pid=" << pes_pid
            << " stream_type=" << std::hex << stream_type << std::dec;
-  std::map<int, PidState*>::iterator it = pids_.find(pes_pid);
+  std::map<int, std::unique_ptr<PidState>>::iterator it = pids_.find(pes_pid);
   if (it != pids_.end())
     return;
 
@@ -331,7 +328,8 @@ void Mp2tMediaParser::RegisterPes(int pmt_pid,
   std::unique_ptr<PidState> pes_pid_state(
       new PidState(pes_pid, pid_type, std::move(pes_section_parser)));
   pes_pid_state->Enable();
-  pids_.insert(std::pair<int, PidState*>(pes_pid, pes_pid_state.release()));
+  pids_.insert(std::pair<int, std::unique_ptr<PidState>>(
+      pes_pid, std::move(pes_pid_state)));
 }
 
 void Mp2tMediaParser::OnNewStreamInfo(

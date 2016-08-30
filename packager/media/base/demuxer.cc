@@ -8,7 +8,6 @@
 
 #include "packager/base/bind.h"
 #include "packager/base/logging.h"
-#include "packager/base/stl_util.h"
 #include "packager/media/base/decryptor_source.h"
 #include "packager/media/base/key_source.h"
 #include "packager/media/base/media_sample.h"
@@ -46,7 +45,6 @@ Demuxer::Demuxer(const std::string& file_name)
 Demuxer::~Demuxer() {
   if (media_file_)
     media_file_->Close();
-  STLDeleteElements(&streams_);
 }
 
 void Demuxer::SetKeySource(std::unique_ptr<KeySource> key_source) {
@@ -121,13 +119,10 @@ Status Demuxer::Initialize() {
 }
 
 void Demuxer::ParserInitEvent(
-    const std::vector<scoped_refptr<StreamInfo> >& streams) {
+    const std::vector<scoped_refptr<StreamInfo>>& stream_infos) {
   init_event_received_ = true;
-
-  std::vector<scoped_refptr<StreamInfo> >::const_iterator it = streams.begin();
-  for (; it != streams.end(); ++it) {
-    streams_.push_back(new MediaStream(*it, this));
-  }
+  for (const scoped_refptr<StreamInfo>& stream_info : stream_infos)
+    streams_.emplace_back(new MediaStream(stream_info, this));
 }
 
 Demuxer::QueuedSample::QueuedSample(uint32_t local_track_id,
@@ -157,10 +152,9 @@ bool Demuxer::NewSampleEvent(uint32_t track_id,
 
 bool Demuxer::PushSample(uint32_t track_id,
                          const scoped_refptr<MediaSample>& sample) {
-  std::vector<MediaStream*>::iterator it = streams_.begin();
-  for (; it != streams_.end(); ++it) {
-    if (track_id == (*it)->info()->track_id()) {
-      Status status = (*it)->PushSample(sample);
+  for (const std::unique_ptr<MediaStream>& stream : streams_) {
+    if (track_id == stream->info()->track_id()) {
+      Status status = stream->PushSample(sample);
       if (!status.ok())
         LOG(ERROR) << "Demuxer::PushSample failed with " << status;
       return status.ok();
@@ -176,10 +170,8 @@ Status Demuxer::Run() {
   LOG(INFO) << "Demuxer::Run() on file '" << file_name_ << "'.";
 
   // Start the streams.
-  for (std::vector<MediaStream*>::iterator it = streams_.begin();
-       it != streams_.end();
-       ++it) {
-    status = (*it)->Start(MediaStream::kPush);
+  for (const std::unique_ptr<MediaStream>& stream : streams_) {
+    status = stream->Start(MediaStream::kPush);
     if (!status.ok())
       return status;
   }
@@ -193,10 +185,8 @@ Status Demuxer::Run() {
   if (status.error_code() == error::END_OF_STREAM) {
     // Push EOS sample to muxer to indicate end of stream.
     const scoped_refptr<MediaSample>& sample = MediaSample::CreateEOSBuffer();
-    for (std::vector<MediaStream*>::iterator it = streams_.begin();
-         it != streams_.end();
-         ++it) {
-      status = (*it)->PushSample(sample);
+    for (const std::unique_ptr<MediaStream>& stream : streams_) {
+      status = stream->PushSample(sample);
       if (!status.ok())
         return status;
     }

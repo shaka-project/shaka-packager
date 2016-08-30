@@ -7,7 +7,6 @@
 #include "packager/media/base/video_stream_info.h"
 
 #include "packager/base/logging.h"
-#include "packager/base/stl_util.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/strings/string_util.h"
 #include "packager/base/strings/stringprintf.h"

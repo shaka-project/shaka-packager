@@ -28,7 +28,7 @@ class Muxer;
 struct MuxerOptions;
 
 /// Print all the stream info for the provided strings to standard output.
-void DumpStreamInfo(const std::vector<MediaStream*>& streams);
+void DumpStreamInfo(const std::vector<std::unique_ptr<MediaStream>>& streams);
 
 /// Create KeySource based on provided command line options for content
 /// encryption. Also fetches keys.
@@ -60,7 +60,7 @@ bool GetMpdOptions(MpdOptions* mpd_options);
 /// @param language_override is a string which, if non-empty, overrides the
 ///        stream's language metadata.
 /// @return true if successful, false otherwise.
-bool AddStreamToMuxer(const std::vector<MediaStream*>& streams,
+bool AddStreamToMuxer(const std::vector<std::unique_ptr<MediaStream>>& streams,
                       const std::string& stream_selector,
                       const std::string& language_override,
                       Muxer* muxer);

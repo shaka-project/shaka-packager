@@ -401,7 +401,6 @@ class RepresentationStateChangeListenerImpl
 MpdBuilder::MpdBuilder(MpdType type, const MpdOptions& mpd_options)
     : type_(type),
       mpd_options_(mpd_options),
-      adaptation_sets_deleter_(&adaptation_sets_),
       clock_(new base::DefaultClock()) {}
 
 MpdBuilder::~MpdBuilder() {}
@@ -416,8 +415,8 @@ AdaptationSet* MpdBuilder::AddAdaptationSet(const std::string& lang) {
                         type_, &representation_counter_));
 
   DCHECK(adaptation_set);
-  adaptation_sets_.push_back(adaptation_set.get());
-  return adaptation_set.release();
+  adaptation_sets_.push_back(std::move(adaptation_set));
+  return adaptation_sets_.back().get();
 }
 
 bool MpdBuilder::WriteMpdToFile(media::File* output_file) {
@@ -464,10 +463,9 @@ xmlDocPtr MpdBuilder::GenerateMpd() {
   // at the moment, just use a constant.
   // Required for 'dynamic' MPDs.
   period.SetId(0);
-  std::list<AdaptationSet*>::iterator adaptation_sets_it =
-      adaptation_sets_.begin();
-  for (; adaptation_sets_it != adaptation_sets_.end(); ++adaptation_sets_it) {
-    xml::scoped_xml_ptr<xmlNode> child((*adaptation_sets_it)->GetXml());
+  for (const std::unique_ptr<AdaptationSet>& adaptation_set :
+       adaptation_sets_) {
+    xml::scoped_xml_ptr<xmlNode> child(adaptation_set->GetXml());
     if (!child.get() || !period.AddChild(std::move(child)))
       return NULL;
   }
@@ -627,11 +625,10 @@ bool MpdBuilder::GetEarliestTimestamp(double* timestamp_seconds) {
   DCHECK(timestamp_seconds);
 
   double earliest_timestamp(-1);
-  for (std::list<AdaptationSet*>::const_iterator iter =
-           adaptation_sets_.begin();
-       iter != adaptation_sets_.end(); ++iter) {
+  for (const std::unique_ptr<AdaptationSet>& adaptation_set :
+       adaptation_sets_) {
     double timestamp;
-    if ((*iter)->GetEarliestTimestamp(&timestamp) &&
+    if (adaptation_set->GetEarliestTimestamp(&timestamp) &&
         ((earliest_timestamp < 0) || (timestamp < earliest_timestamp))) {
       earliest_timestamp = timestamp;
     }
@@ -676,8 +673,7 @@ AdaptationSet::AdaptationSet(uint32_t adaptation_set_id,
                              const MpdOptions& mpd_options,
                              MpdBuilder::MpdType mpd_type,
                              base::AtomicSequenceNumber* counter)
-    : representations_deleter_(&representations_),
-      representation_counter_(counter),
+    : representation_counter_(counter),
       id_(adaptation_set_id),
       lang_(lang),
       mpd_options_(mpd_options),
@@ -730,8 +726,8 @@ Representation* AdaptationSet::AddRepresentation(const MediaInfo& media_info) {
     }
   }
 
-  representations_.push_back(representation.get());
-  return representation.release();
+  representations_.push_back(std::move(representation));
+  return representations_.back().get();
 }
 
 void AdaptationSet::AddContentProtectionElement(
@@ -818,7 +814,8 @@ xml::scoped_xml_ptr<xmlNode> AdaptationSet::GetXml() {
   for (AdaptationSet::Role role : roles_)
     adaptation_set.AddRoleElement("urn:mpeg:dash:role:2011", RoleToText(role));
 
-  for (Representation* representation : representations_) {
+  for (const std::unique_ptr<Representation>& representation :
+       representations_) {
     if (suppress_representation_width)
       representation->SuppressOnce(Representation::kSuppressWidth);
     if (suppress_representation_height)
@@ -876,11 +873,10 @@ bool AdaptationSet::GetEarliestTimestamp(double* timestamp_seconds) {
   DCHECK(timestamp_seconds);
 
   double earliest_timestamp(-1);
-  for (std::list<Representation*>::const_iterator iter =
-           representations_.begin();
-       iter != representations_.end(); ++iter) {
+  for (const std::unique_ptr<Representation>& representation :
+       representations_) {
     double timestamp;
-    if ((*iter)->GetEarliestTimestamp(&timestamp) &&
+    if (representation->GetEarliestTimestamp(&timestamp) &&
         ((earliest_timestamp < 0) || (timestamp < earliest_timestamp))) {
       earliest_timestamp = timestamp;
     }

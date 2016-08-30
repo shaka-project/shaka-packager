@@ -10,7 +10,6 @@
 #include <algorithm>
 
 #include "packager/base/logging.h"
-#include "packager/base/stl_util.h"
 #include "packager/media/base/macros.h"
 #include "packager/media/codecs/nalu_reader.h"
 
@@ -179,10 +178,7 @@ H265SliceHeader::H265SliceHeader() {}
 H265SliceHeader::~H265SliceHeader() {}
 
 H265Parser::H265Parser() {}
-H265Parser::~H265Parser() {
-  STLDeleteValues(&active_spses_);
-  STLDeleteValues(&active_ppses_);
-}
+H265Parser::~H265Parser() {}
 
 H265Parser::Result H265Parser::ParseSliceHeader(const Nalu& nalu,
                                                 H265SliceHeader* slice_header) {
@@ -504,8 +500,7 @@ H265Parser::Result H265Parser::ParsePps(const Nalu& nalu, int* pps_id) {
 
   // This will replace any existing PPS instance.
   *pps_id = pps->pic_parameter_set_id;
-  delete active_ppses_[*pps_id];
-  active_ppses_[*pps_id] = pps.release();
+  active_ppses_[*pps_id] = std::move(pps);
 
   return kOk;
 }
@@ -621,18 +616,17 @@ H265Parser::Result H265Parser::ParseSps(const Nalu& nalu, int* sps_id) {
 
   // This will replace any existing SPS instance.
   *sps_id = sps->seq_parameter_set_id;
-  delete active_spses_[*sps_id];
-  active_spses_[*sps_id] = sps.release();
+  active_spses_[*sps_id] = std::move(sps);
 
   return kOk;
 }
 
 const H265Pps* H265Parser::GetPps(int pps_id) {
-  return active_ppses_[pps_id];
+  return active_ppses_[pps_id].get();
 }
 
 const H265Sps* H265Parser::GetSps(int sps_id) {
-  return active_spses_[sps_id];
+  return active_spses_[sps_id].get();
 }
 
 H265Parser::Result H265Parser::ParseVuiParameters(int max_num_sub_layers_minus1,

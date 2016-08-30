@@ -9,7 +9,6 @@
 #include <algorithm>
 
 #include "packager/base/logging.h"
-#include "packager/base/stl_util.h"
 #include "packager/media/base/aes_cryptor.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/key_source.h"
@@ -161,7 +160,7 @@ Segmenter::Segmenter(const MuxerOptions& options,
       accumulated_progress_(0),
       sample_duration_(0u) {}
 
-Segmenter::~Segmenter() { STLDeleteElements(&fragmenters_); }
+Segmenter::~Segmenter() {}
 
 Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
                              MuxerListener* muxer_listener,
@@ -191,7 +190,8 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
         sidx_->reference_id = i + 1;
     }
     if (!encryption_key_source) {
-      fragmenters_[i] = new Fragmenter(streams[i]->info(), &moof_->tracks[i]);
+      fragmenters_[i].reset(
+          new Fragmenter(streams[i]->info(), &moof_->tracks[i]));
       continue;
     }
 
@@ -220,13 +220,13 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
             encryption_key.iv, encryption_key.key_system_info);
       }
 
-      fragmenters_[i] = new KeyRotationFragmenter(
+      fragmenters_[i].reset(new KeyRotationFragmenter(
           moof_.get(), streams[i]->info(), &moof_->tracks[i],
           encryption_key_source, track_type,
           crypto_period_duration_in_seconds * streams[i]->info()->time_scale(),
           clear_lead_in_seconds * streams[i]->info()->time_scale(),
           protection_scheme, pattern.crypt_byte_block, pattern.skip_byte_block,
-          muxer_listener_);
+          muxer_listener_));
       continue;
     }
 
@@ -258,11 +258,11 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
       }
     }
 
-    fragmenters_[i] = new EncryptingFragmenter(
+    fragmenters_[i].reset(new EncryptingFragmenter(
         streams[i]->info(), &moof_->tracks[i], std::move(encryption_key),
         clear_lead_in_seconds * streams[i]->info()->time_scale(),
         protection_scheme, pattern.crypt_byte_block, pattern.skip_byte_block,
-        muxer_listener_);
+        muxer_listener_));
   }
 
   if (options_.mp4_use_decoding_timestamp_in_timeline) {
@@ -294,10 +294,8 @@ Status Segmenter::Initialize(const std::vector<MediaStream*>& streams,
 }
 
 Status Segmenter::Finalize() {
-  for (std::vector<Fragmenter*>::iterator it = fragmenters_.begin();
-       it != fragmenters_.end();
-       ++it) {
-    Status status = FinalizeFragment(true, *it);
+  for (const std::unique_ptr<Fragmenter>& fragmenter : fragmenters_) {
+    Status status = FinalizeFragment(true, fragmenter.get());
     if (!status.ok())
       return status;
   }
@@ -325,7 +323,7 @@ Status Segmenter::AddSample(const MediaStream* stream,
   DCHECK(stream);
   DCHECK(stream_map_.find(stream) != stream_map_.end());
   uint32_t stream_id = stream_map_[stream];
-  Fragmenter* fragmenter = fragmenters_[stream_id];
+  Fragmenter* fragmenter = fragmenters_[stream_id].get();
 
   // Set default sample duration if it has not been set yet.
   if (moov_->extends.tracks[stream_id].default_sample_duration == 0) {
@@ -429,10 +427,8 @@ Status Segmenter::FinalizeFragment(bool finalize_segment,
   fragmenter->FinalizeFragment();
 
   // Check if all tracks are ready for fragmentation.
-  for (std::vector<Fragmenter*>::iterator it = fragmenters_.begin();
-       it != fragmenters_.end();
-       ++it) {
-    if (!(*it)->fragment_finalized())
+  for (const std::unique_ptr<Fragmenter>& fragmenter : fragmenters_) {
+    if (!fragmenter->fragment_finalized())
       return Status::OK;
   }
 
@@ -470,7 +466,7 @@ Status Segmenter::FinalizeFragment(bool finalize_segment,
   // Write the fragment to buffer.
   moof_->Write(fragment_buffer_.get());
   mdat.WriteHeader(fragment_buffer_.get());
-  for (Fragmenter* fragmenter : fragmenters_)
+  for (const std::unique_ptr<Fragmenter>& fragmenter : fragmenters_)
     fragment_buffer_->AppendBuffer(*fragmenter->data());
 
   // Increase sequence_number for next fragment.

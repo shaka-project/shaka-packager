@@ -11,7 +11,6 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/macros.h"
-#include "packager/base/stl_util.h"
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/sys_byteorder.h"
 #include "packager/mpd/base/media_info.pb.h"

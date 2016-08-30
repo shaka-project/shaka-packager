@@ -13,7 +13,6 @@
 #include "packager/base/json/json_reader.h"
 #include "packager/base/json/json_writer.h"
 #include "packager/base/memory/ref_counted.h"
-#include "packager/base/stl_util.h"
 #include "packager/media/base/fixed_key_source.h"
 #include "packager/media/base/http_key_fetcher.h"
 #include "packager/media/base/producer_consumer_queue.h"
@@ -120,14 +119,12 @@ class WidevineKeySource::RefCountedEncryptionKeyMap
     encryption_key_map_.swap(*encryption_key_map);
   }
 
-  std::map<KeySource::TrackType, EncryptionKey*>& map() {
-    return encryption_key_map_;
-  }
+  const EncryptionKeyMap& map() { return encryption_key_map_; }
 
  private:
   friend class base::RefCountedThreadSafe<RefCountedEncryptionKeyMap>;
 
-  ~RefCountedEncryptionKeyMap() { STLDeleteValues(&encryption_key_map_); }
+  ~RefCountedEncryptionKeyMap() {}
 
   EncryptionKeyMap encryption_key_map_;
 
@@ -159,7 +156,6 @@ WidevineKeySource::~WidevineKeySource() {
     start_key_production_.Signal();
     key_production_thread_.Join();
   }
-  STLDeleteValues(&encryption_key_map_);
 }
 
 Status WidevineKeySource::FetchKeys(const std::vector<uint8_t>& content_id,
@@ -243,12 +239,9 @@ Status WidevineKeySource::GetKey(TrackType track_type, EncryptionKey* key) {
 Status WidevineKeySource::GetKey(const std::vector<uint8_t>& key_id,
                                  EncryptionKey* key) {
   DCHECK(key);
-  for (std::map<TrackType, EncryptionKey*>::iterator iter =
-           encryption_key_map_.begin();
-       iter != encryption_key_map_.end();
-       ++iter) {
-    if (iter->second->key_id == key_id) {
-      *key = *iter->second;
+  for (const auto& pair : encryption_key_map_) {
+    if (pair.second->key_id == key_id) {
+      *key = *pair.second;
       return Status::OK;
     }
   }
@@ -307,12 +300,13 @@ Status WidevineKeySource::GetKeyInternal(uint32_t crypto_period_index,
     return status;
   }
 
-  EncryptionKeyMap& encryption_key_map = ref_counted_encryption_key_map->map();
+  const EncryptionKeyMap& encryption_key_map =
+      ref_counted_encryption_key_map->map();
   if (encryption_key_map.find(track_type) == encryption_key_map.end()) {
     return Status(error::INTERNAL_ERROR,
                   "Cannot find key of type " + TrackTypeToString(track_type));
   }
-  *key = *encryption_key_map[track_type];
+  *key = *encryption_key_map.at(track_type);
   return Status::OK;
 }
 
@@ -568,7 +562,7 @@ bool WidevineKeySource::ExtractEncryptionKey(
 
       encryption_key->key_system_info.push_back(info);
     }
-    encryption_key_map[track_type] = encryption_key.release();
+    encryption_key_map[track_type] = std::move(encryption_key);
   }
 
   // If the flag exists, create a common system ID PSSH box that contains the
@@ -594,7 +588,7 @@ bool WidevineKeySource::ExtractEncryptionKey(
 
   DCHECK(!encryption_key_map.empty());
   if (!enable_key_rotation) {
-    encryption_key_map_ = encryption_key_map;
+    encryption_key_map_.swap(encryption_key_map);
     return true;
   }
   return PushToKeyPool(&encryption_key_map);

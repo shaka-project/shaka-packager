@@ -8,6 +8,7 @@
 #define MEDIA_BASE_DECRYPTOR_SOURCE_H_
 
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "packager/media/base/aes_decryptor.h"
@@ -29,7 +30,7 @@ class DecryptorSource {
 
  private:
   KeySource* key_source_;
-  std::map<std::vector<uint8_t>, AesCryptor*> decryptor_map_;
+  std::map<std::vector<uint8_t>, std::unique_ptr<AesCryptor>> decryptor_map_;
 
   DISALLOW_COPY_AND_ASSIGN(DecryptorSource);
 };

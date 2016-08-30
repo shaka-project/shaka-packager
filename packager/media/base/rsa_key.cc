@@ -25,7 +25,6 @@
 
 #include "packager/base/logging.h"
 #include "packager/base/sha1.h"
-#include "packager/base/stl_util.h"
 
 namespace {
 
@@ -112,10 +111,8 @@ bool RsaPrivateKey::Decrypt(const std::string& encrypted_message,
 
   decrypted_message->resize(rsa_size);
   int decrypted_size = RSA_private_decrypt(
-      rsa_size,
-      reinterpret_cast<const uint8_t*>(encrypted_message.data()),
-      reinterpret_cast<uint8_t*>(string_as_array(decrypted_message)),
-      rsa_key_,
+      rsa_size, reinterpret_cast<const uint8_t*>(encrypted_message.data()),
+      reinterpret_cast<uint8_t*>(&(*decrypted_message)[0]), rsa_key_,
       RSA_PKCS1_OAEP_PADDING);
 
   if (decrypted_size == -1) {
@@ -141,12 +138,9 @@ bool RsaPrivateKey::GenerateSignature(const std::string& message,
   size_t rsa_size = RSA_size(rsa_key_);
   std::vector<uint8_t> padded_digest(rsa_size);
   if (!RSA_padding_add_PKCS1_PSS_mgf1(
-          rsa_key_,
-          &padded_digest[0],
-          reinterpret_cast<uint8_t*>(string_as_array(&message_digest)),
-          EVP_sha1(),
-          EVP_sha1(),
-          kPssSaltLength)) {
+          rsa_key_, &padded_digest[0],
+          reinterpret_cast<uint8_t*>(&message_digest[0]), EVP_sha1(),
+          EVP_sha1(), kPssSaltLength)) {
     LOG(ERROR) << "RSA padding failure: " << ERR_error_string(ERR_get_error(),
                                                               NULL);
     return false;
@@ -155,11 +149,8 @@ bool RsaPrivateKey::GenerateSignature(const std::string& message,
   // Encrypt PSS padded digest.
   signature->resize(rsa_size);
   int signature_size = RSA_private_encrypt(
-      padded_digest.size(),
-      &padded_digest[0],
-      reinterpret_cast<uint8_t*>(string_as_array(signature)),
-      rsa_key_,
-      RSA_NO_PADDING);
+      padded_digest.size(), &padded_digest[0],
+      reinterpret_cast<uint8_t*>(&(*signature)[0]), rsa_key_, RSA_NO_PADDING);
 
   if (signature_size != static_cast<int>(rsa_size)) {
     LOG(ERROR) << "RSA private encrypt failure: " << ERR_error_string(
@@ -192,12 +183,11 @@ bool RsaPublicKey::Encrypt(const std::string& clear_message,
 
   size_t rsa_size = RSA_size(rsa_key_);
   encrypted_message->resize(rsa_size);
-  int encrypted_size = RSA_public_encrypt(
-      clear_message.size(),
-      reinterpret_cast<const uint8_t*>(clear_message.data()),
-      reinterpret_cast<uint8_t*>(string_as_array(encrypted_message)),
-      rsa_key_,
-      RSA_PKCS1_OAEP_PADDING);
+  int encrypted_size =
+      RSA_public_encrypt(clear_message.size(),
+                         reinterpret_cast<const uint8_t*>(clear_message.data()),
+                         reinterpret_cast<uint8_t*>(&(*encrypted_message)[0]),
+                         rsa_key_, RSA_PKCS1_OAEP_PADDING);
 
   if (encrypted_size != static_cast<int>(rsa_size)) {
     LOG(ERROR) << "RSA public encrypt failure: " << ERR_error_string(

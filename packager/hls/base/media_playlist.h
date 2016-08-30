@@ -8,10 +8,10 @@
 #define PACKAGER_HLS_BASE_MEDIA_PLAYLIST_H_
 
 #include <list>
+#include <memory>
 #include <string>
 
 #include "packager/base/macros.h"
-#include "packager/base/stl_util.h"
 #include "packager/mpd/base/media_info.pb.h"
 
 namespace shaka {
@@ -169,8 +169,7 @@ class MediaPlaylist {
   bool target_duration_set_ = false;
   uint32_t target_duration_ = 0;
 
-  std::list<HlsEntry*> entries_;
-  STLElementDeleter<decltype(entries_)> entries_deleter_;
+  std::list<std::unique_ptr<HlsEntry>> entries_;
 
   DISALLOW_COPY_AND_ASSIGN(MediaPlaylist);
 };

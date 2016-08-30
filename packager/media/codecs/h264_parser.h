@@ -11,6 +11,7 @@
 #include <stdlib.h>
 
 #include <map>
+#include <memory>
 
 #include "packager/media/codecs/h26x_bit_reader.h"
 #include "packager/media/codecs/nalu_reader.h"
@@ -324,8 +325,8 @@ class H264Parser {
   Result ParseDecRefPicMarking(H26xBitReader* br, H264SliceHeader* shdr);
 
   // PPSes and SPSes stored for future reference.
-  typedef std::map<int, H264Sps*> SpsById;
-  typedef std::map<int, H264Pps*> PpsById;
+  typedef std::map<int, std::unique_ptr<H264Sps>> SpsById;
+  typedef std::map<int, std::unique_ptr<H264Pps>> PpsById;
   SpsById active_SPSes_;
   PpsById active_PPSes_;
 

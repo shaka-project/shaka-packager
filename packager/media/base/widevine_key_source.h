@@ -67,7 +67,7 @@ class WidevineKeySource : public KeySource {
    ClosureThread key_production_thread_;
 
  private:
-  typedef std::map<TrackType, EncryptionKey*> EncryptionKeyMap;
+  typedef std::map<TrackType, std::unique_ptr<EncryptionKey>> EncryptionKeyMap;
   class RefCountedEncryptionKeyMap;
   typedef ProducerConsumerQueue<scoped_refptr<RefCountedEncryptionKeyMap> >
       EncryptionKeyQueue;
