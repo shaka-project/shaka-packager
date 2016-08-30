@@ -122,37 +122,35 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;  <span class="keywordtype">void</span> Reset() <span class="keyword">override</span>;</div>
 <div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
 <div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160; <span class="keyword">private</span>:</div>
-<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="comment">// Processes a NAL unit found in ParseInternal.  The @a pps_id_for_access_unit</span></div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="comment">// value will be passed to UpdateVideoDecoderConfig.</span></div>
-<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;  <span class="keywordtype">bool</span> ProcessNalu(<span class="keyword">const</span> <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu,</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;                   <span class="keywordtype">bool</span>* is_key_frame,</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;                   <span class="keywordtype">int</span>* pps_id_for_access_unit) <span class="keyword">override</span>;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;  <span class="comment">// Update the video decoder config based on an H264 SPS.</span></div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="comment">// Return true if successful.</span></div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <span class="keywordtype">bool</span> UpdateVideoDecoderConfig(<span class="keywordtype">int</span> sps_id) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;  <span class="comment">// Processes a NAL unit found in ParseInternal.</span></div>
+<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;  <span class="keywordtype">bool</span> ProcessNalu(<span class="keyword">const</span> <a class="code" href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">Nalu</a>&amp; nalu, <a class="code" href="../../d8/dc2/structshaka_1_1media_1_1mp2t_1_1EsParserH26x_1_1VideoSliceInfo.html">VideoSliceInfo</a>* video_slice_info) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;  <span class="comment">// Update the video decoder config based on an H264 SPS.</span></div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;  <span class="comment">// Return true if successful.</span></div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;  <span class="keywordtype">bool</span> UpdateVideoDecoderConfig(<span class="keywordtype">int</span> sps_id) <span class="keyword">override</span>;</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  <span class="comment">// Callback to pass the stream configuration.</span></div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  NewStreamInfoCB new_stream_info_cb_;</div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  <span class="comment">// Callback to pass the stream configuration.</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  NewStreamInfoCB new_stream_info_cb_;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;  scoped_refptr&lt;StreamInfo&gt; last_video_decoder_config_;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="keywordtype">bool</span> decoder_config_check_pending_;</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  scoped_refptr&lt;StreamInfo&gt; last_video_decoder_config_;</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="keywordtype">bool</span> decoder_config_check_pending_;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  std::unique_ptr&lt;H264Parser&gt; h264_parser_;</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;};</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  std::unique_ptr&lt;H264Parser&gt; h264_parser_;</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;};</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="structshaka_1_1media_1_1mp2t_1_1EsParserH26x_1_1VideoSliceInfo_html"><div class="ttname"><a href="../../d8/dc2/structshaka_1_1media_1_1mp2t_1_1EsParserH26x_1_1VideoSliceInfo.html">shaka::media::mp2t::EsParserH26x::VideoSliceInfo</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/d8d/es__parser__h26x_8h_source.html#l00042">es_parser_h26x.h:42</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp2t_1_1EsParserH264_html"><div class="ttname"><a href="../../d5/db9/classshaka_1_1media_1_1mp2t_1_1EsParserH264.html">shaka::media::mp2t::EsParserH264</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d37/es__parser__h264_8h_source.html#l00025">es_parser_h264.h:25</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp2t_1_1EsParserH26x_html"><div class="ttname"><a href="../../da/d23/classshaka_1_1media_1_1mp2t_1_1EsParserH26x.html">shaka::media::mp2t::EsParserH26x</a></div><div class="ttdef"><b>Definition:</b> <a href="../../df/d8d/es__parser__h26x_8h_source.html#l00028">es_parser_h26x.h:28</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Nalu_html"><div class="ttname"><a href="../../d6/dff/classshaka_1_1media_1_1Nalu.html">shaka::media::Nalu</a></div><div class="ttdef"><b>Definition:</b> <a href="../../d4/d87/nalu__reader_8h_source.html#l00026">nalu_reader.h:26</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Aug 23 2016 20:33:15 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Aug 30 2016 00:23:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

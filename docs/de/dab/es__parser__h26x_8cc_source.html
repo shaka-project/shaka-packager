@@ -125,296 +125,292 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;      emit_sample_cb_(emit_sample_cb),</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;      type_(type),</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;      es_queue_(new media::OffsetByteQueue()),</div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      current_search_position_(0),</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;      stream_converter_(std::move(stream_converter)),</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;      pending_sample_duration_(0),</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      waiting_for_key_frame_(true) {}</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;EsParserH26x::~EsParserH26x() {}</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;<span class="keywordtype">bool</span> EsParserH26x::Parse(<span class="keyword">const</span> uint8_t* buf,</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;                         <span class="keywordtype">int</span> size,</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;                         int64_t pts,</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;                         int64_t dts) {</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="comment">// Note: Parse is invoked each time a PES packet has been reassembled.</span></div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="comment">// Unfortunately, a PES packet does not necessarily map</span></div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  <span class="comment">// to an h264/h265 access unit, although the HLS recommendation is to use one</span></div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="comment">// PES for each access unit (but this is just a recommendation and some</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="comment">// streams do not comply with this recommendation).</span></div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  <span class="comment">// HLS recommendation: &quot;In AVC video, you should have both a DTS and a</span></div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="comment">// PTS in each PES header&quot;.</span></div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  <span class="comment">// However, some streams do not comply with this recommendation.</span></div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  DVLOG_IF(1, pts == kNoTimestamp) &lt;&lt; <span class="stringliteral">&quot;Each video PES should have a PTS&quot;</span>;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordflow">if</span> (pts != kNoTimestamp) {</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    TimingDesc timing_desc;</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    timing_desc.pts = pts;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    timing_desc.dts = (dts != kNoTimestamp) ? dts : pts;</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="comment">// Link the end of the byte queue with the incoming timing descriptor.</span></div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;    timing_desc_list_.push_back(</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;        std::pair&lt;int64_t, TimingDesc&gt;(es_queue_-&gt;tail(), timing_desc));</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  }</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;  <span class="comment">// Add the incoming bytes to the ES queue.</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  es_queue_-&gt;Push(buf, size);</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  <span class="comment">// We should always have entries in the vector and it should always start</span></div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;  <span class="comment">// with |can_start_access_unit == true|.  If not, we are just starting and</span></div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">// should skip to the first access unit.</span></div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="keywordflow">if</span> (access_unit_nalus_.empty()) {</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    <span class="keywordflow">if</span> (!SkipToFirstAccessUnit())</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  }</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  DCHECK(!access_unit_nalus_.empty());</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  DCHECK(access_unit_nalus_.front().nalu.can_start_access_unit());</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordflow">return</span> ParseInternal();</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;}</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;<span class="keywordtype">void</span> EsParserH26x::Flush() {</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;EsParserH26x::Flush&quot;</span>;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="comment">// Simulate an additional AUD to force emitting the last access unit</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  <span class="comment">// which is assumed to be complete at this point.</span></div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;  <span class="keywordflow">if</span> (type_ == Nalu::kH264) {</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;    <span class="keyword">const</span> uint8_t aud[] = {0x00, 0x00, 0x01, 0x09};</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    es_queue_-&gt;Push(aud, <span class="keyword">sizeof</span>(aud));</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;  } <span class="keywordflow">else</span> {</div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    DCHECK_EQ(Nalu::kH265, type_);</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    <span class="keyword">const</span> uint8_t aud[] = {0x00, 0x00, 0x01, 0x46, 0x01};</div>
-<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    es_queue_-&gt;Push(aud, <span class="keyword">sizeof</span>(aud));</div>
+<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;      stream_converter_(std::move(stream_converter)) {}</div>
+<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
+<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;EsParserH26x::~EsParserH26x() {}</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="keywordtype">bool</span> EsParserH26x::Parse(<span class="keyword">const</span> uint8_t* buf,</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;                         <span class="keywordtype">int</span> size,</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;                         int64_t pts,</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;                         int64_t dts) {</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;  <span class="comment">// Note: Parse is invoked each time a PES packet has been reassembled.</span></div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;  <span class="comment">// Unfortunately, a PES packet does not necessarily map</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  <span class="comment">// to an h264/h265 access unit, although the HLS recommendation is to use one</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  <span class="comment">// PES for each access unit (but this is just a recommendation and some</span></div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  <span class="comment">// streams do not comply with this recommendation).</span></div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  <span class="comment">// HLS recommendation: &quot;In AVC video, you should have both a DTS and a</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  <span class="comment">// PTS in each PES header&quot;.</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  <span class="comment">// However, some streams do not comply with this recommendation.</span></div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  DVLOG_IF(1, pts == kNoTimestamp) &lt;&lt; <span class="stringliteral">&quot;Each video PES should have a PTS&quot;</span>;</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  <span class="keywordflow">if</span> (pts != kNoTimestamp) {</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;    TimingDesc timing_desc;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    timing_desc.pts = pts;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;    timing_desc.dts = (dts != kNoTimestamp) ? dts : pts;</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;    <span class="comment">// Link the end of the byte queue with the incoming timing descriptor.</span></div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;    timing_desc_list_.push_back(</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;        std::pair&lt;int64_t, TimingDesc&gt;(es_queue_-&gt;tail(), timing_desc));</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;  }</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="comment">// Add the incoming bytes to the ES queue.</span></div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  es_queue_-&gt;Push(buf, size);</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;  <span class="keywordflow">return</span> ParseInternal();</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;}</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keywordtype">void</span> EsParserH26x::Flush() {</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;  DVLOG(1) &lt;&lt; <span class="stringliteral">&quot;EsParserH26x::Flush&quot;</span>;</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  <span class="comment">// Simulate two additional AUDs to force emitting the last access unit</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  <span class="comment">// which is assumed to be complete at this point.</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// Two AUDs are needed because the exact size of a NAL unit can only be</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// determined after seeing the next NAL unit, so we need a second AUD to</span></div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  <span class="comment">// finish the parsing of the first AUD.</span></div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;  <span class="keywordflow">if</span> (type_ == Nalu::kH264) {</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;    <span class="keyword">const</span> uint8_t aud[] = {0x00, 0x00, 0x01, 0x09, 0x00, 0x00, 0x01, 0x09};</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;    es_queue_-&gt;Push(aud, <span class="keyword">sizeof</span>(aud));</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  } <span class="keywordflow">else</span> {</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    DCHECK_EQ(Nalu::kH265, type_);</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keyword">const</span> uint8_t aud[] = {0x00, 0x00, 0x01, 0x46, 0x01,</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;                           0x00, 0x00, 0x01, 0x46, 0x01};</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;    es_queue_-&gt;Push(aud, <span class="keyword">sizeof</span>(aud));</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  }</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;  CHECK(ParseInternal());</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;  <span class="keywordflow">if</span> (pending_sample_) {</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;    <span class="comment">// Flush pending sample.</span></div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;    DCHECK(pending_sample_duration_);</div>
+<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;    pending_sample_-&gt;set_duration(pending_sample_duration_);</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;    emit_sample_cb_.Run(pid(), pending_sample_);</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;    pending_sample_ = scoped_refptr&lt;MediaSample&gt;();</div>
 <div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;  }</div>
-<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;</div>
-<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;  CHECK(ParseInternal());</div>
-<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;</div>
-<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  <span class="comment">// Note that the end argument is exclusive.  We do not want to include the</span></div>
-<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  <span class="comment">// fake AUD we just added, so the argument should point to the AUD.</span></div>
-<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  <span class="keywordflow">if</span> (access_unit_nalus_.size() &gt; 1 &amp;&amp;</div>
-<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;      !ProcessAccessUnit(access_unit_nalus_.end() - 1)) {</div>
-<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;    LOG(WARNING) &lt;&lt; <span class="stringliteral">&quot;Error processing last access unit.&quot;</span>;</div>
-<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  }</div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;</div>
-<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  <span class="keywordflow">if</span> (pending_sample_) {</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;    <span class="comment">// Flush pending sample.</span></div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;    DCHECK(pending_sample_duration_);</div>
-<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;    pending_sample_-&gt;set_duration(pending_sample_duration_);</div>
-<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;    emit_sample_cb_.Run(pid(), pending_sample_);</div>
-<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;    pending_sample_ = scoped_refptr&lt;MediaSample&gt;();</div>
-<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;  }</div>
-<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;}</div>
-<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;</div>
-<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;<span class="keywordtype">void</span> EsParserH26x::Reset() {</div>
-<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;  es_queue_.reset(<span class="keyword">new</span> media::OffsetByteQueue());</div>
-<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  current_search_position_ = 0;</div>
-<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  access_unit_nalus_.clear();</div>
-<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  timing_desc_list_.clear();</div>
-<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  pending_sample_ = scoped_refptr&lt;MediaSample&gt;();</div>
-<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;  pending_sample_duration_ = 0;</div>
-<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;  waiting_for_key_frame_ = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;}</div>
-<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;</div>
-<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;<span class="keywordtype">bool</span> EsParserH26x::SkipToFirstAccessUnit() {</div>
-<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;  DCHECK(access_unit_nalus_.empty());</div>
-<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;  <span class="keywordflow">while</span> (access_unit_nalus_.empty()) {</div>
-<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;    <span class="keywordflow">if</span> (!SearchForNextNalu())</div>
-<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;</div>
-<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;    <span class="comment">// If we can&#39;t start an access unit, remove it and continue.</span></div>
-<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;    DCHECK_EQ(1u, access_unit_nalus_.size());</div>
-<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;    <span class="keywordflow">if</span> (!access_unit_nalus_.back().nalu.can_start_access_unit())</div>
-<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;      access_unit_nalus_.clear();</div>
-<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;  }</div>
-<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;}</div>
-<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;</div>
-<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;<span class="keywordtype">bool</span> EsParserH26x::SearchForNextNalu() {</div>
-<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  <span class="keyword">const</span> uint8_t* es;</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  <span class="keywordtype">int</span> es_size;</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;  es_queue_-&gt;PeekAt(current_search_position_, &amp;es, &amp;es_size);</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  <span class="comment">// Find a start code.</span></div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  uint64_t start_code_offset;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;  uint8_t start_code_size;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> start_code_found = NaluReader::FindStartCode(</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;      es, es_size, &amp;start_code_offset, &amp;start_code_size);</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  <span class="keywordflow">if</span> (!start_code_found) {</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    <span class="comment">// We didn&#39;t find a start code, so we don&#39;t have to search this data again.</span></div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;    <span class="keywordflow">if</span> (es_size &gt; kStartCodeSize)</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      current_search_position_ += es_size - kStartCodeSize;</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  }</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  <span class="comment">// Ensure the next NAL unit is a real NAL unit.</span></div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  <span class="keyword">const</span> uint8_t* nalu_ptr = es + start_code_offset + start_code_size;</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  <span class="comment">// This size is likely inaccurate, this is just to get the header info.</span></div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="keyword">const</span> int64_t next_nalu_size = es_size - start_code_offset - start_code_size;</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  <span class="keywordflow">if</span> (next_nalu_size &lt;</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;      (type_ == Nalu::kH264 ? kH264NaluHeaderSize : kH265NaluHeaderSize)) {</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    <span class="comment">// There was not enough data, wait for more.</span></div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  }</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;</div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  Nalu next_nalu;</div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  <span class="keywordflow">if</span> (!next_nalu.Initialize(type_, nalu_ptr, next_nalu_size)) {</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    <span class="comment">// The next NAL unit is invalid, skip it and search again.</span></div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    current_search_position_ += start_code_offset + start_code_size;</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;    <span class="keywordflow">return</span> SearchForNextNalu();</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;  }</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  current_search_position_ += start_code_offset + start_code_size;</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  NaluInfo info;</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;  info.position = current_search_position_ - start_code_size;</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;  info.start_code_size = start_code_size;</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;  info.nalu = next_nalu;</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;  access_unit_nalus_.push_back(info);</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;}</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;</div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;<span class="keywordtype">bool</span> EsParserH26x::ProcessAccessUnit(std::deque&lt;NaluInfo&gt;::iterator end) {</div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  DCHECK(end &lt; access_unit_nalus_.end());</div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <span class="keyword">auto</span> begin = access_unit_nalus_.begin();</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  <span class="keyword">const</span> uint8_t* es;</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  <span class="keywordtype">int</span> es_size;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  es_queue_-&gt;PeekAt(begin-&gt;position, &amp;es, &amp;es_size);</div>
-<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;  DCHECK_GE(static_cast&lt;uint64_t&gt;(es_size), (end-&gt;position - begin-&gt;position));</div>
-<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;</div>
-<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  <span class="comment">// Process the NAL units in the access unit.</span></div>
-<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;  <span class="keywordtype">bool</span> is_key_frame = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;  <span class="keywordtype">int</span> pps_id = -1;</div>
-<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;  <span class="keywordflow">for</span> (<span class="keyword">auto</span> it = begin; it != end; ++it) {</div>
-<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;    <span class="keywordflow">if</span> (it-&gt;nalu.nuh_layer_id() == 0) {</div>
-<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;      <span class="comment">// Update the NALU because the data pointer may have been invalidated.</span></div>
-<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;      CHECK(it-&gt;nalu.Initialize(</div>
-<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;          type_, es + (it-&gt;position - begin-&gt;position) + it-&gt;start_code_size,</div>
-<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;          ((it+1)-&gt;position - it-&gt;position) - it-&gt;start_code_size));</div>
-<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;      <span class="keywordflow">if</span> (!ProcessNalu(it-&gt;nalu, &amp;is_key_frame, &amp;pps_id))</div>
-<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;}</div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="keywordtype">void</span> EsParserH26x::Reset() {</div>
+<div class="line"><a name="l00102"></a><span class="lineno">  102</span>&#160;  es_queue_.reset(<span class="keyword">new</span> media::OffsetByteQueue());</div>
+<div class="line"><a name="l00103"></a><span class="lineno">  103</span>&#160;  current_search_position_ = 0;</div>
+<div class="line"><a name="l00104"></a><span class="lineno">  104</span>&#160;  current_access_unit_position_ = 0;</div>
+<div class="line"><a name="l00105"></a><span class="lineno">  105</span>&#160;  current_video_slice_info_.valid = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00106"></a><span class="lineno">  106</span>&#160;  next_access_unit_position_set_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00107"></a><span class="lineno">  107</span>&#160;  next_access_unit_position_ = 0;</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;  current_nalu_info_.reset();</div>
+<div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;  timing_desc_list_.clear();</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;  pending_sample_ = scoped_refptr&lt;MediaSample&gt;();</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;  pending_sample_duration_ = 0;</div>
+<div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;  waiting_for_key_frame_ = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00113"></a><span class="lineno">  113</span>&#160;}</div>
+<div class="line"><a name="l00114"></a><span class="lineno">  114</span>&#160;</div>
+<div class="line"><a name="l00115"></a><span class="lineno">  115</span>&#160;<span class="keywordtype">bool</span> EsParserH26x::SearchForNalu(uint64_t* position, Nalu* nalu) {</div>
+<div class="line"><a name="l00116"></a><span class="lineno">  116</span>&#160;  <span class="keyword">const</span> uint8_t* es;</div>
+<div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;  <span class="keywordtype">int</span> es_size;</div>
+<div class="line"><a name="l00118"></a><span class="lineno">  118</span>&#160;  es_queue_-&gt;PeekAt(current_search_position_, &amp;es, &amp;es_size);</div>
+<div class="line"><a name="l00119"></a><span class="lineno">  119</span>&#160;</div>
+<div class="line"><a name="l00120"></a><span class="lineno">  120</span>&#160;  <span class="comment">// Find a start code.</span></div>
+<div class="line"><a name="l00121"></a><span class="lineno">  121</span>&#160;  uint64_t start_code_offset;</div>
+<div class="line"><a name="l00122"></a><span class="lineno">  122</span>&#160;  uint8_t start_code_size;</div>
+<div class="line"><a name="l00123"></a><span class="lineno">  123</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> start_code_found = NaluReader::FindStartCode(</div>
+<div class="line"><a name="l00124"></a><span class="lineno">  124</span>&#160;      es, es_size, &amp;start_code_offset, &amp;start_code_size);</div>
+<div class="line"><a name="l00125"></a><span class="lineno">  125</span>&#160;</div>
+<div class="line"><a name="l00126"></a><span class="lineno">  126</span>&#160;  <span class="keywordflow">if</span> (!start_code_found) {</div>
+<div class="line"><a name="l00127"></a><span class="lineno">  127</span>&#160;    <span class="comment">// We didn&#39;t find a start code, so we don&#39;t have to search this data again.</span></div>
+<div class="line"><a name="l00128"></a><span class="lineno">  128</span>&#160;    <span class="keywordflow">if</span> (es_size &gt; kStartCodeSize)</div>
+<div class="line"><a name="l00129"></a><span class="lineno">  129</span>&#160;      current_search_position_ += es_size - kStartCodeSize;</div>
+<div class="line"><a name="l00130"></a><span class="lineno">  130</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00131"></a><span class="lineno">  131</span>&#160;  }</div>
+<div class="line"><a name="l00132"></a><span class="lineno">  132</span>&#160;</div>
+<div class="line"><a name="l00133"></a><span class="lineno">  133</span>&#160;  <span class="comment">// Ensure the next NAL unit is a real NAL unit.</span></div>
+<div class="line"><a name="l00134"></a><span class="lineno">  134</span>&#160;  <span class="keyword">const</span> uint8_t* next_nalu_ptr = es + start_code_offset + start_code_size;</div>
+<div class="line"><a name="l00135"></a><span class="lineno">  135</span>&#160;  <span class="comment">// This size is likely inaccurate, this is just to get the header info.</span></div>
+<div class="line"><a name="l00136"></a><span class="lineno">  136</span>&#160;  <span class="keyword">const</span> int64_t next_nalu_size = es_size - start_code_offset - start_code_size;</div>
+<div class="line"><a name="l00137"></a><span class="lineno">  137</span>&#160;  <span class="keywordflow">if</span> (next_nalu_size &lt;</div>
+<div class="line"><a name="l00138"></a><span class="lineno">  138</span>&#160;      (type_ == Nalu::kH264 ? kH264NaluHeaderSize : kH265NaluHeaderSize)) {</div>
+<div class="line"><a name="l00139"></a><span class="lineno">  139</span>&#160;    <span class="comment">// There was not enough data, wait for more.</span></div>
+<div class="line"><a name="l00140"></a><span class="lineno">  140</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;  }</div>
+<div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;</div>
+<div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;  <span class="comment">// Update search position for next nalu.</span></div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  current_search_position_ += start_code_offset + start_code_size;</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;  <span class="comment">// |next_nalu_info_| is made global intentionally to avoid repetitive memory</span></div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;  <span class="comment">// allocation which could create memory fragments.</span></div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;  <span class="keywordflow">if</span> (!next_nalu_info_)</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;    next_nalu_info_.reset(<span class="keyword">new</span> NaluInfo);</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;  <span class="keywordflow">if</span> (!next_nalu_info_-&gt;nalu.Initialize(type_, next_nalu_ptr, next_nalu_size)) {</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;    <span class="comment">// This NAL unit is invalid, skip it and search again.</span></div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    <span class="keywordflow">return</span> SearchForNalu(position, nalu);</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  }</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  next_nalu_info_-&gt;position = current_search_position_ - start_code_size;</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;  next_nalu_info_-&gt;start_code_size = start_code_size;</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">bool</span> current_nalu_set = current_nalu_info_ ? <span class="keyword">true</span> : <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;  <span class="keywordflow">if</span> (current_nalu_info_) {</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    <span class="comment">// Starting position for the nalu including start code.</span></div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;    *position = current_nalu_info_-&gt;position;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    <span class="comment">// Update the NALU because the data pointer may have been invalidated.</span></div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    <span class="keyword">const</span> uint8_t* current_nalu_ptr =</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;        next_nalu_ptr +</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;        (current_nalu_info_-&gt;position + current_nalu_info_-&gt;start_code_size) -</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;        current_search_position_;</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;    <span class="keyword">const</span> uint64_t current_nalu_size = next_nalu_info_-&gt;position -</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;                                       current_nalu_info_-&gt;position -</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;                                       current_nalu_info_-&gt;start_code_size;</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    CHECK(nalu-&gt;Initialize(type_, current_nalu_ptr, current_nalu_size));</div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  }</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;  current_nalu_info_.swap(next_nalu_info_);</div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;  <span class="keywordflow">return</span> current_nalu_set ? <span class="keyword">true</span> : SearchForNalu(position, nalu);</div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;}</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;<span class="keywordtype">bool</span> EsParserH26x::ParseInternal() {</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;  uint64_t position;</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;  Nalu nalu;</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;  VideoSliceInfo video_slice_info;</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;  <span class="keywordflow">while</span> (SearchForNalu(&amp;position, &amp;nalu)) {</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    <span class="comment">// ITU H.264 sec. 7.4.1.2.3</span></div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    <span class="comment">// H264: The first of the NAL units with |can_start_access_unit() == true|</span></div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    <span class="comment">//   after the last VCL NAL unit of a primary coded picture specifies the</span></div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    <span class="comment">//   start of a new access unit.</span></div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    <span class="comment">// ITU H.265 sec. 7.4.2.4.4</span></div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;    <span class="comment">// H265: The first of the NAL units with |can_start_access_unit() == true|</span></div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    <span class="comment">//   after the last VCL NAL unit preceding firstBlPicNalUnit (the first</span></div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;    <span class="comment">//   VCL NAL unit of a coded picture with nuh_layer_id equal to 0), if</span></div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;    <span class="comment">//   any, specifies the start of a new access unit.</span></div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;    <span class="keywordflow">if</span> (nalu.can_start_access_unit()) {</div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;      <span class="keywordflow">if</span> (!next_access_unit_position_set_) {</div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;        next_access_unit_position_set_ = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;        next_access_unit_position_ = position;</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;      }</div>
+<div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;      RCHECK(ProcessNalu(nalu, &amp;video_slice_info));</div>
+<div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;      <span class="keywordflow">if</span> (nalu.is_video_slice() &amp;&amp; !video_slice_info.valid) {</div>
+<div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;        <span class="comment">// This could happen only if decoder config is not available yet. Drop</span></div>
+<div class="line"><a name="l00197"></a><span class="lineno">  197</span>&#160;        <span class="comment">// this frame.</span></div>
+<div class="line"><a name="l00198"></a><span class="lineno">  198</span>&#160;        DCHECK(!current_video_slice_info_.valid);</div>
+<div class="line"><a name="l00199"></a><span class="lineno">  199</span>&#160;        next_access_unit_position_set_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00200"></a><span class="lineno">  200</span>&#160;        <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00201"></a><span class="lineno">  201</span>&#160;      }</div>
+<div class="line"><a name="l00202"></a><span class="lineno">  202</span>&#160;    } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (nalu.is_video_slice()) {</div>
+<div class="line"><a name="l00203"></a><span class="lineno">  203</span>&#160;      <span class="comment">// This isn&#39;t the first VCL NAL unit. Next access unit should start after</span></div>
+<div class="line"><a name="l00204"></a><span class="lineno">  204</span>&#160;      <span class="comment">// this NAL unit.</span></div>
+<div class="line"><a name="l00205"></a><span class="lineno">  205</span>&#160;      next_access_unit_position_set_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00206"></a><span class="lineno">  206</span>&#160;      <span class="keywordflow">continue</span>;</div>
 <div class="line"><a name="l00207"></a><span class="lineno">  207</span>&#160;    }</div>
-<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;  }</div>
-<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;</div>
-<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;  <span class="keywordflow">if</span> (is_key_frame)</div>
-<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    waiting_for_key_frame_ = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;  <span class="keywordflow">if</span> (!waiting_for_key_frame_) {</div>
-<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;    <span class="keyword">const</span> uint64_t access_unit_size = end-&gt;position - begin-&gt;position;</div>
-<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;    RCHECK(EmitFrame(begin-&gt;position, access_unit_size, is_key_frame, pps_id));</div>
-<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;  }</div>
-<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;</div>
-<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;}</div>
+<div class="line"><a name="l00208"></a><span class="lineno">  208</span>&#160;</div>
+<div class="line"><a name="l00209"></a><span class="lineno">  209</span>&#160;    <span class="comment">// AUD shall be the first NAL unit if present. There shall be at most one</span></div>
+<div class="line"><a name="l00210"></a><span class="lineno">  210</span>&#160;    <span class="comment">// AUD in any access unit. We can emit the current access unit which shall</span></div>
+<div class="line"><a name="l00211"></a><span class="lineno">  211</span>&#160;    <span class="comment">// not contain the AUD.</span></div>
+<div class="line"><a name="l00212"></a><span class="lineno">  212</span>&#160;    <span class="keywordflow">if</span> (nalu.is_aud())</div>
+<div class="line"><a name="l00213"></a><span class="lineno">  213</span>&#160;      <span class="keywordflow">return</span> EmitCurrentAccessUnit();</div>
+<div class="line"><a name="l00214"></a><span class="lineno">  214</span>&#160;</div>
+<div class="line"><a name="l00215"></a><span class="lineno">  215</span>&#160;    <span class="comment">// We can only determine if the current access unit ends after seeing</span></div>
+<div class="line"><a name="l00216"></a><span class="lineno">  216</span>&#160;    <span class="comment">// another VCL NAL unit.</span></div>
+<div class="line"><a name="l00217"></a><span class="lineno">  217</span>&#160;    <span class="keywordflow">if</span> (!video_slice_info.valid)</div>
+<div class="line"><a name="l00218"></a><span class="lineno">  218</span>&#160;      <span class="keywordflow">continue</span>;</div>
 <div class="line"><a name="l00219"></a><span class="lineno">  219</span>&#160;</div>
-<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;<span class="keywordtype">bool</span> EsParserH26x::ParseInternal() {</div>
-<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;  <span class="keywordflow">while</span> (<span class="keyword">true</span>) {</div>
-<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <span class="keywordflow">if</span> (!SearchForNextNalu())</div>
-<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;</div>
-<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;    <span class="comment">// ITU H.264 sec. 7.4.1.2.3</span></div>
-<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;    <span class="comment">// H264: The first of the NAL units with |can_start_access_unit() == true|</span></div>
-<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;    <span class="comment">//   after the last VCL NAL unit of a primary coded picture specifies the</span></div>
-<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;    <span class="comment">//   start of a new access unit. |nuh_layer_id()| is for H265 only; it is</span></div>
-<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;    <span class="comment">//   included below for ease of computation (the value is always 0).</span></div>
-<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;    <span class="comment">// ITU H.265 sec. 7.4.2.4.4</span></div>
-<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    <span class="comment">// H265: The first of the NAL units with |can_start_access_unit() == true|</span></div>
-<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    <span class="comment">//   after the last VCL NAL unit preceding firstBlPicNalUnit (the first</span></div>
-<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;    <span class="comment">//   VCL NAL unit of a coded picture with nuh_layer_id equal to 0), if</span></div>
-<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;    <span class="comment">//   any, specifies the start of a new access unit.</span></div>
-<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;    DCHECK(!access_unit_nalus_.empty());</div>
-<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;    <span class="keywordflow">if</span> (!access_unit_nalus_.back().nalu.is_video_slice() ||</div>
-<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;        access_unit_nalus_.back().nalu.nuh_layer_id() != 0) {</div>
-<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;      <span class="keywordflow">continue</span>;</div>
-<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    }</div>
-<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;</div>
-<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;    <span class="comment">// First, find the end of the access unit.  Search backward to find the</span></div>
-<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <span class="comment">// first VCL NALU before the current one.</span></div>
-<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    <span class="keyword">auto</span> access_unit_end_rit = access_unit_nalus_.rbegin();</div>
-<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;    <span class="keywordtype">bool</span> found_vcl = <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    <span class="keywordflow">for</span> (<span class="keyword">auto</span> rit = access_unit_nalus_.rbegin() + 1;</div>
-<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;         rit != access_unit_nalus_.rend(); ++rit) {</div>
-<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;      <span class="keywordflow">if</span> (rit-&gt;nalu.is_video_slice()) {</div>
-<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;        found_vcl = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;        <span class="keywordflow">break</span>;</div>
-<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (rit-&gt;nalu.can_start_access_unit()) {</div>
-<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;        <span class="comment">// The start of the next access unit is the first unit with</span></div>
-<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;        <span class="comment">// |can_start_access_unit| after the previous VCL unit.</span></div>
-<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;        access_unit_end_rit = rit;</div>
-<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;      }</div>
-<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;    }</div>
-<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="keywordflow">if</span> (!found_vcl)</div>
-<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;</div>
-<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;    <span class="comment">// Get a forward iterator that corresponds to the same element pointed by</span></div>
-<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;    <span class="comment">// |access_unit_end_rit|. Note: |end| refers to the exclusive end and</span></div>
-<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;    <span class="comment">// will point to a valid object.</span></div>
-<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    <span class="keyword">auto</span> end = (access_unit_end_rit + 1).base();</div>
-<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    <span class="keywordflow">if</span> (!ProcessAccessUnit(end))</div>
-<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;      <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;</div>
-<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;    <span class="comment">// Delete the data we have already processed.</span></div>
-<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;    es_queue_-&gt;Trim(end-&gt;position);</div>
-<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;    access_unit_nalus_.erase(access_unit_nalus_.begin(), end);</div>
-<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;  }</div>
-<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;}</div>
-<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;</div>
-<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;<span class="keywordtype">bool</span> EsParserH26x::EmitFrame(int64_t access_unit_pos,</div>
-<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;                             <span class="keywordtype">int</span> access_unit_size,</div>
-<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;                             <span class="keywordtype">bool</span> is_key_frame,</div>
-<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;                             <span class="keywordtype">int</span> pps_id) {</div>
-<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;  <span class="comment">// Get the access unit timing info.</span></div>
-<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;  TimingDesc current_timing_desc = {kNoTimestamp, kNoTimestamp};</div>
-<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  <span class="keywordflow">while</span> (!timing_desc_list_.empty() &amp;&amp;</div>
-<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;         timing_desc_list_.front().first &lt;= access_unit_pos) {</div>
-<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    current_timing_desc = timing_desc_list_.front().second;</div>
-<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;    timing_desc_list_.pop_front();</div>
-<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  }</div>
-<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  <span class="keywordflow">if</span> (current_timing_desc.pts == kNoTimestamp)</div>
-<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;</div>
-<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;  <span class="comment">// Emit a frame.</span></div>
-<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Emit frame: stream_pos=&quot;</span> &lt;&lt; access_unit_pos</div>
-<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; size=&quot;</span> &lt;&lt; access_unit_size;</div>
-<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  <span class="keywordtype">int</span> es_size;</div>
-<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  <span class="keyword">const</span> uint8_t* es;</div>
-<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  es_queue_-&gt;PeekAt(access_unit_pos, &amp;es, &amp;es_size);</div>
-<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;</div>
-<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;  <span class="comment">// Convert frame to unit stream format.</span></div>
-<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;  std::vector&lt;uint8_t&gt; converted_frame;</div>
-<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  <span class="keywordflow">if</span> (!stream_converter_-&gt;ConvertByteStreamToNalUnitStream(</div>
-<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;          es, access_unit_size, &amp;converted_frame)) {</div>
-<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;    DLOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failure to convert video frame to unit stream format.&quot;</span>;</div>
-<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;  }</div>
-<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;</div>
-<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  <span class="comment">// Update the video decoder configuration if needed.</span></div>
-<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  RCHECK(UpdateVideoDecoderConfig(pps_id));</div>
-<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;</div>
-<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  <span class="comment">// Create the media sample, emitting always the previous sample after</span></div>
-<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  <span class="comment">// calculating its duration.</span></div>
-<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  scoped_refptr&lt;MediaSample&gt; media_sample = <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a3fac8e4cc8da3b34ef5f698411ec868b">MediaSample::CopyFrom</a>(</div>
-<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;      converted_frame.data(), converted_frame.size(), is_key_frame);</div>
-<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;  media_sample-&gt;set_dts(current_timing_desc.dts);</div>
-<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;  media_sample-&gt;set_pts(current_timing_desc.pts);</div>
-<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;  <span class="keywordflow">if</span> (pending_sample_) {</div>
-<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;    DCHECK_GT(media_sample-&gt;dts(), pending_sample_-&gt;dts());</div>
-<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;    pending_sample_duration_ = media_sample-&gt;dts() - pending_sample_-&gt;dts();</div>
-<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;    pending_sample_-&gt;set_duration(pending_sample_duration_);</div>
-<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;    emit_sample_cb_.Run(pid(), pending_sample_);</div>
-<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;  }</div>
-<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;  pending_sample_ = media_sample;</div>
-<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;</div>
-<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;}</div>
-<div class="line"><a name="l00320"></a><span class="lineno">  320</span>&#160;</div>
-<div class="line"><a name="l00321"></a><span class="lineno">  321</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
-<div class="line"><a name="l00322"></a><span class="lineno">  322</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00323"></a><span class="lineno">  323</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00220"></a><span class="lineno">  220</span>&#160;    <span class="comment">// Check if it is the first VCL NAL unit of a primary coded picture. It is</span></div>
+<div class="line"><a name="l00221"></a><span class="lineno">  221</span>&#160;    <span class="comment">// always true for H265 as nuh_layer_id shall be == 0 at this point.</span></div>
+<div class="line"><a name="l00222"></a><span class="lineno">  222</span>&#160;    <span class="keywordtype">bool</span> is_first_vcl_nalu = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00223"></a><span class="lineno">  223</span>&#160;    <span class="keywordflow">if</span> (type_ == Nalu::kH264) {</div>
+<div class="line"><a name="l00224"></a><span class="lineno">  224</span>&#160;      <span class="keywordflow">if</span> (current_video_slice_info_.valid) {</div>
+<div class="line"><a name="l00225"></a><span class="lineno">  225</span>&#160;        <span class="comment">// ITU H.264 sec. 7.4.1.2.4 Detection of the first VCL NAL unit of a</span></div>
+<div class="line"><a name="l00226"></a><span class="lineno">  226</span>&#160;        <span class="comment">// primary coded picture. Only pps_id and frame_num are checked here.</span></div>
+<div class="line"><a name="l00227"></a><span class="lineno">  227</span>&#160;        is_first_vcl_nalu =</div>
+<div class="line"><a name="l00228"></a><span class="lineno">  228</span>&#160;            video_slice_info.frame_num != current_video_slice_info_.frame_num ||</div>
+<div class="line"><a name="l00229"></a><span class="lineno">  229</span>&#160;            video_slice_info.pps_id != current_video_slice_info_.pps_id;</div>
+<div class="line"><a name="l00230"></a><span class="lineno">  230</span>&#160;      }</div>
+<div class="line"><a name="l00231"></a><span class="lineno">  231</span>&#160;    }</div>
+<div class="line"><a name="l00232"></a><span class="lineno">  232</span>&#160;    <span class="keywordflow">if</span> (!is_first_vcl_nalu) {</div>
+<div class="line"><a name="l00233"></a><span class="lineno">  233</span>&#160;      <span class="comment">// This isn&#39;t the first VCL NAL unit. Next access unit should start after</span></div>
+<div class="line"><a name="l00234"></a><span class="lineno">  234</span>&#160;      <span class="comment">// this NAL unit.</span></div>
+<div class="line"><a name="l00235"></a><span class="lineno">  235</span>&#160;      next_access_unit_position_set_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00236"></a><span class="lineno">  236</span>&#160;      <span class="keywordflow">continue</span>;</div>
+<div class="line"><a name="l00237"></a><span class="lineno">  237</span>&#160;    }</div>
+<div class="line"><a name="l00238"></a><span class="lineno">  238</span>&#160;</div>
+<div class="line"><a name="l00239"></a><span class="lineno">  239</span>&#160;    DCHECK(next_access_unit_position_set_);</div>
+<div class="line"><a name="l00240"></a><span class="lineno">  240</span>&#160;    RCHECK(EmitCurrentAccessUnit());</div>
+<div class="line"><a name="l00241"></a><span class="lineno">  241</span>&#160;</div>
+<div class="line"><a name="l00242"></a><span class="lineno">  242</span>&#160;    <span class="comment">// Delete the data we have already processed.</span></div>
+<div class="line"><a name="l00243"></a><span class="lineno">  243</span>&#160;    es_queue_-&gt;Trim(next_access_unit_position_);</div>
+<div class="line"><a name="l00244"></a><span class="lineno">  244</span>&#160;</div>
+<div class="line"><a name="l00245"></a><span class="lineno">  245</span>&#160;    current_access_unit_position_ = next_access_unit_position_;</div>
+<div class="line"><a name="l00246"></a><span class="lineno">  246</span>&#160;    current_video_slice_info_ = video_slice_info;</div>
+<div class="line"><a name="l00247"></a><span class="lineno">  247</span>&#160;    next_access_unit_position_set_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00248"></a><span class="lineno">  248</span>&#160;  }</div>
+<div class="line"><a name="l00249"></a><span class="lineno">  249</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00250"></a><span class="lineno">  250</span>&#160;}</div>
+<div class="line"><a name="l00251"></a><span class="lineno">  251</span>&#160;</div>
+<div class="line"><a name="l00252"></a><span class="lineno">  252</span>&#160;<span class="keywordtype">bool</span> EsParserH26x::EmitCurrentAccessUnit() {</div>
+<div class="line"><a name="l00253"></a><span class="lineno">  253</span>&#160;  <span class="keywordflow">if</span> (current_video_slice_info_.valid) {</div>
+<div class="line"><a name="l00254"></a><span class="lineno">  254</span>&#160;    <span class="keywordflow">if</span> (current_video_slice_info_.is_key_frame)</div>
+<div class="line"><a name="l00255"></a><span class="lineno">  255</span>&#160;      waiting_for_key_frame_ = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00256"></a><span class="lineno">  256</span>&#160;    <span class="keywordflow">if</span> (!waiting_for_key_frame_) {</div>
+<div class="line"><a name="l00257"></a><span class="lineno">  257</span>&#160;      RCHECK(</div>
+<div class="line"><a name="l00258"></a><span class="lineno">  258</span>&#160;          EmitFrame(current_access_unit_position_,</div>
+<div class="line"><a name="l00259"></a><span class="lineno">  259</span>&#160;                    next_access_unit_position_ - current_access_unit_position_,</div>
+<div class="line"><a name="l00260"></a><span class="lineno">  260</span>&#160;                    current_video_slice_info_.is_key_frame,</div>
+<div class="line"><a name="l00261"></a><span class="lineno">  261</span>&#160;                    current_video_slice_info_.pps_id));</div>
+<div class="line"><a name="l00262"></a><span class="lineno">  262</span>&#160;    }</div>
+<div class="line"><a name="l00263"></a><span class="lineno">  263</span>&#160;    current_video_slice_info_.valid = <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00264"></a><span class="lineno">  264</span>&#160;  }</div>
+<div class="line"><a name="l00265"></a><span class="lineno">  265</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00266"></a><span class="lineno">  266</span>&#160;}</div>
+<div class="line"><a name="l00267"></a><span class="lineno">  267</span>&#160;</div>
+<div class="line"><a name="l00268"></a><span class="lineno">  268</span>&#160;<span class="keywordtype">bool</span> EsParserH26x::EmitFrame(int64_t access_unit_pos,</div>
+<div class="line"><a name="l00269"></a><span class="lineno">  269</span>&#160;                             <span class="keywordtype">int</span> access_unit_size,</div>
+<div class="line"><a name="l00270"></a><span class="lineno">  270</span>&#160;                             <span class="keywordtype">bool</span> is_key_frame,</div>
+<div class="line"><a name="l00271"></a><span class="lineno">  271</span>&#160;                             <span class="keywordtype">int</span> pps_id) {</div>
+<div class="line"><a name="l00272"></a><span class="lineno">  272</span>&#160;  <span class="comment">// Get the access unit timing info.</span></div>
+<div class="line"><a name="l00273"></a><span class="lineno">  273</span>&#160;  TimingDesc current_timing_desc = {kNoTimestamp, kNoTimestamp};</div>
+<div class="line"><a name="l00274"></a><span class="lineno">  274</span>&#160;  <span class="keywordflow">while</span> (!timing_desc_list_.empty() &amp;&amp;</div>
+<div class="line"><a name="l00275"></a><span class="lineno">  275</span>&#160;         timing_desc_list_.front().first &lt;= access_unit_pos) {</div>
+<div class="line"><a name="l00276"></a><span class="lineno">  276</span>&#160;    current_timing_desc = timing_desc_list_.front().second;</div>
+<div class="line"><a name="l00277"></a><span class="lineno">  277</span>&#160;    timing_desc_list_.pop_front();</div>
+<div class="line"><a name="l00278"></a><span class="lineno">  278</span>&#160;  }</div>
+<div class="line"><a name="l00279"></a><span class="lineno">  279</span>&#160;  <span class="keywordflow">if</span> (current_timing_desc.pts == kNoTimestamp)</div>
+<div class="line"><a name="l00280"></a><span class="lineno">  280</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00281"></a><span class="lineno">  281</span>&#160;</div>
+<div class="line"><a name="l00282"></a><span class="lineno">  282</span>&#160;  <span class="comment">// Emit a frame.</span></div>
+<div class="line"><a name="l00283"></a><span class="lineno">  283</span>&#160;  DVLOG(LOG_LEVEL_ES) &lt;&lt; <span class="stringliteral">&quot;Emit frame: stream_pos=&quot;</span> &lt;&lt; access_unit_pos</div>
+<div class="line"><a name="l00284"></a><span class="lineno">  284</span>&#160;                      &lt;&lt; <span class="stringliteral">&quot; size=&quot;</span> &lt;&lt; access_unit_size;</div>
+<div class="line"><a name="l00285"></a><span class="lineno">  285</span>&#160;  <span class="keywordtype">int</span> es_size;</div>
+<div class="line"><a name="l00286"></a><span class="lineno">  286</span>&#160;  <span class="keyword">const</span> uint8_t* es;</div>
+<div class="line"><a name="l00287"></a><span class="lineno">  287</span>&#160;  es_queue_-&gt;PeekAt(access_unit_pos, &amp;es, &amp;es_size);</div>
+<div class="line"><a name="l00288"></a><span class="lineno">  288</span>&#160;</div>
+<div class="line"><a name="l00289"></a><span class="lineno">  289</span>&#160;  <span class="comment">// Convert frame to unit stream format.</span></div>
+<div class="line"><a name="l00290"></a><span class="lineno">  290</span>&#160;  std::vector&lt;uint8_t&gt; converted_frame;</div>
+<div class="line"><a name="l00291"></a><span class="lineno">  291</span>&#160;  <span class="keywordflow">if</span> (!stream_converter_-&gt;ConvertByteStreamToNalUnitStream(</div>
+<div class="line"><a name="l00292"></a><span class="lineno">  292</span>&#160;          es, access_unit_size, &amp;converted_frame)) {</div>
+<div class="line"><a name="l00293"></a><span class="lineno">  293</span>&#160;    DLOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Failure to convert video frame to unit stream format.&quot;</span>;</div>
+<div class="line"><a name="l00294"></a><span class="lineno">  294</span>&#160;    <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a name="l00295"></a><span class="lineno">  295</span>&#160;  }</div>
+<div class="line"><a name="l00296"></a><span class="lineno">  296</span>&#160;</div>
+<div class="line"><a name="l00297"></a><span class="lineno">  297</span>&#160;  <span class="comment">// Update the video decoder configuration if needed.</span></div>
+<div class="line"><a name="l00298"></a><span class="lineno">  298</span>&#160;  RCHECK(UpdateVideoDecoderConfig(pps_id));</div>
+<div class="line"><a name="l00299"></a><span class="lineno">  299</span>&#160;</div>
+<div class="line"><a name="l00300"></a><span class="lineno">  300</span>&#160;  <span class="comment">// Create the media sample, emitting always the previous sample after</span></div>
+<div class="line"><a name="l00301"></a><span class="lineno">  301</span>&#160;  <span class="comment">// calculating its duration.</span></div>
+<div class="line"><a name="l00302"></a><span class="lineno">  302</span>&#160;  scoped_refptr&lt;MediaSample&gt; media_sample = <a class="code" href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a3fac8e4cc8da3b34ef5f698411ec868b">MediaSample::CopyFrom</a>(</div>
+<div class="line"><a name="l00303"></a><span class="lineno">  303</span>&#160;      converted_frame.data(), converted_frame.size(), is_key_frame);</div>
+<div class="line"><a name="l00304"></a><span class="lineno">  304</span>&#160;  media_sample-&gt;set_dts(current_timing_desc.dts);</div>
+<div class="line"><a name="l00305"></a><span class="lineno">  305</span>&#160;  media_sample-&gt;set_pts(current_timing_desc.pts);</div>
+<div class="line"><a name="l00306"></a><span class="lineno">  306</span>&#160;  <span class="keywordflow">if</span> (pending_sample_) {</div>
+<div class="line"><a name="l00307"></a><span class="lineno">  307</span>&#160;    DCHECK_GT(media_sample-&gt;dts(), pending_sample_-&gt;dts());</div>
+<div class="line"><a name="l00308"></a><span class="lineno">  308</span>&#160;    pending_sample_duration_ = media_sample-&gt;dts() - pending_sample_-&gt;dts();</div>
+<div class="line"><a name="l00309"></a><span class="lineno">  309</span>&#160;    pending_sample_-&gt;set_duration(pending_sample_duration_);</div>
+<div class="line"><a name="l00310"></a><span class="lineno">  310</span>&#160;    emit_sample_cb_.Run(pid(), pending_sample_);</div>
+<div class="line"><a name="l00311"></a><span class="lineno">  311</span>&#160;  }</div>
+<div class="line"><a name="l00312"></a><span class="lineno">  312</span>&#160;  pending_sample_ = media_sample;</div>
+<div class="line"><a name="l00313"></a><span class="lineno">  313</span>&#160;</div>
+<div class="line"><a name="l00314"></a><span class="lineno">  314</span>&#160;  <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00315"></a><span class="lineno">  315</span>&#160;}</div>
+<div class="line"><a name="l00316"></a><span class="lineno">  316</span>&#160;</div>
+<div class="line"><a name="l00317"></a><span class="lineno">  317</span>&#160;}  <span class="comment">// namespace mp2t</span></div>
+<div class="line"><a name="l00318"></a><span class="lineno">  318</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00319"></a><span class="lineno">  319</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1MediaSample_html_a3fac8e4cc8da3b34ef5f698411ec868b"><div class="ttname"><a href="../../d7/d6d/classshaka_1_1media_1_1MediaSample.html#a3fac8e4cc8da3b34ef5f698411ec868b">shaka::media::MediaSample::CopyFrom</a></div><div class="ttdeci">static scoped_refptr&lt; MediaSample &gt; CopyFrom(const uint8_t *data, size_t size, bool is_key_frame)</div><div class="ttdef"><b>Definition:</b> <a href="../../d8/d0d/media__sample_8cc_source.html#l00045">media_sample.cc:45</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Aug 23 2016 20:33:15 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Tue Aug 30 2016 00:23:18 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
