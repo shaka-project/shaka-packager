@@ -531,12 +531,7 @@ int PackagerMain(int argc, char** argv) {
 
   // Set up logging.
   logging::LoggingSettings log_settings;
-  base::FilePath log_filename;
-  PathService::Get(base::DIR_EXE, &log_filename);
-  log_filename = log_filename.AppendASCII("packager.log");
-  log_settings.logging_dest = logging::LOG_TO_ALL;
-  log_settings.log_file = log_filename.value().c_str();
-  log_settings.delete_old = logging::DELETE_OLD_LOG_FILE;
+  log_settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
   CHECK(logging::InitLogging(log_settings));
 
   google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));

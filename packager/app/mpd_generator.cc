@@ -91,7 +91,11 @@ int MpdMain(int argc, char** argv) {
   base::AtExitManager exit;
   // Needed to enable VLOG/DVLOG through --vmodule or --v.
   base::CommandLine::Init(argc, argv);
-  CHECK(logging::InitLogging(logging::LoggingSettings()));
+
+  // Set up logging.
+  logging::LoggingSettings log_settings;
+  log_settings.logging_dest = logging::LOG_TO_SYSTEM_DEBUG_LOG;
+  CHECK(logging::InitLogging(log_settings));
 
   google::SetUsageMessage(base::StringPrintf(kUsage, argv[0]));
   google::ParseCommandLineFlags(&argc, &argv, true);
