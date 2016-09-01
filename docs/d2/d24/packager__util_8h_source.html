@@ -116,7 +116,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="keyword">class </span>Muxer;</div>
 <div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;<span class="keyword">struct </span>MuxerOptions;</div>
 <div class="line"><a name="l00029"></a><span class="lineno">   29</span>&#160;</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keywordtype">void</span> DumpStreamInfo(<span class="keyword">const</span> std::vector&lt;MediaStream*&gt;&amp; streams);</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;<span class="keywordtype">void</span> DumpStreamInfo(<span class="keyword">const</span> std::vector&lt;std::unique_ptr&lt;MediaStream&gt;&gt;&amp; streams);</div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;</div>
 <div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;std::unique_ptr&lt;KeySource&gt; CreateEncryptionKeySource();</div>
 <div class="line"><a name="l00038"></a><span class="lineno">   38</span>&#160;</div>
@@ -128,7 +128,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keywordtype">bool</span> GetMpdOptions(MpdOptions* mpd_options);</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keywordtype">bool</span> AddStreamToMuxer(<span class="keyword">const</span> std::vector&lt;MediaStream*&gt;&amp; streams,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keywordtype">bool</span> AddStreamToMuxer(<span class="keyword">const</span> std::vector&lt;std::unique_ptr&lt;MediaStream&gt;&gt;&amp; streams,</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                      <span class="keyword">const</span> std::string&amp; stream_selector,</div>
 <div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                      <span class="keyword">const</span> std::string&amp; language_override,</div>
 <div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                      Muxer* muxer);</div>
@@ -140,7 +140,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Aug 31 2016 22:38:12 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Sep 1 2016 17:53:03 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

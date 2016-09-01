@@ -46,7 +46,7 @@ var searchData=
   ['stop',['Stop',['../d5/d33/classshaka_1_1media_1_1ProducerConsumerQueue.html#ac600977b708381facf07f87e36b43d79',1,'shaka::media::ProducerConsumerQueue']]],
   ['stopped',['Stopped',['../d5/d33/classshaka_1_1media_1_1ProducerConsumerQueue.html#a3d88bdebfa412f2847f1d96fd804bba1',1,'shaka::media::ProducerConsumerQueue']]],
   ['stream_5fid',['stream_id',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html#aa023c7fafbced88ca40e98362a7e4c69',1,'shaka::media::mp2t::PesPacket']]],
-  ['streams',['streams',['../dd/d17/classshaka_1_1media_1_1Demuxer.html#af89c3d15b452d45bcacea9470ba43a7f',1,'shaka::media::Demuxer']]],
+  ['streams',['streams',['../dd/d17/classshaka_1_1media_1_1Demuxer.html#aafb74f83b0de2c787336bad9f096ce50',1,'shaka::media::Demuxer']]],
   ['suppressonce',['SuppressOnce',['../de/d52/classshaka_1_1Representation.html#a473e45dbbf64e6ab6ed670ccedac84ed',1,'shaka::Representation']]],
   ['syncsampleiterator',['SyncSampleIterator',['../d7/d26/classshaka_1_1media_1_1mp4_1_1SyncSampleIterator.html#af8bc2d5d153bfdd168f145213c47d3fe',1,'shaka::media::mp4::SyncSampleIterator']]]
 ];
