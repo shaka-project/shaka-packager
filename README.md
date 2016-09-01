@@ -3,9 +3,14 @@
 [![Build Status](https://travis-ci.org/google/shaka-packager.svg?branch=master)](https://travis-ci.org/google/shaka-packager)
 [![Build status](https://ci.appveyor.com/api/projects/status/3t8iu603rp25sa74?svg=true)](https://ci.appveyor.com/project/shaka/shaka-packager)
 
-Media packaging SDK intended for C++ programmers writing DASH/HLS packager applications with common encryption support, Widevine DRM support, Live, and Video-On-Demand.
+Media packaging SDK intended for C++ programmers writing DASH/HLS packager
+applications with common encryption support, Widevine DRM support, Live, and
+Video-On-Demand.
 
-This document provides the information needed to create a DASH/HLS packager that is able to remux and encrypt a video into fragmented ISO BMFF format with common encryption (CENC) support. The DASH/HLS packaging API is also designed in such a way for easy extension to more source and destination formats.
+This document provides the information needed to create a DASH/HLS packager
+that is able to remux and encrypt a video into fragmented ISO BMFF format with
+common encryption (CENC) support. The DASH/HLS packaging API is also designed
+in such a way for easy extension to more source and destination formats.
 
 Current supported codecs:
 
@@ -23,20 +28,32 @@ Current supported codecs:
 ** I for input and O for output.
 ** VP8/VP9/Opus support in ISO-BMFF is experimental.
 
-Right now this project is supported directly on Linux and MacOSX platforms only. One option to run shaka-packager on other platforms is using [docker] (#Using docker for testing /development).
+This project is supported on Linux, Windows and MacOSX platforms.
 
 
-# Mailing list #
+# Useful Links #
 
-We have a [public mailing list](https://groups.google.com/forum/#!forum/shaka-packager-users) for discussion and announcements. To receive notifications about new versions, please join the list. You can also use the list to ask questions or discuss Shaka Packager developments.
+- [API Documentation](https://google.github.io/shaka-packager/docs)
+- [Mailing List](https://groups.google.com/forum/#!forum/shaka-packager-users)
+  (join for release announcements or problem discussions)
+- [Docker Builds](https://hub.docker.com/r/google/shaka-packager/tags/)
+- Several open source players:
+  - [Web: Shaka Player](https://github.com/google/shaka-player)
+  - [Web: dash.js](https://github.com/Dash-Industry-Forum/dash.js)
+  - [Android: ExoPlayer](https://github.com/google/ExoPlayer)
 
-# Setting up for development #
 
-1. Packager source is managed by Git at https://www.github.com/google/shaka-packager. We use gclient tool from Chromium to manage third party libraries. You will need Git (v1.7.5 or above) installed on your machine to access the source code.
+# Setting Up For Development #
+
+1. Packager source is managed by Git at
+https://www.github.com/google/shaka-packager. We use gclient tool from Chromium
+to manage third party libraries. You will need Git (v1.7.5 or above) installed
+on your machine to access the source code.
 
 2. Install Chromium depot tools which contains gclient and ninja
 
-  See http://www.chromium.org/developers/how-tos/install-depot-tools for details.
+  See http://www.chromium.org/developers/how-tos/install-depot-tools for
+  details.
 
 3. Get the source
 
@@ -69,7 +86,8 @@ We have a [public mailing list](https://groups.google.com/forum/#!forum/shaka-pa
   ```
   Refer to ninja manual for details.
 
-  We also provide a mechanism to change build configurations, for example, developers can change build system to “make” by overriding *GYP_GENERATORS*.
+  We also provide a mechanism to change build configurations, for example,
+  developers can change build system to “make” by overriding *GYP_GENERATORS*.
   ```Shell
   GYP_GENERATORS='make' gclient runhooks
   ```
@@ -80,16 +98,21 @@ We have a [public mailing list](https://groups.google.com/forum/#!forum/shaka-pa
 
 5. Updating the code
 
-  Update your current branch with *git pull* followed by *gclient sync*. Note that if you are not on a branch, *git pull* will not work, and you will need to use *git fetch* instead.
+  Update your current branch with *git pull* followed by *gclient sync*. Note
+  that if you are not on a branch, *git pull* will not work, and you will need
+  to use *git fetch* instead.
 
 6. Contributing
 
-  See https://github.com/google/shaka-packager/blob/master/CONTRIBUTING.md for details.
+  See https://github.com/google/shaka-packager/blob/master/CONTRIBUTING.md for
+  details.
 
 
-# Using docker for testing / development #
+# Using Docker For Testing / Development #
 
-[Docker](https://www.docker.com/whatisdocker) is a tool that can package an application and its dependencies in a virtual container to run on different host operating systems.
+[Docker](https://www.docker.com/whatisdocker) is a tool that can package an
+application and its dependencies in a virtual container to run on different
+host operating systems.
 
 1. Install [Docker](https://docs.docker.com/installation/).
 
@@ -130,47 +153,70 @@ We have a [public mailing list](https://groups.google.com/forum/#!forum/shaka-pa
   Outputs are available in your media folder `your_media_path`.
 
 
-# Design overview #
+# Design Overview #
 
 Major modules are described below:
 
-Demuxer is responsible for extracting elementary stream samples from a multimedia file, e.g. an ISO BMFF file. The demuxed streams can be fed into a muxer to generate multimedia files. An optional KeySource can be provided to Demuxer to decrypt CENC and WVM source content.
+Demuxer is responsible for extracting elementary stream samples from a
+multimedia file, e.g. an ISO BMFF file. The demuxed streams can be fed into a
+muxer to generate multimedia files. An optional KeySource can be provided to
+Demuxer to decrypt CENC and WVM source content.
 
-Demuxer reads from source through the File interface. A concrete LocalFile class is already implemented. The users may also implement their own File class if they want to read/write using a different kinds of protocol, e.g. network storage, http etc.
+Demuxer reads from source through the File interface. A concrete LocalFile
+class is already implemented. The users may also implement their own File class
+if they want to read/write using a different kinds of protocol, e.g. network
+storage, http etc.
 
-Muxer is responsible for taking elementary stream samples and producing media segments. An optional KeySource can be provided to Muxer to generate encrypted outputs. Muxer writes to output using the same File interface as Demuxer.
+Muxer is responsible for taking elementary stream samples and producing media
+segments. An optional KeySource can be provided to Muxer to generate encrypted
+outputs. Muxer writes to output using the same File interface as Demuxer.
 
-Demuxer and Muxer are connected using MediaStream. MediaStream wraps the elementary streams and is responsible for the interaction between Demuxer and Muxer. A demuxer can transmits multiple MediaStreams; similarly, A muxer is able to accept and mux multiple MediaStreams, not necessarily from the same Demuxer.
+Demuxer and Muxer are connected using MediaStream. MediaStream wraps the
+elementary streams and is responsible for the interaction between Demuxer and
+Muxer. A demuxer can transmits multiple MediaStreams; similarly, A muxer is
+able to accept and mux multiple MediaStreams, not necessarily from the same
+Demuxer.
 
-MpdBuilder is responsible for the creation of Media Presentation Description as specified in ISO/IEC 23009-1 DASH MPD spec.
+MpdBuilder is responsible for the creation of Media Presentation Description as
+specified in ISO/IEC 23009-1 DASH MPD spec.
 
-Refer to [Design](docs/design.md), [API](https://google.github.io/shaka-packager/docs) for details.
+Refer to [Design](docs/design.md),
+[API](https://google.github.io/shaka-packager/docs) for details.
 
 
 # DASH-IF IOP Compliance #
 
-We try out best to be compliant to [Guidelines for Implementation: DASH-IF Interoperability Points](http://dashif.org/wp-content/uploads/2015/04/DASH-IF-IOP-v3.0.pdf).
+We try out best to be compliant to [Guidelines for Implementation: DASH-IF
+Interoperability Points](http://dashif.org/wp-content/uploads/2015/04/DASH-IF-IOP-v3.0.pdf).
 
-We are already compliant to most of the requirements specified by the document, with two exceptions:
-- ContentProtection elements are still put under Representation element instead of AdaptationSet element;
-- Representations encrypted with different keys are still put under the same AdaptationSet.
+We are already compliant to most of the requirements specified by the document,
+with two exceptions:
+- ContentProtection elements are still put under Representation element instead
+  of AdaptationSet element;
+- Representations encrypted with different keys are still put under the same
+  AdaptationSet.
 
 We created a flag '--generate_dash_if_iop_compliant_mpd', if enabled,
 - ContentProtection elements will be moved under AdaptationSet;
-- Representations encrypted with different keys will be put under different AdaptationSets, grouped by `@group` attribute.
+- Representations encrypted with different keys will be put under different
+  AdaptationSets, grouped by `@group` attribute.
 
-Users can enable the flag '--generate_dash_if_iop_compliant_mpd' to have these features. This flag will be enabled by default in a future release.
+Users can enable the flag '--generate_dash_if_iop_compliant_mpd' to have these
+features. This flag will be enabled by default in a future release.
 
-Please feel free to file a bug or feature request if there are any incompatibilities with DASH-IF IOP or other standards / specifications.
+Please feel free to file a bug or feature request if there are any
+incompatibilities with DASH-IF IOP or other standards / specifications.
 
 
 # Driver Program Sample Usage #
 
-Sample driver programs **packager** and **mpd_generator** are written using the SDK.
+Sample driver programs **packager** and **mpd_generator** are written using the
+SDK.
 
 Some sample usages:
 
-Run the program without arguments will display the help page with the list of command line arguments:
+Run the program without arguments will display the help page with the list of
+command line arguments:
 ```Shell
 packager
 ```
@@ -185,7 +231,8 @@ Demux audio from the input and generate a fragmented mp4:
 packager input=sintel.mp4,stream=audio,output=fragmented_sintel.mp4
 ```
 
-Demux streams from the input and generates a mpd with on-demand profile along with fragmented mp4:
+Demux streams from the input and generates a mpd with on-demand profile along
+with fragmented mp4:
 ```Shell
 packager \
   input=sintel.mp4,stream=audio,output=sintel_audio.mp4 \
@@ -205,7 +252,8 @@ packager \
 ```
 
 
-You may also generate mpd with live profile. Here is an example with IPTV input streams:
+You may also generate mpd with live profile. Here is an example with IPTV input
+streams:
 ```Shell
 packager \
   'input=udp://224.1.1.5:5003,stream=audio,init_segment=live-audio.mp4,segment_template=live-audio-$Number$.mp4,bandwidth=130000'  \
@@ -215,7 +263,8 @@ packager \
 --mpd_output live.mpd
 ```
 
-Demux video from the input and generate an encrypted fragmented mp4 using Widevine encryption with RSA signing key file *widevine_test_private.der*:
+Demux video from the input and generate an encrypted fragmented mp4 using
+Widevine encryption with RSA signing key file *widevine_test_private.der*:
 ```Shell
 packager input=sintel.mp4,stream=video,output=encrypted_sintel.mp4 \
 --enable_widevine_encryption \
@@ -225,7 +274,8 @@ packager input=sintel.mp4,stream=video,output=encrypted_sintel.mp4 \
 --rsa_signing_key_path "widevine_test_private.der"
 ```
 
-The program also supports AES signing. Here is an example with encryption key rotates every 1800 seconds:
+The program also supports AES signing. Here is an example with encryption key
+rotates every 1800 seconds:
 ```Shell
 packager \
   'input=udp://224.1.1.5:5003,stream=audio,init_segment=live-audio.mp4,segment_template=live-audio-$Number$.mp4,bandwidth=130000'  \
@@ -243,7 +293,9 @@ packager \
 ```
 Note that key rotation is only supported for live profile.
 
-Demux and decrypt video from a WVM container, and generate encrypted fragmented mp4 using Widevine encryption with RSA signing key file *widevine_test_private.der*:
+Demux and decrypt video from a WVM container, and generate encrypted fragmented
+mp4 using Widevine encryption with RSA signing key file
+*widevine_test_private.der*:
 ```Shell
 packager input=sintel.wvm,stream=video,output=encrypted_sintel.mp4 \
 --enable_widevine_decryption \
@@ -254,7 +306,8 @@ packager input=sintel.wvm,stream=video,output=encrypted_sintel.mp4 \
 --rsa_signing_key_path "widevine_test_private.der"
 ```
 
-The program can be told to generate MediaInfo files, which can be fed to **mpd_generate** to generate the mpd file.
+The program can be told to generate MediaInfo files, which can be fed to
+**mpd_generate** to generate the mpd file.
 ```Shell
 packager \
   input=sintel.mp4,stream=video,output=sintel_video.mp4 \

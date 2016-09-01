@@ -2,17 +2,28 @@
 
 Major modules are described below:
 
-Demuxer is responsible for extracting elementary stream samples from a multimedia file, e.g. an ISO BMFF file. The demuxed streams can be fed into a muxer to generate multimedia files. An optional KeySource can be provided to Demuxer to decrypt CENC and WVM source content.
+Demuxer is responsible for extracting elementary stream samples from a
+multimedia file, e.g. an ISO BMFF file. The demuxed streams can be fed into a
+muxer to generate multimedia files. An optional KeySource can be provided to
+Demuxer to decrypt CENC and WVM source content.
 
-Demuxer reads from source through the File interface. A concrete LocalFile class is already implemented. The users may also implement their own File class if they want to read/write using a different kinds of protocol, e.g. network storage, http etc.
+Demuxer reads from source through the File interface. A concrete LocalFile
+class is already implemented. The users may also implement their own File class
+if they want to read/write using a different kinds of protocol, e.g. network
+storage, http etc.
 
-Muxer is responsible for taking elementary stream samples and producing media segments. An optional KeySource can be provided to Muxer to generate encrypted outputs. Muxer writes to output using the same File interface as Demuxer.
+Muxer is responsible for taking elementary stream samples and producing media
+segments. An optional KeySource can be provided to Muxer to generate encrypted
+outputs. Muxer writes to output using the same File interface as Demuxer.
 
-Demuxer and Muxer are connected using MediaStream. MediaStream wraps the elementary streams and is responsible for the interaction between Demuxer and Muxer. A demuxer can transmits multiple MediaStreams; similarly, A muxer is able to accept and mux multiple MediaStreams, not necessarily from the same Demuxer.
+Demuxer and Muxer are connected using MediaStream. MediaStream wraps the
+elementary streams and is responsible for the interaction between Demuxer and
+Muxer. A demuxer can transmits multiple MediaStreams; similarly, A muxer is
+able to accept and mux multiple MediaStreams, not necessarily from the same
+Demuxer.
 
-MpdBuilder is responsible for the creation of Media Presentation Description as specified in ISO/IEC 23009-1 DASH MPD spec.
-
-Supported source formats: ISO BMFF (both fragmented and non-fragmented), MPEG-2 TS, IPTV (MPEG-2 TS over UDP), and WVM (Widevine); the only output format supported currently is fragmented ISO BMFF with CENC. Support for more formats will be added soon.
+MpdBuilder is responsible for the creation of Media Presentation Description as
+specified in ISO/IEC 23009-1 DASH MPD spec.
 
 API document is available at https://google.github.io/shaka-packager/docs.
 
@@ -74,7 +85,8 @@ mpd_options.min_buffer_time = 5.0;
 // and availabilityEndTime values, in seconds.
 mpd_options.availability_time_offset = 10.0;
 
-// Indicates to the player how often to refresh the media presentations, in seconds.
+// Indicates to the player how often to refresh the media presentations, in
+// seconds.
 mpd_options.minimum_update_period = 5.0;
 
 // Guranteed duration of the time shifting buffer, in seconds.
