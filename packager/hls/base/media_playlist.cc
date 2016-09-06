@@ -232,7 +232,7 @@ void MediaPlaylist::RemoveOldestSegment() {
   auto entries_itr = entries_.begin();
   ++entries_itr;
   if ((*entries_itr)->type() == HlsEntry::EntryType::kExtInf) {
-    DCHECK_EQ((*entries_itr)->type(), HlsEntry::EntryType::kExtInf);
+    DCHECK((*entries_itr)->type() == HlsEntry::EntryType::kExtInf);
     entries_.erase(entries_itr);
     return;
   }
@@ -240,7 +240,7 @@ void MediaPlaylist::RemoveOldestSegment() {
   ++entries_itr;
   // This assumes that there is a segment between 2 EXT-X-KEY entries.
   // Which should be the case due to logic in AddEncryptionInfo().
-  DCHECK_EQ((*entries_itr)->type(), HlsEntry::EntryType::kExtInf);
+  DCHECK((*entries_itr)->type() == HlsEntry::EntryType::kExtInf);
   entries_.erase(entries_itr);
   entries_.pop_front();
 }

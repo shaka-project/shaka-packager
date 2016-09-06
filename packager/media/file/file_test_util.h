@@ -7,6 +7,9 @@
 #ifndef MEDIA_FILE_FILE_TEST_UTIL_H_
 #define MEDIA_FILE_FILE_TEST_UTIL_H_
 
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include <string>
 
 #include "packager/media/file/file.h"
@@ -22,8 +25,16 @@ namespace media {
     ASSERT_EQ(std::string(array_ptr, arraysize(array)), temp_data);     \
   } while (false)
 
+#define ASSERT_FILE_ENDS_WITH(file_name, array)                             \
+  do {                                                                      \
+    std::string temp_data;                                                  \
+    ASSERT_TRUE(File::ReadFileToString((file_name), &temp_data));           \
+    EXPECT_THAT(temp_data,                                                  \
+                ::testing::EndsWith(std::string(                            \
+                    reinterpret_cast<const char*>(array), sizeof(array)))); \
+  } while (false)
+
 }  // namespace media
 }  // namespace shaka
 
 #endif  // MEDIA_FILE_FILE_TEST_UTIL_H_
-

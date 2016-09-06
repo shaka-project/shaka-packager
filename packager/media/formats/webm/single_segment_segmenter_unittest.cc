@@ -16,22 +16,7 @@ namespace {
 const uint64_t kDuration = 1000;
 
 const uint8_t kBasicSupportData[] = {
-  // ID: EBML Header, Payload Size: 31
-  0x1a, 0x45, 0xdf, 0xa3, 0x9f,
-    // EBMLVersion: 1
-    0x42, 0x86, 0x81, 0x01,
-    // EBMLReadVersion: 1
-    0x42, 0xf7, 0x81, 0x01,
-    // EBMLMaxIDLength: 4
-    0x42, 0xf2, 0x81, 0x04,
-    // EBMLMaxSizeLength: 8
-    0x42, 0xf3, 0x81, 0x08,
-    // DocType: 'webm'
-    0x42, 0x82, 0x84, 0x77, 0x65, 0x62, 0x6d,
-    // DocTypeVersion: 2
-    0x42, 0x87, 0x81, 0x02,
-    // DocTypeReadVersion: 2
-    0x42, 0x85, 0x81, 0x02,
+  // ID: EBML Header omitted.
   // ID: Segment, Payload Size: 343
   0x18, 0x53, 0x80, 0x67, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x57,
     // ID: SeekHead, Payload Size: 57
@@ -187,7 +172,7 @@ TEST_P(SingleSegmentSegmenterTest, BasicSupport) {
   }
   ASSERT_OK(segmenter_->Finalize());
 
-  ASSERT_FILE_EQ(OutputFileName().c_str(), kBasicSupportData);
+  ASSERT_FILE_ENDS_WITH(OutputFileName().c_str(), kBasicSupportData);
 }
 
 TEST_P(SingleSegmentSegmenterTest, SplitsClustersOnSegmentDuration) {
@@ -263,4 +248,3 @@ INSTANTIATE_TEST_CASE_P(TrueIsTwoPass,
 
 }  // namespace media
 }  // namespace shaka
-

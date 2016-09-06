@@ -461,9 +461,7 @@ bool WidevineKeySource::DecodeResponse(
   DCHECK(response);
 
   // Extract base64 formatted response from JSON formatted raw response.
-  // TODO(kqyang): Remove ".release()" when base is updated to use unique_ptr.
-  std::unique_ptr<base::Value> root(
-      base::JSONReader::Read(raw_response).release());
+  std::unique_ptr<base::Value> root(base::JSONReader::Read(raw_response));
   if (!root) {
     LOG(ERROR) << "'" << raw_response << "' is not in JSON format.";
     return false;
@@ -485,8 +483,7 @@ bool WidevineKeySource::ExtractEncryptionKey(
   DCHECK(transient_error);
   *transient_error = false;
 
-  // TODO(kqyang): Remove ".release()" when base is updated to use unique_ptr.
-  std::unique_ptr<base::Value> root(base::JSONReader::Read(response).release());
+  std::unique_ptr<base::Value> root(base::JSONReader::Read(response));
   if (!root) {
     LOG(ERROR) << "'" << response << "' is not in JSON format.";
     return false;
