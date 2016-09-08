@@ -31,6 +31,9 @@ deps = {
   "src/packager/testing/gtest":
     Var("chromium_git") + "/external/github.com/google/googletest@6f8a66431cb592dad629028a50b3dd418a408c87",
 
+  "src/packager/third_party/binutils":
+    Var("chromium_git") + "/chromium/src/third_party/binutils@8d77853bc9415bcb7bb4206fa2901de7603387db",
+
    # Make sure the version matches the one in
    # src/packager/third_party/boringssl, which contains perl generated files.
   "src/packager/third_party/boringssl/src":
@@ -95,6 +98,15 @@ hooks = [
     'name': 'mac_toolchain',
     'pattern': '.',
     'action': ['python', 'src/packager/build/mac_toolchain.py'],
+  },
+  # Pull binutils for linux.
+  {
+    'name': 'binutils',
+    'pattern': 'src/packager/third_party/binutils',
+    'action': [
+        'python',
+        'src/packager/third_party/binutils/download.py',
+    ],
   },
   {
     # Pull clang if needed or requested via GYP_DEFINES (GYP_DEFINES="clang=1").
