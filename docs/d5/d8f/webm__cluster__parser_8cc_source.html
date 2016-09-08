@@ -462,13 +462,13 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00373"></a><span class="lineno">  373</span>&#160;</div>
 <div class="line"><a name="l00374"></a><span class="lineno">  374</span>&#160;    <span class="keywordflow">if</span> (decrypt_config) {</div>
 <div class="line"><a name="l00375"></a><span class="lineno">  375</span>&#160;      <span class="keywordflow">if</span> (!decryptor_source_) {</div>
-<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;        LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Encrypted media sample encountered, but decryption is &quot;</span></div>
-<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;                      <span class="stringliteral">&quot;not enabled&quot;</span>;</div>
-<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
-<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;      }</div>
-<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;      <span class="keywordflow">if</span> (!decryptor_source_-&gt;DecryptSampleBuffer(decrypt_config.get(),</div>
-<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;                                                  buffer-&gt;writable_data(),</div>
-<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;                                                  buffer-&gt;data_size())) {</div>
+<div class="line"><a name="l00376"></a><span class="lineno">  376</span>&#160;        <span class="comment">// If the demuxer does not have the decryptor_source_, store</span></div>
+<div class="line"><a name="l00377"></a><span class="lineno">  377</span>&#160;        <span class="comment">// decrypt_config so that the demuxed sample can be decrypted later.</span></div>
+<div class="line"><a name="l00378"></a><span class="lineno">  378</span>&#160;        buffer-&gt;set_decrypt_config(std::move(decrypt_config));</div>
+<div class="line"><a name="l00379"></a><span class="lineno">  379</span>&#160;        buffer-&gt;set_is_encrypted(<span class="keyword">true</span>);</div>
+<div class="line"><a name="l00380"></a><span class="lineno">  380</span>&#160;      } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (!decryptor_source_-&gt;DecryptSampleBuffer(</div>
+<div class="line"><a name="l00381"></a><span class="lineno">  381</span>&#160;                     decrypt_config.get(), buffer-&gt;writable_data(),</div>
+<div class="line"><a name="l00382"></a><span class="lineno">  382</span>&#160;                     buffer-&gt;data_size())) {</div>
 <div class="line"><a name="l00383"></a><span class="lineno">  383</span>&#160;        LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Cannot decrypt samples&quot;</span>;</div>
 <div class="line"><a name="l00384"></a><span class="lineno">  384</span>&#160;        <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
 <div class="line"><a name="l00385"></a><span class="lineno">  385</span>&#160;      }</div>
@@ -722,7 +722,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Sep 7 2016 19:28:36 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Sep 8 2016 17:18:14 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
