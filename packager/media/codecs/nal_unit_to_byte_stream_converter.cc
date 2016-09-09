@@ -219,7 +219,9 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
           }
           if (is_nalu_all_clear) {
             // If AUD/SPS/PPS is all clear, reduce the clear bytes.
-            subsamples->at(subsample_id).clear_bytes -= old_nalu_size;
+            DCHECK_LT(old_nalu_size, subsamples->at(subsample_id).clear_bytes);
+            subsamples->at(subsample_id).clear_bytes -=
+                static_cast<uint16_t>(old_nalu_size);
           } else {
             // If AUD/SPS/PPS has cipher, drop the corresponding subsample.
             subsamples->erase(subsamples->begin() + subsample_id);
@@ -240,7 +242,9 @@ bool NalUnitToByteStreamConverter::ConvertUnitToByteStreamWithSubsamples(
           }
           if (is_nalu_all_clear) {
             // Add this nalu to the adjustment and remove it from clear_bytes.
-            subsamples->at(subsample_id).clear_bytes -= old_nalu_size;
+            DCHECK_LT(old_nalu_size, subsamples->at(subsample_id).clear_bytes);
+            subsamples->at(subsample_id).clear_bytes -=
+                static_cast<uint16_t>(old_nalu_size);
             adjustment += old_nalu_size;
           } else {
             // Apply the adjustment on the current subsample, reset the
