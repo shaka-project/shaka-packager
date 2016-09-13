@@ -18,13 +18,6 @@ vp8-I-frame-320x480 - The first I frame of a 320x480 reencode of bear-320x240.we
 vp8-I-frame-640x240 - The first I frame of a 640x240 reencode of bear-320x240.webm.
 vp8-corrupt-I-frame - A copy of vp8-I-frame-320x240 w/ all bytes XORed w/ 0xA5.
 
-Vorbis test data from bear.ogv (44100 Hz, 16 bits, stereo)
-vorbis-extradata - Vorbis extradata section
-vorbis-packet-0  - timestamp: 0ms, duration: 0ms
-vorbis-packet-1  - timestamp: 0ms, duration: 0ms
-vorbis-packet-2  - timestamp: 0ms, duration: 0ms
-vorbis-packet-3  - timestamp: 2902ms, duration: 0ms
-
 // Transport streams.
 bear-640x360.ts - AVC + AAC encode, multiplexed into an MPEG2-TS container.
 bear-640x360_ptswraparound.ts - Same as bear-640x360.ts, with a timestamp wrap-around in the middle, created with the below command:
