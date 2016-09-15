@@ -135,26 +135,20 @@ Status Segmenter::AddSample(scoped_refptr<MediaSample> sample) {
 
   Status status;
   bool wrote_frame = false;
+  bool new_segment = false;
   if (!cluster_) {
     status = NewSegment(sample->pts());
+    new_segment = true;
     // First frame, so no previous frame to write.
     wrote_frame = true;
   } else if (segment_length_sec_ >= options_.segment_duration) {
     if (sample->is_key_frame() || !options_.segment_sap_aligned) {
       status = WriteFrame(true /* write_duration */);
       status.Update(NewSegment(sample->pts()));
+      new_segment = true;
       segment_length_sec_ = 0;
       cluster_length_sec_ = 0;
       wrote_frame = true;
-
-      if (encryptor_ && !enable_encryption_) {
-        if (sample->pts() - first_timestamp_ >=
-            clear_lead_ * info_->time_scale()) {
-          enable_encryption_ = true;
-          if (muxer_listener_)
-            muxer_listener_->OnEncryptionStart();
-        }
-      }
     }
   } else if (cluster_length_sec_ >= options_.fragment_duration) {
     if (sample->is_key_frame() || !options_.fragment_sap_aligned) {
@@ -172,6 +166,17 @@ Status Segmenter::AddSample(scoped_refptr<MediaSample> sample) {
 
   // Encrypt the frame.
   if (encryptor_) {
+    // Don't enable encryption in the middle of a segment, i.e. only at the
+    // first frame of a segment.
+    if (new_segment && !enable_encryption_) {
+      if (sample->pts() - first_timestamp_ >=
+          clear_lead_ * info_->time_scale()) {
+        enable_encryption_ = true;
+        if (muxer_listener_)
+          muxer_listener_->OnEncryptionStart();
+      }
+    }
+
     status = encryptor_->EncryptFrame(sample, enable_encryption_);
     if (!status.ok()) {
       LOG(ERROR) << "Error encrypting frame.";
