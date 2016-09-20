@@ -187,6 +187,9 @@ bool UdpFile::Open() {
   local_sock_addr.sin_family = AF_INET;
   local_sock_addr.sin_port = htons(dest_port);
   local_sock_addr.sin_addr.s_addr  = htonl(dest_addr);
+  // We do not need to require exclusive bind of udp sockets
+  int optval = 1;
+  setsockopt(new_socket.get(), SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval));
   if (bind(new_socket.get(),
            reinterpret_cast<struct sockaddr*>(&local_sock_addr),
            sizeof(local_sock_addr))) {
