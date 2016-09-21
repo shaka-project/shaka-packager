@@ -189,9 +189,10 @@ bool UdpFile::Open() {
   local_sock_addr.sin_addr.s_addr  = htonl(dest_addr);
   // We do not need to require exclusive bind of udp sockets
   const int optval = 1;
-  if (setsockopt(new_socket.get(), SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) < 0)
-  {
-    LOG(ERROR) << "Could not apply the SO_REUSEADDR property to the UDP socket";
+  if (setsockopt(new_socket.get(), SOL_SOCKET, SO_REUSEADDR, &optval,
+                 sizeof(optval)) < 0) {
+    LOG(ERROR)
+        << "Could not apply the SO_REUSEADDR property to the UDP socket";
     return false;
   }
   if (bind(new_socket.get(),
