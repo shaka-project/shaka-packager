@@ -117,7 +117,6 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
           LOG(ERROR) << "Unknown/invalid language specified: " << iter->second;
           return false;
         }
-        DCHECK_EQ(3u, language.size());
         descriptor.language = language;
         break;
       }
