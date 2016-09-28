@@ -28,6 +28,7 @@ struct MpdOptions {
   double min_buffer_time;
   double time_shift_buffer_depth;
   double suggested_presentation_delay;
+  std::string default_language;
 };
 
 }  // namespace shaka

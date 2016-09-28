@@ -177,6 +177,7 @@ bool GetMpdOptions(MpdOptions* mpd_options) {
   mpd_options->time_shift_buffer_depth = FLAGS_time_shift_buffer_depth;
   mpd_options->suggested_presentation_delay =
       FLAGS_suggested_presentation_delay;
+  mpd_options->default_language = FLAGS_default_language;
   return true;
 }
 

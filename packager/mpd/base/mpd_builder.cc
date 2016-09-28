@@ -413,8 +413,12 @@ AdaptationSet* MpdBuilder::AddAdaptationSet(const std::string& lang) {
   std::unique_ptr<AdaptationSet> adaptation_set(
       new AdaptationSet(adaptation_set_counter_.GetNext(), lang, mpd_options_,
                         type_, &representation_counter_));
-
   DCHECK(adaptation_set);
+
+  if (!lang.empty() && lang == mpd_options_.default_language) {
+    adaptation_set->AddRole(AdaptationSet::kRoleMain);
+  }
+
   adaptation_sets_.push_back(std::move(adaptation_set));
   return adaptation_sets_.back().get();
 }
