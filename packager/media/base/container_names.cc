@@ -1758,6 +1758,9 @@ MediaContainerName DetermineContainerFromFileName(
   } else if (base::EndsWith(file_name, ".vtt",
                             base::CompareCase::INSENSITIVE_ASCII)) {
     return CONTAINER_WEBVTT;
+  } else if (base::EndsWith(file_name, ".webvtt",
+                            base::CompareCase::INSENSITIVE_ASCII)) {
+    return CONTAINER_WEBVTT;
   } else if (base::EndsWith(file_name, ".ttml",
                             base::CompareCase::INSENSITIVE_ASCII)) {
     return CONTAINER_TTML;
