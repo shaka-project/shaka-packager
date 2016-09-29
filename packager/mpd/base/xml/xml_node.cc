@@ -14,6 +14,7 @@
 #include "packager/base/strings/string_number_conversions.h"
 #include "packager/base/sys_byteorder.h"
 #include "packager/mpd/base/media_info.pb.h"
+#include "packager/mpd/base/mpd_utils.h"
 #include "packager/mpd/base/segment_info.h"
 
 namespace shaka {
@@ -119,9 +120,8 @@ void XmlNode::SetFloatingPointAttribute(const char* attribute_name,
                                         double number) {
   DCHECK(node_);
   DCHECK(attribute_name);
-  xmlSetProp(node_.get(),
-             BAD_CAST attribute_name,
-             BAD_CAST (base::DoubleToString(number).c_str()));
+  xmlSetProp(node_.get(), BAD_CAST attribute_name,
+             BAD_CAST(DoubleToString(number).c_str()));
 }
 
 void XmlNode::SetId(uint32_t id) {

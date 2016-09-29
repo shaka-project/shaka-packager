@@ -1912,7 +1912,7 @@ TEST_F(StaticMpdBuilderTest, AudioChannelConfigurationWithContentProtection) {
       " xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\""
       " minBufferTime=\"PT2S\" type=\"static\""
       " profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\""
-      " mediaPresentationDuration=\"PT24.00943374633789S\">"
+      " mediaPresentationDuration=\"PT24.0094S\">"
       "  <Period id=\"0\">"
       "    <AdaptationSet id=\"0\" contentType=\"audio\">"
       "      <Representation id=\"0\" bandwidth=\"195857\" codecs=\"mp4a.40.2\""

@@ -62,6 +62,11 @@ bool MoreThanOneTrue(bool b1, bool b2, bool b3);
 bool AtLeastOneTrue(bool b1, bool b2, bool b3);
 bool OnlyOneTrue(bool b1, bool b2, bool b3);
 
+/// Converts double to string.
+/// @param value is the input double data.
+/// @return value formatted in string.
+std::string DoubleToString(double value);
+
 /// Converts hex data to UUID format. Hex data must be size 16.
 /// @param data input hex data.
 /// @param uuid_format is the UUID format of the input.
