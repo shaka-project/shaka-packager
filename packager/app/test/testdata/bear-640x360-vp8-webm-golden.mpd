@@ -3,9 +3,9 @@
 <MPD xmlns="urn:mpeg:dash:schema:mpd:2011" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xsi:schemaLocation="urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd" xmlns:cenc="urn:mpeg:cenc:2013" minBufferTime="PT2S" type="static" profiles="urn:mpeg:dash:profile:isoff-on-demand:2011" mediaPresentationDuration="PT2.736S">
   <Period id="0">
     <AdaptationSet id="0" contentType="video" width="640" height="360" frameRate="1000000/33000" par="16:9">
-      <Representation id="0" bandwidth="335454" codecs="vp8" mimeType="video/webm" sar="1:1">
+      <Representation id="0" bandwidth="335457" codecs="vp8" mimeType="video/webm" sar="1:1">
         <BaseURL>output_video.webm</BaseURL>
-        <SegmentBase indexRange="114676-114724" timescale="1000000">
+        <SegmentBase indexRange="289-338" timescale="1000000">
           <Initialization range="0-288"/>
         </SegmentBase>
       </Representation>

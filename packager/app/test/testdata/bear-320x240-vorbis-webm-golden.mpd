@@ -6,7 +6,7 @@
       <Representation id="0" bandwidth="69362" codecs="vorbis" mimeType="audio/webm" audioSamplingRate="44100">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>output_audio.webm</BaseURL>
-        <SegmentBase indexRange="23950-23998" timescale="1000000">
+        <SegmentBase indexRange="4159-4207" timescale="1000000">
           <Initialization range="0-4158"/>
         </SegmentBase>
       </Representation>

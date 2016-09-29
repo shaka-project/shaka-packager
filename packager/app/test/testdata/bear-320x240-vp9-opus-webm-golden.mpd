@@ -6,15 +6,15 @@
       <Representation id="0" bandwidth="76531" codecs="opus" mimeType="audio/webm" audioSamplingRate="48000">
         <AudioChannelConfiguration schemeIdUri="urn:mpeg:dash:23003:3:audio_channel_configuration:2011" value="2"/>
         <BaseURL>output_audio.webm</BaseURL>
-        <SegmentBase indexRange="26555-26603" timescale="1000000">
+        <SegmentBase indexRange="323-371" timescale="1000000">
           <Initialization range="0-322"/>
         </SegmentBase>
       </Representation>
     </AdaptationSet>
     <AdaptationSet id="1" contentType="video" width="320" height="240" frameRate="1000000/34000" par="16:9">
-      <Representation id="1" bandwidth="203348" codecs="vp9" mimeType="video/webm" sar="427:320">
+      <Representation id="1" bandwidth="203351" codecs="vp9" mimeType="video/webm" sar="427:320">
         <BaseURL>output_video.webm</BaseURL>
-        <SegmentBase indexRange="69497-69544" timescale="1000000">
+        <SegmentBase indexRange="299-347" timescale="1000000">
           <Initialization range="0-298"/>
         </SegmentBase>
       </Representation>

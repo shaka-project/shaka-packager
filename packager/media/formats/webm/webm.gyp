@@ -84,6 +84,7 @@
       'dependencies': [
         '../../../testing/gtest.gyp:gtest',
         '../../../testing/gmock.gyp:gmock',
+        '../../../third_party/libwebm/libwebm.gyp:mkvmuxer',
         '../../file/file.gyp:file',
         '../../test/media_test.gyp:media_test_support',
         'webm',

@@ -45,8 +45,6 @@ Status WebMMuxer::Initialize() {
 
   if (!options().single_segment) {
     segmenter_.reset(new MultiSegmentSegmenter(options()));
-  } else if (writer->Seekable()) {
-    segmenter_.reset(new SingleSegmentSegmenter(options()));
   } else {
     segmenter_.reset(new TwoPassSingleSegmentSegmenter(options()));
   }

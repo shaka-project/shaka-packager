@@ -12,13 +12,26 @@
       'target_name': 'mkvmuxer',
       'type': 'static_library',
       'sources': [
-        'src/mkvmuxer.cpp',
-        'src/mkvmuxer.hpp',
-        'src/mkvmuxerutil.cpp',
-        'src/mkvmuxerutil.hpp',
-        'src/mkvwriter.cpp',
-        'src/mkvwriter.hpp',
+        'src/common/webmids.h',
+        'src/mkvmuxer/mkvmuxer.cc',
+        'src/mkvmuxer/mkvmuxer.h',
+        'src/mkvmuxer/mkvmuxertypes.h',
+        'src/mkvmuxer/mkvmuxerutil.cc',
+        'src/mkvmuxer/mkvmuxerutil.h',
+        'src/mkvmuxer/mkvwriter.cc',
+        'src/mkvmuxer/mkvwriter.h',
+        'src/mkvmuxer.hpp'
+        'src/mkvmuxerutil.hpp'
+        'src/webmids.hpp'
       ],
+      'include_dirs': [
+        'src',
+      ],
+      'direct_dependent_settings': {
+        'include_dirs': [
+          'src',
+        ],
+      },
     },
   ],
 }

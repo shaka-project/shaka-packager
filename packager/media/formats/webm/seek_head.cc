@@ -6,19 +6,23 @@
 
 #include "packager/media/formats/webm/seek_head.h"
 
+#include <algorithm>
 #include <limits>
 
+#include "packager/base/logging.h"
 #include "packager/third_party/libwebm/src/mkvmuxerutil.hpp"
 #include "packager/third_party/libwebm/src/webmids.hpp"
 
 namespace shaka {
 namespace media {
 namespace {
-const mkvmuxer::uint64 kElementIds[] = {
-    mkvmuxer::kMkvInfo, mkvmuxer::kMkvTracks, mkvmuxer::kMkvCluster,
-    mkvmuxer::kMkvCues,
-};
-const int kElementIdCount = arraysize(kElementIds);
+
+// Cluster, Cues, Info, Tracks.
+const size_t kElementIdCount = 4u;
+
+uint64_t EbmlMasterElementWithPayloadSize(mkvmuxer::MkvId id, uint64_t payload_size) {
+  return EbmlMasterElementSize(id, payload_size) + payload_size;
+}
 
 uint64_t MaxSeekEntrySize() {
   const uint64_t max_entry_payload_size =
@@ -27,57 +31,46 @@ uint64_t MaxSeekEntrySize() {
           static_cast<mkvmuxer::uint64>(std::numeric_limits<uint32_t>::max())) +
       EbmlElementSize(mkvmuxer::kMkvSeekPosition,
                       std::numeric_limits<mkvmuxer::uint64>::max());
-  const uint64_t max_entry_size =
-      EbmlMasterElementSize(mkvmuxer::kMkvSeek, max_entry_payload_size) +
-      max_entry_payload_size;
-
-  return max_entry_size;
+  return EbmlMasterElementWithPayloadSize(mkvmuxer::kMkvSeek,
+                                          max_entry_payload_size);
 }
+
 }  // namespace
 
 SeekHead::SeekHead()
-    : cluster_pos_(-1),
-      cues_pos_(-1),
-      info_pos_(-1),
-      tracks_pos_(-1),
-      wrote_void_(false) {}
+    : total_void_size_(EbmlMasterElementWithPayloadSize(
+          mkvmuxer::kMkvSeekHead,
+          kElementIdCount * MaxSeekEntrySize())) {}
 
 SeekHead::~SeekHead() {}
 
 bool SeekHead::Write(mkvmuxer::IMkvWriter* writer) {
-  std::vector<uint64_t> element_sizes;
-  const uint64_t payload_size = GetPayloadSize(&element_sizes);
-
-  if (payload_size == 0) {
+  std::vector<SeekElement> seek_elements = CreateSeekElements();
+  if (seek_elements.empty())
     return true;
+
+  uint64_t payload_size = 0;
+  for (const SeekHead::SeekElement& seek_element : seek_elements) {
+    payload_size +=
+        seek_element.size +
+        EbmlMasterElementSize(mkvmuxer::kMkvSeek, seek_element.size);
   }
 
   const int64_t start_pos = writer->Position();
   if (!WriteEbmlMasterElement(writer, mkvmuxer::kMkvSeekHead, payload_size))
     return false;
 
-  const int64_t positions[] = {info_pos_, tracks_pos_, cluster_pos_, cues_pos_};
-  for (int i = 0; i < kElementIdCount; ++i) {
-    if (element_sizes[i] == 0)
-      continue;
-
-    const mkvmuxer::uint64 position =
-        static_cast<mkvmuxer::uint64>(positions[i]);
-    if (!WriteEbmlMasterElement(writer, mkvmuxer::kMkvSeek, element_sizes[i]) ||
-        !WriteEbmlElement(writer, mkvmuxer::kMkvSeekID, kElementIds[i]) ||
-        !WriteEbmlElement(writer, mkvmuxer::kMkvSeekPosition, position))
+  for (const SeekHead::SeekElement& element : seek_elements) {
+    if (!WriteEbmlMasterElement(writer, mkvmuxer::kMkvSeek, element.size) ||
+        !WriteEbmlElement(writer, mkvmuxer::kMkvSeekID, element.id) ||
+        !WriteEbmlElement(writer, mkvmuxer::kMkvSeekPosition, element.position))
       return false;
   }
 
   // If we wrote void before, then fill in the extra with void.
   if (wrote_void_) {
-    const uint64_t max_payload_size = kElementIdCount * MaxSeekEntrySize();
-    const uint64_t total_void_size =
-        EbmlMasterElementSize(mkvmuxer::kMkvSeekHead, max_payload_size) +
-        max_payload_size;
-
     const uint64_t extra_void =
-        total_void_size - (writer->Position() - start_pos);
+        total_void_size_ - (writer->Position() - start_pos);
     if (!WriteVoidElement(writer, extra_void))
       return false;
   }
@@ -86,38 +79,36 @@ bool SeekHead::Write(mkvmuxer::IMkvWriter* writer) {
 }
 
 bool SeekHead::WriteVoid(mkvmuxer::IMkvWriter* writer) {
-  const uint64_t payload_size = kElementIdCount * MaxSeekEntrySize();
-  const uint64_t total_size =
-      EbmlMasterElementSize(mkvmuxer::kMkvSeekHead, payload_size) +
-      payload_size;
-
-  wrote_void_ = true;
-  const uint64_t written = WriteVoidElement(writer, total_size);
+  const uint64_t written = WriteVoidElement(writer, total_void_size_);
   if (!written)
     return false;
-
+  wrote_void_ = true;
   return true;
 }
 
-uint64_t SeekHead::GetPayloadSize(std::vector<uint64_t>* data) {
-  const int64_t positions[] = {info_pos_, tracks_pos_, cluster_pos_, cues_pos_};
-  uint64_t total_payload_size = 0;
-  data->resize(kElementIdCount);
-  for (int i = 0; i < kElementIdCount; ++i) {
-    if (positions[i] < 0) {
-      (*data)[i] = 0;
-      continue;
-    }
+std::vector<SeekHead::SeekElement> SeekHead::CreateSeekElements() {
+  std::vector<SeekHead::SeekElement> seek_elements;
+  if (info_pos_ != 0)
+    seek_elements.emplace_back(mkvmuxer::kMkvInfo, info_pos_);
+  if (tracks_pos_ != 0)
+    seek_elements.emplace_back(mkvmuxer::kMkvTracks, tracks_pos_);
+  if (cues_pos_ != 0)
+    seek_elements.emplace_back(mkvmuxer::kMkvCues, cues_pos_);
+  if (cluster_pos_ != 0)
+    seek_elements.emplace_back(mkvmuxer::kMkvCluster, cluster_pos_);
+  DCHECK_LE(seek_elements.size(), kElementIdCount);
 
-    const mkvmuxer::uint64 position =
-        static_cast<mkvmuxer::uint64>(positions[i]);
-    (*data)[i] = EbmlElementSize(mkvmuxer::kMkvSeekID, kElementIds[i]) +
-                 EbmlElementSize(mkvmuxer::kMkvSeekPosition, position);
-    total_payload_size +=
-        data->at(i) + EbmlMasterElementSize(mkvmuxer::kMkvSeek, data->at(i));
+  std::sort(seek_elements.begin(), seek_elements.end(),
+            [](const SeekHead::SeekElement& left,
+               const SeekHead::SeekElement& right) {
+              return left.position < right.position;
+            });
+  for (SeekHead::SeekElement& element : seek_elements) {
+    element.size =
+        EbmlElementSize(mkvmuxer::kMkvSeekID, element.id) +
+        EbmlElementSize(mkvmuxer::kMkvSeekPosition, element.position);
   }
-
-  return total_payload_size;
+  return seek_elements;
 }
 
 }  // namespace media

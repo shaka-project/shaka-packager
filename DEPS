@@ -50,7 +50,7 @@ deps = {
     Var("chromium_git") + "/chromium/deps/icu@ef5c735307d0f86c7622f69620994c9468beba99",
 
   "src/packager/third_party/libwebm/src":
-    Var("chromium_git") + "/webm/libwebm@1ad314e297a43966605c4ef23a6442bb58e1d9be",
+    Var("chromium_git") + "/webm/libwebm@d6af52a1e688fade2e2d22b6d9b0c82f10d38e0b",
 
   "src/packager/third_party/modp_b64":
     Var("chromium_git") + "/chromium/src/third_party/modp_b64@aae60754fa997799e8037f5e8ca1f56d58df763d",  #405651

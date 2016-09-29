@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/macros.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 
 namespace shaka {
@@ -35,15 +34,29 @@ class SeekHead {
   void set_tracks_pos(uint64_t pos) { tracks_pos_ = pos; }
 
  private:
-  uint64_t GetPayloadSize(std::vector<uint64_t>* data);
+  SeekHead(const SeekHead&) = delete;
+  SeekHead& operator=(const SeekHead&) = delete;
 
-  int64_t cluster_pos_;
-  int64_t cues_pos_;
-  int64_t info_pos_;
-  int64_t tracks_pos_;
-  bool wrote_void_;
+  struct SeekElement {
+    mkvmuxer::uint64 id;
+    mkvmuxer::uint64 position;
+    mkvmuxer::uint64 size;
 
-  DISALLOW_COPY_AND_ASSIGN(SeekHead);
+    SeekElement(uint64_t seek_id, uint64_t seek_position)
+        : id(seek_id), position(seek_position), size(0) {}
+  };
+
+  // Create seek element vector from positions.
+  std::vector<SeekElement> CreateSeekElements();
+
+  // In practice, these positions, if set, will never be 0, so we use a zero
+  // value to denote that they are not set.
+  uint64_t cluster_pos_ = 0;
+  uint64_t cues_pos_ = 0;
+  uint64_t info_pos_ = 0;
+  uint64_t tracks_pos_ = 0;
+  bool wrote_void_ = false;
+  const uint64_t total_void_size_ = 0;
 };
 
 }  // namespace media

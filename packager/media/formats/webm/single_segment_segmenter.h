@@ -36,6 +36,7 @@ class SingleSegmentSegmenter : public Segmenter {
 
  protected:
   MkvWriter* writer() { return writer_.get(); }
+  uint64_t init_end() { return init_end_; }
   void set_init_end(uint64_t end) { init_end_ = end; }
   void set_index_start(uint64_t start) { index_start_ = start; }
   void set_index_end(uint64_t end) { index_end_ = end; }

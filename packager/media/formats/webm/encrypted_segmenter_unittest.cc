@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "packager/media/formats/webm/single_segment_segmenter.h"
 #include "packager/media/formats/webm/two_pass_single_segment_segmenter.h"
 
 #include <gtest/gtest.h>
@@ -39,16 +38,16 @@ const uint8_t kBasicSupportData[] = {
         0x53, 0xac, 0x81, 0xb6,
       // ID: Seek, Payload Size: 12
       0x4d, 0xbb, 0x8c,
-        // SeekID: binary(4) (Cluster)
-        0x53, 0xab, 0x84, 0x1f, 0x43, 0xb6, 0x75,
+        // SeekID: binary(4) (Cues)
+        0x53, 0xab, 0x84, 0x1c, 0x53, 0xbb, 0x6b,
         // SeekPosition: 279
         0x53, 0xac, 0x82, 0x01, 0x17,
       // ID: Seek, Payload Size: 12
       0x4d, 0xbb, 0x8c,
-        // SeekID: binary(4) (Cues)
-        0x53, 0xab, 0x84, 0x1c, 0x53, 0xbb, 0x6b,
-        // SeekPosition: 398
-        0x53, 0xac, 0x82, 0x01, 0x8e,
+        // SeekID: binary(4) (Cluster)
+        0x53, 0xab, 0x84, 0x1f, 0x43, 0xb6, 0x75,
+        // SeekPosition: 313
+        0x53, 0xac, 0x82, 0x01, 0x39,
     // ID: Void, Payload Size: 24
     0xec, 0x98, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -115,6 +114,28 @@ const uint8_t kBasicSupportData[] = {
           0x54, 0xb0, 0x81, 0x64,
           // DisplayHeight: 100
           0x54, 0xba, 0x81, 0x64,
+    // ID: Cues, Payload Size: 29
+    0x1c, 0x53, 0xbb, 0x6b, 0x9d,
+      // ID: CuePoint, Payload Size: 12
+      0xbb, 0x8c,
+        // CueTime: 0
+        0xb3, 0x81, 0x00,
+        // ID: CueTrackPositions, Payload Size: 7
+        0xb7, 0x87,
+          // CueTrack: 1
+          0xf7, 0x81, 0x01,
+          // CueClusterPosition: 313
+          0xf1, 0x82, 0x01, 0x39,
+      // ID: CuePoint, Payload Size: 13
+      0xbb, 0x8d,
+        // CueTime: 3000
+        0xb3, 0x82, 0x0b, 0xb8,
+        // ID: CueTrackPositions, Payload Size: 7
+        0xb7, 0x87,
+          // CueTrack: 1
+          0xf7, 0x81, 0x01,
+          // CueClusterPosition: 370
+          0xf1, 0x82, 0x01, 0x72,
     // ID: Cluster, Payload Size: 45
     0x1f, 0x43, 0xb6, 0x75, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x2d,
       // Timecode: 0
@@ -165,28 +186,6 @@ const uint8_t kBasicSupportData[] = {
           0xbf, 0x38, 0x72, 0x20, 0xac,
         // BlockDuration: 1000
         0x9b, 0x82, 0x03, 0xe8,
-    // ID: Cues, Payload Size: 29
-    0x1c, 0x53, 0xbb, 0x6b, 0x9d,
-      // ID: CuePoint, Payload Size: 12
-      0xbb, 0x8c,
-        // CueTime: 0
-        0xb3, 0x81, 0x00,
-        // ID: CueTrackPositions, Payload Size: 7
-        0xb7, 0x87,
-          // CueTrack: 1
-          0xf7, 0x81, 0x01,
-          // CueClusterPosition: 279
-          0xf1, 0x82, 0x01, 0x17,
-      // ID: CuePoint, Payload Size: 13
-      0xbb, 0x8d,
-        // CueTime: 3000
-        0xb3, 0x82, 0x0b, 0xb8,
-        // ID: CueTrackPositions, Payload Size: 7
-        0xb7, 0x87,
-          // CueTrack: 1
-          0xf7, 0x81, 0x01,
-          // CueClusterPosition: 336
-          0xf1, 0x82, 0x01, 0x50,
 };
 
 }  // namespace
@@ -200,7 +199,7 @@ class EncrypedSegmenterTest : public SegmentTestBase {
     key_source_ =
         FixedKeySource::CreateFromHexStrings(kKeyId, kKey, kPsshData, kIv);
     ASSERT_NO_FATAL_FAILURE(
-        CreateAndInitializeSegmenter<webm::SingleSegmentSegmenter>(
+        CreateAndInitializeSegmenter<webm::TwoPassSingleSegmentSegmenter>(
             options, info_.get(), key_source_.get(), &segmenter_));
   }
 
