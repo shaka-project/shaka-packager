@@ -132,15 +132,20 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;              0.0,</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;              <span class="stringliteral">&quot;Specifies a delay, in seconds, to be added to the media &quot;</span></div>
 <div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;              <span class="stringliteral">&quot;presentation time. This value is used for live profile only.&quot;</span>);</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;DEFINE_bool(generate_dash_if_iop_compliant_mpd,</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;            <span class="keyword">false</span>,</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;            <span class="stringliteral">&quot;Try to generate DASH-IF IOPv3 compliant MPD. This is best effort &quot;</span></div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;            <span class="stringliteral">&quot;and does not guarantee compliance. Off by default until players &quot;</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;            <span class="stringliteral">&quot;support IOP MPDs.&quot;</span>);</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;DEFINE_string(default_language,</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;              <span class="stringliteral">&quot;&quot;</span>,</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;              <span class="stringliteral">&quot;Any tracks tagged with this language will have &quot;</span></div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;              <span class="stringliteral">&quot;&lt;Role ... value=\&quot;main\&quot; /&gt; in the manifest.  This allows the &quot;</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;              <span class="stringliteral">&quot;player to choose the correct default language for the content.&quot;</span>);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;DEFINE_bool(generate_dash_if_iop_compliant_mpd,</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;            <span class="keyword">false</span>,</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;            <span class="stringliteral">&quot;Try to generate DASH-IF IOPv3 compliant MPD. This is best effort &quot;</span></div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;            <span class="stringliteral">&quot;and does not guarantee compliance. Off by default until players &quot;</span></div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;            <span class="stringliteral">&quot;support IOP MPDs.&quot;</span>);</div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Sep 29 2016 16:43:19 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Thu Sep 29 2016 23:03:20 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
