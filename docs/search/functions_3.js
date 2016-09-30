@@ -9,6 +9,7 @@ var searchData=
   ['delete',['Delete',['../d3/d61/classshaka_1_1media_1_1File.html#a92cdfd68e6384dfcc14c78b20c98368e',1,'shaka::media::File::Delete()'],['../d9/de6/classshaka_1_1media_1_1LocalFile.html#aab9c8faf7e459f38e2f8fb2d63e5bd59',1,'shaka::media::LocalFile::Delete()'],['../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#a1079b0a5e919c79cbc97e28f11ac8a81',1,'shaka::media::MemoryFile::Delete()']]],
   ['deleteall',['DeleteAll',['../d9/dbd/classshaka_1_1media_1_1MemoryFile.html#a79f4eedb79cd2251bca60c861eccf3ba',1,'shaka::media::MemoryFile']]],
   ['demuxer',['Demuxer',['../dd/d17/classshaka_1_1media_1_1Demuxer.html#ae2fee69f99e5815de4f686b24393402e',1,'shaka::media::Demuxer']]],
+  ['doubletostring',['DoubleToString',['../d8/daf/namespaceshaka.html#adac592409e758489bad365323d070f31',1,'shaka']]],
   ['dts',['dts',['../d2/d93/classshaka_1_1media_1_1mp2t_1_1PesPacket.html#a88111c4190e74c24c10f0a694e723cb8',1,'shaka::media::mp2t::PesPacket']]],
   ['duration',['Duration',['../d1/d20/classshaka_1_1media_1_1mp4_1_1DecodingTimeIterator.html#a9527abde0a2131605d06fdfa2859dc47',1,'shaka::media::mp4::DecodingTimeIterator']]]
 ];

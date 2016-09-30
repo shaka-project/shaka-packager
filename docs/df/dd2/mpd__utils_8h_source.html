@@ -151,30 +151,33 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keywordtype">bool</span> AtLeastOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3);</div>
 <div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="keywordtype">bool</span> OnlyOneTrue(<span class="keywordtype">bool</span> b1, <span class="keywordtype">bool</span> b2, <span class="keywordtype">bool</span> b3);</div>
 <div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6">HexToUUID</a>(<span class="keyword">const</span> std::string&amp; data, std::string* uuid_format);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;std::string <a class="code" href="../../d8/daf/namespaceshaka.html#adac592409e758489bad365323d070f31">DoubleToString</a>(<span class="keywordtype">double</span> value);</div>
 <div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;<span class="comment">// Update the &lt;cenc:pssh&gt; element for |drm_uuid| ContentProtection element.</span></div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="comment">// If the element does not exist, this will add one.</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keywordtype">void</span> UpdateContentProtectionPsshHelper(</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keyword">const</span> std::string&amp; drm_uuid,</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keyword">const</span> std::string&amp; pssh,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;    std::list&lt;ContentProtectionElement&gt;* content_protection_elements);</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;                                  Representation* parent);</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                                  AdaptationSet* parent);</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}  <span class="comment">// namespace shaka</span></div>
-<div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;</div>
-<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_MPD_UTILS_H_</span></div>
-<div class="ttc" id="namespaceshaka_html_abfd977a0dfb051a942d1694442692814"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">shaka::AddContentProtectionElements</a></div><div class="ttdeci">void AddContentProtectionElements(const MediaInfo &amp;media_info, Representation *parent)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00339">mpd_utils.cc:339</a></div></div>
-<div class="ttc" id="namespaceshaka_html_a4c2ea2c3e7055657ca68a6b8e285d4d6"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6">shaka::HexToUUID</a></div><div class="ttdeci">bool HexToUUID(const std::string &amp;data, std::string *uuid_format)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00174">mpd_utils.cc:174</a></div></div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="../../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6">HexToUUID</a>(<span class="keyword">const</span> std::string&amp; data, std::string* uuid_format);</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;<span class="comment">// Update the &lt;cenc:pssh&gt; element for |drm_uuid| ContentProtection element.</span></div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;<span class="comment">// If the element does not exist, this will add one.</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keywordtype">void</span> UpdateContentProtectionPsshHelper(</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keyword">const</span> std::string&amp; drm_uuid,</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    <span class="keyword">const</span> std::string&amp; pssh,</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    std::list&lt;ContentProtectionElement&gt;* content_protection_elements);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;                                  Representation* parent);</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;<span class="keywordtype">void</span> <a class="code" href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">AddContentProtectionElements</a>(<span class="keyword">const</span> MediaInfo&amp; media_info,</div>
+<div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;                                  AdaptationSet* parent);</div>
+<div class="line"><a name="l00098"></a><span class="lineno">   98</span>&#160;</div>
+<div class="line"><a name="l00099"></a><span class="lineno">   99</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00100"></a><span class="lineno">  100</span>&#160;</div>
+<div class="line"><a name="l00101"></a><span class="lineno">  101</span>&#160;<span class="preprocessor">#endif  // MPD_BASE_MPD_UTILS_H_</span></div>
+<div class="ttc" id="namespaceshaka_html_abfd977a0dfb051a942d1694442692814"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#abfd977a0dfb051a942d1694442692814">shaka::AddContentProtectionElements</a></div><div class="ttdeci">void AddContentProtectionElements(const MediaInfo &amp;media_info, Representation *parent)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00347">mpd_utils.cc:347</a></div></div>
+<div class="ttc" id="namespaceshaka_html_a4c2ea2c3e7055657ca68a6b8e285d4d6"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#a4c2ea2c3e7055657ca68a6b8e285d4d6">shaka::HexToUUID</a></div><div class="ttdeci">bool HexToUUID(const std::string &amp;data, std::string *uuid_format)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00182">mpd_utils.cc:182</a></div></div>
+<div class="ttc" id="namespaceshaka_html_adac592409e758489bad365323d070f31"><div class="ttname"><a href="../../d8/daf/namespaceshaka.html#adac592409e758489bad365323d070f31">shaka::DoubleToString</a></div><div class="ttdeci">std::string DoubleToString(double value)</div><div class="ttdef"><b>Definition:</b> <a href="../../db/dfb/mpd__utils_8cc_source.html#l00175">mpd_utils.cc:175</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Thu Sep 29 2016 23:03:21 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Sep 30 2016 21:38:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
