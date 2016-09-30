@@ -139,48 +139,47 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">const</span> uint64_t size = cluster()-&gt;Size();</div>
 <div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <span class="keyword">const</span> uint64_t start_webm_timecode = cluster()-&gt;timecode();</div>
 <div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    <span class="keyword">const</span> uint64_t start_timescale = FromWebMTimecode(start_webm_timecode);</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    <span class="keyword">const</span> uint64_t length = <span class="keyword">static_cast&lt;</span>uint64_t<span class="keyword">&gt;</span>(</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;        cluster_length_sec() * info()-&gt;time_scale());</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;    muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">OnNewSegment</a>(writer_-&gt;file()-&gt;file_name(),</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                                   start_timescale, length, size);</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;  }</div>
-<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
-<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  VLOG(1) &lt;&lt; <span class="stringliteral">&quot;WEBM file &#39;&quot;</span> &lt;&lt; writer_-&gt;file()-&gt;file_name() &lt;&lt; <span class="stringliteral">&quot;&#39; finalized.&quot;</span>;</div>
-<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;}</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;Status MultiSegmentSegmenter::NewSubsegment(uint64_t start_timescale) {</div>
-<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;  <span class="keywordflow">if</span> (cluster() &amp;&amp; !cluster()-&gt;<a class="code" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a464a30159b8888a54254356d191947ac">Finalize</a>())</div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Error finalizing segment.&quot;</span>);</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  uint64_t start_webm_timecode = FromBMFFTimescale(start_timescale);</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;  <span class="keywordflow">return</span> SetCluster(start_webm_timecode, 0, writer_.get());</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;}</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;</div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;Status MultiSegmentSegmenter::NewSegment(uint64_t start_timescale) {</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;  <span class="keywordflow">if</span> (cluster()) {</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    Status temp = FinalizeSegment();</div>
-<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;    <span class="keywordflow">if</span> (!temp.ok())</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;      <span class="keywordflow">return</span> temp;</div>
-<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;  }</div>
-<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;</div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  <span class="comment">// Create a new file for the new segment.</span></div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;  std::string segment_name =</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;      GetSegmentName(options().segment_template, start_timescale, num_segment_,</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;                     options().bandwidth);</div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  writer_.reset(<span class="keyword">new</span> MkvWriter);</div>
-<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  Status status = writer_-&gt;Open(segment_name);</div>
-<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;    <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;  num_segment_++;</div>
-<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;</div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  uint64_t start_webm_timecode = FromBMFFTimescale(start_timescale);</div>
-<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;  <span class="keywordflow">return</span> SetCluster(start_webm_timecode, 0, writer_.get());</div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;}</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}  <span class="comment">// namespace webm</span></div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}  <span class="comment">// namespace media</span></div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;}  <span class="comment">// namespace shaka</span></div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;    muxer_listener()-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">OnNewSegment</a>(writer_-&gt;file()-&gt;file_name(),</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;                                   start_timescale,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                                   cluster_length_in_time_scale(), size);</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  }</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;  VLOG(1) &lt;&lt; <span class="stringliteral">&quot;WEBM file &#39;&quot;</span> &lt;&lt; writer_-&gt;file()-&gt;file_name() &lt;&lt; <span class="stringliteral">&quot;&#39; finalized.&quot;</span>;</div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;}</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;</div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;Status MultiSegmentSegmenter::NewSubsegment(uint64_t start_timescale) {</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;  <span class="keywordflow">if</span> (cluster() &amp;&amp; !cluster()-&gt;<a class="code" href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a464a30159b8888a54254356d191947ac">Finalize</a>())</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;    <span class="keywordflow">return</span> Status(error::FILE_FAILURE, <span class="stringliteral">&quot;Error finalizing segment.&quot;</span>);</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;  uint64_t start_webm_timecode = FromBMFFTimescale(start_timescale);</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;  <span class="keywordflow">return</span> SetCluster(start_webm_timecode, 0, writer_.get());</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;}</div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
+<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160;Status MultiSegmentSegmenter::NewSegment(uint64_t start_timescale) {</div>
+<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;  <span class="keywordflow">if</span> (cluster()) {</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;    Status temp = FinalizeSegment();</div>
+<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;    <span class="keywordflow">if</span> (!temp.ok())</div>
+<div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;      <span class="keywordflow">return</span> temp;</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;  }</div>
+<div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;  <span class="comment">// Create a new file for the new segment.</span></div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;  std::string segment_name =</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;      GetSegmentName(options().segment_template, start_timescale, num_segment_,</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                     options().bandwidth);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;  writer_.reset(<span class="keyword">new</span> MkvWriter);</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;  Status status = writer_-&gt;Open(segment_name);</div>
+<div class="line"><a name="l00083"></a><span class="lineno">   83</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00084"></a><span class="lineno">   84</span>&#160;    <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00085"></a><span class="lineno">   85</span>&#160;  num_segment_++;</div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;  uint64_t start_webm_timecode = FromBMFFTimescale(start_timescale);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;  <span class="keywordflow">return</span> SetCluster(start_webm_timecode, 0, writer_.get());</div>
+<div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160;}</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;}  <span class="comment">// namespace webm</span></div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;}  <span class="comment">// namespace media</span></div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;}  <span class="comment">// namespace shaka</span></div>
 <div class="ttc" id="classshaka_1_1media_1_1MuxerListener_html_a4cb75da6ff50d6403da18ea8dcc04265"><div class="ttname"><a href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a4cb75da6ff50d6403da18ea8dcc04265">shaka::media::MuxerListener::OnNewSegment</a></div><div class="ttdeci">virtual void OnNewSegment(const std::string &amp;segment_name, uint64_t start_time, uint64_t duration, uint64_t segment_file_size)=0</div></div>
 <div class="ttc" id="classshaka_1_1media_1_1Status_html_a74d29f349b4673d2eef69a47f5152fe4"><div class="ttname"><a href="../../d0/d93/classshaka_1_1media_1_1Status.html#a74d29f349b4673d2eef69a47f5152fe4">shaka::media::Status::Update</a></div><div class="ttdeci">void Update(const Status &amp;new_status)</div><div class="ttdef"><b>Definition:</b> <a href="../../d1/d13/status_8h_source.html#l00117">status.h:117</a></div></div>
 <div class="ttc" id="classshaka_1_1media_1_1mp4_1_1Segmenter_html_a464a30159b8888a54254356d191947ac"><div class="ttname"><a href="../../d9/d26/classshaka_1_1media_1_1mp4_1_1Segmenter.html#a464a30159b8888a54254356d191947ac">shaka::media::mp4::Segmenter::Finalize</a></div><div class="ttdeci">Status Finalize()</div><div class="ttdef"><b>Definition:</b> <a href="../../d2/da8/mp4_2segmenter_8cc_source.html#l00296">segmenter.cc:296</a></div></div>
@@ -188,7 +187,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Sep 30 2016 21:38:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Sep 30 2016 21:48:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

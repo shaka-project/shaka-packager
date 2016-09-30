@@ -131,8 +131,8 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;      first_timestamp_(0),</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;      sample_duration_(0),</div>
 <div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;      segment_payload_pos_(0),</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      cluster_length_sec_(0),</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      segment_length_sec_(0),</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;      cluster_length_in_time_scale_(0),</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;      segment_length_in_time_scale_(0),</div>
 <div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;      track_id_(0) {}</div>
 <div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
 <div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;Segmenter::~Segmenter() {}</div>
@@ -230,56 +230,56 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 <div class="line"><a name="l00141"></a><span class="lineno">  141</span>&#160;    new_segment = <span class="keyword">true</span>;</div>
 <div class="line"><a name="l00142"></a><span class="lineno">  142</span>&#160;    <span class="comment">// First frame, so no previous frame to write.</span></div>
 <div class="line"><a name="l00143"></a><span class="lineno">  143</span>&#160;    wrote_frame = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (segment_length_sec_ &gt;= options_.<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a4e98ad5fc7bbc2df0cb95df3f1db9687">segment_duration</a>) {</div>
-<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;    <span class="keywordflow">if</span> (sample-&gt;is_key_frame() || !options_.<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a1f1336e9be8b12733fe28da083eaf93f">segment_sap_aligned</a>) {</div>
-<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;      status = WriteFrame(<span class="keyword">true</span> <span class="comment">/* write_duration */</span>);</div>
-<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;      status.Update(NewSegment(sample-&gt;pts()));</div>
-<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;      new_segment = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;      segment_length_sec_ = 0;</div>
-<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;      cluster_length_sec_ = 0;</div>
-<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;      wrote_frame = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;    }</div>
-<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (cluster_length_sec_ &gt;= options_.<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a0dbe637b21f1f22f248437b59ad62a38">fragment_duration</a>) {</div>
-<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;    <span class="keywordflow">if</span> (sample-&gt;is_key_frame() || !options_.<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#acb335182d4bd226c1f044cc83705f4fc">fragment_sap_aligned</a>) {</div>
-<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;      status = WriteFrame(<span class="keyword">true</span> <span class="comment">/* write_duration */</span>);</div>
-<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;      status.Update(NewSubsegment(sample-&gt;pts()));</div>
-<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      cluster_length_sec_ = 0;</div>
-<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      wrote_frame = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;    }</div>
-<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;  }</div>
-<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;  <span class="keywordflow">if</span> (!wrote_frame) {</div>
-<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;    status = WriteFrame(<span class="keyword">false</span> <span class="comment">/* write_duration */</span>);</div>
-<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  }</div>
-<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
-<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;    <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;</div>
-<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;  <span class="comment">// Encrypt the frame.</span></div>
-<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;  <span class="keywordflow">if</span> (encryptor_) {</div>
-<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;    <span class="comment">// Don&#39;t enable encryption in the middle of a segment, i.e. only at the</span></div>
-<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;    <span class="comment">// first frame of a segment.</span></div>
-<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    <span class="keywordflow">if</span> (new_segment &amp;&amp; !enable_encryption_) {</div>
-<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;      <span class="keywordflow">if</span> (sample-&gt;pts() - first_timestamp_ &gt;=</div>
-<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;          clear_lead_ * info_-&gt;time_scale()) {</div>
-<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;        enable_encryption_ = <span class="keyword">true</span>;</div>
-<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;        <span class="keywordflow">if</span> (muxer_listener_)</div>
-<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;          muxer_listener_-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a897463091f0effa647a8e2822f48b2ee">OnEncryptionStart</a>();</div>
-<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;      }</div>
-<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;    }</div>
-<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;</div>
-<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    status = encryptor_-&gt;EncryptFrame(sample, enable_encryption_);</div>
-<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;    <span class="keywordflow">if</span> (!status.ok()) {</div>
-<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Error encrypting frame.&quot;</span>;</div>
-<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;      <span class="keywordflow">return</span> status;</div>
-<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;    }</div>
-<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;  }</div>
-<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;</div>
-<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  <span class="comment">// Add the sample to the durations even though we have not written the frame</span></div>
-<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;  <span class="comment">// yet.  This is needed to make sure we split Clusters at the correct point.</span></div>
-<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  <span class="comment">// These are only used in this method.</span></div>
-<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <span class="keyword">const</span> <span class="keywordtype">double</span> duration_sec =</div>
-<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;      <span class="keyword">static_cast&lt;</span><span class="keywordtype">double</span><span class="keyword">&gt;</span>(sample-&gt;duration()) / info_-&gt;time_scale();</div>
-<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  cluster_length_sec_ += duration_sec;</div>
-<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  segment_length_sec_ += duration_sec;</div>
+<div class="line"><a name="l00144"></a><span class="lineno">  144</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (segment_length_in_time_scale_ &gt;=</div>
+<div class="line"><a name="l00145"></a><span class="lineno">  145</span>&#160;             options_.<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a4e98ad5fc7bbc2df0cb95df3f1db9687">segment_duration</a> * info_-&gt;time_scale()) {</div>
+<div class="line"><a name="l00146"></a><span class="lineno">  146</span>&#160;    <span class="keywordflow">if</span> (sample-&gt;is_key_frame() || !options_.<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a1f1336e9be8b12733fe28da083eaf93f">segment_sap_aligned</a>) {</div>
+<div class="line"><a name="l00147"></a><span class="lineno">  147</span>&#160;      status = WriteFrame(<span class="keyword">true</span> <span class="comment">/* write_duration */</span>);</div>
+<div class="line"><a name="l00148"></a><span class="lineno">  148</span>&#160;      status.Update(NewSegment(sample-&gt;pts()));</div>
+<div class="line"><a name="l00149"></a><span class="lineno">  149</span>&#160;      new_segment = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00150"></a><span class="lineno">  150</span>&#160;      segment_length_in_time_scale_ = 0;</div>
+<div class="line"><a name="l00151"></a><span class="lineno">  151</span>&#160;      cluster_length_in_time_scale_ = 0;</div>
+<div class="line"><a name="l00152"></a><span class="lineno">  152</span>&#160;      wrote_frame = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00153"></a><span class="lineno">  153</span>&#160;    }</div>
+<div class="line"><a name="l00154"></a><span class="lineno">  154</span>&#160;  } <span class="keywordflow">else</span> <span class="keywordflow">if</span> (cluster_length_in_time_scale_ &gt;=</div>
+<div class="line"><a name="l00155"></a><span class="lineno">  155</span>&#160;             options_.<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#a0dbe637b21f1f22f248437b59ad62a38">fragment_duration</a> * info_-&gt;time_scale()) {</div>
+<div class="line"><a name="l00156"></a><span class="lineno">  156</span>&#160;    <span class="keywordflow">if</span> (sample-&gt;is_key_frame() || !options_.<a class="code" href="../../d0/d27/structshaka_1_1media_1_1MuxerOptions.html#acb335182d4bd226c1f044cc83705f4fc">fragment_sap_aligned</a>) {</div>
+<div class="line"><a name="l00157"></a><span class="lineno">  157</span>&#160;      status = WriteFrame(<span class="keyword">true</span> <span class="comment">/* write_duration */</span>);</div>
+<div class="line"><a name="l00158"></a><span class="lineno">  158</span>&#160;      status.Update(NewSubsegment(sample-&gt;pts()));</div>
+<div class="line"><a name="l00159"></a><span class="lineno">  159</span>&#160;      cluster_length_in_time_scale_ = 0;</div>
+<div class="line"><a name="l00160"></a><span class="lineno">  160</span>&#160;      wrote_frame = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00161"></a><span class="lineno">  161</span>&#160;    }</div>
+<div class="line"><a name="l00162"></a><span class="lineno">  162</span>&#160;  }</div>
+<div class="line"><a name="l00163"></a><span class="lineno">  163</span>&#160;  <span class="keywordflow">if</span> (!wrote_frame) {</div>
+<div class="line"><a name="l00164"></a><span class="lineno">  164</span>&#160;    status = WriteFrame(<span class="keyword">false</span> <span class="comment">/* write_duration */</span>);</div>
+<div class="line"><a name="l00165"></a><span class="lineno">  165</span>&#160;  }</div>
+<div class="line"><a name="l00166"></a><span class="lineno">  166</span>&#160;  <span class="keywordflow">if</span> (!status.ok())</div>
+<div class="line"><a name="l00167"></a><span class="lineno">  167</span>&#160;    <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00168"></a><span class="lineno">  168</span>&#160;</div>
+<div class="line"><a name="l00169"></a><span class="lineno">  169</span>&#160;  <span class="comment">// Encrypt the frame.</span></div>
+<div class="line"><a name="l00170"></a><span class="lineno">  170</span>&#160;  <span class="keywordflow">if</span> (encryptor_) {</div>
+<div class="line"><a name="l00171"></a><span class="lineno">  171</span>&#160;    <span class="comment">// Don&#39;t enable encryption in the middle of a segment, i.e. only at the</span></div>
+<div class="line"><a name="l00172"></a><span class="lineno">  172</span>&#160;    <span class="comment">// first frame of a segment.</span></div>
+<div class="line"><a name="l00173"></a><span class="lineno">  173</span>&#160;    <span class="keywordflow">if</span> (new_segment &amp;&amp; !enable_encryption_) {</div>
+<div class="line"><a name="l00174"></a><span class="lineno">  174</span>&#160;      <span class="keywordflow">if</span> (sample-&gt;pts() - first_timestamp_ &gt;=</div>
+<div class="line"><a name="l00175"></a><span class="lineno">  175</span>&#160;          clear_lead_ * info_-&gt;time_scale()) {</div>
+<div class="line"><a name="l00176"></a><span class="lineno">  176</span>&#160;        enable_encryption_ = <span class="keyword">true</span>;</div>
+<div class="line"><a name="l00177"></a><span class="lineno">  177</span>&#160;        <span class="keywordflow">if</span> (muxer_listener_)</div>
+<div class="line"><a name="l00178"></a><span class="lineno">  178</span>&#160;          muxer_listener_-&gt;<a class="code" href="../../dd/d7a/classshaka_1_1media_1_1MuxerListener.html#a897463091f0effa647a8e2822f48b2ee">OnEncryptionStart</a>();</div>
+<div class="line"><a name="l00179"></a><span class="lineno">  179</span>&#160;      }</div>
+<div class="line"><a name="l00180"></a><span class="lineno">  180</span>&#160;    }</div>
+<div class="line"><a name="l00181"></a><span class="lineno">  181</span>&#160;</div>
+<div class="line"><a name="l00182"></a><span class="lineno">  182</span>&#160;    status = encryptor_-&gt;EncryptFrame(sample, enable_encryption_);</div>
+<div class="line"><a name="l00183"></a><span class="lineno">  183</span>&#160;    <span class="keywordflow">if</span> (!status.ok()) {</div>
+<div class="line"><a name="l00184"></a><span class="lineno">  184</span>&#160;      LOG(ERROR) &lt;&lt; <span class="stringliteral">&quot;Error encrypting frame.&quot;</span>;</div>
+<div class="line"><a name="l00185"></a><span class="lineno">  185</span>&#160;      <span class="keywordflow">return</span> status;</div>
+<div class="line"><a name="l00186"></a><span class="lineno">  186</span>&#160;    }</div>
+<div class="line"><a name="l00187"></a><span class="lineno">  187</span>&#160;  }</div>
+<div class="line"><a name="l00188"></a><span class="lineno">  188</span>&#160;</div>
+<div class="line"><a name="l00189"></a><span class="lineno">  189</span>&#160;  <span class="comment">// Add the sample to the durations even though we have not written the frame</span></div>
+<div class="line"><a name="l00190"></a><span class="lineno">  190</span>&#160;  <span class="comment">// yet.  This is needed to make sure we split Clusters at the correct point.</span></div>
+<div class="line"><a name="l00191"></a><span class="lineno">  191</span>&#160;  <span class="comment">// These are only used in this method.</span></div>
+<div class="line"><a name="l00192"></a><span class="lineno">  192</span>&#160;  cluster_length_in_time_scale_ += sample-&gt;duration();</div>
+<div class="line"><a name="l00193"></a><span class="lineno">  193</span>&#160;  segment_length_in_time_scale_ += sample-&gt;duration();</div>
 <div class="line"><a name="l00194"></a><span class="lineno">  194</span>&#160;</div>
 <div class="line"><a name="l00195"></a><span class="lineno">  195</span>&#160;  prev_sample_ = sample;</div>
 <div class="line"><a name="l00196"></a><span class="lineno">  196</span>&#160;  <span class="keywordflow">return</span> Status::OK;</div>
@@ -562,7 +562,7 @@ var searchBox = new SearchBox("searchBox", "../../search",false,'Search');
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Fri Sep 30 2016 21:38:25 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Fri Sep 30 2016 21:48:24 for DASH Media Packaging SDK by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="../../doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
