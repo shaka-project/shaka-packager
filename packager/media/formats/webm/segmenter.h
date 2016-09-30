@@ -104,7 +104,9 @@ class Segmenter {
 
   int track_id() const { return track_id_; }
   uint64_t segment_payload_pos() const { return segment_payload_pos_; }
-  double cluster_length_sec() const { return cluster_length_sec_; }
+  uint64_t cluster_length_in_time_scale() const {
+    return cluster_length_in_time_scale_;
+  }
 
   virtual Status DoInitialize(std::unique_ptr<MkvWriter> writer) = 0;
   virtual Status DoFinalize() = 0;
@@ -154,8 +156,9 @@ class Segmenter {
   // file.  This is also the size of the header before the SeekHead.
   uint64_t segment_payload_pos_;
 
-  double cluster_length_sec_;
-  double segment_length_sec_;
+  // Durations in timescale.
+  uint64_t cluster_length_in_time_scale_;
+  uint64_t segment_length_in_time_scale_;
 
   int track_id_;
 
