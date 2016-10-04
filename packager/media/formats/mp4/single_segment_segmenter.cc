@@ -6,38 +6,18 @@
 
 #include "packager/media/formats/mp4/single_segment_segmenter.h"
 
-#include <inttypes.h>
-#include <openssl/err.h>
-#include <openssl/rand.h>
-
-#include "packager/base/files/file_util.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/base/threading/platform_thread.h"
-#include "packager/base/time/time.h"
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/event/muxer_listener.h"
 #include "packager/media/event/progress_listener.h"
 #include "packager/media/file/file.h"
+#include "packager/media/file/file_util.h"
 #include "packager/media/formats/mp4/box_definitions.h"
 
 namespace shaka {
 namespace media {
 namespace mp4 {
-namespace {
-// Create a temp file name using process/thread id and current time.
-std::string TempFileName() {
-  int32_t tid = static_cast<int32_t>(base::PlatformThread::CurrentId());
-  int64_t rand = 0;
-  if (RAND_bytes(reinterpret_cast<uint8_t*>(&rand), sizeof(rand)) != 1) {
-    LOG(WARNING) << "RAND_bytes failed with error: "
-                 << ERR_error_string(ERR_get_error(), NULL);
-    rand = base::Time::Now().ToInternalValue();
-  }
-  return base::StringPrintf("packager-tempfile-%x-%" PRIx64, tid, rand);
-}
-}  // namespace
 
 SingleSegmentSegmenter::SingleSegmentSegmenter(const MuxerOptions& options,
                                                std::unique_ptr<FileType> ftyp,
@@ -77,18 +57,8 @@ Status SingleSegmentSegmenter::DoInitialize() {
   // progress_target was set for stage 1. Times two to account for stage 2.
   set_progress_target(progress_target() * 2);
 
-  if (options().temp_dir.empty()) {
-    base::FilePath temp_file_path;
-    if (!base::CreateTemporaryFile(&temp_file_path)) {
-      LOG(ERROR) << "Failed to create temporary file.";
-      return Status(error::FILE_FAILURE, "Unable to create temporary file.");
-    }
-    temp_file_name_ = temp_file_path.AsUTF8Unsafe();
-  } else {
-    temp_file_name_ =
-      base::FilePath::FromUTF8Unsafe(options().temp_dir)
-        .Append(base::FilePath::FromUTF8Unsafe(TempFileName())).AsUTF8Unsafe();
-  }
+  if (!TempFilePath(options().temp_dir, &temp_file_name_))
+    return Status(error::FILE_FAILURE, "Unable to create temporary file.");
   temp_file_.reset(File::Open(temp_file_name_.c_str(), "w"));
   return temp_file_
              ? Status::OK

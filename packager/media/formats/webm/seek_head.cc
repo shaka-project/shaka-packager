@@ -52,8 +52,7 @@ bool SeekHead::Write(mkvmuxer::IMkvWriter* writer) {
   uint64_t payload_size = 0;
   for (const SeekHead::SeekElement& seek_element : seek_elements) {
     payload_size +=
-        seek_element.size +
-        EbmlMasterElementSize(mkvmuxer::kMkvSeek, seek_element.size);
+        EbmlMasterElementWithPayloadSize(mkvmuxer::kMkvSeek, seek_element.size);
   }
 
   const int64_t start_pos = writer->Position();

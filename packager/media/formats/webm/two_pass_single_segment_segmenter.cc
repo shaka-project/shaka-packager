@@ -6,20 +6,13 @@
 
 #include "packager/media/formats/webm/two_pass_single_segment_segmenter.h"
 
-#include <inttypes.h>
-#include <openssl/err.h>
-#include <openssl/rand.h>
-
 #include <algorithm>
 
-#include "packager/base/files/file_path.h"
-#include "packager/base/strings/stringprintf.h"
-#include "packager/base/threading/platform_thread.h"
-#include "packager/base/time/time.h"
 #include "packager/media/base/media_sample.h"
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
 #include "packager/media/base/stream_info.h"
+#include "packager/media/file/file_util.h"
 #include "packager/third_party/libwebm/src/mkvmuxer.hpp"
 #include "packager/third_party/libwebm/src/mkvmuxerutil.hpp"
 #include "packager/third_party/libwebm/src/webmids.hpp"
@@ -46,22 +39,6 @@ uint64_t UpdateCues(mkvmuxer::Cues* cues) {
     cues_size = new_cues_size;
   }
   return cues_size;
-}
-
-/// Create the temp file name using process/thread id and current time.
-std::string TempFileName(const MuxerOptions& options) {
-  // TODO: Move to a common util function and remove other uses.
-  int32_t tid = static_cast<int32_t>(base::PlatformThread::CurrentId());
-  int64_t rand = 0;
-  if (RAND_bytes(reinterpret_cast<uint8_t*>(&rand), sizeof(rand)) != 1) {
-    LOG(WARNING) << "RAND_bytes failed with error: "
-                 << ERR_error_string(ERR_get_error(), NULL);
-    rand = base::Time::Now().ToInternalValue();
-  }
-  std::string file_prefix =
-      base::StringPrintf("packager-tempfile-%x-%" PRIx64 ".tmp", tid, rand);
-  return base::FilePath::FromUTF8Unsafe(options.temp_dir).Append(
-      base::FilePath::FromUTF8Unsafe(file_prefix)).AsUTF8Unsafe();
 }
 
 // Skips a given number of bytes in a file by reading.  This allows
@@ -100,7 +77,8 @@ Status TwoPassSingleSegmentSegmenter::DoInitialize(
 
   real_writer_ = std::move(writer);
 
-  temp_file_name_ = TempFileName(options());
+  if (!TempFilePath(options().temp_dir, &temp_file_name_))
+    return Status(error::FILE_FAILURE, "Unable to create temporary file.");
   std::unique_ptr<MkvWriter> temp(new MkvWriter);
   Status status = temp->Open(temp_file_name_);
   if (!status.ok())

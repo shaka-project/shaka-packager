@@ -15,6 +15,8 @@
       'sources': [
         'file.cc',
         'file.h',
+        'file_util.cc',
+        'file_util.h',
         'file_closer.h',
         'io_cache.cc',
         'io_cache.h',
@@ -48,6 +50,7 @@
       'type': '<(gtest_target_type)',
       'sources': [
         'file_unittest.cc',
+        'file_util_unittest.cc',
         'io_cache_unittest.cc',
         'memory_file_unittest.cc',
       ],
