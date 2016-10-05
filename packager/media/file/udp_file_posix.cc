@@ -8,7 +8,6 @@
 
 #include <arpa/inet.h>
 #include <errno.h>
-#include <gflags/gflags.h>
 #include <strings.h>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -16,14 +15,9 @@
 #include <limits>
 
 #include "packager/base/logging.h"
-#include "packager/base/strings/string_number_conversions.h"
+#include "packager/media/file/udp_options.h"
 
 // TODO(tinskip): Adapt to work with winsock.
-
-DEFINE_string(udp_interface_address,
-              "0.0.0.0",
-              "IP address of the interface over which to receive UDP unicast"
-              " or multicast streams");
 
 namespace shaka {
 namespace media {
@@ -32,51 +26,8 @@ namespace {
 
 const int kInvalidSocket(-1);
 
-bool StringToIpv4Address(const std::string& addr_in, uint32_t* addr_out) {
-  DCHECK(addr_out);
-
-  *addr_out = 0;
-  size_t start_pos(0);
-  size_t end_pos(0);
-  for (int i = 0; i < 4; ++i) {
-    end_pos = addr_in.find('.', start_pos);
-    if ((end_pos == std::string::npos) != (i == 3))
-      return false;
-    unsigned addr_byte;
-    if (!base::StringToUint(addr_in.substr(start_pos, end_pos - start_pos),
-                            &addr_byte)
-        || (addr_byte > 255))
-      return false;
-    *addr_out <<= 8;
-    *addr_out |= addr_byte;
-    start_pos = end_pos + 1;
-  }
-  return true;
-}
-
-bool StringToIpv4AddressAndPort(const std::string& addr_and_port,
-                                uint32_t* addr,
-                                uint16_t* port) {
-  DCHECK(addr);
-  DCHECK(port);
-
-  size_t colon_pos = addr_and_port.find(':');
-  if (colon_pos == std::string::npos) {
-    return false;
-  }
-  if (!StringToIpv4Address(addr_and_port.substr(0, colon_pos), addr))
-    return false;
-  unsigned port_value;
-  if (!base::StringToUint(addr_and_port.substr(colon_pos + 1),
-                          &port_value) ||
-      (port_value > 65535))
-    return false;
-  *port = port_value;
-  return true;
-}
-
-bool IsIpv4MulticastAddress(uint32_t addr) {
-  return (addr & 0xf0000000) == 0xe0000000;
+bool IsIpv4MulticastAddress(const struct in_addr& addr) {
+  return (ntohl(addr.s_addr) & 0xf0000000) == 0xe0000000;
 }
 
 }  // anonymous namespace
@@ -166,15 +117,10 @@ class ScopedSocket {
 bool UdpFile::Open() {
   DCHECK_EQ(kInvalidSocket, socket_);
 
-  // TODO(tinskip): Support IPv6 addresses.
-  uint32_t dest_addr;
-  uint16_t dest_port;
-  if (!StringToIpv4AddressAndPort(file_name(),
-                                  &dest_addr,
-                                  &dest_port)) {
-    LOG(ERROR) << "Malformed IPv4 address:port UDP stream specifier.";
+  std::unique_ptr<UdpOptions> options =
+      UdpOptions::ParseFromString(file_name());
+  if (!options)
     return false;
-  }
 
   ScopedSocket new_socket(socket(AF_INET, SOCK_DGRAM, 0));
   if (new_socket.get() == kInvalidSocket) {
@@ -184,17 +130,25 @@ bool UdpFile::Open() {
 
   struct sockaddr_in local_sock_addr;
   bzero(&local_sock_addr, sizeof(local_sock_addr));
+  // TODO(kqyang): Support IPv6.
   local_sock_addr.sin_family = AF_INET;
-  local_sock_addr.sin_port = htons(dest_port);
-  local_sock_addr.sin_addr.s_addr  = htonl(dest_addr);
-  // We do not need to require exclusive bind of udp sockets
-  const int optval = 1;
-  if (setsockopt(new_socket.get(), SOL_SOCKET, SO_REUSEADDR, &optval,
-                 sizeof(optval)) < 0) {
-    LOG(ERROR)
-        << "Could not apply the SO_REUSEADDR property to the UDP socket";
+  local_sock_addr.sin_port = htons(options->port());
+  if (inet_pton(AF_INET, options->address().c_str(),
+                &local_sock_addr.sin_addr) != 1) {
+    LOG(ERROR) << "Malformed IPv4 address " << options->address();
     return false;
   }
+
+  if (options->reuse()) {
+    const int optval = 1;
+    if (setsockopt(new_socket.get(), SOL_SOCKET, SO_REUSEADDR, &optval,
+                   sizeof(optval)) < 0) {
+      LOG(ERROR)
+          << "Could not apply the SO_REUSEADDR property to the UDP socket";
+      return false;
+    }
+  }
+
   if (bind(new_socket.get(),
            reinterpret_cast<struct sockaddr*>(&local_sock_addr),
            sizeof(local_sock_addr))) {
@@ -202,21 +156,38 @@ bool UdpFile::Open() {
     return false;
   }
 
-  if (IsIpv4MulticastAddress(dest_addr)) {
-    uint32_t if_addr;
-    if (!StringToIpv4Address(FLAGS_udp_interface_address, &if_addr)) {
-      LOG(ERROR) << "Malformed IPv4 address for interface.";
+  if (IsIpv4MulticastAddress(local_sock_addr.sin_addr)) {
+    struct ip_mreq multicast_group;
+    multicast_group.imr_multiaddr = local_sock_addr.sin_addr;
+
+    if (options->interface_address().empty()) {
+      LOG(ERROR) << "Interface address is required for multicast, which can be "
+                    "specified in udp url, e.g. "
+                    "udp://ip:port?interface=interface_ip.";
       return false;
     }
-    struct ip_mreq multicast_group;
-    multicast_group.imr_multiaddr.s_addr = htonl(dest_addr);
-    multicast_group.imr_interface.s_addr = htonl(if_addr);
-    if (setsockopt(new_socket.get(),
-                   IPPROTO_IP,
-                   IP_ADD_MEMBERSHIP,
-                   &multicast_group,
-                   sizeof(multicast_group)) < 0) {
+    if (inet_pton(AF_INET, options->interface_address().c_str(),
+                  &multicast_group.imr_interface) != 1) {
+      LOG(ERROR) << "Malformed IPv4 interface address "
+                 << options->interface_address();
+      return false;
+    }
+
+    if (setsockopt(new_socket.get(), IPPROTO_IP, IP_ADD_MEMBERSHIP,
+                   &multicast_group, sizeof(multicast_group)) < 0) {
       LOG(ERROR) << "Failed to join multicast group.";
+      return false;
+    }
+  }
+
+  // Set timeout if needed.
+  if (options->timeout_us() != 0) {
+    struct timeval tv;
+    tv.tv_sec = options->timeout_us() / 1000000;
+    tv.tv_usec = options->timeout_us() % 1000000;
+    if (setsockopt(new_socket.get(), SOL_SOCKET, SO_RCVTIMEO,
+                   reinterpret_cast<char*>(&tv), sizeof(tv)) < 0) {
+      LOG(ERROR) << "Failed to set socket timeout.";
       return false;
     }
   }

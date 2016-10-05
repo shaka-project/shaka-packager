@@ -263,6 +263,17 @@ packager \
 --mpd_output live.mpd
 ```
 
+A UDP url is of the form udp://ip:port[?options]. Here is an example:
+udp://224.1.1.5:5003?reuse=1&interface=10.11.12.13&timeout=1234567.
+
+Three options are supported right now:
+- reuse=1|0
+  Allow or disallow reusing UDP sockets. Default to 0.
+- interface=interface_ip_address
+  Address of the interface over which to receive UDP multicast streams.
+- timeout=microseconds
+  Timeout in microseconds. Default to unlimited.
+
 Demux video from the input and generate an encrypted fragmented mp4 using
 Widevine encryption with RSA signing key file *widevine_test_private.der*:
 ```Shell

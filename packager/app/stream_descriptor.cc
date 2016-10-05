@@ -146,7 +146,6 @@ bool InsertStreamDescriptor(const std::string& descriptor_string,
         LOG(ERROR) << "Unknown field in stream descriptor (\"" << iter->first
                    << "\").";
         return false;
-        break;
     }
   }
   // Validate and insert the descriptor

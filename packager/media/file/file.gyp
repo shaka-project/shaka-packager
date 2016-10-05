@@ -27,6 +27,8 @@
         'threaded_io_file.cc',
         'threaded_io_file.h',
         'udp_file.h',
+        'udp_options.cc',
+        'udp_options.h',
       ],
       'conditions': [
         ['OS == "win"', {
@@ -53,6 +55,7 @@
         'file_util_unittest.cc',
         'io_cache_unittest.cc',
         'memory_file_unittest.cc',
+        'udp_options_unittest.cc',
       ],
       'dependencies': [
         '../../testing/gtest.gyp:gtest',
