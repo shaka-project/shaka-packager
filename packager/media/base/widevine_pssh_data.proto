@@ -34,4 +34,9 @@ message WidevinePsshData {
   // Optional protected context for group content. The grouped_license is a
   // serialized SignedMessage.
   optional bytes grouped_license = 8;
+
+  // Protection scheme identifying the encryption algorithm. Represented as one
+  // of the following 4CC values: 'cenc' (AES-CTR), 'cbc1' (AES-CBC),
+  // 'cens' (AES-CTR subsample), 'cbcs' (AES-CBC subsample).
+  optional uint32 protection_scheme = 9;
 }

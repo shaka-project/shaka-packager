@@ -11,20 +11,21 @@ import argparse
 import base64
 import itertools
 import os
+import struct
 import sys
 
 # Append the local protobuf location.  Use a path relative to the tools/pssh
 # folder where this file should be found.  This allows the file to be executed
 # from any directory.
 _pssh_dir = os.path.dirname(os.path.realpath(__file__))
-sys.path.append(os.path.join(_pssh_dir, '../../third_party/protobuf/python'))
+sys.path.insert(0, os.path.join(_pssh_dir, '../../third_party/protobuf/python'))
 # Import the widevine protobuf.  Use either Release or Debug.
 _proto_path_format = os.path.join(
     _pssh_dir, '../../../out/%s/pyproto/packager/media/base')
 if os.path.isdir(_proto_path_format % 'Release'):
-  sys.path.append(_proto_path_format % 'Release')
+  sys.path.insert(0, _proto_path_format % 'Release')
 else:
-  sys.path.append(_proto_path_format % 'Debug')
+  sys.path.insert(0, _proto_path_format % 'Debug')
 try:
   import widevine_pssh_data_pb2  # pylint: disable=g-import-not-at-top
 except ImportError:
@@ -157,11 +158,15 @@ def _create_uuid(data):
           '-' + ret[20:])
 
 
-def _generate_widevine_data(key_ids, content_id, provider):
+def _generate_widevine_data(key_ids, content_id, provider, protection_scheme):
+  """Generate widevine pssh data."""
   wv = widevine_pssh_data_pb2.WidevinePsshData()
   wv.key_id.extend(key_ids)
   wv.provider = provider or ''
   wv.content_id = content_id
+  # 'cenc' is the default, so omitted to save bytes.
+  if protection_scheme and protection_scheme != 'cenc':
+    wv.protection_scheme = struct.unpack('>L', protection_scheme)[0]
   return wv.SerializeToString()
 
 
@@ -183,6 +188,9 @@ def _parse_widevine_data(data):
     ret.append('Policy: ' + wv.policy)
   if wv.HasField('crypto_period_index'):
     ret.append('Crypto Period Index: %d' % wv.crypto_period_index)
+  if wv.HasField('protection_scheme'):
+    protection_scheme = struct.pack('>L', wv.protection_scheme)
+    ret.append('Protection Scheme: %s' % protection_scheme)
 
   return ret
 
@@ -292,8 +300,9 @@ it will appear before the generated one.
 
 An alternative to --pssh-data is to generate Widevine PSSH data.  This is only
 valid with --widevine-system-id.  Passing --content-id will make it generate
-Widevine PSSH data instead.  You can optionally add --provider.  It will
-generate a v0 PSSH box for compatibility reasons.""")
+Widevine PSSH data instead.  You can optionally add --provider and/or
+--protection-scheme.  It will generate a v0 PSSH box for compatibility
+reasons.""")
 
   formats = parser.add_mutually_exclusive_group()
   formats.add_argument('--base64',
@@ -358,6 +367,9 @@ generate a v0 PSSH box for compatibility reasons.""")
   extra.add_argument('--provider',
                      metavar='<string>',
                      help='Sets the provider of the Widevine PSSH data')
+  extra.add_argument('--protection-scheme',
+                     choices=['cenc', 'cbcs', 'cens', 'cbc1'],
+                     help='Set the protection scheme of the Widevine PSSH data')
 
   return parser
 
@@ -366,6 +378,9 @@ def main(all_args):
   boxes = []
   output_format = None
   parser = _create_argument_parser()
+  if not all_args:
+    parser.print_help()
+    sys.exit(1)
   arg_groups = _split_list_on(all_args, '--')
   for args in arg_groups:
     ns = parser.parse_args(args)
@@ -382,10 +397,15 @@ def main(all_args):
     pssh_data = ns.pssh_data
     if pssh_data and ns.content_id:
       raise Exception('Cannot specify both --pssh-data and --content-id')
+    if ns.protection_scheme:
+      if ns.system_id != WIDEVINE_SYSTEM_ID:
+        raise Exception(
+            '--protection-scheme only valid with Widevine system ID')
     if ns.content_id:
       if ns.system_id != WIDEVINE_SYSTEM_ID:
         raise Exception('--content-id only valid with Widevine system ID')
-      pssh_data = _generate_widevine_data(ns.key_id, ns.content_id, ns.provider)
+      pssh_data = _generate_widevine_data(ns.key_id, ns.content_id, ns.provider,
+                                          ns.protection_scheme)
 
     # Ignore if we have no data.
     if not pssh_data and not ns.key_id and not ns.system_id:
