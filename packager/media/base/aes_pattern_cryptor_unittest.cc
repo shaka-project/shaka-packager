@@ -219,35 +219,5 @@ TEST(SampleAesPatternCryptor, MoreThan16Bytes) {
   ASSERT_TRUE(pattern_cryptor.Crypt("0123456789abcdef012", &crypt_text));
 }
 
-TEST(FullSampleSpecialPatternTest, Test) {
-  MockAesCryptor* mock_cryptor = new MockAesCryptor();
-  EXPECT_CALL(*mock_cryptor, CryptInternal(_, 96u, _, _))
-      .WillOnce(Invoke([](const uint8_t* text, size_t text_size,
-                          uint8_t* crypt_text, size_t* crypt_text_size) {
-        *crypt_text_size = text_size;
-        for (size_t i = 0; i < text_size; ++i)
-          *crypt_text++ = 'e';
-        return true;
-      }));
-
-  const uint8_t kFulLSampleCryptBlock = 1;
-  const uint8_t kFullSampleSkipBlock = 0;
-  AesPatternCryptor pattern_cryptor(
-      kFulLSampleCryptBlock, kFullSampleSkipBlock,
-      AesPatternCryptor::kSkipIfCryptByteBlockRemaining,
-      AesPatternCryptor::kUseConstantIv,
-      std::unique_ptr<MockAesCryptor>(mock_cryptor));
-
-  std::vector<uint8_t> iv(8, 'i');
-  // SetIv will be called only once by AesPatternCryptor::SetIv.
-  EXPECT_TRUE(pattern_cryptor.SetIv(iv));
-
-  std::string input_text(100, 'c');
-  std::string crypt_text;
-  // More than 16 bytes so mock's CryptInternal should be called.
-  ASSERT_TRUE(pattern_cryptor.Crypt(input_text, &crypt_text));
-  EXPECT_EQ(std::string(96, 'e') + std::string(4, 'c'), crypt_text);
-}
-
 }  // namespace media
 }  // namespace shaka

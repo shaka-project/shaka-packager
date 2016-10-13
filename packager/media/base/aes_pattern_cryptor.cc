@@ -23,11 +23,9 @@ AesPatternCryptor::AesPatternCryptor(uint8_t crypt_byte_block,
       skip_byte_block_(skip_byte_block),
       encryption_mode_(encryption_mode),
       cryptor_(std::move(cryptor)) {
-  // |crypt_byte_block_| should never be 0. |skip_byte_block_| can be 0 to allow
-  // a special pattern of 1:0, which is the pattern for the case of pattern
-  // encryption when applied to non video tracks.
-  DCHECK_NE(crypt_byte_block_, 0u);
-  DCHECK(skip_byte_block_ != 0 || crypt_byte_block_ == 1);
+  // Treat pattern 0:0 as 1:0.
+  if (crypt_byte_block_ == 0 && skip_byte_block_ == 0)
+    crypt_byte_block_ = 1;
   DCHECK(cryptor_);
   DCHECK(!cryptor_->use_constant_iv());
 }
@@ -50,17 +48,6 @@ bool AesPatternCryptor::CryptInternal(const uint8_t* text,
     return false;
   }
   *crypt_text_size = text_size;
-
-  // Handle the special pattern 1:0.
-  if (skip_byte_block_ == 0) {
-    DCHECK_EQ(crypt_byte_block_, 1u);
-    const size_t crypt_byte_size = text_size / AES_BLOCK_SIZE * AES_BLOCK_SIZE;
-    if (!cryptor_->Crypt(text, crypt_byte_size, crypt_text))
-      return false;
-    memcpy(crypt_text + crypt_byte_size, text + crypt_byte_size,
-           text_size - crypt_byte_size);
-    return true;
-  }
 
   while (text_size > 0) {
     const size_t crypt_byte_size = crypt_byte_block_ * AES_BLOCK_SIZE;

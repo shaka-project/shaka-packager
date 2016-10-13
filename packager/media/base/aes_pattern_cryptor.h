@@ -72,7 +72,7 @@ class AesPatternCryptor : public AesCryptor {
 
   bool NeedEncrypt(size_t input_size, size_t target_data_size);
 
-  const uint8_t crypt_byte_block_;
+  uint8_t crypt_byte_block_;
   const uint8_t skip_byte_block_;
   const PatternEncryptionMode encryption_mode_;
   std::unique_ptr<AesCryptor> cryptor_;
