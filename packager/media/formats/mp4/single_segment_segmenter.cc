@@ -6,6 +6,8 @@
 
 #include "packager/media/formats/mp4/single_segment_segmenter.h"
 
+#include <algorithm>
+
 #include "packager/media/base/buffer_writer.h"
 #include "packager/media/base/media_stream.h"
 #include "packager/media/base/muxer_options.h"
